@@ -1,4 +1,9 @@
 {
+  // TypeScript: 항상 검증
+  "typescript.validate.enable": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
   // ESLint: 항상 검사
   "eslint.enable": true,
   "eslint.run": "onType",

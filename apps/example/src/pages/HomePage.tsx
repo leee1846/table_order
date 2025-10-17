@@ -3,7 +3,6 @@ import { Button } from '@repo/ui/button';
 import { ROUTES } from '@/constants/routes';
 import reactLogo from '@/assets/react.svg';
 import viteLogo from '/vite.svg';
-import '@/App.css';
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -27,7 +26,7 @@ export const HomePage = () => {
 
         <div style={{ marginTop: '20px' }}>
           <Button
-            onClick={() => navigate(ROUTES.ABOUT)}
+            onClick={() => navigate(ROUTES.ABOUT.path)}
             className="navigation-button"
           >
             About 페이지로 이동 →
