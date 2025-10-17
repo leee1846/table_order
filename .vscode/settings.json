@@ -1,7 +1,23 @@
 {
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ]
+  // ESLint: 항상 검사
+  "eslint.enable": true,
+  "eslint.run": "onType",
+
+  // ESLint Flat Config 지원 (ESLint v9+)
+  "eslint.useFlatConfig": true,
+
+  // ESLint가 검증할 언어
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // 각 워크스페이스에서 ESLint 실행
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  // Prettier: 저장 시 자동 포맷팅
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
 }

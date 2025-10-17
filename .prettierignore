@@ -1,0 +1,27 @@
+# 의존성
+node_modules
+**/node_modules
+
+# 빌드 결과물
+dist
+build
+**/dist
+**/build
+.turbo
+**/.turbo
+
+# 로그 파일
+*.log
+pnpm-debug.log*
+
+# 환경 파일
+.env
+.env.*
+
+# Lock 파일
+pnpm-lock.yaml
+
+# 기타
+coverage
+.vite
+*.tsbuildinfo
