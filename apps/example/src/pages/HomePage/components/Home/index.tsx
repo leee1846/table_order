@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@repo/ui/button';
+import { Button } from '@repo/ui';
 import { ROUTES } from '@/constants/routes';
 
 export const Home = () => {

@@ -3,10 +3,12 @@
   "compilerOptions": {
     "outDir": "dist",
     "baseUrl": ".",
+    "jsxImportSource": "@emotion/react",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["@emotion/react/types/css-prop"]
   },
-  "include": ["src"],
+  "include": ["src/**/*", "emotion.d.ts"],
   "exclude": ["node_modules", "dist"]
 }
