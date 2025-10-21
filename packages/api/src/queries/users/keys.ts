@@ -1,4 +1,4 @@
-import type { IGetUsersParams } from '@/types/users';
+import type { IGetUsersParams } from '../../types/users';
 
 /**
  * 사용자 관련 Query Key Factory
