@@ -32,6 +32,9 @@ importers:
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@repo/util':
+        specifier: workspace:*
+        version: link:../../packages/util
       '@tanstack/react-query':
         specifier: ^5.62.8
         version: 5.90.5(react@19.2.0)
@@ -208,6 +211,30 @@ importers:
       react-dom:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
+
+  packages/util:
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/prettier-config':
+        specifier: workspace:*
+        version: link:../prettier-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.15.3
+      eslint:
+        specifier: ^9.34.0
+        version: 9.34.0
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
       typescript:
         specifier: 5.9.2
         version: 5.9.2

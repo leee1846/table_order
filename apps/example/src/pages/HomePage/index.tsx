@@ -1,8 +1,12 @@
 import reactLogo from '@/assets/react.svg';
 import viteLogo from '/vite.svg';
 import { Home } from '@/pages/HomePage/components/Home';
+import { isEmpty } from '@repo/util';
 
 export const HomePage = () => {
+  const title = 'Turborepo Example';
+  const checked = isEmpty(title) ? 'no title' : title;
+
   return (
     <div className="home-page">
       <div>
@@ -14,7 +18,7 @@ export const HomePage = () => {
         </a>
       </div>
 
-      <h1>Turborepo Example</h1>
+      <h1>{checked}</h1>
 
       <Home />
     </div>

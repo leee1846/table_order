@@ -1,16 +1,6 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
-  /**
-   * globalEnv: 모든 작업(task)에서 사용되는 환경 변수 선언
-   *
-   * - Turborepo의 캐싱 시스템이 환경 변수 변경을 추적하도록 설정
-   * - 환경 변수가 변경되면 캐시를 무효화하고 재빌드
-   * - 각 앱의 .env 파일에서 설정한 값이 빌드 시 주입됨
-   *
-   * 예: apps/example/.env의 VITE_API_BASE_URL 값이
-   *     packages/api의 import.meta.env.VITE_API_BASE_URL로 주입
-   */
   "globalEnv": ["VITE_API_BASE_URL"],
   "tasks": {
     "build": {
