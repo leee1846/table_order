@@ -1,20 +1,22 @@
-// Components
-export { Button } from '@/Button';
+export { Button } from './Button';
 
-// Theme
-export {
-  theme,
+import { colors } from './theme/colors';
+import { typography } from './theme/typography';
+import { spacing, borderRadius, shadows } from './theme/spacing';
+
+export const theme = {
   colors,
   typography,
   spacing,
   borderRadius,
   shadows,
-} from './theme';
-export type { Theme } from './theme';
+} as const;
 
-// Styles
+export type Theme = typeof theme;
+
+// Style exports
 export { resetStyles } from './styles/reset';
 export { globalStyles } from './styles/global';
 
-// Provider
+// Provider exports
 export { ThemeProvider } from './provider';

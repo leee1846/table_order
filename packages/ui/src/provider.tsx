@@ -2,9 +2,9 @@
 
 import { ThemeProvider as EmotionThemeProvider, Global } from '@emotion/react';
 import type { ReactNode } from 'react';
-import { theme } from '@/theme';
-import { resetStyles } from '@/styles/reset';
-import { globalStyles } from '@/styles/global';
+import { theme } from './index';
+import { resetStyles } from './styles/reset';
+import { globalStyles } from './styles/global';
 
 interface Props {
   children: ReactNode;

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@repo/ui';
 import { ROUTES } from '@/constants/routes';
+import { UserList } from '@/pages/HomePage/components/UserList';
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ export const Home = () => {
           About 페이지로 이동 →
         </Button>
       </div>
+
+      <UserList />
     </div>
   );
 };

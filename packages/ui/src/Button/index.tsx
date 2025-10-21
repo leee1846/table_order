@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { StyledButton } from '@/Button/button.styles';
+import { StyledButton } from './button.styles';
 
 interface Props {
   children: ReactNode;
@@ -12,7 +12,9 @@ interface Props {
   className?: string;
   onClick?: () => void;
 }
-
+/**
+ * packages/ui/Button 예시 컴포넌트입니다.
+ */
 export const Button = ({
   children,
   variant = 'primary',
