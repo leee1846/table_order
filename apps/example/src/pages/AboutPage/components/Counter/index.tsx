@@ -8,14 +8,11 @@ import * as S from '@/pages/AboutPage/components/Counter/Counter.styles';
  */
 export const Counter = () => {
   // Zustand store에서 상태와 액션 가져오기
-  const {
-    state: { count },
-    actions: { increment, decrement, incrementByAmount },
-  } = useCounterStore();
+  const { count, increment, decrement, incrementByAmount } = useCounterStore();
 
   return (
     <S.Container>
-      <S.Title>🎯 Zustand Counter Example</S.Title>
+      <S.Title>Zustand Counter Example</S.Title>
 
       <S.CountDisplay>
         <S.CountLabel>현재 카운트:</S.CountLabel>
