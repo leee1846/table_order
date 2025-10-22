@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "vite --mode development",
+    "dev:prod": "vite --mode production",
+    "build:dev": "tsc --noEmit && vite build --mode development",
+    "build:prod": "tsc --noEmit && vite build --mode production",
+    "preview": "vite preview",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "check-types": "tsc --noEmit",
-    "preview": "vite preview"
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
