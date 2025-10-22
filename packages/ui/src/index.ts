@@ -1,4 +1,4 @@
-export { Button } from './Button';
+export { ButtonExample } from './ButtonExample';
 
 import { colors } from './theme/colors';
 import { typography } from './theme/typography';

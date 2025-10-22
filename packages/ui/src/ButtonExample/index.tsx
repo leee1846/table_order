@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { StyledButton } from './button.styles';
+import { StyledButton } from './buttonExample.styles';
 
 interface Props {
   children: ReactNode;
@@ -13,9 +13,9 @@ interface Props {
   onClick?: () => void;
 }
 /**
- * packages/ui/Button 예시 컴포넌트입니다.
+ * packages/ui/ButtonExample 예시 컴포넌트입니다.
  */
-export const Button = ({
+export const ButtonExample = ({
   children,
   variant = 'primary',
   size = 'md',
