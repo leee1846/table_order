@@ -83,12 +83,15 @@ export const config = [
 
       // ========================================
       // React Hooks 관련 규칙
+      // React Compiler (eslint-plugin-react-hooks v6+)와 통합됨
       // ========================================
 
       // Hooks의 규칙 준수 (의존성 배열 체크)
+      // React Compiler는 이 규칙을 활용하여 최적화를 수행합니다
       'react-hooks/rules-of-hooks': 'error',
 
       // Hooks 의존성 배열 완전성 체크
+      // React Compiler가 코드를 분석할 때 이 규칙의 위반사항을 표시합니다
       'react-hooks/exhaustive-deps': 'warn',
 
       // ========================================

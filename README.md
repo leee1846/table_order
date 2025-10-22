@@ -55,21 +55,6 @@ pnpm format       # Prettier로 코드 포맷팅
 pnpm check-types  # TypeScript 타입 체크
 ```
 
-## 새 React 앱 추가하기
-
-1. `apps/` 폴더에 새 Vite + React 프로젝트 생성
-2. `package.json`에 필요한 패키지 추가:
-   ```json
-   {
-     "dependencies": {
-       "@repo/api": "workspace:*",
-       "@repo/ui": "workspace:*",
-       "@repo/util": "workspace:*"
-     }
-   }
-   ```
-3. `pnpm install` 실행
-
 ## 패키지 사용 예시
 
 ```typescript
