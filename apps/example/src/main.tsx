@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { ThemeProvider } from '@repo/ui';
 import { QueryProvider } from '@/config/QueryProvider';
-import '@/index.css';
 import { router } from '@/router';
 import '@/config/api';
 

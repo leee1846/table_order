@@ -5,7 +5,7 @@ export const UserProfilePage = () => {
   const { userId } = useParams();
 
   return (
-    <div className="user-profile-page">
+    <div>
       <h1>User Profile {userId} Page</h1>
 
       <UserProfile />

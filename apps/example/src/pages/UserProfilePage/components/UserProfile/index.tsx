@@ -6,12 +6,9 @@ export const UserProfile = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="card">
+    <div>
       <div style={{ marginTop: '30px' }}>
-        <ButtonExample
-          onClick={() => navigate(ROUTES.HOME.path)}
-          className="navigation-button"
-        >
+        <ButtonExample onClick={() => navigate(ROUTES.HOME.path)}>
           ← Home으로 돌아가기
         </ButtonExample>
       </div>

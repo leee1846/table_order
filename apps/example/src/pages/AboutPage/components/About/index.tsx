@@ -6,11 +6,10 @@ export const About = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="card">
+    <div>
       <div style={{ marginTop: '30px' }}>
         <ButtonExample
           onClick={() => navigate(ROUTES.USER_PROFILE.generate(1))}
-          className="navigation-button"
         >
           User Profile로 이동 →
         </ButtonExample>

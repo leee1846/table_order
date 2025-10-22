@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { StyledButton } from './buttonExample.styles';
+import * as S from './buttonExample.styles';
 
 interface Props {
   children: ReactNode;
@@ -25,7 +25,7 @@ export const ButtonExample = ({
   onClick,
 }: Props) => {
   return (
-    <StyledButton
+    <S.StyledButton
       variant={variant}
       size={size}
       disabled={disabled}
@@ -34,6 +34,6 @@ export const ButtonExample = ({
       onClick={onClick}
     >
       {children}
-    </StyledButton>
+    </S.StyledButton>
   );
 };
