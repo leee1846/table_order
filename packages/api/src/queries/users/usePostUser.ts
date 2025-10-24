@@ -17,7 +17,7 @@ interface IPostUserRequest {
 type TPostUserResult = UseMutationResult<IUser, AxiosError, ICreateUserRequest>;
 
 /**
- * 새로운 사용자를 생성하는 React Query Mutation Hook 예시시
+ * 새로운 사용자를 생성하는 React Query Mutation Hook 예시
  *
  * @param options - React Query Mutation 옵션
  * @returns 사용자 생성 mutation 결과

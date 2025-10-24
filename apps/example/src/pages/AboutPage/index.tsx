@@ -1,5 +1,5 @@
-import { About } from '@/pages/AboutPage/components/About';
-import { Counter } from '@/pages/AboutPage/components/Counter';
+import { About } from '@/pages/AboutPage/About';
+import { Counter } from '@/pages/AboutPage/Counter';
 
 export const AboutPage = () => {
   return (
