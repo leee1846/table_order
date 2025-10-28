@@ -1,4 +1,4 @@
-import { UserProfile } from '@/pages/UserProfilePage/components/UserProfile';
+import { UserProfile } from '@/pages/UserProfilePage/UserProfile';
 import { useParams } from 'react-router-dom';
 
 export const UserProfilePage = () => {

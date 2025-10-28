@@ -1,6 +1,6 @@
 import { useCounterStore } from '@/stores/counterStore';
 import { ButtonExample } from '@repo/ui';
-import * as S from '@/pages/AboutPage/components/Counter/Counter.styles';
+import * as S from '@/pages/AboutPage/Counter/Counter.styles';
 
 /**
  * Counter 컴포넌트

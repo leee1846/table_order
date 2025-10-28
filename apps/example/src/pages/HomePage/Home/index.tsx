@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ButtonExample } from '@repo/ui';
 import { ROUTES } from '@/constants/routes';
-import { UserList } from '@/pages/HomePage/components/UserList';
+import { UserList } from '@/pages/HomePage/UserList';
 
 export const Home = () => {
   const navigate = useNavigate();
