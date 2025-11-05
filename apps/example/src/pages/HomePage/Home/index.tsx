@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { ButtonExample } from '@repo/ui';
+import { ButtonExample, MainTitle } from '@repo/ui';
+
 import { ROUTES } from '@/constants/routes';
 import { UserList } from '@/pages/HomePage/UserList';
+import { TYPOGRAPHY } from '@repo/ui';
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -9,8 +11,8 @@ export const Home = () => {
   return (
     <div>
       <h2>Welcome to Home Page</h2>
-      <p>이 페이지는 Turborepo의 구조와 사용법을 보여주는 예제입니다.</p>
-
+      <p css={TYPOGRAPHY.MT_1}>Main Title 1</p>
+      <MainTitle />
       <div style={{ marginTop: '20px' }}>
         <ButtonExample onClick={() => navigate(ROUTES.ABOUT.path)}>
           About 페이지로 이동 →

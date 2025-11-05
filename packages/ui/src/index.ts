@@ -1,7 +1,8 @@
-export { ButtonExample } from './ButtonExample';
+export { ButtonExample } from './components/ButtonExample';
+export { MainTitle } from './components/MainTitle';
 
 import { colors } from './theme/colors';
-import { typography } from './theme/typography';
+import { typography, TYPOGRAPHY } from './theme/typography';
 import { spacing, borderRadius, shadows } from './theme/spacing';
 
 export const theme = {
@@ -20,3 +21,5 @@ export { globalStyles } from './styles/global';
 
 // Provider exports
 export { ThemeProvider } from './provider';
+
+export { TYPOGRAPHY };
