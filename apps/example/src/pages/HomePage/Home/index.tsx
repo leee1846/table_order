@@ -18,8 +18,18 @@ export const Home = () => {
       <ArrowBackIcon color="green" />
       <ArrowForwardIcon color="blue" />
       <div style={{ marginTop: '20px' }}>
-        <Button onClick={() => navigate(ROUTES.ABOUT.path)}>
+        <Button
+          variant="Solid_Navy_M"
+          onClick={() => navigate(ROUTES.ABOUT.path)}
+        >
           About 페이지로 이동 →
+        </Button>
+
+        <Button
+          variant="Solid_Grey_M"
+          onClick={() => navigate(ROUTES.ABOUT.path)}
+        >
+          임시
         </Button>
       </div>
 

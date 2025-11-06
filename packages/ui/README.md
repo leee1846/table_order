@@ -34,12 +34,7 @@ import { ThemeProvider } from '@repo/ui';
 ### 2. 컴포넌트 사용
 
 ```tsx
-import { Button } from '@repo/ui';
 
-<Button variant="primary" size="md">클릭</Button>
-<Button variant="secondary">보조</Button>
-<Button variant="outline" size="lg">외곽선</Button>
-<Button variant="ghost" disabled>비활성화</Button>
 ```
 
 ### 3. Theme 사용
