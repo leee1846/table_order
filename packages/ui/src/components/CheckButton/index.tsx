@@ -1,23 +1,27 @@
 import { SerializedStyles } from '@emotion/react';
-import * as S from './RadioButton.style';
+import * as S from './checkButton.style';
+import CheckIcon from '../../icons/CheckIcon';
+import { colors } from '../../theme/colors';
+
+export type TVariant = 'square' | 'round';
 
 interface Props {
   id: string;
-  value: string;
-  onChange: (value: string) => void;
+  variant?: TVariant;
   checked: boolean;
+  onChange: (checked: boolean) => void;
   disabled?: boolean;
   children: React.ReactNode;
   customStyle?: SerializedStyles;
 }
 
-export const RadioButton = ({
+export const CheckButton = ({
   id,
-  value,
-  onChange,
+  variant = 'square',
   checked,
-  children,
+  onChange,
   disabled = false,
+  children,
   customStyle,
 }: Props) => {
   return (
@@ -25,15 +29,17 @@ export const RadioButton = ({
       htmlFor={id}
       checked={checked}
       disabled={disabled}
+      variant={variant}
       css={customStyle}
     >
-      <div />
+      <div>
+        {checked && <CheckIcon color={colors.white} width={18} height={18} />}
+      </div>
       <input
-        type="radio"
+        type="checkbox"
         id={id}
-        value={value}
-        onChange={() => onChange(value)}
         checked={checked}
+        onChange={() => onChange(!checked)}
         disabled={disabled}
       />
       {children}

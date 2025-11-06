@@ -138,7 +138,8 @@ export const resetStyles = css`
   input:disabled {
     cursor: not-allowed;
   }
-  input[type='radio'] {
+  input[type='radio'],
+  input[type='checkbox'] {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
