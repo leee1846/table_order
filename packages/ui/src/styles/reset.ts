@@ -130,4 +130,9 @@ export const resetStyles = css`
     border-collapse: collapse;
     border-spacing: 0;
   }
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
 `;
