@@ -1,9 +1,9 @@
-import { Button } from '@repo/ui/components';
+import { BasicButton } from '@repo/ui/components';
 
 const LoginPage = () => {
   return (
     <div>
-      <Button variant="Solid_Navy_M">admin Login</Button>
+      <BasicButton variant="Solid_Navy_M">admin Login</BasicButton>
     </div>
   );
 };

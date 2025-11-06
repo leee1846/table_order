@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import * as S from './button.styles';
+import * as S from './basicButton.styles';
 
 type TVariant =
   | 'Solid_Navy_S'
@@ -37,7 +37,7 @@ interface Props {
   onClick?: () => void;
 }
 
-export const Button = ({
+export const BasicButton = ({
   children,
   variant = 'Solid_Navy_M',
   disabled = false,

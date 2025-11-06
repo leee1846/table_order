@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, MainTitle } from '@repo/ui/components';
+import { BasicButton, MainTitle } from '@repo/ui/components';
 
 import { ROUTES } from '@/constants/routes';
 import { UserList } from '@/pages/HomePage/UserList';
@@ -18,19 +18,19 @@ export const Home = () => {
       <ArrowBackIcon color="green" />
       <ArrowForwardIcon color="blue" />
       <div style={{ marginTop: '20px' }}>
-        <Button
+        <BasicButton
           variant="Solid_Navy_M"
           onClick={() => navigate(ROUTES.ABOUT.path)}
         >
           About 페이지로 이동 →
-        </Button>
+        </BasicButton>
 
-        <Button
+        <BasicButton
           variant="Solid_Grey_M"
           onClick={() => navigate(ROUTES.ABOUT.path)}
         >
           임시
-        </Button>
+        </BasicButton>
       </div>
 
       <UserList />
