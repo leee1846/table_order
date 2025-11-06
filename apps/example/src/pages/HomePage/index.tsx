@@ -3,6 +3,7 @@ import viteLogo from '/vite.svg';
 import { Home } from '@/pages/HomePage/Home';
 import { isEmpty } from '@repo/util';
 import * as S from '@/pages/HomePage/HomePage.style';
+import { Test } from '@repo/shared-feature/components';
 
 export const HomePage = () => {
   const title = 'Turborepo Example';
@@ -21,6 +22,7 @@ export const HomePage = () => {
 
       <h1>{checked}</h1>
 
+      <Test />
       <Home />
     </S.HomePageContainer>
   );

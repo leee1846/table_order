@@ -59,7 +59,7 @@ export const globalStyles = (theme: Theme) => css`
 
   ::-webkit-scrollbar-thumb {
     background: ${theme.colors.grey[400]};
-    border-radius: ${theme.borderRadius.base};
+    border-radius: ${theme.borderRadius.md};
   }
 
   ::-webkit-scrollbar-thumb:hover {
