@@ -1,5 +1,5 @@
 import { useCounterStore } from '@/stores/counterStore';
-import { ButtonExample } from '@repo/ui';
+import { Button } from '@repo/ui/components';
 import * as S from '@/pages/AboutPage/Counter/Counter.styles';
 
 /**
@@ -20,31 +20,31 @@ export const Counter = () => {
       </S.CountDisplay>
 
       <S.ButtonGroup>
-        <ButtonExample onClick={decrement} variant="secondary" size="sm">
+        <Button onClick={decrement} variant="outline" size="sm">
           - 빼기
-        </ButtonExample>
+        </Button>
 
-        <ButtonExample onClick={increment} variant="primary" size="sm">
+        <Button onClick={increment} variant="navy" size="sm">
           + 더하기
-        </ButtonExample>
+        </Button>
       </S.ButtonGroup>
 
       <S.ButtonGroup>
-        <ButtonExample
+        <Button
           onClick={() => incrementByAmount(5)}
           variant="outline"
           size="sm"
         >
           +5 추가
-        </ButtonExample>
+        </Button>
 
-        <ButtonExample
+        <Button
           onClick={() => incrementByAmount(10)}
           variant="outline"
           size="sm"
         >
           +10 추가
-        </ButtonExample>
+        </Button>
       </S.ButtonGroup>
     </S.Container>
   );

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ButtonExample } from '@repo/ui';
+import { Button } from '@repo/ui/components';
 import { ROUTES } from '@/constants/routes';
 
 export const UserProfile = () => {
@@ -8,9 +8,9 @@ export const UserProfile = () => {
   return (
     <div>
       <div style={{ marginTop: '30px' }}>
-        <ButtonExample onClick={() => navigate(ROUTES.HOME.path)}>
+        <Button onClick={() => navigate(ROUTES.HOME.path)}>
           ← Home으로 돌아가기
-        </ButtonExample>
+        </Button>
       </div>
     </div>
   );

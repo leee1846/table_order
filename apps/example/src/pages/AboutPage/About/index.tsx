@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ButtonExample } from '@repo/ui';
+import { Button } from '@repo/ui/components';
 import { ROUTES } from '@/constants/routes';
 
 export const About = () => {
@@ -8,11 +8,9 @@ export const About = () => {
   return (
     <div>
       <div style={{ marginTop: '30px' }}>
-        <ButtonExample
-          onClick={() => navigate(ROUTES.USER_PROFILE.generate(1))}
-        >
+        <Button onClick={() => navigate(ROUTES.USER_PROFILE.generate(1))}>
           User Profile로 이동 →
-        </ButtonExample>
+        </Button>
       </div>
     </div>
   );

@@ -267,7 +267,7 @@ import { useGetUsers, usePostUser } from '@repo/api';
 ### 2. @repo/ui - 공유 UI 컴포넌트
 
 ```typescript
-import { ButtonExample } from '@repo/ui';
+
 ```
 
 ### 3. @repo/util - 유틸리티 함수
