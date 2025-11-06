@@ -34,8 +34,6 @@ export const globalStyles = (theme: Theme) => css`
     font-size: ${theme.typography.fontSize.sm};
     font-weight: ${theme.typography.fontWeight.regular};
     line-height: ${theme.typography.lineHeight.sm};
-    color: ${theme.colors.text.primary};
-    background-color: ${theme.colors.background.default};
   }
 
   code,
@@ -54,15 +52,11 @@ export const globalStyles = (theme: Theme) => css`
   }
 
   ::-webkit-scrollbar-track {
-    background: ${theme.colors.grey[100]};
   }
 
   ::-webkit-scrollbar-thumb {
-    background: ${theme.colors.grey[400]};
-    border-radius: ${theme.borderRadius.base};
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: ${theme.colors.grey[500]};
   }
 `;

@@ -48,7 +48,6 @@ import { Button } from '@repo/ui';
 import styled from '@emotion/styled';
 
 const CustomCard = styled.div`
-  background: ${({ theme }) => theme.colors.background.paper};
   padding: ${({ theme }) => theme.spacing[4]};
   border-radius: ${({ theme }) => theme.borderRadius.lg};
 `;
