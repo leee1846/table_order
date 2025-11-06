@@ -6,7 +6,8 @@
   "types": "./src/index.ts",
   "exports": {
     "./package.json": "./package.json",
-    "./components": "./src/components/index.ts"
+    "./components": "./src/components/index.ts",
+    "./hooks": "./src/hooks/index.ts"
   },
   "scripts": {
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
