@@ -55,6 +55,7 @@ export const globalStyles = (theme: Theme) => css`
   }
 
   ::-webkit-scrollbar-thumb {
+    background: ${theme.colors.grey[400]};
   }
 
   ::-webkit-scrollbar-thumb:hover {
