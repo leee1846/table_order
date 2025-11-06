@@ -24,7 +24,7 @@ export function UserList() {
     return (
       <div style={{ padding: '20px', color: 'red' }}>
         <p>에러가 발생했습니다: {error.message}</p>
-              <div/>
+        <div />
       </div>
     );
   }

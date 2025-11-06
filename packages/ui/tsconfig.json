@@ -4,7 +4,8 @@
     "outDir": "dist",
     "baseUrl": ".",
     "jsxImportSource": "@emotion/react",
-    "types": ["@emotion/react/types/css-prop"]
+    "types": ["@emotion/react/types/css-prop"],
+    "resolveJsonModule": true
   },
   "include": ["src/**/*", "emotion.d.ts"],
   "exclude": ["node_modules", "dist"]
