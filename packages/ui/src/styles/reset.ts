@@ -135,4 +135,22 @@ export const resetStyles = css`
     border: none;
     cursor: pointer;
   }
+  input:disabled {
+    cursor: not-allowed;
+  }
+  input[type='radio'] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+  }
+  label {
+    cursor: pointer;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 `;
