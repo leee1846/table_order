@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { BasicButton, MainTitle } from '@repo/ui/components';
+import { BasicButton } from '@repo/ui/components';
 
 import { ROUTES } from '@/constants/routes';
 import { UserList } from '@/pages/HomePage/UserList';
@@ -13,7 +13,6 @@ export const Home = () => {
     <div>
       <h2>Welcome to Home Page</h2>
       <p style={TYPOGRAPHY.MT_4}>Main Title 1</p>
-      <MainTitle />
       <MenuIcon color="red" />
       <ArrowBackIcon color="green" />
       <ArrowForwardIcon color="blue" />
