@@ -3,33 +3,7 @@ import { colors } from '../../theme/colors';
 import { TYPOGRAPHY } from '../../theme/typography';
 import { css } from '@emotion/react';
 
-export const Wrapper = styled.div`
-  width: 100%;
-`;
-
-export const Label = styled.label`
-  ${TYPOGRAPHY.MT_6}
-  margin-bottom: 4px;
-  margin-right: 10px;
-  color: ${colors.grey[800]};
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
-export const RequiredMark = styled.span`
-  color: ${colors.semantic[500]};
-  font-weight: 700;
-  font-size: 1.25rem;
-`;
-
-export const Description = styled.div`
-  color: ${colors.grey[500]};
-  margin-bottom: 12px;
-  ${TYPOGRAPHY.BD_3};
-`;
-
-export const InputBox = styled.div<{ invalid?: boolean; disabled?: boolean }>`
+export const Label = styled.label<{ disabled?: boolean }>`
   display: flex;
   align-items: center;
   position: relative;

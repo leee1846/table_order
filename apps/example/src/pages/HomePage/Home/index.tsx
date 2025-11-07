@@ -3,14 +3,18 @@ import { BasicButton, Input } from '@repo/ui/components';
 
 import { ROUTES } from '@/constants/routes';
 import { UserList } from '@/pages/HomePage/UserList';
-import { TYPOGRAPHY } from '@repo/ui';
-import { MenuIcon, ArrowBackIcon, ArrowForwardIcon } from '@repo/ui/icons';
+import { theme, TYPOGRAPHY } from '@repo/ui';
+import {
+  MenuIcon,
+  ArrowBackIcon,
+  ArrowForwardIcon,
+  VisibilityIcon,
+} from '@repo/ui/icons';
 import { useState } from 'react';
 
 export const Home = () => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState('');
-  const isInvalid = inputValue.length > 4;
 
   return (
     <div>
@@ -23,44 +27,40 @@ export const Home = () => {
         <BasicButton
           variant="Solid_Navy_M"
           onClick={() => navigate(ROUTES.ABOUT.path)}
+          icon={<MenuIcon color="red" />}
+          iconPosition="right"
         >
           Solid_Navy_M
         </BasicButton>
         <Input
-          label="타이틀"
           placeholder="Input"
-          clearable
-          description="추가 설명이 필요할 경우 제공되는 영역입니다."
           width="400px"
-          required
           value={inputValue}
           onChange={setInputValue}
-          invalid
-          validationMessage={isInvalid ? '5글자 이하로 입력하세요' : ''}
-          password
+          type="text"
         />
         <Input
-          label="타이틀"
           placeholder="Input"
-          clearable
-          description="추가 설명이 필요할 경우 제공되는 영역입니다."
           width="400px"
           value={inputValue}
           onChange={setInputValue}
-          invalid
           disabled
         />
 
         <Input
-          label="타이틀"
           placeholder="Input"
-          clearable
-          description="추가 설명이 필요할 경우 제공되는 영역입니다."
           width="200px"
           value={inputValue}
           onChange={setInputValue}
-          invalid
-          price
+          type="password"
+          iconComponent={
+            <VisibilityIcon
+              width={20}
+              height={20}
+              color={theme.colors.grey[500]}
+            />
+          }
+          onIconClick={() => console.log('icon clicked')}
         />
       </div>
 

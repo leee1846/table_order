@@ -12,6 +12,8 @@ interface Props {
   onClick?: () => void;
   fullWidth?: boolean;
   customStyle?: SerializedStyles;
+  icon?: ReactNode; // 버튼 좌우에 추가할 아이콘
+  iconPosition?: 'left' | 'right'; // 아이콘 위치
 }
 
 export const BasicButton = ({
@@ -21,11 +23,38 @@ export const BasicButton = ({
   onClick,
   fullWidth,
   customStyle,
+  icon,
+  iconPosition = 'left',
 }: Props) => {
   const handleClick = (_e: React.MouseEvent<HTMLButtonElement>) => {
     if (!disabled && onClick) {
       onClick();
     }
+  };
+
+  // 아이콘 노드에 margin을 추가하여 텍스트와 겹치지 않게 함
+  const renderIcon = () => {
+    if (!icon) {return null;}
+    if (iconPosition === 'left') {
+      return (
+        <span
+          style={{
+            marginRight: 6,
+            display: 'inline-flex',
+            alignItems: 'center',
+          }}
+        >
+          {icon}
+        </span>
+      );
+    }
+    return (
+      <span
+        style={{ marginLeft: 6, display: 'inline-flex', alignItems: 'center' }}
+      >
+        {icon}
+      </span>
+    );
   };
 
   return (
@@ -37,7 +66,9 @@ export const BasicButton = ({
       fullWidth={fullWidth}
       css={customStyle}
     >
+      {iconPosition === 'left' && renderIcon()}
       {children}
+      {iconPosition === 'right' && renderIcon()}
     </S.ButtonStyle>
   );
 };
