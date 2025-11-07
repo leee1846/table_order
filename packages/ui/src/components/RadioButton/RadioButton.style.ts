@@ -7,16 +7,33 @@ interface Props {
   disabled: boolean;
 }
 
-const getCss = (checked: boolean, disabled: boolean) => {
+const getBorderColor = (checked: boolean, disabled: boolean): string => {
+  if (checked) {
+    return disabled ? colors.primary[300] : colors.primary[500];
+  }
+  return colors.grey[300];
+};
+
+const getBackgroundColor = (checked: boolean, disabled: boolean): string => {
+  if (checked) {
+    return 'transparent';
+  }
+  return disabled ? colors.grey[100] : colors.white;
+};
+
+const getRadioButtonStyles = (checked: boolean, disabled: boolean) => {
+  const borderColor = getBorderColor(checked, disabled);
+  const backgroundColor = getBackgroundColor(checked, disabled);
+
   if (checked) {
     return css`
-      border: 8px solid ${disabled ? colors.primary[300] : colors.primary[500]};
+      border: 0.525rem solid ${borderColor};
     `;
   }
 
   return css`
-    border: 2px solid ${disabled ? colors.grey[300] : colors.grey[300]};
-    background-color: ${disabled ? colors.grey[100] : colors.white};
+    border: 0.125rem solid ${borderColor};
+    background-color: ${backgroundColor};
   `;
 };
 
@@ -27,11 +44,9 @@ export const Label = styled.label<Props>`
   width: fit-content;
 
   & > div {
-    width: 24px;
-    height: 24px;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
-    ${({ checked, disabled }) => {
-      return getCss(checked, disabled);
-    }}
+    ${({ checked, disabled }) => getRadioButtonStyles(checked, disabled)}
   }
 `;
