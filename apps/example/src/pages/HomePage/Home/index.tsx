@@ -11,7 +11,7 @@ export const Home = () => {
 
   return (
     <div>
-      <h2>Welcome to Home Page</h2>
+      <h2>Welcome to Home Page??</h2>
       <p style={TYPOGRAPHY.MT_4}>Main Title 1</p>
       <MenuIcon color="red" />
       <ArrowBackIcon color="green" />
@@ -21,14 +21,67 @@ export const Home = () => {
           variant="Solid_Navy_M"
           onClick={() => navigate(ROUTES.ABOUT.path)}
         >
-          About 페이지로 이동 →
+          Solid_Navy_M
         </BasicButton>
-
+        <BasicButton
+          variant="Solid_Sky_Blue_M"
+          onClick={() => navigate(ROUTES.ABOUT.path)}
+        >
+          Solid_Sky_Blue_M
+        </BasicButton>
         <BasicButton
           variant="Solid_Grey_M"
           onClick={() => navigate(ROUTES.ABOUT.path)}
         >
-          임시
+          Solid_Grey_M
+        </BasicButton>
+        <BasicButton
+          variant="Outline_Navy_M"
+          onClick={() => navigate(ROUTES.ABOUT.path)}
+        >
+          Outline_Navy_M
+        </BasicButton>
+        <BasicButton
+          variant="Outline_Grey_M"
+          onClick={() => navigate(ROUTES.ABOUT.path)}
+        >
+          Outline_Grey_M
+        </BasicButton>
+
+        <BasicButton
+          variant="Solid_Navy_M"
+          onClick={() => navigate(ROUTES.ABOUT.path)}
+          disabled={true}
+        >
+          Solid_Navy_M
+        </BasicButton>
+        <BasicButton
+          variant="Solid_Sky_Blue_M"
+          onClick={() => navigate(ROUTES.ABOUT.path)}
+          disabled={true}
+        >
+          Solid_Sky_Blue_M
+        </BasicButton>
+        <BasicButton
+          variant="Solid_Grey_M"
+          onClick={() => navigate(ROUTES.ABOUT.path)}
+          disabled={true}
+        >
+          Solid_Grey_M
+        </BasicButton>
+        <BasicButton
+          variant="Outline_Navy_M"
+          onClick={() => navigate(ROUTES.ABOUT.path)}
+          disabled={true}
+        >
+          Outline_Navy_M
+        </BasicButton>
+        <BasicButton
+          variant="Outline_Grey_M"
+          onClick={() => navigate(ROUTES.ABOUT.path)}
+          disabled={true}
+        >
+          Outline_Grey_M
         </BasicButton>
       </div>
 

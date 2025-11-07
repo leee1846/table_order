@@ -81,17 +81,18 @@ const getSolidColor = (
 ) => css`
   background: ${disabled ? colors.grey[200] : main};
   color: ${disabled ? colors.grey[500] : text};
-  border: ${disabled ? 'none' : `1px solid ${border}`};
+  border: ${disabled ? `1px solid ${colors.grey[100]}` : `1px solid ${border}`};
 `;
 
 const getOutlineColor = (
-  main: string,
+  background: string,
+  text: string,
   border: string,
   disabled: boolean
 ) => css`
-  background: ${colors.white};
+  background: ${disabled ? colors.white : background};
   border: 1px solid ${disabled ? colors.grey[500] : border};
-  color: ${disabled ? '#B0B8C1' : colors.grey[500]};
+  color: ${disabled ? colors.grey[500] : text};
 `;
 
 type VariantStyleFn = (size: ButtonSize, disabled: boolean) => SerializedStyles;
@@ -114,18 +115,28 @@ const variantStyles: Record<VariantType, VariantStyleFn> = {
     ${sizeStyles[size]}
     ${getSolidColor(
       colors.grey[100],
-      colors.black,
-      colors.primary[200],
+      colors.grey[800],
+      colors.grey[300],
       disabled
     )}
   `,
   Outline_Navy: (size, disabled) => css`
     ${sizeStyles[size]}
-    ${getOutlineColor(colors.primary[600], colors.primary[600], disabled)}
+    ${getOutlineColor(
+      colors.white,
+      colors.primary[600],
+      colors.primary[600],
+      disabled
+    )}
   `,
   Outline_Grey: (size, disabled) => css`
     ${sizeStyles[size]}
-    ${getOutlineColor('#757A7E', '#757A7E', disabled)}
+    ${getOutlineColor(
+      colors.grey[50],
+      colors.grey[700],
+      colors.grey[400],
+      disabled
+    )}
   `,
 };
 
@@ -139,7 +150,7 @@ function parseVariant(v: VariantKey): { type: VariantType; size: ButtonSize } {
     type = 'Solid_Navy';
   } else if (variantStr === 'Solid_Sky_Blue') {
     type = 'Solid_Sky_Blue';
-  } else if (variantStr === 'Solid_Gray') {
+  } else if (variantStr === 'Solid_Grey') {
     type = 'Solid_Grey';
   } else if (variantStr === 'Outline_Navy') {
     type = 'Outline_Navy';
