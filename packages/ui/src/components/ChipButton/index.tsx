@@ -1,3 +1,4 @@
+import { SerializedStyles } from '@emotion/react';
 import * as S from './chipButton.style';
 
 export type TVariant =
@@ -21,9 +22,16 @@ interface Props {
   size: TSize;
   children: React.ReactNode;
   onClick?: () => void;
+  customStyle?: SerializedStyles;
 }
 
-export const ChipButton = ({ children, variant, size, onClick }: Props) => {
+export const ChipButton = ({
+  children,
+  variant,
+  size,
+  onClick,
+  customStyle,
+}: Props) => {
   const handleClick = () => {
     if (onClick) {
       onClick();
@@ -31,7 +39,13 @@ export const ChipButton = ({ children, variant, size, onClick }: Props) => {
   };
 
   return (
-    <S.Button type="button" variant={variant} size={size} onClick={handleClick}>
+    <S.Button
+      type="button"
+      variant={variant}
+      size={size}
+      onClick={handleClick}
+      css={customStyle}
+    >
       {children}
     </S.Button>
   );
