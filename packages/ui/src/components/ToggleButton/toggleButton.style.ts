@@ -9,63 +9,78 @@ interface Props {
   disabled: boolean;
 }
 
-const getTranslate = (size: TSize, isOn: boolean) => {
-  switch (size) {
-    case 'S':
-      return isOn ? 'translateX(calc(100% - 4px))' : 'translateX(0)';
-    case 'M':
-      return isOn ? 'translateX(calc(100% - 8px))' : 'translateX(0)';
-  }
+// Size별 설정 타입
+interface SizeConfig {
+  width: string;
+  height: string;
+  thumbSize: string;
+  translateOffset: {
+    on: string;
+    off: string;
+  };
+}
+
+// Size별 설정 객체 - 확장성을 위해 Record 타입 사용
+const SIZE_CONFIG: Record<TSize, SizeConfig> = {
+  S: {
+    width: '2.25rem',
+    height: '1.25rem',
+    thumbSize: '1.0625rem',
+    translateOffset: {
+      on: '0.325rem',
+      off: '-0.3rem',
+    },
+  },
+  M: {
+    width: '3.25rem',
+    height: '1.875rem',
+    thumbSize: '1.6875rem',
+    translateOffset: {
+      on: '0.6rem',
+      off: '-0.3rem',
+    },
+  },
 };
 
-const SmallButton = css`
-  width: 36px;
-  height: 20px;
+// Translate 값 계산 함수
+const getTranslate = (size: TSize, isOn: boolean): string => {
+  const config = SIZE_CONFIG[size];
+  const offset = isOn ? config.translateOffset.on : config.translateOffset.off;
+  return isOn ? `translateX(calc(100% - ${offset}))` : `translateX(${offset})`;
+};
 
-  & > div {
-    width: 17px;
-    height: 17px;
+// Size별 스타일 생성 함수
+const getSizeStyles = (size: TSize) => {
+  const config = SIZE_CONFIG[size];
+  return css`
+    width: ${config.width};
+    height: ${config.height};
+
+    & > div {
+      width: ${config.thumbSize};
+      height: ${config.thumbSize};
+    }
+  `;
+};
+
+// 배경색 계산 함수
+const getBackgroundColor = (isOn: boolean, disabled: boolean): string => {
+  if (disabled) {
+    return isOn ? colors.primary[200] : colors.grey[400];
   }
-`;
-
-const MediumButton = css`
-  width: 52px;
-  height: 30px;
-
-  & > div {
-    width: 27px;
-    height: 27px;
-  }
-`;
+  return isOn ? colors.primary[500] : colors.grey[200];
+};
 
 export const Button = styled.button<Props>`
   display: flex;
   align-items: center;
-  border-radius: 99px;
-  background-color: ${({ isOn }) =>
-    isOn ? colors.primary[500] : colors.grey[200]};
-  padding: 1px;
+  border-radius: 6.1875rem;
+  background-color: ${({ isOn, disabled }) =>
+    getBackgroundColor(isOn, disabled)};
   transition: transform 0.1s ease-in-out;
-  ${({ size }) => {
-    switch (size) {
-      case 'S':
-        return css`
-          ${SmallButton}
-        `;
-      case 'M':
-        return css`
-          ${MediumButton}
-        `;
-      default:
-        return css`
-          ${SmallButton}
-        `;
-    }
-  }};
+  ${({ size }) => getSizeStyles(size)}
 
   &:disabled {
-    background-color: ${({ isOn }) =>
-      isOn ? colors.primary[200] : colors.grey[400]};
     cursor: not-allowed;
   }
 
