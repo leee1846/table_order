@@ -3,3 +3,5 @@ export { default as ArrowBackIcon } from './ArrowBackIcon';
 export { default as ArrowForwardIcon } from './ArrowForwardIcon';
 export { default as VisibilityIcon } from './VisibilityIcon';
 export { default as VisibilityOffIcon } from './VisibilityOffIcon';
+export { default as RemoveIcon } from './RemoveIcon';
+export { default as AddIcon } from './AddIcon';

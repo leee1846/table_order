@@ -138,6 +138,16 @@ export const resetStyles = css`
   input:disabled {
     cursor: not-allowed;
   }
+  input {
+    background: none;
+    border: none;
+    outline: none;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
   input[type='radio'],
   input[type='checkbox'] {
     appearance: none;
