@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-import { TVariant } from './index';
 import { css } from '@emotion/react';
+import { TVariant } from './index';
 import { colors } from '../../theme/colors';
 
 interface Props {
@@ -9,30 +9,27 @@ interface Props {
   variant: TVariant;
 }
 
-const getCss = (checked: boolean, disabled: boolean) => {
+const getBorderColor = (checked: boolean, disabled: boolean): string => {
   if (checked) {
-    if (disabled) {
-      return css`
-        background-color: ${colors.primary[300]};
-        border: 2px solid ${colors.primary[300]};
-      `;
-    }
-    return css`
-      background-color: ${colors.primary[500]};
-      border: 2px solid ${colors.primary[500]};
-    `;
+    return disabled ? colors.primary[300] : colors.primary[500];
   }
+  return colors.grey[400];
+};
 
-  if (disabled) {
-    return css`
-      background-color: ${colors.grey[200]};
-      border: 2px solid ${colors.grey[400]};
-    `;
+const getBackgroundColor = (checked: boolean, disabled: boolean): string => {
+  if (checked) {
+    return disabled ? colors.primary[300] : colors.primary[500];
   }
+  return disabled ? colors.grey[200] : colors.white;
+};
+
+const getCheckButtonStyles = (checked: boolean, disabled: boolean) => {
+  const borderColor = getBorderColor(checked, disabled);
+  const backgroundColor = getBackgroundColor(checked, disabled);
 
   return css`
-    background-color: ${colors.white};
-    border: 2px solid ${colors.grey[400]};
+    background-color: ${backgroundColor};
+    border: 0.125rem solid ${borderColor};
   `;
 };
 
@@ -47,9 +44,9 @@ export const Label = styled.label<Props>`
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 1.125rem;
+    height: 1.125rem;
     border-radius: ${({ variant }) => (variant === 'round' ? '50%' : '6px')};
-    ${({ checked, disabled }) => getCss(checked, disabled)}
+    ${({ checked, disabled }) => getCheckButtonStyles(checked, disabled)}
   }
 `;
