@@ -31,7 +31,7 @@ export const typography = {
     xxxxl: '2.375rem', // 38px
   },
   letterSpacing: {
-    tight: '-0.025rem',
+    tight: '-0.035rem',
   },
 } as const;
 

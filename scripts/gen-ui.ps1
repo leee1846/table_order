@@ -47,7 +47,7 @@ function To-CamelCase ($str) {
 }
 
 $Name = To-PascalCase $ComponentName
-$StyleClass = "${Name}Style"
+$StyleClass = ${Name}
 $StyleName = (To-CamelCase $StyleClass) + ".styles"
 $StyleFile = "$StyleName.ts"
 

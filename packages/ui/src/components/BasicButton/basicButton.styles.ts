@@ -165,6 +165,7 @@ function parseVariant(v: VariantKey): { type: VariantType; size: ButtonSize } {
 export const ButtonStyle = styled.button<{
   variant: VariantKey;
   disabled: boolean;
+  fullWidth?: boolean;
 }>`
   display: inline-flex;
   align-items: center;
@@ -173,7 +174,7 @@ export const ButtonStyle = styled.button<{
   white-space: nowrap;
   user-select: none;
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
-
+  width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
   ${({ variant, disabled }) => {
     const { type, size } = parseVariant(variant);
     if (!variantStyles[type]) {

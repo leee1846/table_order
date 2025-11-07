@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { css } from '@emotion/react';
+import { css, SerializedStyles } from '@emotion/react';
 import { TVariant } from './index';
 import { colors } from '../../theme/colors';
 
@@ -7,6 +7,7 @@ interface Props {
   checked: boolean;
   disabled: boolean;
   variant: TVariant;
+  customStyle?: SerializedStyles;
 }
 
 const getBorderColor = (checked: boolean, disabled: boolean): string => {
