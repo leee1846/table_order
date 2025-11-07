@@ -1,6 +1,7 @@
 import { colors } from '../../theme/colors';
 import { RemoveIcon, AddIcon } from '../../icons';
 import * as S from './numberInput.style';
+import { SerializedStyles } from '@emotion/react';
 
 export type TVariant = 'square' | 'rounded';
 
@@ -11,6 +12,7 @@ interface Props {
   max?: number;
   disabled?: boolean;
   onChange: (value: number) => void;
+  customStyle?: SerializedStyles;
 }
 
 export const NumberInput = ({
@@ -20,6 +22,7 @@ export const NumberInput = ({
   max,
   disabled,
   onChange,
+  customStyle,
 }: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(e.target.value);
@@ -47,7 +50,12 @@ export const NumberInput = ({
   };
 
   return (
-    <S.Container variant={variant} disabled={disabled ?? false} value={value}>
+    <S.Container
+      variant={variant}
+      disabled={disabled ?? false}
+      value={value}
+      css={customStyle}
+    >
       <button
         type="button"
         onClick={() => onChange(value - 1)}
