@@ -32,9 +32,10 @@ export const BasicButton = ({
     }
   };
 
-  // 아이콘 노드에 margin을 추가하여 텍스트와 겹치지 않게 함
   const renderIcon = () => {
-    if (!icon) {return null;}
+    if (!icon) {
+      return null;
+    }
     if (iconPosition === 'left') {
       return (
         <span

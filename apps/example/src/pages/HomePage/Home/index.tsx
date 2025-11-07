@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { BasicButton, Input } from '@repo/ui/components';
+import { BasicButton, Input, ModalBackground } from '@repo/ui/components';
 
 import { ROUTES } from '@/constants/routes';
 import { UserList } from '@/pages/HomePage/UserList';
@@ -15,6 +15,10 @@ import { useState } from 'react';
 export const Home = () => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState('');
+
+  const doSomething = () => {
+    console.log('icon clicked');
+  };
 
   return (
     <div>
@@ -48,21 +52,20 @@ export const Home = () => {
         />
 
         <Input
-          placeholder="Input"
-          width="200px"
           value={inputValue}
           onChange={setInputValue}
           type="password"
-          iconComponent={
-            <VisibilityIcon
-              width={20}
-              height={20}
-              color={theme.colors.grey[500]}
-            />
+          rightComponent={
+            <div onClick={() => doSomething()}>
+              <VisibilityIcon color="red" />
+            </div>
           }
-          onIconClick={() => console.log('icon clicked')}
         />
       </div>
+      {/* 
+      <ModalBackground>
+        <div>Hello</div>
+      </ModalBackground> */}
 
       <UserList />
     </div>

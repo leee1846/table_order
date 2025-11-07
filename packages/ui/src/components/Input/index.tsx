@@ -1,6 +1,5 @@
 ﻿'use client';
 
-import { useState } from 'react';
 import * as S from './input.styles';
 import { SerializedStyles } from '@emotion/react';
 
@@ -13,8 +12,7 @@ interface InputProps {
   disabled?: boolean; // 인풋 비활성화 여부
   name?: string; // <input name="email" />
   type?: string; // input type('text', 'password', etc), 부모가 제어
-  iconComponent?: React.ReactNode; // 커스텀 아이콘 (type이 text가 아닐 때)
-  onIconClick?: () => void; // 커스텀 아이콘 클릭 핸들러
+  rightComponent?: React.ReactNode; // 오른쪽 영역 자유롭게
 }
 
 export const Input = ({
@@ -26,47 +24,32 @@ export const Input = ({
   disabled = false,
   name,
   type = 'text',
-  iconComponent,
-  onIconClick,
+  rightComponent,
 }: InputProps) => {
-  const [innerValue, setInnerValue] = useState(value);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setInnerValue(val);
-    onChange?.(val);
+    onChange?.(e.target.value);
   };
-
   const handleClear = () => {
-    setInnerValue('');
     onChange?.('');
   };
-
   return (
     <S.Label disabled={disabled} style={{ width }}>
       <S.StyledInput
         name={name}
         type={type}
-        value={innerValue}
+        value={value}
         onChange={handleChange}
         placeholder={placeholder}
         css={customStyle}
         disabled={disabled}
       />
-
-      {/* 1. text & 값 있으면 clear(x) */}
-      {!disabled && type === 'text' && !!innerValue && (
+      {!disabled && type === 'text' && !!value && (
         <S.ClearButton onClick={handleClear} aria-label="입력 지우기">
           ×
         </S.ClearButton>
       )}
-
-      {/* 2. 그 외 type이면 외부 커스텀 아이콘 & 핸들러*/}
-      {!disabled && type !== 'text' && iconComponent && (
-        <S.ClearButton onClick={onIconClick} aria-label="아이콘">
-          {iconComponent}
-        </S.ClearButton>
-      )}
+      {/* 오른쪽 커스텀 영역 */}
+      {rightComponent && <S.RightArea>{rightComponent}</S.RightArea>}
     </S.Label>
   );
 };

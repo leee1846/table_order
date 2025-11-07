@@ -68,6 +68,17 @@ export const PriceIcon = styled.span`
   ${TYPOGRAPHY.ST_4};
 `;
 
+export const RightArea = styled.div`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+`;
+
 export const ValidationMessage = styled.div`
   color: ${colors.semantic[400]};
   ${TYPOGRAPHY.CT_2};
