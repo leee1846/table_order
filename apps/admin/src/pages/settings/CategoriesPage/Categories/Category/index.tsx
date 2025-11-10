@@ -20,7 +20,12 @@ export const Category = ({ category }: Props) => {
         <S.Header>
           <div>
             <span>{category.name}</span>
-            <button type="button" onClick={() => {}}>
+            <button
+              type="button"
+              onClick={() => {
+                // noop
+              }}
+            >
               <ChevronForwardIcon
                 width={30}
                 height={30}
@@ -28,7 +33,12 @@ export const Category = ({ category }: Props) => {
               />
             </button>
           </div>
-          <button type="button" onClick={() => {}}>
+          <button
+            type="button"
+            onClick={() => {
+              // noop
+            }}
+          >
             <DeleteIcon width={14} height={14} color={theme.colors.grey[600]} />
           </button>
         </S.Header>
@@ -70,12 +80,19 @@ export const Category = ({ category }: Props) => {
             <ToggleButton
               size="S"
               isOn={category.isHidden}
-              onChange={() => {}}
+              onChange={() => {
+                // noop
+              }}
             />
           </S.HiddenContainer>
 
           <S.ButtonContainer>
-            <BasicButton variant="Solid_Navy_L" onClick={() => {}}>
+            <BasicButton
+              variant="Solid_Navy_L"
+              onClick={() => {
+                // noop
+              }}
+            >
               테이블 지정
             </BasicButton>
             <BasicButton

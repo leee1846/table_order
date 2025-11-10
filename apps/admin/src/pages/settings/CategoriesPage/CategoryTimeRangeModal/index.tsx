@@ -14,30 +14,64 @@ export const CategoryTimeRangeModal = ({ onClose }: Props) => {
           <CloseIcon width={32} height={32} color={theme.colors.grey[600]} />
         </S.CloseButton>
 
-        <p>판매 시간 설정</p>
+        <S.Title>판매 시간 설정</S.Title>
 
-        <div>
-          <p>판매 시작 시간</p>
-          <input
-            type="time"
-            value="00:00"
-            onChange={(e) => {
-              console.log(e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <p>판매 종료 시간</p>
-          <input
-            type="time"
-            value="00:00"
-            onChange={(e) => {
-              console.log(e.target.value);
-            }}
-          />
-        </div>
+        <S.Contents>
+          <S.Content>
+            <p>판매 시작 시간</p>
+            <div>
+              <input
+                id="sale-start-hour"
+                onChange={() => {
+                  // noop
+                }}
+                type="number"
+                placeholder="00"
+              />
+              <span>시</span>
+              <input
+                id="sale-start-minute"
+                onChange={() => {
+                  // noop
+                }}
+                type="number"
+                placeholder="00"
+              />
+              <span>분</span>
+            </div>
+          </S.Content>
+          <S.Content>
+            <p>판매 종료 시간</p>
+            <div>
+              <input
+                id="sale-end-hour"
+                onChange={() => {
+                  // noop
+                }}
+                type="number"
+                placeholder="00"
+              />
+              <span>시</span>
+              <input
+                id="sale-end-minute"
+                onChange={() => {
+                  // noop
+                }}
+                type="number"
+                placeholder="00"
+              />
+              <span>분</span>
+            </div>
+          </S.Content>
+        </S.Contents>
 
-        <BasicButton variant="Solid_Navy_2XL" onClick={() => {}}>
+        <BasicButton
+          variant="Solid_Navy_2XL"
+          onClick={() => {
+            // noop
+          }}
+          fullWidth
+        >
           설정완료
         </BasicButton>
       </S.Container>
