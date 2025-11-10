@@ -98,7 +98,9 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                 <CheckButton
                   id="count-selection"
                   checked={false}
-                  onChange={() => {}}
+                  onChange={() => {
+                    // noop
+                  }}
                   customStyle={checkButtonCss}
                 >
                   <p>수량선택 사용</p>
@@ -106,7 +108,9 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                 <CheckButton
                   id="staff-call"
                   checked={false}
-                  onChange={() => {}}
+                  onChange={() => {
+                    // noop
+                  }}
                   customStyle={checkButtonCss}
                 >
                   <p>직원호출 사용</p>
@@ -114,7 +118,9 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                 <CheckButton
                   id="two-column-layout"
                   checked={false}
-                  onChange={() => {}}
+                  onChange={() => {
+                    // noop
+                  }}
                   customStyle={checkButtonCss}
                 >
                   <p>2열 배치(가로 기본형)</p>

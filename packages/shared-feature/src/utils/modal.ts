@@ -1,8 +1,4 @@
-import {
-  useModalStore,
-  type ModalConfig,
-  type ModalSize,
-} from '../stores';
+import { useModalStore, type ModalConfig, type ModalSize } from '../stores';
 
 type OpenModalParams = Omit<ModalConfig, 'id'>;
 
