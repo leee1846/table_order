@@ -51,4 +51,5 @@ export const Content = styled.main`
   width: 100%;
   height: 100%;
   padding: 40px 24px 40px 30px;
+  background-color: ${({ theme }) => theme.colors.grey[50]};
 `;
