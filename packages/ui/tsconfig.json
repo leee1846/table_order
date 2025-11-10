@@ -1,12 +1,12 @@
 {
   "extends": "@repo/typescript-config/react-library.json",
   "compilerOptions": {
+    "rootDir": "src",
     "outDir": "dist",
     "baseUrl": ".",
     "jsxImportSource": "@emotion/react",
     "types": ["@emotion/react/types/css-prop"],
-    "resolveJsonModule": true,
-    "rootDir": "src"
+    "resolveJsonModule": true
   },
   "include": ["src/**/*", "emotion.d.ts"],
   "exclude": ["node_modules", "dist"]

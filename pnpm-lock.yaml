@@ -342,9 +342,6 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../api
-      '@repo/ui':
-        specifier: workspace:*
-        version: link:../ui
       '@repo/util':
         specifier: workspace:*
         version: link:../util
@@ -396,6 +393,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.1.0)(react@19.1.0))(@types/react@19.1.0)(react@19.1.0)
+      '@repo/shared-feature':
+        specifier: workspace:*
+        version: link:../shared-feature
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
