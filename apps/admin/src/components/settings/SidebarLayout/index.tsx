@@ -28,7 +28,7 @@ export const SidebarLayout = () => {
               to={ROUTES.SETTINGS.CATEGORIES.generate()}
               isSelected={isSelected(ROUTES.SETTINGS.CATEGORIES.generate())}
             >
-              카테고리 관리
+              <span>카테고리 관리</span>
             </S.LinkItem>
           </li>
           <li>
@@ -36,7 +36,7 @@ export const SidebarLayout = () => {
               to={ROUTES.SETTINGS.CATEGORY_MENUS.generate(1)}
               isSelected={!!categoryMenuMatch}
             >
-              메뉴 관리
+              <span>메뉴 관리</span>
             </S.LinkItem>
           </li>
           {!!categoryMenuMatch &&
@@ -48,7 +48,7 @@ export const SidebarLayout = () => {
                     ROUTES.SETTINGS.CATEGORY_MENUS.generate(category)
                   )}
                 >
-                  카테고리{category} 메뉴
+                  <span>카테고리{category} 메뉴</span>
                   <ChevronForwardIcon color={theme.colors.grey[500]} />
                 </S.LinkItem>
               </li>
@@ -56,9 +56,11 @@ export const SidebarLayout = () => {
         </S.List>
       </S.Section>
 
-      <Suspense fallback={<LoadingSpinner />}>
-        <Outlet />
-      </Suspense>
+      <S.Content>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Outlet />
+        </Suspense>
+      </S.Content>
     </S.Layout>
   );
 };
