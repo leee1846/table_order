@@ -44,20 +44,4 @@ export const globalStyles = (theme: Theme) => css`
   strong {
     font-weight: ${theme.typography.fontWeight.bold};
   }
-
-  /* Scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: ${theme.colors.grey[400]};
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-  }
 `;

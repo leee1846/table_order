@@ -134,6 +134,7 @@ export const resetStyles = css`
     background: none;
     border: none;
     cursor: pointer;
+    padding: 0;
   }
   input:disabled {
     cursor: not-allowed;
@@ -163,5 +164,10 @@ export const resetStyles = css`
   *::before,
   *::after {
     box-sizing: border-box;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
   }
 `;

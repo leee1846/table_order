@@ -5,4 +5,6 @@ export { default as VisibilityIcon } from './VisibilityIcon';
 export { default as VisibilityOffIcon } from './VisibilityOffIcon';
 export { default as RemoveIcon } from './RemoveIcon';
 export { default as AddIcon } from './AddIcon';
+export { default as ChevronForwardIcon } from './ChevronForwardIcon';
+export { default as DeleteIcon } from './DeleteIcon';
 export { default as CloseIcon } from './CloseIcon';

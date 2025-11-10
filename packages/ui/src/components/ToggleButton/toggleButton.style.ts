@@ -20,24 +20,23 @@ interface SizeConfig {
   };
 }
 
-// Size별 설정 객체 - 확장성을 위해 Record 타입 사용
 const SIZE_CONFIG: Record<TSize, SizeConfig> = {
   S: {
-    width: '2.25rem',
-    height: '1.25rem',
-    thumbSize: '1.0625rem',
+    width: '36px',
+    height: '20px',
+    thumbSize: '17px',
     translateOffset: {
-      on: '0.325rem',
-      off: '-0.3rem',
+      on: '0px',
+      off: '1px',
     },
   },
   M: {
-    width: '3.25rem',
-    height: '1.875rem',
-    thumbSize: '1.6875rem',
+    width: '52px',
+    height: '30px',
+    thumbSize: '27px',
     translateOffset: {
-      on: '0.6rem',
-      off: '-0.3rem',
+      on: '4px',
+      off: '2px',
     },
   },
 };

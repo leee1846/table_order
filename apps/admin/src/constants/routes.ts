@@ -1,5 +1,14 @@
 export const ROUTES = {
-  LOGIN: {
-    path: '/login',
+  SETTINGS: {
+    path: '/settings',
+
+    CATEGORIES: {
+      path: 'categories',
+      generate: () => '/settings/categories',
+    },
+    CATEGORY_MENUS: {
+      path: 'categories/:id/menus',
+      generate: (id: string | number) => `/settings/categories/${id}/menus`,
+    },
   },
 } as const;

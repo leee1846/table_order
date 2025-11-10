@@ -13,7 +13,6 @@ export const Label = styled.label<{ disabled?: boolean }>`
   box-sizing: border-box;
   transition: border-color 0.2s;
   border: 1px solid ${colors.grey[400]};
-  margin-bottom: 12px;
   ${({ disabled }) =>
     disabled &&
     css`
