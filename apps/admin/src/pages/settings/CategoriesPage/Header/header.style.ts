@@ -3,7 +3,7 @@ import { TYPOGRAPHY } from '@repo/ui';
 
 export const Header = styled.header`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 31px;
 `;
