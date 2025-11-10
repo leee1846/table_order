@@ -3,7 +3,7 @@ import { BasicButton, Input, ModalBackground } from '@repo/ui/components';
 
 import { ROUTES } from '@/constants/routes';
 import { UserList } from '@/pages/HomePage/UserList';
-import { theme, TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY } from '@repo/ui';
 import {
   MenuIcon,
   ArrowBackIcon,
@@ -11,6 +11,7 @@ import {
   VisibilityIcon,
 } from '@repo/ui/icons';
 import { useState } from 'react';
+import { css } from '@emotion/react';
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -42,6 +43,10 @@ export const Home = () => {
           value={inputValue}
           onChange={setInputValue}
           type="text"
+          customStyle={css`
+            width: 400px;
+          `}
+          name="text"
         />
         <Input
           placeholder="Input"
@@ -49,6 +54,10 @@ export const Home = () => {
           value={inputValue}
           onChange={setInputValue}
           disabled
+          customStyle={css`
+            width: 400px;
+          `}
+          name="email"
         />
 
         <Input
@@ -57,13 +66,17 @@ export const Home = () => {
           type="password"
           rightComponent={
             <div onClick={() => doSomething()}>
-              <VisibilityIcon color="red" />
+              <VisibilityIcon color="red" width={20} height={20} />
             </div>
           }
+          customStyle={css`
+            width: 200px;
+          `}
+          name="password"
         />
       </div>
-      {/* 
-      <ModalBackground>
+
+      {/* <ModalBackground>
         <div>Hello</div>
       </ModalBackground> */}
 

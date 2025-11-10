@@ -19,7 +19,6 @@ export const Input = ({
   value = '',
   onChange,
   placeholder = '',
-  width = '100%',
   customStyle,
   disabled = false,
   name,
@@ -33,17 +32,16 @@ export const Input = ({
     onChange?.('');
   };
   return (
-    <S.Label disabled={disabled} style={{ width }}>
+    <S.Label disabled={disabled} css={customStyle}>
       <S.StyledInput
         name={name}
         type={type}
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        css={customStyle}
         disabled={disabled}
       />
-      {!disabled && type === 'text' && !!value && (
+      {!disabled && type === 'text' && !!value && !rightComponent && (
         <S.ClearButton onClick={handleClear} aria-label="입력 지우기">
           ×
         </S.ClearButton>

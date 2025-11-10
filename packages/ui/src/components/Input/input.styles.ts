@@ -30,16 +30,23 @@ export const StyledInput = styled.input`
   flex: 1;
   border: none;
   outline: none;
+  height: 32px; /* input 높이 고정 */
+  line-height: 32px; /* vertical center (필요 시) */
+  padding-right: 1.5rem;
+  &[type='password'] {
+    font-size: 3rem;
+    letter-spacing: 0.1rem;
+    line-height: 32px;
+    vertical-align: middle;
+  }
   ${TYPOGRAPHY.ST_5};
-  height: 100%;
   background: transparent;
   color: ${colors.grey[700]};
-  min-height: 29px;
-  padding-right: 2.5em;
   &::placeholder {
     color: ${colors.grey[400]};
     ${TYPOGRAPHY.ST_5};
   }
+  width: 100%;
 `;
 
 export const ClearButton = styled.button`
@@ -57,30 +64,15 @@ export const ClearButton = styled.button`
   justify-content: center;
 `;
 
-export const PriceIcon = styled.span`
+export const RightArea = styled.button`
   position: absolute;
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1.5rem;
-  color: ${colors.grey[500]};
-  pointer-events: none;
-  ${TYPOGRAPHY.ST_4};
-`;
-
-export const RightArea = styled.div`
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-`;
-
-export const ValidationMessage = styled.div`
-  color: ${colors.semantic[400]};
-  ${TYPOGRAPHY.CT_2};
-  margin-left: 12px;
 `;
