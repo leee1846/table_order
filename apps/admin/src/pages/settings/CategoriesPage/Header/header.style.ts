@@ -5,6 +5,7 @@ export const Header = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 31px;
 `;
 
 export const TextContainer = styled.div`

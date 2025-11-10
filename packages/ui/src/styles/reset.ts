@@ -134,6 +134,7 @@ export const resetStyles = css`
     background: none;
     border: none;
     cursor: pointer;
+    padding: 0;
   }
   input:disabled {
     cursor: not-allowed;

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 export const Layout = styled.div`
   display: flex;
   height: 100vh;
+  overflow: hidden;
 `;
 
 export const Section = styled.section`
@@ -14,6 +15,7 @@ export const Section = styled.section`
   background-color: ${({ theme }) => theme.colors.grey[800]};
   width: 210px;
   height: 100%;
+  min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 `;
@@ -50,6 +52,10 @@ export const Content = styled.main`
   flex-direction: column;
   width: 100%;
   height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 40px 24px 40px 30px;
   background-color: ${({ theme }) => theme.colors.grey[50]};
+  -webkit-overflow-scrolling: touch;
 `;
