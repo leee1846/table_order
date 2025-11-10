@@ -118,7 +118,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
               </CheckButton>
               <CheckButton
                 id="count-selection"
-                checked={false}
+                checked={true}
                 onChange={() => {}}
                 customStyle={checkButtonCss}
               >
