@@ -1,10 +1,9 @@
 import styled from '@emotion/styled';
+import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
 import { theme, TYPOGRAPHY } from '@repo/ui';
-import { useModalStore, type ModalSize } from '@repo/shared-feature/stores';
-import { getModalWidth } from '@repo/shared-feature/utils';
+import { type ModalSize, getModalWidth } from '@repo/ui/utils';
 import { CloseIcon } from '@repo/ui/icons';
-import { css } from '@emotion/react';
 const { colors } = theme;
 
 interface LongContentModalProps {
@@ -12,22 +11,20 @@ interface LongContentModalProps {
   content: React.ReactNode;
   confirmText?: string;
   onConfirm?: () => void;
+  onClose?: () => void;
   size?: ModalSize;
-  modalId: string;
 }
 
-export const LongContentModal = ({
+export const LongContentDialog = ({
   title,
   content,
   confirmText = '확인',
   onConfirm,
+  onClose,
   size,
-  modalId,
 }: LongContentModalProps) => {
-  const { closeModal } = useModalStore();
-
   const handleClose = () => {
-    closeModal(modalId);
+    onClose?.();
   };
 
   return (

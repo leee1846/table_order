@@ -1,9 +1,8 @@
 import styled from '@emotion/styled';
+import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
 import { theme, TYPOGRAPHY } from '@repo/ui';
-import type { ModalSize } from '@repo/shared-feature/stores';
-import { getModalWidth } from '@repo/shared-feature/utils';
-import { css } from '@emotion/react';
+import { type ModalSize, getModalWidth } from '@repo/ui/utils';
 const { colors } = theme;
 
 interface DualActionModalProps {
@@ -11,18 +10,18 @@ interface DualActionModalProps {
   content: React.ReactNode;
   primaryText?: string;
   secondaryText?: string;
-  onPrimary?: () => void;
-  onSecondary?: () => void;
+  onConfirm?: () => void;
+  onCancel?: () => void;
   size?: ModalSize;
 }
 
-export const DualActionModal = ({
+export const DualActionDialog = ({
   title,
   content,
   primaryText = '주 액션',
   secondaryText = '보조 액션',
-  onPrimary,
-  onSecondary,
+  onConfirm,
+  onCancel,
   size,
 }: DualActionModalProps) => {
   const hasContent = content != null && content !== '' && content !== false;
@@ -32,10 +31,10 @@ export const DualActionModal = ({
       {title && <Title hasContent={hasContent}>{title}</Title>}
       {hasContent && <Content>{content}</Content>}
       <ButtonGroup>
-        {onSecondary && (
+        {onCancel && (
           <BasicButton
             variant="Solid_Sky_Blue_2XL"
-            onClick={onSecondary}
+            onClick={onCancel}
             customStyle={css`
               width: 100%;
             `}
@@ -43,10 +42,10 @@ export const DualActionModal = ({
             {secondaryText}
           </BasicButton>
         )}
-        {onPrimary && (
+        {onConfirm && (
           <BasicButton
             variant="Solid_Navy_2XL"
-            onClick={onPrimary}
+            onClick={onConfirm}
             customStyle={css`
               width: 100%;
             `}

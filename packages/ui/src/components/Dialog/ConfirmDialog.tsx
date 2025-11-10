@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
+import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
 import { theme, TYPOGRAPHY } from '@repo/ui';
-import type { ModalSize } from '@repo/shared-feature/stores';
-import { getModalWidth } from '@repo/shared-feature/utils';
-import { css } from '@emotion/react';
+import type { ModalSize } from '@repo/ui/utils';
+import { getModalWidth } from './modal';
 const { colors } = theme;
 
 interface ConfirmModalProps {
@@ -14,7 +14,7 @@ interface ConfirmModalProps {
   size?: ModalSize;
 }
 
-export const ConfirmModal = ({
+export const ConfirmDialog = ({
   title,
   content,
   confirmText = '확인',

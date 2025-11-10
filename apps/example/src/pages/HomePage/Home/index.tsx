@@ -38,11 +38,11 @@ export const Home = () => {
       primaryText: 'Button',
       secondaryText: 'Button',
       size: 'tiny',
-      onPrimary: () => {
-        console.warn('주 액션 클릭');
+      onConfirm: () => {
+        console.warn('확인 클릭');
       },
-      onSecondary: () => {
-        console.warn('보조 액션 클릭');
+      onCancel: () => {
+        console.warn('취소 클릭');
       },
     });
   };
@@ -54,11 +54,11 @@ export const Home = () => {
       primaryText: 'Button',
       secondaryText: 'Button',
       size: 'tiny',
-      onPrimary: () => {
-        console.warn('주 액션 클릭');
+      onConfirm: () => {
+        console.warn('취소 클릭');
       },
-      onSecondary: () => {
-        console.warn('보조 액션 클릭');
+      onCancel: () => {
+        console.warn('확인 클릭');
       },
     });
   };

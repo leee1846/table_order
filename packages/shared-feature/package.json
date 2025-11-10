@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@repo/api": "workspace:*",
+    "@repo/ui": "workspace:*",
     "@repo/util": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",

@@ -1,11 +1,11 @@
 import { Outlet } from 'react-router-dom';
-import { GlobalModalContainer } from '@repo/ui/components';
+import { GlobalDialogContainer } from '@repo/shared-feature/components';
 
 const App = () => {
   return (
     <div>
-      <GlobalModalContainer />
       <Outlet />
+      <GlobalDialogContainer  />
     </div>
   );
 };

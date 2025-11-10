@@ -1,4 +1,5 @@
-import { css, Theme } from '@emotion/react';
+import { css } from '@emotion/react';
+import type { Theme } from '../index';
 
 export const globalStyles = (theme: Theme) => css`
   @font-face {

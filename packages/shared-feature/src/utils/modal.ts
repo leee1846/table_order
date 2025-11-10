@@ -1,29 +1,10 @@
-import {
-  useModalStore,
-  type ModalConfig,
-  type ModalSize,
-} from '../stores';
+import { useModalStore, type ModalConfig } from '../stores';
+import { getModalWidth } from '@repo/ui/utils';
 
 type OpenModalParams = Omit<ModalConfig, 'id'>;
 
-/**
- * 모달 사이즈에 따른 너비를 반환하는 함수
- * @param size - 모달 사이즈
- * @returns 사이즈에 해당하는 너비 (px 단위)
- */
-export const getModalWidth = (size?: ModalSize): string => {
-  const sizeMap: Record<ModalSize, string> = {
-    tiny: '335px',
-    xsmall: '440px',
-    small: '480px',
-    medium: '560px',
-    large: '640px',
-    xlarge: '1016px',
-    '2xlarge': '1140px',
-  };
-
-  return size ? sizeMap[size] : 'auto';
-};
+// getModalWidth를 re-export하여 기존 코드와의 호환성 유지
+export { getModalWidth };
 
 /**
  * Confirm Modal을 열기 위한 함수

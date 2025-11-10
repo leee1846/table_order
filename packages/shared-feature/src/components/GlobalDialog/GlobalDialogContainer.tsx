@@ -1,10 +1,12 @@
-import { ModalBackground } from '@repo/ui/components';
-import { useModalStore, type ModalConfig } from '@repo/shared-feature/stores';
-import { ConfirmModal } from './ConfirmModal';
-import { DualActionModal } from './DualActionModal';
-import { LongContentModal } from './LongContentModal';
+import { useModalStore, type ModalConfig } from '../../stores';
+import {
+  ConfirmDialog,
+  DualActionDialog,
+  LongContentDialog,
+  ModalBackground,
+} from '@repo/ui/components';
 
-export const GlobalModalContainer = () => {
+export const GlobalDialogContainer = () => {
   const { modals, closeModal } = useModalStore();
 
   if (modals.length === 0) {
@@ -22,7 +24,7 @@ export const GlobalModalContainer = () => {
           switch (modal.type) {
             case 'confirm':
               return (
-                <ConfirmModal
+                <ConfirmDialog
                   title={modal.title}
                   content={modal.content}
                   confirmText={modal.confirmText}
@@ -35,30 +37,30 @@ export const GlobalModalContainer = () => {
               );
             case 'dualAction':
               return (
-                <DualActionModal
+                <DualActionDialog
                   title={modal.title}
                   content={modal.content}
                   primaryText={modal.primaryText}
                   secondaryText={modal.secondaryText}
                   size={modal.size}
-                  onPrimary={() => {
-                    modal.onPrimary?.();
+                  onConfirm={() => {
+                    modal.onConfirm?.();
                     closeModal(modal.id);
                   }}
-                  onSecondary={() => {
-                    modal.onSecondary?.();
+                  onCancel={() => {
+                    modal.onCancel?.();
                     closeModal(modal.id);
                   }}
                 />
               );
             case 'longContent':
               return (
-                <LongContentModal
+                <LongContentDialog
                   title={modal.title}
                   content={modal.content}
                   confirmText={modal.confirmText}
                   size={modal.size}
-                  modalId={modal.id}
+                  onClose={handleClose}
                   onConfirm={() => {
                     modal.onConfirm?.();
                     closeModal(modal.id);

@@ -1,15 +1,9 @@
 import { create } from 'zustand';
+import type { ModalSize } from '@repo/ui/utils';
 
 export type ModalType = 'confirm' | 'dualAction' | 'longContent';
 
-export type ModalSize =
-  | 'tiny'
-  | 'xsmall'
-  | 'small'
-  | 'medium'
-  | 'large'
-  | 'xlarge'
-  | '2xlarge';
+export type { ModalSize };
 
 export interface ModalConfig {
   id: string;
@@ -22,8 +16,6 @@ export interface ModalConfig {
   secondaryText?: string;
   onConfirm?: () => void;
   onCancel?: () => void;
-  onPrimary?: () => void;
-  onSecondary?: () => void;
   position?: 'center' | 'top';
   size?: ModalSize;
 }
