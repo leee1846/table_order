@@ -18,15 +18,11 @@ const CategoryMenusPage = lazy(() =>
   }))
 );
 
-const SuspenseFallback = () => {
-  return <div>Loading...</div>;
-};
-
 export const router = createBrowserRouter([
   {
     path: ROUTES.SETTINGS.path,
     element: (
-      <Suspense fallback={<SuspenseFallback />}>
+      <Suspense>
         <SettingSidebar />
       </Suspense>
     ),
@@ -39,7 +35,7 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.SETTINGS.CATEGORIES.path,
         element: (
-          <Suspense fallback={<SuspenseFallback />}>
+          <Suspense>
             <CategoriesPage />
           </Suspense>
         ),
@@ -53,7 +49,7 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.SETTINGS.CATEGORY_MENUS.path,
         element: (
-          <Suspense fallback={<SuspenseFallback />}>
+          <Suspense>
             <CategoryMenusPage />
           </Suspense>
         ),
