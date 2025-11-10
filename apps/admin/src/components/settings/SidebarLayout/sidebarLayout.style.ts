@@ -34,7 +34,9 @@ export const List = styled.ul`
 interface LinkItemProps {
   isSelected: boolean;
 }
-export const LinkItem = styled(Link)<LinkItemProps>`
+export const LinkItem = styled(Link, {
+  shouldForwardProp: (prop) => prop !== 'isSelected',
+})<LinkItemProps>`
   display: flex;
   align-items: center;
   justify-content: space-between;
