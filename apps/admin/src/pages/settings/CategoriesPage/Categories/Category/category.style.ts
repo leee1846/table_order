@@ -45,3 +45,58 @@ export const Header = styled.div`
     cursor: pointer;
   }
 `;
+
+export const Badges = styled.ul`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grey[200]};
+
+  & > li {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    background-color: ${({ theme }) => theme.colors.grey[100]};
+    border-radius: 8px;
+
+    & > p:first-of-type {
+      color: ${({ theme }) => theme.colors.grey[500]};
+      ${TYPOGRAPHY.CT_2}
+    }
+
+    & > p:last-of-type {
+      color: ${({ theme }) => theme.colors.grey[800]};
+      ${TYPOGRAPHY.ST_3}
+    }
+  }
+`;
+
+export const Footer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const HiddenContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  & > p {
+    color: ${({ theme }) => theme.colors.grey[500]};
+    ${TYPOGRAPHY.BD_2}
+  }
+`;
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  & > button {
+    width: 7.53125rem;
+  }
+`;

@@ -28,12 +28,13 @@ export const Category = ({ category }: Props) => {
         </button>
       </S.Header>
 
-      <ul>
+      <S.Badges>
         {category.startTime && category.endTime && (
           <li>
             <p>판매시간</p>
             <p>
               {category.startTime} ~ {category.endTime}
+              {/* TODO: 상시 표시 추가해야함 (24시간 표시) */}
             </p>
           </li>
         )}
@@ -41,6 +42,7 @@ export const Category = ({ category }: Props) => {
           <li>
             <p>판매 요일</p>
             <p>{category.days.join(', ')}</p>
+            {/* TODO: 매일 표시 추가해야함 (매일 표시) */}
           </li>
         )}
         {category.countable && (
@@ -55,35 +57,23 @@ export const Category = ({ category }: Props) => {
             <p>2열</p>
           </li>
         )}
-      </ul>
+      </S.Badges>
 
-      <div>
-        <div>
+      <S.Footer>
+        <S.HiddenContainer>
           <p>메뉴판에서 숨기기</p>
           <ToggleButton size="S" isOn={category.isHidden} onChange={() => {}} />
-        </div>
+        </S.HiddenContainer>
 
-        <div>
-          <BasicButton
-            variant="Solid_Navy_L"
-            onClick={() => {}}
-            customStyle={css`
-              width: 7.53125rem;
-            `}
-          >
+        <S.ButtonContainer>
+          <BasicButton variant="Solid_Navy_L" onClick={() => {}}>
             테이블 지정
           </BasicButton>
-          <BasicButton
-            variant="Solid_Sky_Blue_L"
-            onClick={() => {}}
-            customStyle={css`
-              width: 7.53125rem;
-            `}
-          >
+          <BasicButton variant="Solid_Sky_Blue_L" onClick={() => {}}>
             수정하기
           </BasicButton>
-        </div>
-      </div>
+        </S.ButtonContainer>
+      </S.Footer>
     </S.Container>
   );
 };
