@@ -6,3 +6,7 @@ export { Input } from './Input';
 export { ChipButton } from './ChipButton';
 export { NumberInput } from './NumberInput';
 export { ModalBackground } from './ModalBackground';
+export { ConfirmModal } from './GlobalModal/ConfirmModal';
+export { DualActionModal } from './GlobalModal/DualActionModal';
+export { LongContentModal } from './GlobalModal/LongContentModal';
+export { GlobalModalContainer } from './GlobalModal/GlobalModalContainer';

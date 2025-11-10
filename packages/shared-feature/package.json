@@ -7,7 +7,9 @@
   "exports": {
     "./package.json": "./package.json",
     "./components": "./src/components/index.ts",
-    "./hooks": "./src/hooks/index.ts"
+    "./hooks": "./src/hooks/index.ts",
+    "./utils": "./src/utils/index.ts",
+    "./stores": "./src/stores/index.ts"
   },
   "scripts": {
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
@@ -29,7 +31,6 @@
   },
   "dependencies": {
     "@repo/api": "workspace:*",
-    "@repo/ui": "workspace:*",
     "@repo/util": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",

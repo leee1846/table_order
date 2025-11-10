@@ -1,24 +1,98 @@
 import { useNavigate } from 'react-router-dom';
-import { BasicButton, Input, ModalBackground } from '@repo/ui/components';
+import { BasicButton, Input } from '@repo/ui/components';
 
 import { ROUTES } from '@/constants/routes';
 import { UserList } from '@/pages/HomePage/UserList';
 import { TYPOGRAPHY } from '@repo/ui';
-import {
-  MenuIcon,
-  ArrowBackIcon,
-  ArrowForwardIcon,
-  VisibilityIcon,
-} from '@repo/ui/icons';
+import { MenuIcon, ArrowBackIcon, ArrowForwardIcon } from '@repo/ui/icons';
 import { useState } from 'react';
 import { css } from '@emotion/react';
+import {
+  openConfirmModal,
+  openDualActionModal,
+  openLongContentModal,
+} from '@repo/shared-feature/utils';
 
 export const Home = () => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState('');
 
-  const doSomething = () => {
-    console.log('icon clicked');
+  const handleOpenConfirmModal = () => {
+    openConfirmModal({
+      title: '확인 모달',
+      content: '타이틀을 입력해 주세요\n최대 두줄까지 입력할 수 있어요',
+      confirmText: '확인',
+      cancelText: '취소',
+      size: 'small',
+      onConfirm: () => {
+        console.warn('확인 클릭');
+      },
+    });
+  };
+
+  const handleOpenDualActionModal = () => {
+    openDualActionModal({
+      title: '타이틀을 입력해 주세요',
+      content:
+        '서브 텍스트를 입력해 주세요 (Fallback)\n최대 두줄까지 입력할 수 있어요',
+      primaryText: 'Button',
+      secondaryText: 'Button',
+      size: 'tiny',
+      onPrimary: () => {
+        console.warn('주 액션 클릭');
+      },
+      onSecondary: () => {
+        console.warn('보조 액션 클릭');
+      },
+    });
+  };
+
+  const handleOpenDualActionModalNoContent = () => {
+    openDualActionModal({
+      title: '타이틀을 입력해 주세요',
+      content: '',
+      primaryText: 'Button',
+      secondaryText: 'Button',
+      size: 'tiny',
+      onPrimary: () => {
+        console.warn('주 액션 클릭');
+      },
+      onSecondary: () => {
+        console.warn('보조 액션 클릭');
+      },
+    });
+  };
+
+  const handleOpenLongContentModal = () => {
+    const longContent = (
+      <div>
+        <p>타이틀을 입력해 주세요</p>
+        <p>최대 두줄까지 입력할 수 있어요</p>
+        <br />
+        <p>서브 텍스트를 입력해 주세요 (Fallback)</p>
+        <p>최대 두줄까지 입력할 수 있어요</p>
+        <br />
+        <p>긴 내용이 들어갈 수 있는 모달입니다.</p>
+        <p>스크롤이 가능합니다.</p>
+        <br />
+        <p>더 많은 내용...</p>
+        <p>더 많은 내용...</p>
+        <p>더 많은 내용...</p>
+        <p>더 많은 내용...</p>
+        <p>더 많은 내용...</p>
+      </div>
+    );
+
+    openLongContentModal({
+      title: 'Title',
+      content: longContent,
+      confirmText: 'Button',
+      onConfirm: () => {
+        console.warn('확인 클릭');
+      },
+      position: 'center',
+      size: '2xlarge',
+    });
   };
 
   return (
@@ -59,26 +133,28 @@ export const Home = () => {
           `}
           name="email"
         />
-
-        <Input
-          value={inputValue}
-          onChange={setInputValue}
-          type="password"
-          rightComponent={
-            <div onClick={() => doSomething()}>
-              <VisibilityIcon color="red" width={20} height={20} />
-            </div>
-          }
-          customStyle={css`
-            width: 200px;
-          `}
-          name="password"
-        />
       </div>
 
-      {/* <ModalBackground>
-        <div>Hello</div>
-      </ModalBackground> */}
+      <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+        <BasicButton variant="Solid_Navy_M" onClick={handleOpenConfirmModal}>
+          Confirm Modal 열기
+        </BasicButton>
+        <BasicButton variant="Solid_Navy_M" onClick={handleOpenDualActionModal}>
+          Dual Action Modal 내용 있는 버전 열기
+        </BasicButton>
+        <BasicButton
+          variant="Solid_Navy_M"
+          onClick={handleOpenDualActionModalNoContent}
+        >
+          Dual Action Modal 내용 없는 버전 열기
+        </BasicButton>
+        <BasicButton
+          variant="Solid_Navy_M"
+          onClick={handleOpenLongContentModal}
+        >
+          Long Content Modal 열기
+        </BasicButton>
+      </div>
 
       <UserList />
     </div>
