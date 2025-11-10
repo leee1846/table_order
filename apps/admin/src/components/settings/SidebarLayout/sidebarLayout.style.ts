@@ -20,6 +20,10 @@ export const Section = styled.section`
   -webkit-overflow-scrolling: touch;
 `;
 
+export const Logo = styled.p`
+  padding: 40px 20px 20px;
+`;
+
 export const List = styled.ul`
   display: flex;
   flex-direction: column;

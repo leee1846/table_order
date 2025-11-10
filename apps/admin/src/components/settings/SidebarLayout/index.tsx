@@ -20,7 +20,7 @@ export const SidebarLayout = () => {
   return (
     <S.Layout>
       <S.Section>
-        <p>LOGO HERE</p>
+        <S.Logo>LOGO HERE</S.Logo>
 
         <S.List>
           <li>
