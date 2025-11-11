@@ -2,17 +2,17 @@ import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
 import { theme, TYPOGRAPHY } from '@repo/ui';
-import { type ModalSize, getModalWidth } from '@repo/ui/utils';
 import { CloseIcon } from '@repo/ui/icons';
+import { DialogSize, getDialogWidth } from './dialog';
 const { colors } = theme;
 
-interface LongContentModalProps {
+interface LongContentDialogProps {
   title?: string;
   content: React.ReactNode;
   confirmText?: string;
   onConfirm?: () => void;
   onClose?: () => void;
-  size?: ModalSize;
+  size?: DialogSize;
 }
 
 export const LongContentDialog = ({
@@ -22,7 +22,7 @@ export const LongContentDialog = ({
   onConfirm,
   onClose,
   size,
-}: LongContentModalProps) => {
+}: LongContentDialogProps) => {
   const handleClose = () => {
     onClose?.();
   };
@@ -51,13 +51,13 @@ export const LongContentDialog = ({
   );
 };
 
-const Container = styled.div<{ size?: ModalSize }>`
+const Container = styled.div<{ size?: DialogSize }>`
   background-color: ${colors.white};
   border-radius: 16px;
   padding: 24px;
   min-width: 480px;
-  width: ${({ size }) => (size ? getModalWidth(size) : 'auto')};
-  max-width: ${({ size }) => (size ? getModalWidth(size) : '720px')};
+  width: ${({ size }) => (size ? getDialogWidth(size) : 'auto')};
+  max-width: ${({ size }) => (size ? getDialogWidth(size) : '720px')};
   display: flex;
   flex-direction: column;
   align-items: center;

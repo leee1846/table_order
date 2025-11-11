@@ -2,17 +2,17 @@ import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
 import { theme, TYPOGRAPHY } from '@repo/ui';
-import { type ModalSize, getModalWidth } from '@repo/ui/utils';
+import { DialogSize, getDialogWidth } from './dialog';
 const { colors } = theme;
 
-interface DualActionModalProps {
+interface DualActionDialogProps {
   title?: string;
   content: React.ReactNode;
   primaryText?: string;
   secondaryText?: string;
   onConfirm?: () => void;
   onCancel?: () => void;
-  size?: ModalSize;
+  size?: DialogSize;
 }
 
 export const DualActionDialog = ({
@@ -23,7 +23,7 @@ export const DualActionDialog = ({
   onConfirm,
   onCancel,
   size,
-}: DualActionModalProps) => {
+}: DualActionDialogProps) => {
   const hasContent = content != null && content !== '' && content !== false;
 
   return (
@@ -58,13 +58,13 @@ export const DualActionDialog = ({
   );
 };
 
-const Container = styled.div<{ size?: ModalSize }>`
+const Container = styled.div<{ size?: DialogSize }>`
   background-color: ${colors.white};
   border-radius: 16px;
   padding: 40px 24px 24px 24px;
   min-width: 400px;
-  width: ${({ size }) => (size ? getModalWidth(size) : 'auto')};
-  max-width: ${({ size }) => (size ? getModalWidth(size) : '560px')};
+  width: ${({ size }) => (size ? getDialogWidth(size) : 'auto')};
+  max-width: ${({ size }) => (size ? getDialogWidth(size) : '560px')};
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,4 +1,4 @@
-import { useModalStore, type ModalConfig } from '../../stores';
+import { type DialogConfig, useDialogStore } from '../../stores';
 import {
   ConfirmDialog,
   DualActionDialog,
@@ -7,17 +7,17 @@ import {
 } from '@repo/ui/components';
 
 export const GlobalDialogContainer = () => {
-  const { modals, closeModal } = useModalStore();
+  const { dialogs, closeDialog } = useDialogStore();
 
-  if (modals.length === 0) {
+  if (dialogs.length === 0) {
     return null;
   }
 
   return (
     <>
-      {modals.map((modal: ModalConfig) => {
+      {dialogs.map((modal: DialogConfig) => {
         const handleClose = () => {
-          closeModal(modal.id);
+          closeDialog(modal.id);
         };
 
         const renderModalContent = () => {
@@ -31,7 +31,7 @@ export const GlobalDialogContainer = () => {
                   size={modal.size}
                   onConfirm={() => {
                     modal.onConfirm?.();
-                    closeModal(modal.id);
+                    closeDialog(modal.id);
                   }}
                 />
               );
@@ -45,11 +45,11 @@ export const GlobalDialogContainer = () => {
                   size={modal.size}
                   onConfirm={() => {
                     modal.onConfirm?.();
-                    closeModal(modal.id);
+                    closeDialog(modal.id);
                   }}
                   onCancel={() => {
                     modal.onCancel?.();
-                    closeModal(modal.id);
+                    closeDialog(modal.id);
                   }}
                 />
               );
@@ -63,7 +63,7 @@ export const GlobalDialogContainer = () => {
                   onClose={handleClose}
                   onConfirm={() => {
                     modal.onConfirm?.();
-                    closeModal(modal.id);
+                    closeDialog(modal.id);
                   }}
                 />
               );

@@ -8,17 +8,17 @@ import { MenuIcon, ArrowBackIcon, ArrowForwardIcon } from '@repo/ui/icons';
 import { useState } from 'react';
 import { css } from '@emotion/react';
 import {
-  openConfirmModal,
-  openDualActionModal,
-  openLongContentModal,
+  openConfirmDialog,
+  openDualActionDialog,
+  openLongContentDialog,
 } from '@repo/feature/utils';
 
 export const Home = () => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState('');
 
-  const handleOpenConfirmModal = () => {
-    openConfirmModal({
+  const handleOpenConfirmDialog = () => {
+    openConfirmDialog({
       title: '확인 모달',
       content: '타이틀을 입력해 주세요\n최대 두줄까지 입력할 수 있어요',
       confirmText: '확인',
@@ -30,8 +30,8 @@ export const Home = () => {
     });
   };
 
-  const handleOpenDualActionModal = () => {
-    openDualActionModal({
+  const handleOpenDualActionDialog = () => {
+    openDualActionDialog({
       title: '타이틀을 입력해 주세요',
       content:
         '서브 텍스트를 입력해 주세요 (Fallback)\n최대 두줄까지 입력할 수 있어요',
@@ -47,8 +47,8 @@ export const Home = () => {
     });
   };
 
-  const handleOpenDualActionModalNoContent = () => {
-    openDualActionModal({
+  const handleOpenDualActionDialogNoContent = () => {
+    openDualActionDialog({
       title: '타이틀을 입력해 주세요',
       content: '',
       primaryText: 'Button',
@@ -63,7 +63,7 @@ export const Home = () => {
     });
   };
 
-  const handleOpenLongContentModal = () => {
+  const handleOpenLongContentDialog = () => {
     const longContent = (
       <div>
         <p>타이틀을 입력해 주세요</p>
@@ -83,7 +83,7 @@ export const Home = () => {
       </div>
     );
 
-    openLongContentModal({
+    openLongContentDialog({
       title: 'Title',
       content: longContent,
       confirmText: 'Button',
@@ -121,6 +121,7 @@ export const Home = () => {
             width: 400px;
           `}
           name="text"
+          errorMessage="에러 메시지"
         />
         <Input
           placeholder="Input"
@@ -136,21 +137,24 @@ export const Home = () => {
       </div>
 
       <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-        <BasicButton variant="Solid_Navy_M" onClick={handleOpenConfirmModal}>
+        <BasicButton variant="Solid_Navy_M" onClick={handleOpenConfirmDialog}>
           Confirm Modal 열기
         </BasicButton>
-        <BasicButton variant="Solid_Navy_M" onClick={handleOpenDualActionModal}>
+        <BasicButton
+          variant="Solid_Navy_M"
+          onClick={handleOpenDualActionDialog}
+        >
           Dual Action Modal 내용 있는 버전 열기
         </BasicButton>
         <BasicButton
           variant="Solid_Navy_M"
-          onClick={handleOpenDualActionModalNoContent}
+          onClick={handleOpenDualActionDialogNoContent}
         >
           Dual Action Modal 내용 없는 버전 열기
         </BasicButton>
         <BasicButton
           variant="Solid_Navy_M"
-          onClick={handleOpenLongContentModal}
+          onClick={handleOpenLongContentDialog}
         >
           Long Content Modal 열기
         </BasicButton>

@@ -1,1 +1,1 @@
-export * from './modalStore';
+export * from './dialogStore';

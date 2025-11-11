@@ -1,7 +1,7 @@
 /**
  * 모달 사이즈 타입
  */
-export type ModalSize =
+export type DialogSize =
   | 'tiny'
   | 'xsmall'
   | 'small'
@@ -15,8 +15,8 @@ export type ModalSize =
  * @param size - 모달 사이즈
  * @returns 사이즈에 해당하는 너비 (px 단위)
  */
-export const getModalWidth = (size?: ModalSize): string => {
-  const sizeMap: Record<ModalSize, string> = {
+export const getDialogWidth = (size?: DialogSize): string => {
+  const sizeMap: Record<DialogSize, string> = {
     tiny: '335px',
     xsmall: '440px',
     small: '480px',
@@ -28,4 +28,3 @@ export const getModalWidth = (size?: ModalSize): string => {
 
   return size ? sizeMap[size] : 'auto';
 };
-

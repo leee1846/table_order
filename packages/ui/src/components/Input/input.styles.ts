@@ -75,3 +75,10 @@ export const RightArea = styled.button`
   align-items: center;
   justify-content: center;
 `;
+
+export const ErrorMessage = styled.p`
+  color: ${colors.semantic[400]};
+  ${TYPOGRAPHY.CT_2};
+  margin-top: 12px;
+  padding-left: 12px;
+`;

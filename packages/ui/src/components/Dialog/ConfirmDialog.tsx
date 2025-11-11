@@ -2,16 +2,16 @@ import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
 import { theme, TYPOGRAPHY } from '@repo/ui';
-import type { ModalSize } from '@repo/ui/utils';
-import { getModalWidth } from './modal';
+import { DialogSize, getDialogWidth } from './dialog';
+
 const { colors } = theme;
 
-interface ConfirmModalProps {
+interface ConfirmDialogProps {
   title?: string;
   content: React.ReactNode;
   confirmText?: string;
   onConfirm?: () => void;
-  size?: ModalSize;
+  size?: DialogSize;
 }
 
 export const ConfirmDialog = ({
@@ -20,7 +20,7 @@ export const ConfirmDialog = ({
   confirmText = '확인',
   onConfirm,
   size,
-}: ConfirmModalProps) => {
+}: ConfirmDialogProps) => {
   return (
     <Container size={size}>
       {title && <Title>{title}</Title>}
@@ -42,13 +42,13 @@ export const ConfirmDialog = ({
   );
 };
 
-const Container = styled.div<{ size?: ModalSize }>`
+const Container = styled.div<{ size?: DialogSize }>`
   background-color: ${colors.white};
   border-radius: 16px;
   padding: 40px 24px 24px 24px;
   min-width: 335px;
-  width: ${({ size }) => (size ? getModalWidth(size) : 'auto')};
-  max-width: ${({ size }) => (size ? getModalWidth(size) : '480px')};
+  width: ${({ size }) => (size ? getDialogWidth(size) : 'auto')};
+  max-width: ${({ size }) => (size ? getDialogWidth(size) : '480px')};
   display: flex;
   flex-direction: column;
   align-items: center;
