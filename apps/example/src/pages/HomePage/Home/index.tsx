@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { BasicButton, Input } from '@repo/ui/components';
-
+import { BasicButton, Input, toast } from '@repo/ui/components';
+import { TYPOGRAPHY } from '@repo/ui';
 import { ROUTES } from '@/constants/routes';
 import { UserList } from '@/pages/HomePage/UserList';
-import { TYPOGRAPHY } from '@repo/ui';
 import { MenuIcon, ArrowBackIcon, ArrowForwardIcon } from '@repo/ui/icons';
 import { useState } from 'react';
 import { css } from '@emotion/react';
@@ -95,6 +94,10 @@ export const Home = () => {
     });
   };
 
+  const handleShowSuccessToast = () => {
+    toast('작업이 성공적으로 완료되었습니다.');
+  };
+
   return (
     <div>
       <h2>Welcome to Home Page??</h2>
@@ -136,7 +139,14 @@ export const Home = () => {
         />
       </div>
 
-      <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+      <div
+        style={{
+          marginTop: '20px',
+          display: 'flex',
+          gap: '10px',
+          flexWrap: 'wrap',
+        }}
+      >
         <BasicButton variant="Solid_Navy_M" onClick={handleOpenConfirmDialog}>
           Confirm Modal 열기
         </BasicButton>
@@ -158,6 +168,22 @@ export const Home = () => {
         >
           Long Content Modal 열기
         </BasicButton>
+      </div>
+
+      <div style={{ marginTop: '20px' }}>
+        <h3 style={TYPOGRAPHY.ST_3}>Toast 메시지 예시</h3>
+        <div
+          style={{
+            marginTop: '10px',
+            display: 'flex',
+            gap: '10px',
+            flexWrap: 'wrap',
+          }}
+        >
+          <BasicButton variant="Solid_Navy_M" onClick={handleShowSuccessToast}>
+            Success Toast
+          </BasicButton>
+        </div>
       </div>
 
       <UserList />
