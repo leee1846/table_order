@@ -3,7 +3,7 @@ import type {
   AxiosError,
   InternalAxiosRequestConfig,
   AxiosResponse,
-} from 'axios';
+} from '@repo/api/axios';
 
 /**
  * API 클라이언트 설정 예시

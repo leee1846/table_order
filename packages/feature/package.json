@@ -9,7 +9,8 @@
     "./components": "./src/components/index.ts",
     "./hooks": "./src/hooks/index.ts",
     "./utils": "./src/utils/index.ts",
-    "./stores": "./src/stores/index.ts"
+    "./stores": "./src/stores/index.ts",
+    "./zustand": "./src/zustand.ts"
   },
   "scripts": {
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",

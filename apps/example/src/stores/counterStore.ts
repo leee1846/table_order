@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from '@repo/feature/zustand';
 
 interface ICounterStore {
   count: number;

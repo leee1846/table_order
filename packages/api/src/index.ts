@@ -9,6 +9,9 @@
 export { apiClient, createApiClient } from './cores/axios';
 export { endpoints } from './cores/endpoints';
 
+// React Query re-exports (전체 모듈)
+export * from '@tanstack/react-query';
+
 // Type exports
 export type { IUser, ICreateUserRequest, IGetUsersParams } from './types/users';
 
