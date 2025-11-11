@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Outlet, useLocation, useMatch } from 'react-router-dom';
-import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import * as S from '@/components/settings/SidebarLayout/sidebarLayout.style';
 import { ROUTES } from '@/constants/routes';
 import { ChevronForwardIcon } from '@repo/ui/icons';
