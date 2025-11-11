@@ -23,7 +23,7 @@ export const ThumbnailContainer = styled.div`
   background-color: ${theme.colors.grey[100]};
 `;
 
-export const ImageContainer = styled.div`
+export const ImagesContainer = styled.div`
   position: absolute;
   top: 0;
   left: 20px;
@@ -49,6 +49,12 @@ export const ChiliContainer = styled.div`
   }
 `;
 
+export const InfoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
 export const TitleContainer = styled.div`
   display: flex;
   align-items: center;
@@ -62,5 +68,37 @@ export const TitleContainer = styled.div`
   & > div {
     display: flex;
     gap: 9px;
+  }
+`;
+
+export const Price = styled.p`
+  ${TYPOGRAPHY.MT_3}
+  color: ${theme.colors.grey[800]};
+`;
+
+export const Description = styled.p`
+  ${TYPOGRAPHY.ST_2}
+  color: ${theme.colors.grey[500]};
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const ToggleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    & > span {
+      ${TYPOGRAPHY.MT_7}
+      color: ${theme.colors.grey[500]};
+    }
   }
 `;

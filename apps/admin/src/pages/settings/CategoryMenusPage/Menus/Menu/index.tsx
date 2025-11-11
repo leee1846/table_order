@@ -7,6 +7,7 @@ import {
   chiliOnIcon,
   newOnIcon,
 } from '@repo/ui/icons';
+import { formatCurrency } from '@repo/util';
 
 interface Props {
   menu: (typeof menus)[number];
@@ -19,10 +20,10 @@ export const Menu = ({ menu }: Props) => {
         <S.ThumbnailContainer>
           {menu.image && <img src={menu.image} alt={menu.name} />}
         </S.ThumbnailContainer>
-        <S.ImageContainer>
+        <S.ImagesContainer>
           {menu.isBest && <img src={bestOnIcon} alt="베스트" />}
           {menu.isNew && <img src={newOnIcon} alt="신규" />}
-        </S.ImageContainer>
+        </S.ImagesContainer>
         {menu.spicyLevel > 0 && (
           <S.ChiliContainer>
             <img src={chiliOnIcon} alt="맵기" />
@@ -38,30 +39,32 @@ export const Menu = ({ menu }: Props) => {
         )}
       </S.LeftContainer>
 
-      <div>
-        <S.TitleContainer>
-          <span>{menu.name}</span>
-          <div>
-            <BasicButton variant="Outline_Grey_L">이동/복사</BasicButton>
-            <BasicButton variant="Outline_Grey_L">삭제</BasicButton>
-            <BasicButton variant="Solid_Sky_Blue_L">수정</BasicButton>
-          </div>
-        </S.TitleContainer>
-
-        <span>{menu.price}</span>
-        <span>{menu.description}</span>
-
+      <S.InfoContainer>
         <div>
+          <S.TitleContainer>
+            <span>{menu.name}</span>
+            <div>
+              <BasicButton variant="Outline_Grey_L">이동/복사</BasicButton>
+              <BasicButton variant="Outline_Grey_L">삭제</BasicButton>
+              <BasicButton variant="Solid_Sky_Blue_L">수정</BasicButton>
+            </div>
+          </S.TitleContainer>
+
+          <S.Price>₩{formatCurrency(menu.price)}</S.Price>
+          <S.Description>{menu.description}</S.Description>
+        </div>
+
+        <S.ToggleContainer>
           <div>
             <span>숨김</span>
-            <ToggleButton size="S" isOn={menu.isHidden} onChange={() => {}} />
+            <ToggleButton size="M" isOn={menu.isHidden} onChange={() => {}} />
           </div>
           <div>
             <span>품절</span>
-            <ToggleButton size="S" isOn={menu.isSoldOut} onChange={() => {}} />
+            <ToggleButton size="M" isOn={menu.isSoldOut} onChange={() => {}} />
           </div>
-        </div>
-      </div>
+        </S.ToggleContainer>
+      </S.InfoContainer>
     </S.Container>
   );
 };

@@ -19,6 +19,10 @@ const checkButtonCss = css`
     height: 1.625rem;
   }
 `;
+const dayCss = css`
+  width: 100%;
+  height: 60px;
+`;
 
 interface Props {
   onClose: () => void;
@@ -32,14 +36,6 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
 
   const [isTimeRangeModalOpen, setIsTimeRangeModalOpen] = useState(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
-
-  const dayCss = (day: string) => css`
-    width: 100%;
-    height: 60px;
-    border-color: ${selectedDays.includes(day)
-      ? theme.colors.primary[400]
-      : theme.colors.grey[400]};
-  `;
 
   return (
     <>
@@ -86,10 +82,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
               <S.SubTitle>판매 요일</S.SubTitle>
               <S.DayList>
                 <li>
-                  <BasicButton
-                    variant="Outline_Grey_L"
-                    customStyle={dayCss('매일')}
-                  >
+                  <BasicButton variant="Outline_Grey_L" customStyle={dayCss}>
                     매일
                   </BasicButton>
                 </li>
@@ -102,7 +95,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                           : 'Outline_Grey_L'
                       }
                       key={day}
-                      customStyle={dayCss(day)}
+                      customStyle={dayCss}
                       onClick={() => setSelectedDays([...selectedDays, day])}
                     >
                       {day}
