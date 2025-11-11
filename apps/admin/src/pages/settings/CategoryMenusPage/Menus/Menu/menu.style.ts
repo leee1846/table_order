@@ -61,6 +61,11 @@ export const TitleContainer = styled.div`
   justify-content: space-between;
 
   & > span {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: ${theme.colors.grey[700]};
     ${TYPOGRAPHY.MT_1}
   }
