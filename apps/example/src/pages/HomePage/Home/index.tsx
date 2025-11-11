@@ -107,12 +107,12 @@ export const Home = () => {
       <ArrowForwardIcon color="blue" />
       <div style={{ marginTop: '20px' }}>
         <BasicButton
-          variant="Solid_Navy_M"
+          variant="Solid_Sky_Blue_M"
           onClick={() => navigate(ROUTES.ABOUT.path)}
           icon={<MenuIcon color="red" />}
           iconPosition="right"
         >
-          Solid_Navy_M
+          Solid_Sky_Blue_M
         </BasicButton>
         <Input
           placeholder="Input"

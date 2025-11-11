@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')!).render(
     <QueryProvider>
       <ThemeProvider>
         <RouterProvider router={router} />
-        <ToastMessage />
+        <ToastMessage visibleToasts={1} />
       </ThemeProvider>
     </QueryProvider>
   </StrictMode>
