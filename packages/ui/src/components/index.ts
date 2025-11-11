@@ -9,4 +9,6 @@ export { ModalBackground } from './ModalBackground';
 export { ConfirmDialog } from './Dialog/ConfirmDialog';
 export { DualActionDialog } from './Dialog/DualActionDialog';
 export { LongContentDialog } from './Dialog/LongContentDialog';
+export { Dropdown } from './Dropdown';
+
 export type { DialogSize } from './Dialog/dialog';

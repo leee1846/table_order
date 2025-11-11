@@ -17,11 +17,17 @@ export const CloseButton = styled.button`
   height: 32px;
 `;
 
+export const DropdownContainer = styled.div`
+  position: absolute;
+  top: 82px;
+  right: 24px;
+`;
+
 export const Title = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin: 20px 0 40px 0;
   color: ${({ theme }) => theme.colors.grey[800]};
   ${TYPOGRAPHY.MT_1}
 `;

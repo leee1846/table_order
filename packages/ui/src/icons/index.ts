@@ -8,3 +8,4 @@ export { default as AddIcon } from './AddIcon';
 export { default as ChevronForwardIcon } from './ChevronForwardIcon';
 export { default as DeleteIcon } from './DeleteIcon';
 export { default as CloseIcon } from './CloseIcon';
+export { default as KeyboardArrowDownIcon } from './KeyboardArrowDownIcon';
