@@ -29,9 +29,9 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
-      '@repo/shared-feature':
+      '@repo/feature':
         specifier: workspace:*
-        version: link:../../packages/shared-feature
+        version: link:../../packages/feature
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -105,9 +105,9 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
-      '@repo/shared-feature':
+      '@repo/feature':
         specifier: workspace:*
-        version: link:../../packages/shared-feature
+        version: link:../../packages/feature
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -181,9 +181,9 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
-      '@repo/shared-feature':
+      '@repo/feature':
         specifier: workspace:*
-        version: link:../../packages/shared-feature
+        version: link:../../packages/feature
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -325,13 +325,7 @@ importers:
         specifier: ^8.40.0
         version: 8.40.0(eslint@9.34.0)(typescript@5.9.2)
 
-  packages/prettier-config:
-    devDependencies:
-      prettier:
-        specifier: ^3.6.2
-        version: 3.6.2
-
-  packages/shared-feature:
+  packages/feature:
     dependencies:
       '@emotion/react':
         specifier: ^11.14.0
@@ -342,6 +336,9 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../api
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../ui
       '@repo/util':
         specifier: workspace:*
         version: link:../util
@@ -383,6 +380,12 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
+  packages/prettier-config:
+    devDependencies:
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+
   packages/typescript-config: {}
 
   packages/ui:
@@ -393,9 +396,6 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.1.0)(react@19.1.0))(@types/react@19.1.0)(react@19.1.0)
-      '@repo/shared-feature':
-        specifier: workspace:*
-        version: link:../shared-feature
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*

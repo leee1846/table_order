@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { GlobalDialogContainer } from '@repo/shared-feature/components';
-
+import { GlobalDialogContainer } from '@repo/feature/components';
 
 const App = () => {
   return (

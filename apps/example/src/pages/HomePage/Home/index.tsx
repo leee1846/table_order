@@ -11,7 +11,7 @@ import {
   openConfirmModal,
   openDualActionModal,
   openLongContentModal,
-} from '@repo/shared-feature/utils';
+} from '@repo/feature/utils';
 
 export const Home = () => {
   const navigate = useNavigate();

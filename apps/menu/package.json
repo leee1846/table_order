@@ -18,7 +18,7 @@
     "@emotion/styled": "^11.14.1",
     "@repo/api": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@repo/shared-feature": "workspace:*",
+    "@repo/feature": "workspace:*",
     "@repo/util": "workspace:*",
     "@tanstack/react-query": "^5.62.8",
     "axios": "^1.7.9",
