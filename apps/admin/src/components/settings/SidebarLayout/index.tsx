@@ -5,6 +5,7 @@ import * as S from '@/components/settings/SidebarLayout/sidebarLayout.style';
 import { ROUTES } from '@/constants/routes';
 import { ChevronForwardIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import { toast } from '@repo/ui/components';
 
 export const SidebarLayout = () => {
   const categories = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -17,10 +18,14 @@ export const SidebarLayout = () => {
     return location.pathname === path;
   };
 
+  const handleShowSuccessToast = () => {
+    toast('성공 메시지');
+  };
+
   return (
     <S.Layout>
       <S.Section>
-        <S.Logo>LOGO HERE</S.Logo>
+        <S.Logo onClick={handleShowSuccessToast}>LOGO HERE</S.Logo>
 
         <S.List>
           <li>
