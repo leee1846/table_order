@@ -34,4 +34,3 @@ export const TableGridContainer = ({ tables, onTableClick }: Props) => {
     </S.GridContainer>
   );
 };
-

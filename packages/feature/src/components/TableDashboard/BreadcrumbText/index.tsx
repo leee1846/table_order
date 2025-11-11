@@ -9,4 +9,3 @@ interface Props {
 export const BreadcrumbText = ({ text }: Props) => {
   return <S.BreadcrumbContainer>{text}</S.BreadcrumbContainer>;
 };
-

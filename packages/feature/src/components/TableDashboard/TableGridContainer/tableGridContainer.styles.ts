@@ -12,4 +12,3 @@ export const GridContainer = styled.div`
   min-height: 100%;
   overflow-y: auto;
 `;
-

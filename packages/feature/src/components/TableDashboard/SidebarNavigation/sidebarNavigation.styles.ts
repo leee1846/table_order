@@ -35,4 +35,3 @@ export const ActionButtonsContainer = styled.div`
   padding-top: 16px;
   border-top: 1px solid ${colors.grey[800]};
 `;
-

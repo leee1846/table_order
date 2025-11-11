@@ -47,15 +47,14 @@ export const SidebarLayout = () => {
           {!!categoryMenuMatch &&
             categories.map((category) => (
               <li key={category}>
-                <S.LinkItem
+                <S.DetailLinkItem
                   to={ROUTES.SETTINGS.CATEGORY_MENUS.generate(category)}
                   isSelected={isSelected(
                     ROUTES.SETTINGS.CATEGORY_MENUS.generate(category)
                   )}
                 >
                   <span>카테고리{category} 메뉴</span>
-                  <ChevronForwardIcon color={theme.colors.grey[500]} />
-                </S.LinkItem>
+                </S.DetailLinkItem>
               </li>
             ))}
         </S.List>

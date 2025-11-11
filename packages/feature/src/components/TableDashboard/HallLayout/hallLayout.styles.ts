@@ -21,4 +21,3 @@ export const TableArea = styled.div`
   flex: 1;
   overflow: hidden;
 `;
-

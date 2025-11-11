@@ -3,6 +3,7 @@ import {
   Input,
   BasicButton,
   CheckButton,
+  Dropdown,
 } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoriesPage/CategoryManageModal/categoryManageModal.style';
 import { theme } from '@repo/ui';
@@ -47,6 +48,25 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
           <S.CloseButton type="button" onClick={onClose}>
             <CloseIcon width={32} height={32} color={theme.colors.grey[600]} />
           </S.CloseButton>
+
+          {/* 수정일때만 언어 선택 드롭다운 노출 */}
+          {isEdit && (
+            <S.DropdownContainer>
+              <Dropdown
+                options={[
+                  { value: 'ko', label: '한국어' },
+                  { value: 'ja', label: '일본어' },
+                  { value: 'zh', label: '중국어' },
+                  { value: 'en', label: '영어' },
+                ]}
+                value="ko"
+                onChange={() => {
+                  // noop
+                }}
+                listPosition="right"
+              />
+            </S.DropdownContainer>
+          )}
 
           <S.Title>
             <p>카테고리 {isEdit ? '수정' : '추가'}</p>
