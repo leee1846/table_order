@@ -127,18 +127,20 @@ export const SidebarLayout = () => {
                   )}
                 </S.CategoryButton>
 
-                {hasSubMenus &&
-                  isOpened &&
-                  menu.subMenus!.map((sub) => (
-                    <li key={sub.id}>
-                      <S.DetailButton
-                        onClick={() => handleSubMenuClick(sub.path)}
-                        isSelected={isPathActive(sub.path)}
-                      >
-                        <span>{sub.label}</span>
-                      </S.DetailButton>
-                    </li>
-                  ))}
+                <ul>
+                  {hasSubMenus &&
+                    isOpened &&
+                    menu.subMenus!.map((sub) => (
+                      <li key={sub.id}>
+                        <S.DetailButton
+                          onClick={() => handleSubMenuClick(sub.path)}
+                          isSelected={isPathActive(sub.path)}
+                        >
+                          <span>{sub.label}</span>
+                        </S.DetailButton>
+                      </li>
+                    ))}
+                </ul>
               </li>
             );
           })}
