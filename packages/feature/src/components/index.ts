@@ -1,4 +1,3 @@
-export { default as Test } from './Test';
 export { GlobalDialogContainer } from './GlobalDialog/GlobalDialogContainer';
 export { TableGridContainer } from './TableDashboard/TableGridContainer';
 export type { TableData } from './TableDashboard/TableGridContainer';
