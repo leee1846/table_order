@@ -105,7 +105,7 @@ const variantStyles: Record<VariantType, VariantStyleFn> = {
   Solid_Sky_Blue: (size, disabled) => css`
     ${sizeStyles[size]}
     ${getSolidColor(
-      colors.primary[200],
+      colors.primary[100],
       colors.primary[600],
       colors.primary[200],
       disabled
