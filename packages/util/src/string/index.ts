@@ -18,3 +18,22 @@
 export const isEmpty = (str: string | null | undefined): boolean => {
   return !str || str.trim().length === 0;
 };
+
+/**
+ * 숫자를 원화 포맷으로 포맷팅합니다.
+ *
+ * @param num - 포맷팅할 숫자
+ * @returns 원화 포맷이 적용된 문자열
+ *
+ * @example
+ * ```ts
+ * formatCurrency(1000) // "1,000"
+ * formatCurrency(1000000) // "1,000,000"
+ * formatCurrency(1234567) // "1,234,567"
+ * formatCurrency(123) // "123"
+ * formatCurrency(0) // "0"
+ * ```
+ */
+export const formatCurrency = (num: number): string => {
+  return num.toLocaleString('ko-KR');
+};

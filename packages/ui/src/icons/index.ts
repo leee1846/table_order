@@ -9,3 +9,8 @@ export { default as ChevronForwardIcon } from './ChevronForwardIcon';
 export { default as DeleteIcon } from './DeleteIcon';
 export { default as CloseIcon } from './CloseIcon';
 export { default as KeyboardArrowDownIcon } from './KeyboardArrowDownIcon';
+
+export { default as bestOnIcon } from './best_on.svg';
+export { default as newOnIcon } from './new_on.svg';
+export { default as chiliOnIcon } from './chili_on.svg';
+export { default as chiliOffIcon } from './chili_off.svg';

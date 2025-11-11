@@ -51,6 +51,12 @@ export const LinkItem = styled(Link, {
     color: ${({ theme, isSelected }) =>
       isSelected ? theme.colors.white : theme.colors.grey[500]};
   }
+
+  & > svg {
+    transform-origin: center;
+    transform: ${({ isSelected }) =>
+      isSelected ? 'rotate(90deg)' : 'rotate(0deg)'};
+  }
 `;
 
 export const DetailLinkItem = styled(Link, {
