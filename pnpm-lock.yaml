@@ -38,12 +38,6 @@ importers:
       '@repo/util':
         specifier: workspace:*
         version: link:../../packages/util
-      '@tanstack/react-query':
-        specifier: ^5.62.8
-        version: 5.90.5(react@19.2.0)
-      axios:
-        specifier: ^1.7.9
-        version: 1.12.2
       react:
         specifier: ^19.1.1
         version: 19.2.0
@@ -53,9 +47,6 @@ importers:
       react-router-dom:
         specifier: ^7.9.4
         version: 7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      zustand:
-        specifier: ^5.0.8
-        version: 5.0.8(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -114,12 +105,6 @@ importers:
       '@repo/util':
         specifier: workspace:*
         version: link:../../packages/util
-      '@tanstack/react-query':
-        specifier: ^5.62.8
-        version: 5.90.5(react@19.2.0)
-      axios:
-        specifier: ^1.7.9
-        version: 1.12.2
       react:
         specifier: ^19.1.1
         version: 19.2.0
@@ -129,9 +114,6 @@ importers:
       react-router-dom:
         specifier: ^7.9.4
         version: 7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      zustand:
-        specifier: ^5.0.8
-        version: 5.0.8(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -190,12 +172,6 @@ importers:
       '@repo/util':
         specifier: workspace:*
         version: link:../../packages/util
-      '@tanstack/react-query':
-        specifier: ^5.62.8
-        version: 5.90.5(react@19.2.0)
-      axios:
-        specifier: ^1.7.9
-        version: 1.12.2
       react:
         specifier: ^19.1.1
         version: 19.2.0
@@ -205,9 +181,6 @@ importers:
       react-router-dom:
         specifier: ^7.9.4
         version: 7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      zustand:
-        specifier: ^5.0.8
-        version: 5.0.8(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -4360,9 +4333,4 @@ snapshots:
   zustand@5.0.8(@types/react@19.1.0)(react@19.2.0):
     optionalDependencies:
       '@types/react': 19.1.0
-      react: 19.2.0
-
-  zustand@5.0.8(@types/react@19.2.2)(react@19.2.0):
-    optionalDependencies:
-      '@types/react': 19.2.2
       react: 19.2.0
