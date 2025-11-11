@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
-import { Link } from 'react-router-dom';
 
 export const Layout = styled.div`
   display: flex;
@@ -13,7 +12,9 @@ export const Section = styled.section`
   flex-direction: column;
   gap: 30px;
   background-color: ${({ theme }) => theme.colors.grey[800]};
-  width: 210px;
+  width: 100%;
+  min-width: 13.125rem;
+  max-width: 13.125rem;
   height: 100%;
   min-height: 0;
   overflow-y: auto;
@@ -28,21 +29,25 @@ export const List = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 12px;
+  padding-left: 16px;
 `;
 
-interface LinkItemProps {
+interface ICategoryButton {
   isSelected: boolean;
+  isOpen?: boolean;
 }
-export const LinkItem = styled(Link, {
-  shouldForwardProp: (prop) => prop !== 'isSelected',
-})<LinkItemProps>`
+export const CategoryButton = styled.button<ICategoryButton>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
 
   span {
+    text-align: left;
     flex: 1;
     overflow: hidden;
     white-space: nowrap;
@@ -54,19 +59,20 @@ export const LinkItem = styled(Link, {
 
   & > svg {
     transform-origin: center;
-    transform: ${({ isSelected }) =>
-      isSelected ? 'rotate(90deg)' : 'rotate(0deg)'};
+    transform: ${({ isOpen }) => (isOpen ? 'rotate(90deg)' : 'rotate(0deg)')};
+    transition: transform 0.2s ease;
   }
 `;
 
-export const DetailLinkItem = styled(Link, {
-  shouldForwardProp: (prop) => prop !== 'isSelected',
-})<LinkItemProps>`
+interface IDetailButton {
+  isSelected: boolean;
+}
+export const DetailButton = styled.button<IDetailButton>`
   display: flex;
   align-items: center;
-  padding: 10px;
-  background-color: ${({ isSelected }) =>
-    isSelected ? 'rgba(255, 255, 255, 0.60)' : 'transparent'};
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px 10px 10px;
   border-radius: 0.5rem;
 
   span {
@@ -76,7 +82,7 @@ export const DetailLinkItem = styled(Link, {
     text-overflow: ellipsis;
     ${TYPOGRAPHY.ST_4}
     color: ${({ theme, isSelected }) =>
-      isSelected ? theme.colors.primary[600] : theme.colors.grey[400]};
+      isSelected ? theme.colors.primary[400] : theme.colors.grey[400]};
   }
 `;
 
