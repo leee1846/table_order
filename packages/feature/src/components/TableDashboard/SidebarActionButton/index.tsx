@@ -14,4 +14,3 @@ export const SidebarActionButton = ({ label, onClick }: Props) => {
     </S.ActionButtonContainer>
   );
 };
-

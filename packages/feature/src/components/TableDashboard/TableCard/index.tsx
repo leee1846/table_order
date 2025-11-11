@@ -28,4 +28,3 @@ export const TableCard = ({
     </S.CardContainer>
   );
 };
-
