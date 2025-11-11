@@ -53,6 +53,27 @@ export const LinkItem = styled(Link, {
   }
 `;
 
+export const DetailLinkItem = styled(Link, {
+  shouldForwardProp: (prop) => prop !== 'isSelected',
+})<LinkItemProps>`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: ${({ isSelected }) =>
+    isSelected ? 'rgba(255, 255, 255, 0.60)' : 'transparent'};
+  border-radius: 0.5rem;
+
+  span {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    ${TYPOGRAPHY.ST_4}
+    color: ${({ theme, isSelected }) =>
+      isSelected ? theme.colors.primary[600] : theme.colors.grey[400]};
+  }
+`;
+
 export const Content = styled.main`
   display: flex;
   flex-direction: column;
