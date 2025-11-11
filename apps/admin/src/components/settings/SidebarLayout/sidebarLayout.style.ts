@@ -31,18 +31,22 @@ export const List = styled.ul`
   padding: 12px;
 `;
 
-interface LinkItemProps {
+interface ICategoryButton {
   isSelected: boolean;
+  isOpen?: boolean;
 }
-export const LinkItem = styled(Link, {
-  shouldForwardProp: (prop) => prop !== 'isSelected',
-})<LinkItemProps>`
+export const CategoryButton = styled.button<ICategoryButton>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
 
   span {
+    text-align: left;
     flex: 1;
     overflow: hidden;
     white-space: nowrap;
@@ -54,16 +58,19 @@ export const LinkItem = styled(Link, {
 
   & > svg {
     transform-origin: center;
-    transform: ${({ isSelected }) =>
-      isSelected ? 'rotate(90deg)' : 'rotate(0deg)'};
+    transform: ${({ isOpen }) => (isOpen ? 'rotate(90deg)' : 'rotate(0deg)')};
+    transition: transform 0.2s ease;
   }
 `;
 
-export const DetailLinkItem = styled(Link, {
-  shouldForwardProp: (prop) => prop !== 'isSelected',
-})<LinkItemProps>`
+interface IDetailButton {
+  isSelected: boolean;
+}
+export const DetailButton = styled.button<IDetailButton>`
   display: flex;
   align-items: center;
+  width: 100%;
+  text-align: left;
   padding: 10px;
   background-color: ${({ isSelected }) =>
     isSelected ? 'rgba(255, 255, 255, 0.60)' : 'transparent'};
