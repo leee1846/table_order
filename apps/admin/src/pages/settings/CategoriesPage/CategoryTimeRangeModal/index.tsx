@@ -2,11 +2,17 @@ import { BasicButton, ModalBackground } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal/categoryTimeRangeModal.style';
+import { useId } from 'react';
 
 interface Props {
   onClose: () => void;
 }
 export const CategoryTimeRangeModal = ({ onClose }: Props) => {
+  const SALE_START_HOUR_ID = `sale-start-hour-${useId()}`;
+  const SALE_START_MINUTE_ID = `sale-start-minute-${useId()}`;
+  const SALE_END_HOUR_ID = `sale-end-hour-${useId()}`;
+  const SALE_END_MINUTE_ID = `sale-end-minute-${useId()}`;
+
   return (
     <ModalBackground onClick={onClose}>
       <S.Container>
@@ -21,7 +27,7 @@ export const CategoryTimeRangeModal = ({ onClose }: Props) => {
             <p>판매 시작 시간</p>
             <div>
               <input
-                id="sale-start-hour"
+                id={SALE_START_HOUR_ID}
                 onChange={() => {
                   // noop
                 }}
@@ -30,7 +36,7 @@ export const CategoryTimeRangeModal = ({ onClose }: Props) => {
               />
               <span>시</span>
               <input
-                id="sale-start-minute"
+                id={SALE_START_MINUTE_ID}
                 onChange={() => {
                   // noop
                 }}
@@ -44,7 +50,7 @@ export const CategoryTimeRangeModal = ({ onClose }: Props) => {
             <p>판매 종료 시간</p>
             <div>
               <input
-                id="sale-end-hour"
+                id={SALE_END_HOUR_ID}
                 onChange={() => {
                   // noop
                 }}
@@ -53,7 +59,7 @@ export const CategoryTimeRangeModal = ({ onClose }: Props) => {
               />
               <span>시</span>
               <input
-                id="sale-end-minute"
+                id={SALE_END_MINUTE_ID}
                 onChange={() => {
                   // noop
                 }}

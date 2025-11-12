@@ -8,7 +8,7 @@ import {
 import * as S from '@/pages/settings/CategoriesPage/CategoryManageModal/categoryManageModal.style';
 import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { css } from '@emotion/react';
 import { CategoryTimeRangeModal } from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal';
 
@@ -32,6 +32,11 @@ interface Props {
   categoryData?: unknown;
 }
 export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
+  const COUNT_SELECTION_ID = `count-selection-${useId()}`;
+  const STAFF_CALL_ID = `staff-call-${useId()}`;
+  const TWO_COLUMN_LAYOUT_ID = `two-column-layout-${useId()}`;
+  const TIME_RANGE_SETTING_ID = `time-range-setting-${useId()}`;
+
   const isEdit = !!categoryData;
 
   const [isTimeRangeModalOpen, setIsTimeRangeModalOpen] = useState(false);
@@ -109,7 +114,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
               <S.SubTitle>추가 설정</S.SubTitle>
               <S.CheckButtonList>
                 <CheckButton
-                  id="count-selection"
+                  id={COUNT_SELECTION_ID}
                   checked={false}
                   onChange={() => {
                     // noop
@@ -119,7 +124,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                   <p>수량선택 사용</p>
                 </CheckButton>
                 <CheckButton
-                  id="staff-call"
+                  id={STAFF_CALL_ID}
                   checked={false}
                   onChange={() => {
                     // noop
@@ -129,7 +134,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                   <p>직원호출 사용</p>
                 </CheckButton>
                 <CheckButton
-                  id="two-column-layout"
+                  id={TWO_COLUMN_LAYOUT_ID}
                   checked={false}
                   onChange={() => {
                     // noop
@@ -139,7 +144,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                   <p>2열 배치(가로 기본형)</p>
                 </CheckButton>
                 <CheckButton
-                  id="time-range-setting"
+                  id={TIME_RANGE_SETTING_ID}
                   checked={isTimeRangeModalOpen}
                   onChange={(checked) => setIsTimeRangeModalOpen(checked)}
                   customStyle={checkButtonCss}
