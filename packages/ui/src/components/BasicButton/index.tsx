@@ -6,7 +6,7 @@ import type { VariantKey } from './basicButton.styles';
 import { SerializedStyles } from '@emotion/react';
 
 interface Props {
-  children: ReactNode;
+  children?: ReactNode;
   variant?: VariantKey;
   disabled?: boolean;
   onClick?: () => void;
@@ -68,7 +68,7 @@ export const BasicButton = ({
       css={customStyle}
     >
       {iconPosition === 'left' && renderIcon()}
-      {children}
+      {children && children}
       {iconPosition === 'right' && renderIcon()}
     </S.ButtonStyle>
   );
