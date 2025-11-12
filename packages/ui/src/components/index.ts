@@ -14,3 +14,12 @@ export { Dropdown } from './Dropdown';
 export type { DialogSize } from './Dialog/dialog';
 export { ToastMessage } from './ToastMessage';
 export { toast } from 'sonner';
+export {
+  SidebarContainer,
+  Logo,
+  MenuList,
+  MenuItem,
+  ActionButtons,
+  ActionButton,
+  MenuDivider,
+} from './Sidebar/sidebar.styles';

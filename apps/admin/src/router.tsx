@@ -17,8 +17,18 @@ const CategoryMenusPage = lazy(() =>
     default: module.CategoryMenusPage,
   }))
 );
+const OrdersPage = lazy(() =>
+  import('@/pages/OrdersPage').then((module) => ({
+    default: module.OrdersPage,
+  }))
+);
 
 export const router = createBrowserRouter([
+  {
+    // 루트 경로 → /orders로 리디렉트
+    path: '/',
+    element: <Navigate to={ROUTES.ORDERS.path} replace />,
+  },
   {
     path: ROUTES.SETTINGS.path,
     element: (
@@ -55,5 +65,13 @@ export const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: ROUTES.ORDERS.path,
+    element: (
+      <Suspense>
+        <OrdersPage />
+      </Suspense>
+    ),
   },
 ]);

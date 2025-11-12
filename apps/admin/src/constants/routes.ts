@@ -11,4 +11,7 @@ export const ROUTES = {
       generate: (id: string | number) => `/settings/categories/${id}/menus`,
     },
   },
+  ORDERS: {
+    path: '/orders',
+  },
 } as const;

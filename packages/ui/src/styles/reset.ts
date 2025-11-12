@@ -93,6 +93,10 @@ export const resetStyles = css`
     font-size: 100%;
     font: inherit;
     vertical-align: baseline;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+    user-select: none;
   }
   /* HTML5 display-role reset for older browsers */
   article,
@@ -135,6 +139,10 @@ export const resetStyles = css`
     border: none;
     cursor: pointer;
     padding: 0;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+    user-select: none;
   }
   input:disabled {
     cursor: not-allowed;
