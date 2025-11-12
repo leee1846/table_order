@@ -17,9 +17,17 @@ export const Container = styled.div<IProps>`
   -webkit-overflow-scrolling: touch;
   align-items: ${({ position }) =>
     position === 'center' ? 'center' : 'flex-start'};
+  padding: ${({ position }) => (position === 'center' ? '1rem 0' : '0')};
 
   & > div {
-    margin: ${({ position }) =>
-      position === 'top' ? '4rem auto 1rem' : 'auto'};
+    margin: ${({ position }) => {
+      if (position === 'top') {
+        return '4rem auto 1rem';
+      }
+      if (position === 'center') {
+        return 'auto';
+      }
+      return 'auto';
+    }};
   }
 `;

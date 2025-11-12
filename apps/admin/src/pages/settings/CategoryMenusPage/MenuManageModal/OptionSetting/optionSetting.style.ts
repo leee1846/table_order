@@ -1,5 +1,14 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
+import { css } from '@emotion/react';
+
+export const optionButtonCss = css`
+  width: 42px;
+  height: 42px;
+  & > span {
+    margin-right: 0 !important;
+  }
+`;
 
 export const Container = styled.div`
   margin-bottom: 24px;

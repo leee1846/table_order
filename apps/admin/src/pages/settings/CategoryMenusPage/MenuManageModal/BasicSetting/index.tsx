@@ -13,11 +13,6 @@ import {
   newOffIcon,
 } from '@repo/ui/icons';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
-import { css } from '@emotion/react';
-
-const inputCss = css`
-  height: 3.5rem;
-`;
 
 export const BasicSetting = () => {
   const TAX_FREE_ID = `tax-free-${useId()}`;
@@ -115,7 +110,7 @@ export const BasicSetting = () => {
             </S.Title>
             <Input
               placeholder="메뉴명을 입력해 주세요."
-              customStyle={inputCss}
+              customStyle={S.inputCss}
             />
           </S.VerticalLayout>
 
@@ -144,11 +139,15 @@ export const BasicSetting = () => {
                 onChange={() => {
                   // noop
                 }}
+                customStyle={S.TaxFreeCss}
               >
                 <span>면세</span>
               </CheckButton>
             </S.PriceTitleContainer>
-            <Input placeholder="가격을 입력해 주세요." customStyle={inputCss} />
+            <Input
+              placeholder="가격을 입력해 주세요."
+              customStyle={S.inputCss}
+            />
           </S.VerticalLayout>
 
           <S.VerticalLayout>

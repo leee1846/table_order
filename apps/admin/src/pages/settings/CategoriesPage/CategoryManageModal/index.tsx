@@ -9,20 +9,9 @@ import * as S from '@/pages/settings/CategoriesPage/CategoryManageModal/category
 import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
 import { useId, useState } from 'react';
-import { css } from '@emotion/react';
 import { CategoryTimeRangeModal } from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal';
 
 const days = ['월', '화', '수', '목', '금', '토', '일'];
-const checkButtonCss = css`
-  & > div {
-    width: 1.625rem;
-    height: 1.625rem;
-  }
-`;
-const dayCss = css`
-  width: 100%;
-  height: 60px;
-`;
 
 interface Props {
   onClose: () => void;
@@ -87,7 +76,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
               <S.SubTitle>판매 요일</S.SubTitle>
               <S.DayList>
                 <li>
-                  <BasicButton variant="Outline_Grey_L" customStyle={dayCss}>
+                  <BasicButton variant="Outline_Grey_L" customStyle={S.dayCss}>
                     매일
                   </BasicButton>
                 </li>
@@ -100,7 +89,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                           : 'Outline_Grey_L'
                       }
                       key={day}
-                      customStyle={dayCss}
+                      customStyle={S.dayCss}
                       onClick={() => setSelectedDays([...selectedDays, day])}
                     >
                       {day}
@@ -119,7 +108,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                   onChange={() => {
                     // noop
                   }}
-                  customStyle={checkButtonCss}
+                  customStyle={S.checkButtonCss}
                 >
                   <p>수량선택 사용</p>
                 </CheckButton>
@@ -129,7 +118,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                   onChange={() => {
                     // noop
                   }}
-                  customStyle={checkButtonCss}
+                  customStyle={S.checkButtonCss}
                 >
                   <p>직원호출 사용</p>
                 </CheckButton>
@@ -139,7 +128,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                   onChange={() => {
                     // noop
                   }}
-                  customStyle={checkButtonCss}
+                  customStyle={S.checkButtonCss}
                 >
                   <p>2열 배치(가로 기본형)</p>
                 </CheckButton>
@@ -147,7 +136,7 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                   id={TIME_RANGE_SETTING_ID}
                   checked={isTimeRangeModalOpen}
                   onChange={(checked) => setIsTimeRangeModalOpen(checked)}
-                  customStyle={checkButtonCss}
+                  customStyle={S.checkButtonCss}
                 >
                   <p>판매 시간 설정</p>
                 </CheckButton>

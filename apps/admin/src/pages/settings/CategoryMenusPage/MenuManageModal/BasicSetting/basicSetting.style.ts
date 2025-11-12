@@ -1,5 +1,10 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { theme, TYPOGRAPHY } from '@repo/ui';
+
+export const inputCss = css`
+  height: 3.5rem;
+`;
 
 export const Container = styled.div`
   display: flex;
@@ -174,6 +179,18 @@ export const Title = styled.p`
   & > span {
     color: ${({ theme }) => theme.colors.semantic[500]};
     ${TYPOGRAPHY.MT_6}
+  }
+`;
+
+export const TaxFreeCss = css`
+  & > div {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  & span {
+    ${TYPOGRAPHY.ST_2}
+    color: ${theme.colors.grey[800]};
   }
 `;
 

@@ -7,6 +7,7 @@ import {
 } from '@repo/ui/components';
 import { AddCircleIcon, CloseIcon, DeleteIcon } from '@repo/ui/icons';
 import { useId } from 'react';
+import * as S from '@/pages/settings/CategoryMenusPage/OptionGroupManageModal/optionGroupManageModal.style';
 
 const OPTIONS = [
   {
@@ -43,64 +44,83 @@ export const OptionGroupManageModal = ({ onClose }: Props) => {
 
   return (
     <ModalBackground onClick={onClose}>
-      <div>
-        <button type="button" onClick={onClose}>
+      <S.Container>
+        <S.CloseButton type="button" onClick={onClose}>
           <CloseIcon width={32} height={32} color={theme.colors.grey[700]} />
-        </button>
+        </S.CloseButton>
         <h1>옵션 그룹 추가</h1>
 
-        <div>
-          <div>
+        <S.Contents>
+          <S.TitleContainer>
             <p>
               옵션 그룹명 <span>*</span>
             </p>
-            <Input placeholder="옵션 그룹명을 입력해주세요." />
-          </div>
+            <Input
+              placeholder="옵션 그룹명을 입력해주세요."
+              customStyle={S.inputCss}
+            />
+          </S.TitleContainer>
 
-          <div>
+          <S.TitleContainer>
             <p>
               개별 옵션 <span>*</span>
             </p>
-            {OPTIONS.map((option) => (
-              <div key={option.id}>
-                <CheckButton
-                  id="option1"
-                  checked={false}
-                  onChange={() => {
-                    // noop
-                  }}
-                >
-                  <span>품절</span>
-                </CheckButton>
-                <Input placeholder="옵션 이름을 입력해주세요." />
-                <Input placeholder="옵션 가격을 입력해주세요." />
-                <Input />
-                <BasicButton
-                  variant="Solid_Navy_M"
-                  icon={
-                    <DeleteIcon
-                      width={22}
-                      height={22}
-                      color={theme.colors.grey[700]}
+            {OPTIONS.length > 0 && (
+              <S.OptionList>
+                {OPTIONS.map((option) => (
+                  <li key={option.id}>
+                    <CheckButton
+                      id={`option-sold-out-${option.id}`}
+                      checked={false}
+                      onChange={() => {
+                        // noop
+                      }}
+                      customStyle={S.soldOutCss}
+                    >
+                      <span>품절</span>
+                    </CheckButton>
+                    <Input
+                      placeholder="옵션 이름을 입력해주세요."
+                      customStyle={S.inputCss}
                     />
-                  }
-                />
-              </div>
-            ))}
+                    <Input
+                      placeholder="옵션 가격을 입력해주세요."
+                      customStyle={S.inputCss}
+                    />
+                    <Input
+                      placeholder="포스 코드"
+                      customStyle={S.inputCss}
+                      disabled
+                    />
+                    <BasicButton
+                      variant="Outline_Grey_XL"
+                      icon={
+                        <DeleteIcon
+                          width={22}
+                          height={22}
+                          color={theme.colors.grey[700]}
+                        />
+                      }
+                      customStyle={S.deleteButtonCss}
+                    />
+                  </li>
+                ))}
+              </S.OptionList>
+            )}
 
-            <button type="button">
+            <S.OptionAddButton type="button">
               <AddCircleIcon
                 width={16}
                 height={16}
                 color={theme.colors.grey[600]}
               />
               <span>옵션 추가</span>
-            </button>
-          </div>
+            </S.OptionAddButton>
+          </S.TitleContainer>
 
-          <div>
+          <S.TitleContainer>
             <p>추가 설정</p>
-            <div>
+            <S.AdditionalsContainer>
               <div>
                 필수
                 <input type="number" />개 선택 (미설정 시 무제한 성택 가능)
@@ -109,6 +129,7 @@ export const OptionGroupManageModal = ({ onClose }: Props) => {
                 id={OPTION_COUNT_INPUT_ID}
                 checked={false}
                 onChange={() => {}}
+                customStyle={S.checkButtonCss}
               >
                 <span>옵션 수량 선택</span>
               </CheckButton>
@@ -116,6 +137,7 @@ export const OptionGroupManageModal = ({ onClose }: Props) => {
                 id={ADD_OPTION_INPUT_ID}
                 checked={false}
                 onChange={() => {}}
+                customStyle={S.checkButtonCss}
               >
                 <span>추가 옵션</span>
               </CheckButton>
@@ -123,19 +145,34 @@ export const OptionGroupManageModal = ({ onClose }: Props) => {
                 id={DUPLICATE_CHECK_INPUT_ID}
                 checked={false}
                 onChange={() => {}}
+                customStyle={S.checkButtonCss}
               >
                 <span>중복체크 허용 (선택 옵션)</span>
               </CheckButton>
-            </div>
-          </div>
+            </S.AdditionalsContainer>
+          </S.TitleContainer>
 
-          <div>
+          <S.TitleContainer>
             <p>포스 코드 연동</p>
-            <Input placeholder="옵션 그룹 코드" disabled />
-            <Input placeholder="옵션 분류 코드" disabled />
-          </div>
-        </div>
-      </div>
+            <S.CodeContainer>
+              <Input
+                placeholder="옵션 그룹 코드"
+                disabled
+                customStyle={S.inputCss}
+              />
+              <Input
+                placeholder="옵션 분류 코드"
+                disabled
+                customStyle={S.inputCss}
+              />
+            </S.CodeContainer>
+          </S.TitleContainer>
+        </S.Contents>
+
+        <S.FloatingButtonContainer>
+          <BasicButton variant="Solid_Navy_2XL">저장하기</BasicButton>
+        </S.FloatingButtonContainer>
+      </S.Container>
     </ModalBackground>
   );
 };

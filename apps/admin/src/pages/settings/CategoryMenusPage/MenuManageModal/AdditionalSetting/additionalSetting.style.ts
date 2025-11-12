@@ -1,5 +1,10 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
+
+export const inputCss = css`
+  height: 3.25rem;
+`;
 
 export const Container = styled.div`
   display: flex;

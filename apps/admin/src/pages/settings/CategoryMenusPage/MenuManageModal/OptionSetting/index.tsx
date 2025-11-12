@@ -2,17 +2,9 @@ import { useState } from 'react';
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import { AddIcon, DeleteIcon, EditIcon } from '@repo/ui/icons';
-import { css } from '@emotion/react';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/optionSetting.style';
 import { OptionGroupManageModal } from '../../OptionGroupManageModal';
 
-const optionButtonCss = css`
-  width: 42px;
-  height: 42px;
-  & > span {
-    margin-right: 0 !important;
-  }
-`;
 const OPTIONS = [
   {
     id: 1,
@@ -88,7 +80,7 @@ export const OptionSetting = () => {
                     color={theme.colors.grey[700]}
                   />
                 }
-                customStyle={optionButtonCss}
+                customStyle={S.optionButtonCss}
               />
               <BasicButton
                 variant="Outline_Grey_XL"
@@ -99,7 +91,7 @@ export const OptionSetting = () => {
                     color={theme.colors.grey[700]}
                   />
                 }
-                customStyle={optionButtonCss}
+                customStyle={S.optionButtonCss}
               />
             </S.OptionButtons>
           </S.OptionGroup>

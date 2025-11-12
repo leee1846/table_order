@@ -1,10 +1,23 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
+
+export const checkButtonCss = css`
+  & > div {
+    width: 1.625rem;
+    height: 1.625rem;
+  }
+`;
+export const dayCss = css`
+  width: 100%;
+  height: 60px;
+`;
 
 export const Container = styled.div`
   position: relative;
   background-color: ${({ theme }) => theme.colors.white};
   width: 40rem;
+  max-width: calc(100vw - 2rem);
   padding: 24px;
   border-radius: 1rem;
 `;

@@ -4,6 +4,7 @@ import { TYPOGRAPHY } from '@repo/ui';
 export const Container = styled.div`
   position: relative;
   width: 27.5rem;
+  max-width: calc(100vw - 2rem);
   padding: 44px 24px 24px;
   background-color: ${({ theme }) => theme.colors.white};
   border-radius: 1rem;

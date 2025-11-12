@@ -38,6 +38,7 @@ export const Label = styled.label<Props>`
   position: relative;
   display: flex;
   align-items: center;
+  gap: 7px;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   width: fit-content;
 
@@ -49,5 +50,9 @@ export const Label = styled.label<Props>`
     height: 1.125rem;
     border-radius: ${({ variant }) => (variant === 'round' ? '50%' : '6px')};
     ${({ checked, disabled }) => getCheckButtonStyles(checked, disabled)}
+  }
+
+  & > input {
+    display: none;
   }
 `;
