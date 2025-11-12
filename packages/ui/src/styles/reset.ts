@@ -170,4 +170,8 @@ export const resetStyles = css`
     text-decoration: none;
     color: inherit;
   }
+
+  textarea {
+    outline: none;
+  }
 `;

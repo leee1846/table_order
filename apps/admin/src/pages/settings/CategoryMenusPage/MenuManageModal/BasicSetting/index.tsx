@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { theme } from '@repo/ui';
 import { CheckButton, Input } from '@repo/ui/components';
 import {
@@ -9,12 +9,30 @@ import {
   CloseIcon,
   newOnIcon,
   PhotoIcon,
+  bestOffIcon,
+  newOffIcon,
 } from '@repo/ui/icons';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
 
 export const BasicSetting = () => {
   const TAX_FREE_ID = `tax-free-${useId()}`;
-  const CHILI_LEVEL = 1;
+
+  const [isBest, setIsBest] = useState(false);
+  const [isNew, setIsNew] = useState(false);
+  const [chiliLevel, setChiliLevel] = useState(0);
+
+  const onClickChiliLevel = (level: number) => {
+    setChiliLevel((prev) => {
+      if (prev === 0) {
+        return level;
+      }
+      if (prev === level) {
+        return prev - 1;
+      }
+      return level;
+    });
+  };
+
   const IMAGES: { id: number; url: string }[] = [
     {
       id: 1,
@@ -62,70 +80,83 @@ export const BasicSetting = () => {
         )}
       </S.ImageSection>
 
-      <div>
-        <div>
-          <div>
-            <p>
+      <S.ContentsSection>
+        <S.HorizontalLayout>
+          <S.VerticalLayout>
+            <S.Title>
               메뉴명 <span>*</span>
-            </p>
+            </S.Title>
             <Input placeholder="메뉴명을 입력해 주세요." />
-          </div>
-          <div>
-            <p>뱃지 선택</p>
-            <div>
-              <button type="button">
-                <img src={bestOnIcon} alt="베스트" />
-              </button>
-              <button type="button">
-                <img src={newOnIcon} alt="신규" />
-              </button>
-            </div>
-          </div>
-        </div>
+          </S.VerticalLayout>
 
-        <div>
-          <div>
-            <div>
-              <p>
+          <S.VerticalLayout>
+            <S.Title>뱃지 선택</S.Title>
+            <S.BadgeContainer gap={10}>
+              <S.BadgeButton type="button" onClick={() => setIsBest(!isBest)}>
+                <img src={isBest ? bestOnIcon : bestOffIcon} alt="베스트" />
+              </S.BadgeButton>
+              <S.BadgeButton type="button" onClick={() => setIsNew(!isNew)}>
+                <img src={isNew ? newOnIcon : newOffIcon} alt="신규" />
+              </S.BadgeButton>
+            </S.BadgeContainer>
+          </S.VerticalLayout>
+        </S.HorizontalLayout>
+
+        <S.HorizontalLayout>
+          <S.VerticalLayout>
+            <S.PriceTitleContainer>
+              <S.Title>
                 가격 <span>*</span>
-              </p>
+              </S.Title>
               <CheckButton id={TAX_FREE_ID} checked={false} onChange={() => {}}>
                 <span>면세</span>
               </CheckButton>
-            </div>
+            </S.PriceTitleContainer>
             <Input placeholder="가격을 입력해 주세요." />
-          </div>
+          </S.VerticalLayout>
 
-          <div>
-            <p>매운맛정도</p>
-            <div>
-              <button type="button">
+          <S.VerticalLayout>
+            <S.Title>매운맛정도</S.Title>
+            <S.BadgeContainer>
+              <S.ChiliLevelButton
+                type="button"
+                onClick={() => onClickChiliLevel(1)}
+              >
                 <img
-                  src={CHILI_LEVEL > 0 ? chiliOnIcon : chiliOffIcon}
+                  src={chiliLevel > 0 ? chiliOnIcon : chiliOffIcon}
                   alt="매운맛 1단계"
                 />
-              </button>
-              <button type="button">
+              </S.ChiliLevelButton>
+              <S.ChiliLevelButton
+                type="button"
+                onClick={() => onClickChiliLevel(2)}
+              >
                 <img
-                  src={CHILI_LEVEL > 1 ? chiliOnIcon : chiliOffIcon}
+                  src={chiliLevel > 1 ? chiliOnIcon : chiliOffIcon}
                   alt="매운맛 2단계"
                 />
-              </button>
-              <button type="button">
+              </S.ChiliLevelButton>
+              <S.ChiliLevelButton
+                type="button"
+                onClick={() => onClickChiliLevel(3)}
+              >
                 <img
-                  src={CHILI_LEVEL > 2 ? chiliOnIcon : chiliOffIcon}
+                  src={chiliLevel > 2 ? chiliOnIcon : chiliOffIcon}
                   alt="매운맛 3단계"
                 />
-              </button>
-            </div>
-          </div>
+              </S.ChiliLevelButton>
+            </S.BadgeContainer>
+          </S.VerticalLayout>
+        </S.HorizontalLayout>
 
-          <div>
-            <p>메뉴 설명</p>
-            <textarea placeholder="메뉴 설명을 입력해 주세요." />
-          </div>
-        </div>
-      </div>
+        <S.VerticalLayout flex>
+          <S.Title>메뉴 설명</S.Title>
+          <S.Textarea
+            id={`menu-description-${useId()}`}
+            placeholder="메뉴 설명을 입력해 주세요."
+          />
+        </S.VerticalLayout>
+      </S.ContentsSection>
     </S.Container>
   );
 };
