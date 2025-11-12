@@ -1,24 +1,32 @@
 import { Input } from '@repo/ui/components';
+import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/AdditionalSetting/additionalSetting.style';
+import { css } from '@emotion/react';
+
+const inputCss = css`
+  height: 3.25rem;
+`;
 
 export const AdditionalSetting = () => {
   return (
-    <div>
-      <div>
+    <S.Container>
+      <S.SetionContainer>
         <p>포스연동 메뉴코드</p>
-        <Input />
-      </div>
-      <div>
+        <Input disabled={true} customStyle={inputCss} />
+      </S.SetionContainer>
+      <S.SetionContainer>
         <p>최소 주문 수량</p>
-        <Input />
-      </div>
-      <div>
+        <Input customStyle={inputCss} />
+      </S.SetionContainer>
+      <S.SetionContainer>
         <p>터치키 색상</p>
-        <span />
-        <span />
-        <span />
-        <span />
-        <span />
-      </div>
-    </div>
+        <S.ColorChips>
+          <S.ColorChip color="#FF909D" />
+          <S.ColorChip color="#FFF47C" />
+          <S.ColorChip color="#7CFFB1" />
+          <S.ColorChip color="#FFCFF1" />
+          <S.ColorChip color="#7CC6FF" />
+        </S.ColorChips>
+      </S.SetionContainer>
+    </S.Container>
   );
 };

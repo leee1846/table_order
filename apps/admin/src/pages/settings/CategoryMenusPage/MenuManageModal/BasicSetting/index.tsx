@@ -48,29 +48,51 @@ export const BasicSetting = () => {
     <S.Container>
       <S.ImageSection>
         <S.Thumbnail>
-          <PhotoIcon width={36} height={36} color={theme.colors.primary[400]} />
-          <p>메인 사진 (1장) 을 선택해 주세요</p>
-          <span>(700*500 px 권장)</span>
+          <S.BadgesContainer>
+            {isBest && <img src={bestOnIcon} alt="베스트" />}
+            {isNew && <img src={newOnIcon} alt="신규" />}
+          </S.BadgesContainer>
+
+          {IMAGES.length > 0 ? (
+            <img src={IMAGES[0]?.url ?? ''} alt="메인 사진" />
+          ) : (
+            <>
+              <PhotoIcon
+                width={36}
+                height={36}
+                color={theme.colors.primary[400]}
+              />
+              <p>메인 사진 (1장) 을 선택해 주세요</p>
+              <span>(700*500 px 권장)</span>
+            </>
+          )}
         </S.Thumbnail>
         {IMAGES.length > 0 ? (
           <S.ImagesContainer>
-            <S.ImageAddButton>
-              <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
-            </S.ImageAddButton>
-            <ul>
-              {IMAGES.map((image) => (
-                <li key={image.id}>
-                  <button type="button">
-                    <CloseIcon
-                      width={14}
-                      height={14}
-                      color={theme.colors.grey[200]}
-                    />
-                  </button>
-                  <img src={image.url} alt="메인 사진" />
-                </li>
-              ))}
-            </ul>
+            <S.Gradient />
+            <S.ScrollableContent>
+              <S.ImageAddButton>
+                <AddIcon
+                  width={20}
+                  height={20}
+                  color={theme.colors.grey[600]}
+                />
+              </S.ImageAddButton>
+              <ul>
+                {IMAGES.map((image) => (
+                  <li key={image.id}>
+                    <button type="button">
+                      <CloseIcon
+                        width={14}
+                        height={14}
+                        color={theme.colors.grey[200]}
+                      />
+                    </button>
+                    <img src={image.url} alt="메인 사진" />
+                  </li>
+                ))}
+              </ul>
+            </S.ScrollableContent>
           </S.ImagesContainer>
         ) : (
           <S.ImageAddButton>
@@ -108,7 +130,13 @@ export const BasicSetting = () => {
               <S.Title>
                 가격 <span>*</span>
               </S.Title>
-              <CheckButton id={TAX_FREE_ID} checked={false} onChange={() => {}}>
+              <CheckButton
+                id={TAX_FREE_ID}
+                checked={false}
+                onChange={() => {
+                  // noop
+                }}
+              >
                 <span>면세</span>
               </CheckButton>
             </S.PriceTitleContainer>

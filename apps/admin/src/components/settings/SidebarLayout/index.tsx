@@ -73,6 +73,9 @@ export const SidebarLayout = () => {
 
   /* 경로가 바뀔 때마다, matchPattern을 기반으로 자동 열림/닫힘 제어 */
   useEffect(() => {
+    const hasActiveSubMenu = (menu: Menu) =>
+      menu.subMenus?.some((sub) => location.pathname === sub.path) ?? false;
+
     SIDEBAR_MENUS.forEach((menu) => {
       if (!menu.matchPattern) {
         return;

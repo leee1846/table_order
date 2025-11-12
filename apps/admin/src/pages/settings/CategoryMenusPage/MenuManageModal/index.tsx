@@ -1,5 +1,5 @@
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/menuManageModal.style';
-import { ChevronForwardIcon, CloseIcon, EditIcon } from '@repo/ui/icons';
+import { ChevronForwardIcon, CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { BasicSetting } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting';
 import { OptionSetting } from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting';

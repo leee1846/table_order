@@ -17,6 +17,7 @@ export const ImageSection = styled.div`
 `;
 
 export const Thumbnail = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,23 +27,50 @@ export const Thumbnail = styled.div`
   height: 15.4375rem;
   background-color: ${({ theme }) => theme.colors.primary[100]};
   border-radius: 1rem;
+  overflow: hidden;
+
+  & > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+export const BadgesContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 20px;
+  display: flex;
+  gap: 4px;
+
+  & > img {
+    width: 64px;
+    height: 43px;
+  }
 `;
 
 export const ImagesContainer = styled.div`
+  position: relative;
+  height: 6.25rem;
+`;
+
+export const ScrollableContent = styled.div`
   display: flex;
   gap: 8px;
-  height: 6.25rem;
+  height: 100%;
   overflow-x: auto;
 
   & > ul {
     display: flex;
     gap: 8px;
+    padding-right: 10px;
 
     & > li {
       position: relative;
       width: 8.75rem;
       border-radius: 1rem;
       overflow: hidden;
+      flex-shrink: 0;
 
       & > img {
         width: 100%;
@@ -65,6 +93,17 @@ export const ImagesContainer = styled.div`
       }
     }
   }
+`;
+
+export const Gradient = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 6.25rem;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #fff 90%);
+  z-index: ${({ theme }) => theme.zIndex.dropdown};
+  pointer-events: none;
 `;
 
 export const ImageAddButton = styled.button`

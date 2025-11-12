@@ -67,14 +67,22 @@ export const Menu = ({ menu }: Props) => {
           <S.ToggleContainer>
             <div>
               <span>숨김</span>
-              <ToggleButton size="M" isOn={menu.isHidden} onChange={() => {}} />
+              <ToggleButton
+                size="M"
+                isOn={menu.isHidden}
+                onChange={() => {
+                  // noop
+                }}
+              />
             </div>
             <div>
               <span>품절</span>
               <ToggleButton
                 size="M"
                 isOn={menu.isSoldOut}
-                onChange={() => {}}
+                onChange={() => {
+                  // noop
+                }}
               />
             </div>
           </S.ToggleContainer>
