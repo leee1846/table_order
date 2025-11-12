@@ -14,7 +14,7 @@ export const colors = {
     900: '#212528', // R33  G37  B40
   },
   primary: {
-    100: '#F8F9FA', // R238 G240 B255
+    100: '#EEF0FF', // R238 G240 B255
     200: '#DDE1FF', // R221 G225 B255
     300: '#C4CCFF', // R196 G204 B255
     400: '#8FA2FF', // R143 G162 B255

@@ -6,27 +6,61 @@ import {
   bestOnIcon,
   chiliOffIcon,
   chiliOnIcon,
+  CloseIcon,
   newOnIcon,
+  PhotoIcon,
 } from '@repo/ui/icons';
+import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
 
 export const BasicSetting = () => {
   const TAX_FREE_ID = `tax-free-${useId()}`;
   const CHILI_LEVEL = 1;
+  const IMAGES: { id: number; url: string }[] = [
+    {
+      id: 1,
+      url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop',
+    },
+    {
+      id: 2,
+      url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop',
+    },
+  ];
 
   return (
-    <div>
-      <div>
-        <div>
-          <span>여기는 아이콘</span>
+    <S.Container>
+      <S.ImageSection>
+        <S.Thumbnail>
+          <PhotoIcon width={36} height={36} color={theme.colors.primary[400]} />
           <p>메인 사진 (1장) 을 선택해 주세요</p>
           <span>(700*500 px 권장)</span>
-        </div>
-        <div>
-          <input type="file" />
-          <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
-          <span>추가할 이미지가 있다면 선택해 주세요 </span>
-        </div>
-      </div>
+        </S.Thumbnail>
+        {IMAGES.length > 0 ? (
+          <S.ImagesContainer>
+            <S.ImageAddButton>
+              <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
+            </S.ImageAddButton>
+            <ul>
+              {IMAGES.map((image) => (
+                <li key={image.id}>
+                  <button type="button">
+                    <CloseIcon
+                      width={14}
+                      height={14}
+                      color={theme.colors.grey[200]}
+                    />
+                  </button>
+                  <img src={image.url} alt="메인 사진" />
+                </li>
+              ))}
+            </ul>
+          </S.ImagesContainer>
+        ) : (
+          <S.ImageAddButton>
+            <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
+            <span>추가할 이미지가 있다면 선택해 주세요 </span>
+          </S.ImageAddButton>
+        )}
+      </S.ImageSection>
 
       <div>
         <div>
@@ -92,6 +126,6 @@ export const BasicSetting = () => {
           </div>
         </div>
       </div>
-    </div>
+    </S.Container>
   );
 };
