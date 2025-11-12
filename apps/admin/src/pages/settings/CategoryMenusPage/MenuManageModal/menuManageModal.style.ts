@@ -9,7 +9,7 @@ export const Container = styled.div`
   height: 100%;
   padding: 40px 24px 40px 30px;
   overflow-y: auto;
-  background-color: ${({ theme }) => theme.colors.grey[50]};
+  background-color: ${({ theme }) => theme.colors.white};
 `;
 
 export const Header = styled.div`

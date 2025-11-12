@@ -18,5 +18,7 @@ export { default as LowBatteryIcon } from './LowBatteryIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';
+export { default as bestOffIcon } from './best_off.svg';
+export { default as newOffIcon } from './new_off.svg';
 export { default as chiliOnIcon } from './chili_on.svg';
 export { default as chiliOffIcon } from './chili_off.svg';
