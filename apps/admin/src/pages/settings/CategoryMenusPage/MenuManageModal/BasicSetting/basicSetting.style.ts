@@ -5,7 +5,7 @@ export const Container = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  margin-top: 41px;
+  margin: 41px 0;
 `;
 
 export const ImageSection = styled.div`
