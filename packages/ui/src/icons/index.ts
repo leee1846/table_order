@@ -15,6 +15,7 @@ export { default as FullBatteryIcon } from './FullBatteryIcon';
 export { default as ChargingBatteryIcon } from './ChargingBatteryIcon';
 export { default as HalfBatteryIcon } from './HalfBatteryIcon';
 export { default as LowBatteryIcon } from './LowBatteryIcon';
+export { default as AddCircleIcon } from './AddCircleIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';

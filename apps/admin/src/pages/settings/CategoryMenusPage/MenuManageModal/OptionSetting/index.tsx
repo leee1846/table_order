@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import { AddIcon, DeleteIcon, EditIcon } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/optionSetting.style';
+import { OptionGroupManageModal } from '../../OptionGroupManageModal';
 
 const optionButtonCss = css`
   width: 42px;
@@ -11,31 +13,27 @@ const optionButtonCss = css`
     margin-right: 0 !important;
   }
 `;
+const OPTIONS = [
+  {
+    id: 1,
+    name: '옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름',
+    options: ['옵션 이름', '옵션 이름'],
+  },
+  {
+    id: 2,
+    name: '옵션 그룹 이름2',
+    options: ['옵션 이름', '옵션 이름', '옵션 이름', '옵션 이름', '옵션 이름'],
+  },
+  {
+    id: 3,
+    name: '옵션 그룹 이름3',
+    options: ['옵션 이름', '옵션 이름', '옵션 이름', '옵션 이름'],
+  },
+];
 
 export const OptionSetting = () => {
-  const OPTIONS = [
-    {
-      id: 1,
-      name: '옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름',
-      options: ['옵션 이름', '옵션 이름'],
-    },
-    {
-      id: 2,
-      name: '옵션 그룹 이름2',
-      options: [
-        '옵션 이름',
-        '옵션 이름',
-        '옵션 이름',
-        '옵션 이름',
-        '옵션 이름',
-      ],
-    },
-    {
-      id: 3,
-      name: '옵션 그룹 이름3',
-      options: ['옵션 이름', '옵션 이름', '옵션 이름', '옵션 이름'],
-    },
-  ];
+  const [isOptionGroupManageModalOpen, setIsOptionGroupManageModalOpen] =
+    useState(false);
 
   if (OPTIONS.length === 0) {
     return (
@@ -43,7 +41,10 @@ export const OptionSetting = () => {
         <S.Header>
           <p>옵션 그룹 설정</p>
         </S.Header>
-        <S.AddOptionGroupButton type="button">
+        <S.AddOptionGroupButton
+          type="button"
+          onClick={() => setIsOptionGroupManageModalOpen(true)}
+        >
           <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
           <span>옵션 그룹 추가</span>
         </S.AddOptionGroupButton>
@@ -60,6 +61,7 @@ export const OptionSetting = () => {
           icon={
             <AddIcon width={16} height={16} color={theme.colors.grey[200]} />
           }
+          onClick={() => setIsOptionGroupManageModalOpen(true)}
         >
           옵션 그룹 추가하기
         </BasicButton>
@@ -103,6 +105,12 @@ export const OptionSetting = () => {
           </S.OptionGroup>
         ))}
       </S.OptionGroups>
+
+      {isOptionGroupManageModalOpen && (
+        <OptionGroupManageModal
+          onClose={() => setIsOptionGroupManageModalOpen(false)}
+        />
+      )}
     </S.Container>
   );
 };
