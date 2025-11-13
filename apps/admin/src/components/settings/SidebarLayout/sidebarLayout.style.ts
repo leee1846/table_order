@@ -94,7 +94,5 @@ export const Content = styled.main`
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 40px 24px 40px 30px;
-  background-color: ${({ theme }) => theme.colors.grey[50]};
   -webkit-overflow-scrolling: touch;
 `;

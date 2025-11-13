@@ -18,7 +18,7 @@ export const CategoriesPage = () => {
   };
 
   return (
-    <div>
+    <S.Container>
       <Header onClickAddCategory={openAddCategoryModal} />
       <Categories />
       <S.AddButton onClick={openAddCategoryModal}>
@@ -31,6 +31,6 @@ export const CategoriesPage = () => {
       {isAddCategoryModalOpen && (
         <CategoryManageModal onClose={closeAddCategoryModal} />
       )}
-    </div>
+    </S.Container>
   );
 };

@@ -3,6 +3,7 @@ import { Header } from '@/pages/settings/CategoryMenusPage/Header';
 import { Menus } from '@/pages/settings/CategoryMenusPage/Menus';
 import { MenuManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal';
 import { useLocation } from 'react-router-dom';
+import * as S from '@/pages/settings/CategoryMenusPage/categoryMenusPage.style';
 
 export const CategoryMenusPage = () => {
   const [isAddMenuModalOpen, setIsAddMenuModalOpen] = useState(false);
@@ -17,11 +18,11 @@ export const CategoryMenusPage = () => {
   }, [location.pathname]);
 
   return (
-    <div>
+    <S.Container>
       <Header onClickAddMenu={onClickAddMenu} />
       <Menus />
 
       {isAddMenuModalOpen && <MenuManageModal />}
-    </div>
+    </S.Container>
   );
 };
