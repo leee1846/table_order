@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import * as S from './dropdown.style';
 import { SerializedStyles } from '@emotion/react';
 import { KeyboardArrowDownIcon } from '@repo/ui/icons';
@@ -16,9 +16,11 @@ interface Props {
   onChange: (value: string | number) => void;
   placeholder?: string;
   disabled?: boolean;
-  listPosition?: 'left' | 'right';
   customStyle?: SerializedStyles;
 }
+
+type TListDirection = 'up' | 'down';
+type TListPosition = 'left' | 'right';
 
 export const Dropdown = ({
   options,
@@ -26,11 +28,15 @@ export const Dropdown = ({
   onChange,
   placeholder = '선택',
   disabled = false,
-  listPosition = 'left',
   customStyle,
 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [listDirection, setListDirection] = useState<TListDirection>('down');
+  const [listPosition, setListPosition] = useState<TListPosition>('left');
+
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const optionRef = useRef<HTMLLIElement>(null);
 
   const selectedOption = options.find((opt) => opt.value === value);
 
@@ -39,32 +45,69 @@ export const Dropdown = ({
     setIsOpen(false);
   };
 
-  // 외부 클릭 시 닫기
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
-
   const handleToggle = () => {
     if (disabled) {
       return;
     }
     setIsOpen(!isOpen);
   };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setIsOpen(false);
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (
+      !isOpen ||
+      !dropdownRef.current ||
+      !listRef.current ||
+      !optionRef.current
+    ) {
+      return;
+    }
+
+    const calculateListDirection = (triggerRect: DOMRect): TListDirection => {
+      const screenCenterY = window.innerHeight / 2;
+      const triggerCenterY = triggerRect.top + triggerRect.height / 2;
+      return triggerCenterY < screenCenterY ? 'down' : 'up';
+    };
+
+    const calculateListPosition = (triggerRect: DOMRect): TListPosition => {
+      const screenCenterX = window.innerWidth / 2;
+      const triggerCenterX = triggerRect.left + triggerRect.width / 2;
+      return triggerCenterX < screenCenterX ? 'left' : 'right';
+    };
+
+    const triggerRect = dropdownRef.current.getBoundingClientRect();
+
+    // 화면 절반 기준으로 방향 계산
+    const direction = calculateListDirection(triggerRect);
+    const position = calculateListPosition(triggerRect);
+
+    setListDirection(direction);
+    setListPosition(position);
+
+    const optionHeight = optionRef.current.offsetHeight;
+    listRef.current.style.setProperty('--option-height', `${optionHeight}px`);
+  }, [isOpen, options.length]);
+
+  /** 외부 클릭 감지  */
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
     <S.Container ref={dropdownRef} css={customStyle}>
@@ -78,10 +121,11 @@ export const Dropdown = ({
       </S.Trigger>
 
       {isOpen && !disabled && (
-        <S.List position={listPosition}>
-          {options.map((option) => (
+        <S.List ref={listRef} direction={listDirection} position={listPosition}>
+          {options.map((option, index) => (
             <S.Option
               key={option.value}
+              ref={index === 0 ? optionRef : undefined}
               isSelected={option.value === value}
               onClick={() => !option.disabled && handleSelect(option.value)}
             >

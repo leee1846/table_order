@@ -1,7 +1,7 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { colors } from '../../theme/colors';
 import { TYPOGRAPHY } from '../../theme/typography';
-import { css } from '@emotion/react';
 import { zIndex } from '../../theme/zIndex';
 
 export const Container = styled.div`
@@ -14,7 +14,7 @@ export const Trigger = styled.button<{ disabled?: boolean }>`
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 10px 14px;
+  padding: 10px 12px;
   border: 1px solid ${colors.grey[400]};
   border-radius: 0.75rem;
   background-color: ${colors.white};
@@ -30,17 +30,43 @@ export const Trigger = styled.button<{ disabled?: boolean }>`
     `}
 `;
 
-export const List = styled.ul<{ position?: 'left' | 'right' }>`
+export const List = styled.ul<{
+  position?: 'left' | 'right';
+  direction?: 'up' | 'down';
+}>`
   position: absolute;
-  top: calc(100% + 4px);
-  left: ${({ position }) => (position === 'left' ? '0' : 'auto')};
-  right: ${({ position }) => (position === 'right' ? '0' : 'auto')};
+  ${({ direction }) =>
+    direction === 'up'
+      ? css`
+          bottom: calc(100% + 4px);
+          top: auto;
+        `
+      : css`
+          top: calc(100% + 4px);
+          bottom: auto;
+        `}
+  ${({ position }) =>
+    position === 'left'
+      ? css`
+          left: 0;
+          right: auto;
+        `
+      : css`
+          left: auto;
+          right: 0;
+        `}
   padding: 10px 14px;
   border: 1px solid ${colors.grey[400]};
   box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.04);
   background-color: ${colors.white};
   border-radius: 0.75rem;
   z-index: ${zIndex.dropdown};
+  max-height: 246px;
+  overflow-y: auto;
+
+  & > li:last-child {
+    border-bottom: none;
+  }
 `;
 
 export const Option = styled.li<{

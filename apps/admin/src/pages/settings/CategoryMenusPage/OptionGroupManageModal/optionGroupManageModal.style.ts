@@ -47,7 +47,7 @@ export const Container = styled.div`
   width: 71.25rem;
   max-width: calc(100vw - 2rem);
   background-color: ${theme.colors.white};
-  padding: 24px;
+  padding: 24px 24px 0;
   border-radius: 1rem;
 
   & > h1 {
@@ -152,7 +152,7 @@ export const CodeContainer = styled.div`
 
 export const FloatingButtonContainer = styled.div`
   position: sticky;
-  bottom: 0;
+  bottom: -24px;
   left: 0;
   right: 0;
   width: 100%;
