@@ -20,6 +20,10 @@ export const ROUTES = {
         path: 'summary',
         generate: () => '/settings/sales/summary',
       },
+      ORDER: {
+        path: 'order',
+        generate: () => '/settings/sales/order',
+      },
     },
   },
 } as const;
