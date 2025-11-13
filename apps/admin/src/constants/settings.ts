@@ -40,6 +40,11 @@ export const SIDEBAR_MENUS: TMenu[] = [
         label: '매출 요약',
         path: ROUTES.SETTINGS.SALES.SUMMARY.generate(),
       },
+      {
+        id: 'order',
+        label: '주문 내역',
+        path: ROUTES.SETTINGS.SALES.ORDER.generate(),
+      },
     ],
   },
 ];

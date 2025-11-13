@@ -50,6 +50,25 @@ export const router = createBrowserRouter([
     element: <Navigate to={ROUTES.TABLES.path} replace />,
   },
   {
+    // /tables
+    path: ROUTES.TABLES.path,
+    element: (
+      <Suspense>
+        <TablesPage />
+      </Suspense>
+    ),
+  },
+  {
+    // /tables/:tableNum
+    path: ROUTES.TABLE_DETAIL.path,
+    element: (
+      <Suspense>
+        <TableDetailPage />
+      </Suspense>
+    ),
+  },
+
+  {
     path: ROUTES.SETTINGS.path,
     element: (
       <Suspense>
@@ -111,23 +130,5 @@ export const router = createBrowserRouter([
         ],
       },
     ],
-  },
-  {
-    // /tables
-    path: ROUTES.TABLES.path,
-    element: (
-      <Suspense>
-        <TablesPage />
-      </Suspense>
-    ),
-  },
-  {
-    // /tables/:tableNum
-    path: ROUTES.TABLE_DETAIL.path,
-    element: (
-      <Suspense>
-        <TableDetailPage />
-      </Suspense>
-    ),
   },
 ]);

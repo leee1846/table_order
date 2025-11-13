@@ -24,6 +24,9 @@ export { default as DiscountIcon } from './DiscountIcon';
 export { default as ListAltAddIcon } from './ListAltAddIcon';
 export { default as ExitToAppIcon } from './ExitToAppIcon';
 export { default as PickupIcon } from './PickupIcon';
+export { default as ChevronBackwardIcon } from './ChevronBackwardIcon';
+export { default as FirstPageIcon } from './FirstPageIcon';
+export { default as LastPageIcon } from './LastPageIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';

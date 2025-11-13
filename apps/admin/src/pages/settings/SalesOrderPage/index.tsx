@@ -1,3 +1,9 @@
+import { Pagination } from '@repo/ui/components';
+
 export const SalesOrderPage = () => {
-  return <div>SalesOrderPage</div>;
+  return (
+    <div>
+      <Pagination />
+    </div>
+  );
 };

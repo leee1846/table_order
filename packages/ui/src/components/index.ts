@@ -10,6 +10,7 @@ export { ConfirmDialog } from './Dialog/ConfirmDialog';
 export { DualActionDialog } from './Dialog/DualActionDialog';
 export { LongContentDialog } from './Dialog/LongContentDialog';
 export { Dropdown } from './Dropdown';
+export { Pagination } from './Pagination';
 
 export type { DialogSize } from './Dialog/dialog';
 export { ToastMessage } from './ToastMessage';
