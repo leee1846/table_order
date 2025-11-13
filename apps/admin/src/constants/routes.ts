@@ -1,4 +1,7 @@
 export const ROUTES = {
+  ORDERS: {
+    path: '/orders',
+  },
   SETTINGS: {
     path: '/settings',
 
@@ -10,8 +13,13 @@ export const ROUTES = {
       path: 'categories/:id/menus',
       generate: (id: string | number) => `/settings/categories/${id}/menus`,
     },
-  },
-  ORDERS: {
-    path: '/orders',
+    SALES: {
+      path: 'sales',
+
+      SUMMARY: {
+        path: 'summary',
+        generate: () => '/settings/sales/summary',
+      },
+    },
   },
 } as const;

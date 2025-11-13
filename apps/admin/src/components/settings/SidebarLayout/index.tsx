@@ -2,41 +2,9 @@ import { Suspense, useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import * as S from '@/components/settings/SidebarLayout/sidebarLayout.style';
-import { ROUTES } from '@/constants/routes';
 import { ChevronForwardIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-
-type SubMenu = {
-  id: string | number;
-  label: string;
-  path: string;
-};
-
-type Menu = {
-  id: string;
-  label: string;
-  path?: string;
-  subMenus?: SubMenu[];
-  matchPattern?: string; // 하위 경로 매칭용
-};
-
-const SIDEBAR_MENUS: Menu[] = [
-  {
-    id: 'categories',
-    label: '카테고리 관리',
-    path: ROUTES.SETTINGS.CATEGORIES.generate(),
-  },
-  {
-    id: 'menus',
-    label: '메뉴 관리',
-    matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.CATEGORY_MENUS.path}`,
-    subMenus: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => ({
-      id,
-      label: `카테고리 ${id} 메뉴`,
-      path: ROUTES.SETTINGS.CATEGORY_MENUS.generate(id),
-    })),
-  },
-];
+import { type TMenu, SIDEBAR_MENUS } from '@/constants/settings';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
@@ -46,7 +14,7 @@ export const SidebarLayout = () => {
   const isPathActive = (path: string) => location.pathname === path;
   const isMenuOpened = (menuId: string) => openedMenuIds.has(menuId);
 
-  const handleMenuClick = (menu: Menu) => {
+  const handleMenuClick = (menu: TMenu) => {
     if (menu.subMenus?.length) {
       toggleMenuOpen(menu.id);
     } else if (menu.path) {
@@ -68,12 +36,12 @@ export const SidebarLayout = () => {
     });
   };
 
-  const hasActiveSubMenu = (menu: Menu) =>
+  const hasActiveSubMenu = (menu: TMenu) =>
     menu.subMenus?.some((sub) => isPathActive(sub.path)) ?? false;
 
   /* 경로가 바뀔 때마다, matchPattern을 기반으로 자동 열림/닫힘 제어 */
   useEffect(() => {
-    const hasActiveSubMenu = (menu: Menu) =>
+    const hasActiveSubMenu = (menu: TMenu) =>
       menu.subMenus?.some((sub) => location.pathname === sub.path) ?? false;
 
     SIDEBAR_MENUS.forEach((menu) => {

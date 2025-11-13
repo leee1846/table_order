@@ -1,5 +1,10 @@
 import { Suspense, lazy } from 'react';
-import { createBrowserRouter, Navigate, redirect } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  redirect,
+} from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 
 const SettingSidebar = lazy(() =>
@@ -22,12 +27,25 @@ const OrdersPage = lazy(() =>
     default: module.OrdersPage,
   }))
 );
+const SalesSummaryPage = lazy(() =>
+  import('@/pages/settings/SalesSummaryPage').then((module) => ({
+    default: module.SalesSummaryPage,
+  }))
+);
 
 export const router = createBrowserRouter([
   {
     // 루트 경로 → /orders로 리디렉트
     path: '/',
     element: <Navigate to={ROUTES.ORDERS.path} replace />,
+  },
+  {
+    path: ROUTES.ORDERS.path,
+    element: (
+      <Suspense>
+        <OrdersPage />
+      </Suspense>
+    ),
   },
   {
     path: ROUTES.SETTINGS.path,
@@ -64,14 +82,24 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
+      {
+        path: ROUTES.SETTINGS.SALES.path,
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            loader: () => redirect(ROUTES.SETTINGS.SALES.SUMMARY.generate()),
+          },
+          {
+            path: ROUTES.SETTINGS.SALES.SUMMARY.path,
+            element: (
+              <Suspense>
+                <SalesSummaryPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
     ],
-  },
-  {
-    path: ROUTES.ORDERS.path,
-    element: (
-      <Suspense>
-        <OrdersPage />
-      </Suspense>
-    ),
   },
 ]);
