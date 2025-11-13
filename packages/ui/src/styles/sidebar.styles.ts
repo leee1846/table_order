@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '../../theme/typography';
-import { theme } from '../../index';
+import { TYPOGRAPHY } from '../theme/typography';
+import { theme } from '../index';
 
 const { colors } = theme;
 

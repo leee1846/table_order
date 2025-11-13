@@ -22,9 +22,14 @@ const CategoryMenusPage = lazy(() =>
     default: module.CategoryMenusPage,
   }))
 );
-const OrdersPage = lazy(() =>
-  import('@/pages/OrdersPage').then((module) => ({
-    default: module.OrdersPage,
+const TablesPage = lazy(() =>
+  import('@/pages/TablesPage').then((module) => ({
+    default: module.TablesPage,
+  }))
+);
+const TableDetailPage = lazy(() =>
+  import('@/pages/TableDetailPage').then((module) => ({
+    default: module.TableDetailPage,
   }))
 );
 const SalesSummaryPage = lazy(() =>
@@ -40,17 +45,9 @@ const SalesOrderPage = lazy(() =>
 
 export const router = createBrowserRouter([
   {
-    // 루트 경로 → /orders로 리디렉트
+    // 루트 경로 → /tables로 리디렉트
     path: '/',
-    element: <Navigate to={ROUTES.ORDERS.path} replace />,
-  },
-  {
-    path: ROUTES.ORDERS.path,
-    element: (
-      <Suspense>
-        <OrdersPage />
-      </Suspense>
-    ),
+    element: <Navigate to={ROUTES.TABLES.path} replace />,
   },
   {
     path: ROUTES.SETTINGS.path,
@@ -114,5 +111,23 @@ export const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    // /tables
+    path: ROUTES.TABLES.path,
+    element: (
+      <Suspense>
+        <TablesPage />
+      </Suspense>
+    ),
+  },
+  {
+    // /tables/:tableNum
+    path: ROUTES.TABLE_DETAIL.path,
+    element: (
+      <Suspense>
+        <TableDetailPage />
+      </Suspense>
+    ),
   },
 ]);

@@ -70,19 +70,11 @@ New-Item -Path $Dir -ItemType Directory -Force | Out-Null
 $tsx = @"
 'use client';
 
-import type { ReactNode } from 'react';
 import * as S from './$StyleName';
 
-interface Props {
-  children: ReactNode;
-}
-
-export const $Name = ({
-  children,
-}: Props) => {
+export const $Name = () => {
   return (
     <S.$StyleClass>
-      {children}
     </S.$StyleClass>
   );
 };
