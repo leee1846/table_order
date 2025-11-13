@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import * as S from './dropdown.style';
 import { SerializedStyles } from '@emotion/react';
-import { KeyboardArrowDownIcon } from '@repo/ui/icons';
+import { ArrowDropDownIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 
 export interface IOption {
@@ -111,9 +111,14 @@ export const Dropdown = ({
 
   return (
     <S.Container ref={dropdownRef} css={customStyle}>
-      <S.Trigger type="button" onClick={handleToggle} disabled={disabled}>
+      <S.Trigger
+        type="button"
+        onClick={handleToggle}
+        disabled={disabled}
+        isOpen={isOpen}
+      >
         <span>{selectedOption ? selectedOption.label : placeholder}</span>
-        <KeyboardArrowDownIcon
+        <ArrowDropDownIcon
           color={disabled ? theme.colors.grey[400] : theme.colors.grey[500]}
           width={20}
           height={20}
