@@ -17,6 +17,13 @@ export { default as HalfBatteryIcon } from './HalfBatteryIcon';
 export { default as LowBatteryIcon } from './LowBatteryIcon';
 export { default as AddCircleIcon } from './AddCircleIcon';
 export { default as InfoIcon } from './InfoIcon';
+export { default as PersonIcon } from './PersonIcon';
+export { default as CancelIcon } from './CancelIcon';
+export { default as CurrencyExchangeIcon } from './CurrencyExchangeIcon';
+export { default as DiscountIcon } from './DiscountIcon';
+export { default as ListAltAddIcon } from './ListAltAddIcon';
+export { default as ExitToAppIcon } from './ExitToAppIcon';
+export { default as PickupIcon } from './PickupIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';

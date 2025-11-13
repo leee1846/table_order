@@ -9,6 +9,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*", "svg.d.ts"],
+  "include": ["src/**/*", "../typescript-config/svg.d.ts", "../typescript-config/woff2.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

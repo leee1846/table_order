@@ -22,4 +22,4 @@ export {
   ActionButtons,
   ActionButton,
   MenuDivider,
-} from './Sidebar/sidebar.styles';
+} from '../styles/sidebar.styles';
