@@ -14,8 +14,14 @@ export * from '@tanstack/react-query';
 
 // Type exports
 export type { IUser, ICreateUserRequest, IGetUsersParams } from './types/users';
+export type {
+  ISendPickupNotificationRequest,
+  ISendPickupNotificationResponse,
+} from './types/orders';
 
 // Query exports (React Query hooks)
 export { userKeys } from './queries/users/keys';
 export { useGetUsers } from './queries/users/useGetUsers';
 export { usePostUser } from './queries/users/usePostUser';
+export { orderKeys } from './queries/orders/keys';
+export { usePostPickupNotification } from './queries/orders/usePostPickupNotification';

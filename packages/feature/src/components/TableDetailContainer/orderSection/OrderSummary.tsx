@@ -29,7 +29,7 @@ const SummaryWrap = styled.div`
 const Row = styled.div`
   ${TYPOGRAPHY.MT_2}
   display: grid;
-  grid-template-columns: 1fr 15rem 9rem;
+  grid-template-columns: 1fr 8rem 9rem;
 
   .qty,
   .price {

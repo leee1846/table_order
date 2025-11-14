@@ -6,4 +6,7 @@ export const endpoints = {
   user: {
     list: '/users',
   },
+  order: {
+    sendPickupNotification: '/orders/pickup-notification',
+  },
 } as const;

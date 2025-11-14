@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { colors } from '../../theme/colors';
 import { TYPOGRAPHY } from '../../theme/typography';
 
 export const Container = styled.div`
@@ -13,7 +14,7 @@ export const Texts = styled.p`
   align-items: center;
   gap: 8px;
   ${TYPOGRAPHY.MT_7}
-  color: ${({ theme }) => theme.colors.grey[600]};
+  color: ${colors.grey[600]};
 `;
 
 export const Buttons = styled.div<{ padding?: string }>`
@@ -30,6 +31,6 @@ export const Button = styled.button<{ padding?: string }>`
   height: 44px;
   padding: ${({ padding }) => padding || '0 12px'};
   border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.colors.grey[400]};
-  background-color: ${({ theme }) => theme.colors.grey[50]};
+  border: 1px solid ${colors.grey[400]};
+  background-color: ${colors.grey[50]};
 `;

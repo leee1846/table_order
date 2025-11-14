@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import styled from '@emotion/styled';
 import { PersonIcon, PickupIcon } from '@repo/ui/icons';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
+import { PickupNotificationDialog } from './dialogs/PickupNotificationDialog';
 
 const { colors } = theme;
 
@@ -16,33 +18,49 @@ export function OrderHeader({
   numberOfPeople,
   orderTime,
 }: OrderHeaderProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handlePickupClick = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+  };
+
   return (
-    <Header>
-      <RightBox>
-        <Title>{title}</Title>
-        <GuestCount>
-          <div>
-            <PersonIcon width={20} height={20} color={colors.grey[700]} />
-          </div>
-          {numberOfPeople && <NumberOfPeople>{numberOfPeople}</NumberOfPeople>}
-        </GuestCount>
-      </RightBox>
-      <LeftBox>
-        <BasicButton
-          variant="Outline_Navy_L"
-          onClick={() => {
-            console.log('픽업알림 클릭');
-          }}
-          icon={<PickupIcon width={30} height={30} />}
-        >
-          픽업알림
-        </BasicButton>
-        <OrderTime>
-          <p>{orderTime}</p>
-          <p>(-)</p>
-        </OrderTime>
-      </LeftBox>
-    </Header>
+    <>
+      <Header>
+        <RightBox>
+          <Title>{title}</Title>
+          <GuestCount>
+            <div>
+              <PersonIcon width={20} height={20} color={colors.grey[700]} />
+            </div>
+
+              <NumberOfPeople>{numberOfPeople}</NumberOfPeople>
+
+          </GuestCount>
+        </RightBox>
+        <LeftBox>
+          <BasicButton
+            variant="Outline_Navy_L"
+            onClick={handlePickupClick}
+            icon={<PickupIcon width={30} height={30} />}
+          >
+            픽업알림
+          </BasicButton>
+          <OrderTime>
+            <p>{orderTime}</p>
+            <p>(-)</p>
+          </OrderTime>
+        </LeftBox>
+      </Header>
+      <PickupNotificationDialog
+        isOpen={isDialogOpen}
+        onClose={handleDialogClose}
+      />
+    </>
   );
 }
 
