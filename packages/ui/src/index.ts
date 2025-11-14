@@ -12,10 +12,6 @@ export const theme = {
 
 export type Theme = typeof theme;
 
-// Style exports
-export { resetStyles } from './styles/reset';
-export { globalStyles } from './styles/global';
-
 // Provider exports
 export { ThemeProvider } from './provider';
 

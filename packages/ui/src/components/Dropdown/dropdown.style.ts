@@ -6,7 +6,7 @@ import { zIndex } from '../../theme/zIndex';
 
 export const Container = styled.div`
   position: relative;
-  width: '100%';
+  width: fit-content;
 `;
 
 export const Trigger = styled.button<{ disabled?: boolean; isOpen: boolean }>`
@@ -59,6 +59,7 @@ export const List = styled.ul<{
           left: auto;
           right: 0;
         `}
+
   padding: 10px 12px;
   border: 1px solid ${colors.grey[400]};
   box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.04);

@@ -37,3 +37,22 @@ export const isEmpty = (str: string | null | undefined): boolean => {
 export const formatCurrency = (num: number): string => {
   return num.toLocaleString('ko-KR');
 };
+
+/**
+ * 숫자를 받아서 1의 자리일 경우 앞에 0을 붙여줍니다.
+ *
+ * @param num - 포맷팅할 숫자
+ * @returns 1의 자리일 경우 앞에 0이 붙은 문자열, 아니면 원래 숫자의 문자열
+ *
+ * @example
+ * ```ts
+ * padZero(1) // "01"
+ * padZero(5) // "05"
+ * padZero(10) // "10"
+ * padZero(25) // "25"
+ * padZero(0) // "00"
+ * ```
+ */
+export const padZero = (num: number): string => {
+  return num.toString().padStart(2, '0');
+};

@@ -9,7 +9,8 @@
     "./package.json": "./package.json",
     "./components": "./src/components/index.ts",
     "./icons": "./src/icons/index.ts",
-    "./utils": "./src/utils/index.ts"
+    "./utils": "./src/utils/index.ts",
+    "./styles": "./src/styles/index.ts"
   },
   "scripts": {
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
@@ -33,6 +34,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@repo/util": "workspace:*",
     "sonner": "^2.0.7"
   },
   "peerDependencies": {
