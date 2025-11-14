@@ -2,6 +2,9 @@ import { Calender, Dropdown, Pagination } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { useState } from 'react';
+import { Table } from '@/pages/settings/SalesOrderPage/Table';
+import * as UIStyles from '@repo/ui/styles';
+import * as S from './salesOrderPage.style';
 
 export const SalesOrderPage = () => {
   const [showCalender, setShowCalender] = useState<boolean>(false);
@@ -22,31 +25,57 @@ export const SalesOrderPage = () => {
   };
 
   return (
-    <div>
-      <p>
-        매출 관리
-        <span />
-        <span>주문내역</span>
-      </p>
+    <>
+      <UIStyles.tableStyles.TablePageContainer>
+        <S.Container>
+          <S.Title>
+            매출 관리
+            <span />
+            <span>주문내역</span>
+          </S.Title>
 
-      <div>
-        <button type="button" onClick={() => setShowCalender(true)}>
-          <CalendarMonthIcon
-            width={32}
-            height={32}
-            color={theme.colors.grey[700]}
-          />
-          <div>
-            {startDate} ~ {endDate}
-          </div>
-        </button>
-        <Dropdown
-          options={orderStatusOptions}
-          value={null}
-          onChange={() => {}}
-        />
-      </div>
-      <Pagination totalPages={10} currentPage={1} onPageChange={() => {}} />
+          <S.Filters>
+            <S.CalendarButton
+              type="button"
+              onClick={() => setShowCalender(true)}
+            >
+              <CalendarMonthIcon
+                width={32}
+                height={32}
+                color={theme.colors.grey[700]}
+              />
+              <S.CalendarText>
+                {startDate && endDate
+                  ? `${startDate} ~ ${endDate}`
+                  : '날짜 선택'}
+              </S.CalendarText>
+            </S.CalendarButton>
+            <Dropdown
+              options={orderStatusOptions}
+              value={null}
+              onChange={() => {}}
+            />
+          </S.Filters>
+
+          <Table />
+        </S.Container>
+
+        <UIStyles.tableStyles.Footer>
+          <UIStyles.tableStyles.FooterContents>
+            <p>
+              <span>총 매출:</span> 9999999 <span>0건</span>
+            </p>
+            <p>
+              <span>결제 전 매출:</span> 9999999 <span>0건</span>
+            </p>
+            <p>
+              <span>총 예상 매출:</span> 9999999 <span>0건</span>
+            </p>
+          </UIStyles.tableStyles.FooterContents>
+          <Pagination totalPages={10} currentPage={1} onPageChange={() => {}} />
+        </UIStyles.tableStyles.Footer>
+      </UIStyles.tableStyles.TablePageContainer>
+
       {showCalender && (
         <Calender
           type="range"
@@ -58,6 +87,6 @@ export const SalesOrderPage = () => {
           afterYears={1}
         />
       )}
-    </div>
+    </>
   );
 };

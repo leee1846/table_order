@@ -9,7 +9,8 @@
     "./package.json": "./package.json",
     "./components": "./src/components/index.ts",
     "./icons": "./src/icons/index.ts",
-    "./utils": "./src/utils/index.ts"
+    "./utils": "./src/utils/index.ts",
+    "./styles": "./src/styles/index.ts"
   },
   "scripts": {
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
