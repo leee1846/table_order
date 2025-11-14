@@ -1,19 +1,18 @@
-import { apiClient } from '@repo/api';
+import { initializeApiClient } from '@repo/api';
 import type {
   AxiosError,
   InternalAxiosRequestConfig,
   AxiosResponse,
 } from '@repo/api/axios';
 
-/**
- * API 클라이언트 설정 예시
- * 이 파일에서 앱별 axios interceptor를 설정합니다.
- */
+// API 클라이언트 초기화 (baseURL 주입)
+const apiClient = initializeApiClient({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+});
 
 // Request Interceptor - 토큰 추가 등
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 로컬 스토리지나 쿠키에서 토큰 가져오기?
     return config;
   },
   (error: AxiosError) => {

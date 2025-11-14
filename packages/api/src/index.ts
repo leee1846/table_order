@@ -6,7 +6,7 @@
  */
 
 // Core exports
-export { apiClient, createApiClient } from './cores/axios';
+export { apiClient, createApiClient, initializeApiClient } from './cores/axios';
 export { endpoints } from './cores/endpoints';
 
 // React Query re-exports (전체 모듈)
