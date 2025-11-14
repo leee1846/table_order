@@ -1,7 +1,9 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '../../theme/typography';
 import { css } from '@emotion/react';
-import { colors } from '../../theme/colors';
+import { theme } from '../../index';
+
+const { colors } = theme;
 
 export const Container = styled.div`
   position: relative;
@@ -11,7 +13,7 @@ export const Container = styled.div`
   gap: 40px;
   padding: 24px;
   border-radius: 16px;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${colors.white};
 `;
 
 export const CloseButton = styled.button`
@@ -48,7 +50,7 @@ export const Header = styled.div`
     justify-content: center;
     gap: 8px;
     ${TYPOGRAPHY.MT_1}
-    color: ${({ theme }) => theme.colors.grey[800]};
+    color: ${colors.grey[800]};
   }
 `;
 
@@ -58,7 +60,7 @@ interface YearInputProps {
 
 export const YearInput = styled.input<YearInputProps>`
   ${TYPOGRAPHY.MT_1}
-  color: ${({ theme }) => theme.colors.grey[800]};
+  color: ${colors.grey[800]};
   width: ${({ width }) => `${Math.max(width, 1)}ch`};
   padding: 0;
   margin: 0;
@@ -82,7 +84,7 @@ export const Days = styled.div`
     width: 73.14286px;
     height: 42px;
     ${TYPOGRAPHY.ST_1}
-    color: ${({ theme }) => theme.colors.grey[500]};
+    color: ${colors.grey[500]};
   }
 `;
 
