@@ -45,7 +45,6 @@ export const checkButtonCss = css`
 export const Container = styled.div`
   position: relative;
   width: 71.25rem;
-  max-width: calc(100vw - 2rem);
   background-color: ${theme.colors.white};
   padding: 24px 24px 0;
   border-radius: 1rem;

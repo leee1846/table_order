@@ -38,6 +38,10 @@ export const ROUTES = {
       path: 'style',
       generate: () => '/settings/style',
     },
+    MISCELLANEOUS: {
+      path: 'misc',
+      generate: () => '/settings/misc',
+    },
   },
   TABLES: {
     path: '/tables',

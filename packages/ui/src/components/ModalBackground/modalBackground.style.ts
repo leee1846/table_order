@@ -29,5 +29,9 @@ export const Container = styled.div<IProps>`
       }
       return 'auto';
     }};
+
+    & > div {
+      max-width: calc(100vw - 2rem);
+    }
   }
 `;
