@@ -7,6 +7,7 @@ import { ActionGrid } from './actionSection/ActionGrid';
 import { AddMenuDialog } from './actionSection/dialogs/AddMenuDialog';
 import { SelectCancelDialog } from './actionSection/dialogs/SelectCancelDialog';
 import { AmountChangeDialog } from './actionSection/dialogs/AmountChangeDialog';
+import { AllDiscountDialog } from './actionSection/dialogs/AllDiscountDialog';
 import type { Order } from './orderSection/types';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { toast } from '@repo/ui/components';
@@ -17,6 +18,7 @@ export const TableDetailContainer = () => {
     useState(false);
   const [isAmountChangeDialogOpen, setIsAmountChangeDialogOpen] =
     useState(false);
+  const [isAllDiscountDialogOpen, setIsAllDiscountDialogOpen] = useState(false);
 
   const order: Order = {
     tableName: '2번 테이블',
@@ -64,6 +66,8 @@ export const TableDetailContainer = () => {
       });
     } else if (id === 'amount-change') {
       setIsAmountChangeDialogOpen(true);
+    } else if (id === 'all-discount') {
+      setIsAllDiscountDialogOpen(true);
     }
   };
 
@@ -82,6 +86,11 @@ export const TableDetailContainer = () => {
   const handleAmountChange = (amount: number) => {
     console.log('변경된 금액:', amount);
     // TODO: 실제 금액 변경 로직 구현
+  };
+
+  const handleAllDiscount = (discount: number) => {
+    console.log('적용된 할인:', discount);
+    // TODO: 실제 할인 적용 로직 구현
   };
 
   return (
@@ -119,6 +128,11 @@ export const TableDetailContainer = () => {
         isOpen={isAmountChangeDialogOpen}
         onClose={() => setIsAmountChangeDialogOpen(false)}
         onApply={handleAmountChange}
+      />
+      <AllDiscountDialog
+        isOpen={isAllDiscountDialogOpen}
+        onClose={() => setIsAllDiscountDialogOpen(false)}
+        onApply={handleAllDiscount}
       />
     </S.TableDetailContainer>
   );

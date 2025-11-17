@@ -20,7 +20,7 @@ export const KeypadButton = styled.button`
   border-radius: 12px;
   background-color: ${colors.white};
   ${TYPOGRAPHY.MT_3}
-  color: ${colors.grey[900]};
+  color: ${colors.grey[700]};
   cursor: pointer;
   display: flex;
   align-items: center;

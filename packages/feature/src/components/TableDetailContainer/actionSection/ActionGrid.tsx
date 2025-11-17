@@ -19,7 +19,7 @@ export type ActionGridProps = {
   onProceed?: () => void;
 };
 
-export function ActionGrid({ onPress, onProceed }: ActionGridProps) {
+export function ActionGrid({ onPress }: ActionGridProps) {
   return (
     <Wrap>
       <Grid>
@@ -54,11 +54,11 @@ export function ActionGrid({ onPress, onProceed }: ActionGridProps) {
       <ExitButtonWrap>
         <BasicButton
           variant="Solid_Grey_2XL"
-          onClick={onProceed}
           iconPosition="right"
           icon={
             <ExitToAppIcon width={24} height={24} color={colors.grey[700]} />
           }
+          onClick={() => console.log('나가기')}
         >
           <label>나가기</label>
         </BasicButton>
