@@ -1,35 +1,21 @@
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
+import {
+  DialogContainer as BaseDialogContainer,
+  CloseButton as BaseCloseButton,
+  Title as BaseTitle,
+} from '../../../shared/dialogStyles';
 
 const { colors, spacing } = theme;
 
-export const DialogContainer = styled.div`
-  background-color: ${colors.white};
-  border-radius: 16px;
-  padding: 24px;
+export const DialogContainer = styled(BaseDialogContainer)`
   width: ${spacing.dialogWidth.large};
-  display: flex;
-  flex-direction: column;
-  position: relative;
   gap: 40px;
 `;
 
-export const CloseButton = styled.button`
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
+export const CloseButton = BaseCloseButton;
 
-export const Title = styled.h2`
-  ${TYPOGRAPHY.MT_1}
-  color: ${colors.grey[800]};
+export const Title = styled(BaseTitle)`
   margin: 20px 0 24px 0;
   text-align: center;
 `;

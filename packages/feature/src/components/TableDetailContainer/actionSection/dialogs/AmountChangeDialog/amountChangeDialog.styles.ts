@@ -1,17 +1,16 @@
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
+import {
+  DialogContainer as BaseDialogContainer,
+  CloseButton as BaseCloseButton,
+  Header as BaseHeader,
+  Title as BaseTitle,
+} from '../../../shared/dialogStyles';
 
-const { colors, zIndex } = theme;
+const { colors } = theme;
 
-export const DialogContainer = styled.div`
-  background-color: ${colors.white};
-  border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
+export const DialogContainer = styled(BaseDialogContainer)`
   width: ${theme.spacing.dialogWidth.small};
-  padding: 24px;
 `;
 
 export const ContentWrapper = styled.div`
@@ -22,28 +21,11 @@ export const ContentWrapper = styled.div`
   gap: 40px;
 `;
 
-export const CloseButton = styled.button`
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: ${zIndex.modal};
-`;
+export const CloseButton = BaseCloseButton;
 
-export const Header = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-`;
+export const Header = BaseHeader;
 
-export const Title = styled.h3`
-  ${TYPOGRAPHY.MT_1}
-  color: ${colors.grey[800]};
-`;
+export const Title = BaseTitle;
 
 export const AmountDisplay = styled.div<{ $isPlaceholder: boolean }>`
   ${TYPOGRAPHY.MT_1}

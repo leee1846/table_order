@@ -19,7 +19,7 @@ export function PaymentActions({
         variant="Solid_Navy_2XL"
         onClick={onPayCard}
         customStyle={css`
-          height: 121px;
+          height: 120px;
         `}
       >
         카드결제
@@ -27,7 +27,7 @@ export function PaymentActions({
       <BasicButton
         variant="Solid_Navy_2XL"
         customStyle={css`
-          height: 121px;
+          height: 120px;
         `}
         onClick={onPayCash}
       >
@@ -36,7 +36,7 @@ export function PaymentActions({
       <BasicButton
         variant="Solid_Sky_Blue_2XL"
         customStyle={css`
-          height: 121px;
+          height: 120px;
         `}
         onClick={onSplitPay}
       >

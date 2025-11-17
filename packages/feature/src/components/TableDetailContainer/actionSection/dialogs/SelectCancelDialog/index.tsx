@@ -9,7 +9,6 @@ import { CloseIcon } from '@repo/ui/icons';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import type { OrderItem } from '../../../orderSection/types';
 import * as S from './selectCancelDialog.styles';
-import * as A from '../AddMenuDialog/addMenuDialog.styles';
 import { css } from '@emotion/react';
 
 const { colors } = theme;
@@ -92,9 +91,9 @@ export const SelectCancelDialog = ({
   return (
     <ModalBackground position="center" onClick={handleClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
-        <A.CloseButton onClick={handleClose} aria-label="닫기">
+        <S.CloseButton onClick={handleClose} aria-label="닫기">
           <CloseIcon width={32} height={32} color={colors.grey[700]} />
-        </A.CloseButton>
+        </S.CloseButton>
 
         <S.ContentWrapper>
           <S.Header>

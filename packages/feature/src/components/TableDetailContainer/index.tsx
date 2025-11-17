@@ -9,21 +9,36 @@ import { SelectCancelDialog } from './actionSection/dialogs/SelectCancelDialog';
 import { AmountChangeDialog } from './actionSection/dialogs/AmountChangeDialog';
 import { AllDiscountDialog } from './actionSection/dialogs/AllDiscountDialog';
 import { ServiceAmountDialog } from './orderSection/dialogs/ServiceAmountDialog';
+import { CardPaymentDialog } from './orderSection/dialogs/CardPaymentDialog';
+import { ArbitraryPaymentConfirmDialog } from './orderSection/dialogs/ArbitraryPaymentConfirmDialog';
 import type { Order, OrderItem } from './orderSection/types';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { toast } from '@repo/ui/components';
 
 export const TableDetailContainer = () => {
+  //메뉴 추가 모달
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
+  //선택 취소 모달
   const [isSelectCancelDialogOpen, setIsSelectCancelDialogOpen] =
     useState(false);
+  //금액 변경 모달
   const [isAmountChangeDialogOpen, setIsAmountChangeDialogOpen] =
     useState(false);
+  // 전체 할인 모달
   const [isAllDiscountDialogOpen, setIsAllDiscountDialogOpen] = useState(false);
+  //서비스 금액 변경 모달
   const [isServiceAmountDialogOpen, setIsServiceAmountDialogOpen] =
     useState(false);
+  //서비스 금액 변경 모달 선택 메뉴
   const [selectedItemForService, setSelectedItemForService] =
     useState<OrderItem | null>(null);
+  //카드 결제 모달
+  const [isCardPaymentDialogOpen, setIsCardPaymentDialogOpen] = useState(false);
+  //임의 결제 확인 모달
+  const [
+    isArbitraryPaymentConfirmDialogOpen,
+    setIsArbitraryPaymentConfirmDialogOpen,
+  ] = useState(false);
 
   const order: Order = {
     tableName: '2번 테이블',
@@ -121,7 +136,7 @@ export const TableDetailContainer = () => {
           <OrderPanel
             order={order}
             selectedItemId=""
-            onPayCard={() => console.log('카드결제')}
+            onPayCard={() => setIsCardPaymentDialogOpen(true)}
             onPayCash={() => console.log('현금결제')}
             onSplitPay={() => console.log('분할결제')}
             onItemClick={handleItemClick}
@@ -134,28 +149,33 @@ export const TableDetailContainer = () => {
           />
         </S.Right>
       </S.Layout>
+      {/* 메뉴 추가 모달 */}
       <AddMenuDialog
         isOpen={isAddMenuDialogOpen}
         onClose={() => setIsAddMenuDialogOpen(false)}
         tableName={order.tableName}
         onAdd={handleAddMenu}
       />
+      {/* 선택 취소 모달 */}
       <SelectCancelDialog
         isOpen={isSelectCancelDialogOpen}
         onClose={() => setIsSelectCancelDialogOpen(false)}
         items={order.items}
         onCancel={handleSelectCancel}
       />
+      {/* 금액 변경 모달 */}
       <AmountChangeDialog
         isOpen={isAmountChangeDialogOpen}
         onClose={() => setIsAmountChangeDialogOpen(false)}
         onApply={handleAmountChange}
       />
+      {/* 전체 할인 모달 */}
       <AllDiscountDialog
         isOpen={isAllDiscountDialogOpen}
         onClose={() => setIsAllDiscountDialogOpen(false)}
         onApply={handleAllDiscount}
       />
+      {/* 서비스 금액 변경 모달 */}
       <ServiceAmountDialog
         isOpen={isServiceAmountDialogOpen}
         onClose={() => {
@@ -163,6 +183,34 @@ export const TableDetailContainer = () => {
           setSelectedItemForService(null);
         }}
         onApply={handleServiceAmountApply}
+      />
+      {/* 카드 결제 모달 */}
+      <CardPaymentDialog
+        isOpen={isCardPaymentDialogOpen}
+        onClose={() => setIsCardPaymentDialogOpen(false)}
+        paymentAmount={order.totalPrice}
+        billingAmount={order.totalPrice}
+        onArbitraryPayment={() => {
+          setIsArbitraryPaymentConfirmDialogOpen(true);
+        }}
+        onConfirmPayment={() => {
+          console.log('결제하기 클릭');
+          // TODO: 결제하기 모달 열기
+        }}
+      />
+      {/* 임의 결제 확인 모달 */}
+      <ArbitraryPaymentConfirmDialog
+        isOpen={isArbitraryPaymentConfirmDialogOpen}
+        onClose={() => setIsArbitraryPaymentConfirmDialogOpen(false)}
+        onBack={() => {
+          setIsArbitraryPaymentConfirmDialogOpen(false);
+        }}
+        onContinue={() => {
+          console.log('임의 결제 계속 진행');
+          setIsArbitraryPaymentConfirmDialogOpen(false);
+          setIsCardPaymentDialogOpen(false);
+          // TODO: 실제 임의 결제 로직 구현
+        }}
       />
     </S.TableDetailContainer>
   );
