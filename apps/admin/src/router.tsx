@@ -62,6 +62,11 @@ const StylePage = lazy(() =>
     default: module.StylePage,
   }))
 );
+const MiscellaneousPage = lazy(() =>
+  import('@/pages/settings/MiscellaneousPage').then((module) => ({
+    default: module.MiscellaneousPage,
+  }))
+);
 
 export const router = createBrowserRouter([
   {
@@ -178,6 +183,14 @@ export const router = createBrowserRouter([
         element: (
           <Suspense>
             <StylePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: ROUTES.SETTINGS.MISCELLANEOUS.path,
+        element: (
+          <Suspense>
+            <MiscellaneousPage />
           </Suspense>
         ),
       },
