@@ -53,7 +53,6 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
                 onChange={() => {
                   // noop
                 }}
-                listPosition="right"
               />
             </S.DropdownContainer>
           )}

@@ -6,7 +6,6 @@ export const Container = styled.div`
   background-color: ${theme.colors.white};
   border-radius: 1rem;
   width: 60rem;
-  max-width: calc(100vw - 2rem);
 `;
 
 export const Tab = styled.div`

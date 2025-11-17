@@ -17,7 +17,6 @@ export const Container = styled.div`
   position: relative;
   background-color: ${({ theme }) => theme.colors.white};
   width: 40rem;
-  max-width: calc(100vw - 2rem);
   padding: 24px;
   border-radius: 1rem;
 `;
