@@ -5,10 +5,13 @@ import * as S from './tableDetailContainer.styles';
 import { OrderPanel } from './orderSection/OrderPanel';
 import { ActionGrid } from './actionSection/ActionGrid';
 import { AddMenuDialog } from './actionSection/dialogs/AddMenuDialog';
+import { SelectCancelDialog } from './actionSection/dialogs/SelectCancelDialog';
 import type { Order } from './orderSection/types';
 
 export const TableDetailContainer = () => {
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
+  const [isSelectCancelDialogOpen, setIsSelectCancelDialogOpen] =
+    useState(false);
 
   const order: Order = {
     tableName: '2번 테이블',
@@ -27,7 +30,7 @@ export const TableDetailContainer = () => {
       {
         id: '2',
         name: '삼겹살',
-        qty: 99999,
+        qty: 999,
         unitPrice: 300000000,
       },
     ],
@@ -39,6 +42,8 @@ export const TableDetailContainer = () => {
   const handleActionPress = (id: string) => {
     if (id === 'add-menu') {
       setIsAddMenuDialogOpen(true);
+    } else if (id === 'select-cancel') {
+      setIsSelectCancelDialogOpen(true);
     } else {
       console.log('action:', id);
     }
@@ -47,6 +52,13 @@ export const TableDetailContainer = () => {
   const handleAddMenu = (selectedItems: unknown) => {
     console.log('추가된 메뉴:', selectedItems);
     // TODO: 실제 메뉴 추가 로직 구현
+  };
+
+  const handleSelectCancel = (
+    selectedItems: { itemId: string; quantity: number }[]
+  ) => {
+    console.log('취소할 메뉴:', selectedItems);
+    // TODO: 실제 선택 취소 로직 구현
   };
 
   return (
@@ -73,6 +85,12 @@ export const TableDetailContainer = () => {
         onClose={() => setIsAddMenuDialogOpen(false)}
         tableName={order.tableName}
         onAdd={handleAddMenu}
+      />
+      <SelectCancelDialog
+        isOpen={isSelectCancelDialogOpen}
+        onClose={() => setIsSelectCancelDialogOpen(false)}
+        items={order.items}
+        onCancel={handleSelectCancel}
       />
     </S.TableDetailContainer>
   );

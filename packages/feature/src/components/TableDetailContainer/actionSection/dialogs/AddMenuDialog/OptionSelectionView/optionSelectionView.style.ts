@@ -49,8 +49,8 @@ export const OptionGroupHeader = styled.div`
 `;
 
 export const OptionGroupName = styled.div`
-  ${TYPOGRAPHY.ST_2}
-  color: ${colors.primary[500]};
+  ${TYPOGRAPHY.ST_1}
+  color: ${colors.grey[700]};
 `;
 
 export const OptionGroupInfo = styled.div`
