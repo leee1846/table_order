@@ -75,6 +75,8 @@ const Title = styled.h2<{ hasContent: boolean }>`
   ${TYPOGRAPHY.MT_1}
   color: ${colors.grey[800]};
   margin-bottom: ${({ hasContent }) => (hasContent ? '12px' : '40px')};
+  white-space: pre-line;
+  text-align: center;
 `;
 
 const Content = styled.div`

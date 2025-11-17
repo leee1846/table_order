@@ -58,6 +58,7 @@ const Title = styled.h2`
   ${TYPOGRAPHY.MT_1}
   color: ${colors.grey[800]};
   margin-bottom: 12px;
+  white-space: pre-line;
 `;
 
 const Content = styled.div`

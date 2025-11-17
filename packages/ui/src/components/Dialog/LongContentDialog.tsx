@@ -70,6 +70,7 @@ const Title = styled.h2`
   color: ${colors.grey[800]};
   margin-bottom: 16px;
   flex-shrink: 0;
+  white-space: pre-line;
 `;
 
 const Content = styled.div`

@@ -7,6 +7,8 @@ import { ActionGrid } from './actionSection/ActionGrid';
 import { AddMenuDialog } from './actionSection/dialogs/AddMenuDialog';
 import { SelectCancelDialog } from './actionSection/dialogs/SelectCancelDialog';
 import type { Order } from './orderSection/types';
+import {  openDualActionDialog } from '@repo/feature/utils';
+import { toast } from '@repo/ui/components';
 
 export const TableDetailContainer = () => {
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
@@ -44,8 +46,19 @@ export const TableDetailContainer = () => {
       setIsAddMenuDialogOpen(true);
     } else if (id === 'select-cancel') {
       setIsSelectCancelDialogOpen(true);
-    } else {
-      console.log('action:', id);
+    } else if (id === 'all-cancel') {
+      openDualActionDialog({
+        title: `전체 메뉴를\n취소하시겠어요?`,
+        primaryText: '네',
+        secondaryText: '아니오',
+        onConfirm: () => {
+          console.log('전체 취소');
+          toast('전체 메뉴를 취소했어요.');
+        },
+        onCancel: () => {
+          console.log('전체 취소 취소');
+        },
+      });
     }
   };
 

@@ -9,7 +9,7 @@ export interface DialogConfig {
   id: string;
   type: DialogType;
   title?: string;
-  content: React.ReactNode;
+  content?: React.ReactNode;
   confirmText?: string;
   cancelText?: string;
   primaryText?: string;
