@@ -21,7 +21,7 @@ export const Title = styled.div`
     background-color: ${({ theme }) => theme.colors.grey[800]};
   }
 
-  & > span:last-child {
+  & > span {
     ${TYPOGRAPHY.ST_1}
     color: ${({ theme }) => theme.colors.grey[600]};
   }
@@ -30,8 +30,20 @@ export const Title = styled.div`
 export const Filters = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+`;
+
+export const FiltersRight = styled.div`
+  display: flex;
+  align-items: center;
   gap: 12px;
+`;
+
+export const BottomButtonContainer = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 export const CalendarButton = styled.button`

@@ -17,8 +17,7 @@ export const Section = styled.section`
   max-width: 13.125rem;
   height: 100%;
   min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 `;
 
 export const Logo = styled.p`
@@ -30,6 +29,10 @@ export const List = styled.ul`
   flex-direction: column;
   gap: 4px;
   padding-left: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 `;
 
 interface ICategoryButton {

@@ -6,7 +6,7 @@ export const Container = styled.div`
   padding: 40px 24px 40px 30px;
 `;
 
-export const Title = styled.p`
+export const Title = styled.div`
   display: flex;
   align-items: center;
   gap: 11px;
