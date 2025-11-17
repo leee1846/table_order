@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { css } from '@emotion/react';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import { RightPanel } from '../addMenuDialog.styles';
 
@@ -7,26 +8,23 @@ const { colors } = theme;
 export const OptionContentWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 320px;
-  gap: 24px;
-  margin-top: 20px;
-  height: calc(90vh - 100px);
+  height: 100%;
 `;
 
 export const OptionLeftPanel = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: ${colors.white};
-  border-radius: 12px;
-  padding: 20px;
+  background-color: ${colors.grey[50]};
+  padding: 56px 45px 0 45px;
   overflow: hidden;
 `;
 
 export const OptionHeader = styled.div`
-  margin-bottom: 24px;
+  margin-bottom: 40px;
 `;
 
 export const OptionMenuName = styled.h2`
-  ${TYPOGRAPHY.MT_4}
+  ${TYPOGRAPHY.MT_1}
   color: ${colors.grey[800]};
 `;
 
@@ -46,18 +44,18 @@ export const OptionGroup = styled.div`
 
 export const OptionGroupHeader = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  gap: 8px;
 `;
 
 export const OptionGroupName = styled.div`
-  ${TYPOGRAPHY.MT_6}
-  color: ${colors.grey[800]};
+  ${TYPOGRAPHY.ST_2}
+  color: ${colors.primary[500]};
 `;
 
 export const OptionGroupInfo = styled.div`
   ${TYPOGRAPHY.ST_4}
-  color: ${colors.primary[500]};
+  color: ${colors.semantic[400]};
 `;
 
 export const OptionRow = styled.div`
@@ -116,4 +114,21 @@ export const OptionItemName = styled.div`
 export const OptionItemQuantity = styled.div`
   ${TYPOGRAPHY.ST_4}
   color: ${colors.grey[700]};
+`;
+
+export const rightPanelQuantityInput = css`
+  width: 100%;
+  border-radius: 12px;
+`;
+
+export const MenuQuantitySection = styled.div`
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const rightPanelMenuQuantityInput = css`
+  width: 100%;
+  border-radius: 12px;
 `;

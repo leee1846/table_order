@@ -29,6 +29,7 @@ export { default as FirstPageIcon } from './FirstPageIcon';
 export { default as LastPageIcon } from './LastPageIcon';
 export { default as EmptedCartIcon } from './EmptedCartIcon';
 export { default as CalendarMonthIcon } from './CalendarMonthIcon';
+export { default as OptionSettingIcon } from './OptionSettingIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';

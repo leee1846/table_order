@@ -5,7 +5,7 @@ const { colors } = theme;
 
 export const ContentWrapper = styled.div`
   display: flex;
-  height: 100%;
+  height: 80vh;
 `;
 
 export const Sidebar = styled.div`
@@ -72,10 +72,12 @@ export const SelectedItemsList = styled.div`
 export const SelectedItem = styled.div`
   background-color: ${colors.white};
   border-radius: 8px;
-  padding: 12px;
+  padding: 8px 8px 18px 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  border-bottom: 1px solid ${colors.grey[200]};
 `;
 
 export const ItemHeader = styled.div`
@@ -85,13 +87,12 @@ export const ItemHeader = styled.div`
 `;
 
 export const ItemName = styled.div`
-  ${TYPOGRAPHY.ST_4}
+  ${TYPOGRAPHY.MT_7}
   color: ${colors.grey[800]};
-  font-weight: 600;
 `;
 
 export const ItemPrice = styled.div`
-  ${TYPOGRAPHY.ST_4}
+  ${TYPOGRAPHY.MT_7}
   color: ${colors.grey[700]};
 `;
 
@@ -110,8 +111,8 @@ export const SelectedOptionItem = styled.div`
 `;
 
 export const OptionItemName = styled.div`
-  ${TYPOGRAPHY.ST_5}
-  color: ${colors.grey[600]};
+  ${TYPOGRAPHY.ST_4}
+  color: ${colors.grey[500]};
 `;
 
 export const OptionItemPrice = styled.div`
@@ -122,8 +123,9 @@ export const OptionItemPrice = styled.div`
 export const ItemActions = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 8px;
+  justify-content: end;
+  gap: 12px;
+  margin-top: 18px;
 `;
 
 export const DeleteButton = styled.button`
@@ -151,9 +153,11 @@ export const QuantitySelector = styled.div`
   display: flex;
   align-items: center;
   border: 1px solid ${colors.grey[300]};
-  border-radius: 6px;
+  padding: 4px 0;
+  border-radius: 12px;
   overflow: hidden;
   background-color: ${colors.white};
+  height: 52px;
 `;
 
 export const QuantityButton = styled.button`
@@ -162,12 +166,14 @@ export const QuantityButton = styled.button`
   border: none;
   background-color: ${colors.white};
   color: ${colors.grey[700]};
-  ${TYPOGRAPHY.ST_4}
+
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
+
+  &:disabled {
 
   &:hover {
     background-color: ${colors.grey[50]};
@@ -184,10 +190,8 @@ export const QuantityValue = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  ${TYPOGRAPHY.ST_4}
+  ${TYPOGRAPHY.MT_6}
   color: ${colors.grey[800]};
-  border-left: 1px solid ${colors.grey[300]};
-  border-right: 1px solid ${colors.grey[300]};
 `;
 
 export const ItemDivider = styled.div`

@@ -5,8 +5,8 @@ import type {
   SelectedMenuWithOptions,
   SelectedOption,
 } from './types';
-import { MenuSelectionView } from './MenuSelectionView/index';
-import { OptionSelectionView } from './OptionSelectionView/index';
+import { MenuSelectionView } from './MenuSelectionView';
+import { OptionSelectionView } from './OptionSelectionView';
 
 export const AddMenuDialog = ({
   isOpen,
@@ -25,6 +25,7 @@ export const AddMenuDialog = ({
   const [selectedOptions, setSelectedOptions] = useState<Map<string, number>>(
     new Map()
   );
+  const [menuQuantity, setMenuQuantity] = useState<number>(1);
 
   // 옵션 수량 변경 핸들러
   const handleOptionQuantityChange = (optionSeq: string, quantity: number) => {
@@ -39,11 +40,31 @@ export const AddMenuDialog = ({
     });
   };
 
-  // 메뉴 클릭 핸들러 - 옵션 화면으로 전환
+  // 메뉴 클릭 핸들러 - 옵션이 없으면 바로 추가, 있으면 옵션 화면으로 전환
   const handleMenuClick = (menu: MenuVo) => {
-    setSelectedMenu(menu);
-    setSelectedOptions(new Map());
-    setViewMode('option');
+    // 옵션이 없는 메뉴인지 확인
+    const hasOptions =
+      menu.optionGroupList &&
+      menu.optionGroupList.length > 0 &&
+      menu.optionGroupList.some(
+        (group) => group.optionList && group.optionList.length > 0
+      );
+
+    if (!hasOptions) {
+      // 옵션이 없으면 바로 RightPanel에 추가
+      const menuWithOptions: SelectedMenuWithOptions = {
+        menu,
+        selectedOptions: [],
+        quantity: 1,
+      };
+      setSelectedMenus((prev) => [...prev, menuWithOptions]);
+    } else {
+      // 옵션이 있으면 옵션 선택 화면으로 전환
+      setSelectedMenu(menu);
+      setSelectedOptions(new Map());
+      setMenuQuantity(1);
+      setViewMode('option');
+    }
   };
 
   // 옵션 화면에서 뒤로가기
@@ -51,6 +72,7 @@ export const AddMenuDialog = ({
     setViewMode('menu');
     setSelectedMenu(null);
     setSelectedOptions(new Map());
+    setMenuQuantity(1);
   };
 
   // 옵션 추가 핸들러
@@ -79,7 +101,7 @@ export const AddMenuDialog = ({
     const menuWithOptions: SelectedMenuWithOptions = {
       menu: selectedMenu,
       selectedOptions: selectedOptionsList,
-      quantity: 1,
+      quantity: menuQuantity,
     };
 
     setSelectedMenus((prev) => [...prev, menuWithOptions]);
@@ -117,6 +139,7 @@ export const AddMenuDialog = ({
     setSelectedCategory(mockCategories[0]?.categorySeq || '');
     setSelectedMenu(null);
     setSelectedOptions(new Map());
+    setMenuQuantity(1);
     setViewMode('menu');
     onClose();
   };
@@ -148,7 +171,9 @@ export const AddMenuDialog = ({
       <OptionSelectionView
         selectedMenu={selectedMenu}
         selectedOptions={selectedOptions}
+        menuQuantity={menuQuantity}
         onOptionQuantityChange={handleOptionQuantityChange}
+        onMenuQuantityChange={setMenuQuantity}
         onAdd={handleAddOptions}
         onBack={handleBackToMenu}
       />

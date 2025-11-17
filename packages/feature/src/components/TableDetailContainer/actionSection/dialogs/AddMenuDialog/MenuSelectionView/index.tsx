@@ -1,12 +1,19 @@
 import { useMemo } from 'react';
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import { theme } from '@repo/ui';
-import { CloseIcon, EmptedCartIcon, DeleteIcon } from '@repo/ui/icons';
+import {
+  CloseIcon,
+  EmptedCartIcon,
+  DeleteIcon,
+  RemoveIcon,
+  AddIcon,
+} from '@repo/ui/icons';
 import { mockCategories, type MenuVo } from '../../../../mock';
 import type { SelectedMenuWithOptions } from '../types';
 import * as S from './menuSelectionView.style';
 import * as A from '../addMenuDialog.styles';
 import { formatCurrency, calculateTotalAmount } from '@repo/util';
+import { css } from '@emotion/react';
 const { colors } = theme;
 
 interface MenuSelectionViewProps {
@@ -75,7 +82,7 @@ export const MenuSelectionView = ({
                 <S.MenuTitle>
                   {menu.localeMenuNameStr || menu.menuName}
                 </S.MenuTitle>
-                <S.MenuPrice>{formatCurrency(menu.menuPrice)}원</S.MenuPrice>
+                <S.MenuPrice>{formatCurrency(menu.menuPrice)}</S.MenuPrice>
               </S.MenuCard>
             ))}
           </S.MenuGrid>
@@ -102,7 +109,7 @@ export const MenuSelectionView = ({
                           {item.menu.localeMenuNameStr || item.menu.menuName}
                         </S.ItemName>
                         <S.ItemPrice>
-                          {formatCurrency(item.menu.menuPrice)}원
+                          {formatCurrency(item.menu.menuPrice)}
                         </S.ItemPrice>
                       </S.ItemHeader>
                       {item.selectedOptions.length > 0 && (
@@ -115,23 +122,28 @@ export const MenuSelectionView = ({
                                   option.optionName}
                               </S.OptionItemName>
                               <S.OptionItemPrice>
-                                {formatCurrency(option.optionPrice)}원
+                                {formatCurrency(option.optionPrice)}
                               </S.OptionItemPrice>
                             </S.SelectedOptionItem>
                           ))}
                         </S.SelectedOptionsContainer>
                       )}
                       <S.ItemActions>
-                        <S.DeleteButton
+                        <BasicButton
+                          variant="Solid_Grey_2XL"
                           onClick={() => onRemoveItem(index)}
                           aria-label="삭제"
+                          customStyle={css`
+                            padding: 14px;
+                            height: 52px;
+                          `}
                         >
                           <DeleteIcon
-                            width={20}
-                            height={20}
+                            width={24}
+                            height={24}
                             color={colors.grey[600]}
                           />
-                        </S.DeleteButton>
+                        </BasicButton>
                         <S.QuantitySelector>
                           <S.QuantityButton
                             onClick={() =>
@@ -139,7 +151,11 @@ export const MenuSelectionView = ({
                             }
                             aria-label="수량 감소"
                           >
-                            -
+                            <RemoveIcon
+                              width={24}
+                              height={24}
+                              color={colors.grey[800]}
+                            />
                           </S.QuantityButton>
                           <S.QuantityValue>{item.quantity}</S.QuantityValue>
                           <S.QuantityButton
@@ -148,7 +164,11 @@ export const MenuSelectionView = ({
                             }
                             aria-label="수량 증가"
                           >
-                            +
+                            <AddIcon
+                              width={24}
+                              height={24}
+                              color={colors.grey[800]}
+                            />
                           </S.QuantityButton>
                         </S.QuantitySelector>
                       </S.ItemActions>
@@ -160,7 +180,7 @@ export const MenuSelectionView = ({
             {selectedMenus.length > 0 && (
               <A.TotalSection>
                 <A.TotalLabel>합계</A.TotalLabel>
-                <A.TotalPrice>{formatCurrency(totalAmount)}원</A.TotalPrice>
+                <A.TotalPrice>{formatCurrency(totalAmount)}</A.TotalPrice>
               </A.TotalSection>
             )}
             <A.PanelFooter>

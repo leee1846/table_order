@@ -1,6 +1,6 @@
 import { BasicButton, ModalBackground, NumberInput } from '@repo/ui/components';
 import { theme } from '@repo/ui';
-import { CloseIcon } from '@repo/ui/icons';
+import { CloseIcon, OptionSettingIcon } from '@repo/ui/icons';
 import type { MenuVo } from '../../../../mock';
 import * as S from './optionSelectionView.style';
 import * as A from '../addMenuDialog.styles';
@@ -10,7 +10,9 @@ const { colors } = theme;
 interface OptionSelectionViewProps {
   selectedMenu: MenuVo;
   selectedOptions: Map<string, number>;
+  menuQuantity: number;
   onOptionQuantityChange: (optionSeq: string, quantity: number) => void;
+  onMenuQuantityChange: (quantity: number) => void;
   onAdd: () => void;
   onBack: () => void;
 }
@@ -18,7 +20,9 @@ interface OptionSelectionViewProps {
 export const OptionSelectionView = ({
   selectedMenu,
   selectedOptions,
+  menuQuantity,
   onOptionQuantityChange,
+  onMenuQuantityChange,
   onAdd,
   onBack,
 }: OptionSelectionViewProps) => {
@@ -74,7 +78,7 @@ export const OptionSelectionView = ({
                           {option.localeOptionNameStr || option.optionName}
                         </S.OptionName>
                         <NumberInput
-                          variant="square"
+                          variant="rounded"
                           value={quantity}
                           min={0}
                           disabled={isDisabled}
@@ -87,10 +91,6 @@ export const OptionSelectionView = ({
                   })}
                 </S.OptionGroup>
               ))}
-              {(!selectedMenu.optionGroupList ||
-                selectedMenu.optionGroupList.length === 0) && (
-                <S.EmptyOptionText>옵션이 없습니다.</S.EmptyOptionText>
-              )}
             </S.OptionListContainer>
           </S.OptionLeftPanel>
 
@@ -102,6 +102,7 @@ export const OptionSelectionView = ({
             <A.PanelContent>
               {!hasSelectedOptions ? (
                 <A.EmptyState>
+                  <OptionSettingIcon width={52} height={52} />
                   <A.EmptyText>추가한 옵션이 없어요.</A.EmptyText>
                 </A.EmptyState>
               ) : (
@@ -134,13 +135,17 @@ export const OptionSelectionView = ({
                 </S.SelectedOptionsList>
               )}
             </A.PanelContent>
+            <S.MenuQuantitySection>
+              <NumberInput
+                variant="square"
+                value={menuQuantity}
+                min={1}
+                onChange={onMenuQuantityChange}
+                customStyle={S.rightPanelMenuQuantityInput}
+              />
+            </S.MenuQuantitySection>
             <A.PanelFooter>
-              <BasicButton
-                variant="Solid_Navy_2XL"
-                onClick={onAdd}
-                fullWidth
-                disabled={!hasSelectedOptions}
-              >
+              <BasicButton variant="Solid_Navy_2XL" onClick={onAdd} fullWidth>
                 추가하기
               </BasicButton>
             </A.PanelFooter>

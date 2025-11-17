@@ -10,8 +10,8 @@ export const DialogContainer = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  height: 80vh;
   width: 80vw;
+  height: 80vh;
 `;
 
 export const CloseButton = styled.button`
@@ -72,14 +72,13 @@ export const TotalSection = styled.div`
 `;
 
 export const TotalLabel = styled.div`
-  ${TYPOGRAPHY.ST_4}
   color: ${colors.grey[800]};
+  ${TYPOGRAPHY.MT_2}
 `;
 
 export const TotalPrice = styled.div`
-  ${TYPOGRAPHY.ST_4}
+  ${TYPOGRAPHY.MT_2}
   color: ${colors.primary[500]};
-  font-weight: 700;
 `;
 
 export const PanelFooter = styled.div`

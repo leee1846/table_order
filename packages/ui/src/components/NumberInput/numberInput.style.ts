@@ -84,9 +84,49 @@ export const Container = styled.div<Props>`
     ${TYPOGRAPHY.MT_6}
     color: ${({ variant, value, disabled }) =>
       getTextColor(variant, value, disabled)};
+    border: none;
+    background: transparent;
+    outline: none;
 
     &:disabled {
       cursor: not-allowed;
+    }
+  }
+
+  &:focus-within {
+    border-color: ${({ variant, disabled }) =>
+      disabled ? colors.grey[300] : colors.primary[500]};
+    background-color: ${({ variant, disabled }) =>
+      disabled
+        ? colors.grey[50]
+        : variant === 'rounded'
+          ? colors.primary[500]
+          : colors.grey[50]};
+
+    & > input {
+      color: ${({ variant, disabled }) =>
+        disabled
+          ? colors.grey[500]
+          : variant === 'rounded'
+            ? colors.white
+            : colors.grey[900]};
+    }
+
+    & > button {
+      & > svg {
+        color: ${({ variant, disabled }) =>
+          disabled
+            ? colors.grey[400]
+            : variant === 'rounded'
+              ? colors.white
+              : colors.grey[800]} !important;
+        fill: ${({ variant, disabled }) =>
+          disabled
+            ? colors.grey[400]
+            : variant === 'rounded'
+              ? colors.white
+              : colors.grey[800]} !important;
+      }
     }
   }
 `;
