@@ -71,10 +71,15 @@ export const Dropdown = ({
       return;
     }
 
-    const calculateListDirection = (triggerRect: DOMRect): TListDirection => {
-      const screenCenterY = window.innerHeight / 2;
-      const triggerCenterY = triggerRect.top + triggerRect.height / 2;
-      return triggerCenterY < screenCenterY ? 'down' : 'up';
+    const calculateListDirection = (
+      triggerRect: DOMRect,
+      listHeight: number
+    ): TListDirection => {
+      // 트리거 버튼 아래쪽에서 화면 하단까지의 남은 공간
+      const spaceBelow = window.innerHeight - triggerRect.bottom;
+
+      // 아래로 열 공간이 충분하면 'down', 아니면 'up'
+      return spaceBelow >= listHeight ? 'down' : 'up';
     };
 
     const calculateListPosition = (triggerRect: DOMRect): TListPosition => {
@@ -85,8 +90,11 @@ export const Dropdown = ({
 
     const triggerRect = dropdownRef.current.getBoundingClientRect();
 
-    // 화면 절반 기준으로 방향 계산
-    const direction = calculateListDirection(triggerRect);
+    // 리스트의 실제 렌더링된 높이 계산 (max-height 적용 후)
+    const listHeight = listRef.current.offsetHeight;
+
+    // 리스트 높이를 고려한 방향 계산
+    const direction = calculateListDirection(triggerRect, listHeight);
     const position = calculateListPosition(triggerRect);
 
     setListDirection(direction);
