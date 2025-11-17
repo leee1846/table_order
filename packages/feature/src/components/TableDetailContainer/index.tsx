@@ -6,13 +6,16 @@ import { OrderPanel } from './orderSection/OrderPanel';
 import { ActionGrid } from './actionSection/ActionGrid';
 import { AddMenuDialog } from './actionSection/dialogs/AddMenuDialog';
 import { SelectCancelDialog } from './actionSection/dialogs/SelectCancelDialog';
+import { AmountChangeDialog } from './actionSection/dialogs/AmountChangeDialog';
 import type { Order } from './orderSection/types';
-import {  openDualActionDialog } from '@repo/feature/utils';
+import { openDualActionDialog } from '@repo/feature/utils';
 import { toast } from '@repo/ui/components';
 
 export const TableDetailContainer = () => {
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
   const [isSelectCancelDialogOpen, setIsSelectCancelDialogOpen] =
+    useState(false);
+  const [isAmountChangeDialogOpen, setIsAmountChangeDialogOpen] =
     useState(false);
 
   const order: Order = {
@@ -59,6 +62,8 @@ export const TableDetailContainer = () => {
           console.log('전체 취소 취소');
         },
       });
+    } else if (id === 'amount-change') {
+      setIsAmountChangeDialogOpen(true);
     }
   };
 
@@ -72,6 +77,11 @@ export const TableDetailContainer = () => {
   ) => {
     console.log('취소할 메뉴:', selectedItems);
     // TODO: 실제 선택 취소 로직 구현
+  };
+
+  const handleAmountChange = (amount: number) => {
+    console.log('변경된 금액:', amount);
+    // TODO: 실제 금액 변경 로직 구현
   };
 
   return (
@@ -104,6 +114,11 @@ export const TableDetailContainer = () => {
         onClose={() => setIsSelectCancelDialogOpen(false)}
         items={order.items}
         onCancel={handleSelectCancel}
+      />
+      <AmountChangeDialog
+        isOpen={isAmountChangeDialogOpen}
+        onClose={() => setIsAmountChangeDialogOpen(false)}
+        onApply={handleAmountChange}
       />
     </S.TableDetailContainer>
   );
