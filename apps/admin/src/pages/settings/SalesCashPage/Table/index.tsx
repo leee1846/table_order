@@ -1,8 +1,8 @@
-import * as UIStyles from '@repo/ui/styles';
-import * as S from '@/pages/settings/SalesCardPage/Table/table.style';
-import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
+import * as UIStyles from '@repo/ui/styles';
+import { theme } from '@repo/ui';
 import { formatCurrency } from '@repo/util';
+import * as S from '@/pages/settings/SalesCashPage/Table/table.style';
 import { openDualActionDialog } from '@repo/feature/utils';
 
 const LIST = [
@@ -16,13 +16,21 @@ const LIST = [
   },
   {
     id: 3,
+    isCancel: false,
+  },
+  {
+    id: 4,
+    isCancel: false,
+  },
+  {
+    id: 5,
     isCancel: true,
   },
 ];
 
 export const Table = () => {
-  const getTextColor = (isCancel: boolean, isApproval?: boolean) => {
-    if (isApproval) {
+  const getTextColor = (isCancel: boolean, isPayment?: boolean) => {
+    if (isPayment) {
       return isCancel ? theme.colors.semantic[400] : theme.colors.primary[500];
     }
 
@@ -44,73 +52,37 @@ export const Table = () => {
     <UIStyles.tableStyles.Table>
       <UIStyles.tableStyles.Thead>
         <tr>
-          <th>
-            승인
-            <br />
-            구분
-          </th>
-          <th>
-            카드번호
-            <br />
-            (승인번호)
-          </th>
-          <th>총거래금액</th>
+          <th>주문번호</th>
+          <th>거래일자</th>
           <th>거래금액</th>
           <th>
-            거래승인(취소)일시
+            현금영수증
             <br />
-            거래고유번호
+            발행여부
           </th>
           <th>
-            매입사
+            현금영수증
             <br />
-            (발급사)
+            발행
           </th>
-          <th>
-            공급가
-            <br />
-            부가세
-          </th>
-          <th>영수증</th>
-          <th>거래취소</th>
+          <th>거래 취소</th>
         </tr>
       </UIStyles.tableStyles.Thead>
       <UIStyles.tableStyles.Tbody>
         {LIST.map((item) => (
           <tr key={item.id}>
-            <S.ColorTd color={getTextColor(item.isCancel, true)}>
-              승인
-            </S.ColorTd>
-            <S.ColorTd color={getTextColor(item.isCancel)}>
-              가상승인
-              <br />
-              [-]
-            </S.ColorTd>
-            <S.ColorTd color={getTextColor(item.isCancel)}>
-              {formatCurrency(100000)}
-            </S.ColorTd>
-            <S.ColorTd color={getTextColor(item.isCancel)}>
-              {formatCurrency(100000)}
-            </S.ColorTd>
+            <S.ColorTd color={getTextColor(item.isCancel)}>111533431</S.ColorTd>
             <S.ColorTd color={getTextColor(item.isCancel)}>
               2025-01-01 12:00:00
-              <br />
-              2321313
-            </S.ColorTd>
-            <S.ColorTd color={getTextColor(item.isCancel)}>
-              기타카드
-              <br />
-              [임의결제]
             </S.ColorTd>
             <S.ColorTd color={getTextColor(item.isCancel)}>
               {formatCurrency(100000)}
-              <br />
-              {formatCurrency(10000)}
             </S.ColorTd>
-            <td>-</td>
+            <S.ColorTd color={getTextColor(item.isCancel)}>-</S.ColorTd>
+            <S.ColorTd color={getTextColor(item.isCancel)}>-</S.ColorTd>
             <td>
               <BasicButton
-                variant="Outline_Navy_M"
+                variant="Outline_Navy_S"
                 onClick={onClickCancel}
                 customStyle={S.cancelButtonCss}
               >

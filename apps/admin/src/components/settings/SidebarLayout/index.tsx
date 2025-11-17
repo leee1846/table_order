@@ -4,9 +4,18 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import * as S from '@/components/settings/SidebarLayout/sidebarLayout.style';
 import { ChevronForwardIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { type TMenu, SIDEBAR_MENUS } from '@/constants/settings';
+import { type TMenu, createSidebarMenus } from '@/constants/settings';
+import { ROUTES } from '@/constants/routes';
 
 export const SidebarLayout = () => {
+  const SIDEBAR_MENUS = createSidebarMenus(
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => ({
+      id,
+      label: `카테고리 ${id} 메뉴`,
+      path: ROUTES.SETTINGS.CATEGORY_MENUS.generate(id),
+    }))
+  );
+
   const navigate = useNavigate();
   const location = useLocation();
   const [openedMenuIds, setOpenedMenuIds] = useState<Set<string>>(new Set());

@@ -1,5 +1,5 @@
-import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
+import styled from '@emotion/styled';
 
 export const Container = styled.div`
   display: flex;

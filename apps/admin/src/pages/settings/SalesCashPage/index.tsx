@@ -1,23 +1,23 @@
-import { Calender, Dropdown, Pagination } from '@repo/ui/components';
+import { useState } from 'react';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { useState } from 'react';
-import { Table } from '@/pages/settings/SalesOrderPage/Table';
+import { Calender, Dropdown, Pagination } from '@repo/ui/components';
+import { Table } from '@/pages/settings/SalesCashPage/Table';
 import * as UIStyles from '@repo/ui/styles';
-import * as S from './salesOrderPage.style';
+import * as S from './salesCashPage.style';
 
-export const SalesOrderPage = () => {
+const orderStatusOptions = [
+  { value: 'all', label: '오늘' },
+  { value: 'yesterday', label: '어제' },
+  { value: 'thisWeek', label: '이번주' },
+  { value: 'thisMonth', label: '이번달' },
+  { value: '3Months', label: '3개월' },
+];
+
+export const SalesCashPage = () => {
   const [showCalender, setShowCalender] = useState<boolean>(false);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-
-  const orderStatusOptions = [
-    { value: 'all', label: '오늘' },
-    { value: 'yesterday', label: '어제' },
-    { value: 'thisWeek', label: '이번주' },
-    { value: 'thisMonth', label: '이번달' },
-    { value: '3Months', label: '3개월' },
-  ];
 
   const onSelectDate = (startDate: string, endDate: string) => {
     setStartDate(startDate);
@@ -31,7 +31,7 @@ export const SalesOrderPage = () => {
           <S.Title>
             매출 관리
             <div />
-            <span>주문내역</span>
+            <span>단순현금결제내역</span>
           </S.Title>
 
           <S.Filters>

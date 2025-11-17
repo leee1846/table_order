@@ -14,7 +14,7 @@ export type TMenu = {
   matchPattern?: string; // 하위 경로 매칭용
 };
 
-export const SIDEBAR_MENUS: TMenu[] = [
+export const createSidebarMenus = (menuSubMenus?: TSubMenu[]): TMenu[] => [
   {
     id: 'categories',
     label: '카테고리 관리',
@@ -24,11 +24,7 @@ export const SIDEBAR_MENUS: TMenu[] = [
     id: 'menus',
     label: '메뉴 관리',
     matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.CATEGORY_MENUS.path}`,
-    subMenus: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => ({
-      id,
-      label: `카테고리 ${id} 메뉴`,
-      path: ROUTES.SETTINGS.CATEGORY_MENUS.generate(id),
-    })),
+    subMenus: menuSubMenus,
   },
   {
     id: 'sales',
@@ -49,6 +45,11 @@ export const SIDEBAR_MENUS: TMenu[] = [
         id: 'card',
         label: '카드승인내역',
         path: ROUTES.SETTINGS.SALES.CARD.generate(),
+      },
+      {
+        id: 'cash',
+        label: '단순현금결제내역',
+        path: ROUTES.SETTINGS.SALES.CASH.generate(),
       },
     ],
   },

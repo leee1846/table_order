@@ -25,6 +25,10 @@ export const ROUTES = {
         path: 'card',
         generate: () => '/settings/sales/card',
       },
+      CASH: {
+        path: 'cash',
+        generate: () => '/settings/sales/cash',
+      },
     },
   },
   TABLES: {
