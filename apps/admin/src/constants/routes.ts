@@ -34,6 +34,10 @@ export const ROUTES = {
         generate: () => '/settings/sales/menu',
       },
     },
+    STYLE: {
+      path: 'style',
+      generate: () => '/settings/style',
+    },
   },
   TABLES: {
     path: '/tables',

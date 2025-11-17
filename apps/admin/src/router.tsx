@@ -57,6 +57,11 @@ const SalesMenuPage = lazy(() =>
     default: module.SalesMenuPage,
   }))
 );
+const StylePage = lazy(() =>
+  import('@/pages/settings/StylePage').then((module) => ({
+    default: module.StylePage,
+  }))
+);
 
 export const router = createBrowserRouter([
   {
@@ -167,6 +172,14 @@ export const router = createBrowserRouter([
             ),
           },
         ],
+      },
+      {
+        path: ROUTES.SETTINGS.STYLE.path,
+        element: (
+          <Suspense>
+            <StylePage />
+          </Suspense>
+        ),
       },
     ],
   },
