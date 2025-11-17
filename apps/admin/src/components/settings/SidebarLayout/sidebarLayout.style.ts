@@ -18,6 +18,7 @@ export const Section = styled.section`
   height: 100%;
   min-height: 0;
   overflow: hidden;
+  position: relative;
 `;
 
 export const Logo = styled.p`
@@ -29,6 +30,7 @@ export const List = styled.ul`
   flex-direction: column;
   gap: 4px;
   padding-left: 16px;
+  padding-bottom: 120px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -86,6 +88,26 @@ export const DetailButton = styled.button<IDetailButton>`
     ${TYPOGRAPHY.ST_4}
     color: ${({ theme, isSelected }) =>
       isSelected ? theme.colors.primary[400] : theme.colors.grey[400]};
+  }
+`;
+
+export const FloatingHomeButton = styled.button`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px 0;
+  background-color: ${({ theme }) => theme.colors.grey[900]};
+  cursor: pointer;
+
+  span {
+    ${TYPOGRAPHY.MT_6}
+    color: ${({ theme }) => theme.colors.grey[600]};
   }
 `;
 

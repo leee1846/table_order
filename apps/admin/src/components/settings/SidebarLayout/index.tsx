@@ -2,7 +2,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import * as S from '@/components/settings/SidebarLayout/sidebarLayout.style';
-import { ChevronForwardIcon } from '@repo/ui/icons';
+import { ChevronForwardIcon, HomeFilledIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { type TMenu, createSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
@@ -76,7 +76,7 @@ export const SidebarLayout = () => {
         return next;
       });
     });
-  }, [location.pathname]);
+  }, [location.pathname, SIDEBAR_MENUS]);
 
   return (
     <S.Layout>
@@ -125,6 +125,18 @@ export const SidebarLayout = () => {
             );
           })}
         </S.List>
+
+        <S.FloatingHomeButton
+          type="button"
+          onClick={() => navigate(ROUTES.TABLES.generate())}
+        >
+          <HomeFilledIcon
+            width={24}
+            height={24}
+            color={theme.colors.grey[700]}
+          />
+          <span>메인 홈</span>
+        </S.FloatingHomeButton>
       </S.Section>
 
       <S.Content>
