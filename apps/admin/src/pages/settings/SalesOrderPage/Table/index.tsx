@@ -2,30 +2,35 @@ import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from './table.style';
+import { formatCurrency } from '@repo/util';
+import { useState } from 'react';
+import { OrderDetailModal } from '@/pages/settings/SalesOrderPage/OrderDetailModal';
+
+const LIST = [
+  {
+    id: 1,
+    isCancel: false,
+  },
+  {
+    id: 2,
+    isCancel: false,
+  },
+  {
+    id: 3,
+    isCancel: false,
+  },
+  {
+    id: 4,
+    isCancel: false,
+  },
+  {
+    id: 5,
+    isCancel: true,
+  },
+];
 
 export const Table = () => {
-  const LIST = [
-    {
-      id: 1,
-      isCancel: false,
-    },
-    {
-      id: 2,
-      isCancel: false,
-    },
-    {
-      id: 3,
-      isCancel: false,
-    },
-    {
-      id: 4,
-      isCancel: false,
-    },
-    {
-      id: 5,
-      isCancel: true,
-    },
-  ];
+  const [isOpenOrderDetailModal, setIsOpenOrderDetailModal] = useState(false);
 
   const getTextColor = (isCancel: boolean, isPayment?: boolean) => {
     if (isPayment) {
@@ -59,18 +64,30 @@ export const Table = () => {
                 2025-01-01 12:00:00
               </S.ColorTd>
               <S.ColorTd color={getTextColor(item.isCancel)}>2</S.ColorTd>
-              <S.ColorTd color={getTextColor(item.isCancel)}>100000</S.ColorTd>
+              <S.ColorTd color={getTextColor(item.isCancel)}>
+                {formatCurrency(100000)}
+              </S.ColorTd>
               <S.ColorTd color={getTextColor(item.isCancel, true)}>
                 카드
               </S.ColorTd>
               <td>2</td>
               <td>
-                <BasicButton variant="Outline_Navy_S">보기</BasicButton>
+                <BasicButton
+                  variant="Outline_Navy_S"
+                  onClick={() => setIsOpenOrderDetailModal(true)}
+                >
+                  보기
+                </BasicButton>
               </td>
             </tr>
           ))}
         </UIStyles.tableStyles.Tbody>
       </UIStyles.tableStyles.Table>
+
+      {/* 주문 내역 및 결제 내역 모달 */}
+      {isOpenOrderDetailModal && (
+        <OrderDetailModal onClose={() => setIsOpenOrderDetailModal(false)} />
+      )}
     </div>
   );
 };

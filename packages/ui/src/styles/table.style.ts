@@ -24,16 +24,18 @@ export const Thead = styled.thead`
   & > tr {
     width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: space-evenly;
+    align-items: flex-start;
     gap: 6px;
   }
 
   & > tr > th {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     text-align: center;
     ${TYPOGRAPHY.ST_3}
     color: ${theme.colors.grey[600]};
+    word-wrap: break-word;
+    word-break: break-word;
   }
 `;
 
@@ -45,17 +47,19 @@ export const Tbody = styled.tbody`
     width: 100%;
     padding: 14px 6px;
     display: flex;
-    align-items: center;
-    justify-content: space-evenly;
+    align-items: flex-start;
     gap: 6px;
     border-bottom: 1px solid ${theme.colors.grey[200]};
   }
 
   & > tr > td {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     text-align: center;
     ${TYPOGRAPHY.ST_4}
     color: ${theme.colors.grey[700]};
+    word-wrap: break-word;
+    word-break: break-word;
   }
 `;
 
