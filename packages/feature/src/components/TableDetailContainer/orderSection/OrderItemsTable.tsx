@@ -9,12 +9,20 @@ const { colors } = theme;
 export type OrderItemsTableProps = {
   items: OrderItem[];
   selectedItemId?: string;
+  onItemClick?: (item: OrderItem) => void;
 };
 
 export function OrderItemsTable({
   items,
   selectedItemId,
+  onItemClick,
 }: OrderItemsTableProps) {
+  const handleRowClick = (item: OrderItem) => {
+    if (onItemClick) {
+      onItemClick(item);
+    }
+  };
+
   return (
     <TableWrap>
       {items.map((it) => (
@@ -22,6 +30,7 @@ export function OrderItemsTable({
           <Row
             className={selectedItemId === it.id ? 'selected' : ''}
             data-item-id={it.id}
+            onClick={() => handleRowClick(it)}
           >
             <Cell className="name" title={it.name}>
               {it.name}

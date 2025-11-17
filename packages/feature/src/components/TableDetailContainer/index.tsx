@@ -7,7 +7,9 @@ import { ActionGrid } from './actionSection/ActionGrid';
 import { AddMenuDialog } from './actionSection/dialogs/AddMenuDialog';
 import { SelectCancelDialog } from './actionSection/dialogs/SelectCancelDialog';
 import { AmountChangeDialog } from './actionSection/dialogs/AmountChangeDialog';
-import type { Order } from './orderSection/types';
+import { AllDiscountDialog } from './actionSection/dialogs/AllDiscountDialog';
+import { ServiceAmountDialog } from './orderSection/dialogs/ServiceAmountDialog';
+import type { Order, OrderItem } from './orderSection/types';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { toast } from '@repo/ui/components';
 
@@ -17,6 +19,11 @@ export const TableDetailContainer = () => {
     useState(false);
   const [isAmountChangeDialogOpen, setIsAmountChangeDialogOpen] =
     useState(false);
+  const [isAllDiscountDialogOpen, setIsAllDiscountDialogOpen] = useState(false);
+  const [isServiceAmountDialogOpen, setIsServiceAmountDialogOpen] =
+    useState(false);
+  const [selectedItemForService, setSelectedItemForService] =
+    useState<OrderItem | null>(null);
 
   const order: Order = {
     tableName: '2번 테이블',
@@ -45,26 +52,28 @@ export const TableDetailContainer = () => {
   };
 
   const handleActionPress = (id: string) => {
-    if (id === 'add-menu') {
-      setIsAddMenuDialogOpen(true);
-    } else if (id === 'select-cancel') {
-      setIsSelectCancelDialogOpen(true);
-    } else if (id === 'all-cancel') {
-      openDualActionDialog({
-        title: `전체 메뉴를\n취소하시겠어요?`,
-        primaryText: '네',
-        secondaryText: '아니오',
-        onConfirm: () => {
-          console.log('전체 취소');
-          toast('전체 메뉴를 취소했어요.');
-        },
-        onCancel: () => {
-          console.log('전체 취소 취소');
-        },
-      });
-    } else if (id === 'amount-change') {
-      setIsAmountChangeDialogOpen(true);
-    }
+    const actionHandlers: Record<string, () => void> = {
+      'add-menu': () => setIsAddMenuDialogOpen(true),
+      'select-cancel': () => setIsSelectCancelDialogOpen(true),
+      'amount-change': () => setIsAmountChangeDialogOpen(true),
+      'all-discount': () => setIsAllDiscountDialogOpen(true),
+      'all-cancel': () => {
+        openDualActionDialog({
+          title: `전체 메뉴를\n취소하시겠어요?`,
+          primaryText: '네',
+          secondaryText: '아니오',
+          onConfirm: () => {
+            console.log('전체 취소');
+            toast('전체 메뉴를 취소했어요.');
+          },
+          onCancel: () => {
+            console.log('전체 취소 취소');
+          },
+        });
+      },
+    };
+
+    actionHandlers[id]?.();
   };
 
   const handleAddMenu = (selectedItems: unknown) => {
@@ -84,6 +93,27 @@ export const TableDetailContainer = () => {
     // TODO: 실제 금액 변경 로직 구현
   };
 
+  const handleAllDiscount = (discount: number) => {
+    console.log('적용된 할인:', discount);
+    // TODO: 실제 할인 적용 로직 구현
+  };
+
+  const handleItemClick = (item: OrderItem) => {
+    setSelectedItemForService(item);
+    setIsServiceAmountDialogOpen(true);
+  };
+
+  const handleServiceAmountApply = (amount: number) => {
+    if (selectedItemForService) {
+      console.log('서비스 금액 적용:', {
+        itemId: selectedItemForService.id,
+        itemName: selectedItemForService.name,
+        serviceAmount: amount,
+      });
+      // TODO: 실제 서비스 금액 적용 로직 구현
+    }
+  };
+
   return (
     <S.TableDetailContainer>
       <S.Layout>
@@ -94,6 +124,7 @@ export const TableDetailContainer = () => {
             onPayCard={() => console.log('카드결제')}
             onPayCash={() => console.log('현금결제')}
             onSplitPay={() => console.log('분할결제')}
+            onItemClick={handleItemClick}
           />
         </S.Left>
         <S.Right>
@@ -119,6 +150,19 @@ export const TableDetailContainer = () => {
         isOpen={isAmountChangeDialogOpen}
         onClose={() => setIsAmountChangeDialogOpen(false)}
         onApply={handleAmountChange}
+      />
+      <AllDiscountDialog
+        isOpen={isAllDiscountDialogOpen}
+        onClose={() => setIsAllDiscountDialogOpen(false)}
+        onApply={handleAllDiscount}
+      />
+      <ServiceAmountDialog
+        isOpen={isServiceAmountDialogOpen}
+        onClose={() => {
+          setIsServiceAmountDialogOpen(false);
+          setSelectedItemForService(null);
+        }}
+        onApply={handleServiceAmountApply}
       />
     </S.TableDetailContainer>
   );

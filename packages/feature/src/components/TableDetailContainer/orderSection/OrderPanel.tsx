@@ -3,7 +3,7 @@ import { OrderHeader } from './OrderHeader';
 import { OrderItemsTable } from './OrderItemsTable';
 import { OrderSummary } from './OrderSummary';
 import { PaymentActions } from './PaymentActions';
-import type { Order } from './types';
+import type { Order, OrderItem } from './types';
 
 export type OrderPanelProps = {
   order: Order;
@@ -11,6 +11,7 @@ export type OrderPanelProps = {
   onPayCard?: () => void;
   onPayCash?: () => void;
   onSplitPay?: () => void;
+  onItemClick?: (item: OrderItem) => void;
 };
 
 export function OrderPanel({
@@ -19,6 +20,7 @@ export function OrderPanel({
   onPayCard,
   onPayCash,
   onSplitPay,
+  onItemClick,
 }: OrderPanelProps) {
   return (
     <Wrap>
@@ -27,7 +29,11 @@ export function OrderPanel({
         numberOfPeople={order.numberOfPeople}
         orderTime={order.orderTime}
       />
-      <OrderItemsTable items={order.items} selectedItemId={selectedItemId} />
+      <OrderItemsTable
+        items={order.items}
+        selectedItemId={selectedItemId}
+        onItemClick={onItemClick}
+      />
       <OrderSummary
         totalCount={order.totalCount}
         totalPrice={order.totalPrice}
