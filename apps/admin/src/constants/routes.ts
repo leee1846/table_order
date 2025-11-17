@@ -21,6 +21,10 @@ export const ROUTES = {
         path: 'order',
         generate: () => '/settings/sales/order',
       },
+      CARD: {
+        path: 'card',
+        generate: () => '/settings/sales/card',
+      },
     },
   },
   TABLES: {

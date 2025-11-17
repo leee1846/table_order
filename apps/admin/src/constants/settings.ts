@@ -37,13 +37,18 @@ export const SIDEBAR_MENUS: TMenu[] = [
     subMenus: [
       {
         id: 'summary',
-        label: '매출 요약',
+        label: '매출요약',
         path: ROUTES.SETTINGS.SALES.SUMMARY.generate(),
       },
       {
         id: 'order',
-        label: '주문 내역',
+        label: '주문내역',
         path: ROUTES.SETTINGS.SALES.ORDER.generate(),
+      },
+      {
+        id: 'card',
+        label: '카드승인내역',
+        path: ROUTES.SETTINGS.SALES.CARD.generate(),
       },
     ],
   },

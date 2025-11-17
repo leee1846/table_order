@@ -42,6 +42,11 @@ const SalesOrderPage = lazy(() =>
     default: module.SalesOrderPage,
   }))
 );
+const SalesCardPage = lazy(() =>
+  import('@/pages/settings/SalesCardPage').then((module) => ({
+    default: module.SalesCardPage,
+  }))
+);
 
 export const router = createBrowserRouter([
   {
@@ -124,6 +129,14 @@ export const router = createBrowserRouter([
             element: (
               <Suspense>
                 <SalesOrderPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: ROUTES.SETTINGS.SALES.CARD.path,
+            element: (
+              <Suspense>
+                <SalesCardPage />
               </Suspense>
             ),
           },
