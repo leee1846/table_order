@@ -32,7 +32,7 @@ export const SalesOrderPage = () => {
             매출 관리
             <span />
             <span>주문내역</span>
-          </S.Title>
+          </S.Title> 
 
           <S.Filters>
             <S.CalendarButton
