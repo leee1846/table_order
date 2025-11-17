@@ -5,13 +5,16 @@ import { TYPOGRAPHY } from '../theme/typography';
 export const TablePageContainer = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  height: 100vh;
   background-color: ${theme.colors.white};
 `;
 
 export const Table = styled.table`
   width: 100%;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 `;
 
 export const Thead = styled.thead`
@@ -24,7 +27,7 @@ export const Thead = styled.thead`
   & > tr {
     width: 100%;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 6px;
   }
 
@@ -42,6 +45,7 @@ export const Thead = styled.thead`
 export const Tbody = styled.tbody`
   width: 100%;
   display: block;
+  overflow-y: auto;
 
   & > tr {
     width: 100%;

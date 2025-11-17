@@ -51,6 +51,11 @@ export const createSidebarMenus = (menuSubMenus?: TSubMenu[]): TMenu[] => [
         label: '단순현금결제내역',
         path: ROUTES.SETTINGS.SALES.CASH.generate(),
       },
+      {
+        id: 'menu',
+        label: '메뉴판매집계',
+        path: ROUTES.SETTINGS.SALES.MENU.generate(),
+      },
     ],
   },
 ];

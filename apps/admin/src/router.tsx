@@ -52,6 +52,11 @@ const SalesCashPage = lazy(() =>
     default: module.SalesCashPage,
   }))
 );
+const SalesMenuPage = lazy(() =>
+  import('@/pages/settings/SalesMenuPage').then((module) => ({
+    default: module.SalesMenuPage,
+  }))
+);
 
 export const router = createBrowserRouter([
   {
@@ -150,6 +155,14 @@ export const router = createBrowserRouter([
             element: (
               <Suspense>
                 <SalesCashPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: ROUTES.SETTINGS.SALES.MENU.path,
+            element: (
+              <Suspense>
+                <SalesMenuPage />
               </Suspense>
             ),
           },
