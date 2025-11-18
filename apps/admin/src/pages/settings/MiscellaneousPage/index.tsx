@@ -4,6 +4,7 @@ import { SettingsIcon } from '@repo/ui/icons';
 import * as S from '@/pages/settings/MiscellaneousPage/MiscellaneousPage.style';
 import { Account } from '@/pages/settings/MiscellaneousPage/Account';
 import { Network } from '@/pages/settings/MiscellaneousPage/Network';
+import { StoreEnvironment } from '@/pages/settings/MiscellaneousPage/StoreEnvironment';
 
 export const MiscellaneousPage = () => {
   return (
@@ -21,6 +22,7 @@ export const MiscellaneousPage = () => {
       <S.Sections>
         <Account />
         <Network />
+        <StoreEnvironment />
       </S.Sections>
     </S.Container>
   );

@@ -4,7 +4,6 @@ import { TYPOGRAPHY } from '@repo/ui';
 export const Container = styled.div`
   padding: 40px 24px 40px 30px;
   background-color: ${({ theme }) => theme.colors.grey[50]};
-  min-height: 100vh;
 
   & > header {
     display: flex;

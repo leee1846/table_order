@@ -49,3 +49,35 @@ export const ContentLayout = styled.div`
     color: ${({ theme }) => theme.colors.grey[800]};
   }
 `;
+
+export const TimeRangeInput = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 8rem;
+  height: 1.625rem;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grey[400]};
+  text-align: right;
+  ${TYPOGRAPHY.ST_2}
+  color: ${({ theme }) => theme.colors.grey[800]};
+
+  & > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ${TYPOGRAPHY.ST_2}
+    color: ${({ theme }) => theme.colors.grey[800]};
+  }
+
+  & > input {
+    text-align: center;
+    width: 20%;
+    ${TYPOGRAPHY.ST_2}
+    color: ${({ theme }) => theme.colors.grey[800]};
+
+    &::placeholder {
+      ${TYPOGRAPHY.ST_2}
+      color: ${({ theme }) => theme.colors.grey[800]};
+    }
+  }
+`;

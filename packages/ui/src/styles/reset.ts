@@ -148,6 +148,7 @@ export const resetStyles = css`
     cursor: not-allowed;
   }
   input {
+    padding: 0;
     background: none;
     border: none;
     outline: none;
