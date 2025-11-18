@@ -11,6 +11,8 @@ import { AllDiscountDialog } from './actionSection/dialogs/AllDiscountDialog';
 import { ServiceAmountDialog } from './orderSection/dialogs/ServiceAmountDialog';
 import { CardPaymentDialog } from './orderSection/dialogs/CardPaymentDialog';
 import { ArbitraryPaymentConfirmDialog } from './orderSection/dialogs/ArbitraryPaymentConfirmDialog';
+import { CashPaymentDialog } from './orderSection/dialogs/CashPaymentDialog';
+import { CashReceiptDialog } from './orderSection/dialogs/CashReceiptDialog';
 import type { Order, OrderItem } from './orderSection/types';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { toast } from '@repo/ui/components';
@@ -39,6 +41,11 @@ export const TableDetailContainer = () => {
     isArbitraryPaymentConfirmDialogOpen,
     setIsArbitraryPaymentConfirmDialogOpen,
   ] = useState(false);
+  //현금 결제 모달
+  const [isCashPaymentDialogOpen, setIsCashPaymentDialogOpen] = useState(false);
+  //현금영수증 모달
+  const [isCashReceiptDialogOpen, setIsCashReceiptDialogOpen] = useState(false);
+  const [cashReceivedAmount, setCashReceivedAmount] = useState<number>(0);
 
   const order: Order = {
     tableName: '2번 테이블',
@@ -137,7 +144,7 @@ export const TableDetailContainer = () => {
             order={order}
             selectedItemId=""
             onPayCard={() => setIsCardPaymentDialogOpen(true)}
-            onPayCash={() => console.log('현금결제')}
+            onPayCash={() => setIsCashPaymentDialogOpen(true)}
             onSplitPay={() => console.log('분할결제')}
             onItemClick={handleItemClick}
           />
@@ -210,6 +217,31 @@ export const TableDetailContainer = () => {
           setIsArbitraryPaymentConfirmDialogOpen(false);
           setIsCardPaymentDialogOpen(false);
           // TODO: 실제 임의 결제 로직 구현
+        }}
+      />
+      {/* 현금 결제 모달 */}
+      <CashPaymentDialog
+        isOpen={isCashPaymentDialogOpen}
+        onClose={() => setIsCashPaymentDialogOpen(false)}
+        paymentAmount={order.totalPrice}
+        onNext={(receivedAmount) => {
+          setCashReceivedAmount(receivedAmount);
+          setIsCashPaymentDialogOpen(false);
+          setIsCashReceiptDialogOpen(true);
+        }}
+      />
+      {/* 현금영수증 모달 */}
+      <CashReceiptDialog
+        isOpen={isCashReceiptDialogOpen}
+        onClose={() => setIsCashReceiptDialogOpen(false)}
+        onComplete={(type, number) => {
+          console.log('현금 결제 완료:', {
+            receivedAmount: cashReceivedAmount,
+            receiptType: type,
+            receiptNumber: number,
+          });
+          setIsCashReceiptDialogOpen(false);
+          // TODO: 실제 현금 결제 로직 구현
         }}
       />
     </S.TableDetailContainer>
