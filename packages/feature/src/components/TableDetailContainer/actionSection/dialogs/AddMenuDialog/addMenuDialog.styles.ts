@@ -1,25 +1,19 @@
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
+import {
+  DialogContainer as BaseDialogContainer,
+  CloseButton as BaseCloseButton,
+} from '../../../shared/dialogStyles';
 
 const { colors } = theme;
 
-export const DialogContainer = styled.div`
-  background-color: ${colors.white};
-  border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
+export const DialogContainer = styled(BaseDialogContainer)`
   width: 80vw;
   height: 80vh;
+  padding: 0;
 `;
 
-export const CloseButton = styled.button`
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  cursor: pointer;
-`;
+export const CloseButton = BaseCloseButton;
 
 export const RightPanel = styled.div`
   flex: 2.1;
