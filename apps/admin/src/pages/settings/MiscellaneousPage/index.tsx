@@ -1,8 +1,9 @@
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import { SettingsIcon } from '@repo/ui/icons';
-import * as S from './MiscellaneousPage.style';
-import { Account } from './Account';
+import * as S from '@/pages/settings/MiscellaneousPage/MiscellaneousPage.style';
+import { Account } from '@/pages/settings/MiscellaneousPage/Account';
+import { Network } from '@/pages/settings/MiscellaneousPage/Network';
 
 export const MiscellaneousPage = () => {
   return (
@@ -19,6 +20,7 @@ export const MiscellaneousPage = () => {
 
       <S.Sections>
         <Account />
+        <Network />
       </S.Sections>
     </S.Container>
   );

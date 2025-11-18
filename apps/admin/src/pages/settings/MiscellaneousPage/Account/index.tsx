@@ -19,7 +19,7 @@ export const Account = () => {
 
       <CommonStyles.ContentsLayout>
         <CommonStyles.ContentLayout>
-          <CommonStyles.ContentTitle>매장 이름???</CommonStyles.ContentTitle>
+          <p>매장 이름???</p>
           <S.Content>
             <ChipButton variant="white" size="M">
               온라인 포스 모드 사용중??

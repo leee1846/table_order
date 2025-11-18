@@ -25,16 +25,27 @@ export const ContentsLayout = styled.div`
   flex-direction: column;
   align-items: space-between;
   gap: 12px;
+  padding-top: 12px;
 `;
 
 export const ContentLayout = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 8px;
-`;
+  padding: 0 8px;
+  height: 3rem;
 
-export const ContentTitle = styled.p`
-  color: ${({ theme }) => theme.colors.grey[600]};
-  ${TYPOGRAPHY.ST_2}
+  & > p {
+    color: ${({ theme }) => theme.colors.grey[600]};
+    ${TYPOGRAPHY.ST_2}
+  }
+
+  & > input {
+    width: 6.6875rem;
+    height: 1.625rem;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.grey[400]};
+    text-align: right;
+    ${TYPOGRAPHY.ST_2}
+    color: ${({ theme }) => theme.colors.grey[800]};
+  }
 `;
