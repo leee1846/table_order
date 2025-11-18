@@ -87,7 +87,7 @@ export const TopSection = styled.div`
 export const NumberDisplay = styled.div<{ $isPlaceholder: boolean }>`
   ${TYPOGRAPHY.MT_1}
   color: ${({ $isPlaceholder }) =>
-    $isPlaceholder ? 'transparent' : colors.grey[900]};
+    $isPlaceholder ? 'transparent ' : colors.grey[900]};
   text-align: center;
   margin-top: 24px;
 `;

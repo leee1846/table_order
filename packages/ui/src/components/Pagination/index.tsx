@@ -1,3 +1,4 @@
+import { SerializedStyles } from '@emotion/react';
 import {
   ChevronBackwardIcon,
   ChevronForwardIcon,
@@ -11,11 +12,13 @@ interface Props {
   totalPages: number;
   currentPage: number;
   onPageChange: (page: number) => void;
+  customStyle?: SerializedStyles;
 }
 export const Pagination = ({
   totalPages,
   currentPage,
   onPageChange,
+  customStyle,
 }: Props) => {
   const isFirstPage = currentPage === 1;
   const isLastPage = currentPage === totalPages;
@@ -29,7 +32,7 @@ export const Pagination = ({
   };
 
   return (
-    <S.Container>
+    <S.Container css={customStyle}>
       <S.Buttons>
         <S.Button onClick={() => handlePageChange(1)} disabled={isFirstPage}>
           <FirstPageIcon

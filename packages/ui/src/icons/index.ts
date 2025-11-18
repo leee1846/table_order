@@ -33,6 +33,7 @@ export { default as OptionSettingIcon } from './OptionSettingIcon';
 export { default as HomeFilledIcon } from './HomeFilledIcon';
 export { default as SettingsIcon } from './SettingsIcon';
 export { default as KeyboardArrowDownIcon } from './KeyboardArrowDownIcon';
+export { default as OrderListIcon } from './OrderListIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';
