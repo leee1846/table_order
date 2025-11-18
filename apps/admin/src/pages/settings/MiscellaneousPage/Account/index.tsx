@@ -1,5 +1,5 @@
 import { BasicButton, ChipButton } from '@repo/ui/components';
-import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common.style';
+import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common/common.style';
 import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
 
 export const Account = () => {

@@ -32,6 +32,7 @@ export { default as CalendarMonthIcon } from './CalendarMonthIcon';
 export { default as OptionSettingIcon } from './OptionSettingIcon';
 export { default as HomeFilledIcon } from './HomeFilledIcon';
 export { default as SettingsIcon } from './SettingsIcon';
+export { default as KeyboardArrowDownIcon } from './KeyboardArrowDownIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';

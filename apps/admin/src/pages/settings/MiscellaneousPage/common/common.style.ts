@@ -81,3 +81,35 @@ export const TimeRangeInput = styled.div`
     }
   }
 `;
+
+export const SingleTimeInput = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 1.625rem;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grey[400]};
+  text-align: right;
+  ${TYPOGRAPHY.ST_2}
+  color: ${({ theme }) => theme.colors.grey[800]};
+
+  & > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ${TYPOGRAPHY.ST_2}
+    color: ${({ theme }) => theme.colors.grey[800]};
+  }
+
+  & > input {
+    text-align: center;
+    width: 40%;
+    ${TYPOGRAPHY.ST_2}
+    color: ${({ theme }) => theme.colors.grey[800]};
+
+    &::placeholder {
+      ${TYPOGRAPHY.ST_2}
+      color: ${({ theme }) => theme.colors.grey[800]};
+    }
+  }
+`;

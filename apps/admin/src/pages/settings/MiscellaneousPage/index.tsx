@@ -5,6 +5,7 @@ import * as S from '@/pages/settings/MiscellaneousPage/MiscellaneousPage.style';
 import { Account } from '@/pages/settings/MiscellaneousPage/Account';
 import { Network } from '@/pages/settings/MiscellaneousPage/Network';
 import { StoreEnvironment } from '@/pages/settings/MiscellaneousPage/StoreEnvironment';
+import { MenuAppFeature } from '@/pages/settings/MiscellaneousPage/MenuAppFeature';
 
 export const MiscellaneousPage = () => {
   return (
@@ -23,6 +24,7 @@ export const MiscellaneousPage = () => {
         <Account />
         <Network />
         <StoreEnvironment />
+        <MenuAppFeature />
       </S.Sections>
     </S.Container>
   );

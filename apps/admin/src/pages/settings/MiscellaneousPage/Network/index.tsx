@@ -1,6 +1,6 @@
 import { BasicButton, Dropdown } from '@repo/ui/components';
 import { useState } from 'react';
-import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common.style';
+import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common/common.style';
 import * as S from '@/pages/settings/MiscellaneousPage/Network/network.style';
 
 const networkSettings = [

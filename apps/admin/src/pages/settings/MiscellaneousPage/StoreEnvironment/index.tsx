@@ -1,4 +1,4 @@
-import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common.style';
+import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common/common.style';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
 import { useState, useRef } from 'react';
 import { useTimeInput } from '@repo/feature/hooks';
