@@ -3,4 +3,8 @@ export const ROUTES = {
     path: '/',
     generate: () => '/',
   },
+  LOGIN: {
+    path: '/login',
+    generate: () => '/login',
+  },
 } as const;
