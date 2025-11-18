@@ -63,4 +63,9 @@ export const createSidebarMenus = (menuSubMenus?: TSubMenu[]): TMenu[] => [
     label: '페이지 설정',
     path: ROUTES.SETTINGS.STYLE.generate(),
   },
+  {
+    id: 'miscellaneous',
+    label: '설정',
+    path: ROUTES.SETTINGS.MISCELLANEOUS.generate(),
+  },
 ];

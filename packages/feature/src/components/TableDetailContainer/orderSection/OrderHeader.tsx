@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { PersonIcon, PickupIcon } from '@repo/ui/icons';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
-import { PickupNotificationDialog } from './dialogs/PickupNotificationDialog';
+import { PickupNotificationDialog } from './dialogs/PickupNotificationDIalog';
 
 const { colors } = theme;
 
@@ -38,8 +38,7 @@ export function OrderHeader({
               <PersonIcon width={20} height={20} color={colors.grey[700]} />
             </div>
 
-              <NumberOfPeople>{numberOfPeople}</NumberOfPeople>
-
+            <NumberOfPeople>{numberOfPeople}</NumberOfPeople>
           </GuestCount>
         </RightBox>
         <LeftBox>

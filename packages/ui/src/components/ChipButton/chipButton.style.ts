@@ -69,6 +69,7 @@ const setButtonColor = (variant: TVariant) => {
       return css`
         color: ${colors.grey[700]};
         background: ${colors.white};
+        border: 0.5px solid ${colors.grey[400]};
       `;
     case 'lightGrey':
       return css`
