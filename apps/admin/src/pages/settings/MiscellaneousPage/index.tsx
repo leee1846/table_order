@@ -7,6 +7,9 @@ import { Network } from '@/pages/settings/MiscellaneousPage/Network';
 import { StoreEnvironment } from '@/pages/settings/MiscellaneousPage/StoreEnvironment';
 import { MenuAppFeature } from '@/pages/settings/MiscellaneousPage/MenuAppFeature';
 import { Payment } from '@/pages/settings/MiscellaneousPage/Payment';
+import { MenuAppView } from '@/pages/settings/MiscellaneousPage/MenuAppView';
+import { Intergration } from '@/pages/settings/MiscellaneousPage/Intergration';
+import { Language } from '@/pages/settings/MiscellaneousPage/Language';
 
 export const MiscellaneousPage = () => {
   return (
@@ -27,6 +30,9 @@ export const MiscellaneousPage = () => {
         <StoreEnvironment />
         <MenuAppFeature />
         <Payment />
+        <MenuAppView />
+        <Intergration />
+        <Language />
       </S.Sections>
     </S.Container>
   );
