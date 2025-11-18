@@ -6,6 +6,7 @@ import { Account } from '@/pages/settings/MiscellaneousPage/Account';
 import { Network } from '@/pages/settings/MiscellaneousPage/Network';
 import { StoreEnvironment } from '@/pages/settings/MiscellaneousPage/StoreEnvironment';
 import { MenuAppFeature } from '@/pages/settings/MiscellaneousPage/MenuAppFeature';
+import { Payment } from '@/pages/settings/MiscellaneousPage/Payment';
 
 export const MiscellaneousPage = () => {
   return (
@@ -25,6 +26,7 @@ export const MiscellaneousPage = () => {
         <Network />
         <StoreEnvironment />
         <MenuAppFeature />
+        <Payment />
       </S.Sections>
     </S.Container>
   );
