@@ -13,6 +13,10 @@ import { CardPaymentDialog } from './orderSection/dialogs/CardPaymentDialog';
 import { ArbitraryPaymentConfirmDialog } from './orderSection/dialogs/ArbitraryPaymentConfirmDialog';
 import { CashPaymentDialog } from './orderSection/dialogs/CashPaymentDialog';
 import { CashReceiptDialog } from './orderSection/dialogs/CashReceiptDialog';
+import {
+  SplitPaymentDialog,
+  type SplitPayment,
+} from './orderSection/dialogs/SplitPaymentDialog';
 import type { Order, OrderItem } from './orderSection/types';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { toast } from '@repo/ui/components';
@@ -46,6 +50,15 @@ export const TableDetailContainer = () => {
   //현금영수증 모달
   const [isCashReceiptDialogOpen, setIsCashReceiptDialogOpen] = useState(false);
   const [cashReceivedAmount, setCashReceivedAmount] = useState<number>(0);
+  //분할 결제 모달
+  const [isSplitPaymentDialogOpen, setIsSplitPaymentDialogOpen] =
+    useState(false);
+  //분할 결제에서 열린 결제 모달인지 여부
+  const [isPaymentFromSplit, setIsPaymentFromSplit] = useState(false);
+  //분할 결제 금액(선택한 메뉴)
+  const [splitPaymentAmount, setSplitPaymentAmount] = useState<number>(0);
+  //분할 결제 내역
+  const [splitPayments, setSplitPayments] = useState<SplitPayment[]>([]);
 
   const order: Order = {
     tableName: '2번 테이블',
@@ -57,15 +70,15 @@ export const TableDetailContainer = () => {
         qty: 1,
         unitPrice: 9000,
         options: [
-          { id: '1-1', name: '옵션1', qty: 2, unitPrice: 2000 },
-          { id: '1-2', name: '옵션 2', qty: 1, unitPrice: 1000 },
+          { id: '1-1', name: '옵션1', qty: 3, unitPrice: 300 },
+          { id: '1-2', name: '옵션2', qty: 1, unitPrice: 1000 },
         ],
       },
       {
         id: '2',
         name: '삼겹살',
         qty: 999,
-        unitPrice: 300000000,
+        unitPrice: 10000,
       },
     ],
     totalCount: 2,
@@ -145,7 +158,7 @@ export const TableDetailContainer = () => {
             selectedItemId=""
             onPayCard={() => setIsCardPaymentDialogOpen(true)}
             onPayCash={() => setIsCashPaymentDialogOpen(true)}
-            onSplitPay={() => console.log('분할결제')}
+            onSplitPay={() => setIsSplitPaymentDialogOpen(true)}
             onItemClick={handleItemClick}
           />
         </S.Left>
@@ -194,14 +207,40 @@ export const TableDetailContainer = () => {
       {/* 카드 결제 모달 */}
       <CardPaymentDialog
         isOpen={isCardPaymentDialogOpen}
-        onClose={() => setIsCardPaymentDialogOpen(false)}
-        paymentAmount={order.totalPrice}
-        billingAmount={order.totalPrice}
+        onClose={() => {
+          setIsCardPaymentDialogOpen(false);
+          if (isPaymentFromSplit) {
+            setIsPaymentFromSplit(false);
+            setIsSplitPaymentDialogOpen(true);
+          }
+        }}
+        paymentAmount={
+          isPaymentFromSplit ? splitPaymentAmount : order.totalPrice
+        }
+        billingAmount={
+          isPaymentFromSplit ? splitPaymentAmount : order.totalPrice
+        }
         onArbitraryPayment={() => {
           setIsArbitraryPaymentConfirmDialogOpen(true);
         }}
         onConfirmPayment={() => {
           console.log('결제하기 클릭');
+          if (isPaymentFromSplit) {
+            // 분할 결제 내역 추가
+            setSplitPayments((prev) => [
+              ...prev,
+              {
+                id: `payment-${Date.now()}`,
+                method: 'card',
+                amount: splitPaymentAmount,
+                timestamp: Date.now(),
+              },
+            ]);
+            // 분할 결제에서 온 경우 결제 완료 후 분할 결제 다이얼로그로 돌아감
+            setIsCardPaymentDialogOpen(false);
+            setIsPaymentFromSplit(false);
+            setIsSplitPaymentDialogOpen(true);
+          }
           // TODO: 결제하기 모달 열기
         }}
       />
@@ -222,8 +261,16 @@ export const TableDetailContainer = () => {
       {/* 현금 결제 모달 */}
       <CashPaymentDialog
         isOpen={isCashPaymentDialogOpen}
-        onClose={() => setIsCashPaymentDialogOpen(false)}
-        paymentAmount={order.totalPrice}
+        onClose={() => {
+          setIsCashPaymentDialogOpen(false);
+          if (isPaymentFromSplit) {
+            setIsPaymentFromSplit(false);
+            setIsSplitPaymentDialogOpen(true);
+          }
+        }}
+        paymentAmount={
+          isPaymentFromSplit ? splitPaymentAmount : order.totalPrice
+        }
         onNext={(receivedAmount) => {
           setCashReceivedAmount(receivedAmount);
           setIsCashPaymentDialogOpen(false);
@@ -241,7 +288,45 @@ export const TableDetailContainer = () => {
             receiptNumber: number,
           });
           setIsCashReceiptDialogOpen(false);
+          if (isPaymentFromSplit) {
+            // 분할 결제 내역 추가
+            setSplitPayments((prev) => [
+              ...prev,
+              {
+                id: `payment-${Date.now()}`,
+                method: 'cash',
+                amount: splitPaymentAmount,
+                timestamp: Date.now(),
+              },
+            ]);
+            // 분할 결제에서 온 경우 분할 결제 다이얼로그로 돌아감
+            setIsPaymentFromSplit(false);
+            setIsSplitPaymentDialogOpen(true);
+          }
           // TODO: 실제 현금 결제 로직 구현
+        }}
+      />
+      {/* 분할 결제 모달 */}
+      <SplitPaymentDialog
+        isOpen={isSplitPaymentDialogOpen}
+        onClose={() => {
+          setIsSplitPaymentDialogOpen(false);
+          // 분할 결제 다이얼로그가 닫힐 때 결제 내역 초기화 (선택사항)
+          // setSplitPayments([]);
+        }}
+        items={order.items}
+        payments={splitPayments}
+        onPayCash={(amount) => {
+          setSplitPaymentAmount(amount);
+          setIsPaymentFromSplit(true);
+          setIsSplitPaymentDialogOpen(false);
+          setIsCashPaymentDialogOpen(true);
+        }}
+        onPayCard={(amount) => {
+          setSplitPaymentAmount(amount);
+          setIsPaymentFromSplit(true);
+          setIsSplitPaymentDialogOpen(false);
+          setIsCardPaymentDialogOpen(true);
         }}
       />
     </S.TableDetailContainer>
