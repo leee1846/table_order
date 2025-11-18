@@ -1,5 +1,6 @@
 export const ROUTES = {
-  LOGIN: {
-    path: '/login',
+  ROOT: {
+    path: '/',
+    generate: () => '/',
   },
 } as const;

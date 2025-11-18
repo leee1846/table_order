@@ -2,7 +2,11 @@ import { Suspense, lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 
-const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const MainPage = lazy(() =>
+  import('@/pages/MainPage').then((module) => ({
+    default: module.MainPage,
+  }))
+);
 
 const SuspenseFallback = () => {
   return <div>Loading...</div>;
@@ -10,10 +14,10 @@ const SuspenseFallback = () => {
 
 export const router = createBrowserRouter([
   {
-    path: ROUTES.LOGIN.path,
+    path: ROUTES.ROOT.path,
     element: (
       <Suspense fallback={<SuspenseFallback />}>
-        <LoginPage />
+        <MainPage />
       </Suspense>
     ),
   },
