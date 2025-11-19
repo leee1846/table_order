@@ -40,7 +40,7 @@ export const initializeApiClient = (
 /**
  * 기본 API 클라이언트 인스턴스
  * 각 앱에서 interceptors를 추가하여 사용하세요.
- * 초기화되지 않았으면 에러 발생생
+ * 초기화되지 않았으면 에러 발생
  */
 export const apiClient = (<T = unknown>(
   ...args: Parameters<AxiosInstance>
