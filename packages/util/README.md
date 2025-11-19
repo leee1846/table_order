@@ -4,7 +4,7 @@
 
 ## 설치 방법
 
-앱의 `package.json`에 의존성을 추가합니다:
+앱의 `package.json`에 의존성을 추가합니다.
 
 ```json
 {

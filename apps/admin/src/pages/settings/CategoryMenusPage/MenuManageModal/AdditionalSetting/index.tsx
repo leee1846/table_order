@@ -6,11 +6,11 @@ export const AdditionalSetting = () => {
     <S.Container>
       <S.SetionContainer>
         <p>포스연동 메뉴코드</p>
-        <Input disabled={true} customStyle={S.inputCss} />
+        <Input disabled={true} />
       </S.SetionContainer>
       <S.SetionContainer>
         <p>최소 주문 수량</p>
-        <Input customStyle={S.inputCss} />
+        <Input />
       </S.SetionContainer>
       <S.SetionContainer>
         <p>터치키 색상</p>
