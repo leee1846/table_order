@@ -1,4 +1,3 @@
-export * as tableStyles from './table.style';
 export * as setting from './setting';
 export * as sidebarStyles from './sidebar.styles';
 export * as resetStyles from './reset';

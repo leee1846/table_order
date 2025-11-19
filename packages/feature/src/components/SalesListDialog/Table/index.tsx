@@ -20,8 +20,8 @@ export const Table = () => {
 
   return (
     <>
-      <UIStyles.tableStyles.Table>
-        <UIStyles.tableStyles.Thead>
+      <UIStyles.setting.Table>
+        <UIStyles.setting.Thead>
           <tr>
             <th>주문번호</th>
             <th>거래일자</th>
@@ -31,8 +31,8 @@ export const Table = () => {
             <th>객수</th>
             <th>상세 내역</th>
           </tr>
-        </UIStyles.tableStyles.Thead>
-        <UIStyles.tableStyles.Tbody>
+        </UIStyles.setting.Thead>
+        <UIStyles.setting.Tbody>
           {mockSalesData.map((item) => (
             <tr key={item.id}>
               <S.ColorTd color={getTextColor(item.isCancelled || false)}>
@@ -61,8 +61,8 @@ export const Table = () => {
               </td>
             </tr>
           ))}
-        </UIStyles.tableStyles.Tbody>
-      </UIStyles.tableStyles.Table>
+        </UIStyles.setting.Tbody>
+      </UIStyles.setting.Table>
 
       {/* 주문 내역 및 결제 내역 모달 */}
       {isOpenOrderDetailModal && (

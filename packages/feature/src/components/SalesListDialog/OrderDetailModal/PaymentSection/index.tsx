@@ -19,29 +19,29 @@ export const PaymentSection = () => {
       </S.TitleContainer>
 
       <S.Tables>
-        <UIStyles.tableStyles.Table>
-          <UIStyles.tableStyles.Thead>
+        <UIStyles.setting.Table>
+          <UIStyles.setting.Thead>
             <tr>
               <th>총금액</th>
               <th>취소금액</th>
               <th>결제금액</th>
               <th>결제수단</th>
             </tr>
-          </UIStyles.tableStyles.Thead>
+          </UIStyles.setting.Thead>
 
-          <UIStyles.tableStyles.Tbody>
+          <UIStyles.setting.Tbody>
             <tr>
               <td>{formatCurrency(100000)}</td>
               <td>{formatCurrency(10000)}</td>
               <td>{formatCurrency(90000)}</td>
               <td>카드</td>
             </tr>
-          </UIStyles.tableStyles.Tbody>
-        </UIStyles.tableStyles.Table>
+          </UIStyles.setting.Tbody>
+        </UIStyles.setting.Table>
 
         {/* 현금일경우 */}
-        <UIStyles.tableStyles.Table>
-          <UIStyles.tableStyles.Thead>
+        <UIStyles.setting.Table>
+          <UIStyles.setting.Thead>
             <tr>
               <th>주문번호</th>
               <th>거래일자</th>
@@ -50,9 +50,9 @@ export const PaymentSection = () => {
               <th>현금영수증 발행</th>
               <th>거래취소</th>
             </tr>
-          </UIStyles.tableStyles.Thead>
+          </UIStyles.setting.Thead>
 
-          <UIStyles.tableStyles.Tbody>
+          <UIStyles.setting.Tbody>
             <tr>
               <td>111533431</td>
               <td>2025-01-01 12:00:00</td>
@@ -69,12 +69,12 @@ export const PaymentSection = () => {
                 </BasicButton>
               </td>
             </tr>
-          </UIStyles.tableStyles.Tbody>
-        </UIStyles.tableStyles.Table>
+          </UIStyles.setting.Tbody>
+        </UIStyles.setting.Table>
 
         {/* 카드일경우 */}
-        <UIStyles.tableStyles.Table>
-          <UIStyles.tableStyles.Thead>
+        <UIStyles.setting.Table>
+          <UIStyles.setting.Thead>
             <tr>
               <th>승인구분</th>
               <th>
@@ -100,9 +100,9 @@ export const PaymentSection = () => {
               </th>
               <th>거래취소</th>
             </tr>
-          </UIStyles.tableStyles.Thead>
+          </UIStyles.setting.Thead>
 
-          <UIStyles.tableStyles.Tbody>
+          <UIStyles.setting.Tbody>
             <tr>
               <td>승인</td>
               <td>
@@ -136,8 +136,8 @@ export const PaymentSection = () => {
                 </BasicButton>
               </td>
             </tr>
-          </UIStyles.tableStyles.Tbody>
-        </UIStyles.tableStyles.Table>
+          </UIStyles.setting.Tbody>
+        </UIStyles.setting.Table>
       </S.Tables>
     </div>
   );

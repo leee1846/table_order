@@ -213,4 +213,3 @@ export const FooterContents = styled.div`
     }
   }
 `;
-
