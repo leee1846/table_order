@@ -6,3 +6,8 @@ export {
   type OrderListDialogProps,
   type OrderItem,
 } from './OrderListDialog';
+export {
+  SalesListDialog,
+  type SalesListDialogProps,
+  type SalesItem,
+} from './SalesListDialog';

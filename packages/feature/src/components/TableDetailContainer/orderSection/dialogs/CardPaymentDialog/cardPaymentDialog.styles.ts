@@ -2,11 +2,11 @@ import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import {
-  DialogContainer as BaseDialogContainer,
-  CloseButton as BaseCloseButton,
-  Header as BaseHeader,
-  Title as BaseTitle,
-} from '../../../shared/dialogStyles';
+  BaseDialogContainer,
+  BaseCloseButton,
+  BaseHeader,
+  BaseTitle,
+} from '../../../../shared/dialogStyles';
 
 const { colors, zIndex, spacing } = theme;
 
@@ -23,7 +23,9 @@ export const ContentWrapper = styled.div`
 
 export const CloseButton = BaseCloseButton;
 
-export const Header = BaseHeader;
+export const Header = styled(BaseHeader)`
+  margin-bottom: 40px;
+`;
 
 export const Title = styled(BaseTitle)``;
 

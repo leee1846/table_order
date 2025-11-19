@@ -2,11 +2,11 @@ import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import {
-  DialogContainer as BaseDialogContainer,
-  CloseButton as BaseCloseButton,
-  Title as BaseTitle,
-  Header as BaseHeader,
-} from '../../../shared/dialogStyles';
+  BaseDialogContainer,
+  BaseCloseButton,
+  BaseTitle,
+  BaseHeader,
+} from '../../../../shared/dialogStyles';
 
 const { colors, spacing } = theme;
 
