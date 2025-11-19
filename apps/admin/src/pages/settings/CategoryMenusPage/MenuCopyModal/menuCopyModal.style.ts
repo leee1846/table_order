@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
   position: relative;
   width: 27.5rem;
   padding: 44px 24px 24px;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${theme.colors.white};
   border-radius: 1rem;
   overflow: hidden;
 
@@ -32,7 +32,7 @@ export const MenuList = styled.ul`
 
   & span {
     ${TYPOGRAPHY.MT_7}
-    color: ${({ theme }) => theme.colors.grey[800]};
+    color: ${theme.colors.grey[800]};
   }
 `;
 

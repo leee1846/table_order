@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Header = styled.header`
   display: flex;
@@ -14,18 +14,18 @@ export const TextContainer = styled.div`
   gap: 11px;
 
   & > h1 {
-    color: ${({ theme }) => theme.colors.grey[800]};
+    color: ${theme.colors.grey[800]};
     ${TYPOGRAPHY.MT_1}
   }
 
   & > div {
     width: 0.125rem;
     height: 1.25rem;
-    background-color: ${({ theme }) => theme.colors.grey[800]};
+    background-color: ${theme.colors.grey[800]};
   }
 
   & > h2 {
-    color: ${({ theme }) => theme.colors.grey[600]};
+    color: ${theme.colors.grey[600]};
     ${TYPOGRAPHY.ST_1}
   }
 `;

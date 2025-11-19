@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${theme.colors.white};
   padding: 40px 24px 40px 30px;
 `;
 
@@ -11,17 +11,17 @@ export const Title = styled.div`
   align-items: center;
   gap: 11px;
   margin-bottom: 24px;
-  color: ${({ theme }) => theme.colors.grey[800]};
+  color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.MT_1}
 
   & > div {
     width: 0.125rem;
     height: 1.25rem;
-    background-color: ${({ theme }) => theme.colors.grey[800]};
+    background-color: ${theme.colors.grey[800]};
   }
 
   & > span {
-    color: ${({ theme }) => theme.colors.grey[600]};
+    color: ${theme.colors.grey[600]};
     ${TYPOGRAPHY.ST_1}
   }
 `;
@@ -37,7 +37,7 @@ export const Item = styled.div`
   flex: 1;
   height: 9.375rem;
   border-radius: 1rem;
-  border: 1px solid ${({ theme }) => theme.colors.primary[200]};
+  border: 1px solid ${theme.colors.primary[200]};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -46,7 +46,7 @@ export const Item = styled.div`
 `;
 
 export const SubTitle = styled.p`
-  color: ${({ theme }) => theme.colors.grey[900]};
+  color: ${theme.colors.grey[900]};
   ${TYPOGRAPHY.ST_4}
 `;
 
@@ -54,7 +54,7 @@ export const Price = styled.p`
   display: flex;
   gap: 4px;
   align-items: center;
-  color: ${({ theme }) => theme.colors.primary[500]};
+  color: ${theme.colors.primary[500]};
   ${TYPOGRAPHY.MT_1}
 
   & > span {
@@ -66,6 +66,6 @@ export const Description = styled.p`
   display: flex;
   align-items: center;
   gap: 2px;
-  color: ${({ theme }) => theme.colors.grey[500]};
+  color: ${theme.colors.grey[500]};
   ${TYPOGRAPHY.BD_2}
 `;

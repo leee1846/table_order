@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
   display: flex;
@@ -7,7 +7,7 @@ export const Container = styled.div`
   gap: 16px;
 
   & > p {
-    color: ${({ theme }) => theme.colors.grey[800]};
+    color: ${theme.colors.grey[800]};
     ${TYPOGRAPHY.MT_6}
   }
 `;
@@ -17,7 +17,7 @@ export const ImageSection = styled.div`
   width: 100%;
   height: 16.875rem;
   border-radius: 1rem;
-  background-color: ${({ theme }) => theme.colors.grey[100]};
+  background-color: ${theme.colors.grey[100]};
 `;
 
 export const ButtonContainer = styled.div`

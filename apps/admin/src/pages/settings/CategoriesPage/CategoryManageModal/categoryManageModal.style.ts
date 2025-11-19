@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const checkButtonCss = css`
   & > div {
@@ -15,7 +15,7 @@ export const dayCss = css`
 
 export const Container = styled.div`
   position: relative;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${theme.colors.white};
   width: 40rem;
   padding: 24px;
   border-radius: 1rem;
@@ -40,7 +40,7 @@ export const Title = styled.div`
   align-items: center;
   justify-content: center;
   margin: 20px 0 40px 0;
-  color: ${({ theme }) => theme.colors.grey[800]};
+  color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.MT_1}
 `;
 
@@ -51,12 +51,12 @@ export const Content = styled.div`
 `;
 
 export const SubTitle = styled.p`
-  color: ${({ theme }) => theme.colors.grey[800]};
+  color: ${theme.colors.grey[800]};
   margin-bottom: 12px;
   ${TYPOGRAPHY.MT_6}
 
   & > span {
-    color: ${({ theme }) => theme.colors.semantic[500]};
+    color: ${theme.colors.semantic[500]};
   }
 `;
 
@@ -76,7 +76,7 @@ export const CheckButtonList = styled.div`
   gap: 24px;
 
   p {
-    color: ${({ theme }) => theme.colors.grey[800]};
+    color: ${theme.colors.grey[800]};
     white-space: nowrap;
     ${TYPOGRAPHY.ST_2}
   }

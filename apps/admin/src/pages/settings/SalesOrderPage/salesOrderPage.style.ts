@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
   display: flex;
@@ -12,18 +12,18 @@ export const Title = styled.div`
   display: flex;
   align-items: center;
   gap: 11px;
-  color: ${({ theme }) => theme.colors.grey[800]};
+  color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.MT_1}
 
   & > div {
     width: 0.125rem;
     height: 1.25rem;
-    background-color: ${({ theme }) => theme.colors.grey[800]};
+    background-color: ${theme.colors.grey[800]};
   }
 
   & > span {
     ${TYPOGRAPHY.ST_1}
-    color: ${({ theme }) => theme.colors.grey[600]};
+    color: ${theme.colors.grey[600]};
   }
 `;
 
@@ -47,7 +47,7 @@ export const CalendarText = styled.div`
   justify-content: center;
   padding: 10px 14px;
   border-radius: 12px;
-  border: 0.5px solid ${({ theme }) => theme.colors.grey[400]};
+  border: 0.5px solid ${theme.colors.grey[400]};
   ${TYPOGRAPHY.BD_2}
-  color: ${({ theme }) => theme.colors.grey[900]};
+  color: ${theme.colors.grey[900]};
 `;

@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
   position: relative;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${theme.colors.white};
   width: 27.5rem;
   padding: 24px;
   border-radius: 1rem;
@@ -19,7 +19,7 @@ export const CloseButton = styled.button`
 
 export const Title = styled.p`
   ${TYPOGRAPHY.MT_1}
-  color: ${({ theme }) => theme.colors.grey[800]};
+  color: ${theme.colors.grey[800]};
   text-align: center;
   margin: 20px 0 40px;
 `;
@@ -41,7 +41,7 @@ export const Content = styled.div`
   height: 2rem;
 
   & > p {
-    color: ${({ theme }) => theme.colors.primary[500]};
+    color: ${theme.colors.primary[500]};
     white-space: nowrap;
     ${TYPOGRAPHY.MT_4};
   }
@@ -53,18 +53,18 @@ export const Content = styled.div`
     & > input {
       width: 3rem;
       height: 100%;
-      border-bottom: 1px solid ${({ theme }) => theme.colors.grey[300]};
+      border-bottom: 1px solid ${theme.colors.grey[300]};
       text-align: center;
-      color: ${({ theme }) => theme.colors.grey[800]};
+      color: ${theme.colors.grey[800]};
       ${TYPOGRAPHY.MT_5};
 
       &::placeholder {
-        color: ${({ theme }) => theme.colors.grey[400]};
+        color: ${theme.colors.grey[400]};
       }
     }
 
     & > span {
-      color: ${({ theme }) => theme.colors.grey[800]};
+      color: ${theme.colors.grey[800]};
       white-space: nowrap;
       ${TYPOGRAPHY.MT_5};
     }

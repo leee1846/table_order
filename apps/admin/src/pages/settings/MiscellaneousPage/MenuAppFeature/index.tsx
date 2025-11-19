@@ -3,7 +3,7 @@ import { BasicButton, ToggleButton } from '@repo/ui/components';
 import { useRef, useState } from 'react';
 import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common/common.style';
 import * as S from '@/pages/settings/MiscellaneousPage/MenuAppFeature/menuAppFeature.style';
-import { useTimeInput } from '@repo/feature/hooks';
+import { useTimeInput } from '@/hooks/useTimeInput';
 
 export const MenuAppFeature = () => {
   const [isTestOn, setIsTestOn] = useState(false);

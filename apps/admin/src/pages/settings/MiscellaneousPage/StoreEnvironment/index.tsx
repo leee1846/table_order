@@ -1,7 +1,7 @@
 import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common/common.style';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
 import { useState, useRef } from 'react';
-import { useTimeInput } from '@repo/feature/hooks';
+import { useTimeInput } from '@/hooks/useTimeInput';
 
 export const StoreEnvironment = () => {
   const [tableOccupationTime, setTableOccupationTime] = useState(false);

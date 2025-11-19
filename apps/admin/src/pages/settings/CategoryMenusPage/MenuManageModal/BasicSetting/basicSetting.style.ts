@@ -30,7 +30,7 @@ export const Thumbnail = styled.div`
   gap: 4px;
   width: 100%;
   height: 15.4375rem;
-  background-color: ${({ theme }) => theme.colors.primary[100]};
+  background-color: ${theme.colors.primary[100]};
   border-radius: 1rem;
   overflow: hidden;
 
@@ -92,7 +92,7 @@ export const ScrollableContent = styled.div`
         justify-content: center;
         width: 1.875rem;
         height: 1.625rem;
-        background-color: ${({ theme }) => theme.colors.primary[600]};
+        background-color: ${theme.colors.primary[600]};
         border-radius: 0 0.75rem 0 0.75rem;
         cursor: pointer;
       }
@@ -107,7 +107,7 @@ export const Gradient = styled.div`
   width: 60px;
   height: 6.25rem;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #fff 90%);
-  z-index: ${({ theme }) => theme.zIndex.dropdown};
+  z-index: ${theme.zIndex.dropdown};
   pointer-events: none;
 `;
 
@@ -120,14 +120,14 @@ export const ImageAddButton = styled.button`
   min-width: 8.75rem;
   width: 100%;
   height: 6.25rem;
-  background-color: ${({ theme }) => theme.colors.grey[100]};
+  background-color: ${theme.colors.grey[100]};
   border-radius: 1rem;
   cursor: pointer;
-  border: 1px dashed ${({ theme }) => theme.colors.grey[400]};
+  border: 1px dashed ${theme.colors.grey[400]};
 
   & > span {
     ${TYPOGRAPHY.CT_2}
-    color: ${({ theme }) => theme.colors.grey[500]};
+    color: ${theme.colors.grey[500]};
   }
 `;
 
@@ -173,11 +173,11 @@ export const Title = styled.p`
   display: flex;
   gap: 10px;
 
-  color: ${({ theme }) => theme.colors.grey[800]};
+  color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.MT_6}
 
   & > span {
-    color: ${({ theme }) => theme.colors.semantic[500]};
+    color: ${theme.colors.semantic[500]};
     ${TYPOGRAPHY.MT_6}
   }
 `;
@@ -199,7 +199,7 @@ export const BadgeContainer = styled.div<{ gap?: number }>`
   align-items: center;
   justify-content: center;
   height: 100%;
-  background-color: ${({ theme }) => theme.colors.grey[100]};
+  background-color: ${theme.colors.grey[100]};
   border-radius: 0.75rem;
   gap: ${({ gap }) => (gap ? `${gap}px` : 0)};
 `;
@@ -229,14 +229,14 @@ export const Textarea = styled.textarea`
   flex: 1;
   min-height: 0;
   border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.colors.grey[400]};
+  border: 1px solid ${theme.colors.grey[400]};
   padding: 16px 12px;
   resize: none;
-  color: ${({ theme }) => theme.colors.grey[700]};
+  color: ${theme.colors.grey[700]};
   ${TYPOGRAPHY.ST_4}
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.grey[400]};
+    color: ${theme.colors.grey[400]};
     ${TYPOGRAPHY.ST_5}
   }
 `;

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Layout = styled.div`
   display: flex;
@@ -11,7 +11,7 @@ export const Section = styled.section`
   display: flex;
   flex-direction: column;
   gap: 30px;
-  background-color: ${({ theme }) => theme.colors.grey[800]};
+  background-color: ${theme.colors.grey[800]};
   width: 100%;
   min-width: 13.125rem;
   max-width: 13.125rem;
@@ -102,12 +102,12 @@ export const FloatingHomeButton = styled.button`
   justify-content: center;
   gap: 6px;
   padding: 24px 0;
-  background-color: ${({ theme }) => theme.colors.grey[900]};
+  background-color: ${theme.colors.grey[900]};
   cursor: pointer;
 
   span {
     ${TYPOGRAPHY.MT_6}
-    color: ${({ theme }) => theme.colors.grey[600]};
+    color: ${theme.colors.grey[600]};
   }
 `;
 

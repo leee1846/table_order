@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
   display: flex;
@@ -15,7 +15,7 @@ export const BestMenu = styled.div`
   flex-direction: column;
   gap: 24px;
   padding: 24px;
-  background-color: ${({ theme }) => theme.colors.grey[100]};
+  background-color: ${theme.colors.grey[100]};
   border-radius: 1rem;
 
   & > img {
@@ -29,7 +29,7 @@ export const BestMenu = styled.div`
 
 export const BestMenuTitle = styled.p`
   ${TYPOGRAPHY.ST_4}
-  color: ${({ theme }) => theme.colors.grey[600]};
+  color: ${theme.colors.grey[600]};
 `;
 
 export const BestMenuInfo = styled.div`
@@ -39,12 +39,12 @@ export const BestMenuInfo = styled.div`
 
   & > p:first-of-type {
     ${TYPOGRAPHY.MT_6}
-    color: ${({ theme }) => theme.colors.grey[900]};
+    color: ${theme.colors.grey[900]};
   }
 
   & > p:last-of-type {
     ${TYPOGRAPHY.MT_4}
-    color: ${({ theme }) => theme.colors.grey[600]};
+    color: ${theme.colors.grey[600]};
   }
 `;
 
@@ -55,7 +55,7 @@ export const TotalMenu = styled.div`
   gap: 16px;
   padding: 24px;
   border-radius: 1rem;
-  border: 1px solid ${({ theme }) => theme.colors.grey[300]};
+  border: 1px solid ${theme.colors.grey[300]};
 `;
 
 export const TotalMenuInfo = styled.div`
@@ -65,7 +65,7 @@ export const TotalMenuInfo = styled.div`
 
   & > p:first-of-type {
     ${TYPOGRAPHY.ST_4}
-    color: ${({ theme }) => theme.colors.grey[600]};
+    color: ${theme.colors.grey[600]};
   }
 `;
 
