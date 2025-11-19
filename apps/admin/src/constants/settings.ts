@@ -1,18 +1,5 @@
 import { ROUTES } from '@/constants/routes';
-
-export type TSubMenu = {
-  id: string | number;
-  label: string;
-  path: string;
-};
-
-export type TMenu = {
-  id: string;
-  label: string;
-  path?: string;
-  subMenus?: TSubMenu[];
-  matchPattern?: string; // 하위 경로 매칭용
-};
+import { type TMenu, type TSubMenu } from '@repo/feature/components';
 
 export const createSidebarMenus = (menuSubMenus?: TSubMenu[]): TMenu[] => [
   {

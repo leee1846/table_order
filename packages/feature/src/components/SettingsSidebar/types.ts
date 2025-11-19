@@ -1,0 +1,20 @@
+export type TSubMenu = {
+  id: string | number;
+  label: string;
+  path: string;
+};
+
+export type TMenu = {
+  id: string;
+  label: string;
+  path?: string;
+  subMenus?: TSubMenu[];
+  matchPattern?: string; // 하위 경로 매칭용
+};
+
+export interface SettingsSidebarProps {
+  menus: TMenu[];
+  homeRoute: string;
+  logoContent?: React.ReactNode;
+}
+

@@ -6,3 +6,10 @@ export {
   type OrderListDialogProps,
   type OrderItem,
 } from './OrderListDialog';
+
+export {
+  SettingsSidebar,
+  type SettingsSidebarProps,
+  type TMenu,
+  type TSubMenu,
+} from './SettingsSidebar';

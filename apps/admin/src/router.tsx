@@ -9,7 +9,7 @@ import { ROUTES } from '@/constants/routes';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 
 const SettingSidebar = lazy(() =>
-  import('@/feature/settings/SidebarLayout').then((module) => ({
+  import('@/pages/settings/SidebarLayout').then((module) => ({
     default: module.SidebarLayout,
   }))
 );
