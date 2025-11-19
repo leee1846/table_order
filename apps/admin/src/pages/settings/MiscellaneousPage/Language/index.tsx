@@ -1,5 +1,5 @@
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
-import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common/common.style';
+import * as UIStyles from '@repo/ui/styles';
 import { CheckButton, Dropdown, ToggleButton } from '@repo/ui/components';
 import { useId, useState } from 'react';
 import * as S from '@/pages/settings/MiscellaneousPage/Language/language.style';
@@ -14,19 +14,19 @@ export const Language = () => {
 
   return (
     <SectionWrapper title="언어">
-      <CommonStyles.ContentLayout>
+      <UIStyles.setting.ContentLayout>
         <p>메인 언어</p>
         <Dropdown options={[]} value={''} onChange={() => {}} />
-      </CommonStyles.ContentLayout>
+      </UIStyles.setting.ContentLayout>
       <div>
-        <CommonStyles.ContentLayout>
+        <UIStyles.setting.ContentLayout>
           <p>다국어 사용</p>
           <ToggleButton
             size="M"
             isOn={isMultilingual}
             onChange={() => setIsMultilingual(!isMultilingual)}
           />
-        </CommonStyles.ContentLayout>
+        </UIStyles.setting.ContentLayout>
         {isMultilingual && (
           <S.CheckboxWrapper>
             <div>

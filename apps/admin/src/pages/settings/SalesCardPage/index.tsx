@@ -25,7 +25,7 @@ export const SalesCardPage = () => {
   };
   return (
     <>
-      <UIStyles.tableStyles.TablePageContainer>
+      <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
             매출 관리
@@ -66,7 +66,7 @@ export const SalesCardPage = () => {
           <Table />
         </S.Container>
 
-        <UIStyles.tableStyles.Footer>
+        <UIStyles.setting.Footer>
           <S.BottomButtonContainer>
             <Pagination
               totalPages={10}
@@ -74,8 +74,8 @@ export const SalesCardPage = () => {
               onPageChange={() => {}}
             />
           </S.BottomButtonContainer>
-        </UIStyles.tableStyles.Footer>
-      </UIStyles.tableStyles.TablePageContainer>
+        </UIStyles.setting.Footer>
+      </UIStyles.setting.TablePageContainer>
 
       {showCalender && (
         <Calender

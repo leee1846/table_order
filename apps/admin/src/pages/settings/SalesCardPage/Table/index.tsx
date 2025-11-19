@@ -41,8 +41,8 @@ export const Table = () => {
   };
 
   return (
-    <UIStyles.tableStyles.Table>
-      <UIStyles.tableStyles.Thead>
+    <UIStyles.setting.Table>
+      <UIStyles.setting.Thead>
         <tr>
           <th>
             승인
@@ -74,8 +74,8 @@ export const Table = () => {
           <th>영수증</th>
           <th>거래취소</th>
         </tr>
-      </UIStyles.tableStyles.Thead>
-      <UIStyles.tableStyles.Tbody>
+      </UIStyles.setting.Thead>
+      <UIStyles.setting.Tbody>
         {LIST.map((item) => (
           <tr key={item.id}>
             <S.ColorTd color={getTextColor(item.isCancel, true)}>
@@ -119,7 +119,7 @@ export const Table = () => {
             </td>
           </tr>
         ))}
-      </UIStyles.tableStyles.Tbody>
-    </UIStyles.tableStyles.Table>
+      </UIStyles.setting.Tbody>
+    </UIStyles.setting.Table>
   );
 };

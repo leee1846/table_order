@@ -35,16 +35,16 @@ const LIST = [
 
 export const Table = () => {
   return (
-    <UIStyles.tableStyles.Table>
-      <UIStyles.tableStyles.Thead>
+    <UIStyles.setting.Table>
+      <UIStyles.setting.Thead>
         <tr>
           <th>메뉴이름</th>
           <th>단위가격</th>
           <th>수량</th>
           <th>총가격</th>
         </tr>
-      </UIStyles.tableStyles.Thead>
-      <UIStyles.tableStyles.Tbody>
+      </UIStyles.setting.Thead>
+      <UIStyles.setting.Tbody>
         {LIST.map((item) => {
           const hasOptions = item.options && item.options.length > 0;
 
@@ -71,7 +71,7 @@ export const Table = () => {
             </React.Fragment>
           );
         })}
-      </UIStyles.tableStyles.Tbody>
-    </UIStyles.tableStyles.Table>
+      </UIStyles.setting.Tbody>
+    </UIStyles.setting.Table>
   );
 };

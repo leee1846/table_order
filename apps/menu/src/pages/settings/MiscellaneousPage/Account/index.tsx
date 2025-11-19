@@ -1,4 +1,4 @@
-import { BasicButton, ChipButton } from '@repo/ui/components';
+import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
 
@@ -20,11 +20,6 @@ export const Account = () => {
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
           <p>매장 이름???</p>
-          <S.Content>
-            <ChipButton variant="darkgrey" size="M">
-              리셋
-            </ChipButton>
-          </S.Content>
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>

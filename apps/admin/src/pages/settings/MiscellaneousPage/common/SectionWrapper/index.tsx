@@ -1,6 +1,6 @@
 import { KeyboardArrowDownIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common/common.style';
+import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/common/SectionWrapper/sectionWrapper.style';
 import { useState } from 'react';
 
@@ -12,10 +12,10 @@ export const SectionWrapper = ({ title, children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <CommonStyles.Container>
+    <UIStyles.setting.Container>
       <S.HeaderButton type="button" onClick={() => setIsOpen(!isOpen)}>
         <S.Header isOpen={isOpen}>
-          <CommonStyles.Title>{title}</CommonStyles.Title>
+          <UIStyles.setting.Title>{title}</UIStyles.setting.Title>
           <KeyboardArrowDownIcon
             width={40}
             height={40}
@@ -26,8 +26,8 @@ export const SectionWrapper = ({ title, children }: Props) => {
       </S.HeaderButton>
 
       {isOpen && (
-        <CommonStyles.ContentsLayout>{children}</CommonStyles.ContentsLayout>
+        <UIStyles.setting.ContentsLayout>{children}</UIStyles.setting.ContentsLayout>
       )}
-    </CommonStyles.Container>
+    </UIStyles.setting.Container>
   );
 };

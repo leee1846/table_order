@@ -27,7 +27,7 @@ export const SalesMenuPage = () => {
 
   return (
     <>
-      <UIStyles.tableStyles.TablePageContainer>
+      <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
             매출 관리
@@ -64,7 +64,7 @@ export const SalesMenuPage = () => {
             <Table />
           </S.TableWrapper>
         </S.Container>
-      </UIStyles.tableStyles.TablePageContainer>
+      </UIStyles.setting.TablePageContainer>
 
       {showCalender && (
         <Calender

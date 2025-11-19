@@ -26,7 +26,7 @@ export const SalesCashPage = () => {
 
   return (
     <>
-      <UIStyles.tableStyles.TablePageContainer>
+      <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
             매출 관리
@@ -60,8 +60,8 @@ export const SalesCashPage = () => {
           <Table />
         </S.Container>
 
-        <UIStyles.tableStyles.Footer>
-          <UIStyles.tableStyles.FooterContents>
+        <UIStyles.setting.Footer>
+          <UIStyles.setting.FooterContents>
             <p>
               <span>총 매출:</span> 9999999 <span>0건</span>
             </p>
@@ -71,10 +71,10 @@ export const SalesCashPage = () => {
             <p>
               <span>총 예상 매출:</span> 9999999 <span>0건</span>
             </p>
-          </UIStyles.tableStyles.FooterContents>
+          </UIStyles.setting.FooterContents>
           <Pagination totalPages={10} currentPage={1} onPageChange={() => {}} />
-        </UIStyles.tableStyles.Footer>
-      </UIStyles.tableStyles.TablePageContainer>
+        </UIStyles.setting.Footer>
+      </UIStyles.setting.TablePageContainer>
 
       {showCalender && (
         <Calender

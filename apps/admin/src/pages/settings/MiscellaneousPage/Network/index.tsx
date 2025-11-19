@@ -1,6 +1,6 @@
 import { BasicButton, Dropdown } from '@repo/ui/components';
 import { useState } from 'react';
-import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common/common.style';
+import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Network/network.style';
 
 const networkSettings = [
@@ -19,9 +19,9 @@ export const Network = () => {
   };
 
   return (
-    <CommonStyles.Container>
-      <CommonStyles.Header>
-        <CommonStyles.Title>버전 및 네트워크</CommonStyles.Title>
+    <UIStyles.setting.Container>
+      <UIStyles.setting.Header>
+        <UIStyles.setting.Title>버전 및 네트워크</UIStyles.setting.Title>
         <S.Versions>
           <p>
             현재 버전 <span>2.??.??</span>
@@ -35,14 +35,14 @@ export const Network = () => {
             Add On 버전 <span>2.??</span>
           </p>
         </S.Versions>
-      </CommonStyles.Header>
+      </UIStyles.setting.Header>
 
-      <CommonStyles.ContentsLayout>
-        <CommonStyles.ContentLayout>
+      <UIStyles.setting.ContentsLayout>
+        <UIStyles.setting.ContentLayout>
           <p>Android ID</p>
           <p>?????????</p>
-        </CommonStyles.ContentLayout>
-        <CommonStyles.ContentLayout>
+        </UIStyles.setting.ContentLayout>
+        <UIStyles.setting.ContentLayout>
           <p>네트워크 설정</p>
           <Dropdown
             options={networkSettings}
@@ -51,44 +51,44 @@ export const Network = () => {
               handleNetworkSettingChange(value as 'auto' | 'wired' | 'wifi')
             }
           />
-        </CommonStyles.ContentLayout>
-        <CommonStyles.ContentLayout>
+        </UIStyles.setting.ContentLayout>
+        <UIStyles.setting.ContentLayout>
           <p>네트워크 정보</p>
           {networkSetting === 'auto' && (
             <BasicButton variant="Solid_Sky_Blue_M" onClick={() => {}}>
               재설정
             </BasicButton>
           )}
-        </CommonStyles.ContentLayout>
-        <CommonStyles.ContentLayout>
+        </UIStyles.setting.ContentLayout>
+        <UIStyles.setting.ContentLayout>
           <p>SSID</p>
           <p>?????????</p>
-        </CommonStyles.ContentLayout>
-        <CommonStyles.ContentLayout>
+        </UIStyles.setting.ContentLayout>
+        <UIStyles.setting.ContentLayout>
           <p>IP</p>
           <p>?????????</p>
-        </CommonStyles.ContentLayout>
+        </UIStyles.setting.ContentLayout>
 
         {networkSetting === 'wifi' && (
           <>
-            <CommonStyles.ContentLayout>
+            <UIStyles.setting.ContentLayout>
               <p>SSID</p>
               <input type="text" />
-            </CommonStyles.ContentLayout>
-            <CommonStyles.ContentLayout>
+            </UIStyles.setting.ContentLayout>
+            <UIStyles.setting.ContentLayout>
               <p>암호</p>
               <input type="text" />
-            </CommonStyles.ContentLayout>
+            </UIStyles.setting.ContentLayout>
           </>
         )}
 
         {networkSetting !== 'auto' && (
-          <CommonStyles.ContentLayout>
+          <UIStyles.setting.ContentLayout>
             <p>IP Address</p>
             <input type="text" />
-          </CommonStyles.ContentLayout>
+          </UIStyles.setting.ContentLayout>
         )}
-      </CommonStyles.ContentsLayout>
-    </CommonStyles.Container>
+      </UIStyles.setting.ContentsLayout>
+    </UIStyles.setting.Container>
   );
 };

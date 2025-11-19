@@ -1,4 +1,4 @@
-import * as CommonStyles from '@/pages/settings/MiscellaneousPage/common/common.style';
+import * as UIStyles from '@repo/ui/styles';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
 import { useState, useRef } from 'react';
 import { useTimeInput } from '@/hooks/useTimeInput';
@@ -11,15 +11,15 @@ export const StoreEnvironment = () => {
   const endTime = useTimeInput();
 
   return (
-    <CommonStyles.Container>
-      <CommonStyles.Header>
-        <CommonStyles.Title>매장 환경</CommonStyles.Title>
-      </CommonStyles.Header>
+    <UIStyles.setting.Container>
+      <UIStyles.setting.Header>
+        <UIStyles.setting.Title>매장 환경</UIStyles.setting.Title>
+      </UIStyles.setting.Header>
 
-      <CommonStyles.ContentsLayout>
-        <CommonStyles.ContentLayout>
+      <UIStyles.setting.ContentsLayout>
+        <UIStyles.setting.ContentLayout>
           <p>정산 시간 (영업 시간)</p>
-          <CommonStyles.TimeRangeInput>
+          <UIStyles.setting.TimeRangeInput>
             <input
               type="text"
               inputMode="numeric"
@@ -60,21 +60,21 @@ export const StoreEnvironment = () => {
               onKeyDown={endTime.handleMinuteKeyDown}
               maxLength={2}
             />
-          </CommonStyles.TimeRangeInput>
-        </CommonStyles.ContentLayout>
-        <CommonStyles.ContentLayout>
+          </UIStyles.setting.TimeRangeInput>
+        </UIStyles.setting.ContentLayout>
+        <UIStyles.setting.ContentLayout>
           <p>테이블 점유시간 표기</p>
           <ToggleButton
             size="M"
             isOn={tableOccupationTime}
             onChange={() => setTableOccupationTime(!tableOccupationTime)}
           />
-        </CommonStyles.ContentLayout>
-        <CommonStyles.ContentLayout>
+        </UIStyles.setting.ContentLayout>
+        <UIStyles.setting.ContentLayout>
           <p>메뉴판 타입</p>
           <Dropdown options={[]} value={''} onChange={() => {}} />
-        </CommonStyles.ContentLayout>
-      </CommonStyles.ContentsLayout>
-    </CommonStyles.Container>
+        </UIStyles.setting.ContentLayout>
+      </UIStyles.setting.ContentsLayout>
+    </UIStyles.setting.Container>
   );
 };
