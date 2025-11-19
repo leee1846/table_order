@@ -1,5 +1,5 @@
 import * as S from '@/pages/settings/CategoriesPage/Categories/categories.style';
-import { NoContent } from '@/components/NoContent';
+import { NoContent } from '@/feature/NoContent';
 import { categories } from '@/constants/mock';
 import { Category } from '@/pages/settings/CategoriesPage/Categories/Category';
 

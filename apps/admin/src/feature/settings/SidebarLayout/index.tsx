@@ -1,7 +1,7 @@
 import { Suspense, useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import * as S from '@/components/settings/SidebarLayout/sidebarLayout.style';
+import { LoadingSpinner } from '@/feature/LoadingSpinner';
+import * as S from '@/feature/settings/SidebarLayout/sidebarLayout.style';
 import { ChevronForwardIcon, HomeFilledIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { type TMenu, createSidebarMenus } from '@/constants/settings';

@@ -1,4 +1,4 @@
-import * as S from '@/components/NoContent/noContent.style';
+import * as S from '@/feature/NoContent/noContent.style';
 
 interface Props {
   children: React.ReactNode;
