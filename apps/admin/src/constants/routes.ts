@@ -2,6 +2,10 @@ export const ROUTES = {
   SETTINGS: {
     path: '/settings',
 
+    NOTICES: {
+      path: 'notices',
+      generate: () => '/settings/notices',
+    },
     CATEGORIES: {
       path: 'categories',
       generate: () => '/settings/categories',

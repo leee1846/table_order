@@ -13,6 +13,11 @@ const SettingSidebar = lazy(() =>
     default: module.SidebarLayout,
   }))
 );
+const NoticesPage = lazy(() =>
+  import('@/pages/settings/NoticesPage').then((module) => ({
+    default: module.NoticesPage,
+  }))
+);
 const CategoriesPage = lazy(() =>
   import('@/pages/settings/CategoriesPage').then((module) => ({
     default: module.CategoriesPage,
@@ -106,6 +111,10 @@ export const router = createBrowserRouter([
         // /settings → /settings/categories
         index: true,
         element: <Navigate to={ROUTES.SETTINGS.CATEGORIES.path} replace />,
+      },
+      {
+        path: ROUTES.SETTINGS.NOTICES.path,
+        element: <NoticesPage />,
       },
       {
         path: ROUTES.SETTINGS.CATEGORIES.path,

@@ -3,6 +3,11 @@ import { type TMenu, type TSubMenu } from '@repo/feature/components';
 
 export const createSidebarMenus = (menuSubMenus?: TSubMenu[]): TMenu[] => [
   {
+    id: 'notices',
+    label: '공지사항',
+    path: ROUTES.SETTINGS.NOTICES.generate(),
+  },
+  {
     id: 'categories',
     label: '카테고리 관리',
     path: ROUTES.SETTINGS.CATEGORIES.generate(),
