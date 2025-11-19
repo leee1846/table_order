@@ -7,4 +7,12 @@ export const ROUTES = {
     path: '/login',
     generate: () => '/login',
   },
+  SETTINGS: {
+    path: '/settings',
+
+    MISCELLANEOUS: {
+      path: 'misc',
+      generate: () => '/settings/misc',
+    },
+  },
 } as const;

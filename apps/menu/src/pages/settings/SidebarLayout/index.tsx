@@ -1,21 +1,34 @@
 import { Suspense, useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
-import * as S from '@/feature/settings/SidebarLayout/sidebarLayout.style';
+import * as S from '@/pages/settings/SidebarLayout/sidebarLayout.style';
 import { ChevronForwardIcon, HomeFilledIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { type TMenu, createSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
 
-export const SidebarLayout = () => {
-  const SIDEBAR_MENUS = createSidebarMenus(
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].map((id) => ({
-      id,
-      label: `카테고리 ${id} 메뉴`,
-      path: ROUTES.SETTINGS.CATEGORY_MENUS.generate(id),
-    }))
-  );
+export type TSubMenu = {
+  id: string | number;
+  label: string;
+  path: string;
+};
 
+export type TMenu = {
+  id: string;
+  label: string;
+  path?: string;
+  subMenus?: TSubMenu[];
+  matchPattern?: string; // 하위 경로 매칭용
+};
+
+export const SIDEBAR_MENUS: TMenu[] = [
+  {
+    id: 'misc',
+    label: '설정',
+    path: ROUTES.SETTINGS.MISCELLANEOUS.generate(),
+  },
+];
+
+export const SidebarLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [openedMenuIds, setOpenedMenuIds] = useState<Set<string>>(new Set());
@@ -46,12 +59,13 @@ export const SidebarLayout = () => {
   };
 
   const hasActiveSubMenu = (menu: TMenu) =>
-    menu.subMenus?.some((sub) => isPathActive(sub.path)) ?? false;
+    menu.subMenus?.some((sub: TSubMenu) => isPathActive(sub.path)) ?? false;
 
   /* 경로가 바뀔 때마다, matchPattern을 기반으로 자동 열림/닫힘 제어 */
   useEffect(() => {
     const hasActiveSubMenu = (menu: TMenu) =>
-      menu.subMenus?.some((sub) => location.pathname === sub.path) ?? false;
+      menu.subMenus?.some((sub: TSubMenu) => location.pathname === sub.path) ??
+      false;
 
     SIDEBAR_MENUS.forEach((menu) => {
       if (!menu.matchPattern) {
@@ -76,7 +90,7 @@ export const SidebarLayout = () => {
         return next;
       });
     });
-  }, [location.pathname, SIDEBAR_MENUS]);
+  }, [location.pathname]);
 
   return (
     <S.Layout>
@@ -110,7 +124,7 @@ export const SidebarLayout = () => {
                 <ul>
                   {hasSubMenus &&
                     isOpened &&
-                    menu.subMenus!.map((sub) => (
+                    menu.subMenus!.map((sub: TSubMenu) => (
                       <li key={sub.id}>
                         <S.DetailButton
                           onClick={() => handleSubMenuClick(sub.path)}
@@ -128,7 +142,7 @@ export const SidebarLayout = () => {
 
         <S.FloatingHomeButton
           type="button"
-          onClick={() => navigate(ROUTES.TABLES.generate())}
+          onClick={() => navigate(ROUTES.ROOT.generate())}
         >
           <HomeFilledIcon
             width={24}

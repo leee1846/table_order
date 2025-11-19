@@ -14,7 +14,6 @@ export const privateApi = createAxiosInstance({
 
 privateApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    console.log('이건 브라이빗');
     return config;
   },
   (error: AxiosError) => {

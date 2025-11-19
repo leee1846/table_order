@@ -14,7 +14,6 @@ export const publicApi = createAxiosInstance({
 
 publicApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    console.log('이건 퍼블릭');
     return config;
   },
   (error: AxiosError) => {

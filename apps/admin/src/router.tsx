@@ -6,6 +6,7 @@ import {
   redirect,
 } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import { FullscreenLoadingSpinner } from '@repo/ui/components';
 
 const SettingSidebar = lazy(() =>
   import('@/feature/settings/SidebarLayout').then((module) => ({
@@ -78,7 +79,7 @@ export const router = createBrowserRouter([
     // /tables
     path: ROUTES.TABLES.path,
     element: (
-      <Suspense>
+      <Suspense fallback={<FullscreenLoadingSpinner />}>
         <TablesPage />
       </Suspense>
     ),
@@ -87,7 +88,7 @@ export const router = createBrowserRouter([
     // /tables/:tableNum
     path: ROUTES.TABLE_DETAIL.path,
     element: (
-      <Suspense>
+      <Suspense fallback={<FullscreenLoadingSpinner />}>
         <TableDetailPage />
       </Suspense>
     ),
@@ -96,7 +97,7 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.SETTINGS.path,
     element: (
-      <Suspense>
+      <Suspense fallback={<FullscreenLoadingSpinner />}>
         <SettingSidebar />
       </Suspense>
     ),
@@ -108,11 +109,7 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTES.SETTINGS.CATEGORIES.path,
-        element: (
-          <Suspense>
-            <CategoriesPage />
-          </Suspense>
-        ),
+        element: <CategoriesPage />,
       },
       {
         // /settings/categories/:id → 바로 menus로 리디렉트
@@ -122,11 +119,7 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTES.SETTINGS.CATEGORY_MENUS.path,
-        element: (
-          <Suspense>
-            <CategoryMenusPage />
-          </Suspense>
-        ),
+        element: <CategoryMenusPage />,
       },
       {
         path: ROUTES.SETTINGS.SALES.path,
@@ -138,61 +131,33 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.SETTINGS.SALES.SUMMARY.path,
-            element: (
-              <Suspense>
-                <SalesSummaryPage />
-              </Suspense>
-            ),
+            element: <SalesSummaryPage />,
           },
           {
             path: ROUTES.SETTINGS.SALES.ORDER.path,
-            element: (
-              <Suspense>
-                <SalesOrderPage />
-              </Suspense>
-            ),
+            element: <SalesOrderPage />,
           },
           {
             path: ROUTES.SETTINGS.SALES.CARD.path,
-            element: (
-              <Suspense>
-                <SalesCardPage />
-              </Suspense>
-            ),
+            element: <SalesCardPage />,
           },
           {
             path: ROUTES.SETTINGS.SALES.CASH.path,
-            element: (
-              <Suspense>
-                <SalesCashPage />
-              </Suspense>
-            ),
+            element: <SalesCashPage />,
           },
           {
             path: ROUTES.SETTINGS.SALES.MENU.path,
-            element: (
-              <Suspense>
-                <SalesMenuPage />
-              </Suspense>
-            ),
+            element: <SalesMenuPage />,
           },
         ],
       },
       {
         path: ROUTES.SETTINGS.STYLE.path,
-        element: (
-          <Suspense>
-            <StylePage />
-          </Suspense>
-        ),
+        element: <StylePage />,
       },
       {
         path: ROUTES.SETTINGS.MISCELLANEOUS.path,
-        element: (
-          <Suspense>
-            <MiscellaneousPage />
-          </Suspense>
-        ),
+        element: <MiscellaneousPage />,
       },
     ],
   },

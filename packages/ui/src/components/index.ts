@@ -13,6 +13,7 @@ export { Dropdown } from './Dropdown';
 export { Pagination } from './Pagination';
 export { Calender } from './Calender';
 export { Keypad } from './Keypad';
+export { FullscreenLoadingSpinner } from './FullscreenLoadingSpinner';
 
 export type { DialogSize } from './Dialog/dialog';
 export { ToastMessage } from './ToastMessage';
