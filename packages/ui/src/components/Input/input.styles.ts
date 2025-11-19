@@ -12,6 +12,8 @@ export const Label = styled.label<{ disabled?: boolean }>`
   padding: 14px 12px;
   box-sizing: border-box;
   transition: border-color 0.2s;
+  height: 52px;
+
   border: 1px solid ${colors.grey[400]};
   ${({ disabled }) =>
     disabled &&
@@ -29,7 +31,6 @@ export const StyledInput = styled.input`
   flex: 1;
   border: none;
   outline: none;
-  height: 32px; /* input 높이 고정 */
   line-height: 32px; /* vertical center (필요 시) */
   padding-right: 1.5rem;
   &[type='password'] {
