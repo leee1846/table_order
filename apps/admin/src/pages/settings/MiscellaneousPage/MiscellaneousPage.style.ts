@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
   padding: 40px 24px 40px 30px;
-  background-color: ${({ theme }) => theme.colors.grey[50]};
+  background-color: ${theme.colors.grey[50]};
 
   & > header {
     display: flex;
@@ -17,7 +17,7 @@ export const Container = styled.div`
       gap: 4px;
 
       & > h1 {
-        color: ${({ theme }) => theme.colors.grey[800]};
+        color: ${theme.colors.grey[800]};
         ${TYPOGRAPHY.MT_1}
       }
     }

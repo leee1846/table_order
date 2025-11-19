@@ -8,7 +8,7 @@ import {
 import { ROUTES } from '@/constants/routes';
 
 const SettingSidebar = lazy(() =>
-  import('@/components/settings/SidebarLayout').then((module) => ({
+  import('@/feature/settings/SidebarLayout').then((module) => ({
     default: module.SidebarLayout,
   }))
 );

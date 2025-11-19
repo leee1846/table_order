@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { theme } from '@repo/ui';
 
 export const HeaderButton = styled.button`
   display: flex;
@@ -21,5 +22,5 @@ export const Header = styled.div<{ isOpen: boolean }>`
 export const Divider = styled.div`
   width: 100%;
   height: 1px;
-  background-color: ${({ theme }) => theme.colors.grey[400]};
+  background-color: ${theme.colors.grey[400]};
 `;

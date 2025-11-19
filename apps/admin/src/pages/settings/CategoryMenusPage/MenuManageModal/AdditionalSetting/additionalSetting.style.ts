@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const inputCss = css`
   height: 3.25rem;
@@ -21,7 +21,7 @@ export const SetionContainer = styled.div`
 
   & > p {
     ${TYPOGRAPHY.BD_2}
-    color: ${({ theme }) => theme.colors.grey[800]};
+    color: ${theme.colors.grey[800]};
   }
 `;
 

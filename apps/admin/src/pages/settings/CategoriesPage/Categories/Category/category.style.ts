@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 24px 20px;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${theme.colors.white};
   border-radius: 1rem;
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
 `;
@@ -21,7 +21,7 @@ export const Header = styled.div`
     align-items: center;
 
     & > span {
-      color: ${({ theme }) => theme.colors.grey[900]};
+      color: ${theme.colors.grey[900]};
       ${TYPOGRAPHY.MT_6}
     }
 
@@ -39,8 +39,8 @@ export const Header = styled.div`
     width: 30px;
     height: 30px;
     border-radius: 8px;
-    background-color: ${({ theme }) => theme.colors.grey[50]};
-    border: 1px solid ${({ theme }) => theme.colors.grey[300]};
+    background-color: ${theme.colors.grey[50]};
+    border: 1px solid ${theme.colors.grey[300]};
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
     cursor: pointer;
   }
@@ -52,23 +52,23 @@ export const Badges = styled.ul`
   gap: 8px;
   padding-bottom: 20px;
   margin-bottom: 20px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.grey[200]};
+  border-bottom: 1px solid ${theme.colors.grey[200]};
 
   & > li {
     display: flex;
     flex-direction: column;
     gap: 6px;
     padding: 10px;
-    background-color: ${({ theme }) => theme.colors.grey[100]};
+    background-color: ${theme.colors.grey[100]};
     border-radius: 8px;
 
     & > p:first-of-type {
-      color: ${({ theme }) => theme.colors.grey[500]};
+      color: ${theme.colors.grey[500]};
       ${TYPOGRAPHY.CT_2}
     }
 
     & > p:last-of-type {
-      color: ${({ theme }) => theme.colors.grey[800]};
+      color: ${theme.colors.grey[800]};
       ${TYPOGRAPHY.ST_3}
     }
   }
@@ -86,7 +86,7 @@ export const HiddenContainer = styled.div`
   gap: 8px;
 
   & > p {
-    color: ${({ theme }) => theme.colors.grey[500]};
+    color: ${theme.colors.grey[500]};
     ${TYPOGRAPHY.BD_2}
   }
 `;

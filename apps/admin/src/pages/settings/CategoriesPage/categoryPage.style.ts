@@ -1,7 +1,8 @@
 import styled from '@emotion/styled';
+import { theme } from '@repo/ui';
 
 export const Container = styled.div`
-  background-color: ${({ theme }) => theme.colors.grey[50]};
+  background-color: ${theme.colors.grey[50]};
   padding: 40px 24px 40px 30px;
 `;
 
@@ -18,8 +19,8 @@ export const AddButton = styled.div`
     width: 2.75rem;
     height: 2.75rem;
     border-radius: 50%;
-    background-color: ${({ theme }) => theme.colors.grey[50]};
-    border: 1px solid ${({ theme }) => theme.colors.grey[400]};
+    background-color: ${theme.colors.grey[50]};
+    border: 1px solid ${theme.colors.grey[400]};
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
     cursor: pointer;
   }

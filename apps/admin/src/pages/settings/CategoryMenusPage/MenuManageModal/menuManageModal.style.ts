@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
   position: absolute;
@@ -9,7 +9,7 @@ export const Container = styled.div`
   height: 100%;
   padding: 40px 24px 40px 30px;
   overflow-y: auto;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${theme.colors.white};
 `;
 
 export const Header = styled.div`
@@ -27,7 +27,7 @@ export const Titles = styled.div`
   align-items: center;
 
   & > p {
-    color: ${({ theme }) => theme.colors.grey[800]};
+    color: ${theme.colors.grey[800]};
     ${TYPOGRAPHY.MT_1}
   }
 
@@ -35,7 +35,7 @@ export const Titles = styled.div`
     width: 0.125rem;
     height: 1.25rem;
     margin: 0 11px;
-    background-color: ${({ theme }) => theme.colors.semantic[800]};
+    background-color: ${theme.colors.semantic[800]};
   }
 
   & > div {
@@ -47,12 +47,12 @@ export const Titles = styled.div`
     }
 
     & > p {
-      color: ${({ theme }) => theme.colors.grey[600]};
+      color: ${theme.colors.grey[600]};
       ${TYPOGRAPHY.ST_1}
     }
 
     & > p:last-child {
-      color: ${({ theme }) => theme.colors.primary[500]};
+      color: ${theme.colors.primary[500]};
       ${TYPOGRAPHY.ST_1}
     }
   }

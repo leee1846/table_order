@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
   display: flex;
@@ -8,7 +8,7 @@ export const Container = styled.div`
   margin-bottom: 16px;
 
   & > p {
-    color: ${({ theme }) => theme.colors.grey[800]};
+    color: ${theme.colors.grey[800]};
     ${TYPOGRAPHY.MT_6}
   }
 `;
@@ -37,5 +37,5 @@ export const ThemeColor = styled.div<{ backgroundColors: string }>`
   border-radius: 0.75rem;
   background-color: ${({ backgroundColors }) => backgroundColors};
   ${TYPOGRAPHY.MT_6}
-  color: ${({ theme }) => theme.colors.primary[400]};
+  color: ${theme.colors.primary[400]};
 `;
