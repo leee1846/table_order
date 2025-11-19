@@ -27,26 +27,68 @@ export const Label = styled.label<{ disabled?: boolean }>`
   }
 `;
 
-export const StyledInput = styled.input`
+export const InputWrapper = styled.div`
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+`;
+
+export const StyledInput = styled.input<{
+  $isPassword?: boolean;
+  $hasRightSpace?: boolean;
+}>`
   flex: 1;
   border: none;
   outline: none;
-  line-height: 32px; /* vertical center (필요 시) */
-  padding-right: 1.5rem;
-  &[type='password'] {
-    font-size: 3rem;
-    letter-spacing: 0.1rem;
-    line-height: 32px;
-    vertical-align: middle;
-  }
+  padding-right: ${({ $hasRightSpace }) => ($hasRightSpace ? '1.5rem' : '0')};
   ${TYPOGRAPHY.ST_5};
   background: transparent;
-  color: ${colors.grey[700]};
+  color: ${({ $isPassword }) =>
+    $isPassword ? 'transparent' : colors.grey[700]};
+  width: 100%;
+  ${({ $isPassword }) =>
+    $isPassword &&
+    css`
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      &::selection {
+        background: transparent;
+      }
+      &::-moz-selection {
+        background: transparent;
+      }
+    `}
   &::placeholder {
     color: ${colors.grey[400]};
     ${TYPOGRAPHY.ST_5};
   }
-  width: 100%;
+`;
+
+export const PasswordOverlay = styled.div<{ $hasRightSpace?: boolean }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: ${({ $hasRightSpace }) => ($hasRightSpace ? '1.5rem' : '0')};
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  overflow: hidden;
+  white-space: nowrap;
+  ${TYPOGRAPHY.ST_5};
+  line-height: inherit;
+`;
+
+export const PasswordDot = styled.span`
+  font-size: 1.25rem;
+  line-height: 1;
+  color: ${colors.grey[700]};
+  margin-right: 0.1rem;
+  display: inline-block;
+  vertical-align: middle;
 `;
 
 export const ClearButton = styled.button`
