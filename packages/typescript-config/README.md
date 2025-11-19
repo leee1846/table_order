@@ -1,8 +1,8 @@
 # @repo/typescript-config
 
-Turborepo 전체에서 공유하는 TypeScript 설정입니다.
+TypeScript 설정입니다.
 
-## 사용법
+## 사용 방법
 
 ### Vite React 프로젝트
 
