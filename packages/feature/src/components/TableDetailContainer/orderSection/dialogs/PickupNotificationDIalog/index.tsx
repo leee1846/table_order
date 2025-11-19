@@ -4,7 +4,7 @@ import { css } from '@emotion/react';
 import { BasicButton, ModalBackground, toast } from '@repo/ui/components';
 import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
-import { usePostPickupNotification } from '@repo/api';
+import { usePostPickupNotification } from '@repo/api/queries';
 import * as S from './pickupNotificationDialog.style';
 
 const { colors } = theme;
@@ -23,28 +23,15 @@ export const PickupNotificationDialog = ({
   const [message, setMessage] = useState(defaultMessage);
   const [isCustomInput, setIsCustomInput] = useState(false);
 
-  const pickupNotificationMutation = usePostPickupNotification({
-    options: {
-      onSuccess: () => {
-        toast('픽업 알림이 전송되었습니다.');
-        onClose();
-      },
-      onError: (error: unknown) => {
-        const errorMessage =
-          (error as { response?: { data?: { message?: string } } })?.response
-            ?.data?.message || '픽업 알림 전송에 실패했습니다.';
-        // toast.error(errorMessage);
-        console.error(errorMessage);
-        onClose();
-      },
-    },
-  });
+  const { mutateAsync: pickupNotification } = usePostPickupNotification();
 
-  const handleConfirm = () => {
-    pickupNotificationMutation.mutate({
+  const handleConfirm = async () => {
+    await pickupNotification({
       orderId: '1',
       message: 'test',
     });
+    toast('픽업 알림이 전송되었습니다.');
+    onClose();
   };
 
   const handleCustomInputClick = () => {

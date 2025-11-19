@@ -1,33 +1,12 @@
-import { initializeApiClient } from '@repo/api';
-import type {
-  AxiosError,
-  InternalAxiosRequestConfig,
-  AxiosResponse,
-} from '@repo/api/axios';
+import { registerAxiosInstances } from '@repo/api/cores';
+import { privateApi } from '@/config/privateApi';
+import { publicApi } from '@/config/publicApi';
 
-// API 클라이언트 초기화 (baseURL 주입)
-const apiClient = initializeApiClient({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+/**
+ * Axios Instance Registry 등록
+ * privateApi와 publicApi를 packages/api의 fetcher에서 사용할 수 있도록 등록
+ */
+registerAxiosInstances({
+  private: privateApi,
+  public: publicApi,
 });
-
-// Request Interceptor - 토큰 추가 등
-apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    return config;
-  },
-  (error: AxiosError) => {
-    return Promise.reject(error);
-  }
-);
-
-// Response Interceptor - 에러 처리 등
-apiClient.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response;
-  },
-  (error: AxiosError) => {
-    return Promise.reject(error);
-  }
-);
-
-export { apiClient };

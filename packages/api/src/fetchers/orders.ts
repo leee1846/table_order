@@ -1,8 +1,8 @@
-import { apiClient } from '../cores/axios';
-import { endpoints } from '../cores/endpoints';
+import { getAxiosInstance } from '../cores/axios';
+import { ENDPOINTS } from '../cores/endpoints';
 import type {
   ISendPickupNotificationRequest,
-  ISendPickupNotificationResponse,
+  TSendPickupNotificationResponse,
 } from '../types/orders';
 
 /**
@@ -11,9 +11,12 @@ import type {
 export const sendPickupNotification = async (
   data: ISendPickupNotificationRequest
 ) => {
-  return apiClient<ISendPickupNotificationResponse>({
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TSendPickupNotificationResponse>({
     method: 'POST',
-    url: endpoints.order.sendPickupNotification,
+    url: ENDPOINTS.ORDER.SEND_PICKUP_NOTIFICATION,
     data,
-  }).then((response) => response.data);
+  });
+
+  return response.data;
 };

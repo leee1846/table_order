@@ -106,7 +106,7 @@ export const ClearButton = styled.button`
   justify-content: center;
 `;
 
-export const RightArea = styled.button`
+export const RightArea = styled.div`
   position: absolute;
   right: 12px;
   top: 50%;

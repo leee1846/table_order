@@ -1,9 +1,6 @@
 import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 
-/**
- * 기본 axios 인스턴스를 생성합니다.
- */
-export const createApiClient = (
+export const createAxiosInstance = (
   config?: CreateAxiosDefaults
 ): AxiosInstance => {
   const instance = axios.create({
@@ -17,39 +14,33 @@ export const createApiClient = (
   return instance;
 };
 
-/**
- * API 클라이언트 인스턴스 (모듈 레벨 변수)
- * initializeApiClient로 초기화되어야 합니다.
- */
-let apiClientInstance: AxiosInstance | null = null;
+const axiosInstanceRegistry = new Map<string, AxiosInstance>();
 
 /**
- * API 클라이언트를 초기화합니다.
- * 각 앱에서 앱 시작 시 호출하여 baseURL을 주입합니다.
- *
- * @param config - axios 설정 (baseURL 등)
- * @returns 초기화된 API 클라이언트 인스턴스
+ * API 클라이언트들을 등록합니다.
+ * 각 app에서 시작 시 호출하여 private, public 등의 axios instance를 등록합니다.
  */
-export const initializeApiClient = (
-  config?: CreateAxiosDefaults
-): AxiosInstance => {
-  apiClientInstance = createApiClient(config);
-  return apiClientInstance;
+export const registerAxiosInstances = (
+  instances: Record<string, AxiosInstance>
+): void => {
+  Object.entries(instances).forEach(([name, instance]) => {
+    axiosInstanceRegistry.set(name, instance);
+  });
 };
 
 /**
- * 기본 API 클라이언트 인스턴스
- * 각 앱에서 interceptors를 추가하여 사용하세요.
- * 초기화되지 않았으면 에러 발생
+ * 등록된 API 클라이언트를 가져옵니다.
+ * fetcher 함수들이 내부적으로 사용합니다.
+ *
+ * @param clientName - 'private', 'public' 등
+ * @returns AxiosInstance
  */
-export const apiClient = (<T = unknown>(
-  ...args: Parameters<AxiosInstance>
-): ReturnType<AxiosInstance> => {
-  if (!apiClientInstance) {
-    throw new Error(
-      'API client is not initialized. Please call initializeApiClient() in your app config.'
-    );
+export const getAxiosInstance = (instanceName: string): AxiosInstance => {
+  const instance = axiosInstanceRegistry.get(instanceName);
+
+  if (!instance) {
+    throw new Error(`Axios instance "${instanceName}" is not registered. `);
   }
 
-  return apiClientInstance<T>(...args);
-}) as AxiosInstance;
+  return instance;
+};

@@ -1,49 +1,21 @@
-import {
-  useMutation,
-  UseMutationOptions,
-  UseMutationResult,
-} from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { sendPickupNotification } from '../../fetchers/orders';
 import type {
   ISendPickupNotificationRequest,
-  ISendPickupNotificationResponse,
+  TSendPickupNotificationResponse,
 } from '../../types/orders';
-
-interface IPostPickupNotificationRequest {
-  options?: Omit<
-    UseMutationOptions<
-      ISendPickupNotificationResponse,
-      AxiosError,
-      ISendPickupNotificationRequest
-    >,
-    'mutationFn'
-  >;
-}
-
-//UseMutationResult<TData, TError, TVariables>
-type TPostPickupNotificationResult = UseMutationResult<
-  ISendPickupNotificationResponse,
-  AxiosError,
-  ISendPickupNotificationRequest
->;
+import { IApiError } from '../../types/common';
 
 /**
- * 픽업 알림을 전송하는 React Query Mutation Hook
- *
- * @param options - React Query Mutation 옵션
- * @returns 픽업 알림 전송 mutation 결과
+ * 픽업 알림을 전송합니다.
  */
-
-export const usePostPickupNotification = ({
-  options,
-}: IPostPickupNotificationRequest): TPostPickupNotificationResult => {
+export const usePostPickupNotification = () => {
   return useMutation<
-    ISendPickupNotificationResponse,
-    AxiosError,
+    TSendPickupNotificationResponse,
+    AxiosError<IApiError>,
     ISendPickupNotificationRequest
   >({
     mutationFn: sendPickupNotification,
-    ...options,
   });
 };

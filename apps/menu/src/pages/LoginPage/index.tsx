@@ -3,6 +3,7 @@ import { useState } from 'react';
 import * as S from '@/pages/LoginPage/loginPage.style';
 import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import { usePostLogin } from '@repo/api/queries';
 
 export const LoginPage = () => {
   const [id, setId] = useState('');
@@ -22,6 +23,14 @@ export const LoginPage = () => {
   const handlePasswordChange = (value: string) => {
     setPassword(value);
     setPasswordErrorMessage(value);
+  };
+
+  const { mutateAsync: login } = usePostLogin({ ignoreGlobalErrors: [404] });
+  const handleLogin = () => {
+    login({
+      id,
+      password,
+    });
   };
 
   const passwordInputTextVisibilityComponent = () => {
@@ -74,7 +83,11 @@ export const LoginPage = () => {
             errorMessage={passwordErrorMessage}
           />
         </div>
-        <BasicButton variant="Solid_Navy_XL" customStyle={S.buttonCss}>
+        <BasicButton
+          variant="Solid_Navy_XL"
+          customStyle={S.buttonCss}
+          onClick={handleLogin}
+        >
           로그인
         </BasicButton>
       </S.LoginContainer>
