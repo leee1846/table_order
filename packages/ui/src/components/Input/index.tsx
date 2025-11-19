@@ -7,7 +7,6 @@ interface InputProps {
   value?: string; // 인풋 입력 값
   onChange?: (value: string) => void;
   placeholder?: string;
-  width?: string;
   customStyle?: SerializedStyles;
   disabled?: boolean; // 인풋 비활성화 여부
   name?: string; // <input name="email" />

@@ -116,25 +116,19 @@ export const Home = () => {
         </BasicButton>
         <Input
           placeholder="Input"
-          width="400px"
           value={inputValue}
           onChange={setInputValue}
           type="text"
-          customStyle={css`
-            width: 400px;
-          `}
+          customStyle={css``}
           name="text"
           errorMessage="에러 메시지"
         />
         <Input
           placeholder="Input"
-          width="400px"
           value={inputValue}
           onChange={setInputValue}
           disabled
-          customStyle={css`
-            width: 400px;
-          `}
+          customStyle={css``}
           name="email"
         />
       </div>
