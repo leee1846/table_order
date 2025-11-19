@@ -19,3 +19,8 @@ export {
   type SalesListDialogProps,
   type SalesItem,
 } from './SalesListDialog';
+export {
+  DeviceListDialog,
+  type DeviceListDialogProps,
+  type DeviceItem,
+} from './DeviceListDialog';

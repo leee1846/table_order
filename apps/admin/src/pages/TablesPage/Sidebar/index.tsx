@@ -8,7 +8,11 @@ import {
   ActionButtons,
   ActionButton,
 } from '@repo/ui/components';
-import { OrderListDialog, SalesListDialog } from '@repo/feature/components';
+import {
+  OrderListDialog,
+  SalesListDialog,
+  DeviceListDialog,
+} from '@repo/feature/components';
 import { mockOrders } from '../mock';
 
 type MenuItem = {
@@ -34,12 +38,17 @@ export const Sidebar = () => {
   const [isOrderListDialogOpen, setIsOrderListDialogOpen] = useState(false);
   //매출 모달
   const [isSalesDialogOpen, setIsSalesDialogOpen] = useState(false);
+  //기기 모달
+  const [isDeviceDialogOpen, setIsDeviceDialogOpen] = useState(false);
   const handleMenuClick = (menuId: string) => {
     setSelectedMenu(menuId);
     if (menuId === 'order') {
       setIsOrderListDialogOpen(true);
     } else if (menuId === 'sales') {
       setIsSalesDialogOpen(true);
+    }
+    if (menuId === 'device') {
+      setIsDeviceDialogOpen(true);
     }
   };
 
@@ -55,7 +64,7 @@ export const Sidebar = () => {
     <SidebarContainer>
       <Logo>
         {/* <img
-          src={logoImage}
+          src={logoImage} 
           alt="캡스 스마트오더 로고"
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         /> */}
@@ -98,6 +107,10 @@ export const Sidebar = () => {
       <SalesListDialog
         isOpen={isSalesDialogOpen}
         onClose={() => setIsSalesDialogOpen(false)}
+      />
+      <DeviceListDialog
+        isOpen={isDeviceDialogOpen}
+        onClose={() => setIsDeviceDialogOpen(false)}
       />
     </SidebarContainer>
   );
