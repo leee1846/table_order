@@ -13,3 +13,9 @@ export {
   type TMenu,
   type TSubMenu,
 } from './SettingsSidebar';
+
+export {
+  SalesListDialog,
+  type SalesListDialogProps,
+  type SalesItem,
+} from './SalesListDialog';

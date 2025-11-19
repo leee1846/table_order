@@ -8,7 +8,7 @@ import {
   ActionButtons,
   ActionButton,
 } from '@repo/ui/components';
-import { OrderListDialog } from '@repo/feature/components';
+import { OrderListDialog, SalesListDialog } from '@repo/feature/components';
 import { mockOrders } from '../mock';
 
 type MenuItem = {
@@ -30,12 +30,16 @@ const MENU_ITEMS: MenuItem[] = [
 
 export const Sidebar = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>('table-group1');
+  //주문 모달
   const [isOrderListDialogOpen, setIsOrderListDialogOpen] = useState(false);
-
+  //매출 모달
+  const [isSalesDialogOpen, setIsSalesDialogOpen] = useState(false);
   const handleMenuClick = (menuId: string) => {
     setSelectedMenu(menuId);
     if (menuId === 'order') {
       setIsOrderListDialogOpen(true);
+    } else if (menuId === 'sales') {
+      setIsSalesDialogOpen(true);
     }
   };
 
@@ -90,6 +94,10 @@ export const Sidebar = () => {
         isOpen={isOrderListDialogOpen}
         onClose={() => setIsOrderListDialogOpen(false)}
         orders={mockOrders}
+      />
+      <SalesListDialog
+        isOpen={isSalesDialogOpen}
+        onClose={() => setIsSalesDialogOpen(false)}
       />
     </SidebarContainer>
   );
