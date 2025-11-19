@@ -8,7 +8,8 @@ import {
   ActionButtons,
   ActionButton,
 } from '@repo/ui/components';
-import { OrderListDialog, type OrderItem } from '@repo/feature/components';
+import { OrderListDialog } from '@repo/feature/components';
+import { mockOrders } from '../mock';
 
 type MenuItem = {
   id: string;
@@ -93,88 +94,3 @@ export const Sidebar = () => {
     </SidebarContainer>
   );
 };
-
-// 임시 목 데이터 (실제로는 API에서 가져올 데이터)
-const mockOrders: OrderItem[] = [
-  {
-    id: '1',
-    orderNumber: '00',
-    orderDateTime: '25-11-10 00:00:00',
-    tableNumber: '3',
-    orderChannel: '포스회사명',
-    paymentMethod: '후결제',
-    orderStatus: '주문완료',
-  },
-  {
-    id: '2',
-    orderNumber: '00',
-    orderDateTime: '25-11-10 00:00:00',
-    tableNumber: '3',
-    orderChannel: '포스',
-    paymentMethod: '선결제현금',
-    orderStatus: '주문완료',
-  },
-  {
-    id: '3',
-    orderNumber: '00',
-    orderDateTime: '25-11-10 00:00:00',
-    tableNumber: '3',
-    orderChannel: '오더포스',
-    paymentMethod: '카드결제',
-    orderStatus: '주문완료',
-  },
-  {
-    id: '4',
-    orderNumber: '00',
-    orderDateTime: '25-11-10 00:00:00',
-    tableNumber: '3',
-    orderChannel: '메뉴판',
-    paymentMethod: '현금결제',
-    orderStatus: '주문완료',
-  },
-  {
-    id: '5',
-    orderNumber: '00',
-    orderDateTime: '25-11-10 00:00:00',
-    tableNumber: '3',
-    orderChannel: '메뉴판',
-    paymentMethod: '현금결제',
-    orderStatus: '주문완료',
-  },
-  {
-    id: '6',
-    orderNumber: '00',
-    orderDateTime: '25-11-10 00:00:00',
-    tableNumber: '3',
-    orderChannel: '포스회사명',
-    paymentMethod: '후결제',
-    orderStatus: '주문완료',
-  },
-  {
-    id: '7',
-    orderNumber: '00',
-    orderDateTime: '25-11-10 00:00:00',
-    tableNumber: '3',
-    orderChannel: '포스',
-    paymentMethod: '선결제현금',
-    orderStatus: '주문완료',
-  },
-  {
-    id: '8',
-    orderNumber: '00',
-    orderDateTime: '25-11-10 00:00:00',
-    tableNumber: '3',
-    orderChannel: '오디포스',
-    paymentMethod: '카드결제',
-    orderStatus: '주문완료',
-  },
-  {
-    id: '9',
-    orderNumber: '00',
-    orderDateTime: '25-11-10 00:00:00',
-    tableNumber: '3',
-    orderChannel: '메뉴판',
-    paymentMethod: '현금결제',
-    orderStatus: '주문완료',
-  },
-];

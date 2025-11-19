@@ -78,6 +78,7 @@ export const Tbody = styled.tbody`
     padding: 14px 6px;
     border-bottom: 1px solid ${colors.grey[200]};
     transition: background-color 0.2s;
+    cursor: pointer;
   }
 
   & > tr > td {

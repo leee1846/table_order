@@ -3,6 +3,8 @@ import { ModalBackground, Pagination } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './orderListDialog.styles';
+import DetailOrderDialog from './DetailOrderDialog';
+import { mockMenuItems } from './mock';
 
 const { colors } = theme;
 
@@ -30,7 +32,8 @@ export const OrderListDialog = ({
   itemsPerPage = 10,
 }: OrderListDialogProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [openDetailOrderDialog, setOpenDetailOrderDialog] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   if (!isOpen) {
     return null;
   }
@@ -42,6 +45,11 @@ export const OrderListDialog = ({
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleRowClick = (order: OrderItem) => {
+    setOpenDetailOrderDialog(true);
+    setSelectedOrder(order);
   };
 
   return (
@@ -70,7 +78,7 @@ export const OrderListDialog = ({
             <S.Tbody>
               {currentOrders.length > 0 ? (
                 currentOrders.map((order) => (
-                  <tr key={order.id}>
+                  <tr key={order.id} onClick={() => handleRowClick(order)}>
                     <td>{order.orderNumber}</td>
                     <td>{order.orderDateTime}</td>
                     <td>{order.tableNumber}</td>
@@ -104,6 +112,19 @@ export const OrderListDialog = ({
           </S.PaginationWrapper>
         )}
       </S.DialogContainer>
+      {openDetailOrderDialog && (
+        <ModalBackground
+          position="center"
+          onClick={() => setOpenDetailOrderDialog(false)}
+        >
+          <DetailOrderDialog
+            isOpen={openDetailOrderDialog}
+            onClose={() => setOpenDetailOrderDialog(false)}
+            order={selectedOrder ?? undefined}
+            menuItems={mockMenuItems}
+          />
+        </ModalBackground>
+      )}
     </ModalBackground>
   );
 };
