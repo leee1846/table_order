@@ -94,7 +94,7 @@ export const Container = styled.div<Props>`
   }
 
   &:focus-within {
-    border-color: ${({ variant, disabled }) =>
+    border-color: ${({ disabled }) =>
       disabled ? colors.grey[300] : colors.primary[500]};
     background-color: ${({ variant, disabled }) =>
       disabled

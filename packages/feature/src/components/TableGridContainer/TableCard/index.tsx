@@ -7,7 +7,7 @@ import {
 } from '@repo/ui/icons';
 import * as S from './tableCard.styles';
 import { theme } from '@repo/ui';
-import { formatCurrency, isEmpty } from '@repo/util';
+import { formatCurrency } from '@repo/util';
 
 const { colors } = theme;
 
@@ -50,7 +50,7 @@ export const TableCard = ({
 
       <S.CardContent>
         {menuItems.map((item, idx) => (
-          <S.MenuItem key={`item-${tableNumber}-${id}-${idx}`}>
+          <S.MenuItem key={`item-${tableNumber}-${id}-${idx + 1}`}>
             <S.MenuItemName>{item.name}</S.MenuItemName>
             <S.MenuItemQuantity>{item.quantity}</S.MenuItemQuantity>
           </S.MenuItem>
