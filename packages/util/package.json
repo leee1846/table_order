@@ -26,6 +26,7 @@
   },
   "prettier": "@repo/prettier-config",
   "dependencies": {
-    "dayjs": "^1.11.19"
+    "dayjs": "^1.11.19",
+    "jwt-decode": "^4.0.0"
   }
 }

@@ -158,6 +158,9 @@ importers:
 
   packages/api:
     dependencies:
+      '@repo/util':
+        specifier: workspace:*
+        version: link:../util
       '@tanstack/react-query':
         specifier: ^5.62.8
         version: 5.90.5(react@19.2.0)
@@ -352,9 +355,6 @@ importers:
 
   packages/util:
     dependencies:
-      '@repo/api':
-        specifier: workspace:*
-        version: link:../api
       dayjs:
         specifier: ^1.11.19
         version: 1.11.19
