@@ -32,7 +32,7 @@ export const registerAxiosInstances = (
  * 등록된 API 클라이언트를 가져옵니다.
  * fetcher 함수들이 내부적으로 사용합니다.
  *
- * @param clientName - 'private', 'public' 등
+ * @param clientName - 'private', 'public', 'raw' 등
  * @returns AxiosInstance
  */
 export const getAxiosInstance = (instanceName: string): AxiosInstance => {

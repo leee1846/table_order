@@ -8,6 +8,9 @@ import type {
 import { openConfirmDialog } from '@repo/feature/utils';
 import type { IApiError } from '@repo/api/types';
 
+/**
+ * 인증 없이 요청하고싶을때 사용
+ */
 export const publicApi = createAxiosInstance({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 });
@@ -26,11 +29,13 @@ publicApi.interceptors.response.use(
     return response;
   },
   (error: AxiosError<IApiError>) => {
-    const ignoreGlobalErrors = (
-      error.config as AxiosRequestConfig & { ignoreGlobalErrors?: number[] }
-    )?.ignoreGlobalErrors;
+    const config = error.config as AxiosRequestConfig;
     const statusCode = error.response?.status;
+    const ignoreGlobalErrors =
+      (config as AxiosRequestConfig & { ignoreGlobalErrors?: number[] })
+        ?.ignoreGlobalErrors ?? [];
 
+    // tanstack query 커스텀 hook 실행시 무시하고싶은 error code가 존재할경우
     if (
       ignoreGlobalErrors &&
       statusCode &&
@@ -39,6 +44,7 @@ publicApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // 나머지 모든 error dialog 처리
     openConfirmDialog({
       title: 'Server Error',
       content:

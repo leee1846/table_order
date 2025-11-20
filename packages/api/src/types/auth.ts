@@ -12,3 +12,7 @@ export interface ILoginData {
 }
 
 export type TLoginResponse = IApiResponse<ILoginData>;
+
+export type TRefreshAccessTokenResponse = IApiResponse<{
+  accessToken: string;
+}>;
