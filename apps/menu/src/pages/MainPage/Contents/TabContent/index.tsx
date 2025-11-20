@@ -1,4 +1,4 @@
-import { CATEGORY_SELECT_EVENT } from '@/constants/keys';
+import { SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY } from '@/constants/keys';
 import { categories } from '@/constants/mock';
 import { useState, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
@@ -31,7 +31,7 @@ export const TabContent = ({ categories }: Props) => {
     // 어떤 카테고리를 클릭해도 이벤트를 받을 수 있도록 모든 카테고리를 리스닝
     categories.forEach((category) => {
       window.addEventListener(
-        CATEGORY_SELECT_EVENT(category.id),
+        SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.id),
         handleCategoryChange
       );
     });
@@ -41,7 +41,7 @@ export const TabContent = ({ categories }: Props) => {
       // 모든 이벤트 리스너 제거
       categories.forEach((category) => {
         window.removeEventListener(
-          CATEGORY_SELECT_EVENT(category.id),
+          SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.id),
           handleCategoryChange
         );
       });

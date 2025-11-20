@@ -1,3 +1,6 @@
-export const CATEGORY_SELECT_EVENT = (id: number) => `CATEGORY-SELECT-${id}`;
-export const OBSERVER_INTERSECTION_EVENT = (id: number) =>
-  `OBSERVER-INTERSECTION-${id}`;
+export const SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY = (id: number) =>
+  `sidebar-category-tab-click-${id}`;
+export const SCROLL_CATEGORY_VISIBLE_EVENT_KEY = (id: number) =>
+  `scroll-category-visible-${id}`;
+export const ACCESS_TOKEN_KEY = 'accessToken';
+export const REFRESH_TOKEN_KEY = 'refreshToken';

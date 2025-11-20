@@ -1,3 +1,5 @@
+import { jwtDecode } from 'jwt-decode';
+
 /**
  * 주어진 시간 동안 추가 호출이 없을 때만 콜백을 실행합니다.
  *
@@ -98,4 +100,31 @@ export const createThrottle = <T extends (...args: unknown[]) => void>(
   };
 
   return { throttledFn, cleanup };
+};
+
+/**
+ * JWT 토큰을 디코드하여 페이로드를 반환합니다.
+ * 토큰 검증은 하지 않으며, 단순히 페이로드를 파싱합니다.
+ *
+ * @param token - 디코드할 JWT 토큰 문자열
+ * @returns 디코드된 페이로드 객체, 실패 시 null
+ *
+ * @example
+ * ```ts
+ * const payload = decodeJwtToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+ * if (payload) {
+ *   console.log(payload.exp); // 만료 시간
+ *   console.log(payload.sub); // 사용자 ID
+ * }
+ * ```
+ */
+export const decodeJwtToken = <T = Record<string, unknown>>(
+  token: string
+): T | null => {
+  try {
+    return jwtDecode(token) as T;
+  } catch (error) {
+    console.error('Failed to decode JWT token:', error);
+    return null;
+  }
 };

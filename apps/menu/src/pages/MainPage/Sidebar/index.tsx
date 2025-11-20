@@ -1,6 +1,6 @@
 import {
-  CATEGORY_SELECT_EVENT,
-  OBSERVER_INTERSECTION_EVENT,
+  SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY,
+  SCROLL_CATEGORY_VISIBLE_EVENT_KEY,
 } from '@/constants/keys';
 import { categories } from '@/constants/mock';
 import { useState, useEffect, useRef } from 'react';
@@ -72,7 +72,7 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
 
     // MenuContent 컴포넌트에서 수신할 커스텀 이벤트 발생
     window.dispatchEvent(
-      new CustomEvent(CATEGORY_SELECT_EVENT(categoryId), {
+      new CustomEvent(SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(categoryId), {
         detail: { id: categoryId },
       })
     );
@@ -129,7 +129,7 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
     // 모든 카테고리에 대한 intersection 이벤트 리스너 등록
     categories.forEach((category) => {
       window.addEventListener(
-        OBSERVER_INTERSECTION_EVENT(category.id),
+        SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.id),
         handleIntersectionEvent
       );
     });
@@ -144,7 +144,7 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
       // 모든 이벤트 리스너 제거
       categories.forEach((category) => {
         window.removeEventListener(
-          OBSERVER_INTERSECTION_EVENT(category.id),
+          SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.id),
           handleIntersectionEvent
         );
       });

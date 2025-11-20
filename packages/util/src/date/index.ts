@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { getCurrentUnixTime } from '../time';
 
 /**
  * 연도, 월, 일을 'YYYY-MM-DD' 형식의 문자열로 변환합니다.
@@ -354,4 +355,33 @@ export const getYearMonthFromDate = (
     year: date.year(),
     month: date.month() + 1,
   };
+};
+
+/**
+ * 특정 시간(초 단위)이 만료되었는지 확인한다
+ * JWT 토큰의 exp 값과 같은 Unix timestamp를 검증할 때 사용합니다.
+ *
+ * @param expirationTime - 만료 시간 (Unix timestamp, 초 단위)
+ * @param bufferSeconds - 만료 전 몇 초를 만료로 간주할지 (기본값: 60초)
+ * @param currentTime - 현재 시간 (Unix timestamp, 초 단위) - 테스트를 위해 주입 가능
+ * @returns true면 만료됨, false면 유효함
+ *
+ * @example
+ * ```ts
+ * // 만료 시간이 1700000000이고, 60초 전을 만료로 판단
+ * isExpired(1700000000, 60, 1699999950); // true
+ *
+ * // 기본 buffer 60초 사용
+ * isExpired(1700000000); // 현재 시간 기준으로 판단
+ *
+ * // 30초 전을 만료로 판단
+ * isExpired(1700000000, 30); // 현재 시간 기준으로 판단
+ * ```
+ */
+export const isExpired = (
+  expirationTime: number,
+  bufferSeconds: number = 60,
+  currentTime: number = getCurrentUnixTime()
+): boolean => {
+  return currentTime >= expirationTime - bufferSeconds;
 };

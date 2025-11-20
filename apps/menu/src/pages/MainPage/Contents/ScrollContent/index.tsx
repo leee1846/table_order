@@ -1,4 +1,4 @@
-import { OBSERVER_INTERSECTION_EVENT } from '@/constants/keys';
+import { SCROLL_CATEGORY_VISIBLE_EVENT_KEY } from '@/constants/keys';
 import { categories } from '@/constants/mock';
 import { useRef, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
@@ -68,9 +68,12 @@ export const ScrollContent = ({ categories }: Props) => {
 
         // Sidebar 컴포넌트가 수신할 커스텀 이벤트 발생
         window.dispatchEvent(
-          new CustomEvent(OBSERVER_INTERSECTION_EVENT(topVisibleCategoryId), {
-            detail: { id: topVisibleCategoryId },
-          })
+          new CustomEvent(
+            SCROLL_CATEGORY_VISIBLE_EVENT_KEY(topVisibleCategoryId),
+            {
+              detail: { id: topVisibleCategoryId },
+            }
+          )
         );
       }
     };

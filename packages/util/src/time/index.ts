@@ -52,3 +52,20 @@ export const validateMinute = (value: string): string => {
   const num = parseInt(value);
   return num > 59 ? '59' : value;
 };
+
+/**
+ * 현재 시간을 Unix timestamp (초 단위)로 반환한다
+ * 테스트를 위해 Date 객체를 주입할 수 있습니다.
+ *
+ * @param now - 현재 시간 (기본값: new Date())
+ * @returns Unix timestamp (초 단위)
+ *
+ * @example
+ * ```ts
+ * getCurrentUnixTime() // 1700000000
+ * getCurrentUnixTime(new Date('2025-01-15')) // 1736899200
+ * ```
+ */
+export const getCurrentUnixTime = (now: Date = new Date()): number => {
+  return Math.floor(now.getTime() / 1000);
+};
