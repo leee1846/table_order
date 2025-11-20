@@ -47,7 +47,7 @@ const MENUS = [
 
 export const OrderSection = () => {
   return (
-    <div>
+    <S.Container>
       <S.TitleContainer>
         <p>테이블 번호:101</p>
         <div>
@@ -115,6 +115,6 @@ export const OrderSection = () => {
         <p>6</p>
         <p>{formatCurrency(100000)}</p>
       </S.Total>
-    </div>
+    </S.Container>
   );
 };

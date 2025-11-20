@@ -63,6 +63,13 @@ const SalesMenuPage = lazy(() =>
     default: module.SalesMenuPage,
   }))
 );
+
+const SettingsTablesPage = lazy(() =>
+  import('@/pages/settings/TablesPage').then((module) => ({
+    default: module.TablesPage,
+  }))
+);
+
 const StylePage = lazy(() =>
   import('@/pages/settings/StylePage').then((module) => ({
     default: module.StylePage,
@@ -169,5 +176,13 @@ export const router = createBrowserRouter([
         element: <MiscellaneousPage />,
       },
     ],
+  },
+  {
+    path: ROUTES.SETTINGS.TABLES.generate(),
+    element: (
+      <Suspense fallback={<FullscreenLoadingSpinner />}>
+        <SettingsTablesPage />
+      </Suspense>
+    ),
   },
 ]);
