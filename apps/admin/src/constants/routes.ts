@@ -38,6 +38,10 @@ export const ROUTES = {
         generate: () => '/settings/sales/menu',
       },
     },
+    TABLES: {
+      path: 'tables',
+      generate: () => '/settings/tables',
+    },
     STYLE: {
       path: 'style',
       generate: () => '/settings/style',

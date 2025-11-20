@@ -4,6 +4,7 @@ import {
   BaseDialogContainer,
   BaseCloseButton,
   BaseHeader,
+  BaseTitle,
 } from '../../shared/dialogStyles';
 
 const { zIndex, colors, spacing } = theme;
@@ -15,16 +16,12 @@ export const DetailOrderDialog = styled(BaseDialogContainer)`
 
 export const Header = styled(BaseHeader)`
   justify-content: center;
+  margin-bottom: 40px;
 `;
 
-export const CloseButtonWrapper = BaseCloseButton;
+export const CloseButtonWrapper = styled(BaseCloseButton)``;
 
-export const Title = styled.h3`
-  ${TYPOGRAPHY.MT_1}
-  color: ${colors.grey[800]};
-  margin-top: 20px;
-  border: 1px solid red;
-`;
+export const Title = BaseTitle;
 
 export const Content = styled.div`
   display: flex;

@@ -14,6 +14,8 @@ import {
   DeviceListDialog,
 } from '@repo/feature/components';
 import { mockOrders } from '../mock';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes';
 
 type MenuItem = {
   id: string;
@@ -33,6 +35,7 @@ const MENU_ITEMS: MenuItem[] = [
 ];
 
 export const Sidebar = () => {
+  const navigate = useNavigate();
   const [selectedMenu, setSelectedMenu] = useState<string>('table-group1');
   //주문 모달
   const [isOrderListDialogOpen, setIsOrderListDialogOpen] = useState(false);
@@ -40,6 +43,7 @@ export const Sidebar = () => {
   const [isSalesDialogOpen, setIsSalesDialogOpen] = useState(false);
   //기기 모달
   const [isDeviceDialogOpen, setIsDeviceDialogOpen] = useState(false);
+
   const handleMenuClick = (menuId: string) => {
     setSelectedMenu(menuId);
     if (menuId === 'order') {
@@ -49,6 +53,9 @@ export const Sidebar = () => {
     }
     if (menuId === 'device') {
       setIsDeviceDialogOpen(true);
+    }
+    if (menuId === 'management') {
+      navigate(ROUTES.SETTINGS.NOTICES.generate());
     }
   };
 

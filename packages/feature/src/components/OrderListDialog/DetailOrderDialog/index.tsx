@@ -51,10 +51,10 @@ const DetailOrderDialog = ({
 
   return (
     <S.DetailOrderDialog onClick={(e) => e.stopPropagation()}>
+      <S.CloseButtonWrapper onClick={handleCloseClick}>
+        <CloseIcon width={32} height={32} color={colors.grey[700]} />
+      </S.CloseButtonWrapper>
       <S.Header>
-        <S.CloseButtonWrapper onClick={handleCloseClick}>
-          <CloseIcon width={32} height={32} color={colors.grey[700]} />
-        </S.CloseButtonWrapper>
         <S.Title>주문내역 상세</S.Title>
       </S.Header>
       <S.Content>

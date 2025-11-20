@@ -194,3 +194,137 @@ export const sampleTables: TableData[] = [
     batteryLevel: 19,
   },
 ];
+
+// /settings/tables 페이지 목업 데이터
+export interface TableInfoData {
+  id: number;
+  tableNumber: number;
+  tableName: string;
+}
+
+export interface TableGroupData {
+  id: number;
+  name: string;
+  tables: TableInfoData[];
+}
+
+export const tableGroups: TableGroupData[] = [
+  {
+    id: 1,
+    name: '1층',
+    tables: [
+      {
+        id: 1,
+        tableNumber: 1,
+        tableName: '1',
+      },
+      {
+        id: 2,
+        tableNumber: 2,
+        tableName: '2',
+      },
+      {
+        id: 3,
+        tableNumber: 3,
+        tableName: '3',
+      },
+      {
+        id: 4,
+        tableNumber: 4,
+        tableName: '4',
+      },
+      {
+        id: 101,
+        tableNumber: 101,
+        tableName: '1-1',
+      },
+      {
+        id: 102,
+        tableNumber: 102,
+        tableName: '1-2',
+      },
+      {
+        id: 103,
+        tableNumber: 103,
+        tableName: '1-3',
+      },
+      {
+        id: 104,
+        tableNumber: 104,
+        tableName: '1-4',
+      },
+      {
+        id: 201,
+        tableNumber: 201,
+        tableName: '2-1',
+      },
+      {
+        id: 202,
+        tableNumber: 202,
+        tableName: '2-2',
+      },
+      {
+        id: 203,
+        tableNumber: 203,
+        tableName: '2-3',
+      },
+      {
+        id: 204,
+        tableNumber: 204,
+        tableName: '2-4',
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: '2층',
+    tables: [
+      {
+        id: 5,
+        tableNumber: 5,
+        tableName: '5',
+      },
+      {
+        id: 6,
+        tableNumber: 6,
+        tableName: '6',
+      },
+      {
+        id: 7,
+        tableNumber: 7,
+        tableName: '7',
+      },
+      {
+        id: 8,
+        tableNumber: 8,
+        tableName: '8',
+      },
+    ],
+  },
+  {
+    id: 3,
+    name: '3층',
+    tables: [
+      {
+        id: 9,
+        tableNumber: 9,
+        tableName: '9',
+      },
+      {
+        id: 10,
+        tableNumber: 10,
+        tableName: '10',
+      },
+      {
+        id: 11,
+        tableNumber: 11,
+        tableName: '11',
+      },
+      {
+        id: 12,
+        tableNumber: 12,
+        tableName: '12',
+      },
+    ],
+  },
+];
