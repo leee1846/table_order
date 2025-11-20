@@ -11,6 +11,7 @@
   },
   "include": [
     "src/**/*",
+    "emotion.d.ts",
     "../typescript-config/svg.d.ts",
     "../typescript-config/woff2.d.ts",
     "../typescript-config/images.d.ts",
