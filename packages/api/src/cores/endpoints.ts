@@ -9,4 +9,7 @@ export const ENDPOINTS = {
   ORDER: {
     SEND_PICKUP_NOTIFICATION: '/orders/pickup-notification',
   },
+  CATEGORY: {
+    LIST: '/category/list',
+  },
 } as const;
