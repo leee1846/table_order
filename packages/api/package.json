@@ -5,6 +5,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
+    "./auth": "./src/auth/index.ts",
     "./types": "./src/types/index.ts",
     "./cores": "./src/cores/index.ts",
     "./queries": "./src/queries/index.ts",

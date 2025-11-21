@@ -13,3 +13,9 @@ export interface IApiError {
   status: IApiStatus;
   data: null;
 }
+
+export interface ITokenPayload {
+  exp: number;
+  iat: number;
+  sub: string;
+}

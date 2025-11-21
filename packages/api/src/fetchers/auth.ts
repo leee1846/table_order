@@ -1,6 +1,10 @@
 import { getAxiosInstance } from '../cores/axios';
 import { ENDPOINTS } from '../cores/endpoints';
-import type { ILoginRequest, TLoginResponse } from '../types/auth';
+import type {
+  ILoginRequest,
+  TLoginResponse,
+  TRefreshAccessTokenResponse,
+} from '../types/auth';
 
 interface ILoginParams {
   params: ILoginRequest;
@@ -16,6 +20,17 @@ export const login = async ({
     url: ENDPOINTS.AUTH.LOGIN,
     data: params,
     ignoreGlobalErrors,
+  });
+
+  return response.data;
+};
+
+export const refreshAccessToken = async () => {
+  const axiosInstance = getAxiosInstance('raw');
+  const response = await axiosInstance<TRefreshAccessTokenResponse>({
+    method: 'POST',
+    url: ENDPOINTS.AUTH.TOKEN_REFRESH,
+    ignoreGlobalErrors: [401],
   });
 
   return response.data;
