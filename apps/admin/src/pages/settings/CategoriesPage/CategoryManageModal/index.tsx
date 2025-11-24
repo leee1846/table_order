@@ -4,14 +4,15 @@ import {
   BasicButton,
   CheckButton,
   Dropdown,
+  toast,
 } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoriesPage/CategoryManageModal/categoryManageModal.style';
 import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
-import { useId, useState } from 'react';
+import { useId, useState, useEffect } from 'react';
 import { CategoryTimeRangeModal } from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal';
-import type { ICategory } from '@repo/api/types';
-import { usePutUpdateCategory } from '@repo/api/queries';
+import type { ICategory, IUpdateCategoryRequest } from '@repo/api/types';
+import { usePostCreateCategory, usePutUpdateCategory } from '@repo/api/queries';
 
 const days = [
   { value: 0, label: '월' },
@@ -25,23 +26,29 @@ const days = [
 
 interface Props {
   onClose: () => void;
-  /**
-   * 카테고리 수정 시 타입 추가해야함
-   */
-  categoryData?: unknown;
+
+  categoryData?: ICategory;
+  shopSeq: number;
+  categoryList?: ICategory[];
 }
-export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
+export const CategoryManageModal = ({
+  onClose,
+  categoryData,
+  shopSeq,
+  categoryList = [],
+}: Props) => {
   const COUNT_SELECTION_ID = `count-selection-${useId()}`;
   const STAFF_CALL_ID = `staff-call-${useId()}`;
   const TWO_COLUMN_LAYOUT_ID = `two-column-layout-${useId()}`;
   const TIME_RANGE_SETTING_ID = `time-range-setting-${useId()}`;
 
   const isEdit = !!categoryData;
+  const createCategoryMutation = usePostCreateCategory();
   const updateCategoryMutation = usePutUpdateCategory();
 
   // 카테고리 이름 상태 관리
   const [categoryName, setCategoryName] = useState<string>(
-    (categoryData as ICategory)?.categoryName
+    (categoryData as ICategory)?.categoryName || ''
   );
 
   // 카테고리 설명 상태 관리
@@ -54,42 +61,68 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
 
   //판매 요일 선택 (일반 요일만 관리) - day.label로 저장
   //TODO : 카테고리 생성할 때 모든 값을 선택하게 하고, useSaleDay 값을 false로 설정
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  // TODO : Get 해올 떄 안 오는  거 낼 수정해주기로 함
+  const [selectedDays, setSelectedDays] = useState<string[]>(
+    isEdit ? [] : days.map((day) => day.label) // 생성 시 모든 요일 선택
+  );
 
   //공휴일 판매 여부
   //TODO : 카테고리 생성할 때 공휴일 무조건 true로 생성
   const [isSaleOnHoliday, setIsSaleOnHoliday] = useState<boolean>(
-    (categoryData as ICategory)?.isSaleOnHoliday
+    (categoryData as ICategory)?.isSaleOnHoliday ?? true // 생성 시 기본값 true
   );
 
   // 추가 설정 상태 관리
 
   //수량 선택 사용
   const [isQuantitySelectable, setIsQuantitySelectable] = useState<boolean>(
-    (categoryData as ICategory)?.isQuantitySelectable
+    (categoryData as ICategory)?.isQuantitySelectable ?? false
   );
 
   //직원호출 사용
   const [isStaffCall, setIsStaffCall] = useState<boolean>(
-    (categoryData as ICategory)?.isStaffCall
+    (categoryData as ICategory)?.isStaffCall ?? false
   );
 
   //2열 배치(가로 기본형)
   const [useTwoColumnLayout, setUseTwoColumnLayout] = useState<boolean>(
-    (categoryData as ICategory)?.useTwoColumnLayout
+    (categoryData as ICategory)?.useTwoColumnLayout ?? false
   );
 
   // 언어 선택 상태
-  const [selectedLanguageCode, setSelectedLanguageCode] =
-    useState<string>('KO');
+  const [selectedLanguageCode, setSelectedLanguageCode] = useState<
+    'KO' | 'JP' | 'CH' | 'EN' | null
+  >('KO');
 
   // 판매 시간 설정 TODO useSaleTime 값 추가
   const [saleStartTime, setSaleStartTime] = useState<string>(
-    (categoryData as ICategory)?.saleStartTime
+    (categoryData as ICategory)?.saleStartTime || ''
   );
   const [saleEndTime, setSaleEndTime] = useState<string>(
-    (categoryData as ICategory)?.saleEndTime
+    (categoryData as ICategory)?.saleEndTime || ''
   );
+
+  // index 계산: 기존 카테고리 중 최대 index + 1, 없으면 0
+  const calculateIndex = () => {
+    if (categoryList.length === 0) {
+      return 0;
+    }
+    const maxIndex = Math.max(...categoryList.map((cat) => cat.index));
+    return maxIndex + 1;
+  };
+
+  // 수정 모드일 때 기존 데이터로 초기화
+  useEffect(() => {
+    if (isEdit && categoryData) {
+      const category = categoryData as ICategory;
+      // 판매 요일 초기화 (null이나 undefined일 경우 빈 배열로 처리)
+      const existingDays = category.saleDayOfWeek ?? [];
+      const dayLabels = existingDays
+        .map((dayValue) => days.find((d) => d.value === dayValue)?.label)
+        .filter((label): label is string => label !== undefined);
+      setSelectedDays(dayLabels);
+    }
+  }, [isEdit, categoryData]);
 
   const toggleDay = (day: string) => {
     setSelectedDays((prev) =>
@@ -99,34 +132,55 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
 
   // 완료 버튼 핸들러
   const handleSubmit = async () => {
-    if (!categoryData) {
-      // 추가 모드는 아직 구현되지 않음
+    if (categoryName === '') {
+      toast('카테고리 이름을 입력해주세요.');
       return;
     }
 
-    const category = categoryData as ICategory;
-
     //TODO :  useSaleDay, useSaleTime 값 추가
+    // Convert selectedDays (string labels) to numbers
+    const saleDayOfWeekNumbers = selectedDays
+      .map((label) => days.find((day) => day.label === label)?.value ?? -1)
+      .filter((value) => value !== -1);
+
     try {
-      await updateCategoryMutation.mutateAsync({
-        categorySeq: category.categorySeq,
-        shopSeq: category.shopSeq,
-        categoryName: categoryName || category.categoryName,
-        index: category.index, //TODO : 위치 바꾸면 수정되게
-        mappedCategoryCode: category.mappedCategoryCode,
-        isHidden: category.isHidden,
-        saleDayOfWeek: selectedDays,
-        saleStartTime,
-        saleEndTime,
-        isSaleOnHoliday,
-        useTwoColumnLayout,
-        isQuantitySelectable,
-        isStaffCall,
-        categoryDescription,
-        isFirstOrderRequired: category.isFirstOrderRequired,
-        menuInfoList: category.menuInfoList,
-        selectedLanguageCode,
-      });
+      if (isEdit) {
+        // 수정 모드
+        const category = categoryData as ICategory;
+        const updateData: IUpdateCategoryRequest = {
+          ...category,
+          categoryName: categoryName || category.categoryName,
+          saleDayOfWeek: saleDayOfWeekNumbers,
+          saleStartTime,
+          saleEndTime,
+          isSaleOnHoliday,
+          useTwoColumnLayout,
+          isQuantitySelectable,
+          isStaffCall,
+          categoryDescription,
+          selectedLanguageCode,
+        };
+        await updateCategoryMutation.mutateAsync(updateData);
+      } else {
+        // 생성 모드
+        await createCategoryMutation.mutateAsync({
+          shopSeq,
+          categoryName,
+          index: calculateIndex(),
+          isHidden: false,
+          saleDayOfWeek:
+            saleDayOfWeekNumbers.length > 0 ? saleDayOfWeekNumbers : undefined,
+          saleStartTime: saleStartTime || undefined,
+          saleEndTime: saleEndTime || undefined,
+          isSaleOnHoliday,
+          useTwoColumnLayout,
+          isQuantitySelectable,
+          isStaffCall,
+          categoryDescription: categoryDescription || undefined,
+          isFirstOrderRequired: false,
+          selectedLanguageCode: selectedLanguageCode || undefined,
+        });
+      }
       onClose();
     } catch (_error) {
       // 에러는 interceptor에서 처리됨
@@ -147,12 +201,16 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
               <Dropdown
                 options={[
                   { value: 'KO', label: '한국어' },
-                  { value: 'JA', label: '일본어' },
-                  { value: 'ZH', label: '중국어' },
+                  { value: 'JP', label: '일본어' },
+                  { value: 'CH', label: '중국어' },
                   { value: 'EN', label: '영어' },
                 ]}
                 value={selectedLanguageCode}
-                onChange={(value) => setSelectedLanguageCode(String(value))}
+                onChange={(value) =>
+                  setSelectedLanguageCode(
+                    value as 'KO' | 'JP' | 'CH' | 'EN' | null
+                  )
+                }
               />
             </S.DropdownContainer>
           )}
@@ -250,12 +308,11 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
               </S.CheckButtonList>
             </div>
 
-            <BasicButton
-              variant="Solid_Navy_2XL"
-              onClick={handleSubmit}
-              disabled={updateCategoryMutation.isPending || !categoryName}
-            >
-              {updateCategoryMutation.isPending ? '처리 중...' : '완료'}
+            <BasicButton variant="Solid_Navy_2XL" onClick={handleSubmit}>
+              {createCategoryMutation.isPending ||
+              updateCategoryMutation.isPending
+                ? '처리 중...'
+                : '완료'}
             </BasicButton>
           </S.Content>
         </S.Container>
@@ -264,11 +321,18 @@ export const CategoryManageModal = ({ onClose, categoryData }: Props) => {
       {isTimeRangeModalOpen && (
         <CategoryTimeRangeModal
           onClose={() => setIsTimeRangeModalOpen(false)}
-          categoryData={{
-            ...(categoryData as ICategory),
-            saleStartTime,
-            saleEndTime,
-          }}
+          categoryData={
+            categoryData
+              ? {
+                  ...(categoryData as ICategory),
+                  saleStartTime,
+                  saleEndTime,
+                }
+              : ({
+                  saleStartTime,
+                  saleEndTime,
+                } as ICategory)
+          }
           onTimeChange={(startTime, endTime) => {
             setSaleStartTime(startTime);
             setSaleEndTime(endTime);

@@ -30,6 +30,7 @@ export const CategoriesPage = () => {
       <Categories
         categories={categoryListResponse?.data}
         isLoading={isLoading}
+        shopSeq={shopSeq}
       />
       <S.AddButton onClick={openAddCategoryModal}>
         <button type="button" onClick={openAddCategoryModal}>
@@ -39,7 +40,11 @@ export const CategoriesPage = () => {
 
       {/* 카테고리 추가 모달 */}
       {isAddCategoryModalOpen && (
-        <CategoryManageModal onClose={closeAddCategoryModal} />
+        <CategoryManageModal
+          onClose={closeAddCategoryModal}
+          shopSeq={shopSeq}
+          categoryList={categoryListResponse?.data}
+        />
       )}
     </S.Container>
   );

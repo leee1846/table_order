@@ -1,27 +1,28 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { updateCategory } from '../../fetchers/category';
+import { createCategory } from '../../fetchers/category';
 import type {
-  IUpdateCategoryRequest,
-  TUpdateCategoryResponse,
+  ICreateCategoryRequest,
+  TCreateCategoryResponse,
 } from '../../types/category';
 import { IApiError } from '../../types/common';
 
 /**
- * 카테고리를 수정합니다.
+ * 카테고리를 생성합니다.
  */
-export const usePutUpdateCategory = () => {
+export const usePostCreateCategory = () => {
   const queryClient = useQueryClient();
 
   return useMutation<
-    TUpdateCategoryResponse,
+    TCreateCategoryResponse,
     AxiosError<IApiError>,
-    IUpdateCategoryRequest
+    ICreateCategoryRequest
   >({
-    mutationFn: updateCategory,
+    mutationFn: createCategory,
     onSuccess: () => {
       // 카테고리 리스트 쿼리 무효화하여 최신 데이터로 갱신
       queryClient.invalidateQueries({ queryKey: ['category', 'list'] });
     },
   });
 };
+

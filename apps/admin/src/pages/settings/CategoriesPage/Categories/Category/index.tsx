@@ -8,9 +8,11 @@ import type { ICategory } from '@repo/api/types';
 
 interface Props {
   category: ICategory;
+  shopSeq: number;
+  categoryList: ICategory[];
 }
 
-export const Category = ({ category }: Props) => {
+export const Category = ({ category, shopSeq, categoryList }: Props) => {
   const [isCategoryManageModalOpen, setIsCategoryManageModalOpen] =
     useState(false);
 
@@ -111,6 +113,8 @@ export const Category = ({ category }: Props) => {
         <CategoryManageModal
           onClose={() => setIsCategoryManageModalOpen(false)}
           categoryData={category}
+          shopSeq={shopSeq}
+          categoryList={categoryList}
         />
       )}
     </>

@@ -1,6 +1,5 @@
 import type { IApiResponse } from './common';
 
-
 export interface IMenu {
   menuSeq: number;
   menuName: string;
@@ -25,33 +24,51 @@ export interface IMenu {
   optionGroupList: unknown[];
 }
 
-//TODO useSaleDay, useSaleTime 값 추가
-export interface ICategory {
-  categorySeq: number;
+/**
+ * 카테고리 생성 요청 파라미터 타입
+ */
+export interface ICreateCategoryRequest {
   shopSeq: number;
   categoryName: string;
   index: number;
-  mappedCategoryCode: string;
-  isMapped: boolean; //오케이 포스와 연동
-  isHidden: boolean; //메뉴판에서 숨기기
-  saleDayOfWeek: number[]; //판매 요일
-  useSaleTime: boolean;
-  saleStartTime: string; //판매 시작 시간
-  saleEndTime: string; //판매 종료 시간
+  mappedCategoryCode?: string;
+  isHidden: boolean;
+  saleDayOfWeek?: number[];
+  saleStartTime?: string;
+  saleEndTime?: string;
   isSaleOnHoliday: boolean;
   useTwoColumnLayout: boolean;
   isQuantitySelectable: boolean;
   isStaffCall: boolean;
-  categoryDescription: string;
+  categoryDescription?: string;
   isFirstOrderRequired: boolean;
+  menuInfoList?: IMenu[];
+  selectedLanguageCode?: 'KO' | 'JP' | 'CH' | 'EN' | null;
+}
+
+/**
+ * 카테고리 생성 응답 타입 (IApiResponse 래핑)
+ */
+export type TCreateCategoryResponse = IApiResponse<null>;
+
+/**
+ * 카테고리 수정 요청 파라미터 타입
+ */
+
+//TODO useSaleDay, useSaleTime 값 추가
+
+export interface IUpdateCategoryRequest extends ICreateCategoryRequest {
+  categorySeq: number;
+  isMapped: boolean; //오케이 포스와 연동
+  useSaleTime: boolean;
   isDeleted: boolean;
   localeCategoryName: string;
   localeCategoryDescription: string;
   createDate: string;
   updateDate: string;
-  menuInfoList: IMenu[];
-  selectedLanguageCode: 'KO' | 'JP' | 'CH' | 'EN' | null;
 }
+
+export type ICategory = IUpdateCategoryRequest;
 
 /**
  * 카테고리 리스트 조회 요청 파라미터 타입

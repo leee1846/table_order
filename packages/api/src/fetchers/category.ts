@@ -1,8 +1,10 @@
 import { getAxiosInstance } from '../cores/axios';
 import { ENDPOINTS } from '../cores/endpoints';
 import type {
-  ICategory,
+  ICreateCategoryRequest,
   IGetCategoryListParams,
+  IUpdateCategoryRequest,
+  TCreateCategoryResponse,
   TGetCategoryListResponse,
   TUpdateCategoryResponse,
 } from '../types/category';
@@ -24,10 +26,26 @@ export const getCategoryList = async (
 };
 
 /**
- * 카테고리를 수정합니다.
+ * 카테고리 생성
+ */
+export const createCategory = async (
+  params: ICreateCategoryRequest
+): Promise<TCreateCategoryResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TCreateCategoryResponse>({
+    method: 'POST',
+    url: ENDPOINTS.CATEGORY.CREATE,
+    data: params,
+  });
+
+  return response.data;
+};
+
+/**
+ * 카테고리 수정
  */
 export const updateCategory = async (
-  params: ICategory
+  params: IUpdateCategoryRequest
 ): Promise<TUpdateCategoryResponse> => {
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TUpdateCategoryResponse>({
