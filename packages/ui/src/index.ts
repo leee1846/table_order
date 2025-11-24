@@ -2,10 +2,11 @@ import { colors } from './theme/colors';
 import { typography, TYPOGRAPHY } from './theme/typography';
 import { zIndex } from './theme/zIndex';
 import { spacing } from './theme/spacing';
-import { getModeColors } from './theme/modeColors';
+import { getModeColors, darkModeColors } from './theme/modeColors';
 
-const baseTheme = {
+export const baseTheme = {
   colors,
+  darkModeColors,
   typography,
   zIndex,
   spacing,
@@ -13,6 +14,7 @@ const baseTheme = {
 
 export const createTheme = (mode: 'light' | 'dark') => ({
   ...baseTheme,
+  themeMode: mode,
   mode: getModeColors(mode),
 });
 

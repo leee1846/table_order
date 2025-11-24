@@ -5,6 +5,8 @@ import {
 import { categories } from '@/constants/mock';
 import { useState, useEffect, useRef } from 'react';
 import * as S from '@/pages/MainPage/Sidebar/sidebar.style';
+import { CallBellIcon } from '@repo/ui/icons';
+import { baseTheme } from '@repo/ui';
 
 interface Props {
   categories: typeof categories;
@@ -153,18 +155,23 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
 
   return (
     <S.Container>
-      <p>스크롤모드 {useScrollLayout ? 'true' : 'false'}</p>
-
       {categories.map((category) => (
         <S.CategoryButton
+          isActive={selectedCategoryId === category.id}
           key={category.id}
           type="button"
           onClick={() => handleCategoryClick(category)}
-          isActive={selectedCategoryId === category.id}
         >
           {category.name}
         </S.CategoryButton>
       ))}
+
+      <S.StaffCall>
+        <button type="button">
+          <CallBellIcon color={baseTheme.colors.white} width={30} height={30} />
+          직원 호출
+        </button>
+      </S.StaffCall>
     </S.Container>
   );
 };

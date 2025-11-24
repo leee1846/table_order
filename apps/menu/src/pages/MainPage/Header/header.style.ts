@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, baseTheme } from '@repo/ui';
 
 export const Header = styled.header`
   position: fixed;
@@ -12,7 +12,11 @@ export const Header = styled.header`
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background-color: ${({ theme }) => theme.mode.white};
+  background-color: ${({ theme }) =>
+    theme.themeMode === 'dark'
+      ? baseTheme.darkModeColors.grey[50]
+      : theme.colors.white};
+  border-bottom: 1px solid ${({ theme }) => theme.mode.grey[200]};
   z-index: ${({ theme }) => theme.zIndex.base};
 `;
 
@@ -28,7 +32,7 @@ export const LeftContent = styled.div`
 export const Divider = styled.span`
   width: 0.0625rem;
   height: 1rem;
-  background-color: ${({ theme }) => theme.mode.grey[300]};
+  background-color: ${baseTheme.darkModeColors.grey[500]};
 `;
 
 export const ShopName = styled.p`
@@ -38,7 +42,7 @@ export const ShopName = styled.p`
 
 export const Description = styled.p`
   ${TYPOGRAPHY.ST_2}
-  color: ${({ theme }) => theme.mode.grey[500]};
+  color: ${baseTheme.darkModeColors.grey[500]};
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
