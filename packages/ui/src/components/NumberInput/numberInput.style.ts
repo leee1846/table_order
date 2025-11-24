@@ -2,9 +2,11 @@ import styled from '@emotion/styled';
 import { colors } from '../../theme/colors';
 import { TVariant } from '.';
 import { TYPOGRAPHY } from '../../theme/typography';
+import { baseTheme, Theme } from '../../index';
 
 interface Props {
   variant: TVariant;
+  size: 'M' | 'S';
   disabled: boolean;
   value: number;
 }
@@ -14,8 +16,15 @@ const getBorderRadius = (variant: TVariant): string => {
     square: '0.75rem',
     rounded: '62.4rem',
   };
-
   return BORDER_RADIUS[variant];
+};
+
+const getWidth = (size: 'M' | 'S'): string => {
+  return size === 'M' ? '11.25rem' : '8.125rem';
+};
+
+const getHeight = (size: 'M' | 'S'): string => {
+  return size === 'M' ? '3.25rem' : '2.75rem';
 };
 
 const isRoundedActive = (variant: TVariant, value: number): boolean => {
@@ -25,26 +34,98 @@ const isRoundedActive = (variant: TVariant, value: number): boolean => {
 const getBackgroundColor = (
   variant: TVariant,
   value: number,
-  disabled: boolean
+  disabled: boolean,
+  theme: Theme
 ): string => {
-  if (disabled || !isRoundedActive(variant, value)) {
-    return colors.grey[50];
+  if (isRoundedActive(variant, value)) {
+    return baseTheme.colors.primary[500];
   }
-  return colors.primary[500];
+
+  if (disabled) {
+    return baseTheme.colors.grey[300];
+  }
+
+  if (theme.themeMode === 'dark') {
+    return baseTheme.darkModeColors.background[100];
+  }
+  return baseTheme.colors.white;
+};
+
+const getBorderColor = (
+  theme: Theme,
+  variant: TVariant,
+  value: number
+): string => {
+  if (isRoundedActive(variant, value)) {
+    return baseTheme.colors.primary[500];
+  }
+  if (theme.themeMode === 'dark') {
+    return baseTheme.darkModeColors.grey[300];
+  }
+  return baseTheme.colors.grey[300];
 };
 
 const getTextColor = (
+  theme: Theme,
   variant: TVariant,
   value: number,
   disabled: boolean
 ): string => {
   if (disabled) {
-    return colors.grey[500];
+    return baseTheme.colors.grey[500];
   }
   if (isRoundedActive(variant, value)) {
+    return baseTheme.colors.grey[50];
+  }
+  return theme.mode.grey[900];
+};
+
+const getFocusBackgroundColor = (
+  variant: TVariant,
+  disabled: boolean,
+  theme: Theme
+): string => {
+  if (disabled) {
+    return theme.themeMode === 'dark'
+      ? baseTheme.darkModeColors.grey[300]
+      : colors.grey[50];
+  }
+  if (variant === 'rounded') {
+    return colors.primary[500];
+  }
+  return theme.themeMode === 'dark'
+    ? baseTheme.darkModeColors.background[100]
+    : colors.grey[50];
+};
+
+const getFocusTextColor = (
+  variant: TVariant,
+  disabled: boolean,
+  theme: Theme
+): string => {
+  if (disabled) {
+    return colors.grey[500];
+  }
+  if (variant === 'rounded') {
     return colors.white;
   }
-  return colors.grey[900];
+  return theme.mode.grey[900];
+};
+
+const getFocusIconColor = (
+  variant: TVariant,
+  disabled: boolean,
+  theme: Theme
+): string => {
+  if (disabled) {
+    return colors.grey[400];
+  }
+  if (variant === 'rounded') {
+    return colors.white;
+  }
+  return theme.themeMode === 'dark'
+    ? baseTheme.darkModeColors.grey[800]
+    : colors.grey[800];
 };
 
 export const Container = styled.div<Props>`
@@ -52,13 +133,14 @@ export const Container = styled.div<Props>`
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  width: 11.25rem;
-  height: 3.25rem;
+  width: ${({ size }) => getWidth(size)};
+  height: ${({ size }) => getHeight(size)};
   padding: 4px 0;
-  border: 1px solid ${colors.grey[300]};
+  border: 1px solid
+    ${({ variant, value, theme }) => getBorderColor(theme, variant, value)};
   border-radius: ${({ variant }) => getBorderRadius(variant)};
-  background-color: ${({ variant, value, disabled }) =>
-    getBackgroundColor(variant, value, disabled)};
+  background-color: ${({ variant, value, disabled, theme }) =>
+    getBackgroundColor(variant, value, disabled, theme)};
 
   & > button {
     display: flex;
@@ -82,8 +164,8 @@ export const Container = styled.div<Props>`
     padding: 0;
     text-align: center;
     ${TYPOGRAPHY.MT_6}
-    color: ${({ variant, value, disabled }) =>
-      getTextColor(variant, value, disabled)};
+    color: ${({ variant, value, disabled, theme }) =>
+      getTextColor(theme, variant, value, disabled)};
     border: none;
     background: transparent;
     outline: none;
@@ -94,38 +176,20 @@ export const Container = styled.div<Props>`
   }
 
   &:focus-within {
-    border-color: ${({ disabled }) =>
-      disabled ? colors.grey[300] : colors.primary[500]};
-    background-color: ${({ variant, disabled }) =>
-      disabled
-        ? colors.grey[50]
-        : variant === 'rounded'
-          ? colors.primary[500]
-          : colors.grey[50]};
+    background-color: ${({ variant, disabled, theme }) =>
+      getFocusBackgroundColor(variant, disabled, theme)};
 
     & > input {
-      color: ${({ variant, disabled }) =>
-        disabled
-          ? colors.grey[500]
-          : variant === 'rounded'
-            ? colors.white
-            : colors.grey[900]};
+      color: ${({ variant, disabled, theme }) =>
+        getFocusTextColor(variant, disabled, theme)};
     }
 
     & > button {
       & > svg {
-        color: ${({ variant, disabled }) =>
-          disabled
-            ? colors.grey[400]
-            : variant === 'rounded'
-              ? colors.white
-              : colors.grey[800]} !important;
-        fill: ${({ variant, disabled }) =>
-          disabled
-            ? colors.grey[400]
-            : variant === 'rounded'
-              ? colors.white
-              : colors.grey[800]} !important;
+        color: ${({ variant, disabled, theme }) =>
+          getFocusIconColor(variant, disabled, theme)} !important;
+        fill: ${({ variant, disabled, theme }) =>
+          getFocusIconColor(variant, disabled, theme)} !important;
       }
     }
   }
