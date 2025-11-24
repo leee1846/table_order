@@ -1,4 +1,4 @@
-export const useScrollLayout = false;
+export const useScrollLayout = true;
 
 export const categories = [
   {

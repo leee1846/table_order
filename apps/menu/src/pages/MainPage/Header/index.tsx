@@ -7,23 +7,25 @@ export const Header = () => {
 
   return (
     <S.Header>
-      <div>
+      <S.LeftContent>
         <button type="button">
-          <span>logo버튼</span>
+          <span>logo버튼 영역</span>
         </button>
-        <span />
-        <p>shop 이름영역</p>
-        <p>브레이크타임 or 영업마감 라스트오더 문구 노출 영역(... 처리)</p>
-      </div>
+        <S.Divider />
+        <S.ShopName>shop 이름영역</S.ShopName>
+        <S.Description>
+          브레이크타임 or 영업마감 라스트오더 문구 노출 영역(... 처리)
+        </S.Description>
+      </S.LeftContent>
 
-      <div>
-        <p>??번 테이블</p>
-        <span />
-        <button type="button">
-          <MenuIcon width={24} height={24} color={theme.mode.primary[500]} />
+      <S.RightContent>
+        <S.TableNumber>??번 테이블</S.TableNumber>
+        <S.Divider />
+        <S.OrderHistoryButton type="button">
+          <MenuIcon width={20} height={20} color={theme.mode.primary[500]} />
           주문내역
-        </button>
-      </div>
+        </S.OrderHistoryButton>
+      </S.RightContent>
     </S.Header>
   );
 };
