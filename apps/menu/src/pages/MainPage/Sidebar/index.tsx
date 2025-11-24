@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import * as S from '@/pages/MainPage/Sidebar/sidebar.style';
 import { CallBellIcon } from '@repo/ui/icons';
 import { baseTheme } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   categories: typeof categories;
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export const Sidebar = ({ categories, useScrollLayout }: Props) => {
+  const { t } = useTranslation();
   const [selectedCategoryId, setSelectedCategoryId] = useState(
     categories?.[0]?.id || 0
   );
@@ -169,7 +171,7 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
       <S.StaffCall>
         <button type="button">
           <CallBellIcon color={baseTheme.colors.white} width={30} height={30} />
-          직원 호출
+          {t('직원 호출')}
         </button>
       </S.StaffCall>
     </S.Container>

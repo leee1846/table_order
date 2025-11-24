@@ -1,9 +1,11 @@
 import { MenuIcon } from '@repo/ui/icons';
 import { useTheme } from '@emotion/react';
 import * as S from '@/pages/MainPage/Header/header.style';
+import { useTranslation } from 'react-i18next';
 
 export const Header = () => {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   return (
     <S.Header>
@@ -19,11 +21,13 @@ export const Header = () => {
       </S.LeftContent>
 
       <S.RightContent>
-        <S.TableNumber>??번 테이블</S.TableNumber>
+        <S.TableNumber>
+          {t('{number}번 테이블', { number: '??' })}
+        </S.TableNumber>
         <S.Divider />
         <S.OrderHistoryButton type="button">
           <MenuIcon width={20} height={20} color={theme.mode.primary[500]} />
-          주문내역
+          {t('주문내역')}
         </S.OrderHistoryButton>
       </S.RightContent>
     </S.Header>

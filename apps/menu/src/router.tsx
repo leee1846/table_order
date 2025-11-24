@@ -35,9 +35,9 @@ const MiscellaneousPage = lazy(() =>
  */
 const protectedRouteLoader = () => {
   const token = getAccessToken();
-  if (!token) {
-    return redirect(ROUTES.LOGIN.path);
-  }
+  // if (!token) {
+  //   return redirect(ROUTES.LOGIN.path);
+  // }
   return null;
 };
 

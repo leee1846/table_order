@@ -2,6 +2,7 @@ import { SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY } from '@/constants/keys';
 import { categories } from '@/constants/mock';
 import { useState, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
+import { CategoryItem } from '../CategoryItem';
 
 interface Props {
   categories: typeof categories;
@@ -52,12 +53,7 @@ export const TabContent = ({ categories }: Props) => {
     <S.Container>
       {selectedCategory && (
         <div>
-          <p>{selectedCategory.name}</p>
-          <div>
-            {selectedCategory.menus.map((menu) => (
-              <div key={menu.id}>{menu.name}</div>
-            ))}
-          </div>
+          <CategoryItem category={selectedCategory} />
         </div>
       )}
     </S.Container>
