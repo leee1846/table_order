@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { categories } from '@/constants/mock';
 import { BasicButton, ToggleButton } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoriesPage/Categories/Category/category.style';
 import { ChevronForwardIcon, DeleteIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryManageModal';
+import type { ICategory } from '@repo/api/types';
 
 interface Props {
-  category: (typeof categories)[number];
+  category: ICategory;
 }
 
 export const Category = ({ category }: Props) => {
@@ -19,13 +19,8 @@ export const Category = ({ category }: Props) => {
       <S.Container>
         <S.Header>
           <div>
-            <span>{category.name}</span>
-            <button
-              type="button"
-              onClick={() => {
-                // noop
-              }}
-            >
+            <span>{category.categoryName}</span>
+            <button type="button" onClick={() => {}}>
               <ChevronForwardIcon
                 width={30}
                 height={30}
@@ -44,29 +39,36 @@ export const Category = ({ category }: Props) => {
         </S.Header>
 
         <S.Badges>
-          {category.startTime && category.endTime && (
+          {category.saleStartTime && category.saleEndTime && (
             <li>
               <p>판매시간</p>
               <p>
-                {category.startTime} ~ {category.endTime}
+                {category.saleStartTime} ~ {category.saleEndTime}
                 {/* TODO: 상시 표시 추가해야함 (24시간 표시) */}
               </p>
             </li>
           )}
-          {category.days.length > 0 && (
+
+          {category.saleDayOfWeek && category.saleDayOfWeek.length > 0 && (
             <li>
               <p>판매 요일</p>
-              <p>{category.days.join(', ')}</p>
-              {/* TODO: 매일 표시 추가해야함 (매일 표시) */}
+              <p>{category.saleDayOfWeek?.toString()}</p>
             </li>
           )}
-          {category.countable && (
+          {category.saleDayOfWeek && category.saleDayOfWeek.length === 7 && (
+            <li>
+              <p>판매 요일</p>
+              <p>매일</p>
+            </li>
+          )}
+
+          {category.isQuantitySelectable && (
             <li>
               <p>수량 선택</p>
               <p>가능</p>
             </li>
           )}
-          {category.layout && (
+          {category.useTwoColumnLayout && (
             <li>
               <p>보기 옵션</p>
               <p>2열</p>
