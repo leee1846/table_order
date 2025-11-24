@@ -4,12 +4,8 @@ import type { ILoginRequest, TLoginResponse } from '../../types/auth';
 import { AxiosError } from 'axios';
 import { IApiError } from '../../types/common';
 
-export const usePostLogin = ({
-  ignoreGlobalErrors = [],
-}: {
-  ignoreGlobalErrors?: number[];
-}) => {
+export const usePostLogin = () => {
   return useMutation<TLoginResponse, AxiosError<IApiError>, ILoginRequest>({
-    mutationFn: (params) => login({ params, ignoreGlobalErrors }),
+    mutationFn: (params) => login({ params }),
   });
 };

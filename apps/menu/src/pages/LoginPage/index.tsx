@@ -4,8 +4,14 @@ import * as S from '@/pages/LoginPage/loginPage.style';
 import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { usePostLogin } from '@repo/api/queries';
+import { openConfirmDialog } from '@repo/feature/utils';
+import { setAccessToken, setRefreshToken } from '@repo/api/auth';
+import { ROUTES } from '@/constants/routes';
+import { useNavigate } from 'react-router-dom';
 
 export const LoginPage = () => {
+  const navigate = useNavigate();
+
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [idErrorMessage, setIdErrorMessage] = useState('');
@@ -17,20 +23,54 @@ export const LoginPage = () => {
 
   const handleIdChange = (value: string) => {
     setId(value);
-    setIdErrorMessage(value);
+
+    if (value.length > 0) {
+      setIdErrorMessage('');
+    } else {
+      setIdErrorMessage('아이디를 입력해주세요.');
+    }
   };
 
   const handlePasswordChange = (value: string) => {
     setPassword(value);
-    setPasswordErrorMessage(value);
+
+    if (value.length > 0) {
+      setPasswordErrorMessage('');
+    } else {
+      setPasswordErrorMessage('비밀번호를 입력해주세요.');
+    }
   };
 
-  const { mutateAsync: login } = usePostLogin({ ignoreGlobalErrors: [404] });
-  const handleLogin = () => {
-    login({
+  const { mutateAsync: login } = usePostLogin();
+  const handleLogin = async () => {
+    if (!id) {
+      setIdErrorMessage('아이디를 입력해주세요.');
+      return;
+    }
+    if (!password) {
+      setPasswordErrorMessage('비밀번호를 입력해주세요.');
+      return;
+    }
+
+    setIdErrorMessage('');
+    setPasswordErrorMessage('');
+    const response = await login({
       id,
-      password,
+      pw: password,
     });
+
+    // api는 성공 처리됨.
+    if (!response.data.loginResult) {
+      openConfirmDialog({
+        title: '로그인 실패',
+        content: response.status.userMessage,
+      });
+      return;
+    }
+
+    setAccessToken(response.data.accessToken);
+    setRefreshToken(response.data.refreshToken);
+    navigate(ROUTES.ROOT.generate());
   };
 
   const passwordInputTextVisibilityComponent = () => {

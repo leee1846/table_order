@@ -2,7 +2,7 @@ import type { IApiResponse } from './common';
 
 export interface ILoginRequest {
   id: string;
-  password: string;
+  pw: string;
 }
 
 export interface ILoginData {

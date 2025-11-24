@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
+import { getAccessToken } from '@repo/api/auth';
 
 const MainPage = lazy(() =>
   import('@/pages/MainPage').then((module) => ({
@@ -33,9 +34,8 @@ const MiscellaneousPage = lazy(() =>
  * 모든 보호된 라우트에 공통으로 적용되는 인증 체크 loader
  */
 const protectedRouteLoader = () => {
-  // 추후 토큰 인증 로직 추가
-  const token = localStorage.getItem('access_token');
-  if (token) {
+  const token = getAccessToken();
+  if (!token) {
     return redirect(ROUTES.LOGIN.path);
   }
   return null;

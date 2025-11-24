@@ -1,11 +1,16 @@
 import styled from '@emotion/styled';
 
 export const Container = styled.div`
-  width: 100%;
-  margin-left: 250px;
+  position: fixed;
+  top: 4.75rem;
+  right: 0;
+  bottom: 0;
+  left: 250px;
+  width: calc(100% - 250px);
   display: flex;
   flex-direction: column;
   gap: 50px;
+  overflow-y: auto;
 
   & > div {
     width: 100%;
