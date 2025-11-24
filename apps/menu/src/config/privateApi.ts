@@ -16,7 +16,7 @@ import { openConfirmDialog } from '@repo/feature/utils';
 import { decodeJwtToken, getCurrentUnixTime, isExpired } from '@repo/util';
 import { ROUTES } from '@/constants/routes';
 
-const handleTokenRefreshFailed = () => {
+const forceReLogin = () => {
   removeAccessToken();
   openConfirmDialog({
     title: '인증 만료',
@@ -28,7 +28,7 @@ const handleTokenRefreshFailed = () => {
 };
 
 accessTokenRefreshManager.configure({
-  onRefreshFailed: handleTokenRefreshFailed,
+  onRefreshFailed: forceReLogin,
 });
 
 /**
@@ -44,14 +44,14 @@ privateApi.interceptors.request.use(
 
     // 토큰이 없을경우
     if (!accessToken) {
-      handleTokenRefreshFailed();
+      forceReLogin();
       throw new axios.Cancel('No access token');
     }
 
     // 토큰이 유효하지 않을경우
     const payload = decodeJwtToken<ITokenPayload>(accessToken);
     if (!payload) {
-      handleTokenRefreshFailed();
+      forceReLogin();
       throw new axios.Cancel('Invalid access token');
     }
 
@@ -99,7 +99,7 @@ privateApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 토큰 만료 or 토큰 존재하지 않을경우, 재요청하여 request interceptor에서 처리리
+    // 토큰 만료 or 토큰 존재하지 않을경우, 재요청하여 request interceptor에서 처리
     if (error.response?.status === 401) {
       return privateApi(config);
     }
