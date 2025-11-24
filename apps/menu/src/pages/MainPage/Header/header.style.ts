@@ -15,7 +15,7 @@ export const Header = styled.header`
   background-color: ${({ theme }) =>
     theme.themeMode === 'dark'
       ? baseTheme.darkModeColors.grey[50]
-      : theme.colors.white};
+      : baseTheme.darkModeColors.white};
   border-bottom: 1px solid ${({ theme }) => theme.mode.grey[200]};
   z-index: ${({ theme }) => theme.zIndex.base};
 `;
@@ -42,7 +42,7 @@ export const ShopName = styled.p`
 
 export const Description = styled.p`
   ${TYPOGRAPHY.ST_2}
-  color: ${baseTheme.darkModeColors.grey[500]};
+  color: ${({ theme }) => theme.mode.grey[500]};
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;

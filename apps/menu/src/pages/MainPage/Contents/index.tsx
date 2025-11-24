@@ -9,8 +9,6 @@ interface Props {
 }
 
 export const Contents = ({ categories, useScrollLayout }: Props) => {
-  const layout: 1 | 2 | 3 = 1;
-
   return useScrollLayout ? (
     <S.Container>
       <ScrollContent categories={categories} />

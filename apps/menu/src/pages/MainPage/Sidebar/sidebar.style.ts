@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { baseTheme, TYPOGRAPHY } from '@repo/ui';
+import { baseTheme, TYPOGRAPHY, type Theme } from '@repo/ui';
 
 export const Container = styled.aside`
   position: fixed;
@@ -8,7 +8,10 @@ export const Container = styled.aside`
   left: 0;
   width: 13.125rem;
   height: calc(100vh - 4.75rem);
-  background-color: ${baseTheme.darkModeColors.grey[100]};
+  background-color: ${({ theme }) =>
+    theme.themeMode === 'dark'
+      ? baseTheme.darkModeColors.grey[50]
+      : baseTheme.darkModeColors.grey[100]};
   padding: 20px 0 130px;
   display: flex;
   flex-direction: column;
@@ -16,14 +19,24 @@ export const Container = styled.aside`
   z-index: ${({ theme }) => theme.zIndex.base};
 `;
 
+const getBackgroundColor = (theme: Theme, isActive: boolean) => {
+  if (isActive) {
+    return baseTheme.darkModeColors.background[100];
+  }
+
+  if (theme.themeMode === 'dark') {
+    return baseTheme.darkModeColors.grey[50];
+  }
+
+  return baseTheme.darkModeColors.grey[100];
+};
+
 export const CategoryButton = styled.button<{
   isActive: boolean;
 }>`
   padding: 14px 20px 14px 30px;
-  background-color: ${({ isActive }) =>
-    isActive
-      ? baseTheme.darkModeColors.background[100]
-      : baseTheme.darkModeColors.grey[100]};
+  background-color: ${({ isActive, theme }) =>
+    getBackgroundColor(theme, isActive)};
   color: ${({ isActive }) =>
     isActive
       ? baseTheme.colors.primary[500]
@@ -41,7 +54,10 @@ export const StaffCall = styled.div`
   left: 0;
   width: 13.125rem;
   padding: 20px 12px 40px;
-  background-color: ${baseTheme.darkModeColors.grey[100]};
+  background-color: ${({ theme }) =>
+    theme.themeMode === 'dark'
+      ? baseTheme.darkModeColors.grey[50]
+      : baseTheme.darkModeColors.grey[100]};
 
   & > button {
     width: 100%;

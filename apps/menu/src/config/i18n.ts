@@ -2,8 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import koTranslation from '@/locales/ko/translation.json';
 import enTranslation from '@/locales/en/translation.json';
-
-const LANGUAGE_STORAGE_KEY = 'i18nextLng';
+import { LANGUAGE_STORAGE_KEY } from '@/constants/keys';
 
 // 로컬스토리지에서 저장된 언어 가져오기
 const getStoredLanguage = (): string => {

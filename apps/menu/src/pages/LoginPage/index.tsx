@@ -102,7 +102,7 @@ export const LoginPage = () => {
 
   return (
     <S.Container>
-      <div>{t('로고 이미지 영역')}</div>
+      <div>로고 이미지 영역</div>
 
       <S.LoginContainer>
         <div>

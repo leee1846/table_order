@@ -3,6 +3,7 @@ import { categories } from '@/constants/mock';
 import { useRef, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
 import { createDebounce, getMinFromArray } from '@repo/util';
+import { CategoryItem } from '@/pages/MainPage/Contents/CategoryItem';
 
 interface Props {
   categories: typeof categories;
@@ -128,13 +129,7 @@ export const ScrollContent = ({ categories }: Props) => {
     <S.Container>
       {categories.map((category) => (
         <div key={category.id} id={`category-${category.id}`}>
-          <p>{category.name}</p>
-
-          <div>
-            {category.menus.map((menu) => (
-              <div key={menu.id}>{menu.name}</div>
-            ))}
-          </div>
+          <CategoryItem category={category} />
         </div>
       ))}
     </S.Container>
