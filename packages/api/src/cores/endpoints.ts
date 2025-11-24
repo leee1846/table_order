@@ -11,5 +11,6 @@ export const ENDPOINTS = {
   },
   CATEGORY: {
     LIST: '/category/list',
+    UPDATE: '/category',
   },
 } as const;
