@@ -1,6 +1,7 @@
 import { categories } from '@/constants/mock';
 import { ScrollContent } from '@/pages/MainPage/Contents/ScrollContent';
 import { TabContent } from '@/pages/MainPage/Contents/TabContent';
+import * as S from '@/pages/MainPage/Contents/contents.style';
 
 interface Props {
   categories: typeof categories;
@@ -8,9 +9,15 @@ interface Props {
 }
 
 export const Contents = ({ categories, useScrollLayout }: Props) => {
+  const layout: 1 | 2 | 3 = 1;
+
   return useScrollLayout ? (
-    <ScrollContent categories={categories} />
+    <S.Container>
+      <ScrollContent categories={categories} />
+    </S.Container>
   ) : (
-    <TabContent categories={categories} />
+    <S.Container>
+      <TabContent categories={categories} />
+    </S.Container>
   );
 };

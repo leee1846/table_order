@@ -6,7 +6,7 @@ export const darkModeColors = {
   black: '#000000', // #000000
   white: '#ffffff', // #ffffff
   background: {
-    100: '#0d0d0d',
+    100: '#0D0D0D',
   },
   grey: {
     50: '#303438',
