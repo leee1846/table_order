@@ -15,6 +15,7 @@ import {
 import { useState } from 'react';
 import { css } from '@emotion/react';
 import * as S from './menuDetailWithOptionsModal.style';
+import { useTranslation } from 'react-i18next';
 
 const options = Array.from({ length: 4 }, (_, index) => `option-${index + 1}`);
 const optionGroups = Array.from(
@@ -31,6 +32,8 @@ interface Props {
 }
 
 export const MenuDetailWithOptionsModal = ({ onClose }: Props) => {
+  const { t } = useTranslation();
+
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [isSelected, setIsSelected] = useState<string | null>(null);
@@ -153,13 +156,13 @@ export const MenuDetailWithOptionsModal = ({ onClose }: Props) => {
               <p>10000????</p>
             </S.TotalInfo>
             <BasicButton
-              variant="Solid_Navy_2XL"
+              variant="Solid_Blue_2XL"
               onClick={() => {}}
               customStyle={css`
                 width: 100%;
               `}
             >
-              추가하기
+              {t('추가하기')}
             </BasicButton>
           </S.TotalContainer>
         </S.SelectedOptionsContainer>

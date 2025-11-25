@@ -12,7 +12,7 @@ export const Container = styled.div<IProps>`
   display: flex;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: ${zIndex.modalBackdrop};
+  z-index: ${zIndex.notification};
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   align-items: ${({ position }) =>

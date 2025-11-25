@@ -140,3 +140,19 @@ export const OrderButton = styled.div`
     width: 100%;
   }
 `;
+
+export const DeleteButton = styled.button`
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background-color: ${({ theme }) => theme.mode.grey[100]};
+  border: 1px solid
+    ${({ theme }) =>
+      theme.themeMode === 'dark'
+        ? theme.darkModeColors.grey[300]
+        : theme.colors.grey[300]};
+`;

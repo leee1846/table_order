@@ -1,0 +1,192 @@
+import styled from '@emotion/styled';
+import { TYPOGRAPHY } from '@repo/ui';
+
+export const Container = styled.div`
+  width: 60rem;
+  max-width: calc(100vw - 2rem);
+  height: 40rem;
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  background-color: ${({ theme }) =>
+    theme.themeMode === 'dark'
+      ? theme.darkModeColors.background[100]
+      : theme.colors.white};
+  border-radius: 1.25rem;
+  overflow: hidden;
+`;
+
+export const LeftContainer = styled.div`
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.mode.grey[50]};
+
+  & > img {
+    width: 12.5rem;
+    height: 12.5rem;
+    margin-bottom: 12px;
+  }
+
+  & > p {
+    ${TYPOGRAPHY.ST_2}
+    color: ${({ theme }) => theme.mode.grey[600]};
+  }
+
+  & > p:first-of-type {
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 46px; /* 127.778% */
+    letter-spacing: -0.9px;
+    margin-bottom: 16px;
+    color: ${({ theme }) =>
+      theme.themeMode === 'dark'
+        ? theme.darkModeColors.grey[900]
+        : theme.colors.black};
+  }
+`;
+
+export const RightContainer = styled.div`
+  width: 50%;
+  height: 100%;
+  padding: 15.63px 12.5px;
+  display: flex;
+  flex-direction: column;
+  background-color: ${({ theme }) =>
+    theme.themeMode === 'dark'
+      ? theme.darkModeColors.background[100]
+      : theme.colors.white};
+  min-height: 0;
+`;
+
+export const Title = styled.p`
+  ${TYPOGRAPHY.MT_4}
+  color: ${({ theme }) =>
+    theme.themeMode === 'dark' ? theme.colors.white : theme.colors.black};
+  margin-bottom: 12px;
+`;
+
+export const Date = styled.p`
+  text-align: right;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 26px; /* 144.444% */
+  letter-spacing: -0.45px;
+  color: ${({ theme }) => theme.mode.grey[600]};
+  padding-bottom: 24px;
+  border-bottom: 1px solid ${({ theme }) => theme.mode.grey[200]};
+  margin-bottom: 16px;
+`;
+
+export const OrderList = styled.ul`
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+
+  & > li {
+    padding: 8px;
+  }
+`;
+
+export const MenuInfo = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  & > p {
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 30px; /* 150% */
+    letter-spacing: -0.5px;
+    color: ${({ theme }) => theme.mode.grey[800]};
+  }
+  & > p:first-of-type {
+    width: 50%;
+    text-align: left;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  & > p:nth-of-type(2) {
+    width: 10%;
+  }
+
+  & > p:last-of-type {
+    flex: 1;
+    text-align: right;
+  }
+`;
+
+export const OptionList = styled.ul`
+  padding: 0 2px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  & > li {
+    display: flex;
+    gap: 8px;
+
+    & > div > p {
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 24px; /* 150% */
+      letter-spacing: -0.4px;
+      color: ${({ theme }) => theme.mode.grey[500]};
+    }
+
+    & > div:first-of-type {
+      width: 70%;
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+
+      & > span {
+        flex-shrink: 0;
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-left: 1.25px solid ${({ theme }) => theme.mode.grey[500]};
+        border-bottom: 1.25px solid ${({ theme }) => theme.mode.grey[500]};
+        margin-top: 6px;
+      }
+    }
+
+    & > div:last-of-type {
+      flex: 1;
+      display: flex;
+      gap: 12.5px;
+    }
+  }
+`;
+
+export const TotalContainer = styled.div`
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid ${({ theme }) => theme.mode.grey[200]};
+    padding: 28px 8px 0;
+
+    & > p:first-of-type {
+      ${TYPOGRAPHY.MT_7}
+      color: ${({ theme }) => theme.mode.grey[700]};
+    }
+    & > p:last-of-type {
+      ${TYPOGRAPHY.MT_2}
+      color: ${({ theme }) => theme.mode.primary[500]};
+    }
+  }
+`;

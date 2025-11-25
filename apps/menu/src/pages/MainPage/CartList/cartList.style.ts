@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
 
-export const Background = styled.button`
+export const Background = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -193,4 +193,20 @@ export const ButtonContainer = styled.div`
   justify-content: flex-end;
   gap: 12px;
   margin: 18px 0;
+`;
+
+export const DeleteButton = styled.button`
+  width: 52px;
+  height: 52px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background-color: ${({ theme }) => theme.mode.grey[100]};
+  border: 1px solid
+    ${({ theme }) =>
+      theme.themeMode === 'dark'
+        ? theme.darkModeColors.grey[300]
+        : theme.colors.grey[300]};
 `;

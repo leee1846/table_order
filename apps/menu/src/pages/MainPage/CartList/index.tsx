@@ -5,14 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { DeleteIcon, EmptedCartIcon } from '@repo/ui/icons';
 import { theme, useThemeMode } from '@repo/ui';
+import { openDualActionDialog } from '@repo/feature/utils';
 
-const hasOptions = true;
+const hasOptions = false;
 const menuList = Array.from({ length: 5 });
 
 interface Props {
   onClose: () => void;
+  openOrderCompleteModal: () => void;
 }
-export const CartList = ({ onClose }: Props) => {
+export const CartList = ({ onClose, openOrderCompleteModal }: Props) => {
   const { t } = useTranslation();
   const { mode } = useThemeMode();
 
@@ -22,8 +24,21 @@ export const CartList = ({ onClose }: Props) => {
     onClose();
   };
 
+  const order = () => {
+    openDualActionDialog({
+      title: t('메뉴를 주문할까요?'),
+      content: t('주방 접수된 이후에는 취소가 불가능해요.'),
+      primaryText: t('주문하기'),
+      secondaryText: t('이전으로'),
+      onConfirm: () => {
+        onClose();
+        openOrderCompleteModal();
+      },
+    });
+  };
+
   return createPortal(
-    <S.Background type="button" onClick={closeCartList}>
+    <S.Background onClick={closeCartList}>
       <S.Container onClick={(e) => e.stopPropagation()}>
         <S.Title>{t('장바구니')}</S.Title>
 
@@ -62,7 +77,7 @@ export const CartList = ({ onClose }: Props) => {
               )}
 
               <S.ButtonContainer>
-                <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
+                <S.DeleteButton onClick={() => {}}>
                   <DeleteIcon
                     color={
                       mode === 'dark'
@@ -70,10 +85,10 @@ export const CartList = ({ onClose }: Props) => {
                         : theme.colors.grey[600]
                     }
                   />
-                </BasicButton>
+                </S.DeleteButton>
                 <NumberInput
                   variant="square"
-                  size="M"
+                  size="L"
                   min={1}
                   value={quantity}
                   onChange={setQuantity}
@@ -88,7 +103,7 @@ export const CartList = ({ onClose }: Props) => {
             <p>{t('합계')}</p>
             <p>10000??</p>
           </S.TotalInfo>
-          <BasicButton variant="Solid_Sky_Blue_2XL" onClick={() => {}}>
+          <BasicButton variant="Solid_Blue_2XL" onClick={order}>
             {t('주문하기')}
           </BasicButton>
         </S.TotalContainer>

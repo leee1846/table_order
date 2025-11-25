@@ -42,3 +42,4 @@ export { default as bestOffIcon } from './best_off.svg';
 export { default as newOffIcon } from './new_off.svg';
 export { default as chiliOnIcon } from './chili_on.svg';
 export { default as chiliOffIcon } from './chili_off.svg';
+export { default as apronIcon } from './apron.png';

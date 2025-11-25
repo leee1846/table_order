@@ -43,19 +43,13 @@ export const StaffCallModal = ({ onClose }: Props) => {
                   <button type="button">
                     <p>메뉴 이름??</p>
                     <div>
-                      <BasicButton
-                        variant="Solid_Navy_M"
-                        customStyle={css`
-                          width: 44px;
-                          height: 44px;
-                        `}
-                      >
+                      <S.DeleteButton onClick={() => {}}>
                         <DeleteIcon
                           color={getIconColor(600)}
                           width={20}
                           height={20}
                         />
-                      </BasicButton>
+                      </S.DeleteButton>
                       <NumberInput
                         variant="square"
                         size="M"
@@ -95,7 +89,7 @@ export const StaffCallModal = ({ onClose }: Props) => {
           </S.ChosenMenuList>
 
           <S.OrderButton>
-            <BasicButton variant="Solid_Navy_2XL" onClick={() => {}}>
+            <BasicButton variant="Solid_Blue_2XL" onClick={() => {}}>
               {t('요청하기')}
             </BasicButton>
           </S.OrderButton>

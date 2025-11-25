@@ -57,7 +57,7 @@ export const MenuDetailModal = ({ onClose }: Props) => {
           <p>10000????</p>
         </S.TotalContainer>
         <BasicButton
-          variant="Solid_Navy_2XL"
+          variant="Solid_Blue_2XL"
           onClick={() => {}}
           customStyle={css`
             width: 100%;
