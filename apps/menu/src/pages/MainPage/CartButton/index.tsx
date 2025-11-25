@@ -3,12 +3,14 @@ import * as S from '@/pages/MainPage/CartButton/cartButton.style';
 import { useState } from 'react';
 import { CartList } from '@/pages/MainPage/CartList';
 import { OrderCompleteModal } from '@/pages/MainPage/OrderCompleteModal';
+import { PaymentsModal } from '@/pages/MainPage/PaymentsModal';
 
 export const CartButton = () => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isOrderCompleteModalOpen, setIsOrderCompleteModalOpen] =
     useState(false);
+  const [isPaymentsModalOpen, setIsPaymentsModalOpen] = useState(false);
 
   return (
     <>
@@ -20,6 +22,13 @@ export const CartButton = () => {
       {isOpen && (
         <CartList
           onClose={() => setIsOpen(false)}
+          openPaymentsModal={() => setIsPaymentsModalOpen(true)}
+        />
+      )}
+
+      {isPaymentsModalOpen && (
+        <PaymentsModal
+          onClose={() => setIsPaymentsModalOpen(false)}
           openOrderCompleteModal={() => setIsOrderCompleteModalOpen(true)}
         />
       )}

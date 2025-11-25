@@ -12,9 +12,9 @@ const menuList = Array.from({ length: 5 });
 
 interface Props {
   onClose: () => void;
-  openOrderCompleteModal: () => void;
+  openPaymentsModal: () => void;
 }
-export const CartList = ({ onClose, openOrderCompleteModal }: Props) => {
+export const CartList = ({ onClose, openPaymentsModal }: Props) => {
   const { t } = useTranslation();
   const { mode } = useThemeMode();
 
@@ -32,7 +32,7 @@ export const CartList = ({ onClose, openOrderCompleteModal }: Props) => {
       secondaryText: t('이전으로'),
       onConfirm: () => {
         onClose();
-        openOrderCompleteModal();
+        openPaymentsModal();
       },
     });
   };

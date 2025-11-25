@@ -43,3 +43,6 @@ export { default as newOffIcon } from './new_off.svg';
 export { default as chiliOnIcon } from './chili_on.svg';
 export { default as chiliOffIcon } from './chili_off.svg';
 export { default as apronIcon } from './apron.png';
+export { default as cardIcon } from './cardIcon.svg';
+export { default as currencyIcon } from './currencyIcon.svg';
+export { default as splitIcon } from './splitIcon.svg';
