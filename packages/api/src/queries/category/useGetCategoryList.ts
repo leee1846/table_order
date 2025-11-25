@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { getCategoryList } from '../../fetchers/category';
+import { queryKeys } from '../queryKeys';
 import type {
   IGetCategoryListParams,
   TGetCategoryListResponse,
@@ -12,8 +13,7 @@ import { IApiError } from '../../types/common';
  */
 export const useGetCategoryList = (params: IGetCategoryListParams) => {
   return useQuery<TGetCategoryListResponse, AxiosError<IApiError>>({
-    //queryKey: [도메인, 리소스, 파라미터]
-    queryKey: ['category', 'list', params.shopSeq],
+    queryKey: queryKeys.category.list(),
     queryFn: () => getCategoryList(params),
   });
 };
