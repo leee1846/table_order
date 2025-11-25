@@ -2,6 +2,8 @@ import styled from '@emotion/styled';
 import { css, SerializedStyles } from '@emotion/react';
 import { TYPOGRAPHY } from '../../theme/typography';
 import { colors } from '../../theme/colors';
+import type { ThemeMode } from '../../theme/modeColors';
+import { baseTheme } from '../../';
 
 export type ButtonSize = 'S' | 'M' | 'L' | 'XL' | '2XL';
 
@@ -10,7 +12,9 @@ export type VariantType =
   | 'Solid_Sky_Blue'
   | 'Solid_Grey'
   | 'Outline_Navy'
-  | 'Outline_Grey';
+  | 'Outline_Grey'
+  | 'Solid_Blue'
+  | 'Outline_Blue';
 
 export type VariantKey =
   | 'Solid_Navy_S'
@@ -37,9 +41,18 @@ export type VariantKey =
   | 'Outline_Grey_M'
   | 'Outline_Grey_L'
   | 'Outline_Grey_XL'
-  | 'Outline_Grey_2XL';
+  | 'Outline_Grey_2XL'
+  | 'Solid_Blue_S'
+  | 'Solid_Blue_M'
+  | 'Solid_Blue_L'
+  | 'Solid_Blue_XL'
+  | 'Solid_Blue_2XL'
+  | 'Outline_Blue_S'
+  | 'Outline_Blue_M'
+  | 'Outline_Blue_L'
+  | 'Outline_Blue_XL'
+  | 'Outline_Blue_2XL';
 
-//SerializedStyles :Emotion/react에서 쓰이는 라이브러리 타입, css함수 반환값이 스타일 객체임을 ts가 이해함
 const sizeStyles: Record<ButtonSize, SerializedStyles> = {
   S: css`
     ${TYPOGRAPHY.CT_1}
@@ -77,88 +90,167 @@ const getSolidColor = (
   main: string,
   text: string,
   border: string,
-  disabled: boolean
-) => css`
-  background: ${disabled ? colors.grey[200] : main};
-  color: ${disabled ? colors.grey[500] : text};
-  border: ${disabled ? `1px solid ${colors.grey[100]}` : `1px solid ${border}`};
-`;
+  disabled: boolean,
+  themeMode: ThemeMode = 'light'
+) => {
+  const disabledBg =
+    themeMode === 'dark'
+      ? baseTheme.darkModeColors.grey[200]
+      : colors.grey[200];
+  const disabledText =
+    themeMode === 'dark'
+      ? baseTheme.darkModeColors.grey[500]
+      : colors.grey[500];
+  const disabledBorder =
+    themeMode === 'dark'
+      ? baseTheme.darkModeColors.grey[100]
+      : colors.grey[100];
+
+  return css`
+    background: ${disabled ? disabledBg : main};
+    color: ${disabled ? disabledText : text};
+    border: ${disabled ? `1px solid ${disabledBorder}` : `1px solid ${border}`};
+  `;
+};
 
 const getOutlineColor = (
   background: string,
   text: string,
   border: string,
-  disabled: boolean
-) => css`
-  background: ${disabled ? colors.white : background};
-  border: 1px solid ${disabled ? colors.grey[500] : border};
-  color: ${disabled ? colors.grey[500] : text};
-`;
+  disabled: boolean,
+  themeMode: ThemeMode = 'light'
+) => {
+  const disabledBg =
+    themeMode === 'dark' ? baseTheme.darkModeColors.grey[50] : colors.white;
+  const disabledText =
+    themeMode === 'dark'
+      ? baseTheme.darkModeColors.grey[500]
+      : colors.grey[500];
+  const disabledBorder =
+    themeMode === 'dark'
+      ? baseTheme.darkModeColors.grey[500]
+      : colors.grey[500];
 
-type VariantStyleFn = (size: ButtonSize, disabled: boolean) => SerializedStyles;
+  return css`
+    background: ${disabled ? disabledBg : background};
+    border: 1px solid ${disabled ? disabledBorder : border};
+    color: ${disabled ? disabledText : text};
+  `;
+};
+
+type VariantStyleFn = (
+  size: ButtonSize,
+  disabled: boolean,
+  themeMode?: ThemeMode
+) => SerializedStyles;
 
 const variantStyles: Record<VariantType, VariantStyleFn> = {
-  Solid_Navy: (size, disabled) => css`
+  Solid_Navy: (size, disabled, themeMode) => css`
     ${sizeStyles[size]}
-    ${getSolidColor(colors.primary[600], colors.white, 'none', disabled)}
+    ${getSolidColor(
+      colors.primary[600],
+      colors.white,
+      'none',
+      disabled,
+      themeMode
+    )}
   `,
-  Solid_Sky_Blue: (size, disabled) => css`
+  Solid_Sky_Blue: (size, disabled, themeMode) => css`
     ${sizeStyles[size]}
     ${getSolidColor(
       colors.primary[100],
       colors.primary[600],
       colors.primary[200],
-      disabled
+      disabled,
+      themeMode
     )}
   `,
-  Solid_Grey: (size, disabled) => css`
+  Solid_Grey: (size, disabled, themeMode) => css`
     ${sizeStyles[size]}
     ${getSolidColor(
       colors.grey[100],
       colors.grey[800],
       colors.grey[300],
-      disabled
+      disabled,
+      themeMode
     )}
   `,
-  Outline_Navy: (size, disabled) => css`
+  Outline_Navy: (size, disabled, themeMode) => css`
     ${sizeStyles[size]}
     ${getOutlineColor(
       colors.white,
       colors.primary[600],
       colors.primary[600],
-      disabled
+      disabled,
+      themeMode
     )}
   `,
-  Outline_Grey: (size, disabled) => css`
+  Outline_Grey: (size, disabled, themeMode) => css`
     ${sizeStyles[size]}
     ${getOutlineColor(
       colors.grey[50],
       colors.grey[700],
       colors.grey[400],
-      disabled
+      disabled,
+      themeMode
     )}
   `,
+  Solid_Blue: (size, disabled, themeMode) => {
+    const mainColor =
+      themeMode === 'dark'
+        ? baseTheme.darkModeColors.primary[500]
+        : baseTheme.colors.primary[500];
+    const textColor =
+      themeMode === 'dark'
+        ? baseTheme.darkModeColors.background[100]
+        : colors.white;
+
+    return css`
+      ${sizeStyles[size]}
+      ${getSolidColor(mainColor, textColor, 'none', disabled, themeMode)}
+    `;
+  },
+  Outline_Blue: (size, disabled, themeMode) => {
+    const textColor =
+      themeMode === 'dark'
+        ? baseTheme.darkModeColors.primary[500]
+        : colors.primary[500];
+    const borderColor =
+      themeMode === 'dark'
+        ? baseTheme.darkModeColors.primary[500]
+        : colors.primary[500];
+
+    return css`
+      ${sizeStyles[size]}
+      ${getOutlineColor(
+        colors.white,
+        textColor,
+        borderColor,
+        disabled,
+        themeMode
+      )}
+    `;
+  },
 };
+
+const VARIANT_TYPE_MAP: Record<string, VariantType> = {
+  Solid_Navy: 'Solid_Navy',
+  Solid_Sky_Blue: 'Solid_Sky_Blue',
+  Solid_Grey: 'Solid_Grey',
+  Outline_Navy: 'Outline_Navy',
+  Outline_Blue: 'Outline_Blue',
+  Solid_Blue: 'Solid_Blue',
+  Outline_Grey: 'Outline_Grey',
+} as const;
 
 function parseVariant(v: VariantKey): { type: VariantType; size: ButtonSize } {
   const arr = v.split('_');
   const variantStr = arr.slice(0, arr.length - 1).join('_');
   const sizeStr = arr[arr.length - 1];
-  let type: VariantType;
-  // type 추론
-  if (variantStr === 'Solid_Navy') {
-    type = 'Solid_Navy';
-  } else if (variantStr === 'Solid_Sky_Blue') {
-    type = 'Solid_Sky_Blue';
-  } else if (variantStr === 'Solid_Grey') {
-    type = 'Solid_Grey';
-  } else if (variantStr === 'Outline_Navy') {
-    type = 'Outline_Navy';
-  } else {
-    type = 'Outline_Grey';
-  }
-  // size 추론
+
+  const type = VARIANT_TYPE_MAP[variantStr] || 'Outline_Grey';
   const size: ButtonSize = sizeStr === '2XL' ? '2XL' : (sizeStr as ButtonSize);
+
   return { type, size };
 }
 
@@ -166,6 +258,7 @@ export const ButtonStyle = styled.button<{
   variant: VariantKey;
   disabled: boolean;
   fullWidth?: boolean;
+  themeMode?: ThemeMode;
 }>`
   display: inline-flex;
   align-items: center;
@@ -175,11 +268,11 @@ export const ButtonStyle = styled.button<{
   user-select: none;
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
-  ${({ variant, disabled }) => {
+  ${({ variant, disabled, themeMode }) => {
     const { type, size } = parseVariant(variant);
     if (!variantStyles[type]) {
       return '';
     }
-    return variantStyles[type](size, disabled);
+    return variantStyles[type](size, disabled, themeMode);
   }}
 `;

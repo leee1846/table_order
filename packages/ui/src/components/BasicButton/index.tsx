@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import * as S from './basicButton.styles';
 import type { VariantKey } from './basicButton.styles';
 import { SerializedStyles } from '@emotion/react';
+import { useThemeMode } from '../../hooks/useThemeMode';
 
 interface Props {
   children?: ReactNode;
@@ -26,36 +27,19 @@ export const BasicButton = ({
   icon,
   iconPosition = 'left',
 }: Props) => {
+  const { mode } = useThemeMode();
+
   const handleClick = (_e: React.MouseEvent<HTMLButtonElement>) => {
     if (!disabled && onClick) {
       onClick();
     }
   };
 
-  const renderIcon = () => {
-    if (!icon) {
-      return null;
-    }
-    if (iconPosition === 'left') {
-      return (
-        <span
-          style={{
-            marginRight: 6,
-            display: 'inline-flex',
-            alignItems: 'center',
-          }}
-        >
-          {icon}
-        </span>
-      );
-    }
-    return (
-      <span
-        style={{ marginLeft: 6, display: 'inline-flex', alignItems: 'center' }}
-      >
-        {icon}
-      </span>
-    );
+  const iconStyle = {
+    display: 'inline-flex' as const,
+    alignItems: 'center' as const,
+    marginRight: iconPosition === 'left' ? 6 : 0,
+    marginLeft: iconPosition === 'right' ? 6 : 0,
   };
 
   return (
@@ -63,13 +47,13 @@ export const BasicButton = ({
       type="button"
       variant={variant}
       disabled={disabled}
+      themeMode={mode}
       onClick={handleClick}
       fullWidth={fullWidth}
       css={customStyle}
     >
-      {iconPosition === 'left' && renderIcon()}
-      {children && children}
-      {iconPosition === 'right' && renderIcon()}
+      {icon && <span style={iconStyle}>{icon}</span>}
+      {children}
     </S.ButtonStyle>
   );
 };
