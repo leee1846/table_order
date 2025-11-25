@@ -2,11 +2,11 @@ import { getAxiosInstance } from '../cores/axios';
 import { ENDPOINTS } from '../cores/endpoints';
 import type {
   ICreateCategoryRequest,
+  IDeleteCategoryParams,
   IGetCategoryListParams,
   IUpdateCategoryRequest,
-  TCreateCategoryResponse,
   TGetCategoryListResponse,
-  TUpdateCategoryResponse,
+  TCategoryMutationResponse,
 } from '../types/category';
 
 /**
@@ -30,9 +30,9 @@ export const getCategoryList = async (
  */
 export const createCategory = async (
   params: ICreateCategoryRequest
-): Promise<TCreateCategoryResponse> => {
+): Promise<TCategoryMutationResponse> => {
   const axiosInstance = getAxiosInstance('private');
-  const response = await axiosInstance<TCreateCategoryResponse>({
+  const response = await axiosInstance<TCategoryMutationResponse>({
     method: 'POST',
     url: ENDPOINTS.CATEGORY.CREATE,
     data: params,
@@ -46,12 +46,28 @@ export const createCategory = async (
  */
 export const updateCategory = async (
   params: IUpdateCategoryRequest
-): Promise<TUpdateCategoryResponse> => {
+): Promise<TCategoryMutationResponse> => {
   const axiosInstance = getAxiosInstance('private');
-  const response = await axiosInstance<TUpdateCategoryResponse>({
+  const response = await axiosInstance<TCategoryMutationResponse>({
     method: 'PUT',
     url: ENDPOINTS.CATEGORY.UPDATE,
     data: params,
+  });
+
+  return response.data;
+};
+
+/**
+ * 카테고리 삭제
+ */
+export const deleteCategory = async (
+  params: IDeleteCategoryParams
+): Promise<TCategoryMutationResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TCategoryMutationResponse>({
+    method: 'DELETE',
+    url: ENDPOINTS.CATEGORY.DELETE,
+    params: { categorySeq: params.categorySeq },
   });
 
   return response.data;

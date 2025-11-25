@@ -3,7 +3,7 @@ import { AxiosError } from 'axios';
 import { createCategory } from '../../fetchers/category';
 import type {
   ICreateCategoryRequest,
-  TCreateCategoryResponse,
+  TCategoryMutationResponse,
 } from '../../types/category';
 import { IApiError } from '../../types/common';
 
@@ -14,7 +14,7 @@ export const usePostCreateCategory = () => {
   const queryClient = useQueryClient();
 
   return useMutation<
-    TCreateCategoryResponse,
+    TCategoryMutationResponse,
     AxiosError<IApiError>,
     ICreateCategoryRequest
   >({
@@ -25,4 +25,3 @@ export const usePostCreateCategory = () => {
     },
   });
 };
-
