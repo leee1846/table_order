@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import * as S from '@/pages/MainPage/CartList/cartList.style';
 import { BasicButton, NumberInput } from '@repo/ui/components';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +22,7 @@ export const CartList = ({ onClose }: Props) => {
     onClose();
   };
 
-  return (
+  return createPortal(
     <S.Background type="button" onClick={closeCartList}>
       <S.Container onClick={(e) => e.stopPropagation()}>
         <S.Title>{t('장바구니')}</S.Title>
@@ -92,6 +93,7 @@ export const CartList = ({ onClose }: Props) => {
           </BasicButton>
         </S.TotalContainer>
       </S.Container>
-    </S.Background>
+    </S.Background>,
+    document.body
   );
 };
