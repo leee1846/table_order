@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { createCategory } from '../../fetchers/category';
+import { queryKeys } from '../queryKeys';
 import type {
   ICreateCategoryRequest,
   TCategoryMutationResponse,
@@ -21,7 +22,7 @@ export const usePostCreateCategory = () => {
     mutationFn: createCategory,
     onSuccess: () => {
       // 카테고리 리스트 쿼리 무효화하여 최신 데이터로 갱신
-      queryClient.invalidateQueries({ queryKey: ['category', 'list'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.category.list() });
     },
   });
 };
