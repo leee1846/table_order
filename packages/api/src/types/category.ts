@@ -47,16 +47,11 @@ export interface ICreateCategoryRequest {
 }
 
 /**
- * 카테고리 생성 응답 타입 (IApiResponse 래핑)
+ * 카테고리 생성/수정/삭제 응답 타입 (IApiResponse 래핑)
  */
-export type TCreateCategoryResponse = IApiResponse<null>;
-
-/**
- * 카테고리 수정 요청 파라미터 타입
- */
+export type TCategoryMutationResponse = IApiResponse<null>;
 
 //TODO useSaleDay, useSaleTime 값 추가
-
 export interface IUpdateCategoryRequest extends ICreateCategoryRequest {
   categorySeq: number;
   isMapped: boolean; //오케이 포스와 연동
@@ -83,6 +78,8 @@ export interface IGetCategoryListParams {
 export type TGetCategoryListResponse = IApiResponse<ICategory[]>;
 
 /**
- * 카테고리 수정 응답 타입 (IApiResponse 래핑)
+ * 카테고리 삭제 요청 파라미터 타입
  */
-export type TUpdateCategoryResponse = IApiResponse<null>;
+export interface IDeleteCategoryParams {
+  categorySeq: number;
+}

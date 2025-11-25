@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { BasicButton, ToggleButton } from '@repo/ui/components';
+import { BasicButton, ToggleButton, toast } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoriesPage/Categories/Category/category.style';
 import { ChevronForwardIcon, DeleteIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryManageModal';
 import type { ICategory } from '@repo/api/types';
+import { useDeleteCategory } from '@repo/api/queries';
+import { openDualActionDialog } from '@repo/feature/utils';
 
 interface Props {
   category: ICategory;
@@ -15,6 +17,32 @@ interface Props {
 export const Category = ({ category, shopSeq, categoryList }: Props) => {
   const [isCategoryManageModalOpen, setIsCategoryManageModalOpen] =
     useState(false);
+  const deleteCategoryMutation = useDeleteCategory();
+
+  const handleDeleteCategory = (categorySeq: number) => {
+    openDualActionDialog({
+      title: '카테고리를 삭제할까요?',
+      primaryText: '삭제',
+      secondaryText: '취소',
+      size: 'xsmall',
+      onConfirm: () => {
+        deleteCategoryMutation.mutate(
+          { categorySeq },
+          {
+            onSuccess: () => {
+              toast('카테고리가 삭제되었습니다.');
+            },
+            onError: (error) => {
+              toast(
+                error.response?.data?.status?.userMessage ||
+                  '카테고리 삭제에 실패했습니다.'
+              );
+            },
+          }
+        );
+      },
+    });
+  };
 
   return (
     <>
@@ -33,7 +61,7 @@ export const Category = ({ category, shopSeq, categoryList }: Props) => {
           <button
             type="button"
             onClick={() => {
-              // noop
+              handleDeleteCategory(category.categorySeq);
             }}
           >
             <DeleteIcon width={14} height={14} color={theme.colors.grey[600]} />

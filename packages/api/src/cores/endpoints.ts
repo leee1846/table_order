@@ -13,5 +13,6 @@ export const ENDPOINTS = {
     LIST: '/category/list',
     CREATE: '/category',
     UPDATE: '/category',
+    DELETE: '/category',
   },
 } as const;
