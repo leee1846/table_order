@@ -30,7 +30,6 @@ export const MenuDetailModal = ({ onClose }: Props) => {
                 setImageError(true);
                 setImageLoaded(false);
               }}
-              style={{ opacity: imageLoaded ? 1 : 0 }}
             />
           )}
           <S.BestIcon src={bestOnIcon} alt="" />

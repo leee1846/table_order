@@ -1,4 +1,4 @@
-import { SerializedStyles } from '@emotion/react';
+import { SerializedStyles, useTheme } from '@emotion/react';
 import * as S from './checkButton.style';
 import CheckIcon from '../../icons/CheckIcon';
 import { colors } from '../../theme/colors';
@@ -24,6 +24,8 @@ export const CheckButton = ({
   children,
   customStyle,
 }: Props) => {
+  const { themeMode } = useTheme();
+
   return (
     <S.Label
       htmlFor={id}
@@ -33,7 +35,13 @@ export const CheckButton = ({
       css={customStyle}
     >
       <div>
-        {checked && <CheckIcon color={colors.white} width={18} height={18} />}
+        {checked && (
+          <CheckIcon
+            color={themeMode === 'dark' ? colors.black : colors.white}
+            width={18}
+            height={18}
+          />
+        )}
       </div>
       <input
         type="checkbox"

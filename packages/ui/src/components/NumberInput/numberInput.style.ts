@@ -72,10 +72,10 @@ const getTextColor = (
   disabled: boolean
 ): string => {
   if (disabled) {
-    return baseTheme.colors.grey[500];
+    return theme.mode.grey[500];
   }
   if (isRoundedActive(variant, value)) {
-    return baseTheme.colors.grey[50];
+    return theme.mode.grey[50];
   }
   return theme.mode.grey[900];
 };

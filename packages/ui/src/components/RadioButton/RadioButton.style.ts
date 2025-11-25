@@ -1,29 +1,82 @@
 import styled from '@emotion/styled';
 import { colors } from '../../theme/colors';
+import { baseTheme } from '../../index';
 import { css } from '@emotion/react';
+import { ThemeMode } from '../../theme/modeColors';
 
 interface Props {
   checked: boolean;
   disabled: boolean;
 }
 
-const getBorderColor = (checked: boolean, disabled: boolean): string => {
-  if (checked) {
-    return disabled ? colors.primary[300] : colors.primary[500];
+const getBorderColor = (
+  checked: boolean,
+  disabled: boolean,
+  mode: ThemeMode
+): string => {
+  if (disabled) {
+    if (checked) {
+      if (mode === 'dark') {
+        return baseTheme.darkModeColors.primary[300];
+      }
+      return baseTheme.colors.primary[300];
+    }
+
+    if (mode === 'dark') {
+      return baseTheme.darkModeColors.grey[300];
+    }
+    return baseTheme.colors.grey[300];
   }
-  return colors.grey[300];
+
+  if (checked) {
+    if (mode === 'dark') {
+      return baseTheme.darkModeColors.primary[500];
+    }
+    return baseTheme.colors.primary[500];
+  }
+
+  if (mode === 'dark') {
+    return baseTheme.darkModeColors.grey[300];
+  }
+  return baseTheme.colors.grey[300];
 };
 
-const getBackgroundColor = (checked: boolean, disabled: boolean): string => {
-  if (checked) {
-    return 'transparent';
+const getBackgroundColor = (
+  checked: boolean,
+  disabled: boolean,
+  mode: ThemeMode
+): string => {
+  if (disabled) {
+    if (checked) {
+      if (mode === 'dark') {
+        return baseTheme.darkModeColors.grey[50];
+      }
+      return baseTheme.colors.white;
+    }
+
+    if (mode === 'dark') {
+      return baseTheme.darkModeColors.grey[100];
+    }
+    return baseTheme.colors.grey[100];
   }
-  return disabled ? colors.grey[100] : colors.white;
+
+  if (checked) {
+    if (mode === 'dark') {
+      return baseTheme.darkModeColors.grey[100];
+    }
+    return baseTheme.colors.grey[100];
+  }
+
+  return baseTheme.colors.white;
 };
 
-const getRadioButtonStyles = (checked: boolean, disabled: boolean) => {
-  const borderColor = getBorderColor(checked, disabled);
-  const backgroundColor = getBackgroundColor(checked, disabled);
+const getRadioButtonStyles = (
+  checked: boolean,
+  disabled: boolean,
+  mode: ThemeMode
+) => {
+  const borderColor = getBorderColor(checked, disabled, mode);
+  const backgroundColor = getBackgroundColor(checked, disabled, mode);
 
   if (checked) {
     return css`
@@ -47,6 +100,7 @@ export const Label = styled.label<Props>`
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
-    ${({ checked, disabled }) => getRadioButtonStyles(checked, disabled)}
+    ${({ checked, disabled, theme }) =>
+      getRadioButtonStyles(checked, disabled, theme.themeMode)}
   }
 `;

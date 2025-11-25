@@ -64,10 +64,16 @@ export const NumberInput = ({
 
   const getIconColor = (type: 'remove' | 'add') => {
     if (disabled) {
+      if (mode === 'dark') {
+        return baseTheme.darkModeColors.grey[400];
+      }
       return baseTheme.colors.grey[400];
     }
 
     if (variant === 'rounded' && value > 0) {
+      if (mode === 'dark') {
+        return baseTheme.darkModeColors.grey[50];
+      }
       return baseTheme.colors.grey[50];
     }
 

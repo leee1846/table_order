@@ -2,6 +2,7 @@ import { useState } from 'react';
 import * as S from '@/pages/MainPage/Contents/MenuItem/menuItem.style';
 import { bestOnIcon, chiliOffIcon, chiliOnIcon } from '@repo/ui/icons';
 import { MenuDetailModal } from '@/pages/MainPage/Contents/MenuDetailModal';
+import { MenuDetailWithOptionsModal } from '@/pages/MainPage/Contents/MenuDetailWithOptionsModal';
 
 const hasOptions = true;
 
@@ -69,6 +70,12 @@ export const MenuItem = ({
 
       {isMenuDetailOpen && !hasOptions && (
         <MenuDetailModal onClose={() => setIsMenuDetailOpen(false)} />
+      )}
+
+      {isMenuDetailOpen && hasOptions && (
+        <MenuDetailWithOptionsModal
+          onClose={() => setIsMenuDetailOpen(false)}
+        />
       )}
     </>
   );
