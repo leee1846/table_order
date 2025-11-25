@@ -61,6 +61,20 @@ export const TotalInfo = styled.div`
   }
 `;
 
+export const NoContent = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+  & > p {
+    ${TYPOGRAPHY.MT_7}
+    color: ${({ theme }) => theme.mode.grey[500]};
+  }
+`;
+
 export const OrderList = styled.ul`
   display: flex;
   flex-direction: column;

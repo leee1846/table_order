@@ -8,7 +8,7 @@ export type TVariant = 'square' | 'rounded';
 
 interface Props {
   variant: TVariant;
-  size?: 'M' | 'S';
+  size?: 'L' | 'M';
   value: number;
   min?: number;
   max?: number;
@@ -19,7 +19,7 @@ interface Props {
 
 export const NumberInput = ({
   variant,
-  size = 'M',
+  size = 'L',
   value,
   min,
   max,

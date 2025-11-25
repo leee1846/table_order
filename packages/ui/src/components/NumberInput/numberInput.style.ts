@@ -6,7 +6,7 @@ import { baseTheme, Theme } from '../../index';
 
 interface Props {
   variant: TVariant;
-  size: 'M' | 'S';
+  size: 'L' | 'M';
   disabled: boolean;
   value: number;
 }
@@ -19,12 +19,12 @@ const getBorderRadius = (variant: TVariant): string => {
   return BORDER_RADIUS[variant];
 };
 
-const getWidth = (size: 'M' | 'S'): string => {
-  return size === 'M' ? '11.25rem' : '8.125rem';
+const getWidth = (size: 'L' | 'M'): string => {
+  return size === 'L' ? '11.25rem' : '8.125rem';
 };
 
-const getHeight = (size: 'M' | 'S'): string => {
-  return size === 'M' ? '3.25rem' : '2.75rem';
+const getHeight = (size: 'L' | 'M'): string => {
+  return size === 'L' ? '3.25rem' : '2.75rem';
 };
 
 const isRoundedActive = (variant: TVariant, value: number): boolean => {

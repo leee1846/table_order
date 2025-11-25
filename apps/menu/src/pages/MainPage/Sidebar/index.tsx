@@ -8,6 +8,7 @@ import * as S from '@/pages/MainPage/Sidebar/sidebar.style';
 import { CallBellIcon } from '@repo/ui/icons';
 import { baseTheme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
+import { StaffCallModal } from '@/pages/MainPage/StaffCallModal';
 
 interface Props {
   categories: typeof categories;
@@ -16,6 +17,7 @@ interface Props {
 
 export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   const { t } = useTranslation();
+  const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(
     categories?.[0]?.id || 0
   );
@@ -156,24 +158,34 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   }, [useScrollLayout, categories]);
 
   return (
-    <S.Container>
-      {categories.map((category) => (
-        <S.CategoryButton
-          isActive={selectedCategoryId === category.id}
-          key={category.id}
-          type="button"
-          onClick={() => handleCategoryClick(category)}
-        >
-          {category.name}
-        </S.CategoryButton>
-      ))}
+    <>
+      <S.Container>
+        {categories.map((category) => (
+          <S.CategoryButton
+            isActive={selectedCategoryId === category.id}
+            key={category.id}
+            type="button"
+            onClick={() => handleCategoryClick(category)}
+          >
+            {category.name}
+          </S.CategoryButton>
+        ))}
 
-      <S.StaffCall>
-        <button type="button">
-          <CallBellIcon color={baseTheme.colors.white} width={30} height={30} />
-          {t('직원 호출')}
-        </button>
-      </S.StaffCall>
-    </S.Container>
+        <S.StaffCall>
+          <button type="button" onClick={() => setIsStaffCallModalOpen(true)}>
+            <CallBellIcon
+              color={baseTheme.colors.white}
+              width={30}
+              height={30}
+            />
+            {t('직원 호출')}
+          </button>
+        </S.StaffCall>
+      </S.Container>
+
+      {isStaffCallModalOpen && (
+        <StaffCallModal onClose={() => setIsStaffCallModalOpen(false)} />
+      )}
+    </>
   );
 };

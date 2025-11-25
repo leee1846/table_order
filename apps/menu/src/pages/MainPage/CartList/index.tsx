@@ -2,8 +2,11 @@ import * as S from '@/pages/MainPage/CartList/cartList.style';
 import { BasicButton, NumberInput } from '@repo/ui/components';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { DeleteIcon } from '@repo/ui/icons';
+import { DeleteIcon, EmptedCartIcon } from '@repo/ui/icons';
 import { theme, useThemeMode } from '@repo/ui';
+
+const hasOptions = true;
+const menuList = Array.from({ length: 5 });
 
 interface Props {
   onClose: () => void;
@@ -11,11 +14,10 @@ interface Props {
 export const CartList = ({ onClose }: Props) => {
   const { t } = useTranslation();
   const { mode } = useThemeMode();
-  const hasOptions = true;
 
   const [quantity, setQuantity] = useState(1);
 
-  const closeCartList = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const closeCartList = () => {
     onClose();
   };
 
@@ -25,7 +27,14 @@ export const CartList = ({ onClose }: Props) => {
         <S.Title>{t('장바구니')}</S.Title>
 
         <S.OrderList>
-          {Array.from({ length: 4 }).map((_, index) => (
+          {menuList.length < 1 && (
+            <S.NoContent>
+              <EmptedCartIcon mode={mode} width={52} height={52} />
+              <p>{t('현재 담긴 메뉴가 없어요.')}</p>
+            </S.NoContent>
+          )}
+
+          {menuList.map((_, index) => (
             <S.OrderItem key={`order-${index + 1}`}>
               <S.OrderMenu>
                 <p>메뉴 이름???</p>
@@ -63,7 +72,7 @@ export const CartList = ({ onClose }: Props) => {
                 </BasicButton>
                 <NumberInput
                   variant="square"
-                  size="S"
+                  size="M"
                   min={1}
                   value={quantity}
                   onChange={setQuantity}
