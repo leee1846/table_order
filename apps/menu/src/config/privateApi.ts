@@ -13,7 +13,9 @@ import {
 } from '@repo/api/axios';
 import type { IApiError, ITokenPayload } from '@repo/api/types';
 import { openConfirmDialog } from '@repo/feature/utils';
-import { decodeJwtToken, getCurrentUnixTime, isExpired } from '@repo/util';
+import { isExpired } from '@repo/util/date';
+import { decodeJwtToken } from '@repo/util/function';
+import { getCurrentUnixTime } from '@repo/util/time';
 import { ROUTES } from '@/constants/routes';
 
 const forceReLogin = () => {

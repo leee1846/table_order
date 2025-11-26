@@ -8,7 +8,7 @@ import {
   chiliOnIcon,
   newOnIcon,
 } from '@repo/ui/icons';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import { MenuCopyModal } from '@/pages/settings/CategoryMenusPage/MenuCopyModal';
 
 interface Props {

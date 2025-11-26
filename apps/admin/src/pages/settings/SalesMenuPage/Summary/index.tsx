@@ -1,5 +1,5 @@
 import { bestOnIcon } from '@repo/ui/icons';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import * as S from '@/pages/settings/SalesMenuPage/Summary/summary.style';
 import { theme } from '@repo/ui';
 

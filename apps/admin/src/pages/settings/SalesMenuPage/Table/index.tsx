@@ -1,6 +1,6 @@
 import React from 'react';
 import * as UIStyles from '@repo/ui/styles';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import * as S from './table.style';
 const LIST = [
   {

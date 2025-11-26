@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import type { OrderItem } from './types';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
 const { colors } = theme;

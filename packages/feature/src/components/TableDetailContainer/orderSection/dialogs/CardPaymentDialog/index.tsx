@@ -3,7 +3,7 @@ import { BasicButton, ModalBackground, Dropdown } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './cardPaymentDialog.styles';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import { CardPaymentProgressDialog } from '../CardPaymentProgressDialog';
 
 const { colors } = theme;

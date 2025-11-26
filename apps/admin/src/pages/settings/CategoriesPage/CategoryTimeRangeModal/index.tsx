@@ -4,7 +4,7 @@ import { theme } from '@repo/ui';
 import * as S from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal/categoryTimeRangeModal.style';
 import { useId, useState, useEffect, useCallback } from 'react';
 import type { ICategory } from '@repo/api/types';
-import { parseTimeString, formatTimeString } from '@repo/util';
+import { parseTimeString, formatTimeString } from '@repo/util/time';
 
 interface Props {
   onClose: () => void;

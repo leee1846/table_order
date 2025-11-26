@@ -1,5 +1,5 @@
 import { useState, useRef, type ChangeEvent, type KeyboardEvent } from 'react';
-import { extractNumbers, validateHour, validateMinute } from '@repo/util';
+import { extractNumbers, validateHour, validateMinute } from '@repo/util/time';
 
 interface Props {
   /**

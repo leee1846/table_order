@@ -2,7 +2,8 @@ import { SCROLL_CATEGORY_VISIBLE_EVENT_KEY } from '@/constants/keys';
 import { categories } from '@/constants/mock';
 import { useRef, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
-import { createDebounce, getMinFromArray } from '@repo/util';
+import { createDebounce } from '@repo/util/function';
+import { getMinFromArray } from '@repo/util/array';
 import { CategoryItem } from '@/pages/MainPage/Contents/CategoryItem';
 
 interface Props {

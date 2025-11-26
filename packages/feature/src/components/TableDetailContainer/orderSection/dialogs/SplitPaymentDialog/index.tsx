@@ -3,7 +3,8 @@ import { BasicButton, ModalBackground, Keypad } from '@repo/ui/components';
 import { CloseIcon, ArrowBackIcon, OrderListIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './splitPaymentDialog.styles';
-import { formatCurrency, calculateTotalAmount } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
+import { calculateTotalAmount } from '@repo/util/calculation';
 import type { OrderItem } from '../../types';
 
 const { colors } = theme;

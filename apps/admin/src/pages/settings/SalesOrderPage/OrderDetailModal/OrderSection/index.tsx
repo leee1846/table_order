@@ -1,5 +1,5 @@
 import { BasicButton } from '@repo/ui/components';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import * as S from './orderSection.style';
 
 const MENUS = [

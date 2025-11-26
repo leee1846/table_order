@@ -3,7 +3,7 @@ import { BasicButton, ModalBackground, Keypad } from '@repo/ui/components';
 import { CloseIcon, ArrowBackIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './amountChangeDialog.styles';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 
 const { colors } = theme;
 

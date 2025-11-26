@@ -1,6 +1,6 @@
 import { InfoIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import * as S from '@/pages/settings/SalesSummaryPage/salesSummaryPage.style';
 
 export const SalesSummaryPage = () => {

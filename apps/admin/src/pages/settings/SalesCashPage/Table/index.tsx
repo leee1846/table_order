@@ -1,7 +1,7 @@
 import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import { theme } from '@repo/ui';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import * as S from '@/pages/settings/SalesCashPage/Table/table.style';
 import { openDualActionDialog } from '@repo/feature/utils';
 

@@ -7,7 +7,7 @@ import {
 } from '@repo/ui/icons';
 import * as S from './tableCard.styles';
 import { theme } from '@repo/ui';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 
 const { colors } = theme;
 

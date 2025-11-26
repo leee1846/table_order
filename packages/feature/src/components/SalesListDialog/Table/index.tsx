@@ -2,7 +2,7 @@ import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from './table.style';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import { useState } from 'react';
 import { OrderDetailModal } from '../OrderDetailModal';
 import { mockSalesData } from '../mock';

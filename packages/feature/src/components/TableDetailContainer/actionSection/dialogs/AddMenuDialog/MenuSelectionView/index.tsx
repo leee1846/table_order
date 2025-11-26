@@ -12,7 +12,8 @@ import { mockCategories, type MenuVo } from '../../../../mock';
 import type { SelectedMenuWithOptions } from '../types';
 import * as S from './menuSelectionView.style';
 import * as A from '../addMenuDialog.styles';
-import { formatCurrency, calculateTotalAmount } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
+import { calculateTotalAmount } from '@repo/util/calculation';
 import { css } from '@emotion/react';
 const { colors } = theme;
 

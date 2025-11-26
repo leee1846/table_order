@@ -1,5 +1,5 @@
 import { BasicButton } from '@repo/ui/components';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from './paymentSection.style';
 

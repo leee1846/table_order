@@ -1,7 +1,7 @@
 import * as S from './detailOrderDialog.style';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import { OrderItem as MenuItem } from 'src/components/TableDetailContainer/orderSection/types';
 import { OrderItem as OrderInfo } from '../index';
 

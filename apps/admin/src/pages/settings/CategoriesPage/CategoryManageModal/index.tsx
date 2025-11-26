@@ -14,7 +14,7 @@ import { CategoryTimeRangeModal } from '@/pages/settings/CategoriesPage/Category
 import type { ICategory, IUpdateCategoryRequest } from '@repo/api/types';
 import { usePostCreateCategory, usePutUpdateCategory } from '@repo/api/queries';
 import { DAYS } from '@/constants/days';
-import { formatTimeDisplay } from '@repo/util';
+import { formatTimeDisplay } from '@repo/util/time';
 
 interface Props {
   onClose: () => void;

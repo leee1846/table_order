@@ -1,8 +1,32 @@
-import { QueryClient, QueryClientProvider } from '@repo/api/tanstack-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useIsFetching,
+  useIsMutating,
+} from '@repo/api/tanstack-query';
+import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useState, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
+}
+
+/**
+ * QueryClientProvider 내부에서 전역 loading 상태를 감지하는 컴포넌트
+ */
+function GlobalLoadingIndicator() {
+  // 전역 query fetching 상태 확인
+  const isFetching = useIsFetching();
+  // 전역 mutation 상태 확인
+  const isMutating = useIsMutating();
+  // query 또는 mutation 중 하나라도 진행 중이면 loading 표시
+  const isLoading = isFetching > 0 || isMutating > 0;
+
+  if (!isLoading) {
+    return null;
+  }
+
+  return <FullscreenLoadingSpinner />;
 }
 
 /**
@@ -38,6 +62,9 @@ export function QueryProvider({ children }: Props) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <GlobalLoadingIndicator />
+    </QueryClientProvider>
   );
 }

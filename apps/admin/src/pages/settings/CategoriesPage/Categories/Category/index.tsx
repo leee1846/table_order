@@ -8,7 +8,7 @@ import type { ICategory } from '@repo/api/types';
 import { useDeleteCategory } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { DAYS } from '@/constants/days';
-import { formatTimeDisplay } from '@repo/util';
+import { formatTimeDisplay } from '@repo/util/time';
 
 interface Props {
   category: ICategory;

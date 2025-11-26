@@ -2,7 +2,7 @@ import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/SalesCardPage/Table/table.style';
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import { openDualActionDialog } from '@repo/feature/utils';
 
 const LIST = [

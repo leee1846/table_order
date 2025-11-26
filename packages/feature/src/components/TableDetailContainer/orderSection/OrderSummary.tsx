@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { formatCurrency } from '@repo/util';
+import { formatCurrency } from '@repo/util/string';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
 const { colors } = theme;
