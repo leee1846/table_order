@@ -11,6 +11,7 @@ import type {
 
 /**
  * 카테고리 리스트를 조회합니다.
+ * GET /category/list
  */
 export const getCategoryList = async (
   params: IGetCategoryListParams
@@ -26,7 +27,8 @@ export const getCategoryList = async (
 };
 
 /**
- * 카테고리 생성
+ * 카테고리를 생성합니다.
+ * POST /category
  */
 export const createCategory = async (
   params: ICreateCategoryRequest
@@ -42,7 +44,8 @@ export const createCategory = async (
 };
 
 /**
- * 카테고리 수정
+ * 카테고리를 수정합니다.
+ * PUT /category
  */
 export const updateCategory = async (
   params: IUpdateCategoryRequest
@@ -58,7 +61,8 @@ export const updateCategory = async (
 };
 
 /**
- * 카테고리 삭제
+ * 카테고리를 삭제합니다.
+ * DELETE /category
  */
 export const deleteCategory = async (
   params: IDeleteCategoryParams
