@@ -4,3 +4,7 @@ export const SCROLL_CATEGORY_VISIBLE_EVENT_KEY = (id: number) =>
   `scroll-category-visible-${id}`;
 
 export const LANGUAGE_STORAGE_KEY = 'i18Lng';
+
+export const timerKeys = {
+  CART_REMINDER: 'cart-reminder',
+};

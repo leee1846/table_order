@@ -24,7 +24,7 @@ export const Header = () => {
 
       <S.RightContent>
         <S.TableNumber>
-          {t('{number}번 테이블', { number: '??' })}
+          {t('{{number}}번 테이블', { number: '??' })}
         </S.TableNumber>
         <S.Divider />
         <S.OrderHistoryButton type="button">

@@ -47,3 +47,4 @@ export { default as cardIcon } from './cardIcon.svg';
 export { default as currencyIcon } from './currencyIcon.svg';
 export { default as splitIcon } from './splitIcon.svg';
 export { default as clockIcon } from './clock.svg';
+export { default as speechBubbleIcon } from './speech_bubble.svg';
