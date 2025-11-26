@@ -15,8 +15,6 @@ import {
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
 
 export const BasicSetting = () => {
-  const TAX_FREE_ID = `tax-free-${useId()}`;
-
   const [isBest, setIsBest] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const [chiliLevel, setChiliLevel] = useState(0);
@@ -134,7 +132,6 @@ export const BasicSetting = () => {
                 가격 <span>*</span>
               </S.Title>
               <CheckButton
-                id={TAX_FREE_ID}
                 checked={false}
                 onChange={() => {
                   // noop

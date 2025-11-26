@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { SerializedStyles } from '@emotion/react';
 import * as S from './checkButton.style';
 import CheckIcon from '../../icons/CheckIcon';
@@ -6,7 +7,6 @@ import { useThemeMode } from '../../hooks/useThemeMode';
 export type TVariant = 'square' | 'round';
 
 interface Props {
-  id: string;
   variant?: TVariant;
   checked: boolean;
   onChange: (checked: boolean) => void;
@@ -16,7 +16,6 @@ interface Props {
 }
 
 export const CheckButton = ({
-  id,
   variant = 'square',
   checked,
   onChange,
@@ -25,10 +24,11 @@ export const CheckButton = ({
   customStyle,
 }: Props) => {
   const { theme } = useThemeMode();
+  const uniqueId = useId();
 
   return (
     <S.Label
-      htmlFor={id}
+      htmlFor={uniqueId}
       checked={checked}
       disabled={disabled}
       variant={variant}
@@ -45,7 +45,7 @@ export const CheckButton = ({
       </div>
       <input
         type="checkbox"
-        id={id}
+        id={uniqueId}
         checked={checked}
         onChange={() => onChange(!checked)}
         disabled={disabled}

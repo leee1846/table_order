@@ -108,7 +108,6 @@ export const SelectCancelDialog = ({
               return (
                 <S.ItemRow key={item.id}>
                   <CheckButton
-                    id={`checkbox-${item.id}`}
                     variant="square"
                     checked={isChecked}
                     onChange={(checked) =>

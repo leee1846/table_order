@@ -157,7 +157,6 @@ export const DeviceListDialog = ({
                     <td>
                       <S.DeviceCell>
                         <CheckButton
-                          id={`device-${device.id}`}
                           checked={selectedDevices.has(device.id)}
                           onChange={() => handleSelectDevice(device.id)}
                         >
