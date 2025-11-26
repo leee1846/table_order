@@ -9,7 +9,7 @@ import {
 import * as S from '@/pages/settings/CategoriesPage/CategoryManageModal/categoryManageModal.style';
 import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
-import { useId, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CategoryTimeRangeModal } from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal';
 import type { ICategory, IUpdateCategoryRequest } from '@repo/api/types';
 import {
@@ -33,11 +33,6 @@ export const CategoryManageModal = ({
   shopSeq,
   categoryList = [],
 }: Props) => {
-  const COUNT_SELECTION_ID = `count-selection-${useId()}`;
-  const STAFF_CALL_ID = `staff-call-${useId()}`;
-  const TWO_COLUMN_LAYOUT_ID = `two-column-layout-${useId()}`;
-  const TIME_RANGE_SETTING_ID = `time-range-setting-${useId()}`;
-
   const isEdit = !!categoryData;
   const queryClient = useQueryClient();
   const createCategoryMutation = usePostCreateCategory();
@@ -294,7 +289,6 @@ export const CategoryManageModal = ({
               <S.SubTitle>추가 설정</S.SubTitle>
               <S.CheckButtonList>
                 <CheckButton
-                  id={COUNT_SELECTION_ID}
                   checked={isQuantitySelectable}
                   onChange={(checked) => setIsQuantitySelectable(checked)}
                   customStyle={S.checkButtonCss}
@@ -302,7 +296,6 @@ export const CategoryManageModal = ({
                   <p>수량선택 사용</p>
                 </CheckButton>
                 <CheckButton
-                  id={STAFF_CALL_ID}
                   checked={isStaffCall}
                   onChange={(checked) => setIsStaffCall(checked)}
                   customStyle={S.checkButtonCss}
@@ -310,7 +303,6 @@ export const CategoryManageModal = ({
                   <p>직원호출 사용</p>
                 </CheckButton>
                 <CheckButton
-                  id={TWO_COLUMN_LAYOUT_ID}
                   checked={useTwoColumnLayout}
                   onChange={(checked) => setUseTwoColumnLayout(checked)}
                   customStyle={S.checkButtonCss}
@@ -319,7 +311,6 @@ export const CategoryManageModal = ({
                 </CheckButton>
                 <S.TimeRangeWrapper>
                   <CheckButton
-                    id={TIME_RANGE_SETTING_ID}
                     checked={useSaleTime}
                     onChange={(checked) => setUseSaleTime(checked)}
                     customStyle={S.checkButtonCss}

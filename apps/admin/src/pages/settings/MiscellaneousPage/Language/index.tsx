@@ -1,16 +1,11 @@
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
 import { CheckButton, Dropdown, ToggleButton } from '@repo/ui/components';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import * as S from '@/pages/settings/MiscellaneousPage/Language/language.style';
 
 export const Language = () => {
   const [isMultilingual, setIsMultilingual] = useState(false);
-  const koLanguageId = useId();
-  const enLanguageId = useId();
-  const zhLanguageId = useId();
-  const jaLanguageId = useId();
-  const beforeOrderLanguageId = useId();
 
   return (
     <SectionWrapper title="언어">
@@ -31,7 +26,6 @@ export const Language = () => {
           <S.CheckboxWrapper>
             <div>
               <CheckButton
-                id={`ko-${koLanguageId}`}
                 checked={true}
                 onChange={() => {}}
                 customStyle={S.checkboxCss}
@@ -39,7 +33,6 @@ export const Language = () => {
                 <S.CheckboxText>한국어</S.CheckboxText>
               </CheckButton>
               <CheckButton
-                id={`en-${enLanguageId}`}
                 checked={false}
                 onChange={() => {}}
                 customStyle={S.checkboxCss}
@@ -47,7 +40,6 @@ export const Language = () => {
                 <S.CheckboxText>영어</S.CheckboxText>
               </CheckButton>
               <CheckButton
-                id={`zh-${zhLanguageId}`}
                 checked={false}
                 onChange={() => {}}
                 customStyle={S.checkboxCss}
@@ -55,7 +47,6 @@ export const Language = () => {
                 <S.CheckboxText>중국어</S.CheckboxText>
               </CheckButton>
               <CheckButton
-                id={`ja-${jaLanguageId}`}
                 checked={false}
                 onChange={() => {}}
                 customStyle={S.checkboxCss}
@@ -64,7 +55,6 @@ export const Language = () => {
               </CheckButton>
             </div>
             <CheckButton
-              id={`before-order-language-${beforeOrderLanguageId}`}
               checked={false}
               onChange={() => {}}
               customStyle={S.checkboxCss}

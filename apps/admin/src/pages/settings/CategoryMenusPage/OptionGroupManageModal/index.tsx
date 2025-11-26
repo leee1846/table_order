@@ -6,7 +6,6 @@ import {
   ModalBackground,
 } from '@repo/ui/components';
 import { AddCircleIcon, CloseIcon, DeleteIcon } from '@repo/ui/icons';
-import { useId } from 'react';
 import * as S from '@/pages/settings/CategoryMenusPage/OptionGroupManageModal/optionGroupManageModal.style';
 
 const OPTIONS = [
@@ -38,10 +37,6 @@ interface Props {
 }
 
 export const OptionGroupManageModal = ({ onClose }: Props) => {
-  const OPTION_COUNT_INPUT_ID = `option-count-${useId()}`;
-  const ADD_OPTION_INPUT_ID = `add-option-${useId()}`;
-  const DUPLICATE_CHECK_INPUT_ID = `duplicate-check-${useId()}`;
-
   return (
     <ModalBackground onClick={onClose}>
       <S.Container>
@@ -70,7 +65,6 @@ export const OptionGroupManageModal = ({ onClose }: Props) => {
                 {OPTIONS.map((option) => (
                   <li key={option.id}>
                     <CheckButton
-                      id={`option-sold-out-${option.id}`}
                       checked={false}
                       onChange={() => {
                         // noop
@@ -126,7 +120,6 @@ export const OptionGroupManageModal = ({ onClose }: Props) => {
                 <input type="number" />개 선택 (미설정 시 무제한 성택 가능)
               </div>
               <CheckButton
-                id={OPTION_COUNT_INPUT_ID}
                 checked={false}
                 onChange={() => {}}
                 customStyle={S.checkButtonCss}
@@ -134,7 +127,6 @@ export const OptionGroupManageModal = ({ onClose }: Props) => {
                 <span>옵션 수량 선택</span>
               </CheckButton>
               <CheckButton
-                id={ADD_OPTION_INPUT_ID}
                 checked={false}
                 onChange={() => {}}
                 customStyle={S.checkButtonCss}
@@ -142,7 +134,6 @@ export const OptionGroupManageModal = ({ onClose }: Props) => {
                 <span>추가 옵션</span>
               </CheckButton>
               <CheckButton
-                id={DUPLICATE_CHECK_INPUT_ID}
                 checked={false}
                 onChange={() => {}}
                 customStyle={S.checkButtonCss}

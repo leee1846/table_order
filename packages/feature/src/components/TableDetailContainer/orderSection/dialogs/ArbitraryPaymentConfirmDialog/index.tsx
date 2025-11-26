@@ -62,7 +62,6 @@ export const ArbitraryPaymentConfirmDialog = ({
 
           <S.CheckboxWrapper>
             <CheckButton
-              id="dont-show-again"
               variant="square"
               checked={dontShowAgain}
               onChange={setDontShowAgain}

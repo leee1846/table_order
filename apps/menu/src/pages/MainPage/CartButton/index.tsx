@@ -16,7 +16,7 @@ export const CartButton = () => {
   /** 결제 방법 선택 모달 */
   const [isPaymentsModalOpen, setIsPaymentsModalOpen] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
-    'card' | 'cash' | 'split'
+    'card' | 'cash' | 'split' | 'payAfter'
   >('card');
   /** 분할 결제 모달 */
   const [isSplitPaymentModalOpen, setIsSplitPaymentModalOpen] = useState(false);
