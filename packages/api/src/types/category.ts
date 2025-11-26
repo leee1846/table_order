@@ -44,6 +44,8 @@ export interface ICreateCategoryRequest {
   isFirstOrderRequired: boolean;
   menuInfoList?: IMenu[];
   selectedLanguageCode?: 'KO' | 'JP' | 'CH' | 'EN' | null;
+  useSaleDay: boolean;
+  useSaleTime: boolean;
 }
 
 /**
@@ -51,11 +53,9 @@ export interface ICreateCategoryRequest {
  */
 export type TCategoryMutationResponse = IApiResponse<null>;
 
-//TODO useSaleDay, useSaleTime 값 추가
 export interface IUpdateCategoryRequest extends ICreateCategoryRequest {
   categorySeq: number;
   isMapped: boolean; //오케이 포스와 연동
-  useSaleTime: boolean;
   isDeleted: boolean;
   localeCategoryName: string;
   localeCategoryDescription: string;

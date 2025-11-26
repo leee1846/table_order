@@ -13,20 +13,11 @@ import { useId, useState, useEffect } from 'react';
 import { CategoryTimeRangeModal } from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal';
 import type { ICategory, IUpdateCategoryRequest } from '@repo/api/types';
 import { usePostCreateCategory, usePutUpdateCategory } from '@repo/api/queries';
-
-const days = [
-  { value: 0, label: '월' },
-  { value: 1, label: '화' },
-  { value: 2, label: '수' },
-  { value: 3, label: '목' },
-  { value: 4, label: '금' },
-  { value: 5, label: '토' },
-  { value: 6, label: '일' },
-];
+import { DAYS } from '@/constants/days';
+import { formatTimeDisplay } from '@repo/util';
 
 interface Props {
   onClose: () => void;
-
   categoryData?: ICategory;
   shopSeq: number;
   categoryList?: ICategory[];
@@ -60,10 +51,8 @@ export const CategoryManageModal = ({
   const [isTimeRangeModalOpen, setIsTimeRangeModalOpen] = useState(false);
 
   //판매 요일 선택 (일반 요일만 관리) - day.label로 저장
-  //TODO : 카테고리 생성할 때 모든 값을 선택하게 하고, useSaleDay 값을 false로 설정
-  // TODO : Get 해올 떄 안 오는  거 낼 수정해주기로 함
   const [selectedDays, setSelectedDays] = useState<string[]>(
-    isEdit ? [] : days.map((day) => day.label) // 생성 시 모든 요일 선택
+    isEdit ? [] : DAYS.map((day) => day.label) // 생성 시 모든 요일 선택
   );
 
   //공휴일 판매 여부
@@ -94,13 +83,27 @@ export const CategoryManageModal = ({
     'KO' | 'JP' | 'CH' | 'EN' | null
   >('KO');
 
-  // 판매 시간 설정 TODO useSaleTime 값 추가
+  // 판매 시간 설정
+  const [useSaleTime, setUseSaleTime] = useState<boolean>(
+    (categoryData as ICategory)?.useSaleTime ?? false
+  );
+  // 수정 모드: 초기값 "0000", 생성 모드: 빈 문자열
   const [saleStartTime, setSaleStartTime] = useState<string>(
-    (categoryData as ICategory)?.saleStartTime || ''
+    isEdit ? ((categoryData as ICategory)?.saleStartTime ?? '') : ''
   );
   const [saleEndTime, setSaleEndTime] = useState<string>(
-    (categoryData as ICategory)?.saleEndTime || ''
+    isEdit ? ((categoryData as ICategory)?.saleEndTime ?? '') : ''
   );
+
+  // 표시할 시간 값 계산
+  const getDisplayTime = (): string => {
+    // 생성 모드: 값이 있으면 표시, 없으면 placeholder "00 : 00 - 00 : 00"
+    // 수정 모드: 값이 있으면 표시, 없으면 "00 : 00 - 00 : 00"
+    if (saleStartTime && saleEndTime) {
+      return `${formatTimeDisplay(saleStartTime, ' : ')} - ${formatTimeDisplay(saleEndTime, ' : ')}`;
+    }
+    return '00 : 00 - 00 : 00';
+  };
 
   // index 계산: 기존 카테고리 중 최대 index + 1, 없으면 0
   const calculateIndex = () => {
@@ -118,9 +121,11 @@ export const CategoryManageModal = ({
       // 판매 요일 초기화 (null이나 undefined일 경우 빈 배열로 처리)
       const existingDays = category.saleDayOfWeek ?? [];
       const dayLabels = existingDays
-        .map((dayValue) => days.find((d) => d.value === dayValue)?.label)
+        .map((dayValue) => DAYS.find((d) => d.value === dayValue)?.label)
         .filter((label): label is string => label !== undefined);
       setSelectedDays(dayLabels);
+      // 판매 시간 설정 초기화
+      setUseSaleTime(category.useSaleTime ?? false);
     }
   }, [isEdit, categoryData]);
 
@@ -137,11 +142,14 @@ export const CategoryManageModal = ({
       return;
     }
 
-    //TODO :  useSaleDay, useSaleTime 값 추가
     // Convert selectedDays (string labels) to numbers
     const saleDayOfWeekNumbers = selectedDays
-      .map((label) => days.find((day) => day.label === label)?.value ?? -1)
+      .map((label) => DAYS.find((day) => day.label === label)?.value ?? -1)
       .filter((value) => value !== -1);
+
+    // 모든 요일이 선택되어 있고 공휴일 판매가 true면 useSaleDay는 false, 그 외에는 true
+    const allDaysSelected = selectedDays.length === DAYS.length;
+    const useSaleDay = !(allDaysSelected && isSaleOnHoliday);
 
     try {
       if (isEdit) {
@@ -159,10 +167,11 @@ export const CategoryManageModal = ({
           isStaffCall,
           categoryDescription,
           selectedLanguageCode,
+          useSaleDay,
+          useSaleTime,
         };
         await updateCategoryMutation.mutateAsync(updateData);
       } else {
-        // 생성 모드
         await createCategoryMutation.mutateAsync({
           shopSeq,
           categoryName,
@@ -179,11 +188,13 @@ export const CategoryManageModal = ({
           categoryDescription: categoryDescription || undefined,
           isFirstOrderRequired: false,
           selectedLanguageCode: selectedLanguageCode || undefined,
+          useSaleDay,
+          useSaleTime,
         });
       }
       onClose();
-    } catch (_error) {
-      // 에러는 interceptor에서 처리됨
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -240,7 +251,7 @@ export const CategoryManageModal = ({
             <div>
               <S.SubTitle>판매 요일</S.SubTitle>
               <S.DayList>
-                {days.map((day) => (
+                {DAYS.map((day) => (
                   <li key={day.value}>
                     <BasicButton
                       variant={
@@ -297,14 +308,24 @@ export const CategoryManageModal = ({
                 >
                   <p>2열 배치(가로 기본형)</p>
                 </CheckButton>
-                <CheckButton
-                  id={TIME_RANGE_SETTING_ID}
-                  checked={isTimeRangeModalOpen}
-                  onChange={(checked) => setIsTimeRangeModalOpen(checked)}
-                  customStyle={S.checkButtonCss}
-                >
-                  <p>판매 시간 설정</p>
-                </CheckButton>
+                <S.TimeRangeWrapper>
+                  <CheckButton
+                    id={TIME_RANGE_SETTING_ID}
+                    checked={useSaleTime}
+                    onChange={(checked) => setUseSaleTime(checked)}
+                    customStyle={S.checkButtonCss}
+                  >
+                    <p>판매 시간 설정</p>
+                  </CheckButton>
+                  <S.TimeRangeContainer>
+                    <S.TimeRangeDisplay
+                      hasValue={!!(saleStartTime && saleEndTime)}
+                      onClick={() => setIsTimeRangeModalOpen(true)}
+                    >
+                      {getDisplayTime()}
+                    </S.TimeRangeDisplay>
+                  </S.TimeRangeContainer>
+                </S.TimeRangeWrapper>
               </S.CheckButtonList>
             </div>
 

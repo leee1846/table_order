@@ -2,8 +2,7 @@ import styled from '@emotion/styled';
 import { css, SerializedStyles } from '@emotion/react';
 import { TYPOGRAPHY } from '../../theme/typography';
 import { colors } from '../../theme/colors';
-import type { ThemeMode } from '../../theme/modeColors';
-import { baseTheme } from '../../';
+import type { Theme } from '@emotion/react/macro';
 
 export type ButtonSize = 'S' | 'M' | 'L' | 'XL' | '2XL';
 
@@ -91,20 +90,11 @@ const getSolidColor = (
   text: string,
   border: string,
   disabled: boolean,
-  themeMode: ThemeMode = 'light'
+  theme: Theme
 ) => {
-  const disabledBg =
-    themeMode === 'dark'
-      ? baseTheme.darkModeColors.grey[200]
-      : colors.grey[200];
-  const disabledText =
-    themeMode === 'dark'
-      ? baseTheme.darkModeColors.grey[500]
-      : colors.grey[500];
-  const disabledBorder =
-    themeMode === 'dark'
-      ? baseTheme.darkModeColors.grey[100]
-      : colors.grey[100];
+  const disabledBg = theme.mode.grey[200];
+  const disabledText = theme.mode.grey[500];
+  const disabledBorder = theme.mode.grey[100];
 
   return css`
     background: ${disabled ? disabledBg : main};
@@ -118,18 +108,11 @@ const getOutlineColor = (
   text: string,
   border: string,
   disabled: boolean,
-  themeMode: ThemeMode = 'light'
+  theme: Theme
 ) => {
-  const disabledBg =
-    themeMode === 'dark' ? baseTheme.darkModeColors.grey[50] : colors.white;
-  const disabledText =
-    themeMode === 'dark'
-      ? baseTheme.darkModeColors.grey[500]
-      : colors.grey[500];
-  const disabledBorder =
-    themeMode === 'dark'
-      ? baseTheme.darkModeColors.grey[500]
-      : colors.grey[500];
+  const disabledBg = theme.mode.white;
+  const disabledText = theme.mode.grey[500];
+  const disabledBorder = theme.mode.grey[500];
 
   return css`
     background: ${disabled ? disabledBg : background};
@@ -141,94 +124,70 @@ const getOutlineColor = (
 type VariantStyleFn = (
   size: ButtonSize,
   disabled: boolean,
-  themeMode?: ThemeMode
+  theme: Theme
 ) => SerializedStyles;
 
 const variantStyles: Record<VariantType, VariantStyleFn> = {
-  Solid_Navy: (size, disabled, themeMode) => css`
+  Solid_Navy: (size, disabled, theme) => css`
     ${sizeStyles[size]}
-    ${getSolidColor(
-      colors.primary[600],
-      colors.white,
-      'none',
-      disabled,
-      themeMode
-    )}
+    ${getSolidColor(colors.primary[600], colors.white, 'none', disabled, theme)}
   `,
-  Solid_Sky_Blue: (size, disabled, themeMode) => css`
+  Solid_Sky_Blue: (size, disabled, theme) => css`
     ${sizeStyles[size]}
     ${getSolidColor(
       colors.primary[100],
       colors.primary[600],
       colors.primary[200],
       disabled,
-      themeMode
+      theme
     )}
   `,
-  Solid_Grey: (size, disabled, themeMode) => css`
+  Solid_Grey: (size, disabled, theme) => css`
     ${sizeStyles[size]}
     ${getSolidColor(
       colors.grey[100],
       colors.grey[800],
       colors.grey[300],
       disabled,
-      themeMode
+      theme
     )}
   `,
-  Outline_Navy: (size, disabled, themeMode) => css`
+  Outline_Navy: (size, disabled, theme) => css`
     ${sizeStyles[size]}
     ${getOutlineColor(
       colors.white,
       colors.primary[600],
       colors.primary[600],
       disabled,
-      themeMode
+      theme
     )}
   `,
-  Outline_Grey: (size, disabled, themeMode) => css`
+  Outline_Grey: (size, disabled, theme) => css`
     ${sizeStyles[size]}
     ${getOutlineColor(
       colors.grey[50],
       colors.grey[700],
       colors.grey[400],
       disabled,
-      themeMode
+      theme
     )}
   `,
-  Solid_Blue: (size, disabled, themeMode) => {
-    const mainColor =
-      themeMode === 'dark'
-        ? baseTheme.darkModeColors.primary[500]
-        : baseTheme.colors.primary[500];
-    const textColor =
-      themeMode === 'dark'
-        ? baseTheme.darkModeColors.background[100]
-        : colors.white;
+  Solid_Blue: (size, disabled, theme) => {
+    const mainColor = theme.mode.primary[500];
+    const textColor = theme.mode.background[100];
 
     return css`
       ${sizeStyles[size]}
-      ${getSolidColor(mainColor, textColor, 'none', disabled, themeMode)}
+      ${getSolidColor(mainColor, textColor, 'none', disabled, theme)}
     `;
   },
-  Outline_Blue: (size, disabled, themeMode) => {
-    const textColor =
-      themeMode === 'dark'
-        ? baseTheme.darkModeColors.primary[500]
-        : colors.primary[500];
-    const borderColor =
-      themeMode === 'dark'
-        ? baseTheme.darkModeColors.primary[500]
-        : colors.primary[500];
+  Outline_Blue: (size, disabled, theme) => {
+    const textColor = theme.mode.primary[500];
+    const borderColor = theme.mode.primary[500];
 
     return css`
       ${sizeStyles[size]}
-      ${getOutlineColor(
-        colors.white,
-        textColor,
-        borderColor,
-        disabled,
-        themeMode
-      )}
+      ${getOutlineColor(colors.white, textColor, borderColor, disabled, theme)}
     `;
   },
 };
@@ -258,7 +217,6 @@ export const ButtonStyle = styled.button<{
   variant: VariantKey;
   disabled: boolean;
   fullWidth?: boolean;
-  themeMode?: ThemeMode;
 }>`
   display: inline-flex;
   align-items: center;
@@ -268,11 +226,11 @@ export const ButtonStyle = styled.button<{
   user-select: none;
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
-  ${({ variant, disabled, theme, themeMode }) => {
+  ${({ variant, disabled, theme }) => {
     const { type, size } = parseVariant(variant);
     if (!variantStyles[type]) {
       return '';
     }
-    return variantStyles[type](size, disabled, themeMode);
+    return variantStyles[type](size, disabled, theme);
   }}
 `;

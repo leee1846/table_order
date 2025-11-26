@@ -69,3 +69,81 @@ export const validateMinute = (value: string): string => {
 export const getCurrentUnixTime = (now: Date = new Date()): number => {
   return Math.floor(now.getTime() / 1000);
 };
+
+/**
+ * 4자리 시간 문자열을 "HH:MM" 형식으로 변환합니다.
+ *
+ * @param timeString - 4자리 시간 문자열 (예: "0900")
+ * @param separator - 시와 분 사이의 구분자 (기본값: ":")
+ * @param defaultValue - 유효하지 않은 값일 때 반환할 기본값 (기본값: "00:00")
+ * @returns 포맷팅된 시간 문자열 (예: "09:00")
+ *
+ * @example
+ * ```ts
+ * formatTimeDisplay('0900') // '09:00'
+ * formatTimeDisplay('1830', ' : ') // '18 : 30'
+ * formatTimeDisplay('123') // '00:00'
+ * formatTimeDisplay('123', ':', '00:00') // '00:00'
+ * ```
+ */
+export const formatTimeDisplay = (
+  timeString: string,
+  separator: string = ':',
+  defaultValue: string = '00:00'
+): string => {
+  if (!timeString || timeString.length !== 4) {
+    return defaultValue;
+  }
+  const hour = timeString.substring(0, 2);
+  const minute = timeString.substring(2, 4);
+  return `${hour}${separator}${minute}`;
+};
+
+/**
+ * 4자리 시간 문자열을 시/분으로 파싱합니다.
+ *
+ * @param timeString - 4자리 시간 문자열 (예: "0900")
+ * @returns 시와 분을 포함한 객체 (예: { hour: "09", minute: "00" })
+ *
+ * @example
+ * ```ts
+ * parseTimeString('0900') // { hour: '09', minute: '00' }
+ * parseTimeString('1830') // { hour: '18', minute: '30' }
+ * parseTimeString('123') // { hour: '', minute: '' }
+ * ```
+ */
+export const parseTimeString = (
+  timeString: string
+): {
+  hour: string;
+  minute: string;
+} => {
+  if (!timeString || timeString.length !== 4) {
+    return { hour: '', minute: '' };
+  }
+  return {
+    hour: timeString.substring(0, 2),
+    minute: timeString.substring(2, 4),
+  };
+};
+
+/**
+ * 시와 분을 4자리 시간 문자열로 포맷팅합니다.
+ *
+ * @param hour - 시 (예: "9" 또는 "09")
+ * @param minute - 분 (예: "0" 또는 "00")
+ * @returns 4자리 시간 문자열 (예: "0900")
+ *
+ * @example
+ * ```ts
+ * formatTimeString('9', '0') // '0900'
+ * formatTimeString('18', '30') // '1830'
+ * formatTimeString('8', '5') // '0805'
+ * ```
+ */
+
+export const formatTimeString = (hour: string, minute: string): string => {
+  const formattedHour = hour.padStart(2, '0');
+  const formattedMinute = minute.padStart(2, '0');
+  return formattedHour + formattedMinute;
+};

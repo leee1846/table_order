@@ -79,5 +79,33 @@ export const CheckButtonList = styled.div`
     color: ${theme.colors.grey[800]};
     white-space: nowrap;
     ${TYPOGRAPHY.ST_2}
+`;
+
+export const TimeRangeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  grid-column: 1 / -1; /* 전체 너비 차지 */
+`;
+
+export const TimeRangeContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  p {
+    margin: 0;
+    color: ${theme.colors.grey[800]};
+    white-space: nowrap;
+    ${TYPOGRAPHY.ST_2}
   }
+`;
+
+export const TimeRangeDisplay = styled.div<{ hasValue: boolean }>`
+  color: ${({ hasValue }) =>
+    hasValue ? theme.colors.grey[800] : theme.colors.grey[400]};
+  cursor: pointer;
+  white-space: nowrap;
+  ${TYPOGRAPHY.ST_2}
+  border-bottom : 1px solid ${theme.colors.grey[400]};
 `;

@@ -15,4 +15,7 @@ export const ENDPOINTS = {
     UPDATE: '/category',
     DELETE: '/category',
   },
+  MENU: {
+    CREATE: '/menu',
+  },
 } as const;

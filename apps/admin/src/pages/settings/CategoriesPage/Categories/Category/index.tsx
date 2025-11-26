@@ -7,6 +7,8 @@ import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryMan
 import type { ICategory } from '@repo/api/types';
 import { useDeleteCategory } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
+import { DAYS } from '@/constants/days';
+import { formatTimeDisplay } from '@repo/util';
 
 interface Props {
   category: ICategory;
@@ -18,6 +20,35 @@ export const Category = ({ category, shopSeq, categoryList }: Props) => {
   const [isCategoryManageModalOpen, setIsCategoryManageModalOpen] =
     useState(false);
   const deleteCategoryMutation = useDeleteCategory();
+
+  // 판매 요일 표시 텍스트 생성
+  const getSaleDayDisplay = (): string | null => {
+    if (!category.saleDayOfWeek || category.saleDayOfWeek.length === 0) {
+      return null;
+    }
+
+    // 모든 요일(0-6)이 선택되어 있고 공휴일도 true면 "매일"
+    const allDaysSelected =
+      category.saleDayOfWeek.length === 7 &&
+      [0, 1, 2, 3, 4, 5, 6].every((day) =>
+        category.saleDayOfWeek?.includes(day)
+      );
+    if (allDaysSelected && category.isSaleOnHoliday) {
+      return '매일';
+    }
+
+    // 선택된 요일의 label들을 가져옴
+    const dayLabels = category.saleDayOfWeek
+      .map((dayValue) => DAYS.find((d) => d.value === dayValue)?.label)
+      .filter((label): label is string => label !== undefined);
+
+    // 공휴일이 true면 "공휴일" 추가
+    if (category.isSaleOnHoliday) {
+      dayLabels.push('공휴일');
+    }
+
+    return dayLabels.length > 0 ? dayLabels.join(', ') : null;
+  };
 
   const handleDeleteCategory = (categorySeq: number) => {
     openDualActionDialog({
@@ -44,6 +75,8 @@ export const Category = ({ category, shopSeq, categoryList }: Props) => {
     });
   };
 
+  const saleDayDisplay = getSaleDayDisplay();
+
   return (
     <>
       <S.Container>
@@ -69,26 +102,26 @@ export const Category = ({ category, shopSeq, categoryList }: Props) => {
         </S.Header>
 
         <S.Badges>
-          {category.saleStartTime && category.saleEndTime && (
-            <li>
-              <p>판매시간</p>
-              <p>
-                {category.saleStartTime} ~ {category.saleEndTime}
-                {/* TODO: 상시 표시 추가해야함 (24시간 표시) */}
-              </p>
-            </li>
-          )}
+          {category.saleStartTime &&
+            category.saleEndTime &&
+            !(
+              category.saleStartTime === '0000' &&
+              category.saleEndTime === '0000'
+            ) && (
+              <li>
+                <p>판매시간</p>
+                <p>
+                  {formatTimeDisplay(category.saleStartTime)} ~{' '}
+                  {formatTimeDisplay(category.saleEndTime)}
+                  {/* TODO: 상시 표시 추가해야함 (24시간 표시) */}
+                </p>
+              </li>
+            )}
 
-          {category.saleDayOfWeek && category.saleDayOfWeek.length > 0 && (
+          {saleDayDisplay && (
             <li>
               <p>판매 요일</p>
-              <p>{category.saleDayOfWeek?.toString()}</p>
-            </li>
-          )}
-          {category.saleDayOfWeek && category.saleDayOfWeek.length === 7 && (
-            <li>
-              <p>판매 요일</p>
-              <p>매일</p>
+              <p>{saleDayDisplay}</p>
             </li>
           )}
 

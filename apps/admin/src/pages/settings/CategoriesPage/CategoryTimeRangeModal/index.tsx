@@ -4,30 +4,13 @@ import { theme } from '@repo/ui';
 import * as S from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal/categoryTimeRangeModal.style';
 import { useId, useState, useEffect, useCallback } from 'react';
 import type { ICategory } from '@repo/api/types';
+import { parseTimeString, formatTimeString } from '@repo/util';
 
 interface Props {
   onClose: () => void;
   categoryData?: ICategory;
   onTimeChange?: (startTime: string, endTime: string) => void;
 }
-
-// 4자리 시간 문자열을 시/분으로 파싱하는 함수 (예: "0900" -> { hour: "09", minute: "00" })
-const parseTimeString = (timeString: string) => {
-  if (!timeString || timeString.length !== 4) {
-    return { hour: '', minute: '' };
-  }
-  return {
-    hour: timeString.substring(0, 2),
-    minute: timeString.substring(2, 4),
-  };
-};
-
-// 시/분을 4자리 시간 문자열로 포맷팅하는 함수 (예: { hour: "09", minute: "00" } -> "0900")
-const formatTimeString = (hour: string, minute: string) => {
-  const formattedHour = hour.padStart(2, '0');
-  const formattedMinute = minute.padStart(2, '0');
-  return formattedHour + formattedMinute;
-};
 
 export const CategoryTimeRangeModal = ({
   onClose,

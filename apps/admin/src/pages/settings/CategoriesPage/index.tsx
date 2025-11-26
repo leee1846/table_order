@@ -37,7 +37,6 @@ export const CategoriesPage = () => {
           <AddIcon color={theme.colors.grey[700]} />
         </button>
       </S.AddButton>
-
       {/* 카테고리 추가 모달 */}
       {isAddCategoryModalOpen && (
         <CategoryManageModal
