@@ -12,9 +12,14 @@ import { CloseIcon } from '@repo/ui/icons';
 import { useState, useEffect } from 'react';
 import { CategoryTimeRangeModal } from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal';
 import type { ICategory, IUpdateCategoryRequest } from '@repo/api/types';
-import { usePostCreateCategory, usePutUpdateCategory } from '@repo/api/queries';
+import {
+  queryKeys,
+  usePostCreateCategory,
+  usePutUpdateCategory,
+} from '@repo/api/queries';
 import { DAYS } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
+import { useQueryClient } from '@repo/api/tanstack-query';
 
 interface Props {
   onClose: () => void;
@@ -29,6 +34,7 @@ export const CategoryManageModal = ({
   categoryList = [],
 }: Props) => {
   const isEdit = !!categoryData;
+  const queryClient = useQueryClient();
   const createCategoryMutation = usePostCreateCategory();
   const updateCategoryMutation = usePutUpdateCategory();
 
@@ -166,26 +172,29 @@ export const CategoryManageModal = ({
           useSaleTime,
         };
         await updateCategoryMutation.mutateAsync(updateData);
+        queryClient.invalidateQueries({ queryKey: queryKeys.category.list() });
       } else {
         await createCategoryMutation.mutateAsync({
           shopSeq,
           categoryName,
           index: calculateIndex(),
           isHidden: false,
+          mappedCategoryCode: null,
           saleDayOfWeek:
-            saleDayOfWeekNumbers.length > 0 ? saleDayOfWeekNumbers : undefined,
-          saleStartTime: saleStartTime || undefined,
-          saleEndTime: saleEndTime || undefined,
+            saleDayOfWeekNumbers.length > 0 ? saleDayOfWeekNumbers : null,
+          saleStartTime: saleStartTime || null,
+          saleEndTime: saleEndTime || null,
           isSaleOnHoliday,
           useTwoColumnLayout,
           isQuantitySelectable,
           isStaffCall,
-          categoryDescription: categoryDescription || undefined,
+          categoryDescription: categoryDescription || null,
           isFirstOrderRequired: false,
-          selectedLanguageCode: selectedLanguageCode || undefined,
+          selectedLanguageCode: selectedLanguageCode || null,
           useSaleDay,
           useSaleTime,
         });
+        queryClient.invalidateQueries({ queryKey: queryKeys.category.list() });
       }
       onClose();
     } catch (error) {

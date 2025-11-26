@@ -5,10 +5,11 @@ import { ChevronForwardIcon, DeleteIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryManageModal';
 import type { ICategory } from '@repo/api/types';
-import { useDeleteCategory } from '@repo/api/queries';
+import { queryKeys, useDeleteCategory } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { DAYS } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
+import { useQueryClient } from '@repo/api/tanstack-query';
 
 interface Props {
   category: ICategory;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export const Category = ({ category, shopSeq, categoryList }: Props) => {
+  const queryClient = useQueryClient();
   const [isCategoryManageModalOpen, setIsCategoryManageModalOpen] =
     useState(false);
   const deleteCategoryMutation = useDeleteCategory();
@@ -61,6 +63,9 @@ export const Category = ({ category, shopSeq, categoryList }: Props) => {
           { categorySeq },
           {
             onSuccess: () => {
+              queryClient.invalidateQueries({
+                queryKey: queryKeys.category.list(),
+              });
               toast('카테고리가 삭제되었습니다.');
             },
             onError: (error) => {
