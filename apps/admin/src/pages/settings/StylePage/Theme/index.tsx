@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { RadioButton } from '@repo/ui/components';
 import * as S from '@/pages/settings/StylePage/Theme/theme.style';
 import { theme } from '@repo/ui';
@@ -15,7 +15,6 @@ export const Theme = () => {
         <button type="button" onClick={() => setSelectedTheme('light')}>
           <S.ThemeColor backgroundColors={theme.colors.grey[200]} />
           <RadioButton
-            id={`light-theme-${useId()}`}
             value="light"
             onChange={() => setSelectedTheme('light')}
             checked={selectedTheme === 'light'}
@@ -26,7 +25,6 @@ export const Theme = () => {
         <button type="button" onClick={() => setSelectedTheme('dark')}>
           <S.ThemeColor backgroundColors={theme.colors.grey[800]} />
           <RadioButton
-            id={`dark-theme-${useId()}`}
             value="dark"
             onChange={() => setSelectedTheme('dark')}
             checked={selectedTheme === 'dark'}
@@ -39,7 +37,6 @@ export const Theme = () => {
             IMAGE
           </S.ThemeColor>
           <RadioButton
-            id={`image-theme-${useId()}`}
             value="image"
             onChange={() => setSelectedTheme('image')}
             checked={selectedTheme === 'image'}

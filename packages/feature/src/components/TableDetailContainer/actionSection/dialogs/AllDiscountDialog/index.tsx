@@ -42,7 +42,7 @@ export const AllDiscountDialog = ({
   };
 
   const handleApply = () => {
-    let discount ;
+    let discount;
     if (selectedDiscount === 'custom') {
       discount = parseFloat(customDiscount) || 0;
     } else {
@@ -80,7 +80,6 @@ export const AllDiscountDialog = ({
             {DISCOUNT_OPTIONS.map((option) => (
               <div key={option.value}>
                 <RadioButton
-                  id={`discount-${option.value}`}
                   value={option.value}
                   checked={selectedDiscount === option.value}
                   onChange={handleDiscountChange}

@@ -87,7 +87,6 @@ export const MenuDetailWithOptionsModal = ({ onClose }: Props) => {
                   {options.map((option) => (
                     <li key={option}>
                       <RadioButton
-                        id={`option-${1}`}
                         value={option}
                         onChange={() => setIsSelected(option)}
                         checked={isSelected === option}

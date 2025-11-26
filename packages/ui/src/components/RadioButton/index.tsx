@@ -1,8 +1,8 @@
 import { SerializedStyles } from '@emotion/react';
 import * as S from './RadioButton.style';
+import { useId } from 'react';
 
 interface Props {
-  id: string;
   value: string;
   onChange: (value: string) => void;
   checked: boolean;
@@ -12,7 +12,6 @@ interface Props {
 }
 
 export const RadioButton = ({
-  id,
   value,
   onChange,
   checked,
@@ -20,9 +19,11 @@ export const RadioButton = ({
   disabled = false,
   customStyle,
 }: Props) => {
+  const uniqueId = useId();
+
   return (
     <S.Label
-      htmlFor={id}
+      htmlFor={uniqueId}
       checked={checked}
       disabled={disabled}
       css={customStyle}
@@ -30,7 +31,7 @@ export const RadioButton = ({
       <div />
       <input
         type="radio"
-        id={id}
+        id={uniqueId}
         value={value}
         onChange={() => onChange(value)}
         checked={checked}

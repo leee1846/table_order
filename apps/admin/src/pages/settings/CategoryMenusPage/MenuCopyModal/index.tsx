@@ -46,7 +46,6 @@ export const MenuCopyModal = ({ onClose }: Props) => {
           {menuList.map((menu) => (
             <li key={menu.id}>
               <RadioButton
-                id={menu.id.toString()}
                 value={menu.id.toString()}
                 onChange={() => setSelectedMenu(menu.id)}
                 checked={selectedMenu === menu.id}
