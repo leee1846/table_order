@@ -14,6 +14,11 @@ export const MenuSelector = () => {
 
   const [isOptionDetailModalOpen, setIsOptionDetailModalOpen] = useState(false);
 
+  const onClickOptionDetail = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    setIsOptionDetailModalOpen(true);
+  };
+
   return (
     <>
       <S.SelectedMenuContainer>
@@ -41,12 +46,7 @@ export const MenuSelector = () => {
               </CheckButton>
               <S.ButtonRightContainer>
                 <p>{t('{{amount}}원', { amount: 10000 })}</p>
-                <button
-                  type="button"
-                  onClick={() => setIsOptionDetailModalOpen(true)}
-                >
-                  {t('옵션')}
-                </button>
+                <div onClick={onClickOptionDetail}>{t('옵션')}</div>
               </S.ButtonRightContainer>
             </button>
           </S.MenuItem>

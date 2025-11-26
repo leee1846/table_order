@@ -76,7 +76,7 @@ export const ButtonRightContainer = styled.div`
     color: ${({ theme }) => theme.mode.grey[800]};
   }
 
-  & > button {
+  & > div {
     padding: 4px 8px;
     border-radius: 0.5rem;
     background-color: ${({ theme }) => theme.mode.grey[700]};

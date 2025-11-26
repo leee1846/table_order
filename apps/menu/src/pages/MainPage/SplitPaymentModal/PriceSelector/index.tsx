@@ -3,6 +3,7 @@ import { CheckButton, NumberInput } from '@repo/ui/components';
 import { useTranslation } from 'react-i18next';
 import * as S from '@/pages/MainPage/SplitPaymentModal/PriceSelector/priceSelector.style';
 import { useState } from 'react';
+import { PriceChangeKeypad } from '@/pages/MainPage/SplitPaymentModal/PriceSelector/PriceChangeKeypad';
 
 export const PriceSelector = () => {
   const menuList = Array.from(
@@ -16,7 +17,7 @@ export const PriceSelector = () => {
   return (
     <>
       <S.PersonCountContainer>
-        <p>인원수</p>
+        <p>{t('인원수')}</p>
         <NumberInput variant="square" size="M" value={1} onChange={() => {}} />
       </S.PersonCountContainer>
 
@@ -35,16 +36,17 @@ export const PriceSelector = () => {
               >
                 <S.Price>{t('{{amount}}원', { amount: '10000???' })}</S.Price>
               </CheckButton>
-              <S.ChangePriceButton
-                type="button"
-                onClick={() => setIsKeypadOpen(true)}
-              >
-                금액변경
+              <S.ChangePriceButton onClick={() => setIsKeypadOpen(true)}>
+                {t('금액변경')}
               </S.ChangePriceButton>
             </button>
           </S.MenuItem>
         ))}
       </S.MenuList>
+
+      {isKeypadOpen && (
+        <PriceChangeKeypad onClose={() => setIsKeypadOpen(false)} />
+      )}
     </>
   );
 };

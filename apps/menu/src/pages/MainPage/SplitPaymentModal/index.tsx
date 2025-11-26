@@ -57,8 +57,8 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
           </p>
 
           <S.OrderList>
-            {orderList.map((order) => (
-              <li key={`order-${order}`}>
+            {orderList.map((_, index) => (
+              <li key={`order-${index + 1}`}>
                 <S.MenuInfo>
                   <p>메뉴명명명??</p>
                   <p>10000????</p>
@@ -66,8 +66,8 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
                 </S.MenuInfo>
 
                 <S.OptionList>
-                  {optionList.map((option) => (
-                    <li key={`option-${option}`}>
+                  {optionList.map((_, index) => (
+                    <li key={`option-${index + 1}`}>
                       <div>
                         <span />
                         <p>옵션명명명??</p>

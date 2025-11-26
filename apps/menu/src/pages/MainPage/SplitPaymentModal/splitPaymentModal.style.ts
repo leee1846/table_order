@@ -34,7 +34,7 @@ export const ToggleButtonContainer = styled.div`
   padding: 4px;
   border-radius: 62.4rem;
   background-color: ${({ theme }) => theme.mode.grey[200]};
-  margin-bottom: 40px;
+  margin: 24px 0 40px;
 `;
 
 export const ToggleButton = styled.button<{ isActive: boolean }>`

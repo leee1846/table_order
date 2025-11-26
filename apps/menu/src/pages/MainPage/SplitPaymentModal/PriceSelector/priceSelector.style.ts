@@ -56,7 +56,7 @@ export const Price = styled.p`
   text-align: left;
 `;
 
-export const ChangePriceButton = styled.button`
+export const ChangePriceButton = styled.div`
   color: ${({ theme }) => theme.mode.grey[600]};
   ${TYPOGRAPHY.ST_4}
   text-decoration: underline;

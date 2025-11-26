@@ -30,8 +30,8 @@ export const OptionDetailModal = ({ onClose }: Props) => {
           </S.MenuInfo>
 
           <S.OptionList>
-            {optionList.map((option) => (
-              <li key={`option-${option}`}>
+            {optionList.map((_, index) => (
+              <li key={`option-${index + 1}`}>
                 <div>
                   <span />
                   <p>옵션명명명??</p>
