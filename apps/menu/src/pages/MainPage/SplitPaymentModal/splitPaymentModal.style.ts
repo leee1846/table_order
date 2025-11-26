@@ -48,6 +48,49 @@ export const ToggleButton = styled.button<{ isActive: boolean }>`
     isActive ? theme.mode.primary[500] : theme.mode.grey[200]};
 `;
 
+export const SelectorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+`;
+
+export const SelectorTotalContainer = styled.div`
+  flex-shrink: 0;
+  margin: 20px 8px 0;
+  border-top: 1px solid ${({ theme }) => theme.mode.grey[200]};
+  padding-top: 12px;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+`;
+
+export const TotalInfo = styled.div`
+  & > p:first-of-type {
+    ${TYPOGRAPHY.ST_2}
+    color: ${({ theme }) => theme.mode.grey[600]};
+  }
+  & > p:last-of-type {
+    ${TYPOGRAPHY.MT_6}
+    color: ${({ theme }) => theme.mode.grey[700]};
+  }
+`;
+
+export const RemainingAmount = styled.div`
+  & > p:first-of-type {
+    ${TYPOGRAPHY.MT_4}
+    color: ${({ theme }) => theme.mode.grey[900]};
+  }
+  & > p:last-of-type {
+    ${TYPOGRAPHY.MT_4}
+    color: ${({ theme }) => theme.mode.primary[500]};
+  }
+`;
+
 export const RightContainer = styled.div`
   width: 45%;
   height: 100%;

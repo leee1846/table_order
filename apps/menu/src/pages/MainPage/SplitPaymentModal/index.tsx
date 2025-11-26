@@ -2,7 +2,8 @@ import { BasicButton, ModalBackground } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/SplitPaymentModal/splitPaymentModal.style';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MenuSelector } from './MenuSelector';
+import { MenuSelector } from '@/pages/MainPage/SplitPaymentModal/MenuSelector';
+import { PriceSelector } from '@/pages/MainPage/SplitPaymentModal/PriceSelector';
 
 interface Props {
   onClose: () => void;
@@ -33,7 +34,21 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
             </S.ToggleButton>
           </S.ToggleButtonContainer>
 
-          {isMenuSplit && <MenuSelector />}
+          <S.SelectorContainer>
+            {isMenuSplit && <MenuSelector />}
+            {!isMenuSplit && <PriceSelector />}
+
+            <S.SelectorTotalContainer>
+              <S.TotalInfo>
+                <p>{t('총 결제금액')}</p>
+                <p>{t('{{amount}}원', { amount: 10000 })}</p>
+              </S.TotalInfo>
+              <S.RemainingAmount>
+                <p>{t('남은 결제 금액')}</p>
+                <p>{t('{{amount}}원', { amount: 10000 })}</p>
+              </S.RemainingAmount>
+            </S.SelectorTotalContainer>
+          </S.SelectorContainer>
         </S.LeftContainer>
 
         <S.RightContainer>

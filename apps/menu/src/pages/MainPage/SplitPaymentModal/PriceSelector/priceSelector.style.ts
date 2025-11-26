@@ -1,28 +1,6 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
 
-export const SelectedMenuContainer = styled.div`
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-
-  & > p {
-    color: ${({ theme }) => theme.mode.grey[700]};
-
-    & > span {
-      color: ${({ theme }) => theme.mode.semantic[400]};
-    }
-  }
-  & > p:first-of-type {
-    ${TYPOGRAPHY.MT_6}
-  }
-  & > p:last-of-type {
-    ${TYPOGRAPHY.MT_7}
-  }
-`;
-
 export const MenuList = styled.ul`
   flex: 1;
   overflow-y: auto;
@@ -30,6 +8,18 @@ export const MenuList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 16px;
+`;
+
+export const PersonCountContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  & > p {
+    ${TYPOGRAPHY.MT_6}
+    color: ${({ theme }) => theme.mode.grey[700]};
+  }
 `;
 
 export const MenuItem = styled.li<{ isSelected: boolean }>`
@@ -55,7 +45,7 @@ export const MenuItem = styled.li<{ isSelected: boolean }>`
   }
 `;
 
-export const MenuName = styled.p`
+export const Price = styled.p`
   ${TYPOGRAPHY.MT_7}
   color: ${({ theme }) => theme.mode.grey[800]};
   overflow: hidden;
@@ -66,21 +56,8 @@ export const MenuName = styled.p`
   text-align: left;
 `;
 
-export const ButtonRightContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 28px;
-
-  & > p {
-    ${TYPOGRAPHY.MT_7}
-    color: ${({ theme }) => theme.mode.grey[800]};
-  }
-
-  & > button {
-    padding: 4px 8px;
-    border-radius: 0.5rem;
-    background-color: ${({ theme }) => theme.mode.grey[700]};
-    color: ${({ theme }) => theme.mode.grey[200]};
-    ${TYPOGRAPHY.BD_1}
-  }
+export const ChangePriceButton = styled.button`
+  color: ${({ theme }) => theme.mode.grey[600]};
+  ${TYPOGRAPHY.ST_4}
+  text-decoration: underline;
 `;
