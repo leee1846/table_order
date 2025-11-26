@@ -46,3 +46,4 @@ export { default as apronIcon } from './apron.png';
 export { default as cardIcon } from './cardIcon.svg';
 export { default as currencyIcon } from './currencyIcon.svg';
 export { default as splitIcon } from './splitIcon.svg';
+export { default as clockIcon } from './clock.svg';
