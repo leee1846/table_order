@@ -21,7 +21,9 @@ export const darkModeColors = {
     900: '#D8E0E8',
   },
   primary: {
+    100: '#03071F',
     300: '#000B54',
+    400: '#8FA2FF',
     500: '#6F91FF',
   },
   semantic: {

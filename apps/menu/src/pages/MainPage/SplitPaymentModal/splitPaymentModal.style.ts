@@ -2,9 +2,9 @@ import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.div`
-  width: 60rem;
+  width: 71.25rem;
   max-width: calc(100vw - 2rem);
-  height: 40rem;
+  height: 43.75rem;
   max-height: calc(100vh - 2rem);
   display: flex;
   background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
@@ -13,63 +13,56 @@ export const Container = styled.div`
 `;
 
 export const LeftContainer = styled.div`
-  width: 50%;
+  width: 55%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   background-color: ${({ theme }) => theme.mode.grey[50]};
-
-  & > img {
-    width: 12.5rem;
-    height: 12.5rem;
-    margin-bottom: 12px;
-  }
+  padding: 30px;
 
   & > p {
-    ${TYPOGRAPHY.ST_2}
-    color: ${({ theme }) => theme.mode.grey[600]};
+    ${TYPOGRAPHY.MT_1}
+    color: ${({ theme }) => theme.mode.undefined_palette[400]};
   }
+`;
 
-  & > p:first-of-type {
-    font-size: 36px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 46px; /* 127.778% */
-    letter-spacing: -0.9px;
-    margin-bottom: 16px;
-    color: ${({ theme }) => theme.mode.undefined_palette[300]};
-  }
+export const ToggleButtonContainer = styled.div`
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 62.4rem;
+  background-color: ${({ theme }) => theme.mode.grey[200]};
+  margin-bottom: 40px;
+`;
+
+export const ToggleButton = styled.button<{ isActive: boolean }>`
+  width: 10.21875rem;
+  height: 3.125rem;
+  ${TYPOGRAPHY.ST_1}
+  border-radius: 62.4rem;
+  color: ${({ isActive, theme }) =>
+    isActive ? theme.mode.undefined_palette[100] : theme.mode.grey[700]};
+  background-color: ${({ isActive, theme }) =>
+    isActive ? theme.mode.primary[500] : theme.mode.grey[200]};
 `;
 
 export const RightContainer = styled.div`
-  width: 50%;
+  width: 45%;
   height: 100%;
-  padding: 15.63px 12.5px;
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
-  min-height: 0;
-`;
+  padding: 24px;
 
-export const Title = styled.p`
-  ${TYPOGRAPHY.MT_4}
-  color: ${({ theme }) => theme.mode.undefined_palette[400]};
-  margin-bottom: 12px;
-`;
-
-export const Date = styled.p`
-  text-align: right;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: -0.45px;
-  color: ${({ theme }) => theme.mode.grey[600]};
-  padding-bottom: 24px;
-  border-bottom: 1px solid ${({ theme }) => theme.mode.grey[200]};
-  margin-bottom: 16px;
+  & > p {
+    ${TYPOGRAPHY.MT_4}
+    color: ${({ theme }) => theme.mode.grey[900]};
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid ${({ theme }) => theme.mode.grey[200]};
+  }
 `;
 
 export const OrderList = styled.ul`
@@ -151,24 +144,10 @@ export const OptionList = styled.ul`
 
 export const TotalContainer = styled.div`
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  width: 100%;
+  padding-top: 16px;
 
-  & > div {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid ${({ theme }) => theme.mode.grey[200]};
-    padding: 28px 8px 0;
-
-    & > p:first-of-type {
-      ${TYPOGRAPHY.MT_7}
-      color: ${({ theme }) => theme.mode.grey[700]};
-    }
-    & > p:last-of-type {
-      ${TYPOGRAPHY.MT_2}
-      color: ${({ theme }) => theme.mode.primary[500]};
-    }
+  & > button {
+    width: 100%;
   }
 `;

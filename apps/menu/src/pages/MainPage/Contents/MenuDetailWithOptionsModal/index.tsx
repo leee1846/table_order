@@ -99,7 +99,6 @@ export const MenuDetailWithOptionsModal = ({ onClose }: Props) => {
                   {options.map((option) => (
                     <li key={option}>
                       <CheckButton
-                        id={`option-${1}`}
                         checked={isSelected === option}
                         onChange={() => setIsSelected(option)}
                         customStyle={css`

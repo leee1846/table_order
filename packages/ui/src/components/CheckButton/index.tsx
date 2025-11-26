@@ -9,7 +9,7 @@ export type TVariant = 'square' | 'round';
 interface Props {
   variant?: TVariant;
   checked: boolean;
-  onChange: (checked: boolean) => void;
+  onChange?: (checked: boolean) => void;
   disabled?: boolean;
   children: React.ReactNode;
   customStyle?: SerializedStyles;
@@ -18,7 +18,9 @@ interface Props {
 export const CheckButton = ({
   variant = 'square',
   checked,
-  onChange,
+  onChange = () => {
+    /**noop*/
+  },
   disabled = false,
   children,
   customStyle,
