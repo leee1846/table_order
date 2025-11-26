@@ -11,6 +11,7 @@
     "./function": "./src/function/index.ts",
     "./string": "./src/string/index.ts",
     "./time": "./src/time/index.ts",
+    "./timerManager": "./src/timerManager/index.ts",
     "./package.json": "./package.json"
   },
   "scripts": {
