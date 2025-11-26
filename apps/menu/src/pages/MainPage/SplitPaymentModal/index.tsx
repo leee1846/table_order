@@ -10,10 +10,8 @@ interface Props {
 export const SplitPaymentModal = ({ onClose }: Props) => {
   const { t } = useTranslation();
   const [isMenuSplit, setIsMenuSplit] = useState(true);
-  const orderList = Array.from(
-    { length: 4 },
-    (_, index) => `order-${index + 1}`
-  );
+  const orderList = Array.from({ length: 4 });
+  const optionList = Array.from({ length: 4 });
 
   return (
     <ModalBackground onClick={onClose}>
@@ -45,7 +43,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
           <S.OrderList>
             {orderList.map((order) => (
-              <li key={order}>
+              <li key={`order-${order}`}>
                 <S.MenuInfo>
                   <p>메뉴명명명??</p>
                   <p>10000????</p>
@@ -53,39 +51,19 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
                 </S.MenuInfo>
 
                 <S.OptionList>
-                  <li>
-                    <div>
-                      <span />
-                      <p>옵션명명명??</p>
-                    </div>
+                  {optionList.map((option) => (
+                    <li key={`option-${option}`}>
+                      <div>
+                        <span />
+                        <p>옵션명명명??</p>
+                      </div>
 
-                    <div>
-                      <p>10000????</p>
-                      <p>10000????</p>
-                    </div>
-                  </li>
-                  <li>
-                    <div>
-                      <span />
-                      <p>옵션명명명??</p>
-                    </div>
-
-                    <div>
-                      <p>10000????</p>
-                      <p>10000????</p>
-                    </div>
-                  </li>
-                  <li>
-                    <div>
-                      <span />
-                      <p>옵션명명명??</p>
-                    </div>
-
-                    <div>
-                      <p>10000????</p>
-                      <p>10000????</p>
-                    </div>
-                  </li>
+                      <div>
+                        <p>10000????</p>
+                        <p>10000????</p>
+                      </div>
+                    </li>
+                  ))}
                 </S.OptionList>
               </li>
             ))}
