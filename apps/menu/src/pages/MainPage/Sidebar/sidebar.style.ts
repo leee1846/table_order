@@ -8,10 +8,7 @@ export const Container = styled.aside`
   left: 0;
   width: 13.125rem;
   height: calc(100vh - 4.75rem);
-  background-color: ${({ theme }) =>
-    theme.themeMode === 'dark'
-      ? baseTheme.darkModeColors.grey[50]
-      : baseTheme.darkModeColors.grey[100]};
+  background-color: ${({ theme }) => theme.mode.undefined_palette[600]};
   padding: 20px 0 130px;
   display: flex;
   flex-direction: column;
@@ -24,19 +21,18 @@ const getBackgroundColor = (theme: Theme, isActive: boolean) => {
     return baseTheme.darkModeColors.background[100];
   }
 
-  if (theme.themeMode === 'dark') {
-    return baseTheme.darkModeColors.grey[50];
-  }
-
-  return baseTheme.darkModeColors.grey[100];
+  return theme.mode.undefined_palette[600];
 };
 
 export const CategoryButton = styled.button<{
   isActive: boolean;
 }>`
   padding: 14px 20px 14px 30px;
+  text-align: left;
   background-color: ${({ isActive, theme }) =>
-    getBackgroundColor(theme, isActive)};
+    isActive
+      ? baseTheme.darkModeColors.background[100]
+      : theme.mode.undefined_palette[600]};
   color: ${({ isActive }) =>
     isActive
       ? baseTheme.colors.primary[500]
@@ -45,7 +41,6 @@ export const CategoryButton = styled.button<{
     ${({ isActive }) =>
       isActive ? baseTheme.colors.primary[500] : 'transparent'};
   ${TYPOGRAPHY.MT_5}
-  text-align: left;
 `;
 
 export const StaffCall = styled.div`
@@ -54,10 +49,7 @@ export const StaffCall = styled.div`
   left: 0;
   width: 13.125rem;
   padding: 20px 12px 40px;
-  background-color: ${({ theme }) =>
-    theme.themeMode === 'dark'
-      ? baseTheme.darkModeColors.grey[50]
-      : baseTheme.darkModeColors.grey[100]};
+  background-color: ${({ theme }) => theme.mode.undefined_palette[600]};
 
   & > button {
     width: 100%;

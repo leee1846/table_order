@@ -1,8 +1,6 @@
 import styled from '@emotion/styled';
-import { css, SerializedStyles } from '@emotion/react';
+import { css, SerializedStyles, Theme } from '@emotion/react';
 import { TVariant } from './index';
-import { ThemeMode } from '../../theme/modeColors';
-import { baseTheme } from '../../index';
 
 interface Props {
   checked: boolean;
@@ -14,71 +12,50 @@ interface Props {
 const getBorderColor = (
   checked: boolean,
   disabled: boolean,
-  mode: ThemeMode
+  theme: Theme
 ): string => {
   if (disabled) {
     if (checked) {
-      if (mode === 'dark') {
-        return baseTheme.darkModeColors.primary[300];
-      }
-      return baseTheme.colors.primary[300];
+      return theme.mode.primary[300];
     }
 
-    if (mode === 'dark') {
-      return baseTheme.darkModeColors.grey[200];
-    }
-    return baseTheme.colors.grey[200];
+    return theme.mode.grey[200];
   }
 
   if (checked) {
-    if (mode === 'dark') {
-      return baseTheme.darkModeColors.primary[500];
-    }
-    return baseTheme.colors.primary[500];
+    return theme.mode.primary[500];
   }
 
-  if (mode === 'dark') {
-    return baseTheme.darkModeColors.grey[400];
-  }
-  return baseTheme.colors.grey[400];
+  return theme.mode.grey[400];
 };
 
 const getBackgroundColor = (
   checked: boolean,
   disabled: boolean,
-  mode: ThemeMode
+  theme: Theme
 ): string => {
   if (disabled) {
     if (checked) {
-      if (mode === 'dark') {
-        return baseTheme.darkModeColors.primary[300];
-      }
-      return baseTheme.colors.primary[300];
+      return theme.mode.primary[300];
     }
 
-    if (mode === 'dark') {
-      return baseTheme.darkModeColors.grey[200];
-    }
-    return baseTheme.colors.grey[200];
+    return theme.mode.grey[200];
   }
 
   if (checked) {
-    if (mode === 'dark') {
-      return baseTheme.darkModeColors.primary[500];
-    }
-    return baseTheme.colors.primary[500];
+    return theme.mode.primary[500];
   }
 
-  return baseTheme.colors.white;
+  return theme.colors.white;
 };
 
 const getCheckButtonStyles = (
   checked: boolean,
   disabled: boolean,
-  mode: ThemeMode
+  theme: Theme
 ) => {
-  const borderColor = getBorderColor(checked, disabled, mode);
-  const backgroundColor = getBackgroundColor(checked, disabled, mode);
+  const borderColor = getBorderColor(checked, disabled, theme);
+  const backgroundColor = getBackgroundColor(checked, disabled, theme);
 
   return css`
     background-color: ${backgroundColor};
@@ -102,7 +79,7 @@ export const Label = styled.label<Props>`
     height: 1.125rem;
     border-radius: ${({ variant }) => (variant === 'round' ? '50%' : '6px')};
     ${({ checked, disabled, theme }) =>
-      getCheckButtonStyles(checked, disabled, theme.themeMode)}
+      getCheckButtonStyles(checked, disabled, theme)}
   }
 
   & > input {

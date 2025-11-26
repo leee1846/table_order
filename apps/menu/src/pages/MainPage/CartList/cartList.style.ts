@@ -204,9 +204,5 @@ export const DeleteButton = styled.button`
   justify-content: center;
   border-radius: 0.75rem;
   background-color: ${({ theme }) => theme.mode.grey[100]};
-  border: 1px solid
-    ${({ theme }) =>
-      theme.themeMode === 'dark'
-        ? theme.darkModeColors.grey[300]
-        : theme.colors.grey[300]};
+  border: 1px solid ${({ theme }) => theme.mode.grey[300]};
 `;

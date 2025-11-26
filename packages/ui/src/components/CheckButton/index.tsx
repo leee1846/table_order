@@ -1,7 +1,7 @@
-import { SerializedStyles, useTheme } from '@emotion/react';
+import { SerializedStyles } from '@emotion/react';
 import * as S from './checkButton.style';
 import CheckIcon from '../../icons/CheckIcon';
-import { colors } from '../../theme/colors';
+import { useThemeMode } from '../../hooks/useThemeMode';
 
 export type TVariant = 'square' | 'round';
 
@@ -24,7 +24,7 @@ export const CheckButton = ({
   children,
   customStyle,
 }: Props) => {
-  const { themeMode } = useTheme();
+  const { theme } = useThemeMode();
 
   return (
     <S.Label
@@ -37,9 +37,9 @@ export const CheckButton = ({
       <div>
         {checked && (
           <CheckIcon
-            color={themeMode === 'dark' ? colors.black : colors.white}
             width={18}
             height={18}
+            color={theme.mode.undefined_palette[700]}
           />
         )}
       </div>

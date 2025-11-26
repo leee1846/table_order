@@ -46,4 +46,17 @@ export const colors = {
     700: '#911120', // R145 G17  B32
     800: '#5E0512', // R94  G5   B18
   },
+
+  // 디자인 시스템에 정의되지 않은 라이트/다크 테마 컬러
+  undefined_palette: {
+    100: '#ffffff', // white
+    200: '#ffffff', // white
+    300: '#000000', // black
+    400: '#000000', // black
+    500: '#DDE1FF', // primary[200]
+    600: '#424951', // darkModeColors.grey[100]
+    700: '#ffffff', // white
+    800: '#F8F9FA', // grey[50]
+    900: '#F8F9FA', // grey[50]
+  },
 } as const;

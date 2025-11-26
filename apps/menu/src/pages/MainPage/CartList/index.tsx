@@ -4,7 +4,7 @@ import { BasicButton, NumberInput } from '@repo/ui/components';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { DeleteIcon, EmptedCartIcon } from '@repo/ui/icons';
-import { theme, useThemeMode } from '@repo/ui';
+import { useThemeMode } from '@repo/ui';
 import { openDualActionDialog } from '@repo/feature/utils';
 
 const hasOptions = false;
@@ -16,7 +16,7 @@ interface Props {
 }
 export const CartList = ({ onClose, openPaymentsModal }: Props) => {
   const { t } = useTranslation();
-  const { mode } = useThemeMode();
+  const { theme } = useThemeMode();
 
   const [quantity, setQuantity] = useState(1);
 
@@ -45,7 +45,7 @@ export const CartList = ({ onClose, openPaymentsModal }: Props) => {
         <S.OrderList>
           {menuList.length < 1 && (
             <S.NoContent>
-              <EmptedCartIcon mode={mode} width={52} height={52} />
+              <EmptedCartIcon theme={theme} width={52} height={52} />
               <p>{t('현재 담긴 메뉴가 없어요.')}</p>
             </S.NoContent>
           )}
@@ -78,13 +78,7 @@ export const CartList = ({ onClose, openPaymentsModal }: Props) => {
 
               <S.ButtonContainer>
                 <S.DeleteButton onClick={() => {}}>
-                  <DeleteIcon
-                    color={
-                      mode === 'dark'
-                        ? theme.darkModeColors.grey[600]
-                        : theme.colors.grey[600]
-                    }
-                  />
+                  <DeleteIcon color={theme.mode.grey[600]} />
                 </S.DeleteButton>
                 <NumberInput
                   variant="square"

@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { css } from '@emotion/react';
 import * as S from './menuDetailWithOptionsModal.style';
 import { useTranslation } from 'react-i18next';
+import { useThemeMode } from '@repo/ui';
 
 const options = Array.from({ length: 4 }, (_, index) => `option-${index + 1}`);
 const optionGroups = Array.from(
@@ -33,6 +34,7 @@ interface Props {
 
 export const MenuDetailWithOptionsModal = ({ onClose }: Props) => {
   const { t } = useTranslation();
+  const { theme } = useThemeMode();
 
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -45,7 +47,7 @@ export const MenuDetailWithOptionsModal = ({ onClose }: Props) => {
     <ModalBackground onClick={onClose}>
       <S.Container>
         <S.CloseButton type="button" onClick={onClose}>
-          <CloseIcon width={32} height={32} color="black" />
+          <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
         </S.CloseButton>
 
         <S.MenuInfoContainer>

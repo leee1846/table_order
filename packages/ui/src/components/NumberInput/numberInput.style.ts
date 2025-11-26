@@ -45,10 +45,7 @@ const getBackgroundColor = (
     return baseTheme.colors.grey[300];
   }
 
-  if (theme.themeMode === 'dark') {
-    return baseTheme.darkModeColors.background[100];
-  }
-  return baseTheme.colors.white;
+  return theme.mode.undefined_palette[100];
 };
 
 const getBorderColor = (
@@ -59,10 +56,7 @@ const getBorderColor = (
   if (isRoundedActive(variant, value)) {
     return baseTheme.colors.primary[500];
   }
-  if (theme.themeMode === 'dark') {
-    return baseTheme.darkModeColors.grey[300];
-  }
-  return baseTheme.colors.grey[300];
+  return theme.mode.grey[300];
 };
 
 const getTextColor = (
@@ -86,16 +80,13 @@ const getFocusBackgroundColor = (
   theme: Theme
 ): string => {
   if (disabled) {
-    return theme.themeMode === 'dark'
-      ? baseTheme.darkModeColors.grey[300]
-      : colors.grey[50];
+    return theme.mode.undefined_palette[800];
   }
   if (variant === 'rounded') {
     return colors.primary[500];
   }
-  return theme.themeMode === 'dark'
-    ? baseTheme.darkModeColors.background[100]
-    : colors.grey[50];
+
+  return theme.mode.undefined_palette[900];
 };
 
 const getFocusTextColor = (
@@ -123,9 +114,7 @@ const getFocusIconColor = (
   if (variant === 'rounded') {
     return colors.white;
   }
-  return theme.themeMode === 'dark'
-    ? baseTheme.darkModeColors.grey[800]
-    : colors.grey[800];
+  return theme.mode.grey[800];
 };
 
 export const Container = styled.div<Props>`

@@ -268,7 +268,7 @@ export const ButtonStyle = styled.button<{
   user-select: none;
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
-  ${({ variant, disabled, themeMode }) => {
+  ${({ variant, disabled, theme, themeMode }) => {
     const { type, size } = parseVariant(variant);
     if (!variantStyles[type]) {
       return '';

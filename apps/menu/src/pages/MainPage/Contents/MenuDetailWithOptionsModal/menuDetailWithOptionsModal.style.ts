@@ -7,10 +7,7 @@ export const Container = styled.div`
   max-width: calc(100vw - 2rem);
   height: 700px;
   max-height: calc(100vh - 2rem);
-  background-color: ${({ theme }) =>
-    theme.themeMode === 'dark'
-      ? theme.darkModeColors.background[100]
-      : theme.colors.white};
+  background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
   display: flex;
   border-radius: 1.25rem;
 `;
@@ -143,10 +140,7 @@ export const SelectedOptionsContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 24px 24px 40px;
-  background-color: ${({ theme }) =>
-    theme.themeMode === 'dark'
-      ? theme.darkModeColors.background[100]
-      : theme.colors.white};
+  background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
   min-height: 0;
 `;
 

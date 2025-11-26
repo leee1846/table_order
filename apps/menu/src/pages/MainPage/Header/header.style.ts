@@ -12,10 +12,7 @@ export const Header = styled.header`
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background-color: ${({ theme }) =>
-    theme.themeMode === 'dark'
-      ? baseTheme.darkModeColors.grey[50]
-      : baseTheme.darkModeColors.white};
+  background-color: ${({ theme }) => theme.mode.undefined_palette[200]};
   border-bottom: 1px solid ${({ theme }) => theme.mode.grey[200]};
   z-index: ${({ theme }) => theme.zIndex.base};
 `;

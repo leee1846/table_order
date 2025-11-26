@@ -1,8 +1,10 @@
 import { createContext, useState, useEffect, type ReactNode } from 'react';
 import type { ThemeMode } from '../theme/modeColors';
+import { createTheme, type Theme } from '../index';
 
 export interface ThemeModeContextValue {
   mode: ThemeMode;
+  theme: Theme;
   toggleMode: () => void;
   setMode: (mode: ThemeMode) => void;
 }
@@ -38,10 +40,11 @@ interface ThemeModeProviderProps {
 /**
  * 테마 모드 Provider 컴포넌트
  * 테마 모드 상태를 관리하고 localStorage에 저장
+ * theme 객체를 제공하여 컴포넌트에서 theme.mode.grey[200] 같은 방식으로 사용 가능
  *
  * @example
  * ```tsx
- * import { ThemeModeProvider } from '@repo/ui';
+ * import { ThemeModeProvider, useThemeMode } from '@repo/ui';
  *
  * function App() {
  *   return (
@@ -49,6 +52,11 @@ interface ThemeModeProviderProps {
  *       <YourApp />
  *     </ThemeModeProvider>
  *   );
+ * }
+ *
+ * function Component() {
+ *   const { theme } = useThemeMode();
+ *   const color = theme.mode.grey[200]; // 다크모드/라이트모드에 따라 자동 변경
  * }
  * ```
  */
@@ -75,8 +83,12 @@ export const ThemeModeProvider = ({
     setModeState(newMode);
   };
 
+  // mode에 따라 theme 생성
+  const theme = createTheme(mode);
+
   const value = {
     mode,
+    theme,
     toggleMode,
     setMode,
   };

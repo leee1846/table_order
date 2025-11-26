@@ -7,10 +7,7 @@ export const Container = styled.div`
   height: 40rem;
   max-height: calc(100vh - 2rem);
   display: flex;
-  background-color: ${({ theme }) =>
-    theme.themeMode === 'dark'
-      ? theme.darkModeColors.background[100]
-      : theme.colors.white};
+  background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
   border-radius: 1.25rem;
   overflow: hidden;
 `;
@@ -42,10 +39,7 @@ export const LeftContainer = styled.div`
     line-height: 46px; /* 127.778% */
     letter-spacing: -0.9px;
     margin-bottom: 16px;
-    color: ${({ theme }) =>
-      theme.themeMode === 'dark'
-        ? theme.darkModeColors.grey[900]
-        : theme.colors.black};
+    color: ${({ theme }) => theme.mode.undefined_palette[300]};
   }
 `;
 
@@ -55,17 +49,13 @@ export const RightContainer = styled.div`
   padding: 15.63px 12.5px;
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) =>
-    theme.themeMode === 'dark'
-      ? theme.darkModeColors.background[100]
-      : theme.colors.white};
+  background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
   min-height: 0;
 `;
 
 export const Title = styled.p`
   ${TYPOGRAPHY.MT_4}
-  color: ${({ theme }) =>
-    theme.themeMode === 'dark' ? theme.colors.white : theme.colors.black};
+  color: ${({ theme }) => theme.mode.undefined_palette[400]};
   margin-bottom: 12px;
 `;
 

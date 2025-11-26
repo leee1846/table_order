@@ -21,34 +21,24 @@ export const darkModeColors = {
     900: '#D8E0E8',
   },
   primary: {
-    100: 'red',
-    200: 'red',
     300: '#000B54',
-    400: 'red',
     500: '#6F91FF',
-    600: 'red',
-    700: 'red',
-    800: 'red',
-  },
-  secondary: {
-    100: 'red',
-    200: 'red',
-    300: 'red',
-    400: 'red',
-    500: 'red',
-    600: 'red',
-    700: 'red',
-    800: 'red',
   },
   semantic: {
-    100: 'red',
-    200: 'red',
-    300: 'red',
     400: '#FF6675',
-    500: 'red',
-    600: 'red',
-    700: 'red',
-    800: 'red',
+  },
+
+  // 디자인 시스템에 정의되지 않은 라이트/다크 테마 컬러
+  undefined_palette: {
+    100: '#0D0D0D', // background/dark
+    200: '#303438', // grey[50]
+    300: '#D8E0E8', // grey[900]
+    400: '#ffffff', // white
+    500: '#525C67', // grey[200]
+    600: '#303438', // grey[50]
+    700: '#000000', // black
+    800: '#67717D', // grey[300]
+    900: '#0D0D0D', // background/dark
   },
 } as const;
 

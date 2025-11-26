@@ -2,7 +2,6 @@ import { RemoveIcon, AddIcon } from '../../icons';
 import * as S from './numberInput.style';
 import { SerializedStyles } from '@emotion/react';
 import { useThemeMode } from '../../hooks/useThemeMode';
-import { baseTheme } from '../../index';
 
 export type TVariant = 'square' | 'rounded';
 
@@ -27,7 +26,7 @@ export const NumberInput = ({
   onChange,
   customStyle,
 }: Props) => {
-  const { mode } = useThemeMode();
+  const { theme } = useThemeMode();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = Number(e.target.value);
@@ -64,30 +63,18 @@ export const NumberInput = ({
 
   const getIconColor = (type: 'remove' | 'add') => {
     if (disabled) {
-      if (mode === 'dark') {
-        return baseTheme.darkModeColors.grey[400];
-      }
-      return baseTheme.colors.grey[400];
+      return theme.mode.grey[400];
     }
 
     if (variant === 'rounded' && value > 0) {
-      if (mode === 'dark') {
-        return baseTheme.darkModeColors.grey[50];
-      }
-      return baseTheme.colors.grey[50];
+      return theme.mode.grey[50];
     }
 
     if (type === 'remove') {
-      if (mode === 'dark') {
-        return baseTheme.darkModeColors.grey[400];
-      }
-      return baseTheme.colors.grey[400];
+      return theme.mode.grey[400];
     }
 
-    if (mode === 'dark') {
-      return baseTheme.darkModeColors.grey[800];
-    }
-    return baseTheme.colors.grey[800];
+    return theme.mode.grey[800];
   };
 
   return (

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { baseTheme, TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.div`
   position: relative;
@@ -34,8 +34,7 @@ export const LeftContainer = styled.div`
 
   & > p {
     ${TYPOGRAPHY.MT_1}
-    color: ${({ theme }) =>
-      theme.themeMode === 'dark' ? theme.colors.white : theme.colors.black};
+    color: ${({ theme }) => theme.mode.undefined_palette[400]};
   }
 `;
 
@@ -77,10 +76,7 @@ export const MenuList = styled.ul`
 
 export const RightContainer = styled.div`
   width: 35%;
-  background-color: ${({ theme }) =>
-    theme.themeMode === 'dark'
-      ? baseTheme.darkModeColors.background[100]
-      : baseTheme.colors.white};
+  background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -150,9 +146,5 @@ export const DeleteButton = styled.button`
   justify-content: center;
   border-radius: 0.75rem;
   background-color: ${({ theme }) => theme.mode.grey[100]};
-  border: 1px solid
-    ${({ theme }) =>
-      theme.themeMode === 'dark'
-        ? theme.darkModeColors.grey[300]
-        : theme.colors.grey[300]};
+  border: 1px solid ${({ theme }) => theme.mode.grey[300]};
 `;

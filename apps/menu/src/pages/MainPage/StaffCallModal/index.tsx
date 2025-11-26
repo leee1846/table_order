@@ -3,7 +3,7 @@ import * as S from '@/pages/MainPage/StaffCallModal/staffCallModal.style';
 import { useTranslation } from 'react-i18next';
 import { CloseIcon, DeleteIcon } from '@repo/ui/icons';
 import { css } from '@emotion/react';
-import { baseTheme, useThemeMode } from '@repo/ui';
+import { useThemeMode } from '@repo/ui';
 
 const menuList = Array.from({ length: 20 });
 const chosenMenuList = Array.from({ length: 30 });
@@ -13,19 +13,13 @@ interface Props {
 }
 export const StaffCallModal = ({ onClose }: Props) => {
   const { t } = useTranslation();
-  const { mode } = useThemeMode();
-
-  const getIconColor = (number: 600 | 700) => {
-    return mode === 'dark'
-      ? baseTheme.darkModeColors.grey[number]
-      : baseTheme.colors.grey[number];
-  };
+  const { theme } = useThemeMode();
 
   return (
     <ModalBackground onClick={onClose}>
       <S.Container>
         <S.CloseButton type="button" onClick={onClose}>
-          <CloseIcon width={32} height={32} color={getIconColor(700)} />
+          <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
         </S.CloseButton>
 
         <S.LeftContainer>
@@ -45,9 +39,9 @@ export const StaffCallModal = ({ onClose }: Props) => {
                     <div>
                       <S.DeleteButton onClick={() => {}}>
                         <DeleteIcon
-                          color={getIconColor(600)}
                           width={20}
                           height={20}
+                          color={theme.mode.grey[600]}
                         />
                       </S.DeleteButton>
                       <NumberInput

@@ -2,15 +2,17 @@ import { MenuIcon } from '@repo/ui/icons';
 import { useTheme } from '@emotion/react';
 import * as S from '@/pages/MainPage/Header/header.style';
 import { useTranslation } from 'react-i18next';
+import { useThemeMode } from '@repo/ui';
 
 export const Header = () => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { toggleMode } = useThemeMode();
 
   return (
     <S.Header>
       <S.LeftContent>
-        <button type="button">
+        <button type="button" onClick={toggleMode}>
           <span>logo버튼 영역</span>
         </button>
         <S.Divider />
