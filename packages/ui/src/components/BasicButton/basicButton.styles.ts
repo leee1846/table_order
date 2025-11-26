@@ -174,7 +174,7 @@ const variantStyles: Record<VariantType, VariantStyleFn> = {
   `,
   Solid_Blue: (size, disabled, theme) => {
     const mainColor = theme.mode.primary[500];
-    const textColor = theme.mode.background[100];
+    const textColor = theme.mode.undefined_palette[900];
 
     return css`
       ${sizeStyles[size]}

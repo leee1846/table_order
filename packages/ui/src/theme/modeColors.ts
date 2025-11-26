@@ -5,9 +5,6 @@ export type ThemeMode = 'light' | 'dark';
 export const darkModeColors = {
   black: '#000000', // #000000
   white: '#ffffff', // #ffffff
-  background: {
-    100: '#0D0D0D',
-  },
   grey: {
     50: '#303438',
     100: '#424951',

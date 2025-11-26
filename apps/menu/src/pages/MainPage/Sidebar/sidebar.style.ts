@@ -22,9 +22,7 @@ export const CategoryButton = styled.button<{
   padding: 14px 20px 14px 30px;
   text-align: left;
   background-color: ${({ isActive, theme }) =>
-    isActive
-      ? theme.mode.undefined_palette[900]
-      : theme.mode.undefined_palette[600]};
+    isActive ? '#0D0D0D' : theme.mode.undefined_palette[600]};
   color: ${({ isActive }) =>
     isActive
       ? baseTheme.colors.primary[500]
