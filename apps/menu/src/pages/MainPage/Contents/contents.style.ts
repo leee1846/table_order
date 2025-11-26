@@ -9,5 +9,5 @@ export const Container = styled.div`
   width: calc(100% - 210px);
   padding: 40px 0 0 40px;
   overflow-y: auto;
-  background-color: ${({ theme }) => theme.mode.background[100]};
+  background-color: ${({ theme }) => theme.mode.undefined_palette[900]};
 `;

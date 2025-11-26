@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { baseTheme, TYPOGRAPHY, type Theme } from '@repo/ui';
+import { baseTheme, TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.aside`
   position: fixed;
@@ -16,14 +16,6 @@ export const Container = styled.aside`
   z-index: ${({ theme }) => theme.zIndex.base};
 `;
 
-const getBackgroundColor = (theme: Theme, isActive: boolean) => {
-  if (isActive) {
-    return baseTheme.darkModeColors.background[100];
-  }
-
-  return theme.mode.undefined_palette[600];
-};
-
 export const CategoryButton = styled.button<{
   isActive: boolean;
 }>`
@@ -31,7 +23,7 @@ export const CategoryButton = styled.button<{
   text-align: left;
   background-color: ${({ isActive, theme }) =>
     isActive
-      ? baseTheme.darkModeColors.background[100]
+      ? theme.mode.undefined_palette[900]
       : theme.mode.undefined_palette[600]};
   color: ${({ isActive }) =>
     isActive
