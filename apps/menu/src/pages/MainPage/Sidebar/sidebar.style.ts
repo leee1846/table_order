@@ -9,7 +9,7 @@ export const Container = styled.aside`
   width: 13.125rem;
   height: calc(100vh - 4.75rem);
   background-color: ${({ theme }) => theme.mode.undefined_palette[600]};
-  padding: 20px 0 130px;
+  padding-top: 20px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -34,12 +34,12 @@ export const CategoryButton = styled.button<{
 `;
 
 export const StaffCall = styled.div`
-  position: fixed;
+  position: sticky;
   bottom: 0;
-  left: 0;
-  width: 13.125rem;
+  width: 100%;
   padding: 20px 12px 40px;
   background-color: ${({ theme }) => theme.mode.undefined_palette[600]};
+  margin-top: auto;
 
   & > button {
     width: 100%;

@@ -1,25 +1,27 @@
-import {
-  SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY,
-  SCROLL_CATEGORY_VISIBLE_EVENT_KEY,
-} from '@/constants/keys';
+import { EVENT_KEYS } from '@/constants/keys';
 import { useState, useEffect, useRef } from 'react';
 import * as S from '@/pages/MainPage/Sidebar/sidebar.style';
 import { CallBellIcon } from '@repo/ui/icons';
 import { baseTheme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { StaffCallModal } from '@/pages/MainPage/StaffCallModal';
-import type { ICategory, TGetCategoryListResponse } from '@repo/api/types';
+import type { ICategory } from '@repo/api/types';
 
 interface Props {
-  categories: TGetCategoryListResponse;
+  categories: ICategory[];
   useScrollLayout: boolean;
 }
 
 export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   const { t } = useTranslation();
+
+  const staffCallCategory = categories.find(
+    (category) => !!category.isStaffCall
+  );
+
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
   const [selectedCategorySeq, setSelectedCategorySeq] = useState(
-    categories.data[0]?.categorySeq || 0
+    categories[0]?.categorySeq || 0
   );
 
   /**
@@ -78,9 +80,12 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
 
     // MenuContent 컴포넌트에서 수신할 커스텀 이벤트 발생
     window.dispatchEvent(
-      new CustomEvent(SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(categorySeq), {
-        detail: { seq: categorySeq },
-      })
+      new CustomEvent(
+        EVENT_KEYS.SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(categorySeq),
+        {
+          detail: { seq: categorySeq },
+        }
+      )
     );
   };
 
@@ -133,9 +138,9 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
     };
 
     // 모든 카테고리에 대한 intersection 이벤트 리스너 등록
-    categories.data.forEach((category) => {
+    categories.forEach((category) => {
       window.addEventListener(
-        SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.categorySeq),
+        EVENT_KEYS.SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.categorySeq),
         handleIntersectionEvent
       );
     });
@@ -148,9 +153,9 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
       }
 
       // 모든 이벤트 리스너 제거
-      categories.data.forEach((category) => {
+      categories.forEach((category) => {
         window.removeEventListener(
-          SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.categorySeq),
+          EVENT_KEYS.SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.categorySeq),
           handleIntersectionEvent
         );
       });
@@ -160,7 +165,7 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   return (
     <>
       <S.Container>
-        {categories.data
+        {categories
           .filter((category) => !category.isHidden)
           .map((category) => (
             <S.CategoryButton
@@ -173,16 +178,18 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
             </S.CategoryButton>
           ))}
 
-        <S.StaffCall>
-          <button type="button" onClick={() => setIsStaffCallModalOpen(true)}>
-            <CallBellIcon
-              color={baseTheme.colors.white}
-              width={30}
-              height={30}
-            />
-            {t('직원 호출')}
-          </button>
-        </S.StaffCall>
+        {staffCallCategory && (
+          <S.StaffCall>
+            <button type="button" onClick={() => setIsStaffCallModalOpen(true)}>
+              <CallBellIcon
+                color={baseTheme.colors.white}
+                width={30}
+                height={30}
+              />
+              {t('직원 호출')}
+            </button>
+          </S.StaffCall>
+        )}
       </S.Container>
 
       {isStaffCallModalOpen && (
