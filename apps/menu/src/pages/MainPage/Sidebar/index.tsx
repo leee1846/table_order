@@ -14,6 +14,11 @@ interface Props {
 
 export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   const { t } = useTranslation();
+
+  const staffCallCategory = categories.find(
+    (category) => !!category.isStaffCall
+  );
+
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
   const [selectedCategorySeq, setSelectedCategorySeq] = useState(
     categories[0]?.categorySeq || 0
@@ -173,16 +178,18 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
             </S.CategoryButton>
           ))}
 
-        <S.StaffCall>
-          <button type="button" onClick={() => setIsStaffCallModalOpen(true)}>
-            <CallBellIcon
-              color={baseTheme.colors.white}
-              width={30}
-              height={30}
-            />
-            {t('직원 호출')}
-          </button>
-        </S.StaffCall>
+        {staffCallCategory && (
+          <S.StaffCall>
+            <button type="button" onClick={() => setIsStaffCallModalOpen(true)}>
+              <CallBellIcon
+                color={baseTheme.colors.white}
+                width={30}
+                height={30}
+              />
+              {t('직원 호출')}
+            </button>
+          </S.StaffCall>
+        )}
       </S.Container>
 
       {isStaffCallModalOpen && (
