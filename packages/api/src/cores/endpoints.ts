@@ -17,5 +17,6 @@ export const ENDPOINTS = {
   },
   MENU: {
     CREATE: '/menu',
+    LIST: '/menu/list',
   },
 } as const;

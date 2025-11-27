@@ -11,7 +11,7 @@ import '@/config/api';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryProvider>
-      <ThemeModeProvider appType="admin">
+      <ThemeModeProvider>
         <DynamicThemeProvider>
           <RouterProvider router={router} />
           <GlobalDialogContainer />

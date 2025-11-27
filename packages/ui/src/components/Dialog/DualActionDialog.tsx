@@ -23,14 +23,14 @@ export const DualActionDialog = ({
   onCancel,
   size,
 }: DualActionDialogProps) => {
-  const { appType } = useThemeMode();
-  const isMenu = appType === 'menu';
+  const { active = false } = useThemeMode();
+  const isMenu = active;
   const hasContent = content != null && content !== '' && content !== false;
-  const primaryButtonVariant =
-    appType === 'admin' ? 'Solid_Navy_2XL' : 'Solid_Blue_2XL';
+  const primaryButtonVariant = active ? 'Solid_Blue_2XL' : 'Solid_Navy_2XL';
 
-  const secondaryButtonVariant =
-    appType === 'admin' ? 'Solid_Sky_Blue_2XL' : 'Outline_Blue_2XL';
+  const secondaryButtonVariant = active
+    ? 'Outline_Blue_2XL'
+    : 'Solid_Sky_Blue_2XL';
   return (
     <Container size={size} isMenu={isMenu}>
       {title && (

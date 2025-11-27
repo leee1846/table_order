@@ -7,7 +7,7 @@ export interface ThemeModeContextValue {
   theme: Theme;
   toggleMode: () => void;
   setMode: (mode: ThemeMode) => void;
-  appType?: 'admin' | 'menu';
+  active?: boolean;
 }
 
 export const ThemeModeContext = createContext<
@@ -36,7 +36,7 @@ const getInitialMode = (): ThemeMode => {
 interface ThemeModeProviderProps {
   children: ReactNode;
   initialMode?: ThemeMode;
-  appType?: 'admin' | 'menu';
+  active?: boolean;
 }
 
 /**
@@ -65,7 +65,7 @@ interface ThemeModeProviderProps {
 export const ThemeModeProvider = ({
   children,
   initialMode,
-  appType,
+  active,
 }: ThemeModeProviderProps) => {
   const [mode, setModeState] = useState<ThemeMode>(
     initialMode ?? getInitialMode
@@ -94,7 +94,7 @@ export const ThemeModeProvider = ({
     theme,
     toggleMode,
     setMode,
-    appType,
+    active,
   };
 
   return (

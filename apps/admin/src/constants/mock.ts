@@ -44,63 +44,6 @@ export const categories = [
   },
 ];
 
-export const menus = [
-  {
-    id: 1,
-    name: '불고기 전골',
-    description:
-      '불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명',
-    price: 10000,
-    image:
-      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop',
-    isBest: true,
-    isNew: true,
-    isSoldOut: false,
-    isHidden: false,
-    spicyLevel: 1,
-  },
-  {
-    id: 2,
-    name: '불고기 전골2',
-    description:
-      '불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명',
-    price: 12000,
-    image:
-      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop',
-    isBest: false,
-    isNew: true,
-    isSoldOut: true,
-    isHidden: true,
-    spicyLevel: 2,
-  },
-  {
-    id: 3,
-    name: '불고기 전골3',
-    description:
-      '불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명',
-    price: 1000000,
-    image:
-      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop',
-    isBest: true,
-    isNew: false,
-    isSoldOut: true,
-    isHidden: false,
-    spicyLevel: 3,
-  },
-  {
-    id: 4,
-    name: '불고기 전골4',
-    description:
-      '불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명불고기 전골 설명',
-    price: 1000000,
-    image: '',
-    isBest: false,
-    isNew: false,
-    isSoldOut: false,
-    isHidden: false,
-    spicyLevel: 0,
-  },
-];
 
 // /tables 페이지 목업 데이터
 export const sampleTables: TableData[] = [

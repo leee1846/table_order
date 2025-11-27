@@ -7,6 +7,7 @@ import {
   MenuDivider,
   ActionButtons,
   ActionButton,
+  toast,
 } from '@repo/ui/components';
 import {
   OrderListDialog,
@@ -69,7 +70,14 @@ export const Sidebar = () => {
 
   return (
     <SidebarContainer>
-      <Logo>
+      <Logo
+        onClick={() => {
+          toast('test', {
+            position: 'top-center',
+            duration: 10000000000000,
+          });
+        }}
+      >
         {/* <img
           src={logoImage} 
           alt="캡스 스마트오더 로고"

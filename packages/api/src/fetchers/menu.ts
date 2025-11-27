@@ -1,6 +1,11 @@
 import { getAxiosInstance } from '../cores/axios';
 import { ENDPOINTS } from '../cores/endpoints';
-import type { ICreateMenuRequest, TCreateMenuResponse } from '../types/menu';
+import type {
+  ICreateMenuRequest,
+  IGetMenuListParams,
+  TCreateMenuResponse,
+  TGetMenuListResponse,
+} from '../types/menu';
 
 export const createMenu = async (
   params: ICreateMenuRequest
@@ -10,6 +15,19 @@ export const createMenu = async (
     method: 'POST',
     url: ENDPOINTS.MENU.CREATE,
     data: params,
+  });
+
+  return response.data;
+};
+
+export const getMenuListByCategory = async (
+  params: IGetMenuListParams
+): Promise<TGetMenuListResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetMenuListResponse>({
+    method: 'GET',
+    url: ENDPOINTS.MENU.LIST,
+    params,
   });
 
   return response.data;

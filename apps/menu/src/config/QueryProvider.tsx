@@ -16,9 +16,9 @@ interface Props {
  */
 function GlobalLoadingIndicator() {
   // 전역 query fetching 상태 확인
-  const isFetching = useIsFetching();
+  const isFetching = useIsFetching(); //get 중이거나
   // 전역 mutation 상태 확인
-  const isMutating = useIsMutating();
+  const isMutating = useIsMutating(); //post, put, delete 중이거나
   // query 또는 mutation 중 하나라도 진행 중이면 loading 표시
   const isLoading = isFetching > 0 || isMutating > 0;
 

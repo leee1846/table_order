@@ -23,13 +23,12 @@ export const LongContentDialog = ({
   onClose,
   size,
 }: LongContentDialogProps) => {
-  const { appType } = useThemeMode();
+  const { active = false } = useThemeMode();
   const handleClose = () => {
     onClose?.();
   };
-  const buttonVariant =
-    appType === 'admin' ? 'Solid_Navy_2XL' : 'Solid_Blue_2XL';
-  const isMenu = appType === 'menu';
+  const buttonVariant = active ? 'Solid_Blue_2XL' : 'Solid_Navy_2XL';
+  const isMenu = active;
   return (
     <Container size={size} isMenu={isMenu}>
       <CloseButton onClick={handleClose} aria-label="닫기">

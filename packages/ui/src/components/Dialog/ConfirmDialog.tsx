@@ -19,10 +19,9 @@ export const ConfirmDialog = ({
   onConfirm,
   size,
 }: ConfirmDialogProps) => {
-  const { appType } = useThemeMode();
-  const isMenu = appType === 'menu';
-  const buttonVariant =
-    appType === 'admin' ? 'Solid_Navy_2XL' : 'Solid_Blue_2XL';
+  const { active = false } = useThemeMode();
+  const isMenu = active;
+  const buttonVariant = active ? 'Solid_Blue_2XL' : 'Solid_Navy_2XL';
 
   return (
     <Container size={size} isMenu={isMenu}>

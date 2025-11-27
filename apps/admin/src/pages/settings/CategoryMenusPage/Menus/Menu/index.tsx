@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { menus } from '@/constants/mock';
+import { useMemo, useState } from 'react';
 import { BasicButton, ToggleButton } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoryMenusPage/Menus/Menu/menu.style';
 import {
@@ -10,34 +9,56 @@ import {
 } from '@repo/ui/icons';
 import { formatCurrency } from '@repo/util/string';
 import { MenuCopyModal } from '@/pages/settings/CategoryMenusPage/MenuCopyModal';
+import type { IMenuListItem } from '@repo/api/types';
 
 interface Props {
-  menu: (typeof menus)[number];
+  menu: IMenuListItem;
 }
 
 export const Menu = ({ menu }: Props) => {
   const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
+
+  const thumbnailSrc = useMemo(() => {
+    if (!menu.menuImageList || menu.menuImageList.length === 0) {
+      return null;
+    }
+
+    const availableImages = menu.menuImageList.filter(
+      (image) => !image.isDeleted && image.imagePath
+    );
+
+    if (availableImages.length === 0) {
+      return null;
+    }
+
+    const mainImage =
+      availableImages.find((image) => image.isMainImage) ?? availableImages[0];
+
+    return mainImage?.imagePath ?? null;
+  }, [menu.menuImageList]);
+
+  const spiceLevel = menu.spiceLevel ?? 0;
 
   return (
     <>
       <S.Container>
         <S.LeftContainer>
           <S.ThumbnailContainer>
-            {menu.image && <img src={menu.image} alt={menu.name} />}
+            {thumbnailSrc && <img src={thumbnailSrc} alt={menu.menuName} />}
           </S.ThumbnailContainer>
           <S.ImagesContainer>
             {menu.isBest && <img src={bestOnIcon} alt="베스트" />}
             {menu.isNew && <img src={newOnIcon} alt="신규" />}
           </S.ImagesContainer>
-          {menu.spicyLevel > 0 && (
+          {spiceLevel > 0 && (
             <S.ChiliContainer>
               <img src={chiliOnIcon} alt="맵기" />
               <img
-                src={menu.spicyLevel > 1 ? chiliOnIcon : chiliOffIcon}
+                src={spiceLevel > 1 ? chiliOnIcon : chiliOffIcon}
                 alt="맵기"
               />
               <img
-                src={menu.spicyLevel > 2 ? chiliOnIcon : chiliOffIcon}
+                src={spiceLevel > 2 ? chiliOnIcon : chiliOffIcon}
                 alt="맵기"
               />
             </S.ChiliContainer>
@@ -47,7 +68,7 @@ export const Menu = ({ menu }: Props) => {
         <S.InfoContainer>
           <div>
             <S.TitleContainer>
-              <span>{menu.name}</span>
+              <span>{menu.menuName}</span>
               <div>
                 <BasicButton
                   variant="Outline_Grey_L"
@@ -60,8 +81,8 @@ export const Menu = ({ menu }: Props) => {
               </div>
             </S.TitleContainer>
 
-            <S.Price>₩{formatCurrency(menu.price)}</S.Price>
-            <S.Description>{menu.description}</S.Description>
+            <S.Price>{formatCurrency(menu.menuPrice)}</S.Price>
+            <S.Description>{menu.menuDescription ?? ''}</S.Description>
           </div>
 
           <S.ToggleContainer>
@@ -79,7 +100,7 @@ export const Menu = ({ menu }: Props) => {
               <span>품절</span>
               <ToggleButton
                 size="M"
-                isOn={menu.isSoldOut}
+                isOn={menu.isOutOfStock}
                 onChange={() => {
                   // noop
                 }}
