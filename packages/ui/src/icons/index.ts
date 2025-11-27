@@ -49,3 +49,5 @@ export { default as splitIcon } from './splitIcon.svg';
 export { default as clockIcon } from './clock.svg';
 export { default as speechBubbleIcon } from './speech_bubble.svg';
 export { default as payAfterIcon } from './pay_after.svg';
+export { default as loadingBlueIcon } from './insider-loading-blue.json';
+export { default as loadingGreyIcon } from './insider-loading-lightGrey.json';

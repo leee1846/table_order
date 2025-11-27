@@ -8,6 +8,11 @@
     "types": ["@emotion/react/types/css-prop"],
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "emotion.d.ts", "../typescript-config/svg.d.ts", "../typescript-config/woff2.d.ts"],
+  "include": [
+    "src/**/*",
+    "emotion.d.ts",
+    "../typescript-config/img.d.ts",
+    "../typescript-config/woff2.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

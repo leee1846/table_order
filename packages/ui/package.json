@@ -35,6 +35,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@repo/util": "workspace:*",
+    "lottie-react": "^2.4.1",
     "sonner": "^2.0.7"
   },
   "peerDependencies": {
