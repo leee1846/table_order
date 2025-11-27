@@ -1,4 +1,4 @@
-import { SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY } from '@/constants/keys';
+import { EVENT_KEYS } from '@/constants/keys';
 import type { TGetCategoryListResponse } from '@repo/api/types';
 import { useState, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
@@ -32,7 +32,7 @@ export const TabContent = ({ categories }: Props) => {
     // 어떤 카테고리를 클릭해도 이벤트를 받을 수 있도록 모든 카테고리를 리스닝
     categories.data.forEach((category) => {
       window.addEventListener(
-        SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.categorySeq),
+        EVENT_KEYS.SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.categorySeq),
         handleCategoryChange
       );
     });
@@ -42,7 +42,7 @@ export const TabContent = ({ categories }: Props) => {
       // 모든 이벤트 리스너 제거
       categories.data.forEach((category) => {
         window.removeEventListener(
-          SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.categorySeq),
+          EVENT_KEYS.SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.categorySeq),
           handleCategoryChange
         );
       });
