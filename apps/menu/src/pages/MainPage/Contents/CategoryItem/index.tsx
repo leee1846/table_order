@@ -1,9 +1,9 @@
-import type { categories } from '@/constants/mock';
+import type { ICategory } from '@repo/api/types';
 import { MenuItem } from '@/pages/MainPage/Contents/MenuItem';
 import * as S from '@/pages/MainPage/Contents/CategoryItem/categoryItem.style';
 
 interface Props {
-  category: (typeof categories)[number];
+  category: ICategory;
 }
 export const CategoryItem = ({ category }: Props) => {
   const layout: 1 | 2 | 3 = 3;
@@ -16,8 +16,8 @@ export const CategoryItem = ({ category }: Props) => {
       </div>
 
       <S.Categories layout={layout}>
-        {category.menus.map((menu) => (
-          <MenuItem layout={layout} key={menu.id} />
+        {category.menuInfoList.map((menu) => (
+          <MenuItem layout={layout} key={menu.menuSeq} />
         ))}
       </S.Categories>
     </S.Container>

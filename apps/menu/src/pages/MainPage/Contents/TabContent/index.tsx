@@ -1,20 +1,20 @@
 import { SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY } from '@/constants/keys';
-import { categories } from '@/constants/mock';
+import type { TGetCategoryListResponse } from '@repo/api/types';
 import { useState, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
 import { CategoryItem } from '../CategoryItem';
 
 interface Props {
-  categories: typeof categories;
+  categories: TGetCategoryListResponse;
 }
 
 export const TabContent = ({ categories }: Props) => {
-  const [selectedCategoryId, setSelectedCategoryId] = useState(
-    categories?.[0]?.id || 0
+  const [selectedCategorySeq, setSelectedCategorySeq] = useState(
+    categories.data[0]?.categorySeq || 0
   );
 
-  const selectedCategory = categories.find(
-    (category) => category.id === selectedCategoryId
+  const selectedCategory = categories.data.find(
+    (category) => category.categorySeq === selectedCategorySeq
   );
 
   /**
@@ -24,15 +24,15 @@ export const TabContent = ({ categories }: Props) => {
   useEffect(() => {
     /** Sidebar에서 카테고리를 클릭했을 때 호출됨 */
     const handleCategoryChange = (event: Event) => {
-      const customEvent = event as CustomEvent<{ id: number }>;
-      setSelectedCategoryId(customEvent.detail.id);
+      const customEvent = event as CustomEvent<{ seq: number }>;
+      setSelectedCategorySeq(customEvent.detail.seq);
     };
 
     // 모든 카테고리에 대한 선택 이벤트 리스너 등록
     // 어떤 카테고리를 클릭해도 이벤트를 받을 수 있도록 모든 카테고리를 리스닝
-    categories.forEach((category) => {
+    categories.data.forEach((category) => {
       window.addEventListener(
-        SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.id),
+        SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.categorySeq),
         handleCategoryChange
       );
     });
@@ -40,9 +40,9 @@ export const TabContent = ({ categories }: Props) => {
     // Cleanup: 컴포넌트 언마운트 또는 의존성 변경 시 실행
     return () => {
       // 모든 이벤트 리스너 제거
-      categories.forEach((category) => {
+      categories.data.forEach((category) => {
         window.removeEventListener(
-          SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.id),
+          SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.categorySeq),
           handleCategoryChange
         );
       });

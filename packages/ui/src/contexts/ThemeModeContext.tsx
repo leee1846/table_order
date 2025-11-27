@@ -14,7 +14,7 @@ export const ThemeModeContext = createContext<
   ThemeModeContextValue | undefined
 >(undefined);
 
-const THEME_MODE_STORAGE_KEY = 'theme-mode';
+export const THEME_MODE_STORAGE_KEY = 'theme-mode';
 
 const getInitialMode = (): ThemeMode => {
   const stored = localStorage.getItem(THEME_MODE_STORAGE_KEY);

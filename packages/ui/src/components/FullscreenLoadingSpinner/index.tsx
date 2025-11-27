@@ -1,20 +1,40 @@
+import { useContext } from 'react';
 import Lottie from 'lottie-react';
 import * as S from './fullscreenLoadingSpinner.style';
 import { loadingBlueIcon, loadingGreyIcon } from '@repo/ui/icons';
-import { useThemeMode } from '../../hooks/useThemeMode';
+import {
+  ThemeModeContext,
+  THEME_MODE_STORAGE_KEY,
+} from '../../contexts/ThemeModeContext';
+import type { ThemeMode } from '../../theme/modeColors';
 
-interface Props {
-  size?: number;
-}
+const getThemeMode = (): ThemeMode => {
+  const stored = localStorage.getItem(THEME_MODE_STORAGE_KEY);
+  if (stored === 'light' || stored === 'dark') {
+    return stored;
+  }
 
-export const FullscreenLoadingSpinner = ({ size = 300 }: Props) => {
-  const { mode } = useThemeMode();
+  if (
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  ) {
+    return 'dark';
+  }
+
+  return 'light';
+};
+
+export const FullscreenLoadingSpinner = ({ size = 300 }: { size?: number }) => {
+  const context = useContext(ThemeModeContext);
+  const contextMode = context?.mode;
+
+  const mode = contextMode ?? getThemeMode();
 
   return (
     <S.Container>
       <S.SpinnerWrapper size={size}>
         <Lottie
-          animationData={mode === 'dark' ? loadingBlueIcon : loadingGreyIcon}
+          animationData={mode === 'dark' ? loadingGreyIcon : loadingBlueIcon}
           loop={true}
         />
       </S.SpinnerWrapper>
