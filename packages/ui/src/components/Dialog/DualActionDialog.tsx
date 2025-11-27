@@ -1,9 +1,8 @@
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
-import { theme, TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
 import { DialogSize, getDialogWidth } from './dialog';
-const { colors } = theme;
 
 interface DualActionDialogProps {
   title?: string;
@@ -24,16 +23,26 @@ export const DualActionDialog = ({
   onCancel,
   size,
 }: DualActionDialogProps) => {
+  const { appType } = useThemeMode();
+  const isMenu = appType === 'menu';
   const hasContent = content != null && content !== '' && content !== false;
+  const primaryButtonVariant =
+    appType === 'admin' ? 'Solid_Navy_2XL' : 'Solid_Blue_2XL';
 
+  const secondaryButtonVariant =
+    appType === 'admin' ? 'Solid_Sky_Blue_2XL' : 'Outline_Blue_2XL';
   return (
-    <Container size={size}>
-      {title && <Title hasContent={hasContent}>{title}</Title>}
-      {hasContent && <Content>{content}</Content>}
+    <Container size={size} isMenu={isMenu}>
+      {title && (
+        <Title hasContent={hasContent} isMenu={isMenu}>
+          {title}
+        </Title>
+      )}
+      {hasContent && <Content isMenu={isMenu}>{content}</Content>}
       <ButtonGroup>
         {onCancel && (
           <BasicButton
-            variant="Solid_Sky_Blue_2XL"
+            variant={secondaryButtonVariant}
             onClick={onCancel}
             customStyle={css`
               width: 100%;
@@ -44,7 +53,7 @@ export const DualActionDialog = ({
         )}
         {onConfirm && (
           <BasicButton
-            variant="Solid_Navy_2XL"
+            variant={primaryButtonVariant}
             onClick={onConfirm}
             customStyle={css`
               width: 100%;
@@ -58,8 +67,9 @@ export const DualActionDialog = ({
   );
 };
 
-const Container = styled.div<{ size?: DialogSize }>`
-  background-color: ${colors.white};
+const Container = styled.div<{ size?: DialogSize; isMenu: boolean }>`
+  background-color: ${({ theme, isMenu }) =>
+    isMenu ? theme.mode.undefined_palette[100] : theme.colors.white};
   border-radius: 16px;
   padding: 40px 24px 24px 24px;
   min-width: 400px;
@@ -69,19 +79,24 @@ const Container = styled.div<{ size?: DialogSize }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border: 1px solid
+    ${({ theme, isMenu }) =>
+      isMenu ? theme.mode.undefined_palette[1000] : 'none'};
 `;
 
-const Title = styled.h2<{ hasContent: boolean }>`
+const Title = styled.h2<{ hasContent: boolean; isMenu: boolean }>`
   ${TYPOGRAPHY.MT_1}
-  color: ${colors.grey[800]};
+  color: ${({ theme, isMenu }) =>
+    isMenu ? theme.mode.grey[800] : theme.colors.grey[800]};
   margin-bottom: ${({ hasContent }) => (hasContent ? '12px' : '40px')};
   white-space: pre-line;
   text-align: center;
 `;
 
-const Content = styled.div`
+const Content = styled.div<{ isMenu: boolean }>`
   ${TYPOGRAPHY.ST_2}
-  color: ${colors.grey[500]};
+  color: ${({ theme, isMenu }) =>
+    isMenu ? theme.mode.grey[600] : theme.colors.grey[600]};
   margin-bottom: 40px;
 `;
 

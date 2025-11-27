@@ -38,6 +38,7 @@ export const darkModeColors = {
     700: '#000000', // black
     800: '#67717D', // grey[300]
     900: '#0D0D0D', // background/dark
+    1000: '#424951', // grey[100]
   },
 } as const;
 

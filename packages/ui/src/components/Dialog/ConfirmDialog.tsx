@@ -1,10 +1,8 @@
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
-import { theme, TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
 import { DialogSize, getDialogWidth } from './dialog';
-
-const { colors } = theme;
 
 interface ConfirmDialogProps {
   title?: string;
@@ -21,14 +19,19 @@ export const ConfirmDialog = ({
   onConfirm,
   size,
 }: ConfirmDialogProps) => {
+  const { appType } = useThemeMode();
+  const isMenu = appType === 'menu';
+  const buttonVariant =
+    appType === 'admin' ? 'Solid_Navy_2XL' : 'Solid_Blue_2XL';
+
   return (
-    <Container size={size}>
-      {title && <Title>{title}</Title>}
-      <Content>{content}</Content>
+    <Container size={size} isMenu={isMenu}>
+      {title && <Title isMenu={isMenu}>{title}</Title>}
+      <Content isMenu={isMenu}>{content}</Content>
       <ButtonGroup>
         {onConfirm && (
           <BasicButton
-            variant="Solid_Navy_2XL"
+            variant={buttonVariant}
             onClick={onConfirm}
             customStyle={css`
               width: 100%;
@@ -42,8 +45,9 @@ export const ConfirmDialog = ({
   );
 };
 
-const Container = styled.div<{ size?: DialogSize }>`
-  background-color: ${colors.white};
+const Container = styled.div<{ size?: DialogSize; isMenu: boolean }>`
+  background-color: ${({ theme, isMenu }) =>
+    isMenu ? theme.mode.undefined_palette[100] : theme.colors.white};
   border-radius: 16px;
   padding: 40px 24px 24px 24px;
   min-width: 335px;
@@ -52,18 +56,23 @@ const Container = styled.div<{ size?: DialogSize }>`
   display: flex;
   flex-direction: column;
   align-items: center;
+  border: 1px solid
+    ${({ theme, isMenu }) =>
+      isMenu ? theme.mode.undefined_palette[1000] : 'none'};
 `;
 
-const Title = styled.h2`
+const Title = styled.h2<{ isMenu: boolean }>`
   ${TYPOGRAPHY.MT_1}
-  color: ${colors.grey[800]};
+  color: ${({ theme, isMenu }) =>
+    isMenu ? theme.mode.grey[800] : theme.colors.grey[800]};
   margin-bottom: 12px;
   white-space: pre-line;
 `;
 
-const Content = styled.div`
+const Content = styled.div<{ isMenu: boolean }>`
   ${TYPOGRAPHY.ST_2}
-  color: ${colors.grey[600]};
+  color: ${({ theme, isMenu }) =>
+    isMenu ? theme.mode.grey[600] : theme.colors.grey[600]};
   margin-bottom: 40px;
 `;
 

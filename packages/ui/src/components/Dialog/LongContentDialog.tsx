@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
-import { theme, TYPOGRAPHY } from '@repo/ui';
+import { theme, TYPOGRAPHY, useThemeMode } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
 import { DialogSize, getDialogWidth } from './dialog';
 const { colors } = theme;
@@ -23,21 +23,24 @@ export const LongContentDialog = ({
   onClose,
   size,
 }: LongContentDialogProps) => {
+  const { appType } = useThemeMode();
   const handleClose = () => {
     onClose?.();
   };
-
+  const buttonVariant =
+    appType === 'admin' ? 'Solid_Navy_2XL' : 'Solid_Blue_2XL';
+  const isMenu = appType === 'menu';
   return (
-    <Container size={size}>
+    <Container size={size} isMenu={isMenu}>
       <CloseButton onClick={handleClose} aria-label="닫기">
         <CloseIcon width={24} height={24} color={colors.grey[700]} />
       </CloseButton>
-      {title && <Title>{title}</Title>}
-      <Content>{content}</Content>
+      {title && <Title isMenu={isMenu}>{title}</Title>}
+      <Content isMenu={isMenu}>{content}</Content>
       <ButtonGroup>
         {onConfirm && (
           <BasicButton
-            variant="Solid_Navy_2XL"
+            variant={buttonVariant}
             onClick={onConfirm}
             customStyle={css`
               width: 100%;
@@ -51,8 +54,9 @@ export const LongContentDialog = ({
   );
 };
 
-const Container = styled.div<{ size?: DialogSize }>`
-  background-color: ${colors.white};
+const Container = styled.div<{ size?: DialogSize; isMenu: boolean }>`
+  background-color: ${({ theme, isMenu }) =>
+    isMenu ? theme.mode.undefined_palette[100] : theme.colors.white};
   border-radius: 16px;
   padding: 24px;
   min-width: 480px;
@@ -63,19 +67,24 @@ const Container = styled.div<{ size?: DialogSize }>`
   align-items: center;
   justify-content: center;
   position: relative;
+  border: 1px solid
+    ${({ theme, isMenu }) =>
+      isMenu ? theme.mode.undefined_palette[1000] : 'none'};
 `;
 
-const Title = styled.h2`
+const Title = styled.h2<{ isMenu: boolean }>`
   ${TYPOGRAPHY.MT_1}
-  color: ${colors.grey[800]};
+  color: ${({ theme, isMenu }) =>
+    isMenu ? theme.mode.grey[800] : theme.colors.grey[800]};
   margin-bottom: 16px;
   flex-shrink: 0;
   white-space: pre-line;
 `;
 
-const Content = styled.div`
+const Content = styled.div<{ isMenu: boolean }>`
   font-size: 14px;
-  color: ${colors.grey[700]};
+  color: ${({ theme, isMenu }) =>
+    isMenu ? theme.mode.grey[600] : theme.colors.grey[600]}s;
   margin-bottom: 24px;
   line-height: 1.6;
   overflow-y: auto;
@@ -86,17 +95,20 @@ const Content = styled.div`
   }
 
   &::-webkit-scrollbar-track {
-    background: ${colors.grey[100]};
+    background: ${({ theme, isMenu }) =>
+      isMenu ? theme.mode.grey[100] : theme.colors.grey[100]};
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${colors.grey[400]};
+    background: ${({ theme, isMenu }) =>
+      isMenu ? theme.mode.grey[400] : theme.colors.grey[400]};
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: ${colors.grey[500]};
+    background: ${({ theme, isMenu }) =>
+      isMenu ? theme.mode.grey[500] : theme.colors.grey[500]};
   }
 `;
 
