@@ -1,6 +1,8 @@
+import type { ToastPosition } from '../../contexts/ToastContext';
+
 type ToastFunction = (
   message: string,
-  options?: { position?: string; duration?: number }
+  options?: { position?: ToastPosition; duration?: number }
 ) => void;
 type RemoveToastFunction = (id: string) => void;
 
