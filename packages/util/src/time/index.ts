@@ -147,3 +147,120 @@ export const formatTimeString = (hour: string, minute: string): string => {
   const formattedMinute = minute.padStart(2, '0');
   return formattedHour + formattedMinute;
 };
+
+/**
+ * 현재 시간이 판매 시간 범위 내에 있는지 확인합니다.
+ *
+ * @param saleStartTime - 판매 시작 시간 (예: "0900")
+ * @param saleEndTime - 판매 종료 시간 (예: "2100")
+ * @param currentTime - 현재 시간 (기본값: 현재 시각, 테스트를 위해 주입 가능)
+ * @returns 판매 시간 범위 내이면 true, 아니면 false
+ *
+ * @example
+ * ```ts
+ * // 현재 시간이 오전 10시라고 가정
+ * isWithinSaleTime('0900', '2100'); // true
+ * isWithinSaleTime('1100', '2100'); // false
+ *
+ * // 자정을 넘어가는 경우 (예: 21:00 ~ 03:00)
+ * isWithinSaleTime('2100', '0300'); // 현재 시간이 22:00이면 true, 05:00이면 false
+ * ```
+ */
+export const isWithinSaleTime = (
+  saleStartTime: string,
+  saleEndTime: string,
+  currentTime: Date = new Date()
+): boolean => {
+  const now = currentTime;
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const currentTotalMinutes = currentHour * 60 + currentMinute;
+
+  const { hour: startHour, minute: startMinute } =
+    parseTimeString(saleStartTime);
+  const startTotalMinutes = parseInt(startHour) * 60 + parseInt(startMinute);
+
+  const { hour: endHour, minute: endMinute } = parseTimeString(saleEndTime);
+  const endTotalMinutes = parseInt(endHour) * 60 + parseInt(endMinute);
+
+  // 자정을 넘어가지 않는 경우 (예: 09:00 ~ 21:00)
+  if (startTotalMinutes <= endTotalMinutes) {
+    return (
+      currentTotalMinutes >= startTotalMinutes &&
+      currentTotalMinutes < endTotalMinutes
+    );
+  }
+
+  // 자정을 넘어가는 경우 (예: 21:00 ~ 03:00)
+  return (
+    currentTotalMinutes >= startTotalMinutes ||
+    currentTotalMinutes < endTotalMinutes
+  );
+};
+
+/**
+ * 다음 판매 시작 또는 종료 시간까지 남은 밀리초를 계산합니다.
+ *
+ * @param saleStartTime - 판매 시작 시간 (예: "0900")
+ * @param saleEndTime - 판매 종료 시간 (예: "2100")
+ * @param currentTime - 현재 시간 (기본값: 현재 시각)
+ * @returns 다음 상태 변경까지 남은 밀리초
+ *
+ * @example
+ * ```ts
+ * // 현재 시간이 08:30이고, 판매 시간이 09:00 ~ 21:00인 경우
+ * getTimeUntilNextSaleStateChange('0900', '2100'); // 1800000 (30분)
+ * ```
+ */
+export const getTimeUntilNextSaleStateChange = (
+  saleStartTime: string,
+  saleEndTime: string,
+  currentTime: Date = new Date()
+): number => {
+  const now = currentTime;
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const currentSecond = now.getSeconds();
+  const currentMillisecond = now.getMilliseconds();
+
+  const currentTotalMs =
+    (currentHour * 60 * 60 + currentMinute * 60 + currentSecond) * 1000 +
+    currentMillisecond;
+
+  const { hour: startHour, minute: startMinute } =
+    parseTimeString(saleStartTime);
+  const startTotalMs =
+    (parseInt(startHour) * 60 * 60 + parseInt(startMinute) * 60) * 1000;
+
+  const { hour: endHour, minute: endMinute } = parseTimeString(saleEndTime);
+  const endTotalMs =
+    (parseInt(endHour) * 60 * 60 + parseInt(endMinute) * 60) * 1000;
+
+  const oneDayMs = 24 * 60 * 60 * 1000;
+
+  // 자정을 넘어가지 않는 경우
+  if (startTotalMs <= endTotalMs) {
+    if (currentTotalMs < startTotalMs) {
+      // 판매 시작 전
+      return startTotalMs - currentTotalMs;
+    } else if (currentTotalMs < endTotalMs) {
+      // 판매 중
+      return endTotalMs - currentTotalMs;
+    } else {
+      // 판매 종료 후 (다음날 판매 시작까지)
+      return oneDayMs - currentTotalMs + startTotalMs;
+    }
+  }
+
+  // 자정을 넘어가는 경우
+  if (currentTotalMs >= startTotalMs) {
+    // 판매 중 (오늘 밤)
+    return oneDayMs - currentTotalMs + endTotalMs;
+  } else if (currentTotalMs < endTotalMs) {
+    // 판매 중 (내일 새벽)
+    return endTotalMs - currentTotalMs;
+  } else {
+    // 판매 종료 후
+    return startTotalMs - currentTotalMs;
+  }
+};

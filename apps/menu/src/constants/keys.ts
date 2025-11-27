@@ -16,4 +16,6 @@ export const STORAGE_KEYS = {
 export const timerKeys = {
   /** 장바구니 알림 내부 타이머 키 */
   CART_REMINDER: 'cart-reminder',
+  /** 카테고리 노출 여부 업데이트 타이머 키 */
+  CATEGORY_VISIBILITY_UPDATE: 'category-visibility-update',
 };

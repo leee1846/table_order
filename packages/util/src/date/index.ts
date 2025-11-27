@@ -385,3 +385,19 @@ export const isExpired = (
 ): boolean => {
   return currentTime >= expirationTime - bufferSeconds;
 };
+
+/**
+ * 현재 요일을 숫자로 반환합니다.
+ *
+ * @param date - 확인할 날짜 (기본값: 현재 날짜)
+ * @returns 요일 (0: 일요일, 1: 월요일, ..., 6: 토요일)
+ *
+ * @example
+ * ```ts
+ * getCurrentDayOfWeek(); // 4 (목요일)
+ * getCurrentDayOfWeek(new Date('2025-11-30')); // 0 (일요일)
+ * ```
+ */
+export const getCurrentDayOfWeek = (date: Date = new Date()): number => {
+  return dayjs(date).day();
+};
