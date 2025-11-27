@@ -92,6 +92,24 @@ const getSolidColor = (
   disabled: boolean,
   theme: Theme
 ) => {
+  const disabledBg = theme.colors.grey[100];
+  const disabledText = theme.colors.grey[500];
+  const disabledBorder = theme.colors.grey[100];
+
+  return css`
+    background: ${disabled ? disabledBg : main};
+    color: ${disabled ? disabledText : text};
+    border: ${disabled ? `1px solid ${disabledBorder}` : `1px solid ${border}`};
+  `;
+};
+
+const getSolidDarkColor = (
+  main: string,
+  text: string,
+  border: string,
+  disabled: boolean,
+  theme: Theme
+) => {
   const disabledBg = theme.mode.grey[200];
   const disabledText = theme.mode.grey[500];
   const disabledBorder = theme.mode.grey[100];
@@ -110,7 +128,25 @@ const getOutlineColor = (
   disabled: boolean,
   theme: Theme
 ) => {
-  const disabledBg = theme.mode.white;
+  const disabledBg = theme.colors.white;
+  const disabledText = theme.colors.grey[500];
+  const disabledBorder = theme.mode.grey[500];
+
+  return css`
+    background: ${disabled ? disabledBg : background};
+    border: 1px solid ${disabled ? disabledBorder : border};
+    color: ${disabled ? disabledText : text};
+  `;
+};
+
+const getOutlineDarkColor = (
+  background: string,
+  text: string,
+  border: string,
+  disabled: boolean,
+  theme: Theme
+) => {
+  const disabledBg = theme.mode.undefined_palette[200];
   const disabledText = theme.mode.grey[500];
   const disabledBorder = theme.mode.grey[500];
 
@@ -178,7 +214,7 @@ const variantStyles: Record<VariantType, VariantStyleFn> = {
 
     return css`
       ${sizeStyles[size]}
-      ${getSolidColor(mainColor, textColor, 'none', disabled, theme)}
+      ${getSolidDarkColor(mainColor, textColor, 'none', disabled, theme)}
     `;
   },
   Outline_Blue: (size, disabled, theme) => {
@@ -187,7 +223,13 @@ const variantStyles: Record<VariantType, VariantStyleFn> = {
 
     return css`
       ${sizeStyles[size]}
-      ${getOutlineColor(colors.white, textColor, borderColor, disabled, theme)}
+      ${getOutlineDarkColor(
+        colors.white,
+        textColor,
+        borderColor,
+        disabled,
+        theme
+      )}
     `;
   },
 };
