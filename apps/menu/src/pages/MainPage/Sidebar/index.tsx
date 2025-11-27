@@ -2,24 +2,24 @@ import {
   SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY,
   SCROLL_CATEGORY_VISIBLE_EVENT_KEY,
 } from '@/constants/keys';
-import { categories } from '@/constants/mock';
 import { useState, useEffect, useRef } from 'react';
 import * as S from '@/pages/MainPage/Sidebar/sidebar.style';
 import { CallBellIcon } from '@repo/ui/icons';
 import { baseTheme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { StaffCallModal } from '@/pages/MainPage/StaffCallModal';
+import type { ICategory, TGetCategoryListResponse } from '@repo/api/types';
 
 interface Props {
-  categories: typeof categories;
+  categories: TGetCategoryListResponse;
   useScrollLayout: boolean;
 }
 
 export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   const { t } = useTranslation();
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(
-    categories?.[0]?.id || 0
+  const [selectedCategorySeq, setSelectedCategorySeq] = useState(
+    categories.data[0]?.categorySeq || 0
   );
 
   /**
@@ -73,13 +73,13 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
    * 탭 모드: 선택된 카테고리를 변경하고 커스텀 이벤트를 발생시킴
    * @param categoryId - 선택할 카테고리 ID
    */
-  const switchCategoryTab = (categoryId: number) => {
-    setSelectedCategoryId(categoryId);
+  const switchCategoryTab = (categorySeq: number) => {
+    setSelectedCategorySeq(categorySeq);
 
     // MenuContent 컴포넌트에서 수신할 커스텀 이벤트 발생
     window.dispatchEvent(
-      new CustomEvent(SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(categoryId), {
-        detail: { id: categoryId },
+      new CustomEvent(SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(categorySeq), {
+        detail: { seq: categorySeq },
       })
     );
   };
@@ -88,15 +88,15 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
    * 카테고리 버튼 클릭 핸들러
    * 현재 레이아웃 모드(스크롤/탭)에 따라 다르게 동작
    */
-  const handleCategoryClick = (category: (typeof categories)[number]) => {
+  const handleCategoryClick = (category: ICategory) => {
     if (useScrollLayout) {
       // 스크롤 모드: 해당 카테고리 섹션으로 스크롤
-      setSelectedCategoryId(category.id);
-      scrollToCategorySection(category.id);
+      setSelectedCategorySeq(category.categorySeq);
+      scrollToCategorySection(category.categorySeq);
       temporarilyDisableScrollObserver();
     } else {
       // 탭 모드: 카테고리 탭 전환
-      switchCategoryTab(category.id);
+      switchCategoryTab(category.categorySeq);
     }
   };
 
@@ -121,21 +121,21 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
         return;
       }
 
-      const customEvent = event as CustomEvent<{ id: number }>;
-      const newCategoryId = customEvent.detail.id;
+      const customEvent = event as CustomEvent<{ seq: number }>;
+      const newCategorySeq = customEvent.detail.seq;
 
       // 이전 카테고리 ID와 다를 때만 상태 업데이트 (불필요한 리렌더링 방지)
-      setSelectedCategoryId((prevCategoryId) => {
-        return prevCategoryId === newCategoryId
-          ? prevCategoryId
-          : newCategoryId;
+      setSelectedCategorySeq((prevCategorySeq) => {
+        return prevCategorySeq === newCategorySeq
+          ? prevCategorySeq
+          : newCategorySeq;
       });
     };
 
     // 모든 카테고리에 대한 intersection 이벤트 리스너 등록
-    categories.forEach((category) => {
+    categories.data.forEach((category) => {
       window.addEventListener(
-        SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.id),
+        SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.categorySeq),
         handleIntersectionEvent
       );
     });
@@ -148,9 +148,9 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
       }
 
       // 모든 이벤트 리스너 제거
-      categories.forEach((category) => {
+      categories.data.forEach((category) => {
         window.removeEventListener(
-          SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.id),
+          SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.categorySeq),
           handleIntersectionEvent
         );
       });
@@ -160,16 +160,18 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   return (
     <>
       <S.Container>
-        {categories.map((category) => (
-          <S.CategoryButton
-            isActive={selectedCategoryId === category.id}
-            key={category.id}
-            type="button"
-            onClick={() => handleCategoryClick(category)}
-          >
-            {category.name}
-          </S.CategoryButton>
-        ))}
+        {categories.data
+          .filter((category) => !category.isHidden)
+          .map((category) => (
+            <S.CategoryButton
+              isActive={selectedCategorySeq === category.categorySeq}
+              key={category.categorySeq}
+              type="button"
+              onClick={() => handleCategoryClick(category)}
+            >
+              {category.categoryName}
+            </S.CategoryButton>
+          ))}
 
         <S.StaffCall>
           <button type="button" onClick={() => setIsStaffCallModalOpen(true)}>

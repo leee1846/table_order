@@ -1,5 +1,5 @@
 import { SCROLL_CATEGORY_VISIBLE_EVENT_KEY } from '@/constants/keys';
-import { categories } from '@/constants/mock';
+import type { TGetCategoryListResponse } from '@repo/api/types';
 import { useRef, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
 import { createDebounce } from '@repo/util/function';
@@ -7,7 +7,7 @@ import { getMinFromArray } from '@repo/util/array';
 import { CategoryItem } from '@/pages/MainPage/Contents/CategoryItem';
 
 interface Props {
-  categories: typeof categories;
+  categories: TGetCategoryListResponse;
 }
 
 /**
@@ -37,7 +37,7 @@ export const ScrollContent = ({ categories }: Props) => {
    * 마지막으로 이벤트를 발생시킨 카테고리 ID
    * 동일한 카테고리에 대해 중복 이벤트 발생을 방지
    */
-  const lastEmittedCategoryIdRef = useRef<number | null>(null);
+  const lastEmittedCategorySeqRef = useRef<number | null>(null);
 
   useEffect(() => {
     /**
@@ -46,34 +46,34 @@ export const ScrollContent = ({ categories }: Props) => {
      */
     const emitActiveCategoryEvent = () => {
       // 현재 화면에 보이는 모든 카테고리 ID를 추출
-      const visibleCategoryIds = Array.from(
+      const visibleCategorySeqs = Array.from(
         categoryVisibilityMapRef.current.entries()
       )
         .filter(([_, isVisible]) => isVisible)
-        .map(([categoryId]) => categoryId);
+        .map(([categorySeq]) => categorySeq);
 
       // 화면에 보이는 카테고리가 없으면 이벤트를 발생시키지 않음
-      if (visibleCategoryIds.length === 0) {
+      if (visibleCategorySeqs.length === 0) {
         return;
       }
 
       // 여러 카테고리가 보일 경우, 가장 작은 ID (가장 위쪽)를 선택
-      const topVisibleCategoryId = getMinFromArray(visibleCategoryIds);
+      const topVisibleCategorySeq = getMinFromArray(visibleCategorySeqs);
 
       // 이전에 발생시킨 이벤트와 동일한 카테고리면 중복 이벤트 발생 방지
       const shouldEmitEvent =
-        topVisibleCategoryId !== null &&
-        lastEmittedCategoryIdRef.current !== topVisibleCategoryId;
+        topVisibleCategorySeq !== null &&
+        lastEmittedCategorySeqRef.current !== topVisibleCategorySeq;
 
       if (shouldEmitEvent) {
-        lastEmittedCategoryIdRef.current = topVisibleCategoryId;
+        lastEmittedCategorySeqRef.current = topVisibleCategorySeq;
 
         // Sidebar 컴포넌트가 수신할 커스텀 이벤트 발생
         window.dispatchEvent(
           new CustomEvent(
-            SCROLL_CATEGORY_VISIBLE_EVENT_KEY(topVisibleCategoryId),
+            SCROLL_CATEGORY_VISIBLE_EVENT_KEY(topVisibleCategorySeq),
             {
-              detail: { id: topVisibleCategoryId },
+              detail: { seq: topVisibleCategorySeq },
             }
           )
         );
@@ -91,8 +91,8 @@ export const ScrollContent = ({ categories }: Props) => {
     const handleIntersectionChange = (entries: IntersectionObserverEntry[]) => {
       // 모든 변경된 카테고리의 가시성 상태를 Map에 업데이트
       entries.forEach((entry) => {
-        const categoryId = Number(entry.target.id.replace('category-', ''));
-        categoryVisibilityMapRef.current.set(categoryId, entry.isIntersecting);
+        const categorySeq = Number(entry.target.id.replace('category-', ''));
+        categoryVisibilityMapRef.current.set(categorySeq, entry.isIntersecting);
       });
 
       // 디바운스된 이벤트 발생 함수 호출
@@ -106,8 +106,10 @@ export const ScrollContent = ({ categories }: Props) => {
     );
 
     // 모든 카테고리 섹션을 관찰 대상으로 등록
-    categories.forEach((category) => {
-      const sectionElement = document.getElementById(`category-${category.id}`);
+    categories.data.forEach((category) => {
+      const sectionElement = document.getElementById(
+        `category-${category.categorySeq}`
+      );
 
       if (sectionElement && intersectionObserverRef.current) {
         intersectionObserverRef.current.observe(sectionElement);
@@ -128,8 +130,8 @@ export const ScrollContent = ({ categories }: Props) => {
 
   return (
     <S.Container>
-      {categories.map((category) => (
-        <div key={category.id} id={`category-${category.id}`}>
+      {categories.data.map((category) => (
+        <div key={category.categorySeq} id={`category-${category.categorySeq}`}>
           <CategoryItem category={category} />
         </div>
       ))}
