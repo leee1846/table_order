@@ -34,7 +34,7 @@ export const MenuSelector = () => {
           <S.MenuItem key={`menu-${index + 1}`} isSelected={true}>
             <button type="button">
               <CheckButton
-                checked={false}
+                checked={true}
                 customStyle={css`
                   & > div {
                     width: 28px;

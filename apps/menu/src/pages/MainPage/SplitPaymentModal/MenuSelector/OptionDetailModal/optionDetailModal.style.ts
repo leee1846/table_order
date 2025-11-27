@@ -6,10 +6,11 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 24px;
-  background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
   border-radius: 1.25rem;
   width: 27.5rem;
   max-width: calc(100vw - 2rem);
+  background-color: ${({ theme }) => theme.mode.undefined_palette[200]};
+  border: 1px solid ${({ theme }) => theme.mode.grey[100]};
 
   & > h1 {
     ${TYPOGRAPHY.MT_1}

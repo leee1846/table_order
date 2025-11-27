@@ -46,7 +46,7 @@ const getBackgroundColor = (
     return theme.mode.primary[500];
   }
 
-  return theme.colors.white;
+  return 'transparent';
 };
 
 const getCheckButtonStyles = (
