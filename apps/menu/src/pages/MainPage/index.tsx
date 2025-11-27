@@ -7,10 +7,20 @@ import { Header } from '@/pages/MainPage/Header';
 import { CartButton } from '@/pages/MainPage/CartButton';
 import { BreakTime } from '@/pages/MainPage/BreakTime';
 import { CartReminder } from '@/pages/MainPage/CartReminder';
+import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
 
 export const MainPage = () => {
   const [showCartReminder, setShowCartReminder] = useState(false);
   const showBreakTime = false;
+  const [showPickupAlarm, setShowPickupAlarm] = useState(false);
+
+  if (showPickupAlarm) {
+    return <PickupAlarm onClose={() => setShowPickupAlarm(false)} />;
+  }
+
+  if (showBreakTime) {
+    return <BreakTime />;
+  }
 
   if (showCartReminder) {
     return (
@@ -19,10 +29,6 @@ export const MainPage = () => {
         resetCart={() => {}}
       />
     );
-  }
-
-  if (showBreakTime) {
-    return <BreakTime />;
   }
 
   return (
