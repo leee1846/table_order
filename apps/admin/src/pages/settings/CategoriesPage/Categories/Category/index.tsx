@@ -82,6 +82,23 @@ export const Category = ({ category, shopSeq, categoryList }: Props) => {
 
   const saleDayDisplay = getSaleDayDisplay();
 
+  //판매시작, 종료 시간이 모두있는 지 확인
+  const hasSaleTimeRange = !!category.saleStartTime && !!category.saleEndTime;
+
+  //시간 범위가 00:00 ~ 00:00인지 확인
+  const isZeroTimeRange =
+    hasSaleTimeRange &&
+    category.saleStartTime === '0000' &&
+    category.saleEndTime === '0000';
+
+  //조건 : useSaleTime + 시간 범위 존재 + 시간 범위가 00:00 ~ 00:00이 아닌 지 확인
+  const shouldDisplayFormattedSaleTime =
+    category.useSaleTime === true && hasSaleTimeRange && !isZeroTimeRange;
+
+  const saleTimeDisplay = shouldDisplayFormattedSaleTime
+    ? `${formatTimeDisplay(category.saleStartTime as string)} ~ ${formatTimeDisplay(category.saleEndTime as string)}`
+    : '상시';
+
   return (
     <>
       <S.Container>
@@ -107,21 +124,10 @@ export const Category = ({ category, shopSeq, categoryList }: Props) => {
         </S.Header>
 
         <S.Badges>
-          {category.saleStartTime &&
-            category.saleEndTime &&
-            !(
-              category.saleStartTime === '0000' &&
-              category.saleEndTime === '0000'
-            ) && (
-              <li>
-                <p>판매시간</p>
-                <p>
-                  {formatTimeDisplay(category.saleStartTime)} ~{' '}
-                  {formatTimeDisplay(category.saleEndTime)}
-                  {/* TODO: 상시 표시 추가해야함 (24시간 표시) */}
-                </p>
-              </li>
-            )}
+          <li>
+            <p>판매시간</p>
+            <p>{saleTimeDisplay}</p>
+          </li>
 
           {saleDayDisplay && (
             <li>

@@ -17,7 +17,7 @@ export { FullscreenLoadingSpinner } from './FullscreenLoadingSpinner';
 
 export type { DialogSize } from './Dialog/dialog';
 export { ToastMessage } from './ToastMessage';
-export { toast } from 'sonner';
+export { toast } from './ToastMessage/toast';
 export {
   SidebarContainer,
   Logo,

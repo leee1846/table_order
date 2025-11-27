@@ -56,5 +56,6 @@ export const colors = {
     800: '#F8F9FA', // grey[50]
     900: '#F8F9FA', // grey[50]
     1000: '#ffffff', // white
+    1100: 'rgba(0, 0, 0, 0.8)',
   },
 } as const;
