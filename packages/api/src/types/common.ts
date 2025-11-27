@@ -15,7 +15,10 @@ export interface IApiError {
 }
 
 export interface ITokenPayload {
-  exp: number;
-  iat: number;
   sub: string;
+  role: 'ADMIN' | 'SHOP';
+  shopSeq: number;
+  token_type: 'access_token' | 'refresh_token';
+  iat: number;
+  exp: number;
 }
