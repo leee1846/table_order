@@ -209,24 +209,24 @@ const variantStyles: Record<VariantType, VariantStyleFn> = {
     )}
   `,
   Solid_Blue: (size, disabled, theme) => {
-    const mainColor = theme.mode.primary[500];
-    const textColor = theme.mode.undefined_palette[900];
-
     return css`
       ${sizeStyles[size]}
-      ${getSolidDarkColor(mainColor, textColor, 'none', disabled, theme)}
+      ${getSolidDarkColor(
+        theme.mode.primary[500],
+        theme.mode.undefined_palette[900],
+        'none',
+        disabled,
+        theme
+      )}
     `;
   },
   Outline_Blue: (size, disabled, theme) => {
-    const textColor = theme.mode.primary[500];
-    const borderColor = theme.mode.primary[500];
-
     return css`
       ${sizeStyles[size]}
       ${getOutlineDarkColor(
-        colors.white,
-        textColor,
-        borderColor,
+        'transparent',
+        theme.mode.primary[500],
+        theme.mode.primary[500],
         disabled,
         theme
       )}
