@@ -66,6 +66,14 @@ export const IconWrapper = styled.div`
   justify-content: space-between;
 `;
 
+export const LeftBadges = styled.div`
+  position: absolute;
+  top: 0;
+  left: 20px;
+  display: flex;
+  gap: 4px;
+`;
+
 export const BestIcon = styled.img`
   position: absolute;
   top: 0;

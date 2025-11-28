@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import * as S from '@/pages/MainPage/Contents/MenuItem/menuItem.style';
-import { bestOnIcon, chiliOffIcon, chiliOnIcon } from '@repo/ui/icons';
+import {
+  bestOnIcon,
+  chiliOffIcon,
+  chiliOnIcon,
+  newOnIcon,
+} from '@repo/ui/icons';
 import { MenuDetailModal } from '@/pages/MainPage/Contents/MenuDetailModal';
 import { MenuDetailWithOptionsModal } from '@/pages/MainPage/Contents/MenuDetailWithOptionsModal';
 import type { IMenu } from '@repo/api/types';
@@ -44,8 +49,11 @@ export const MenuItem = ({ layout, menu }: Props) => {
             />
           )}
           <S.IconWrapper>
-            {menu.isBest && (
-              <S.BestIcon src={bestOnIcon} width={64} height={43} />
+            {(menu.isBest || menu.isNew) && (
+              <S.LeftBadges>
+                {menu.isBest && <img src={bestOnIcon} width={64} height={43} />}
+                {menu.isNew && <img src={newOnIcon} width={64} height={43} />}
+              </S.LeftBadges>
             )}
             {menu.spiceLevel > 0 && (
               <S.ChiliIcons>

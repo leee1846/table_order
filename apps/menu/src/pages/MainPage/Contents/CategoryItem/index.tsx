@@ -8,7 +8,7 @@ interface Props {
   category: ICategoryWithMenus;
 }
 export const CategoryItem = ({ category }: Props) => {
-  const layout: 1 | 2 | 3 = 2;
+  const layout: 1 | 2 | 3 = category.useTwoColumnLayout ? 2 : 1;
   const { t } = useTranslation();
 
   return (
