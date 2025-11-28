@@ -8,6 +8,7 @@ const { colors } = theme;
 import { tableGroups } from '@/constants/mock';
 import { ROUTES } from '@/constants/routes';
 import { useState } from 'react';
+import { toast } from '@repo/feature/utils';
 
 interface SidebarProps {
   selectedTableGroupId: number;
@@ -22,12 +23,16 @@ export const Sidebar = ({
   const [isAddTableGroupDialogOpen, setIsAddTableGroupDialogOpen] =
     useState(false);
 
-  const handleAddTableGroup = () => {
-    console.log('add table group');
-  };
+  const handleAddTableGroup = () => {};
   return (
     <S.Sidebar>
-      <S.SidebarLogo>
+      <S.SidebarLogo
+        onClick={() => {
+          toast('test', {
+            position: 'center-center',
+          });
+        }}
+      >
         {/* <img
           src={logoImage}
           alt="캡스 스마트오더 로고"
