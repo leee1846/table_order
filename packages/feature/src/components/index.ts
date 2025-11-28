@@ -31,3 +31,4 @@ export {
   BaseHeader,
   BaseTitle,
 } from './shared/dialogStyles';
+export { ToastMessage } from './ToastMessage';

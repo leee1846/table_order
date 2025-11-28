@@ -19,7 +19,7 @@ import {
 } from './orderSection/dialogs/SplitPaymentDialog';
 import type { Order, OrderItem } from './orderSection/types';
 import { openDualActionDialog } from '@repo/feature/utils';
-import { toast } from '@repo/ui/components';
+import { toast } from '@repo/feature/utils';
 
 export const TableDetailContainer = () => {
   //메뉴 추가 모달

@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
-import { useToastContext, type ToastPosition } from '../contexts/ToastContext';
+import { useToastStore, type ToastPosition } from '../stores/toastStore';
 
 export const useToast = () => {
-  const { addToast } = useToastContext();
+  const addToast = useToastStore((state) => state.addToast);
 
   const toast = useCallback(
     (
@@ -15,7 +15,7 @@ export const useToast = () => {
       addToast({
         message,
         position: options?.position,
-        duration: options?.duration || 3000,
+        duration: options?.duration,
       });
     },
     [addToast]
@@ -23,3 +23,4 @@ export const useToast = () => {
 
   return toast;
 };
+

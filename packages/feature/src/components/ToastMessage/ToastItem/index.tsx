@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Toast } from '../../../contexts/ToastContext';
+import { Toast } from '../../../stores/toastStore';
 import * as S from './toastItem.styles';
+
 interface ToastItemProps {
   toast: Toast;
-  onRemove: (id: string) => void;
+  onRemove: () => void;
 }
 
 export const ToastItem = ({ toast, onRemove }: ToastItemProps) => {
@@ -14,17 +15,14 @@ export const ToastItem = ({ toast, onRemove }: ToastItemProps) => {
 
   useEffect(() => {
     // 애니메이션을 위한 지연
-    setTimeout(() => setIsVisible(true), 10);
-
-    return () => {
-      setIsLeaving(true);
-    };
+    const timer = setTimeout(() => setIsVisible(true), 10);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleRemove = () => {
     setIsLeaving(true);
     setTimeout(() => {
-      onRemove(toast.id);
+      onRemove();
     }, 300);
   };
 
@@ -40,3 +38,4 @@ export const ToastItem = ({ toast, onRemove }: ToastItemProps) => {
     </S.ToastItemStyles>
   );
 };
+

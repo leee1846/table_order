@@ -292,13 +292,7 @@ export const SplitPaymentDialog = ({
                 bottomLeftLabel="00"
                 bottomLeftAction={handleDoubleZero}
                 bottomRightAction={handleBackspace}
-                bottomRightIcon={
-                  <ArrowBackIcon
-                    width={24}
-                    height={24}
-                    color={colors.grey[900]}
-                  />
-                }
+                bottomRightIcon={<ArrowBackIcon width={24} height={24} />}
               />
             </S.KeypadWrapper>
             <S.Footer>

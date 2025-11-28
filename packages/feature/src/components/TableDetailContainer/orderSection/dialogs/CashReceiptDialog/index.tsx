@@ -1,13 +1,9 @@
 import { useState } from 'react';
-import {
-  BasicButton,
-  ModalBackground,
-  Keypad,
-  toast,
-} from '@repo/ui/components';
+import { BasicButton, ModalBackground, Keypad } from '@repo/ui/components';
 import { CloseIcon, ArrowBackIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './cashReceiptDialog.styles';
+import { toast } from '@repo/feature/utils';
 
 const { colors } = theme;
 

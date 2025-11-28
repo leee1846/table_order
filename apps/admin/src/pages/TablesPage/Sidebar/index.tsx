@@ -7,7 +7,6 @@ import {
   MenuDivider,
   ActionButtons,
   ActionButton,
-  toast,
 } from '@repo/ui/components';
 import {
   OrderListDialog,
@@ -17,6 +16,7 @@ import {
 import { mockOrders } from '../mock';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import { toast } from '@repo/feature/utils';
 
 type MenuItem = {
   id: string;
@@ -72,10 +72,8 @@ export const Sidebar = () => {
     <SidebarContainer>
       <Logo
         onClick={() => {
-          toast('test', {
-            position: 'top-center',
-            duration: 10000000000000,
-          });
+          console.log('test');
+          toast('test');
         }}
       >
         {/* <img

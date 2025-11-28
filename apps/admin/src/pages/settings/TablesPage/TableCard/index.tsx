@@ -1,6 +1,7 @@
 ﻿'use client';
 
-import { BasicButton, toast } from '@repo/ui/components';
+import { BasicButton } from '@repo/ui/components';
+import { toast } from '@repo/feature/utils';
 import * as S from './tableCard.styles';
 import { type TableInfoData } from '@/constants/mock';
 import { css } from '@emotion/react';

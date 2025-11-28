@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { BasicButton, ToggleButton, toast } from '@repo/ui/components';
+import { BasicButton, ToggleButton } from '@repo/ui/components';
+import { toast } from '@repo/feature/utils';
 import * as S from '@/pages/settings/CategoriesPage/Categories/Category/category.style';
 import { ChevronForwardIcon, DeleteIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';

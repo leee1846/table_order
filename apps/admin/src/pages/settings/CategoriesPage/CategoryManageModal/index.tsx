@@ -4,7 +4,6 @@ import {
   BasicButton,
   CheckButton,
   Dropdown,
-  toast,
 } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoriesPage/CategoryManageModal/categoryManageModal.style';
 import { theme } from '@repo/ui';
@@ -20,6 +19,7 @@ import {
 import { DAYS } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
 import { useQueryClient } from '@repo/api/tanstack-query';
+import { toast } from '@repo/feature/utils';
 
 interface Props {
   onClose: () => void;

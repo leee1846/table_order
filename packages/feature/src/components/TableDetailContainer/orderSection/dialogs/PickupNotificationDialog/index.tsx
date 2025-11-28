@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
 import { css } from '@emotion/react';
-import { BasicButton, ModalBackground, toast } from '@repo/ui/components';
+import { BasicButton, ModalBackground } from '@repo/ui/components';
+import { toast } from '@repo/feature/utils';
 import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
 import { usePostPickupNotification } from '@repo/api/queries';

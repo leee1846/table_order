@@ -1,6 +1,8 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { zIndex } from '../../theme/zIndex';
+import { theme } from '@repo/ui';
+
+const { zIndex } = theme;
 
 export const ToastContainerWrapper = styled.div<{ position: string }>`
   position: fixed;
@@ -53,17 +55,4 @@ export const ToastContainerWrapper = styled.div<{ position: string }>`
         `;
     }
   }}
-`;
-export const toastMessageStyles = css`
-  /* Toaster 컨테이너 */
-  .toaster {
-    position: fixed !important;
-    z-index: ${zIndex.notification} !important;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-  }
 `;

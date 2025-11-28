@@ -96,7 +96,11 @@ export const MenuSelectionView = ({
             <A.PanelContent>
               {selectedMenus.length === 0 ? (
                 <A.EmptyState>
-                  <EmptedCartIcon width={52} height={52} />
+                  <EmptedCartIcon
+                    width={52}
+                    height={52}
+                    color={colors.grey[600]}
+                  />
                   <A.EmptyText>현재 담긴 메뉴가 없어요.</A.EmptyText>
                 </A.EmptyState>
               ) : (
