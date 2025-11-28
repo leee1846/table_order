@@ -1,4 +1,5 @@
 ﻿import type { IApiResponse } from './common';
+import { IMenu } from './menu';
 
 // ============================================================================
 // 언어 코드 타입
@@ -54,7 +55,7 @@ export interface IGetCategoryListParams {
   shopSeq: number;
 }
 
-export type TGetCategoryListResponse = IApiResponse<ICategory[]>;
+export type TGetCategoryListResponse = IApiResponse<ICategoryWithMenus[]>;
 
 // ============================================================================
 // POST /category
@@ -128,3 +129,12 @@ export interface IDeleteCategoryParams {
 // ============================================================================
 
 export type TCategoryMutationResponse = IApiResponse<null>;
+
+export interface IGetShopCategoriesWithMenusParams {
+  shopCode: string;
+  tableNumber: number;
+}
+
+export interface ICategoryWithMenus extends ICategoryBase {
+  menuInfoList: IMenu[];
+}

@@ -1,5 +1,5 @@
 import { create } from '@repo/feature/zustand';
-import type { ICategory } from '@repo/api/types';
+import type { ICategoryWithMenus } from '@repo/api/types';
 import { createInitialState, type IBaseStore } from '@/stores/types';
 import { STORAGE_KEYS } from '@/constants/keys';
 import storage from '@/utils/storage';
@@ -10,7 +10,7 @@ import storage from '@/utils/storage';
  */
 export type ICategoryVisibilityMap = Record<number, boolean>;
 
-export interface ICategoryStore extends IBaseStore<ICategory[]> {
+export interface ICategoryStore extends IBaseStore<ICategoryWithMenus[]> {
   /** 카테고리 노출여부 상태 맵  */
   visibilityMap: ICategoryVisibilityMap;
   /** 카테고리 노출여부 상태 맵 업데이트 */
@@ -18,7 +18,7 @@ export interface ICategoryStore extends IBaseStore<ICategory[]> {
   /** 모든 카테고리 노출여부 상태 맵 업데이트 */
   updateAllVisibility: (visibilityMap: ICategoryVisibilityMap) => void;
   /** 필터링된 보이는 카테고리 목록 반환 */
-  getVisibleCategories: () => ICategory[];
+  getVisibleCategories: () => ICategoryWithMenus[];
 }
 
 /**
@@ -28,11 +28,11 @@ export interface ICategoryStore extends IBaseStore<ICategory[]> {
  */
 export const useCategoryStore = create<ICategoryStore>((set) => ({
   // 초기 상태
-  ...createInitialState<ICategory[]>(),
+  ...createInitialState<ICategoryWithMenus[]>(),
   visibilityMap: {},
 
   // 데이터 설정 (스토리지에도 저장)
-  setData: (data: ICategory[]) => {
+  setData: (data: ICategoryWithMenus[]) => {
     const success = storage.save(STORAGE_KEYS.CATEGORIES, data);
     if (success) {
       set({
@@ -51,7 +51,7 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
   clearData: () => {
     storage.remove(STORAGE_KEYS.CATEGORIES);
     set({
-      ...createInitialState<ICategory[]>(),
+      ...createInitialState<ICategoryWithMenus[]>(),
       visibilityMap: {},
     });
   },
@@ -68,7 +68,9 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
 
   // 스토리지에서 데이터 불러오기
   loadFromStorage: () => {
-    const storedData = storage.load<ICategory[]>(STORAGE_KEYS.CATEGORIES);
+    const storedData = storage.load<ICategoryWithMenus[]>(
+      STORAGE_KEYS.CATEGORIES
+    );
     if (storedData) {
       set({
         data: storedData,
@@ -96,21 +98,23 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
   },
 
   // 필터링된 보이는 카테고리 목록 반환
-  getVisibleCategories: (): ICategory[] => {
+  getVisibleCategories: (): ICategoryWithMenus[] => {
     const state = useCategoryStore.getState() as ICategoryStore;
     if (!state.data) {
       return [];
     }
 
-    return state.data.filter((category: ICategory) => {
-      // isHidden이 true이면 숨김
-      if (category.isHidden) {
-        return false;
-      }
+    return state.data;
+    // TODO: 주석 정상 동작함
+    // return state.data.filter((category: ICategoryWithMenus) => {
+    //   // isHidden이 true이면 숨김
+    //   if (category.isHidden) {
+    //     return false;
+    //   }
 
-      // visibilityMap 확인: false면 숨김, 없거나 true면 표시
-      const isVisible = state.visibilityMap[category.categorySeq];
-      return isVisible !== false;
-    });
+    //   // visibilityMap 확인: false면 숨김, 없거나 true면 표시
+    //   const isVisible = state.visibilityMap[category.categorySeq];
+    //   return isVisible !== false;
+    // });
   },
 }));

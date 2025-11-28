@@ -5,10 +5,10 @@ import { CallBellIcon } from '@repo/ui/icons';
 import { baseTheme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { StaffCallModal } from '@/pages/MainPage/StaffCallModal';
-import type { ICategory } from '@repo/api/types';
+import type { ICategoryWithMenus } from '@repo/api/types';
 
 interface Props {
-  categories: ICategory[];
+  categories: ICategoryWithMenus[];
   useScrollLayout: boolean;
 }
 
@@ -93,7 +93,7 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
    * 카테고리 버튼 클릭 핸들러
    * 현재 레이아웃 모드(스크롤/탭)에 따라 다르게 동작
    */
-  const handleCategoryClick = (category: ICategory) => {
+  const handleCategoryClick = (category: ICategoryWithMenus) => {
     if (useScrollLayout) {
       // 스크롤 모드: 해당 카테고리 섹션으로 스크롤
       setSelectedCategorySeq(category.categorySeq);

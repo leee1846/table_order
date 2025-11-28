@@ -4,7 +4,7 @@ import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style'
 import { createDebounce } from '@repo/util/function';
 import { getMinFromArray } from '@repo/util/array';
 import { CategoryItem } from '@/pages/MainPage/Contents/CategoryItem';
-import type { ICategory } from '@repo/api/types';
+import type { ICategoryWithMenus } from '@repo/api/types';
 
 /**
  * Intersection Observer 설정
@@ -17,7 +17,7 @@ const OBSERVER_OPTIONS: IntersectionObserverInit = {
 };
 
 interface Props {
-  categories: ICategory[];
+  categories: ICategoryWithMenus[];
 }
 
 export const ScrollContent = ({ categories }: Props) => {

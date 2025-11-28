@@ -14,6 +14,7 @@ export const ENDPOINTS = {
     CREATE: '/category',
     UPDATE: '/category',
     DELETE: '/category',
+    MENUBOARD_LIST: (shopCode: string) => `/menuboard/${shopCode}`,
   },
   MENU: {
     LIST: '/menu/list',

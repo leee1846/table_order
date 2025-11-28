@@ -44,7 +44,7 @@ export const ImageWrapper = styled.div<IImageWrapper>`
   width: ${({ layout }) => (layout === 1 ? IMAGE_SIZE[1].width : '100%')};
   flex-shrink: 0;
   background-color: ${({ theme, hasImage }) =>
-    hasImage ? 'transparent' : theme.mode.grey[50]};
+    hasImage ? 'transparent' : theme.mode.grey[300]};
   border-radius: 0.5rem;
   overflow: hidden;
   ${({ hasImage }) => !hasImage && 'min-height: 200px;'}

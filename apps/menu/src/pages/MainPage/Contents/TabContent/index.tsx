@@ -1,11 +1,11 @@
 import { EVENT_KEYS } from '@/constants/keys';
-import type { ICategory } from '@repo/api/types';
+import type { ICategoryWithMenus } from '@repo/api/types';
 import { useState, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
 import { CategoryItem } from '../CategoryItem';
 
 interface Props {
-  categories: ICategory[];
+  categories: ICategoryWithMenus[];
 }
 
 export const TabContent = ({ categories }: Props) => {

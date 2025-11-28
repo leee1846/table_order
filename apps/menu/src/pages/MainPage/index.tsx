@@ -6,7 +6,7 @@ import { CartButton } from '@/pages/MainPage/CartButton';
 import { BreakTime } from '@/pages/MainPage/BreakTime';
 import { CartReminder } from '@/pages/MainPage/CartReminder';
 import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
-import { useGetCategoryList } from '@repo/api/queries';
+import { useGetCategoriesWithMenus } from '@repo/api/queries';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { checkCategorySaleStatus } from '@/utils/category';
@@ -35,8 +35,8 @@ export const MainPage = () => {
   }, [loadFromStorage]);
 
   // 세션 스토리지에 데이터가 없을 때만 API 호출
-  const { data: categoriesData } = useGetCategoryList(
-    { shopSeq: 1 },
+  const { data: categoriesData } = useGetCategoriesWithMenus(
+    { shopCode: 'NEXA000001', tableNumber: 1 },
     { enabled: !categoriesStoreData }
   );
 

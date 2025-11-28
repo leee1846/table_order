@@ -7,6 +7,7 @@ import type {
   IUpdateCategoryRequest,
   TGetCategoryListResponse,
   TCategoryMutationResponse,
+  IGetShopCategoriesWithMenusParams,
 } from '../types/category';
 
 /**
@@ -72,6 +73,24 @@ export const deleteCategory = async (
     method: 'DELETE',
     url: ENDPOINTS.CATEGORY.DELETE,
     params: { categorySeq: params.categorySeq },
+  });
+
+  return response.data;
+};
+
+/**
+ * 메뉴 목록을 포함하는 모든 카테고리 목록을 가져온다.
+ */
+export const getCategoriesWithMenus = async (
+  params: IGetShopCategoriesWithMenusParams
+): Promise<TGetCategoryListResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetCategoryListResponse>({
+    method: 'GET',
+    url: ENDPOINTS.CATEGORY.MENUBOARD_LIST(params.shopCode),
+    params: {
+      tableNumber: params.tableNumber,
+    },
   });
 
   return response.data;
