@@ -8,6 +8,7 @@ import { Thumbnail } from '@/feature/Thumbnail';
 import { useCartStore } from '@/stores/useCartStore';
 import { toast } from '@repo/feature/utils';
 import { useCategoryStore } from '@/stores/useCategoryStore';
+import { useTranslation } from 'react-i18next';
 
 const IMAGE_SIZE = {
   1: {
@@ -27,6 +28,7 @@ interface Props {
   menu: IMenu;
 }
 export const MenuItem = ({ layout, category, menu }: Props) => {
+  const { t } = useTranslation();
   const firstImage = menu.menuImageList?.[0];
 
   const [isMenuDetailOpen, setIsMenuDetailOpen] = useState(false);
@@ -35,9 +37,9 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   const { getVisibleCategories } = useCategoryStore();
 
   const onClickMenu = () => {
-    // 품절되었을경우우
+    // 품절되었을경우
     if (menu.isOutOfStock) {
-      toast('메뉴가 품절되었습니다.');
+      toast(t('메뉴가 품절되었습니다.'));
       return;
     }
 
@@ -66,7 +68,10 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
 
     // 수량선택이 불가능한경우
     if (!category.isQuantitySelectable) {
-      toast('메뉴가 담겼습니다.');
+      toast(t('메뉴가 담겼습니다.'), {
+        position: 'top-center',
+        duration: 1000,
+      });
       addToCart(menu);
       return;
     }
