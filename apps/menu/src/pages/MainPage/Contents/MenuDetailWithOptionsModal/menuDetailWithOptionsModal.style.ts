@@ -32,6 +32,13 @@ export const MenuInfoContainer = styled.div`
   min-height: 0;
 `;
 
+export const SwiperContainer = styled.div`
+  position: relative;
+  width: 100%;
+  border-radius: 0.5rem;
+  overflow: hidden;
+`;
+
 interface IImageWrapper {
   hasImage: boolean;
 }
