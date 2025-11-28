@@ -53,6 +53,13 @@ export const ToastContainerWrapper = styled.div<{ position: string }>`
           right: 16px;
           align-items: flex-end;
         `;
+      case 'center-center':
+        return css`
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          align-items: center;
+        `;
     }
   }}
 `;
