@@ -25,9 +25,11 @@ export const CategoryItem = ({ category }: Props) => {
       )}
 
       <S.Categories layout={layout}>
-        {category.menuInfoList.map((menu) => (
-          <MenuItem layout={layout} key={menu.menuSeq} menu={menu} />
-        ))}
+        {category.menuInfoList
+          .filter((menu) => !menu.isHidden)
+          .map((menu) => (
+            <MenuItem layout={layout} key={menu.menuSeq} menu={menu} />
+          ))}
       </S.Categories>
     </S.Container>
   );
