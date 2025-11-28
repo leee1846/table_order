@@ -1,19 +1,19 @@
 import { EVENT_KEYS } from '@/constants/keys';
-import type { TGetCategoryListResponse } from '@repo/api/types';
+import type { ICategory } from '@repo/api/types';
 import { useState, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
 import { CategoryItem } from '../CategoryItem';
 
 interface Props {
-  categories: TGetCategoryListResponse;
+  categories: ICategory[];
 }
 
 export const TabContent = ({ categories }: Props) => {
   const [selectedCategorySeq, setSelectedCategorySeq] = useState(
-    categories.data[0]?.categorySeq || 0
+    categories[0]?.categorySeq || 0
   );
 
-  const selectedCategory = categories.data.find(
+  const selectedCategory = categories.find(
     (category) => category.categorySeq === selectedCategorySeq
   );
 
@@ -30,7 +30,7 @@ export const TabContent = ({ categories }: Props) => {
 
     // 모든 카테고리에 대한 선택 이벤트 리스너 등록
     // 어떤 카테고리를 클릭해도 이벤트를 받을 수 있도록 모든 카테고리를 리스닝
-    categories.data.forEach((category) => {
+    categories.forEach((category) => {
       window.addEventListener(
         EVENT_KEYS.SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.categorySeq),
         handleCategoryChange
@@ -40,7 +40,7 @@ export const TabContent = ({ categories }: Props) => {
     // Cleanup: 컴포넌트 언마운트 또는 의존성 변경 시 실행
     return () => {
       // 모든 이벤트 리스너 제거
-      categories.data.forEach((category) => {
+      categories.forEach((category) => {
         window.removeEventListener(
           EVENT_KEYS.SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY(category.categorySeq),
           handleCategoryChange

@@ -17,6 +17,8 @@ export interface ICategoryStore extends IBaseStore<ICategory[]> {
   updateVisibility: (categorySeq: number, isVisible: boolean) => void;
   /** 모든 카테고리 노출여부 상태 맵 업데이트 */
   updateAllVisibility: (visibilityMap: ICategoryVisibilityMap) => void;
+  /** 필터링된 보이는 카테고리 목록 반환 */
+  getVisibleCategories: () => ICategory[];
 }
 
 /**
@@ -90,6 +92,25 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
   updateAllVisibility: (visibilityMap: ICategoryVisibilityMap) => {
     set({
       visibilityMap: { ...visibilityMap },
+    });
+  },
+
+  // 필터링된 보이는 카테고리 목록 반환
+  getVisibleCategories: (): ICategory[] => {
+    const state = useCategoryStore.getState() as ICategoryStore;
+    if (!state.data) {
+      return [];
+    }
+
+    return state.data.filter((category: ICategory) => {
+      // isHidden이 true이면 숨김
+      if (category.isHidden) {
+        return false;
+      }
+
+      // visibilityMap 확인: false면 숨김, 없거나 true면 표시
+      const isVisible = state.visibilityMap[category.categorySeq];
+      return isVisible !== false;
     });
   },
 }));

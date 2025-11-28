@@ -1,14 +1,10 @@
-import { SCROLL_CATEGORY_VISIBLE_EVENT_KEY } from '@/constants/keys';
-import type { TGetCategoryListResponse } from '@repo/api/types';
+import { EVENT_KEYS } from '@/constants/keys';
 import { useRef, useEffect } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
 import { createDebounce } from '@repo/util/function';
 import { getMinFromArray } from '@repo/util/array';
 import { CategoryItem } from '@/pages/MainPage/Contents/CategoryItem';
-
-interface Props {
-  categories: TGetCategoryListResponse;
-}
+import type { ICategory } from '@repo/api/types';
 
 /**
  * Intersection Observer 설정
@@ -19,6 +15,10 @@ const OBSERVER_OPTIONS: IntersectionObserverInit = {
   rootMargin: '0px 0px -80% 0px', // 화면 상단 20%에서 감지 (스크롤 시 block: 'start'를 사용하므로)
   threshold: [0, 0.1, 0.5, 1.0], // 요소의 가시성 비율에 따라 여러 번 콜백 호출
 };
+
+interface Props {
+  categories: ICategory[];
+}
 
 export const ScrollContent = ({ categories }: Props) => {
   /**
@@ -71,7 +71,7 @@ export const ScrollContent = ({ categories }: Props) => {
         // Sidebar 컴포넌트가 수신할 커스텀 이벤트 발생
         window.dispatchEvent(
           new CustomEvent(
-            SCROLL_CATEGORY_VISIBLE_EVENT_KEY(topVisibleCategorySeq),
+            EVENT_KEYS.SCROLL_CATEGORY_VISIBLE_EVENT_KEY(topVisibleCategorySeq),
             {
               detail: { seq: topVisibleCategorySeq },
             }
@@ -106,7 +106,7 @@ export const ScrollContent = ({ categories }: Props) => {
     );
 
     // 모든 카테고리 섹션을 관찰 대상으로 등록
-    categories.data.forEach((category) => {
+    categories.forEach((category) => {
       const sectionElement = document.getElementById(
         `category-${category.categorySeq}`
       );
@@ -130,7 +130,7 @@ export const ScrollContent = ({ categories }: Props) => {
 
   return (
     <S.Container>
-      {categories.data.map((category) => (
+      {categories.map((category) => (
         <div key={category.categorySeq} id={`category-${category.categorySeq}`}>
           <CategoryItem category={category} />
         </div>

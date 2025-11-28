@@ -6,7 +6,6 @@ import { baseTheme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { StaffCallModal } from '@/pages/MainPage/StaffCallModal';
 import type { ICategory } from '@repo/api/types';
-import { useCategoryStore } from '@/stores/useCategoryStore';
 
 interface Props {
   categories: ICategory[];
@@ -15,8 +14,6 @@ interface Props {
 
 export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   const { t } = useTranslation();
-
-  const visibilityMap = useCategoryStore((state) => state.visibilityMap);
 
   const staffCallCategory = categories.find(
     (category) => !!category.isStaffCall
@@ -168,28 +165,17 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   return (
     <>
       <S.Container>
-        {categories
-          .filter((category) => {
-            // isHidden이 true이면 숨김
-            if (category.isHidden) {
-              return false;
-            }
-
-            // visibilityMap 확인: false면 숨김, 없거나 true면 표시
-            const isVisible = visibilityMap[category.categorySeq];
-            return isVisible !== false;
-          })
-          .map((category) => (
-            <S.CategoryButton
-              isActive={selectedCategorySeq === category.categorySeq}
-              key={category.categorySeq}
-              type="button"
-              onClick={() => handleCategoryClick(category)}
-            >
-              {category.categoryName}
-              {category.categorySeq}
-            </S.CategoryButton>
-          ))}
+        {categories.map((category) => (
+          <S.CategoryButton
+            isActive={selectedCategorySeq === category.categorySeq}
+            key={category.categorySeq}
+            type="button"
+            onClick={() => handleCategoryClick(category)}
+          >
+            {category.categoryName}
+            {category.categorySeq}
+          </S.CategoryButton>
+        ))}
 
         {staffCallCategory && (
           <S.StaffCall>

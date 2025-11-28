@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as S from '@/pages/MainPage/mainPage.style';
 import { Sidebar } from '@/pages/MainPage/Sidebar';
-import { useScrollLayout } from '@/constants/mock';
 import { Header } from '@/pages/MainPage/Header';
 import { CartButton } from '@/pages/MainPage/CartButton';
 import { BreakTime } from '@/pages/MainPage/BreakTime';
@@ -12,6 +11,10 @@ import { useCategoryStore } from '@/stores/useCategoryStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { checkCategorySaleStatus } from '@/utils/category';
 import { timerKeys } from '@/constants/keys';
+import { Contents } from '@/pages/MainPage/Contents';
+
+// TODO: api를 통해 반환받은 data로 추후 변경 예정정
+const useScrollLayout = true;
 
 export const MainPage = () => {
   // TODO: 실제 토큰에서 shopSeq를 가져와서 API 호출에 사용하도록 추후에 수정
@@ -23,6 +26,7 @@ export const MainPage = () => {
     data: categoriesStoreData,
     setData: setCategoriesStoreData,
     loadFromStorage,
+    getVisibleCategories,
   } = useCategoryStore();
 
   // 컴포넌트 마운트 시 세션 스토리지에서 데이터 로드
@@ -136,17 +140,20 @@ export const MainPage = () => {
     );
   }
 
+  const visibleCategories = getVisibleCategories();
+
   return (
     <S.Container>
       <Header />
       <S.MainContent>
-        {categoriesStoreData && (
-          <Sidebar
-            categories={categoriesStoreData}
-            useScrollLayout={useScrollLayout}
-          />
-        )}
-        {/* <Contents categories={categories} useScrollLayout={useScrollLayout} /> */}
+        <Sidebar
+          categories={visibleCategories}
+          useScrollLayout={useScrollLayout}
+        />
+        <Contents
+          categories={visibleCategories}
+          useScrollLayout={useScrollLayout}
+        />
         <CartButton />
       </S.MainContent>
     </S.Container>

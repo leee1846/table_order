@@ -1,10 +1,10 @@
-import { categories } from '@/constants/mock';
 import { ScrollContent } from '@/pages/MainPage/Contents/ScrollContent';
 import { TabContent } from '@/pages/MainPage/Contents/TabContent';
 import * as S from '@/pages/MainPage/Contents/contents.style';
+import type { ICategory } from '@repo/api/types';
 
 interface Props {
-  categories: typeof categories;
+  categories: ICategory[];
   useScrollLayout: boolean;
 }
 
