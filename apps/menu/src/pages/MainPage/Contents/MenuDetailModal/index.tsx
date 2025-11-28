@@ -9,6 +9,7 @@ import { formatCurrency } from '@repo/util/string';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { useState } from 'react';
+import { toast } from '@repo/feature/utils';
 
 interface Props {
   onClose: () => void;
@@ -17,9 +18,20 @@ interface Props {
 export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const { t } = useTranslation();
 
+  const [currentCount, setCurrentCount] = useState(1);
+
   const images = menu.menuImageList?.filter((img) => img.imagePath) || [];
 
-  const [currentCount, setCurrentCount] = useState(1);
+  const onClickAdd = () => {
+    if (menu.minQuantity > currentCount) {
+      toast(
+        t('최소 주문 수량은 {{minQuantity}}개 입니다.', {
+          minQuantity: menu.minQuantity,
+        })
+      );
+      return;
+    }
+  };
 
   return createPortal(
     <ModalBackground onClick={onClose}>
@@ -57,7 +69,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
         </S.TotalContainer>
         <BasicButton
           variant="Solid_Blue_2XL"
-          onClick={() => {}}
+          onClick={onClickAdd}
           customStyle={css`
             width: 100%;
           `}

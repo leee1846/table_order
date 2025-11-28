@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { BasicButton, ToggleButton } from '@repo/ui/components';
-import { toast } from '@repo/feature/utils';
 import * as S from '@/pages/settings/CategoriesPage/Categories/Category/category.style';
 import { ChevronForwardIcon, DeleteIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryManageModal';
 import type { ICategory } from '@repo/api/types';
 import { queryKeys, useDeleteCategory } from '@repo/api/queries';
-import { openDualActionDialog } from '@repo/feature/utils';
+import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { DAYS } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
 import { useQueryClient } from '@repo/api/tanstack-query';

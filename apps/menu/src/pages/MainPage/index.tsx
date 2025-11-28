@@ -12,6 +12,7 @@ import { globalTimerManager } from '@/utils/timerManager';
 import { checkCategorySaleStatus } from '@/utils/category';
 import { timerKeys } from '@/constants/keys';
 import { Contents } from '@/pages/MainPage/Contents';
+import { useCartStore } from '@/stores/useCartStore';
 
 // TODO: api를 통해 반환받은 data로 추후 변경 예정정
 const useScrollLayout = true;
@@ -22,22 +23,26 @@ export const MainPage = () => {
   // const payload = decodeJwtToken<ITokenPayload>(token);
   // const shopSeq = payload?.shopSeq ?? 0;
 
+  const { loadFromStorage: loadCartFromStorage, setCartOptions } =
+    useCartStore();
+
   const {
-    data: categoriesStoreData,
-    setData: setCategoriesStoreData,
-    loadFromStorage,
+    categories: categoriesStoreData,
+    setCategories: setCategoriesStoreData,
+    loadFromStorage: loadCategoryFromStorage,
     getVisibleCategories,
   } = useCategoryStore();
 
   // 컴포넌트 마운트 시 세션 스토리지에서 데이터 로드
   useEffect(() => {
-    loadFromStorage();
-  }, [loadFromStorage]);
+    loadCategoryFromStorage();
+    loadCartFromStorage();
+  }, [loadCartFromStorage, loadCategoryFromStorage]);
 
   // 세션 스토리지에 데이터가 없을 때만 API 호출
   const { data: categoriesData } = useGetCategoriesWithMenus(
     { shopCode: 'NEXA000001', tableNumber: 1 },
-    { enabled: !categoriesStoreData }
+    { enabled: categoriesStoreData === null }
   );
 
   // API 응답을 받으면 스토어에 저장 (세션 스토리지에도 자동 저장)
@@ -49,8 +54,10 @@ export const MainPage = () => {
 
   // 카테고리 노출 여부를 업데이트하는 함수
   const updateCategoryVisibility = () => {
-    const currentCategoriesData = useCategoryStore.getState().data;
+    const currentCategoriesData = useCategoryStore.getState().categories;
     const updateAllVisibility = useCategoryStore.getState().updateAllVisibility;
+    const getVisibleCategories =
+      useCategoryStore.getState().getVisibleCategories;
 
     if (!currentCategoriesData) {
       return;
@@ -88,6 +95,13 @@ export const MainPage = () => {
 
     // visibility 맵 업데이트
     updateAllVisibility(newVisibilityMap);
+
+    // updateCategoryVisibility 완료 후 cart options 업데이트
+    const visibleCategories = getVisibleCategories();
+    const hasFirstOrderRequiredItems = visibleCategories.some(
+      (category) => category.isFirstOrderRequired
+    );
+    setCartOptions({ hasFirstOrderRequiredItems });
 
     // 다음 상태 변경을 위한 타이머 설정
     if (earliestNextChangeMs !== null) {

@@ -37,5 +37,6 @@ export const ContentWrapperStyles = styled.div`
 export const MessageStyles = styled.div`
   flex: 1;
   word-break: break-word;
+  white-space: pre-line;
   ${TYPOGRAPHY.MT_7}
 `;

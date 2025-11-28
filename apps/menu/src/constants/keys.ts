@@ -11,6 +11,8 @@ export const STORAGE_KEYS = {
   CATEGORIES: 'menu-categories',
   /** 선택한 다국어 코드 키 */
   I18N_LANGUAGE: 'i18Lng',
+  /** 장바구니 data 키 */
+  CART: 'menu-cart',
 } as const;
 
 export const timerKeys = {
