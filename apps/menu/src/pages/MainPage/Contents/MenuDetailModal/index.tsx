@@ -1,47 +1,43 @@
 import { createPortal } from 'react-dom';
-import { useState } from 'react';
 import { BasicButton, ModalBackground, NumberInput } from '@repo/ui/components';
-import { bestOnIcon, chiliOffIcon, chiliOnIcon } from '@repo/ui/icons';
 import { useTranslation } from 'react-i18next';
 import * as S from '@/pages/MainPage/Contents/MenuDetailModal/menuDetailModal.style';
 import { css } from '@emotion/react';
+import type { IMenu } from '@repo/api/types';
+import { Thumbnail } from '@/feature/Thumbnail';
+import { formatCurrency } from '@repo/util/string';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
 
 interface Props {
   onClose: () => void;
+  menu: IMenu;
 }
-export const MenuDetailModal = ({ onClose }: Props) => {
+export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const { t } = useTranslation();
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
 
-  const imageUrl = 'https://picsum.photos/400/300';
-  const hasImage = Boolean(imageLoaded && !imageError && imageUrl);
+  const images = menu.menuImageList?.filter((img) => img.imagePath) || [];
 
   return createPortal(
     <ModalBackground onClick={onClose}>
       <S.Container>
-        <S.ImageWrapper hasImage={hasImage}>
-          {!imageError && imageUrl && (
-            <S.Image
-              src={imageUrl}
-              alt="메뉴 이미지"
-              onLoad={() => setImageLoaded(true)}
-              onError={() => {
-                setImageError(true);
-                setImageLoaded(false);
-              }}
-            />
-          )}
-          <S.BestIcon src={bestOnIcon} alt="" />
-          <S.ChiliIcons>
-            <img src={chiliOnIcon} width={36} height={36} alt="" />
-            <img src={chiliOffIcon} width={36} height={36} alt="" />
-            <img src={chiliOnIcon} width={36} height={36} alt="" />
-          </S.ChiliIcons>
-        </S.ImageWrapper>
-        <S.Name>메뉴 이름???</S.Name>
-        <S.Price>10000????</S.Price>
-        <S.Description>메뉴 설명??????????????</S.Description>
+        {images.length > 0 ? (
+          <S.SwiperContainer>
+            <Swiper spaceBetween={0} slidesPerView={1} loop>
+              {images.map((image) => (
+                <SwiperSlide key={image.imageSeq || image.imagePath}>
+                  <Thumbnail menu={menu} image={image} width="100%" />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </S.SwiperContainer>
+        ) : (
+          <Thumbnail menu={menu} image={undefined} width="100%" />
+        )}
+        <S.Name>{menu.menuName}</S.Name>
+        {/* TODO 화폐단위 추후 적용 */}
+        <S.Price>₩{formatCurrency(menu.menuPrice)}</S.Price>
+        <S.Description>{menu.menuDescription}</S.Description>
         <NumberInput
           variant="square"
           value={1}

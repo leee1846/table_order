@@ -10,49 +10,10 @@ export const Container = styled.div`
   max-width: calc(100vw - 2rem);
 `;
 
-interface IImageWrapper {
-  hasImage: boolean;
-}
-
-export const ImageWrapper = styled.div<IImageWrapper>`
-  position: relative;
-  width: 100%;
-  background-color: ${({ theme, hasImage }) =>
-    hasImage ? 'transparent' : theme.mode.grey[200]};
-  border-radius: 0.5rem;
-  overflow: hidden;
-  aspect-ratio: 4 / 3;
-  min-height: 200px;
-  margin-bottom: 14px;
-`;
-
-export const Image = styled.img`
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 0.5rem;
-  object-fit: cover;
-`;
-
-export const BestIcon = styled.img`
-  position: absolute;
-  top: 0;
-  left: 20px;
-  width: 64px;
-  height: 43px;
-`;
-
-export const ChiliIcons = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  align-items: center;
-`;
-
 export const Name = styled.p`
   ${TYPOGRAPHY.MT_7}
   color: ${({ theme }) => theme.mode.grey[800]};
+  margin-top: 14px;
   margin-bottom: 6px;
 `;
 
@@ -84,4 +45,11 @@ export const TotalContainer = styled.div`
     ${TYPOGRAPHY.MT_4}
     color: ${({ theme }) => theme.mode.primary[500]};
   }
+`;
+
+export const SwiperContainer = styled.div`
+  position: relative;
+  width: 100%;
+  border-radius: 0.5rem;
+  overflow: hidden;
 `;
