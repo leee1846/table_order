@@ -10,6 +10,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { useState } from 'react';
 import { toast } from '@repo/feature/utils';
+import { useCartStore } from '@/stores/useCartStore';
 
 interface Props {
   onClose: () => void;
@@ -19,6 +20,8 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const { t } = useTranslation();
 
   const [currentCount, setCurrentCount] = useState(1);
+
+  const { addToCart } = useCartStore();
 
   const images = menu.menuImageList?.filter((img) => img.imagePath) || [];
 
@@ -31,6 +34,15 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
       );
       return;
     }
+
+    Array.from({ length: currentCount }).forEach(() => {
+      addToCart(menu);
+    });
+    toast(t('메뉴가 담겼습니다.'), {
+      position: 'top-center',
+      duration: 1000,
+    });
+    onClose();
   };
 
   return createPortal(
