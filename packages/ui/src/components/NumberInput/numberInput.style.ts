@@ -86,7 +86,7 @@ const getFocusBackgroundColor = (
     return colors.primary[500];
   }
 
-  return theme.mode.undefined_palette[900];
+  return theme.mode.white;
 };
 
 const getFocusTextColor = (

@@ -21,6 +21,11 @@ export const Thumbnail = ({ menu, image, width = '100%' }: Props) => {
 
   return (
     <S.ImageWrapper hasImage={hasImage} width={width}>
+      {menu.isOutOfStock && (
+        <S.OutOfStock>
+          <p>Sold Out</p>
+        </S.OutOfStock>
+      )}
       {!imageError && image && image.imagePath && (
         <img
           src={image.imagePath}

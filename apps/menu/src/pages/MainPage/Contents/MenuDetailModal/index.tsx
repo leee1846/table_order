@@ -8,6 +8,7 @@ import { Thumbnail } from '@/feature/Thumbnail';
 import { formatCurrency } from '@repo/util/string';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
+import { useState } from 'react';
 
 interface Props {
   onClose: () => void;
@@ -18,6 +19,8 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
 
   const images = menu.menuImageList?.filter((img) => img.imagePath) || [];
 
+  const [currentCount, setCurrentCount] = useState(1);
+
   return createPortal(
     <ModalBackground onClick={onClose}>
       <S.Container>
@@ -25,7 +28,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
           <S.SwiperContainer>
             <Swiper spaceBetween={0} slidesPerView={1} loop>
               {images.map((image) => (
-                <SwiperSlide key={image.imageSeq || image.imagePath}>
+                <SwiperSlide key={image.imageSeq}>
                   <Thumbnail menu={menu} image={image} width="100%" />
                 </SwiperSlide>
               ))}
@@ -40,8 +43,8 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
         <S.Description>{menu.menuDescription}</S.Description>
         <NumberInput
           variant="square"
-          value={1}
-          onChange={() => {}}
+          value={currentCount}
+          onChange={setCurrentCount}
           size="L"
           min={1}
           customStyle={css`
@@ -50,7 +53,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
         />
         <S.TotalContainer>
           <p>{t('합계')}</p>
-          <p>10000????</p>
+          <p>{formatCurrency(menu.menuPrice * currentCount)}</p>
         </S.TotalContainer>
         <BasicButton
           variant="Solid_Blue_2XL"
