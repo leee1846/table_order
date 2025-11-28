@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { BasicButton, ToggleButton } from '@repo/ui/components';
+import { BasicButton, ToggleButton, toast } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoryMenusPage/Menus/Menu/menu.style';
 import {
   bestOnIcon,
@@ -9,14 +9,19 @@ import {
 } from '@repo/ui/icons';
 import { formatCurrency } from '@repo/util/string';
 import { MenuCopyModal } from '@/pages/settings/CategoryMenusPage/MenuCopyModal';
-import type { IMenuListItem } from '@repo/api/types';
+import type { IMenu } from '@repo/api/types';
+import { queryKeys, useDeleteMenu } from '@repo/api/queries';
+import { useQueryClient } from '@repo/api/tanstack-query';
+import { openDualActionDialog } from '@repo/feature/utils';
 
 interface Props {
-  menu: IMenuListItem;
+  menu: IMenu;
 }
 
 export const Menu = ({ menu }: Props) => {
   const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const deleteMenuMutation = useDeleteMenu();
 
   const thumbnailSrc = useMemo(() => {
     if (!menu.menuImageList || menu.menuImageList.length === 0) {
@@ -38,6 +43,35 @@ export const Menu = ({ menu }: Props) => {
   }, [menu.menuImageList]);
 
   const spiceLevel = menu.spiceLevel ?? 0;
+
+  const handleDeleteMenu = () => {
+    openDualActionDialog({
+      title: '메뉴를 삭제할까요?',
+      content: `"${menu.menuName}" 메뉴를 삭제하시겠습니까?`,
+      primaryText: '예',
+      secondaryText: '아니요',
+      size: 'xsmall',
+      onConfirm: () => {
+        deleteMenuMutation.mutate(
+          { menuSeq: menu.menuSeq },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({
+                queryKey: queryKeys.menu.list(menu.categorySeq),
+              });
+              toast('메뉴가 삭제되었습니다.');
+            },
+            onError: (error) => {
+              toast(
+                error.response?.data?.status?.userMessage ||
+                  '메뉴 삭제에 실패했습니다.'
+              );
+            },
+          }
+        );
+      },
+    });
+  };
 
   return (
     <>
@@ -76,7 +110,12 @@ export const Menu = ({ menu }: Props) => {
                 >
                   이동/복사
                 </BasicButton>
-                <BasicButton variant="Outline_Grey_L">삭제</BasicButton>
+                <BasicButton
+                  variant="Outline_Grey_L"
+                  onClick={handleDeleteMenu}
+                >
+                  삭제
+                </BasicButton>
                 <BasicButton variant="Solid_Sky_Blue_L">수정</BasicButton>
               </div>
             </S.TitleContainer>

@@ -1,10 +1,10 @@
 import { Menu } from '@/pages/settings/CategoryMenusPage/Menus/Menu';
 import * as S from '@/pages/settings/CategoryMenusPage/Menus/menus.style';
-import type { IMenuListItem } from '@repo/api/types';
+import type { IMenu } from '@repo/api/types';
 import { NoContent } from '@/feature/NoContent';
 
 interface MenusProps {
-  menus: IMenuListItem[] | undefined;
+  menus: IMenu[] | undefined;
   isLoading: boolean;
   hasCategory: boolean;
 }
