@@ -144,10 +144,3 @@ export class TimerManager {
     return Array.from(this.timers.keys());
   }
 }
-
-/**
- * 전역 타이머 매니저 싱글톤 인스턴스를 생성합니다.
- */
-export const createTimerManager = (): TimerManager => {
-  return new TimerManager();
-};

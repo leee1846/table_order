@@ -4,7 +4,7 @@ import { speechBubbleIcon } from '@repo/ui/icons';
 import * as S from './cartReminder.style';
 import { useTranslation, Trans } from 'react-i18next';
 import { css } from '@emotion/react';
-import { createTimerManager } from '@repo/util/timerManager';
+import { globalTimerManager } from '@/utils/timerManager';
 import { timerKeys } from '@/constants/keys';
 
 interface Props {
@@ -16,10 +16,8 @@ export const CartReminder = ({ closePage, resetCart }: Props) => {
 
   const [time, setTime] = useState(30);
 
-  const timer = createTimerManager();
-
   useEffect(() => {
-    timer.setInterval(
+    globalTimerManager.setInterval(
       timerKeys.CART_REMINDER,
       () => {
         setTime((prev) => prev - 1);
@@ -28,17 +26,17 @@ export const CartReminder = ({ closePage, resetCart }: Props) => {
     );
 
     return () => {
-      timer.clear(timerKeys.CART_REMINDER);
+      globalTimerManager.clear(timerKeys.CART_REMINDER);
     };
-  }, [timer]);
+  }, []);
 
   useEffect(() => {
     if (time === 0) {
-      timer.clear(timerKeys.CART_REMINDER);
+      globalTimerManager.clear(timerKeys.CART_REMINDER);
       resetCart();
       closePage();
     }
-  }, [time, timer, resetCart, closePage]);
+  }, [time, resetCart, closePage]);
 
   return (
     <S.Container>

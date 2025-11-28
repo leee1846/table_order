@@ -11,8 +11,10 @@ export const CategoryItem = ({ category }: Props) => {
   return (
     <S.Container>
       <div>
-        <S.CategoryName>카테고리 이름???????</S.CategoryName>
-        <S.CategoryDescription>카테고리 설명???????</S.CategoryDescription>
+        <S.CategoryName>{category.categoryName}</S.CategoryName>
+        <S.CategoryDescription>
+          {category.categoryDescription}
+        </S.CategoryDescription>
       </div>
 
       <S.Categories layout={layout}>

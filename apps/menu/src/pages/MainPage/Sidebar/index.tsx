@@ -165,18 +165,17 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   return (
     <>
       <S.Container>
-        {categories
-          .filter((category) => !category.isHidden)
-          .map((category) => (
-            <S.CategoryButton
-              isActive={selectedCategorySeq === category.categorySeq}
-              key={category.categorySeq}
-              type="button"
-              onClick={() => handleCategoryClick(category)}
-            >
-              {category.categoryName}
-            </S.CategoryButton>
-          ))}
+        {categories.map((category) => (
+          <S.CategoryButton
+            isActive={selectedCategorySeq === category.categorySeq}
+            key={category.categorySeq}
+            type="button"
+            onClick={() => handleCategoryClick(category)}
+          >
+            {category.categoryName}
+            {category.categorySeq}
+          </S.CategoryButton>
+        ))}
 
         {staffCallCategory && (
           <S.StaffCall>
