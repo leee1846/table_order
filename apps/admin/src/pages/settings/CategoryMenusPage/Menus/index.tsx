@@ -7,9 +7,15 @@ interface MenusProps {
   menus: IMenu[] | undefined;
   isLoading: boolean;
   hasCategory: boolean;
+  onClickEditMenu: (menu: IMenu) => void;
 }
 
-export const Menus = ({ menus, isLoading, hasCategory }: MenusProps) => {
+export const Menus = ({
+  menus,
+  isLoading,
+  hasCategory,
+  onClickEditMenu,
+}: MenusProps) => {
   if (!hasCategory) {
     return <NoContent>카테고리가 선택되지 않았습니다.</NoContent>;
   }
@@ -25,7 +31,7 @@ export const Menus = ({ menus, isLoading, hasCategory }: MenusProps) => {
   return (
     <S.Container>
       {menus.map((menu) => (
-        <Menu key={menu.menuSeq} menu={menu} />
+        <Menu key={menu.menuSeq} menu={menu} onEditMenu={onClickEditMenu} />
       ))}
     </S.Container>
   );

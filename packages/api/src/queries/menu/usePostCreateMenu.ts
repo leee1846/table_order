@@ -13,7 +13,7 @@ import type { IApiError } from '../../types/common';
  * const { mutateAsync: createMenu } = usePostCreateMenu();
  *
  * const handleCreate = async () => {
- *   await createMenu(data);
+ *   await createMenu({ menu: data, files: [file1, file2] });
  * };
  * ```
  */
@@ -21,7 +21,7 @@ export const usePostCreateMenu = () => {
   return useMutation<
     TMenuMutationResponse,
     AxiosError<IApiError>,
-    ICreateMenuRequest
+    { menu: ICreateMenuRequest; files?: File[] }
   >({
     mutationFn: createMenu,
   });

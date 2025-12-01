@@ -1,14 +1,9 @@
 import { useState } from 'react';
-import {
-  ModalBackground,
-  Input,
-  BasicButton,
-  toast,
-} from '@repo/ui/components';
+import { ModalBackground, Input, BasicButton } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './addTableGroupDialog.styles';
-
+import { toast } from '@repo/feature/utils';
 const { colors } = theme;
 
 interface AddTableGroupDialogProps {
@@ -38,7 +33,9 @@ export const AddTableGroupDialog = ({
     onClose();
   };
 
-  if (!isOpen){ return null;}
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <ModalBackground onClick={handleClose}>

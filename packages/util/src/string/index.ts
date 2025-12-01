@@ -56,3 +56,51 @@ export const formatCurrency = (num: number): string => {
 export const padZero = (num: number): string => {
   return num.toString().padStart(2, '0');
 };
+
+/**
+ * 이미지 URL의 도메인을 127.0.0.1:5173에 맞춰서 변환합니다.
+ * 전체 URL인 경우 도메인 부분을 교체하고, 상대 경로인 경우 127.0.0.1:5173을 앞에 붙입니다.
+ *
+ * @param imagePath - 변환할 이미지 경로 (전체 URL 또는 상대 경로)
+ * @returns 127.0.0.1:5173에 맞춰 변환된 이미지 URL
+ *
+ * @example
+ * ```ts
+ * // 전체 URL인 경우
+ * normalizeImageUrl('http://127.0.0.1:8080/shop/NEXA000001/menu/51/image.jpg')
+ * // "http://127.0.0.1:5173/shop/NEXA000001/menu/51/image.jpg"
+ *
+ * // 상대 경로인 경우
+ * normalizeImageUrl('/shop/NEXA000001/menu/51/image.jpg')
+ * // "http://127.0.0.1:5173/shop/NEXA000001/menu/51/image.jpg"
+ *
+ * // null이나 빈 문자열인 경우
+ * normalizeImageUrl(null) // null
+ * normalizeImageUrl('') // ''
+ * ```
+ */
+export const normalizeImageUrl = (
+  imagePath: string | null | undefined
+): string | null => {
+  if (!imagePath) {
+    return imagePath ?? null;
+  }
+
+  const baseUrl = 'http://127.0.0.1:5173';
+
+  // 전체 URL인 경우 (http:// 또는 https://로 시작)
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    try {
+      const url = new URL(imagePath);
+      const pathname = url.pathname;
+      return `${baseUrl}${pathname}`;
+    } catch {
+      // URL 파싱 실패 시 원본 반환
+      return imagePath;
+    }
+  }
+
+  // 상대 경로인 경우
+  const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+  return `${baseUrl}${path}`;
+};

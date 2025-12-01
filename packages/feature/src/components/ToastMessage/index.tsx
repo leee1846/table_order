@@ -59,7 +59,7 @@ const ToastContainer = ({ position }: ToastMessageProps) => {
  * @param {ToastMessageProps} props - 컴포넌트 props
  * @param {ToastPosition} [props.position='top-center'] - Toast가 표시될 위치
  *   - 'top-left' | 'top-center' | 'top-right'
- *   - 'bottom-left' | 'bottom-center' | 'bottom-right'
+ *   - 'bottom-left' | 'bottom-center' | 'bottom-right' | 'center-center'
  *
  * @example
  * ```tsx

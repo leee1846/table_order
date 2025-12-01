@@ -9,7 +9,7 @@ import type {
 import type { IApiError } from '../../types/common';
 
 /**
- * 카테고리별 메뉴 리스트 조회
+ * 카테고리별 메뉴 리스트 조회 훅
  */
 export const useGetMenuList = (
   params: IGetMenuListParams,

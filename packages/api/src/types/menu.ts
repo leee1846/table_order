@@ -55,6 +55,18 @@ export interface IMenuImage {
   isMainImage: boolean;
 }
 
+/**
+ * 메뉴 생성 요청 시 사용하는 이미지 타입
+ * - imageName: 파일명 (UUID 또는 timestamp)
+ * - imageIndex: 이미지 순서
+ * - isMainImage: 메인 이미지 여부
+ */
+export interface ICreateMenuImage {
+  imageName: string;
+  imageIndex: number;
+  isMainImage: boolean;
+}
+
 // ============================================================================
 // 메뉴 베이스 타입 (최소 단위)
 // ============================================================================
@@ -152,6 +164,10 @@ export type ICreateMenuRequest = Omit<
   | 'quantity'
   | 'selectedOptions'
   | 'totalPrice'
+  | 'isOutOfStock'
+  | 'index'
+  | 'mappedMenuCode'
+  | 'isHidden'
   | 'menuImageList'
 > &
   Partial<
@@ -172,7 +188,9 @@ export type ICreateMenuRequest = Omit<
       | 'optionGroupList'
       | 'selectedLanguageCode'
     >
-  >;
+  > & {
+    menuImageList?: ICreateMenuImage[];
+  };
 
 // ============================================================================
 // PUT /menu
@@ -218,7 +236,6 @@ export type IUpdateMenuRequest = Omit<
       | 'touchKeyColorCode'
       | 'optionGroupList'
       | 'selectedLanguageCode'
-      | 'menuImageList'
     >
   >;
 

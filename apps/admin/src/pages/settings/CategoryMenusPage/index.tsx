@@ -5,9 +5,11 @@ import { MenuManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageMo
 import { useLocation, useParams } from 'react-router-dom';
 import * as S from '@/pages/settings/CategoryMenusPage/categoryMenusPage.style';
 import { useGetMenuList } from '@repo/api/queries';
+import type { IMenu } from '@repo/api/types';
 
 export const CategoryMenusPage = () => {
-  const [isAddMenuModalOpen, setIsAddMenuModalOpen] = useState(false);
+  const [isMenuManageModalOpen, setIsMenuManageModalOpen] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState<IMenu | null>(null);
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const categorySeq = Number(id);
@@ -16,15 +18,27 @@ export const CategoryMenusPage = () => {
   const { data: menuListResponse, isLoading: isMenuListLoading } =
     useGetMenuList(
       { categorySeq: isValidCategorySeq ? categorySeq : 0 },
-      { enabled: isValidCategorySeq }
+      { enabled: isValidCategorySeq } // 카테고리 시퀀스가 유효할 때 만 쿼리가 실행되도록 함함
     );
 
   const onClickAddMenu = () => {
-    setIsAddMenuModalOpen(true);
+    setSelectedMenu(null);
+    setIsMenuManageModalOpen(true);
+  };
+
+  const handleEditMenu = (menu: IMenu) => {
+    setSelectedMenu(menu);
+    setIsMenuManageModalOpen(true);
+  };
+
+  const handleCloseMenuModal = () => {
+    setIsMenuManageModalOpen(false);
+    setSelectedMenu(null);
   };
 
   useEffect(() => {
-    setIsAddMenuModalOpen(false);
+    setIsMenuManageModalOpen(false);
+    setSelectedMenu(null);
   }, [location.pathname]);
 
   return (
@@ -34,9 +48,16 @@ export const CategoryMenusPage = () => {
         menus={menuListResponse?.data}
         isLoading={isMenuListLoading}
         hasCategory={isValidCategorySeq}
+        onClickEditMenu={handleEditMenu}
       />
 
-      {isAddMenuModalOpen && <MenuManageModal />}
+      {isMenuManageModalOpen && isValidCategorySeq && (
+        <MenuManageModal
+          menu={selectedMenu ?? undefined}
+          categorySeq={categorySeq}
+          onClose={handleCloseMenuModal}
+        />
+      )}
     </S.Container>
   );
 };

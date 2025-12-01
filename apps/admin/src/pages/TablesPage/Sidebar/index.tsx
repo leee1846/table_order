@@ -72,12 +72,13 @@ export const Sidebar = () => {
     <SidebarContainer>
       <Logo
         onClick={() => {
-          console.log('test');
-          toast('test');
+          toast('test', {
+            position: 'top-center',
+          });
         }}
       >
         {/* <img
-          src={logoImage} 
+          src={logoImage}
           alt="캡스 스마트오더 로고"
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         /> */}
