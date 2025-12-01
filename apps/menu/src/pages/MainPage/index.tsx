@@ -10,9 +10,12 @@ import { useGetCategoriesWithMenus } from '@repo/api/queries';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { checkCategorySaleStatus } from '@/utils/category';
-import { timerKeys } from '@/constants/keys';
+import { timerKeys, STORAGE_KEYS } from '@/constants/keys';
 import { Contents } from '@/pages/MainPage/Contents';
 import { useCartStore } from '@/stores/useCartStore';
+import { mockCategories } from '@/mocks/mockCategories';
+import storage from '@/utils/storage';
+import type { ICategoryWithMenus } from '@repo/api/types';
 
 // TODO: api를 통해 반환받은 data로 추후 변경 예정정
 const useScrollLayout = true;
@@ -33,22 +36,27 @@ export const MainPage = () => {
     getVisibleCategories,
   } = useCategoryStore();
 
+  // 스토리지에 데이터가 있는지 확인 (렌더링 전에 확인하여 API 호출 여부 결정)
+  const hasStorageData = storage.load<ICategoryWithMenus[]>(
+    STORAGE_KEYS.CATEGORIES
+  );
+
   // 컴포넌트 마운트 시 세션 스토리지에서 데이터 로드
   useEffect(() => {
     loadCategoryFromStorage();
     loadCartFromStorage();
   }, [loadCartFromStorage, loadCategoryFromStorage]);
 
-  // 세션 스토리지에 데이터가 없을 때만 API 호출
+  // 세션 스토리지에 데이터가 없고 스토어에도 데이터가 없을 때만 API 호출
   const { data: categoriesData } = useGetCategoriesWithMenus(
     { shopCode: 'NEXA000001', tableNumber: 1 },
-    { enabled: categoriesStoreData === null }
+    { enabled: !hasStorageData && categoriesStoreData === null }
   );
 
   // API 응답을 받으면 스토어에 저장 (세션 스토리지에도 자동 저장)
   useEffect(() => {
     if (categoriesData?.data) {
-      setCategoriesStoreData(categoriesData.data);
+      setCategoriesStoreData(mockCategories);
     }
   }, [categoriesData, setCategoriesStoreData]);
 

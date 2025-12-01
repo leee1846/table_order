@@ -1,7 +1,7 @@
 import { create } from '@repo/feature/zustand';
-import type { IMenuBase } from '@repo/api/types';
 import { STORAGE_KEYS } from '@/constants/keys';
 import storage from '@/utils/storage';
+import type { ICartMenu } from '@/types/cart';
 
 export interface ICartOptions {
   /** 첫 주문 필수 항목이 있는지 여부 */
@@ -9,7 +9,7 @@ export interface ICartOptions {
 }
 
 export interface ICart extends ICartOptions {
-  menus: IMenuBase[];
+  menus: ICartMenu[];
 }
 
 export interface ICartStore {
@@ -20,9 +20,11 @@ export interface ICartStore {
   setCartOptions: (options: ICartOptions) => void;
 
   /** 장바구니에 아이템 추가 */
-  addToCart: (item: IMenuBase) => void;
+  addToCart: (item: ICartMenu) => void;
+  /** 장바구니 아이템 수량 업데이트 */
+  updateCartItemQuantity: (menuSeq: number, newQuantity: number) => void;
   /** 장바구니에 아이템 제거 */
-  removeFromCart: (item: IMenuBase) => void;
+  removeFromCart: (menuSeq: number) => void;
   /** 장바구니 비우기 */
   clearCart: () => void;
 }
@@ -53,7 +55,7 @@ export const useCartStore = create<ICartStore>((set, get) => ({
   },
 
   // 장바구니에 아이템 추가
-  addToCart: (item: IMenuBase) => {
+  addToCart: (item: ICartMenu) => {
     const newItems = {
       ...get().data,
       menus: [...get().data.menus, item],
@@ -62,11 +64,28 @@ export const useCartStore = create<ICartStore>((set, get) => ({
     set({ data: newItems });
   },
 
+  // 장바구니 아이템 수량 업데이트
+  updateCartItemQuantity: (menuSeq: number, newQuantity: number) => {
+    const newMenus = get().data.menus.map((item) =>
+      item.menuSeq === menuSeq ? { ...item, quantity: newQuantity } : item
+    );
+    const newData = {
+      ...get().data,
+      menus: newMenus,
+    };
+    storage.save(STORAGE_KEYS.CART, newData);
+    set({ data: newData });
+  },
+
   // 장바구니에서 아이템 제거
-  removeFromCart: (item: IMenuBase) => {
-    const newMenus = get().data.menus.filter((i) => i.menuSeq !== item.menuSeq);
-    storage.save(STORAGE_KEYS.CART, newMenus);
-    set({ data: { ...get().data, menus: newMenus } });
+  removeFromCart: (menuSeq: number) => {
+    const newMenus = get().data.menus.filter((i) => i.menuSeq !== menuSeq);
+    const newData = {
+      ...get().data,
+      menus: newMenus,
+    };
+    storage.save(STORAGE_KEYS.CART, newData);
+    set({ data: newData });
   },
 
   // 장바구니 비우기

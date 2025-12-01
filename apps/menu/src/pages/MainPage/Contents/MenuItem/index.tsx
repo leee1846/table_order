@@ -33,13 +33,16 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
 
   const [isMenuDetailOpen, setIsMenuDetailOpen] = useState(false);
 
-  const { addToCart, data: cartData } = useCartStore();
+  const { addToCart, updateCartItemQuantity, data: cartData } = useCartStore();
   const { getVisibleCategories } = useCategoryStore();
 
   const onClickMenu = () => {
     // 품절되었을경우
     if (menu.isOutOfStock) {
-      toast(t('메뉴가 품절되었습니다.'));
+      toast(t('메뉴가 품절되었습니다.'), {
+        position: 'center-center',
+        duration: 1000,
+      });
       return;
     }
 
@@ -53,8 +56,8 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
         menusInCart.some((m) => m.categorySeq === c.categorySeq)
       );
 
-      // 카트에 첫 주문 필수 항목이 없는 경우
-      if (!hasFirstOrderRequiredMenu) {
+      // 카트에 첫 주문 필수 항목이 없고, 현재 선택한 메뉴도 첫 주문 필수 항목이 아닌 경우
+      if (!hasFirstOrderRequiredMenu && !category.isFirstOrderRequired) {
         toast(
           `[${firstOrderRequiredCategories.map((c) => c.categoryName).join(', ')}]\n 메뉴 중 1개 이상 주문해주세요.`,
           {
@@ -68,11 +71,29 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
 
     // 수량선택이 불가능한경우
     if (!category.isQuantitySelectable) {
+      const prevCartMenuData = cartData.menus.find(
+        (item) => item.menuSeq === menu.menuSeq
+      );
+
+      if (prevCartMenuData) {
+        // 이전 데이터가 있으면 수량만 업데이트
+        updateCartItemQuantity(menu.menuSeq, prevCartMenuData.quantity + 1);
+      } else {
+        // 없으면 새로 추가
+        addToCart({
+          categorySeq: menu.categorySeq,
+          menuSeq: menu.menuSeq,
+          menuName: menu.menuName,
+          menuPrice: menu.menuPrice,
+          quantity: 1,
+          selectedOptions: [],
+        });
+      }
+
       toast(t('메뉴가 담겼습니다.'), {
-        position: 'top-center',
+        position: 'center-center',
         duration: 1000,
       });
-      addToCart(menu);
       return;
     }
 
@@ -109,6 +130,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
       {isMenuDetailOpen && menu.optionGroupList.length > 0 && (
         <MenuDetailWithOptionsModal
           onClose={() => setIsMenuDetailOpen(false)}
+          menu={menu}
         />
       )}
     </>

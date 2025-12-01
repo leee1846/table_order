@@ -21,7 +21,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
 
   const [currentCount, setCurrentCount] = useState(1);
 
-  const { addToCart } = useCartStore();
+  const { addToCart, data: cartData } = useCartStore();
 
   const images = menu.menuImageList?.filter((img) => img.imagePath) || [];
 
@@ -35,13 +35,24 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
       return;
     }
 
-    Array.from({ length: currentCount }).forEach(() => {
-      addToCart(menu);
+    const prevCartData = cartData.menus.find(
+      (item) => item.menuSeq === menu.menuSeq
+    );
+
+    addToCart({
+      categorySeq: menu.categorySeq,
+      menuSeq: menu.menuSeq,
+      menuName: menu.menuName,
+      menuPrice: menu.menuPrice,
+      quantity: prevCartData?.quantity ?? 0 + currentCount,
+      selectedOptions: [],
     });
+
     toast(t('메뉴가 담겼습니다.'), {
       position: 'center-center',
       duration: 1000,
     });
+
     onClose();
   };
 

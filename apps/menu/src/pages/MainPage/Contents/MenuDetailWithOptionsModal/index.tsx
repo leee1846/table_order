@@ -18,6 +18,9 @@ import { formatCurrency } from '@repo/util/string';
 import { Thumbnail } from '@/feature/Thumbnail';
 import { NoContent } from '@/feature/NoContent';
 import * as S from '@/pages/MainPage/Contents/MenuDetailWithOptionsModal/menuDetailWithOptionsModal.style';
+import { toast } from '@repo/feature/utils';
+import { useCartStore } from '@/stores/useCartStore';
+import type { ICartMenu } from '@/types/cart';
 
 interface Props {
   onClose: () => void;
@@ -30,11 +33,21 @@ interface SelectedOptionWithGroup {
   groupName: string;
 }
 
+// 옵션을 고유하게 식별하는 키 생성
+const getOptionKey = (option: IOption): string => {
+  return `${option.optionGroupSeq}-${option.optionSeq}`;
+};
+
+// Map 기반 선택된 옵션 타입
+type SelectedOptionsMap = Map<string, { option: IOption; quantity: number }>;
+
 export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
-
-  const [selectedOptions, setSelectedOptions] = useState<IOption[]>([]);
+  const { addToCart } = useCartStore();
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptionsMap>(
+    new Map()
+  );
   const [menuQuantity, setMenuQuantity] = useState(1);
 
   const menuImages = menu.menuImageList?.filter((img) => img.imagePath) || [];
@@ -46,11 +59,8 @@ export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
     targetOptionSeq: number,
     targetOptionGroupSeq: number
   ): number => {
-    return selectedOptions.filter(
-      (option) =>
-        option.optionSeq === targetOptionSeq &&
-        option.optionGroupSeq === targetOptionGroupSeq
-    ).length;
+    const key = `${targetOptionGroupSeq}-${targetOptionSeq}`;
+    return selectedOptions.get(key)?.quantity ?? 0;
   };
 
   // 옵션 추가 가격을 표시할 텍스트 생성 (가격이 0보다 클 때만 표시)
@@ -67,38 +77,66 @@ export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
 
   // 다중 선택 가능한 옵션을 토글 (체크박스 방식)
   const toggleMultipleSelectOption = (option: IOption) => {
-    const currentCount = countSelectedOption(
-      option.optionSeq,
-      option.optionGroupSeq
+    const optionKey = getOptionKey(option);
+    const optionGroup = menu.optionGroupList.find(
+      (group) => group.optionGroupSeq === option.optionGroupSeq
     );
-    const isCurrentlySelected = currentCount > 0;
 
     setSelectedOptions((prevOptions) => {
-      // 이미 선택된 경우: 해당 옵션을 모두 제거
-      if (isCurrentlySelected) {
-        return prevOptions.filter(
-          (opt) =>
-            !(
-              opt.optionSeq === option.optionSeq &&
-              opt.optionGroupSeq === option.optionGroupSeq
-            )
-        );
+      const newOptions = new Map(prevOptions);
+      const currentItem = newOptions.get(optionKey);
+      const currentCount = currentItem?.quantity ?? 0;
+
+      // 이미 선택된 경우: 해당 옵션을 제거
+      if (currentCount > 0) {
+        newOptions.delete(optionKey);
+        return newOptions;
       }
-      // 선택되지 않은 경우: 옵션 추가
-      return [...prevOptions, { ...option }];
+
+      // 선택되지 않은 경우: 옵션 추가 전 최대 수량 체크
+      if (optionGroup?.requiredQuantity && optionGroup.requiredQuantity > 0) {
+        // 해당 옵션 그룹에서 현재 선택된 모든 옵션의 총 수량 계산
+        let currentGroupTotalCount = 0;
+        prevOptions.forEach((item) => {
+          if (item.option.optionGroupSeq === option.optionGroupSeq) {
+            currentGroupTotalCount += item.quantity;
+          }
+        });
+
+        // 최대 수량을 초과하는지 확인
+        if (currentGroupTotalCount + 1 > optionGroup.requiredQuantity) {
+          toast(
+            t('최대 수량({{maxQuantity}}개)을 이미 다 선택했습니다.', {
+              maxQuantity: optionGroup.requiredQuantity,
+            }),
+            { position: 'center-center', duration: 2000 }
+          );
+          return prevOptions;
+        }
+      }
+
+      // 선택되지 않은 경우: 옵션 추가 (수량 1)
+      newOptions.set(optionKey, { option: { ...option }, quantity: 1 });
+      return newOptions;
     });
   };
 
   // 단일 선택 가능한 옵션을 선택 (라디오박스 방식)
   const selectSingleOption = (option: IOption, optionGroup: IOptionGroup) => {
     setSelectedOptions((prevOptions) => {
-      // 같은 그룹의 기존 선택을 모두 제거하고 새 옵션만 추가
-      return [
-        ...prevOptions.filter(
-          (opt) => opt.optionGroupSeq !== optionGroup.optionGroupSeq
-        ),
-        { ...option },
-      ];
+      const newOptions = new Map(prevOptions);
+
+      // 같은 그룹의 기존 선택을 모두 제거
+      prevOptions.forEach((item, key) => {
+        if (item.option.optionGroupSeq === optionGroup.optionGroupSeq) {
+          newOptions.delete(key);
+        }
+      });
+
+      // 새 옵션 추가 (수량 1)
+      const optionKey = getOptionKey(option);
+      newOptions.set(optionKey, { option: { ...option }, quantity: 1 });
+      return newOptions;
     });
   };
 
@@ -127,49 +165,70 @@ export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
     targetOption: IOption,
     newQuantity: number
   ) => {
+    const optionKey = getOptionKey(targetOption);
+    const optionGroup = menu.optionGroupList.find(
+      (group) => group.optionGroupSeq === targetOption.optionGroupSeq
+    );
+
     setSelectedOptions((prevOptions) => {
-      // 현재 선택된 개수 계산
-      const currentCount = prevOptions.filter(
-        (option) =>
-          option.optionSeq === targetOption.optionSeq &&
-          option.optionGroupSeq === targetOption.optionGroupSeq
-      ).length;
+      const newOptions = new Map(prevOptions);
+      const currentItem = newOptions.get(optionKey);
+      const currentCount = currentItem?.quantity ?? 0;
 
-      // 수량이 0 이하이면 해당 옵션 모두 제거
+      // 수량이 0 이하이면 해당 옵션 제거
       if (newQuantity < 1) {
-        return prevOptions.filter(
-          (option) =>
-            !(
-              option.optionSeq === targetOption.optionSeq &&
-              option.optionGroupSeq === targetOption.optionGroupSeq
-            )
-        );
+        newOptions.delete(optionKey);
+        return newOptions;
       }
 
-      // 수량 증가: 부족한 만큼 배열에 추가
+      // 수량 증가: 최대 수량 체크
       if (newQuantity > currentCount) {
-        const additionalCount = newQuantity - currentCount;
-        const newOptions = Array.from({ length: additionalCount }, () => ({
-          ...targetOption,
-        }));
-        return [...prevOptions, ...newOptions];
+        // isOptionQuantitySelectable이 true이고 requiredQuantity가 최대 수량 제한인 경우 체크
+        if (
+          optionGroup?.isOptionQuantitySelectable &&
+          optionGroup.requiredQuantity > 0
+        ) {
+          // 해당 옵션 그룹에서 현재 선택된 모든 옵션의 총 수량 계산
+          let currentGroupTotalCount = 0;
+          prevOptions.forEach((item) => {
+            if (item.option.optionGroupSeq === targetOption.optionGroupSeq) {
+              currentGroupTotalCount += item.quantity;
+            }
+          });
+
+          // 추가하려는 수량
+          const additionalCount = newQuantity - currentCount;
+
+          // 최대 수량을 초과하는지 확인
+          if (
+            currentGroupTotalCount + additionalCount >
+            optionGroup.requiredQuantity
+          ) {
+            toast(
+              t('최대 수량({{maxQuantity}}개)을 이미 다 선택했습니다.', {
+                maxQuantity: optionGroup.requiredQuantity,
+              }),
+              { position: 'center-center', duration: 2000 }
+            );
+            return prevOptions;
+          }
+        }
+
+        // 수량 업데이트
+        newOptions.set(optionKey, {
+          option: { ...targetOption },
+          quantity: newQuantity,
+        });
+        return newOptions;
       }
 
-      // 수량 감소: 초과분을 배열에서 제거
+      // 수량 감소: 수량만 업데이트
       if (newQuantity < currentCount) {
-        const removeCount = currentCount - newQuantity;
-        let removedCount = 0;
-        return prevOptions.filter((option) => {
-          const isTarget =
-            option.optionSeq === targetOption.optionSeq &&
-            option.optionGroupSeq === targetOption.optionGroupSeq;
-
-          if (isTarget && removedCount < removeCount) {
-            removedCount++;
-            return false;
-          }
-          return true;
+        newOptions.set(optionKey, {
+          option: { ...targetOption },
+          quantity: newQuantity,
         });
+        return newOptions;
       }
 
       // 수량이 동일하면 변경 없음
@@ -180,30 +239,21 @@ export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
   // 선택된 옵션들을 그룹별, 옵션별로 집계하여 표시용 데이터 생성
   const groupSelectedOptionsByGroupAndOption =
     (): SelectedOptionWithGroup[] => {
-      const optionMap = new Map<string, SelectedOptionWithGroup>();
+      const result: SelectedOptionWithGroup[] = [];
 
-      selectedOptions.forEach((option) => {
-        // 그룹 시퀀스와 옵션 시퀀스를 조합한 고유 키 생성
-        const mapKey = `${option.optionGroupSeq}-${option.optionSeq}`;
+      selectedOptions.forEach((item) => {
         const optionGroup = menu.optionGroupList.find(
-          (group) => group.optionGroupSeq === option.optionGroupSeq
+          (group) => group.optionGroupSeq === item.option.optionGroupSeq
         );
 
-        const existingItem = optionMap.get(mapKey);
-        if (existingItem) {
-          // 이미 존재하는 옵션이면 개수만 증가
-          existingItem.count++;
-        } else {
-          // 새로운 옵션이면 맵에 추가
-          optionMap.set(mapKey, {
-            option,
-            count: 1,
-            groupName: optionGroup?.optionGroupName || '',
-          });
-        }
+        result.push({
+          option: item.option,
+          count: item.quantity,
+          groupName: optionGroup?.optionGroupName || '',
+        });
       });
 
-      return Array.from(optionMap.values());
+      return result;
     };
 
   // 메뉴 총 가격 계산
@@ -211,41 +261,28 @@ export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
   // - true: 옵션 가격은 수량과 무관 (메뉴 가격만 수량에 곱해짐)
   // - false: 옵션 가격도 수량에 곱해짐 (메뉴 + 옵션 전체에 수량 곱함)
   const calculateMenuTotalPrice = (): number => {
-    // 옵션을 그룹별로 분리
-    const optionsByGroup = new Map<number, IOption[]>();
-    selectedOptions.forEach((option) => {
-      const groupSeq = option.optionGroupSeq;
-      if (!optionsByGroup.has(groupSeq)) {
-        optionsByGroup.set(groupSeq, []);
-      }
-      optionsByGroup.get(groupSeq)!.push(option);
-    });
-
     // 그룹별로 옵션 가격 계산
     let dependentOptionsPrice = 0; // 수량에 곱해지는 옵션 가격
     let independentOptionsPrice = 0; // 수량과 무관한 옵션 가격
 
-    optionsByGroup.forEach((optionsInGroup, groupSeq) => {
+    selectedOptions.forEach((item) => {
       const optionGroup = menu.optionGroupList.find(
-        (group) => group.optionGroupSeq === groupSeq
+        (group) => group.optionGroupSeq === item.option.optionGroupSeq
       );
 
       if (!optionGroup) {
         return;
       }
 
-      // 그룹 내 모든 옵션의 가격 합계
-      const groupTotalPrice = optionsInGroup.reduce(
-        (sum, option) => sum + option.optionPrice,
-        0
-      );
+      // 옵션 가격 * 수량
+      const optionTotalPrice = item.option.optionPrice * item.quantity;
 
       if (optionGroup.isMenuQuantityDependant) {
         // 수량과 무관: 옵션 가격은 그대로
-        independentOptionsPrice += groupTotalPrice;
+        independentOptionsPrice += optionTotalPrice;
       } else {
         // 수량에 곱해짐: 옵션 가격도 수량에 곱함
-        dependentOptionsPrice += groupTotalPrice;
+        dependentOptionsPrice += optionTotalPrice;
       }
     });
 
@@ -277,6 +314,125 @@ export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
   const groupedSelectedOptions = groupSelectedOptionsByGroupAndOption();
   const totalPrice = calculateMenuTotalPrice();
   const hasSelectedOptions = groupedSelectedOptions.length > 0;
+
+  const onClickAdd = () => {
+    if (menu.minQuantity > menuQuantity) {
+      toast(
+        t('최소 주문 수량은 {{minQuantity}}개 입니다.', {
+          minQuantity: menu.minQuantity,
+        }),
+        { position: 'center-center', duration: 2000 }
+      );
+      return;
+    }
+
+    // 옵션 그룹별 필수 수량 체크
+    for (const optionGroup of menu.optionGroupList) {
+      if (optionGroup.requiredQuantity > 0) {
+        let selectedCountInGroup = 0;
+        selectedOptions.forEach((item) => {
+          if (item.option.optionGroupSeq === optionGroup.optionGroupSeq) {
+            selectedCountInGroup += item.quantity;
+          }
+        });
+
+        if (selectedCountInGroup < optionGroup.requiredQuantity) {
+          toast(
+            t('{{groupName}}에서 {{requiredQuantity}}개를 선택해주세요.', {
+              groupName: optionGroup.optionGroupName,
+              requiredQuantity: optionGroup.requiredQuantity,
+            }),
+            { position: 'center-center', duration: 2000 }
+          );
+          return;
+        }
+      }
+    }
+
+    // 옵션을 카트 형식으로 변환
+    const allOptions: ICartMenu['selectedOptions'] = [];
+    const independentOptions: ICartMenu['selectedOptions'] = []; // isMenuQuantityDependant === false인 옵션들
+
+    selectedOptions.forEach((item) => {
+      const optionGroup = menu.optionGroupList.find(
+        (group) => group.optionGroupSeq === item.option.optionGroupSeq
+      );
+
+      const cartOption = {
+        optionSeq: item.option.optionSeq,
+        optionName: item.option.optionName,
+        optionPrice: item.option.optionPrice,
+        index: item.option.index,
+        quantity: item.quantity,
+      };
+
+      // 모든 옵션은 allOptions에 포함
+      allOptions.push(cartOption);
+
+      // isMenuQuantityDependant가 false인 경우만 independentOptions에 포함
+      // (이 옵션들은 메뉴 수량과 무관하게 모든 메뉴에 포함됨)
+      if (optionGroup && !optionGroup.isMenuQuantityDependant) {
+        independentOptions.push(cartOption);
+      }
+    });
+
+    // 모든 옵션 그룹이 isMenuQuantityDependant === false인지 확인
+    const allGroupsAreIndependent = menu.optionGroupList.every(
+      (group) => !group.isMenuQuantityDependant
+    );
+
+    if (allGroupsAreIndependent) {
+      // 모든 옵션 그룹이 isMenuQuantityDependant === false인 경우:
+      // 메뉴 1개만 추가하고, quantity를 menuQuantity로 설정, 모든 옵션 포함
+      const cartMenu: ICartMenu = {
+        categorySeq: menu.categorySeq,
+        menuSeq: menu.menuSeq,
+        menuName: menu.menuName,
+        menuPrice: menu.menuPrice,
+        quantity: menuQuantity,
+        selectedOptions: allOptions,
+      };
+
+      addToCart(cartMenu);
+    } else {
+      // isMenuQuantityDependant === true인 옵션 그룹이 하나라도 있는 경우:
+      // 첫 번째 메뉴: 모든 옵션 포함, quantity = 1
+      // 두 번째 메뉴부터: isMenuQuantityDependant가 false인 옵션만 포함
+      // 반복문 대신 quantity를 조정하여 처리
+
+      // 첫 번째 메뉴 추가 (모든 옵션 포함)
+      const firstCartMenu: ICartMenu = {
+        categorySeq: menu.categorySeq,
+        menuSeq: menu.menuSeq,
+        menuName: menu.menuName,
+        menuPrice: menu.menuPrice,
+        quantity: 1,
+        selectedOptions: allOptions,
+      };
+      addToCart(firstCartMenu);
+
+      // 두 번째 메뉴부터 추가 (isMenuQuantityDependant가 false인 옵션만 포함)
+      // quantity를 조정하여 반복문 없이 처리
+      if (menuQuantity > 1) {
+        const additionalCartMenu: ICartMenu = {
+          categorySeq: menu.categorySeq,
+          menuSeq: menu.menuSeq,
+          menuName: menu.menuName,
+          menuPrice: menu.menuPrice,
+          quantity: menuQuantity - 1, // 첫 번째 메뉴를 제외한 나머지 수량
+          selectedOptions: independentOptions, // isMenuQuantityDependant가 false인 옵션만 포함
+        };
+        addToCart(additionalCartMenu);
+      }
+    }
+
+    toast(t('메뉴가 담겼습니다.'), {
+      position: 'center-center',
+      duration: 1000,
+    });
+
+    onClose();
+  };
 
   return createPortal(
     <ModalBackground onClick={onClose}>
@@ -316,7 +472,11 @@ export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
                 <li key={optionGroup.optionGroupSeq}>
                   <S.OptionGroupName>
                     {buildOptionGroupTitleText(optionGroup)}
-                    {optionGroup.requiredQuantity && <span>필수/수량제한</span>}
+                    {optionGroup.requiredQuantity ? (
+                      <span>필수/수량제한</span>
+                    ) : (
+                      ''
+                    )}
                   </S.OptionGroupName>
 
                   <S.Options>
@@ -445,10 +605,7 @@ export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
             </S.TotalInfo>
             <BasicButton
               variant="Solid_Blue_2XL"
-              onClick={() => {
-                // TODO: 장바구니 추가 로직
-                onClose();
-              }}
+              onClick={onClickAdd}
               customStyle={css`
                 width: 100%;
               `}
