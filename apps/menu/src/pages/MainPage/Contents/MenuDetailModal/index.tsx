@@ -39,7 +39,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
       addToCart(menu);
     });
     toast(t('메뉴가 담겼습니다.'), {
-      position: 'top-center',
+      position: 'center-center',
       duration: 1000,
     });
     onClose();

@@ -42,7 +42,7 @@ const getBackgroundColor = (
   }
 
   if (disabled) {
-    return baseTheme.colors.grey[300];
+    return theme.mode.grey[50];
   }
 
   return theme.mode.undefined_palette[100];
@@ -76,13 +76,15 @@ const getTextColor = (
 
 const getFocusBackgroundColor = (
   variant: TVariant,
+  value: number,
   disabled: boolean,
   theme: Theme
 ): string => {
   if (disabled) {
     return theme.mode.undefined_palette[800];
   }
-  if (variant === 'rounded') {
+  // rounded variant이고 value가 0보다 클 때만 primary 색상 사용
+  if (isRoundedActive(variant, value)) {
     return colors.primary[500];
   }
 
@@ -91,13 +93,15 @@ const getFocusBackgroundColor = (
 
 const getFocusTextColor = (
   variant: TVariant,
+  value: number,
   disabled: boolean,
   theme: Theme
 ): string => {
   if (disabled) {
     return colors.grey[500];
   }
-  if (variant === 'rounded') {
+  // rounded variant이고 value가 0보다 클 때만 white 색상 사용
+  if (isRoundedActive(variant, value)) {
     return colors.white;
   }
   return theme.mode.grey[900];
@@ -105,13 +109,15 @@ const getFocusTextColor = (
 
 const getFocusIconColor = (
   variant: TVariant,
+  value: number,
   disabled: boolean,
   theme: Theme
 ): string => {
   if (disabled) {
     return colors.grey[400];
   }
-  if (variant === 'rounded') {
+  // rounded variant이고 value가 0보다 클 때만 white 색상 사용
+  if (isRoundedActive(variant, value)) {
     return colors.white;
   }
   return theme.mode.grey[800];
@@ -123,6 +129,8 @@ export const Container = styled.div<Props>`
   justify-content: space-between;
   gap: 8px;
   width: ${({ size }) => getWidth(size)};
+  max-width: ${({ size }) => getWidth(size)};
+  min-width: ${({ size }) => getWidth(size)};
   height: ${({ size }) => getHeight(size)};
   padding: 4px 0;
   border: 1px solid
@@ -165,20 +173,20 @@ export const Container = styled.div<Props>`
   }
 
   &:focus-within {
-    background-color: ${({ variant, disabled, theme }) =>
-      getFocusBackgroundColor(variant, disabled, theme)};
+    background-color: ${({ variant, value, disabled, theme }) =>
+      getFocusBackgroundColor(variant, value, disabled, theme)};
 
     & > input {
-      color: ${({ variant, disabled, theme }) =>
-        getFocusTextColor(variant, disabled, theme)};
+      color: ${({ variant, value, disabled, theme }) =>
+        getFocusTextColor(variant, value, disabled, theme)};
     }
 
     & > button {
       & > svg {
-        color: ${({ variant, disabled, theme }) =>
-          getFocusIconColor(variant, disabled, theme)} !important;
-        fill: ${({ variant, disabled, theme }) =>
-          getFocusIconColor(variant, disabled, theme)} !important;
+        color: ${({ variant, value, disabled, theme }) =>
+          getFocusIconColor(variant, value, disabled, theme)} !important;
+        fill: ${({ variant, value, disabled, theme }) =>
+          getFocusIconColor(variant, value, disabled, theme)} !important;
       }
     }
   }

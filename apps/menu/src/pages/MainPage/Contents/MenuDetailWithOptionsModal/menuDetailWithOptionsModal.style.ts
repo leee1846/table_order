@@ -10,6 +10,7 @@ export const Container = styled.div`
   background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
   display: flex;
   border-radius: 1.25rem;
+  overflow: hidden;
 `;
 
 export const CloseButton = styled.button`
@@ -130,9 +131,10 @@ export const Options = styled.ul`
   gap: 20px;
 `;
 
-export const OptionText = styled.span`
+export const OptionText = styled.span<{ soldOut: boolean }>`
   ${TYPOGRAPHY.MT_7}
-  color: ${({ theme }) => theme.mode.grey[700]};
+  color: ${({ soldOut, theme }) =>
+    soldOut ? theme.mode.grey[400] : theme.mode.grey[700]};
 `;
 
 export const NumberInputContainer = styled.li`
@@ -163,6 +165,20 @@ export const SelectedOptionsList = styled.ul`
   min-height: 0;
   ${TYPOGRAPHY.ST_4}
   color: ${({ theme }) => theme.mode.grey[500]};
+
+  & > li {
+    display: flex;
+
+    & > span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-left: 1.25px solid ${({ theme }) => theme.mode.grey[500]};
+      border-bottom: 1.25px solid ${({ theme }) => theme.mode.grey[500]};
+      margin-top: 6px;
+      margin-right: 4px;
+    }
+  }
 `;
 
 export const TotalContainer = styled.div`
