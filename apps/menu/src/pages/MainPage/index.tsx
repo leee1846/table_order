@@ -56,6 +56,7 @@ export const MainPage = () => {
   // API 응답을 받으면 스토어에 저장 (세션 스토리지에도 자동 저장)
   useEffect(() => {
     if (categoriesData?.data) {
+      // TODO: mockData 삭제 예정 -> categoriesData.data를 넣어야함
       setCategoriesStoreData(mockCategories);
     }
   }, [categoriesData, setCategoriesStoreData]);
