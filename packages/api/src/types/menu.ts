@@ -1,5 +1,45 @@
 import type { IApiResponse } from './common';
 
+interface ICommonResponseData {
+  index: number;
+  isDeleted: boolean;
+  mappedOptionGroupCode: string;
+  mappedOptionGroupName: string;
+  mappedHeadOptionGroupCode: string;
+  mappedUptDt: string;
+  isMapped: boolean;
+  createDate: string;
+  createMemberUuid: string;
+  updateDate: string;
+  updateMemberUuid: string;
+}
+
+type TLocale = Record<string, string> | null;
+
+export interface IOption extends ICommonResponseData {
+  optionSeq: number;
+  optionGroupSeq: number;
+  optionName: string;
+  optionPrice: number;
+  isOutOfStock: boolean;
+  localeOptionName: TLocale;
+  localeOptionNameStr: TLocale;
+  quantity: number;
+}
+
+export interface IOptionGroup extends ICommonResponseData {
+  optionGroupSeq: number;
+  optionGroupName: string;
+  menuSeq: number;
+  requiredQuantity: number;
+  isMultipleSelectable: boolean;
+  isOptionQuantitySelectable: boolean;
+  isMenuQuantityDependant: boolean;
+  localeOptionGroupName: TLocale;
+  localeOptionGroupNameStr: TLocale;
+  optionList: IOption[];
+}
+
 // ============================================================================
 // 이미지 타입
 // ============================================================================
@@ -58,13 +98,13 @@ export interface IMenuBase {
   isTaxFree: boolean;
   minQuantity: number;
   touchKeyColorCode: string | null;
-  localeMenuName: Record<string, string> | null; // READ_ONLY (GET 응답에만 포함)
-  localeMenuDescription: Record<string, string> | null; // READ_ONLY (GET 응답에만 포함)
+  localeMenuName: TLocale; // READ_ONLY (GET 응답에만 포함)
+  localeMenuDescription: TLocale; // READ_ONLY (GET 응답에만 포함)
   createDate: string | null; // READ_ONLY (GET 응답에만 포함)
   createMemberUuid: string | null; // READ_ONLY (GET 응답에만 포함)
   updateDate: string | null; // READ_ONLY (GET 응답에만 포함)
   updateMemberUuid: string | null; // READ_ONLY (GET 응답에만 포함)
-  optionGroupList: unknown[];
+  optionGroupList: IOptionGroup[];
   localeMenuNameStr: string | null; // READ_ONLY (GET 응답에만 포함)
   localeMenuDescriptionStr: string | null; // READ_ONLY (GET 응답에만 포함)
   quantity: number; // CLIENT_ONLY

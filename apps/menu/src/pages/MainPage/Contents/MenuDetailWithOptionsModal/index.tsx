@@ -6,23 +6,18 @@ import {
   NumberInput,
   RadioButton,
 } from '@repo/ui/components';
-import {
-  bestOnIcon,
-  chiliOffIcon,
-  chiliOnIcon,
-  CloseIcon,
-} from '@repo/ui/icons';
-import { useState } from 'react';
+import { CloseIcon } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import * as S from './menuDetailWithOptionsModal.style';
 import { useTranslation } from 'react-i18next';
 import { useThemeMode } from '@repo/ui';
+import type { IMenu } from '@repo/api/types';
+import { Thumbnail } from '@/feature/Thumbnail';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { formatCurrency } from '@repo/util/string';
+import 'swiper/css';
+import { NoContent } from '@/feature/NoContent';
 
-const options = Array.from({ length: 4 }, (_, index) => `option-${index + 1}`);
-const optionGroups = Array.from(
-  { length: 10 },
-  (_, index) => `option-group-${index + 1}`
-);
 const chosenOptions = Array.from(
   { length: 20 },
   (_, index) => `chosen-option-${index + 1}`
@@ -30,18 +25,14 @@ const chosenOptions = Array.from(
 
 interface Props {
   onClose: () => void;
+  menu: IMenu;
 }
 
-export const MenuDetailWithOptionsModal = ({ onClose }: Props) => {
+export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
 
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const [isSelected, setIsSelected] = useState<string | null>(null);
-
-  const imageUrl = 'https://picsum.photos/400/300';
-  const hasImage = Boolean(imageLoaded && !imageError && imageUrl);
+  const images = menu.menuImageList?.filter((img) => img.imagePath) || [];
 
   return createPortal(
     <ModalBackground onClick={onClose}>
@@ -51,55 +42,57 @@ export const MenuDetailWithOptionsModal = ({ onClose }: Props) => {
         </S.CloseButton>
 
         <S.MenuInfoContainer>
-          <S.ImageWrapper hasImage={hasImage}>
-            {!imageError && imageUrl && (
-              <S.Image
-                src={imageUrl}
-                alt="메뉴 이미지"
-                onLoad={() => setImageLoaded(true)}
-                onError={() => {
-                  setImageError(true);
-                  setImageLoaded(false);
-                }}
-              />
-            )}
-            <S.BestIcon src={bestOnIcon} alt="" />
-            <S.ChiliIcons>
-              <img src={chiliOnIcon} width={36} height={36} alt="" />
-              <img src={chiliOffIcon} width={36} height={36} alt="" />
-              <img src={chiliOnIcon} width={36} height={36} alt="" />
-            </S.ChiliIcons>
-          </S.ImageWrapper>
+          {images.length > 0 ? (
+            <S.SwiperContainer>
+              <Swiper spaceBetween={0} slidesPerView={1} loop>
+                {images.map((image) => (
+                  <SwiperSlide key={image.imageSeq}>
+                    <Thumbnail menu={menu} image={image} width="100%" />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </S.SwiperContainer>
+          ) : (
+            <Thumbnail menu={menu} image={undefined} width="100%" />
+          )}
 
-          <S.MenuName>메뉴 이름???</S.MenuName>
-          <S.Price>10000????</S.Price>
-          <S.Description>메뉴 설명??????????????</S.Description>
+          <S.MenuName>{menu.menuName}</S.MenuName>
+          <S.Price>{formatCurrency(menu.menuPrice)}</S.Price>
+          <S.Description>{menu.menuDescription}</S.Description>
         </S.MenuInfoContainer>
 
         <S.OptionsContainer>
+          {menu.optionGroupList.length < 1 && (
+            <NoContent paddingTop="10%">옵션이 존재하지 않습니다.</NoContent>
+          )}
+
           <S.OptionsList>
-            {optionGroups.map((optionGroup) => (
-              <li key={optionGroup}>
+            {menu.optionGroupList.map((optionGroup) => (
+              <li key={optionGroup.optionGroupSeq}>
                 <S.OptionGroupName>
-                  옵션그룹명??(필수??) <span>필수/수량제한??</span>
+                  {optionGroup.optionGroupName}{' '}
+                  {optionGroup.requiredQuantity &&
+                    `(${optionGroup.requiredQuantity}개 필수 선택)`}
+                  {optionGroup.requiredQuantity && <span>필수/수량제한</span>}
                 </S.OptionGroupName>
+
                 <S.Options>
-                  {options.map((option) => (
-                    <li key={option}>
+                  {optionGroup.optionList.map((option) => (
+                    <li key={option.optionSeq}>
                       <RadioButton
-                        value={option}
-                        onChange={() => setIsSelected(option)}
-                        checked={isSelected === option}
+                        value={''}
+                        onChange={() => {}}
+                        checked={false}
                       >
                         <S.OptionText>옵션옵션</S.OptionText>
                       </RadioButton>
                     </li>
                   ))}
-                  {options.map((option) => (
-                    <li key={option}>
+                  {optionGroup.optionList.map((option) => (
+                    <li key={option.optionSeq}>
                       <CheckButton
-                        checked={isSelected === option}
-                        onChange={() => setIsSelected(option)}
+                        checked={false}
+                        onChange={() => {}}
                         customStyle={css`
                           & > div {
                             width: 24px;
@@ -111,8 +104,8 @@ export const MenuDetailWithOptionsModal = ({ onClose }: Props) => {
                       </CheckButton>
                     </li>
                   ))}
-                  {options.map((option) => (
-                    <S.NumberInputContainer key={option}>
+                  {optionGroup.optionList.map((option) => (
+                    <S.NumberInputContainer key={option.optionSeq}>
                       <S.OptionText>옵션 이름이름</S.OptionText>
                       <NumberInput
                         variant="rounded"
