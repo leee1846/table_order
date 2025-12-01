@@ -25,6 +25,7 @@ export const MainPage = () => {
   // const token = getAccessToken() as string;
   // const payload = decodeJwtToken<ITokenPayload>(token);
   // const shopSeq = payload?.shopSeq ?? 0;
+  // test
 
   const { loadFromStorage: loadCartFromStorage, setCartOptions } =
     useCartStore();
