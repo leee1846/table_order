@@ -29,7 +29,7 @@ export const Sidebar = ({
       <S.SidebarLogo
         onClick={() => {
           toast('test', {
-            position: 'center-center',
+            position: 'top-center',
           });
         }}
       >

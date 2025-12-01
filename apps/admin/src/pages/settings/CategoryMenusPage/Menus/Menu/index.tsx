@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
-import { BasicButton, ToggleButton, toast } from '@repo/ui/components';
+﻿import { useMemo, useState } from 'react';
+import { BasicButton, ToggleButton } from '@repo/ui/components';
+import { toast, openDualActionDialog } from '@repo/feature/utils';
 import * as S from '@/pages/settings/CategoryMenusPage/Menus/Menu/menu.style';
 import {
   bestOnIcon,
@@ -7,18 +8,18 @@ import {
   chiliOnIcon,
   newOnIcon,
 } from '@repo/ui/icons';
-import { formatCurrency } from '@repo/util/string';
+import { formatCurrency, normalizeImageUrl } from '@repo/util/string';
 import { MenuCopyModal } from '@/pages/settings/CategoryMenusPage/MenuCopyModal';
 import type { IMenu } from '@repo/api/types';
 import { queryKeys, useDeleteMenu } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { openDualActionDialog } from '@repo/feature/utils';
 
 interface Props {
   menu: IMenu;
+  onEditMenu: (menu: IMenu) => void;
 }
 
-export const Menu = ({ menu }: Props) => {
+export const Menu = ({ menu, onEditMenu }: Props) => {
   const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const deleteMenuMutation = useDeleteMenu();
@@ -39,14 +40,14 @@ export const Menu = ({ menu }: Props) => {
     const mainImage =
       availableImages.find((image) => image.isMainImage) ?? availableImages[0];
 
-    return mainImage?.imagePath ?? null;
+    return normalizeImageUrl(mainImage?.imagePath ?? null);
   }, [menu.menuImageList]);
 
   const spiceLevel = menu.spiceLevel ?? 0;
 
   const handleDeleteMenu = () => {
     openDualActionDialog({
-      title: '메뉴를 삭제할까요?',
+      title: '메뉴 삭제',
       content: `"${menu.menuName}" 메뉴를 삭제하시겠습니까?`,
       primaryText: '예',
       secondaryText: '아니요',
@@ -86,14 +87,14 @@ export const Menu = ({ menu }: Props) => {
           </S.ImagesContainer>
           {spiceLevel > 0 && (
             <S.ChiliContainer>
-              <img src={chiliOnIcon} alt="맵기" />
+              <img src={chiliOnIcon} alt="매운맛" />
               <img
                 src={spiceLevel > 1 ? chiliOnIcon : chiliOffIcon}
-                alt="맵기"
+                alt="매운맛"
               />
               <img
                 src={spiceLevel > 2 ? chiliOnIcon : chiliOffIcon}
-                alt="맵기"
+                alt="매운맛"
               />
             </S.ChiliContainer>
           )}
@@ -108,7 +109,7 @@ export const Menu = ({ menu }: Props) => {
                   variant="Outline_Grey_L"
                   onClick={() => setIsMenuCopyModalOpen(true)}
                 >
-                  이동/복사
+                  복사/삭제
                 </BasicButton>
                 <BasicButton
                   variant="Outline_Grey_L"
@@ -116,7 +117,12 @@ export const Menu = ({ menu }: Props) => {
                 >
                   삭제
                 </BasicButton>
-                <BasicButton variant="Solid_Sky_Blue_L">수정</BasicButton>
+                <BasicButton
+                  variant="Solid_Sky_Blue_L"
+                  onClick={() => onEditMenu(menu)}
+                >
+                  수정
+                </BasicButton>
               </div>
             </S.TitleContainer>
 

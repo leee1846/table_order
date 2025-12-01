@@ -28,10 +28,13 @@ export const ColorChips = styled.div`
   mix-blend-mode: luminosity;
 `;
 
-export const ColorChip = styled.span<{ color: string }>`
+export const ColorChip = styled.button<{ color: string; selected: boolean }>`
   width: 2.70833rem;
   height: 2.70833rem;
   border-radius: 50%;
   background-color: ${({ color }) => color};
   aspect-ratio: 43.33/43.33;
+  border: ${({ selected }) =>
+    selected ? `2px solid ${theme.colors.grey[900]}` : '2px solid transparent'};
+  cursor: pointer;
 `;

@@ -1,104 +1,52 @@
-import { useId, useState } from 'react';
-import { theme } from '@repo/ui';
+import { useId } from 'react';
 import { CheckButton, Input } from '@repo/ui/components';
 import {
-  AddIcon,
   bestOnIcon,
   chiliOffIcon,
   chiliOnIcon,
-  CloseIcon,
-  newOnIcon,
-  PhotoIcon,
   bestOffIcon,
   newOffIcon,
+  newOnIcon,
 } from '@repo/ui/icons';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
+import { ImageSection } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection';
+import type { ICreateMenuRequest, IMenu } from '@repo/api/types';
 
-export const BasicSetting = () => {
-  const [isBest, setIsBest] = useState(false);
-  const [isNew, setIsNew] = useState(false);
-  const [chiliLevel, setChiliLevel] = useState(0);
+interface BasicSettingProps {
+  menu?: IMenu;
+  values?: Partial<ICreateMenuRequest>;
+  onChange?: (nextValue: Partial<ICreateMenuRequest>) => void;
+  onAddFiles?: (files: FileList | null) => void;
+}
+
+export const BasicSetting = ({
+  menu,
+  values,
+  onChange,
+  onAddFiles,
+}: BasicSettingProps) => {
+  const descriptionInputId = useId();
 
   const onClickChiliLevel = (level: number) => {
-    setChiliLevel((prev) => {
-      if (prev === 0) {
-        return level;
-      }
-      if (prev === level) {
-        return prev - 1;
-      }
-      return level;
-    });
-  };
+    const currentSpiceLevel = values?.spiceLevel ?? 0;
+    const nextSpiceLevel =
+      currentSpiceLevel === 0
+        ? level
+        : currentSpiceLevel === level
+          ? level - 1
+          : level;
 
-  const IMAGES: { id: number; url: string }[] = [
-    {
-      id: 1,
-      url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop',
-    },
-    {
-      id: 2,
-      url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop',
-    },
-  ];
+    onChange?.({ spiceLevel: Math.max(0, nextSpiceLevel) });
+  };
 
   return (
     <S.Container>
-      <S.ImageSection>
-        <S.Thumbnail>
-          <S.BadgesContainer>
-            {isBest && <img src={bestOnIcon} alt="베스트" />}
-            {isNew && <img src={newOnIcon} alt="신규" />}
-          </S.BadgesContainer>
-
-          {IMAGES.length > 0 ? (
-            <img src={IMAGES[0]?.url ?? ''} alt="메인 사진" />
-          ) : (
-            <>
-              <PhotoIcon
-                width={36}
-                height={36}
-                color={theme.colors.primary[400]}
-              />
-              <p>메인 사진 (1장) 을 선택해 주세요</p>
-              <span>(700*500 px 권장)</span>
-            </>
-          )}
-        </S.Thumbnail>
-        {IMAGES.length > 0 ? (
-          <S.ImagesContainer>
-            <S.Gradient />
-            <S.ScrollableContent>
-              <S.ImageAddButton>
-                <AddIcon
-                  width={20}
-                  height={20}
-                  color={theme.colors.grey[600]}
-                />
-              </S.ImageAddButton>
-              <ul>
-                {IMAGES.map((image) => (
-                  <li key={image.id}>
-                    <button type="button">
-                      <CloseIcon
-                        width={14}
-                        height={14}
-                        color={theme.colors.grey[200]}
-                      />
-                    </button>
-                    <img src={image.url} alt="메인 사진" />
-                  </li>
-                ))}
-              </ul>
-            </S.ScrollableContent>
-          </S.ImagesContainer>
-        ) : (
-          <S.ImageAddButton>
-            <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
-            <span>추가할 이미지가 있다면 선택해 주세요 </span>
-          </S.ImageAddButton>
-        )}
-      </S.ImageSection>
+      <ImageSection
+        menu={menu}
+        isBest={values?.isBest}
+        isNew={values?.isNew}
+        onAddFiles={onAddFiles}
+      />
 
       <S.ContentsSection>
         <S.HorizontalLayout>
@@ -109,17 +57,30 @@ export const BasicSetting = () => {
             <Input
               placeholder="메뉴명을 입력해 주세요."
               customStyle={S.inputCss}
+              value={values?.menuName ?? ''}
+              onChange={(value) => onChange?.({ menuName: value })}
             />
           </S.VerticalLayout>
 
           <S.VerticalLayout>
             <S.Title>뱃지 선택</S.Title>
             <S.BadgeContainer gap={10}>
-              <S.BadgeButton type="button" onClick={() => setIsBest(!isBest)}>
-                <img src={isBest ? bestOnIcon : bestOffIcon} alt="베스트" />
+              <S.BadgeButton
+                type="button"
+                onClick={() =>
+                  onChange?.({ isBest: !(values?.isBest ?? false) })
+                }
+              >
+                <img
+                  src={values?.isBest ? bestOnIcon : bestOffIcon}
+                  alt="베스트"
+                />
               </S.BadgeButton>
-              <S.BadgeButton type="button" onClick={() => setIsNew(!isNew)}>
-                <img src={isNew ? newOnIcon : newOffIcon} alt="신규" />
+              <S.BadgeButton
+                type="button"
+                onClick={() => onChange?.({ isNew: !(values?.isNew ?? false) })}
+              >
+                <img src={values?.isNew ? newOnIcon : newOffIcon} alt="신규" />
               </S.BadgeButton>
             </S.BadgeContainer>
           </S.VerticalLayout>
@@ -132,10 +93,8 @@ export const BasicSetting = () => {
                 가격 <span>*</span>
               </S.Title>
               <CheckButton
-                checked={false}
-                onChange={() => {
-                  // noop
-                }}
+                checked={values?.isTaxFree ?? false}
+                onChange={(checked) => onChange?.({ isTaxFree: checked })}
                 customStyle={S.TaxFreeCss}
               >
                 <span>면세</span>
@@ -144,6 +103,20 @@ export const BasicSetting = () => {
             <Input
               placeholder="가격을 입력해 주세요."
               customStyle={S.inputCss}
+              value={
+                values?.menuPrice !== undefined
+                  ? values.menuPrice.toString()
+                  : ''
+              }
+              onChange={(value) => {
+                const numericString = value.replace(/[^0-9]/g, '');
+                onChange?.({
+                  menuPrice:
+                    numericString.length > 0
+                      ? Number(numericString)
+                      : undefined,
+                });
+              }}
             />
           </S.VerticalLayout>
 
@@ -155,7 +128,9 @@ export const BasicSetting = () => {
                 onClick={() => onClickChiliLevel(1)}
               >
                 <img
-                  src={chiliLevel > 0 ? chiliOnIcon : chiliOffIcon}
+                  src={
+                    (values?.spiceLevel ?? 0) > 0 ? chiliOnIcon : chiliOffIcon
+                  }
                   alt="매운맛 1단계"
                 />
               </S.ChiliLevelButton>
@@ -164,7 +139,9 @@ export const BasicSetting = () => {
                 onClick={() => onClickChiliLevel(2)}
               >
                 <img
-                  src={chiliLevel > 1 ? chiliOnIcon : chiliOffIcon}
+                  src={
+                    (values?.spiceLevel ?? 0) > 1 ? chiliOnIcon : chiliOffIcon
+                  }
                   alt="매운맛 2단계"
                 />
               </S.ChiliLevelButton>
@@ -173,7 +150,9 @@ export const BasicSetting = () => {
                 onClick={() => onClickChiliLevel(3)}
               >
                 <img
-                  src={chiliLevel > 2 ? chiliOnIcon : chiliOffIcon}
+                  src={
+                    (values?.spiceLevel ?? 0) > 2 ? chiliOnIcon : chiliOffIcon
+                  }
                   alt="매운맛 3단계"
                 />
               </S.ChiliLevelButton>
@@ -184,8 +163,12 @@ export const BasicSetting = () => {
         <S.VerticalLayout flex>
           <S.Title>메뉴 설명</S.Title>
           <S.Textarea
-            id={`menu-description-${useId()}`}
+            id={`menu-description-${descriptionInputId}`}
+            value={values?.menuDescription ?? ''}
             placeholder="메뉴 설명을 입력해 주세요."
+            onChange={(event) =>
+              onChange?.({ menuDescription: event.target.value })
+            }
           />
         </S.VerticalLayout>
       </S.ContentsSection>

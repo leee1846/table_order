@@ -29,15 +29,36 @@ export const getMenuListByCategory = async (
 /**
  * 메뉴를 생성합니다.
  * POST /menu
+ * FormData 형식으로 요청 (menu는 JSON 문자열, files는 파일 리스트)
  */
-export const createMenu = async (
-  params: ICreateMenuRequest
-): Promise<TMenuMutationResponse> => {
+export const createMenu = async (params: {
+  menu: ICreateMenuRequest;
+  files?: File[];
+}): Promise<TMenuMutationResponse> => {
   const axiosInstance = getAxiosInstance('private');
+
+  const formData = new FormData();
+
+  // menu를 JSON(application/json) Blob으로 추가
+  const menuBlob = new Blob([JSON.stringify(params.menu)], {
+    type: 'application/json',
+  });
+  formData.append('menu', menuBlob);
+
+  // files가 있으면 추가 (파일명과 menu.menuImageList.imageName이 일치해야 함)
+  if (params.files && params.files.length > 0) {
+    params.files.forEach((file) => {
+      formData.append('files', file);
+    });
+  }
+
   const response = await axiosInstance<TMenuMutationResponse>({
     method: 'POST',
     url: ENDPOINTS.MENU.CREATE,
-    data: params,
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
 
   return response.data;

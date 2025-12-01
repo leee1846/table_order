@@ -4,6 +4,7 @@ import {
   chiliOnIcon,
   newOnIcon,
 } from '@repo/ui/icons';
+import { normalizeImageUrl } from '@repo/util/string';
 import * as S from '@/feature/Thumbnail/thumbnail.style';
 import type { IMenu, IMenuImage } from '@repo/api/types';
 import { useState } from 'react';
@@ -28,7 +29,7 @@ export const Thumbnail = ({ menu, image, width = '100%' }: Props) => {
       )}
       {!imageError && image && image.imagePath && (
         <img
-          src={image.imagePath}
+          src={normalizeImageUrl(image.imagePath) ?? ''}
           alt={image.imageName}
           onLoad={() => setImageLoaded(true)}
           onError={() => {
