@@ -173,7 +173,6 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
             onClick={() => handleCategoryClick(category)}
           >
             {category.categoryName}
-            {category.categorySeq}
           </S.CategoryButton>
         ))}
 

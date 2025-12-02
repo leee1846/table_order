@@ -126,6 +126,7 @@ const createCategory = (
     saleDayOfWeek?: number[] | null;
     saleStartTime?: string | null;
     saleEndTime?: string | null;
+    isStaffCall?: boolean;
   } = {}
 ): ICategoryWithMenus => ({
   categorySeq,
@@ -143,7 +144,7 @@ const createCategory = (
   isSaleOnHoliday: true,
   useTwoColumnLayout: false,
   isQuantitySelectable: options.isQuantitySelectable ?? true,
-  isStaffCall: false,
+  isStaffCall: options.isStaffCall ?? false,
   categoryDescription: null,
   isFirstOrderRequired: options.isFirstOrderRequired ?? false,
   localeCategoryName: null,
@@ -459,6 +460,40 @@ const noOptionMenus = [
   }),
 ];
 
+// 카테고리 7: 직원 호출
+const staffCallMenus = [
+  createMenu(21, 7, '직원 호출', 0, {
+    menuDescription: '직원을 호출합니다',
+    minQuantity: 1,
+    optionGroupList: [],
+  }),
+  createMenu(22, 7, '물건 요청', 0, {
+    menuDescription: '물건을 요청합니다 (물티슈, 젓가락 등)',
+    minQuantity: 1,
+    optionGroupList: [],
+  }),
+  createMenu(23, 7, '서비스 요청', 0, {
+    menuDescription: '서비스를 요청합니다',
+    minQuantity: 1,
+    optionGroupList: [],
+  }),
+  createMenu(24, 7, '계산 요청', 0, {
+    menuDescription: '계산을 요청합니다',
+    minQuantity: 1,
+    optionGroupList: [],
+  }),
+  createMenu(25, 7, '물 추가 요청', 0, {
+    menuDescription: '물을 추가로 요청합니다',
+    minQuantity: 1,
+    optionGroupList: [],
+  }),
+  createMenu(26, 7, '기타 문의', 0, {
+    menuDescription: '기타 문의사항이 있습니다',
+    minQuantity: 1,
+    optionGroupList: [],
+  }),
+];
+
 // ============================================================================
 // 카테고리 생성
 // ============================================================================
@@ -500,5 +535,11 @@ export const mockCategories: ICategoryWithMenus[] = [
     isHidden: false,
     isQuantitySelectable: true,
     isFirstOrderRequired: false,
+  }),
+  createCategory(7, '직원 호출', staffCallMenus, {
+    isHidden: false,
+    isQuantitySelectable: false,
+    isFirstOrderRequired: false,
+    isStaffCall: true,
   }),
 ];

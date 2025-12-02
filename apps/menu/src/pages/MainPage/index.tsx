@@ -17,7 +17,7 @@ import { mockCategories } from '@/mocks/mockCategories';
 import storage from '@/utils/storage';
 import type { ICategoryWithMenus } from '@repo/api/types';
 
-// TODO: api를 통해 반환받은 data로 추후 변경 예정정
+// TODO: api를 통해 반환받은 data로 추후 변경 예정
 const useScrollLayout = true;
 
 export const MainPage = () => {

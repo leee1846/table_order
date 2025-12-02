@@ -44,7 +44,7 @@ export const CartReminder = ({ closePage, resetCart }: Props) => {
       <S.Title>{t('주문을 계속 진행해 주세요!')}</S.Title>
       <S.Description>
         <Trans
-          i18nKey="화면 조작이 없어 {{time}}초 후 화면이 초기화 됩니다."
+          i18nKey="화면 조작이 없어 <span>{{time}}</span>초 후 화면이 초기화 됩니다."
           values={{ time }}
           components={{ span: <span /> }}
         />
