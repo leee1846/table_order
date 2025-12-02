@@ -7,7 +7,6 @@ import {
   BaseTitle,
 } from '../shared/dialogStyles';
 
-
 export const DialogContainer = styled(BaseDialogContainer)`
   width: 90vw;
   height: 90vh;

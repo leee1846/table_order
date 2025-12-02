@@ -1,7 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { createMenu } from '../../fetchers/menu';
-import type { ICreateMenuRequest, TMenuMutationResponse } from '../../types/menu';
+import type {
+  ICreateMenuRequest,
+  TMenuMutationResponse,
+} from '../../types/menu';
 import type { IApiError } from '../../types/common';
 
 /**

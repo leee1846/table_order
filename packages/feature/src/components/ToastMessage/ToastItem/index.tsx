@@ -38,4 +38,3 @@ export const ToastItem = ({ toast, onRemove }: ToastItemProps) => {
     </S.ToastItemStyles>
   );
 };
-

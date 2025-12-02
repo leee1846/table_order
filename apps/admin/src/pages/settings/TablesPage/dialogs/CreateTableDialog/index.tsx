@@ -31,7 +31,9 @@ export const CreateTableDialog = ({
     onClose();
   };
 
-  if (!isOpen){ return null;}
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <ModalBackground onClick={handleClose}>

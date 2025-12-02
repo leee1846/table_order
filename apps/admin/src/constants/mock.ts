@@ -44,7 +44,6 @@ export const categories = [
   },
 ];
 
-
 // /tables 페이지 목업 데이터
 export const sampleTables: TableData[] = [
   {

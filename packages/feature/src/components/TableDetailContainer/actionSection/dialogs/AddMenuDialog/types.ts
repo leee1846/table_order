@@ -16,4 +16,3 @@ export interface AddMenuDialogProps {
   tableName?: string;
   onAdd?: (selectedItems: SelectedMenuWithOptions[]) => void;
 }
-

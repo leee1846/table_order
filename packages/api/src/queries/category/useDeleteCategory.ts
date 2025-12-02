@@ -10,11 +10,11 @@ import { IApiError } from '../../types/common';
 /**
  * 카테고리를 삭제합니다.
  * DELETE /category
- * 
+ *
  * @example
  * ```tsx
  * const { mutateAsync: deleteCategory } = useDeleteCategory();
- * 
+ *
  * const handleDelete = async () => {
  *   await deleteCategory(params);
  *   // 성공 후 필요한 작업을 선택적으로 수행

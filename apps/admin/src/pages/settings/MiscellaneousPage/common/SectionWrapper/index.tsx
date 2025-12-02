@@ -26,7 +26,9 @@ export const SectionWrapper = ({ title, children }: Props) => {
       </S.HeaderButton>
 
       {isOpen && (
-        <UIStyles.setting.ContentsLayout>{children}</UIStyles.setting.ContentsLayout>
+        <UIStyles.setting.ContentsLayout>
+          {children}
+        </UIStyles.setting.ContentsLayout>
       )}
     </UIStyles.setting.Container>
   );

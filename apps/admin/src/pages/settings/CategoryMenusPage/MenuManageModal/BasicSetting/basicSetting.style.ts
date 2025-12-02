@@ -13,7 +13,6 @@ export const Container = styled.div`
   margin: 41px 0;
 `;
 
-
 export const ContentsSection = styled.div`
   width: 100%;
   display: flex;

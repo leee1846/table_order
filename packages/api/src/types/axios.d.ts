@@ -5,5 +5,3 @@ declare module 'axios' {
     ignoreGlobalErrors?: number[];
   }
 }
-
-

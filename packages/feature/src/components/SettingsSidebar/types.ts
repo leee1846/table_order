@@ -17,4 +17,3 @@ export interface SettingsSidebarProps {
   homeRoute: string;
   logoContent?: React.ReactNode;
 }
-
