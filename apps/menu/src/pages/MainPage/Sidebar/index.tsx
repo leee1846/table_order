@@ -190,8 +190,11 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
         )}
       </S.Container>
 
-      {isStaffCallModalOpen && (
-        <StaffCallModal onClose={() => setIsStaffCallModalOpen(false)} />
+      {isStaffCallModalOpen && staffCallCategory && (
+        <StaffCallModal
+          onClose={() => setIsStaffCallModalOpen(false)}
+          category={staffCallCategory}
+        />
       )}
     </>
   );

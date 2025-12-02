@@ -44,33 +44,37 @@ export const MenuList = styled.ul`
   grid-column-gap: 12px;
   grid-row-gap: 16px;
   overflow-y: auto;
+`;
 
-  & > li > button {
+export const menuButton = styled.button<{ isSelected: boolean }>`
+  width: 100%;
+  min-height: 9.625rem;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  background-color: ${({ theme }) => theme.mode.grey[200]};
+  border-radius: 0.75rem;
+  padding: 16px 13px;
+  border: ${({ isSelected, theme }) =>
+    isSelected
+      ? `1px solid ${theme.mode.primary[500]}`
+      : '1px solid transparent'};
+
+  & > p {
+    ${TYPOGRAPHY.MT_4}
+    color: ${({ theme }) => theme.mode.grey[600]};
+    text-align: left;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  & > div {
     width: 100%;
-    min-height: 9.625rem;
-    height: auto;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    background-color: ${({ theme }) => theme.mode.grey[200]};
-    border-radius: 0.75rem;
-    padding: 16px 13px;
-
-    & > p {
-      ${TYPOGRAPHY.MT_4}
-      color: ${({ theme }) => theme.mode.grey[600]};
-      text-align: left;
-      word-wrap: break-word;
-      word-break: break-word;
-    }
-
-    & > div {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
   }
 `;
 

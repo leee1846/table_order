@@ -127,7 +127,7 @@ export const Container = styled.div<Props>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 2px;
   width: ${({ size }) => getWidth(size)};
   max-width: ${({ size }) => getWidth(size)};
   min-width: ${({ size }) => getWidth(size)};
@@ -156,6 +156,7 @@ export const Container = styled.div<Props>`
 
   & > input {
     flex: 1;
+    min-width: 28px;
     width: 100%;
     height: 100%;
     padding: 0;

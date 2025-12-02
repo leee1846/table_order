@@ -2,6 +2,7 @@ import { RemoveIcon, AddIcon } from '../../icons';
 import * as S from './numberInput.style';
 import { SerializedStyles } from '@emotion/react';
 import { useThemeMode } from '../../hooks/useThemeMode';
+import { useId } from 'react';
 
 export type TVariant = 'square' | 'rounded';
 
@@ -26,9 +27,12 @@ export const NumberInput = ({
   onChange,
   customStyle,
 }: Props) => {
+  const id = useId();
   const { theme } = useThemeMode();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
     const newValue = Number(e.target.value);
     if (min && newValue < min) {
       onChange(min);
@@ -43,7 +47,9 @@ export const NumberInput = ({
     onChange(newValue);
   };
 
-  const handleDecrease = () => {
+  const handleDecrease = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
     const newValue = value - 1;
     if (min !== undefined && newValue < min) {
       onChange(min);
@@ -52,7 +58,9 @@ export const NumberInput = ({
     onChange(newValue);
   };
 
-  const handleIncrease = () => {
+  const handleIncrease = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
     const newValue = value + 1;
     if (max !== undefined && newValue > max) {
       onChange(max);
@@ -94,9 +102,11 @@ export const NumberInput = ({
       </button>
       <input
         type="number"
+        id={id}
         value={value}
         onChange={handleChange}
         disabled={disabled}
+        onClick={(e) => e.stopPropagation()}
       />
       <button
         type="button"
