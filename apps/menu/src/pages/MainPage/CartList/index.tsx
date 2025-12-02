@@ -2,13 +2,11 @@ import { createPortal } from 'react-dom';
 import * as S from '@/pages/MainPage/CartList/cartList.style';
 import { BasicButton, NumberInput } from '@repo/ui/components';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 import { DeleteIcon, EmptedCartIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
-import { openDualActionDialog } from '@repo/feature/utils';
-
-const hasOptions = false;
-const menuList = Array.from({ length: 5 });
+import { openDualActionDialog, toast } from '@repo/feature/utils';
+import { useCartStore } from '@/stores/useCartStore';
+import { formatCurrency } from '@repo/util/string';
 
 interface Props {
   onClose: () => void;
@@ -17,11 +15,18 @@ interface Props {
 export const CartList = ({ onClose, openPaymentsModal }: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
+  const {
+    data: cartData,
+    removeFromCart,
+    updateCartItemQuantity,
+  } = useCartStore();
 
-  const [quantity, setQuantity] = useState(1);
-
-  const closeCartList = () => {
-    onClose();
+  const removeMenu = (index: number) => {
+    removeFromCart(index);
+    toast(t('메뉴가 삭제되었습니다.'), {
+      position: 'center-center',
+      duration: 2000,
+    });
   };
 
   const order = () => {
@@ -38,54 +43,56 @@ export const CartList = ({ onClose, openPaymentsModal }: Props) => {
   };
 
   return createPortal(
-    <S.Background onClick={closeCartList}>
+    <S.Background onClick={onClose}>
       <S.Container onClick={(e) => e.stopPropagation()}>
         <S.Title>{t('장바구니')}</S.Title>
 
         <S.OrderList>
-          {menuList.length < 1 && (
+          {cartData.menus.length < 1 && (
             <S.NoContent>
               <EmptedCartIcon theme={theme} width={52} height={52} />
               <p>{t('현재 담긴 메뉴가 없어요.')}</p>
             </S.NoContent>
           )}
 
-          {menuList.map((_, index) => (
+          {cartData.menus.map((menu, index) => (
             <S.OrderItem key={`order-${index + 1}`}>
               <S.OrderMenu>
-                <p>메뉴 이름???</p>
-                <p>10000????</p>
+                <p>{menu.menuName}</p>
+                <p>{formatCurrency(menu.menuPrice)}</p>
               </S.OrderMenu>
-              {hasOptions && (
+              {menu.selectedOptions.length > 0 && (
                 <S.Options>
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <S.OptionItem key={`option-${index + 1}`}>
+                  {menu.selectedOptions.map((option) => (
+                    <S.OptionItem key={option.optionSeq}>
                       <p>
                         <span />
-                        옵션 이름???adsasdsaddasdasdasdds
+                        {option.optionName}
                       </p>
                       <div>
-                        <p>10000????</p>
-                        <p>10000????</p>
+                        <p>{formatCurrency(option.quantity)}</p>
+                        <p>{formatCurrency(option.optionPrice)}</p>
                       </div>
                     </S.OptionItem>
                   ))}
-                  <div>
-                    <button type="button">옵션</button>
-                  </div>
+                  {menu.selectedOptions.length > 0 && (
+                    <div>
+                      <button type="button">옵션</button>
+                    </div>
+                  )}
                 </S.Options>
               )}
 
               <S.ButtonContainer>
-                <S.DeleteButton onClick={() => {}}>
+                <S.DeleteButton onClick={() => removeMenu(index)}>
                   <DeleteIcon color={theme.mode.grey[600]} />
                 </S.DeleteButton>
                 <NumberInput
                   variant="square"
                   size="L"
                   min={1}
-                  value={quantity}
-                  onChange={setQuantity}
+                  value={menu.quantity}
+                  onChange={(value) => updateCartItemQuantity(index, value)}
                 />
               </S.ButtonContainer>
             </S.OrderItem>

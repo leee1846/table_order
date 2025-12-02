@@ -71,13 +71,18 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
 
     // 수량선택이 불가능한경우
     if (!category.isQuantitySelectable) {
-      const prevCartMenuData = cartData.menus.find(
-        (item) => item.menuSeq === menu.menuSeq
+      // 같은 menuSeq와 같은 옵션 조합을 가진 아이템 찾기
+      const cartMenuIndex = cartData.menus.findIndex(
+        (item) =>
+          item.menuSeq === menu.menuSeq && item.selectedOptions.length === 0
       );
 
-      if (prevCartMenuData) {
+      if (cartMenuIndex !== -1) {
         // 이전 데이터가 있으면 수량만 업데이트
-        updateCartItemQuantity(menu.menuSeq, prevCartMenuData.quantity + 1);
+        const prevCartMenuData = cartData.menus[cartMenuIndex];
+        if (prevCartMenuData) {
+          updateCartItemQuantity(cartMenuIndex, prevCartMenuData.quantity + 1);
+        }
       } else {
         // 없으면 새로 추가
         addToCart({
