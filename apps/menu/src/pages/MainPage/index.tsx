@@ -178,7 +178,7 @@ export const MainPage = () => {
           categories={visibleCategories}
           useScrollLayout={useScrollLayout}
         />
-        <CartButton />
+        <CartButton categories={visibleCategories} />
       </S.MainContent>
     </S.Container>
   );

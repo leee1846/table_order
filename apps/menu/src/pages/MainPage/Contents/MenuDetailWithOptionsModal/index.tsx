@@ -20,11 +20,14 @@ import { NoContent } from '@/feature/NoContent';
 import * as S from '@/pages/MainPage/Contents/MenuDetailWithOptionsModal/menuDetailWithOptionsModal.style';
 import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
-import type { ICartMenu } from '@/types/cart';
+import type { ICartMenu, ICartOption } from '@/types/cart';
 
 interface Props {
   onClose: () => void;
   menu: IMenu;
+  initialQuantity?: number;
+  initialSelectedOptions?: ICartOption[];
+  cartItemIndex?: number; // 카트 아이템 인덱스 (있으면 업데이트, 없으면 추가)
 }
 
 interface SelectedOptionWithGroup {
@@ -41,14 +44,50 @@ const getOptionKey = (option: IOption): string => {
 // Map 기반 선택된 옵션 타입
 type SelectedOptionsMap = Map<string, { option: IOption; quantity: number }>;
 
-export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
+export const MenuDetailWithOptionsModal = ({
+  onClose,
+  menu,
+  initialQuantity = 1,
+  initialSelectedOptions = [],
+  cartItemIndex,
+}: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
-  const { addToCart } = useCartStore();
+  const { addToCart, updateCartItem } = useCartStore();
+
+  // 초기 선택된 옵션을 Map으로 변환
+  const initializeSelectedOptions = (): SelectedOptionsMap => {
+    const optionsMap = new Map<string, { option: IOption; quantity: number }>();
+
+    if (initialSelectedOptions.length === 0) {
+      return optionsMap;
+    }
+
+    // menu의 optionGroupList에서 각 옵션을 찾아서 Map에 추가
+    initialSelectedOptions.forEach((cartOption) => {
+      // 해당 optionSeq를 가진 옵션 찾기
+      for (const optionGroup of menu.optionGroupList) {
+        const option = optionGroup.optionList.find(
+          (opt) => opt.optionSeq === cartOption.optionSeq
+        );
+        if (option) {
+          const optionKey = getOptionKey(option);
+          optionsMap.set(optionKey, {
+            option: { ...option },
+            quantity: cartOption.quantity,
+          });
+          break;
+        }
+      }
+    });
+
+    return optionsMap;
+  };
+
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptionsMap>(
-    new Map()
+    initializeSelectedOptions
   );
-  const [menuQuantity, setMenuQuantity] = useState(1);
+  const [menuQuantity, setMenuQuantity] = useState(initialQuantity);
 
   const menuImages = menu.menuImageList?.filter((img) => img.imagePath) || [];
   const hasImages = menuImages.length > 0;
@@ -349,87 +388,52 @@ export const MenuDetailWithOptionsModal = ({ onClose, menu }: Props) => {
       }
     }
 
-    // 옵션을 카트 형식으로 변환
-    const allOptions: ICartMenu['selectedOptions'] = [];
-    const independentOptions: ICartMenu['selectedOptions'] = []; // isMenuQuantityDependant === false인 옵션들
+    // 옵션을 카트 형식으로 변환 (모든 옵션에 isMenuQuantityDependant 정보 포함)
+    const cartOptions: ICartMenu['selectedOptions'] = [];
 
     selectedOptions.forEach((item) => {
       const optionGroup = menu.optionGroupList.find(
         (group) => group.optionGroupSeq === item.option.optionGroupSeq
       );
 
-      const cartOption = {
+      const cartOption: ICartOption = {
         optionSeq: item.option.optionSeq,
         optionName: item.option.optionName,
         optionPrice: item.option.optionPrice,
         index: item.option.index,
         quantity: item.quantity,
+        isMenuQuantityDependant: optionGroup?.isMenuQuantityDependant ?? false,
       };
 
-      // 모든 옵션은 allOptions에 포함
-      allOptions.push(cartOption);
-
-      // isMenuQuantityDependant가 false인 경우만 independentOptions에 포함
-      // (이 옵션들은 메뉴 수량과 무관하게 모든 메뉴에 포함됨)
-      if (optionGroup && !optionGroup.isMenuQuantityDependant) {
-        independentOptions.push(cartOption);
-      }
+      cartOptions.push(cartOption);
     });
 
-    // 모든 옵션 그룹이 isMenuQuantityDependant === false인지 확인
-    const allGroupsAreIndependent = menu.optionGroupList.every(
-      (group) => !group.isMenuQuantityDependant
-    );
+    // 항상 1개의 메뉴만 카트에 등록
+    // isMenuQuantityDependant는 가격 계산 시에만 사용됨
+    const cartMenu: ICartMenu = {
+      categorySeq: menu.categorySeq,
+      menuSeq: menu.menuSeq,
+      menuName: menu.menuName,
+      menuPrice: menu.menuPrice,
+      quantity: menuQuantity,
+      selectedOptions: cartOptions,
+    };
 
-    if (allGroupsAreIndependent) {
-      // 모든 옵션 그룹이 isMenuQuantityDependant === false인 경우:
-      // 메뉴 1개만 추가하고, quantity를 menuQuantity로 설정, 모든 옵션 포함
-      const cartMenu: ICartMenu = {
-        categorySeq: menu.categorySeq,
-        menuSeq: menu.menuSeq,
-        menuName: menu.menuName,
-        menuPrice: menu.menuPrice,
-        quantity: menuQuantity,
-        selectedOptions: allOptions,
-      };
-
-      addToCart(cartMenu);
+    if (cartItemIndex !== undefined) {
+      // 카트 아이템 업데이트 모드
+      updateCartItem(cartItemIndex, cartMenu);
+      toast(t('메뉴가 수정되었습니다.'), {
+        position: 'center-center',
+        duration: 1000,
+      });
     } else {
-      // isMenuQuantityDependant === true인 옵션 그룹이 하나라도 있는 경우:
-      // 첫 번째 메뉴: 모든 옵션 포함, quantity = 1
-      // 두 번째 메뉴부터: isMenuQuantityDependant가 false인 옵션만 포함
-      // 반복문 대신 quantity를 조정하여 처리
-
-      // 첫 번째 메뉴 추가 (모든 옵션 포함)
-      const firstCartMenu: ICartMenu = {
-        categorySeq: menu.categorySeq,
-        menuSeq: menu.menuSeq,
-        menuName: menu.menuName,
-        menuPrice: menu.menuPrice,
-        quantity: 1,
-        selectedOptions: allOptions,
-      };
-      addToCart(firstCartMenu);
-
-      // 두 번째 메뉴부터 추가 (isMenuQuantityDependant가 false인 옵션만 포함)
-      // quantity를 조정하여 반복문 없이 처리
-      if (menuQuantity > 1) {
-        const additionalCartMenu: ICartMenu = {
-          categorySeq: menu.categorySeq,
-          menuSeq: menu.menuSeq,
-          menuName: menu.menuName,
-          menuPrice: menu.menuPrice,
-          quantity: menuQuantity - 1, // 첫 번째 메뉴를 제외한 나머지 수량
-          selectedOptions: independentOptions, // isMenuQuantityDependant가 false인 옵션만 포함
-        };
-        addToCart(additionalCartMenu);
-      }
+      // 새로 추가 모드
+      addToCart(cartMenu);
+      toast(t('메뉴가 담겼습니다.'), {
+        position: 'center-center',
+        duration: 1000,
+      });
     }
-
-    toast(t('메뉴가 담겼습니다.'), {
-      position: 'center-center',
-      duration: 1000,
-    });
 
     onClose();
   };

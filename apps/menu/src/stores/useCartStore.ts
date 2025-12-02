@@ -29,6 +29,8 @@ export interface ICartStore {
   addToCart: (item: ICartMenu) => void;
   /** 장바구니 아이템 수량 업데이트 */
   updateCartItemQuantity: (index: number, newQuantity: number) => void;
+  /** 장바구니 아이템 전체 업데이트 (옵션과 수량 포함) */
+  updateCartItem: (index: number, item: ICartMenu) => void;
   /** 장바구니에 아이템 제거 */
   removeFromCart: (index: number) => void;
   /** 장바구니 비우기 */
@@ -124,6 +126,21 @@ export const useCartStore = create<ICartStore>((set, get) => ({
     const newMenus = menus.map((item, i) =>
       i === index ? { ...item, quantity: newQuantity } : item
     );
+    const newData = {
+      ...get().data,
+      menus: newMenus,
+    };
+    storage.save(STORAGE_KEYS.CART, newData);
+    set({ data: newData });
+  },
+
+  // 장바구니 아이템 전체 업데이트 (옵션과 수량 포함)
+  updateCartItem: (index: number, item: ICartMenu) => {
+    const menus = get().data.menus;
+    if (index < 0 || index >= menus.length) {
+      return;
+    }
+    const newMenus = menus.map((menu, i) => (i === index ? item : menu));
     const newData = {
       ...get().data,
       menus: newMenus,

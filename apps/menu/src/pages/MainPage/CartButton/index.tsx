@@ -6,8 +6,13 @@ import { OrderCompleteModal } from '@/pages/MainPage/OrderCompleteModal';
 import { PaymentsModal } from '@/pages/MainPage/PaymentsModal';
 import { SplitPaymentModal } from '@/pages/MainPage/SplitPaymentModal';
 import { useCartStore } from '@/stores/useCartStore';
+import type { ICategoryWithMenus } from '@repo/api/types';
 
-export const CartButton = () => {
+interface Props {
+  categories: ICategoryWithMenus[];
+}
+
+export const CartButton = ({ categories }: Props) => {
   const { t } = useTranslation();
   const { data: cartData } = useCartStore();
 
@@ -46,6 +51,7 @@ export const CartButton = () => {
         <CartList
           onClose={() => setIsCartListOpen(false)}
           openPaymentsModal={() => setIsPaymentsModalOpen(true)}
+          categories={categories}
         />
       )}
 

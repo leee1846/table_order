@@ -134,31 +134,32 @@ export const Options = styled.ul`
       }
     }
   }
+`;
 
-  & > div {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-top: 6px;
+export const OptionButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 6px;
 
-    & > button {
-      width: fit-content;
-      padding: 8px 12px;
-      border-radius: 0.5rem;
-      background-color: ${({ theme }) => theme.mode.grey[700]};
-      color: ${({ theme }) => theme.mode.grey[200]};
-      ${TYPOGRAPHY.BD_1}
-    }
+  & > button {
+    width: fit-content;
+    padding: 8px 12px;
+    border-radius: 0.5rem;
+    background-color: ${({ theme }) => theme.mode.grey[700]};
+    color: ${({ theme }) => theme.mode.grey[200]};
+    ${TYPOGRAPHY.BD_1}
   }
 `;
 
-export const OptionItem = styled.p`
+export const OptionItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4px;
 
-  & > p:first-of-type {
+  & > p {
+    flex: 1;
     color: ${({ theme }) => theme.mode.grey[500]};
     ${TYPOGRAPHY.ST_4}
     overflow: hidden;

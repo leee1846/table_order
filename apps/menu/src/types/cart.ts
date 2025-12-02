@@ -1,4 +1,5 @@
 export interface ICartOption {
+  isMenuQuantityDependant: boolean;
   optionSeq: number;
   optionName: string;
   optionPrice: number;

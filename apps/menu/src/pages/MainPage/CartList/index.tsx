@@ -7,14 +7,29 @@ import { useThemeMode } from '@repo/ui';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import { formatCurrency } from '@repo/util/string';
+import { useState } from 'react';
+import { MenuDetailWithOptionsModal } from '../Contents/MenuDetailWithOptionsModal';
+import type { ICategoryWithMenus } from '@repo/api/types';
+import type { ICartMenu } from '@/types/cart';
 
 interface Props {
   onClose: () => void;
   openPaymentsModal: () => void;
+  categories: ICategoryWithMenus[];
 }
-export const CartList = ({ onClose, openPaymentsModal }: Props) => {
+export const CartList = ({ onClose, openPaymentsModal, categories }: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
+
+  const [isMenuDetailModalOpen, setIsMenuDetailModalOpen] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState<ICartMenu | null>(null);
+  const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
+    null
+  );
+  const selectedMenuData = categories
+    .find((category) => category.categorySeq === selectedMenu?.categorySeq)
+    ?.menuInfoList.find((menu) => menu.menuSeq === selectedMenu?.menuSeq);
+
   const {
     data: cartData,
     removeFromCart,
@@ -40,6 +55,12 @@ export const CartList = ({ onClose, openPaymentsModal }: Props) => {
         openPaymentsModal();
       },
     });
+  };
+
+  const onClickOptionButton = (menu: ICartMenu, index: number) => {
+    setSelectedMenu(menu);
+    setSelectedMenuIndex(index);
+    setIsMenuDetailModalOpen(true);
   };
 
   return createPortal(
@@ -76,9 +97,14 @@ export const CartList = ({ onClose, openPaymentsModal }: Props) => {
                     </S.OptionItem>
                   ))}
                   {menu.selectedOptions.length > 0 && (
-                    <div>
-                      <button type="button">옵션</button>
-                    </div>
+                    <S.OptionButtonContainer>
+                      <button
+                        type="button"
+                        onClick={() => onClickOptionButton(menu, index)}
+                      >
+                        옵션
+                      </button>
+                    </S.OptionButtonContainer>
                   )}
                 </S.Options>
               )}
@@ -109,6 +135,22 @@ export const CartList = ({ onClose, openPaymentsModal }: Props) => {
           </BasicButton>
         </S.TotalContainer>
       </S.Container>
+
+      {isMenuDetailModalOpen &&
+        selectedMenuData &&
+        selectedMenu &&
+        selectedMenuIndex !== null && (
+          <MenuDetailWithOptionsModal
+            onClose={() => {
+              setIsMenuDetailModalOpen(false);
+              setSelectedMenuIndex(null);
+            }}
+            menu={selectedMenuData}
+            initialQuantity={selectedMenu.quantity}
+            initialSelectedOptions={selectedMenu.selectedOptions}
+            cartItemIndex={selectedMenuIndex}
+          />
+        )}
     </S.Background>,
     document.body
   );

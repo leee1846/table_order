@@ -1,4 +1,4 @@
-import type { ICategoryWithMenus } from '@repo/api/types';
+import type { ICategoryWithMenus, IMenu, IMenuImage } from '@repo/api/types';
 
 const createCommonFields = (index: number) => ({
   index,
@@ -12,6 +12,25 @@ const createCommonFields = (index: number) => ({
   createMemberUuid: 'mock-uuid',
   updateDate: '2024-01-01T00:00:00Z',
   updateMemberUuid: 'mock-uuid',
+});
+
+const createMenuImage = (
+  imageSeq: number,
+  menuSeq: number,
+  imagePath: string,
+  imageName: string,
+  imageIndex: number = 0,
+  isMainImage: boolean = false
+): IMenuImage => ({
+  ...createCommonFields(imageSeq),
+  imageSeq,
+  menuSeq,
+  imagePath,
+  imageName,
+  imageExtension: imageName.split('.').pop() || 'jpg',
+  imageIndex,
+  isDeleted: false,
+  isMainImage,
 });
 
 const createOption = (
@@ -72,9 +91,9 @@ const createMenu = (
     minQuantity?: number;
     spiceLevel?: number;
     optionGroupList?: ReturnType<typeof createOptionGroup>[];
-    menuImageList?: any[];
+    menuImageList?: IMenuImage[] | null;
   } = {}
-): any => ({
+): IMenu => ({
   ...createCommonFields(menuSeq),
   menuSeq,
   categorySeq,
@@ -195,7 +214,7 @@ const toppingOptions = createOptionGroup(
   1,
   '토핑 추가',
   {
-    requiredQuantity: 0,
+    requiredQuantity: 4,
     isMultipleSelectable: false,
     isOptionQuantitySelectable: true,
     isMenuQuantityDependant: false,
@@ -317,20 +336,21 @@ const burgerMenus = [
       packagingOptions,
     ],
     menuImageList: [
-      {
-        imageSeq: 1,
-        menuSeq: 1,
-        imagePath:
-          'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&h=600&fit=crop',
-        imageName: '치즈버거.jpg',
-      },
-      {
-        imageSeq: 2,
-        menuSeq: 1,
-        imagePath:
-          'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=600&fit=crop',
-        imageName: '치즈버거2.jpg',
-      },
+      createMenuImage(
+        1,
+        1,
+        'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&h=600&fit=crop',
+        '치즈버거.jpg',
+        0,
+        true
+      ),
+      createMenuImage(
+        2,
+        1,
+        'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=600&fit=crop',
+        '치즈버거2.jpg',
+        1
+      ),
     ],
   }),
   createMenu(2, 1, '불고기버거', 9000, {
@@ -340,13 +360,14 @@ const burgerMenus = [
     minQuantity: 1,
     optionGroupList: [sizeOptions, drinkOptions, packagingOptions],
     menuImageList: [
-      {
-        imageSeq: 3,
-        menuSeq: 2,
-        imagePath:
-          'https://images.unsplash.com/photo-1553979459-d2229ba7433W?w=800&h=600&fit=crop&auto=format',
-        imageName: '불고기버거.jpg',
-      },
+      createMenuImage(
+        3,
+        2,
+        'https://images.unsplash.com/photo-1553979459-d2229ba7433W?w=800&h=600&fit=crop&auto=format',
+        '불고기버거.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(3, 1, '치킨버거', 8500, {
@@ -355,13 +376,14 @@ const burgerMenus = [
     minQuantity: 1,
     optionGroupList: [sizeOptions, toppingOptions],
     menuImageList: [
-      {
-        imageSeq: 4,
-        menuSeq: 3,
-        imagePath:
-          'https://images.unsplash.com/photo-1606755962773-d324e788a195?w=800&h=600&fit=crop',
-        imageName: '치킨버거.jpg',
-      },
+      createMenuImage(
+        4,
+        3,
+        'https://images.unsplash.com/photo-1606755962773-d324e788a195?w=800&h=600&fit=crop',
+        '치킨버거.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(4, 1, '더블치즈버거', 12000, {
@@ -377,20 +399,21 @@ const burgerMenus = [
       additionalOrderOptions,
     ],
     menuImageList: [
-      {
-        imageSeq: 5,
-        menuSeq: 4,
-        imagePath:
-          'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=600&fit=crop',
-        imageName: '더블치즈버거.jpg',
-      },
-      {
-        imageSeq: 6,
-        menuSeq: 4,
-        imagePath:
-          'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&h=600&fit=crop',
-        imageName: '더블치즈버거2.jpg',
-      },
+      createMenuImage(
+        5,
+        4,
+        'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=600&fit=crop',
+        '더블치즈버거.jpg',
+        0,
+        true
+      ),
+      createMenuImage(
+        6,
+        4,
+        'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&h=600&fit=crop',
+        '더블치즈버거2.jpg',
+        1
+      ),
     ],
   }),
   createMenu(5, 1, '품절 메뉴', 10000, {
@@ -406,13 +429,14 @@ const burgerMenus = [
     minQuantity: 1,
     optionGroupList: [sizeOptions, drinkOptions, packagingOptions],
     menuImageList: [
-      {
-        imageSeq: 7,
-        menuSeq: 27,
-        imagePath:
-          'https://images.unsplash.com/photo-1553979459-d2229ba7433W?w=800&h=600&fit=crop&auto=format',
-        imageName: '매운불고기버거.jpg',
-      },
+      createMenuImage(
+        7,
+        27,
+        'https://images.unsplash.com/photo-1553979459-d2229ba7433W?w=800&h=600&fit=crop&auto=format',
+        '매운불고기버거.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(28, 1, '불닭버거', 11000, {
@@ -428,13 +452,14 @@ const burgerMenus = [
       packagingOptions,
     ],
     menuImageList: [
-      {
-        imageSeq: 8,
-        menuSeq: 28,
-        imagePath:
-          'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=600&fit=crop',
-        imageName: '불닭버거.jpg',
-      },
+      createMenuImage(
+        8,
+        28,
+        'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=600&fit=crop',
+        '불닭버거.jpg',
+        0,
+        true
+      ),
     ],
   }),
 ];
@@ -448,20 +473,21 @@ const chickenMenus = [
     minQuantity: 1,
     optionGroupList: [spiceOptions],
     menuImageList: [
-      {
-        imageSeq: 9,
-        menuSeq: 6,
-        imagePath:
-          'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=800&h=600&fit=crop',
-        imageName: '후라이드치킨.jpg',
-      },
-      {
-        imageSeq: 10,
-        menuSeq: 6,
-        imagePath:
-          'https://images.unsplash.com/photo-1626645738192-c2a33c2b13f9?w=800&h=600&fit=crop',
-        imageName: '후라이드치킨2.jpg',
-      },
+      createMenuImage(
+        9,
+        6,
+        'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=800&h=600&fit=crop',
+        '후라이드치킨.jpg',
+        0,
+        true
+      ),
+      createMenuImage(
+        10,
+        6,
+        'https://images.unsplash.com/photo-1626645738192-c2a33c2b13f9?w=800&h=600&fit=crop',
+        '후라이드치킨2.jpg',
+        1
+      ),
     ],
   }),
   createMenu(7, 2, '양념 치킨', 19000, {
@@ -470,13 +496,14 @@ const chickenMenus = [
     minQuantity: 1,
     optionGroupList: [spiceOptions],
     menuImageList: [
-      {
-        imageSeq: 11,
-        menuSeq: 7,
-        imagePath:
-          'https://images.unsplash.com/photo-1608039829573-8031512130c1?w=800&h=600&fit=crop',
-        imageName: '양념치킨.jpg',
-      },
+      createMenuImage(
+        11,
+        7,
+        'https://images.unsplash.com/photo-1608039829573-8031512130c1?w=800&h=600&fit=crop',
+        '양념치킨.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(8, 2, '간장 치킨', 20000, {
@@ -484,13 +511,14 @@ const chickenMenus = [
     minQuantity: 1,
     optionGroupList: [spiceOptions],
     menuImageList: [
-      {
-        imageSeq: 12,
-        menuSeq: 8,
-        imagePath:
-          'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=800&h=600&fit=crop',
-        imageName: '간장치킨.jpg',
-      },
+      createMenuImage(
+        12,
+        8,
+        'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=800&h=600&fit=crop',
+        '간장치킨.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(9, 2, '반반 치킨', 19500, {
@@ -499,13 +527,14 @@ const chickenMenus = [
     minQuantity: 1,
     optionGroupList: [spiceOptions],
     menuImageList: [
-      {
-        imageSeq: 13,
-        menuSeq: 9,
-        imagePath:
-          'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=800&h=600&fit=crop',
-        imageName: '반반치킨.jpg',
-      },
+      createMenuImage(
+        13,
+        9,
+        'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=800&h=600&fit=crop',
+        '반반치킨.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(29, 2, '매운 양념 치킨', 20000, {
@@ -515,13 +544,14 @@ const chickenMenus = [
     minQuantity: 1,
     optionGroupList: [spiceOptions],
     menuImageList: [
-      {
-        imageSeq: 14,
-        menuSeq: 29,
-        imagePath:
-          'https://images.unsplash.com/photo-1608039829573-8031512130c1?w=800&h=600&fit=crop',
-        imageName: '매운양념치킨.jpg',
-      },
+      createMenuImage(
+        14,
+        29,
+        'https://images.unsplash.com/photo-1608039829573-8031512130c1?w=800&h=600&fit=crop',
+        '매운양념치킨.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(30, 2, '마라 치킨', 22000, {
@@ -531,13 +561,14 @@ const chickenMenus = [
     minQuantity: 1,
     optionGroupList: [spiceOptions],
     menuImageList: [
-      {
-        imageSeq: 15,
-        menuSeq: 30,
-        imagePath:
-          'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=800&h=600&fit=crop',
-        imageName: '마라치킨.jpg',
-      },
+      createMenuImage(
+        15,
+        30,
+        'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=800&h=600&fit=crop',
+        '마라치킨.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(31, 2, '순한 양념 치킨', 19000, {
@@ -546,13 +577,14 @@ const chickenMenus = [
     minQuantity: 1,
     optionGroupList: [spiceOptions],
     menuImageList: [
-      {
-        imageSeq: 16,
-        menuSeq: 31,
-        imagePath:
-          'https://images.unsplash.com/photo-1608039829573-8031512130c1?w=800&h=600&fit=crop',
-        imageName: '순한양념치킨.jpg',
-      },
+      createMenuImage(
+        16,
+        31,
+        'https://images.unsplash.com/photo-1608039829573-8031512130c1?w=800&h=600&fit=crop',
+        '순한양념치킨.jpg',
+        0,
+        true
+      ),
     ],
   }),
 ];
@@ -564,13 +596,14 @@ const sideMenus = [
     minQuantity: 1,
     optionGroupList: [limitedQuantityOptions],
     menuImageList: [
-      {
-        imageSeq: 17,
-        menuSeq: 10,
-        imagePath:
-          'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=800&h=600&fit=crop',
-        imageName: '감자튀김.jpg',
-      },
+      createMenuImage(
+        17,
+        10,
+        'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=800&h=600&fit=crop',
+        '감자튀김.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(11, 3, '치즈스틱', 5000, {
@@ -578,13 +611,14 @@ const sideMenus = [
     minQuantity: 1,
     optionGroupList: [],
     menuImageList: [
-      {
-        imageSeq: 18,
-        menuSeq: 11,
-        imagePath:
-          'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&h=600&fit=crop',
-        imageName: '치즈스틱.jpg',
-      },
+      createMenuImage(
+        18,
+        11,
+        'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&h=600&fit=crop',
+        '치즈스틱.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(12, 3, '치킨너겟', 6000, {
@@ -592,13 +626,14 @@ const sideMenus = [
     minQuantity: 1,
     optionGroupList: [limitedQuantityOptions],
     menuImageList: [
-      {
-        imageSeq: 19,
-        menuSeq: 12,
-        imagePath:
-          'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&h=600&fit=crop',
-        imageName: '치킨너겟.jpg',
-      },
+      createMenuImage(
+        19,
+        12,
+        'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&h=600&fit=crop',
+        '치킨너겟.jpg',
+        0,
+        true
+      ),
     ],
   }),
 ];
@@ -610,13 +645,14 @@ const drinkMenus = [
     minQuantity: 1,
     optionGroupList: [],
     menuImageList: [
-      {
-        imageSeq: 20,
-        menuSeq: 13,
-        imagePath:
-          'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&h=600&fit=crop',
-        imageName: '콜라.jpg',
-      },
+      createMenuImage(
+        20,
+        13,
+        'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&h=600&fit=crop',
+        '콜라.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(14, 4, '사이다', 2000, {
@@ -624,13 +660,14 @@ const drinkMenus = [
     minQuantity: 1,
     optionGroupList: [],
     menuImageList: [
-      {
-        imageSeq: 21,
-        menuSeq: 14,
-        imagePath:
-          'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&h=600&fit=crop',
-        imageName: '사이다.jpg',
-      },
+      createMenuImage(
+        21,
+        14,
+        'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&h=600&fit=crop',
+        '사이다.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(15, 4, '오렌지 주스', 3000, {
@@ -638,13 +675,14 @@ const drinkMenus = [
     minQuantity: 1,
     optionGroupList: [],
     menuImageList: [
-      {
-        imageSeq: 22,
-        menuSeq: 15,
-        imagePath:
-          'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=800&h=600&fit=crop',
-        imageName: '오렌지주스.jpg',
-      },
+      createMenuImage(
+        22,
+        15,
+        'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=800&h=600&fit=crop',
+        '오렌지주스.jpg',
+        0,
+        true
+      ),
     ],
   }),
   createMenu(16, 4, '옵션 테스트 메뉴', 5000, {
@@ -652,13 +690,14 @@ const drinkMenus = [
     minQuantity: 1,
     optionGroupList: [outOfStockOptions],
     menuImageList: [
-      {
-        imageSeq: 23,
-        menuSeq: 16,
-        imagePath:
-          'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&h=600&fit=crop',
-        imageName: '옵션테스트메뉴.jpg',
-      },
+      createMenuImage(
+        23,
+        16,
+        'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&h=600&fit=crop',
+        '옵션테스트메뉴.jpg',
+        0,
+        true
+      ),
     ],
   }),
 ];
