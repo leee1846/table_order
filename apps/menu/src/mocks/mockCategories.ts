@@ -75,6 +75,7 @@ const createMenu = (
     menuImageList?: any[];
   } = {}
 ): any => ({
+  ...createCommonFields(menuSeq),
   menuSeq,
   categorySeq,
   menuName,
@@ -92,20 +93,12 @@ const createMenu = (
   mappedMenuCode: null,
   mappedMenuName: null,
   mappedCategoryCode: null,
-  mappedOptionGroupCode: null,
   mappedOptionGroupCode2: null,
-  mappedUptDt: null,
-  isMapped: false,
   selectedLanguageCode: null,
   localeMenuName: null,
   localeMenuDescription: null,
   localeMenuNameStr: null,
   localeMenuDescriptionStr: null,
-  createDate: '2024-01-01T00:00:00Z',
-  createMemberUuid: 'mock-uuid',
-  updateDate: '2024-01-01T00:00:00Z',
-  updateMemberUuid: 'mock-uuid',
-  ...createCommonFields(menuSeq),
   optionGroupList: options.optionGroupList ?? [],
   menuImageList: options.menuImageList ?? null,
   quantity: 0,
@@ -323,6 +316,22 @@ const burgerMenus = [
       toppingOptions,
       packagingOptions,
     ],
+    menuImageList: [
+      {
+        imageSeq: 1,
+        menuSeq: 1,
+        imagePath:
+          'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&h=600&fit=crop',
+        imageName: '치즈버거.jpg',
+      },
+      {
+        imageSeq: 2,
+        menuSeq: 1,
+        imagePath:
+          'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=600&fit=crop',
+        imageName: '치즈버거2.jpg',
+      },
+    ],
   }),
   createMenu(2, 1, '불고기버거', 9000, {
     menuDescription: '달콤한 불고기 소스가 일품인 버거',
@@ -330,12 +339,30 @@ const burgerMenus = [
     isBest: false,
     minQuantity: 1,
     optionGroupList: [sizeOptions, drinkOptions, packagingOptions],
+    menuImageList: [
+      {
+        imageSeq: 3,
+        menuSeq: 2,
+        imagePath:
+          'https://images.unsplash.com/photo-1553979459-d2229ba7433W?w=800&h=600&fit=crop&auto=format',
+        imageName: '불고기버거.jpg',
+      },
+    ],
   }),
   createMenu(3, 1, '치킨버거', 8500, {
     menuDescription: '바삭한 치킨 패티가 들어간 버거',
     isRecommended: true,
     minQuantity: 1,
     optionGroupList: [sizeOptions, toppingOptions],
+    menuImageList: [
+      {
+        imageSeq: 4,
+        menuSeq: 3,
+        imagePath:
+          'https://images.unsplash.com/photo-1606755962773-d324e788a195?w=800&h=600&fit=crop',
+        imageName: '치킨버거.jpg',
+      },
+    ],
   }),
   createMenu(4, 1, '더블치즈버거', 12000, {
     menuDescription: '치즈가 두 배로 들어간 프리미엄 버거',
@@ -349,12 +376,66 @@ const burgerMenus = [
       packagingOptions,
       additionalOrderOptions,
     ],
+    menuImageList: [
+      {
+        imageSeq: 5,
+        menuSeq: 4,
+        imagePath:
+          'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=600&fit=crop',
+        imageName: '더블치즈버거.jpg',
+      },
+      {
+        imageSeq: 6,
+        menuSeq: 4,
+        imagePath:
+          'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&h=600&fit=crop',
+        imageName: '더블치즈버거2.jpg',
+      },
+    ],
   }),
   createMenu(5, 1, '품절 메뉴', 10000, {
     menuDescription: '품절된 메뉴 예시',
     isOutOfStock: true,
     minQuantity: 1,
     optionGroupList: [],
+  }),
+  createMenu(27, 1, '매운 불고기버거', 9500, {
+    menuDescription: '매콤한 불고기 소스가 일품인 버거',
+    isRecommended: true,
+    spiceLevel: 3,
+    minQuantity: 1,
+    optionGroupList: [sizeOptions, drinkOptions, packagingOptions],
+    menuImageList: [
+      {
+        imageSeq: 7,
+        menuSeq: 27,
+        imagePath:
+          'https://images.unsplash.com/photo-1553979459-d2229ba7433W?w=800&h=600&fit=crop&auto=format',
+        imageName: '매운불고기버거.jpg',
+      },
+    ],
+  }),
+  createMenu(28, 1, '불닭버거', 11000, {
+    menuDescription: '매우 매운 불닭 소스가 들어간 버거',
+    isBest: true,
+    isNew: true,
+    spiceLevel: 5,
+    minQuantity: 1,
+    optionGroupList: [
+      sizeOptions,
+      drinkOptions,
+      toppingOptions,
+      packagingOptions,
+    ],
+    menuImageList: [
+      {
+        imageSeq: 8,
+        menuSeq: 28,
+        imagePath:
+          'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=600&fit=crop',
+        imageName: '불닭버거.jpg',
+      },
+    ],
   }),
 ];
 
@@ -366,23 +447,113 @@ const chickenMenus = [
     isBest: true,
     minQuantity: 1,
     optionGroupList: [spiceOptions],
+    menuImageList: [
+      {
+        imageSeq: 9,
+        menuSeq: 6,
+        imagePath:
+          'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=800&h=600&fit=crop',
+        imageName: '후라이드치킨.jpg',
+      },
+      {
+        imageSeq: 10,
+        menuSeq: 6,
+        imagePath:
+          'https://images.unsplash.com/photo-1626645738192-c2a33c2b13f9?w=800&h=600&fit=crop',
+        imageName: '후라이드치킨2.jpg',
+      },
+    ],
   }),
   createMenu(7, 2, '양념 치킨', 19000, {
     menuDescription: '달콤하고 매콤한 양념 치킨',
     isRecommended: true,
     minQuantity: 1,
     optionGroupList: [spiceOptions],
+    menuImageList: [
+      {
+        imageSeq: 11,
+        menuSeq: 7,
+        imagePath:
+          'https://images.unsplash.com/photo-1608039829573-8031512130c1?w=800&h=600&fit=crop',
+        imageName: '양념치킨.jpg',
+      },
+    ],
   }),
   createMenu(8, 2, '간장 치킨', 20000, {
     menuDescription: '깊은 맛의 간장 치킨',
     minQuantity: 1,
     optionGroupList: [spiceOptions],
+    menuImageList: [
+      {
+        imageSeq: 12,
+        menuSeq: 8,
+        imagePath:
+          'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=800&h=600&fit=crop',
+        imageName: '간장치킨.jpg',
+      },
+    ],
   }),
   createMenu(9, 2, '반반 치킨', 19500, {
     menuDescription: '후라이드와 양념을 반반으로',
     isNew: true,
     minQuantity: 1,
     optionGroupList: [spiceOptions],
+    menuImageList: [
+      {
+        imageSeq: 13,
+        menuSeq: 9,
+        imagePath:
+          'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=800&h=600&fit=crop',
+        imageName: '반반치킨.jpg',
+      },
+    ],
+  }),
+  createMenu(29, 2, '매운 양념 치킨', 20000, {
+    menuDescription: '매콤달콤한 양념 치킨',
+    isRecommended: true,
+    spiceLevel: 4,
+    minQuantity: 1,
+    optionGroupList: [spiceOptions],
+    menuImageList: [
+      {
+        imageSeq: 14,
+        menuSeq: 29,
+        imagePath:
+          'https://images.unsplash.com/photo-1608039829573-8031512130c1?w=800&h=600&fit=crop',
+        imageName: '매운양념치킨.jpg',
+      },
+    ],
+  }),
+  createMenu(30, 2, '마라 치킨', 22000, {
+    menuDescription: '중국식 마라 소스가 들어간 매우 매운 치킨',
+    isBest: true,
+    spiceLevel: 5,
+    minQuantity: 1,
+    optionGroupList: [spiceOptions],
+    menuImageList: [
+      {
+        imageSeq: 15,
+        menuSeq: 30,
+        imagePath:
+          'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=800&h=600&fit=crop',
+        imageName: '마라치킨.jpg',
+      },
+    ],
+  }),
+  createMenu(31, 2, '순한 양념 치킨', 19000, {
+    menuDescription: '순한 양념으로 만든 치킨',
+    spiceLevel: 1,
+    minQuantity: 1,
+    optionGroupList: [spiceOptions],
+    menuImageList: [
+      {
+        imageSeq: 16,
+        menuSeq: 31,
+        imagePath:
+          'https://images.unsplash.com/photo-1608039829573-8031512130c1?w=800&h=600&fit=crop',
+        imageName: '순한양념치킨.jpg',
+      },
+    ],
   }),
 ];
 
@@ -392,16 +563,43 @@ const sideMenus = [
     menuDescription: '바삭한 감자튀김',
     minQuantity: 1,
     optionGroupList: [limitedQuantityOptions],
+    menuImageList: [
+      {
+        imageSeq: 17,
+        menuSeq: 10,
+        imagePath:
+          'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=800&h=600&fit=crop',
+        imageName: '감자튀김.jpg',
+      },
+    ],
   }),
   createMenu(11, 3, '치즈스틱', 5000, {
     menuDescription: '쫄깃한 치즈스틱',
     minQuantity: 1,
     optionGroupList: [],
+    menuImageList: [
+      {
+        imageSeq: 18,
+        menuSeq: 11,
+        imagePath:
+          'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&h=600&fit=crop',
+        imageName: '치즈스틱.jpg',
+      },
+    ],
   }),
   createMenu(12, 3, '치킨너겟', 6000, {
     menuDescription: '부드러운 치킨너겟',
     minQuantity: 1,
     optionGroupList: [limitedQuantityOptions],
+    menuImageList: [
+      {
+        imageSeq: 19,
+        menuSeq: 12,
+        imagePath:
+          'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&h=600&fit=crop',
+        imageName: '치킨너겟.jpg',
+      },
+    ],
   }),
 ];
 
@@ -411,21 +609,57 @@ const drinkMenus = [
     menuDescription: '시원한 콜라',
     minQuantity: 1,
     optionGroupList: [],
+    menuImageList: [
+      {
+        imageSeq: 20,
+        menuSeq: 13,
+        imagePath:
+          'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&h=600&fit=crop',
+        imageName: '콜라.jpg',
+      },
+    ],
   }),
   createMenu(14, 4, '사이다', 2000, {
     menuDescription: '시원한 사이다',
     minQuantity: 1,
     optionGroupList: [],
+    menuImageList: [
+      {
+        imageSeq: 21,
+        menuSeq: 14,
+        imagePath:
+          'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&h=600&fit=crop',
+        imageName: '사이다.jpg',
+      },
+    ],
   }),
   createMenu(15, 4, '오렌지 주스', 3000, {
     menuDescription: '신선한 오렌지 주스',
     minQuantity: 1,
     optionGroupList: [],
+    menuImageList: [
+      {
+        imageSeq: 22,
+        menuSeq: 15,
+        imagePath:
+          'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=800&h=600&fit=crop',
+        imageName: '오렌지주스.jpg',
+      },
+    ],
   }),
   createMenu(16, 4, '옵션 테스트 메뉴', 5000, {
     menuDescription: '다양한 옵션을 테스트할 수 있는 메뉴',
     minQuantity: 1,
     optionGroupList: [outOfStockOptions],
+    menuImageList: [
+      {
+        imageSeq: 23,
+        menuSeq: 16,
+        imagePath:
+          'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&h=600&fit=crop',
+        imageName: '옵션테스트메뉴.jpg',
+      },
+    ],
   }),
 ];
 

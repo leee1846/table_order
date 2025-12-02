@@ -18,10 +18,13 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
   const staffCallCategory = categories.find(
     (category) => !!category.isStaffCall
   );
+  const categoriesWithoutStaffCall = categories.filter(
+    (category) => !category.isStaffCall
+  );
 
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
   const [selectedCategorySeq, setSelectedCategorySeq] = useState(
-    categories[0]?.categorySeq || 0
+    categoriesWithoutStaffCall[0]?.categorySeq || 0
   );
 
   /**
@@ -138,7 +141,7 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
     };
 
     // 모든 카테고리에 대한 intersection 이벤트 리스너 등록
-    categories.forEach((category) => {
+    categoriesWithoutStaffCall.forEach((category) => {
       window.addEventListener(
         EVENT_KEYS.SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.categorySeq),
         handleIntersectionEvent
@@ -153,19 +156,19 @@ export const Sidebar = ({ categories, useScrollLayout }: Props) => {
       }
 
       // 모든 이벤트 리스너 제거
-      categories.forEach((category) => {
+      categoriesWithoutStaffCall.forEach((category) => {
         window.removeEventListener(
           EVENT_KEYS.SCROLL_CATEGORY_VISIBLE_EVENT_KEY(category.categorySeq),
           handleIntersectionEvent
         );
       });
     };
-  }, [useScrollLayout, categories]);
+  }, [useScrollLayout, categoriesWithoutStaffCall]);
 
   return (
     <>
       <S.Container>
-        {categories.map((category) => (
+        {categoriesWithoutStaffCall.map((category) => (
           <S.CategoryButton
             isActive={selectedCategorySeq === category.categorySeq}
             key={category.categorySeq}
