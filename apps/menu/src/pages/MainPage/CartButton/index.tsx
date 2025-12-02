@@ -5,19 +5,25 @@ import { CartList } from '@/pages/MainPage/CartList';
 import { OrderCompleteModal } from '@/pages/MainPage/OrderCompleteModal';
 import { PaymentsModal } from '@/pages/MainPage/PaymentsModal';
 import { SplitPaymentModal } from '@/pages/MainPage/SplitPaymentModal';
+import { useCartStore } from '@/stores/useCartStore';
 
 export const CartButton = () => {
   const { t } = useTranslation();
+  const { data: cartData } = useCartStore();
+
   /** 장바구니 모달 */
   const [isCartListOpen, setIsCartListOpen] = useState(false);
+
   /** 주문 완료 모달 */
   const [isOrderCompleteModalOpen, setIsOrderCompleteModalOpen] =
     useState(false);
+
   /** 결제 방법 선택 모달 */
   const [isPaymentsModalOpen, setIsPaymentsModalOpen] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     'card' | 'cash' | 'split' | 'payAfter'
   >('card');
+
   /** 분할 결제 모달 */
   const [isSplitPaymentModalOpen, setIsSplitPaymentModalOpen] = useState(false);
 
@@ -32,7 +38,7 @@ export const CartButton = () => {
     <>
       <S.Container type="button" onClick={() => setIsCartListOpen(true)}>
         <p>{t('장바구니')}</p>
-        <p>99</p>
+        <p>{cartData.menus.reduce((acc, curr) => acc + curr.quantity, 0)}</p>
       </S.Container>
 
       {/* 장바구니 모달 */}

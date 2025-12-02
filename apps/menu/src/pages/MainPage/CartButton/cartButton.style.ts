@@ -25,7 +25,9 @@ export const Container = styled.button`
   & > p:last-of-type {
     // TODO
     // 100단위 커버가 되지 않음...
-    width: 2.5625rem;
+    min-width: 2.5625rem;
+    width: fit-content;
+    padding: 0 4px;
     height: 2.375rem;
     background-color: ${baseTheme.colors.white};
     border-radius: 50%;
