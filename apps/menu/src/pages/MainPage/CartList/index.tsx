@@ -63,6 +63,38 @@ export const CartList = ({ onClose, openPaymentsModal, categories }: Props) => {
     setIsMenuDetailModalOpen(true);
   };
 
+  // 카트 메뉴의 총 가격 계산
+  const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
+    let dependentOptionsPrice = 0; // 수량에 곱해지는 옵션 가격
+    let independentOptionsPrice = 0; // 수량과 무관한 옵션 가격
+
+    cartMenu.selectedOptions.forEach((option) => {
+      // 옵션 가격 * 수량
+      const optionTotalPrice = option.optionPrice * option.quantity;
+
+      if (option.isMenuQuantityDependant) {
+        // 수량과 무관: 옵션 가격은 그대로
+        independentOptionsPrice += optionTotalPrice;
+      } else {
+        // 수량에 곱해짐: 옵션 가격도 수량에 곱함
+        dependentOptionsPrice += optionTotalPrice;
+      }
+    });
+
+    // 메뉴 가격 + 수량에 곱해지는 옵션 가격을 수량에 곱하고, 수량과 무관한 옵션 가격을 더함
+    return (
+      (cartMenu.menuPrice + dependentOptionsPrice) * cartMenu.quantity +
+      independentOptionsPrice
+    );
+  };
+
+  // 전체 카트의 총 합계 계산
+  const calculateTotalPrice = (): number => {
+    return cartData.menus.reduce((total, menu) => {
+      return total + calculateCartMenuPrice(menu);
+    }, 0);
+  };
+
   return createPortal(
     <S.Background onClick={onClose}>
       <S.Container onClick={(e) => e.stopPropagation()}>
@@ -128,7 +160,7 @@ export const CartList = ({ onClose, openPaymentsModal, categories }: Props) => {
         <S.TotalContainer>
           <S.TotalInfo>
             <p>{t('합계')}</p>
-            <p>10000??</p>
+            <p>{formatCurrency(calculateTotalPrice())}</p>
           </S.TotalInfo>
           <BasicButton variant="Solid_Blue_2XL" onClick={order}>
             {t('주문하기')}
