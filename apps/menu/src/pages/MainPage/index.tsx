@@ -22,12 +22,10 @@ const tableNumber = 1;
 export const MainPage = () => {
   const { shopData } = useShopData();
 
-  const { data: categoriesStoreData, getVisibleCategories } = useCategoriesData(
-    {
-      shopData,
-      tableNumber,
-    }
-  );
+  const { data: categoriesStoreData, visibleCategories } = useCategoriesData({
+    shopData,
+    tableNumber,
+  });
 
   const { setCartOptions } = useCartStore();
 
@@ -35,8 +33,6 @@ export const MainPage = () => {
   const updateCategoryVisibility = () => {
     const currentCategoriesData = useCategoryStore.getState().categories;
     const updateAllVisibility = useCategoryStore.getState().updateAllVisibility;
-    const getVisibleCategories =
-      useCategoryStore.getState().getVisibleCategories;
 
     if (!currentCategoriesData) {
       return;
@@ -72,15 +68,8 @@ export const MainPage = () => {
       }
     });
 
-    // visibility 맵 업데이트
+    // visibility 맵 업데이트 (visibleCategories는 자동으로 계산됨)
     updateAllVisibility(newVisibilityMap);
-
-    // updateCategoryVisibility 완료 후 cart options 업데이트
-    const visibleCategories = getVisibleCategories();
-    const hasFirstOrderRequiredItems = visibleCategories.some(
-      (category) => category.isFirstOrderRequired
-    );
-    setCartOptions({ hasFirstOrderRequiredItems });
 
     // 다음 상태 변경을 위한 타이머 설정
     if (earliestNextChangeMs !== null) {
@@ -110,6 +99,14 @@ export const MainPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoriesStoreData]);
 
+  // visibleCategories 변경 시 cart options 업데이트
+  useEffect(() => {
+    const hasFirstOrderRequiredItems = visibleCategories.some(
+      (category) => category.isFirstOrderRequired
+    );
+    setCartOptions({ hasFirstOrderRequiredItems });
+  }, [visibleCategories, setCartOptions]);
+
   const [showCartReminder, setShowCartReminder] = useState(false);
   const showBreakTime = false;
   const [showPickupAlarm, setShowPickupAlarm] = useState(false);
@@ -132,8 +129,6 @@ export const MainPage = () => {
       />
     );
   }
-
-  const visibleCategories = getVisibleCategories();
 
   return (
     <S.Container>

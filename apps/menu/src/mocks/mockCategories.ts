@@ -786,13 +786,18 @@ export const mockCategories: ICategoryWithMenus[] = [
     useSaleDay: true,
     saleDayOfWeek: [1, 2, 3, 4, 5], // 월~금
     useSaleTime: true,
-    saleStartTime: '1409',
+    saleStartTime: '1457',
     saleEndTime: '2200',
   }),
   createCategory(3, '사이드 메뉴', sideMenus, {
     isHidden: false,
     isQuantitySelectable: true,
     isFirstOrderRequired: false,
+    useSaleDay: true,
+    saleDayOfWeek: [1, 2, 3, 4, 5], // 월~금
+    useSaleTime: true,
+    saleStartTime: '1458',
+    saleEndTime: '2200',
   }),
   createCategory(4, '음료', drinkMenus, {
     isHidden: false,

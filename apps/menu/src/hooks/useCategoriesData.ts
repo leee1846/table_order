@@ -12,7 +12,7 @@ export const useCategoriesData = ({ shopData, tableNumber }: Props) => {
   const {
     categories: categoriesStoreData,
     setCategories: setCategoriesStoreData,
-    getVisibleCategories,
+    visibleCategories,
   } = useCategoryStore();
 
   const enabled = !categoriesStoreData && !!shopData?.shopCode && !!tableNumber;
@@ -30,6 +30,6 @@ export const useCategoriesData = ({ shopData, tableNumber }: Props) => {
 
   return {
     data: categoriesStoreData,
-    getVisibleCategories,
+    visibleCategories,
   };
 };
