@@ -6,8 +6,8 @@ import type {
   IGetMenuListParams,
   IUpdateMenuRequest,
   TGetMenuListResponse,
-  TMenuMutationResponse,
 } from '../types/menu';
+import type { TVoidApiResponse } from '../types/common';
 
 /**
  * 메뉴 리스트를 조회합니다.
@@ -34,7 +34,7 @@ export const getMenuListByCategory = async (
 export const createMenu = async (params: {
   menu: ICreateMenuRequest;
   files?: File[];
-}): Promise<TMenuMutationResponse> => {
+}): Promise<TVoidApiResponse> => {
   const axiosInstance = getAxiosInstance('private');
 
   const formData = new FormData();
@@ -52,7 +52,7 @@ export const createMenu = async (params: {
     });
   }
 
-  const response = await axiosInstance<TMenuMutationResponse>({
+  const response = await axiosInstance<TVoidApiResponse>({
     method: 'POST',
     url: ENDPOINTS.MENU.CREATE,
     data: formData,
@@ -68,28 +68,11 @@ export const createMenu = async (params: {
  * 메뉴를 수정합니다.
  * PUT /menu
  */
-export const updateMenu = async (params: {
-  menu: IUpdateMenuRequest;
-  files?: File[];
-}): Promise<TMenuMutationResponse> => {
+export const updateMenu = async (
+  params: IUpdateMenuRequest
+): Promise<TVoidApiResponse> => {
   const axiosInstance = getAxiosInstance('private');
-
-  const formData = new FormData();
-
-  // menu를 JSON(application/json) Blob으로 추가
-  const menuBlob = new Blob([JSON.stringify(params.menu)], {
-    type: 'application/json',
-  });
-  formData.append('menu', menuBlob);
-
-  // files가 있으면 추가 (파일명과 menu.menuImageList.imageName이 일치해야 함)
-  if (params.files && params.files.length > 0) {
-    params.files.forEach((file) => {
-      formData.append('files', file);
-    });
-  }
-
-  const response = await axiosInstance<TMenuMutationResponse>({
+  const response = await axiosInstance<TVoidApiResponse>({
     method: 'PUT',
     url: ENDPOINTS.MENU.UPDATE,
     data: formData,
@@ -107,9 +90,9 @@ export const updateMenu = async (params: {
  */
 export const deleteMenu = async (
   params: IDeleteMenuParams
-): Promise<TMenuMutationResponse> => {
+): Promise<TVoidApiResponse> => {
   const axiosInstance = getAxiosInstance('private');
-  const response = await axiosInstance<TMenuMutationResponse>({
+  const response = await axiosInstance<TVoidApiResponse>({
     method: 'DELETE',
     url: ENDPOINTS.MENU.DELETE,
     params: { menuSeq: params.menuSeq },

@@ -1,11 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { updateMenu } from '../../fetchers/menu';
-import type {
-  IUpdateMenuRequest,
-  TMenuMutationResponse,
-} from '../../types/menu';
-import { IApiError } from '../../types/common';
+import type { IUpdateMenuRequest } from '../../types/menu';
+import { IApiError, TVoidApiResponse } from '../../types/common';
 
 /**
  * 메뉴를 수정합니다.
@@ -24,7 +21,7 @@ import { IApiError } from '../../types/common';
  */
 export const usePutUpdateMenu = () => {
   return useMutation<
-    TMenuMutationResponse,
+    TVoidApiResponse,
     AxiosError<IApiError>,
     { menu: IUpdateMenuRequest; files?: File[] }
   >({

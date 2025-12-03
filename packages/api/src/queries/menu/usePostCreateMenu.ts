@@ -1,11 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { createMenu } from '../../fetchers/menu';
-import type {
-  ICreateMenuRequest,
-  TMenuMutationResponse,
-} from '../../types/menu';
-import type { IApiError } from '../../types/common';
+import type { ICreateMenuRequest } from '../../types/menu';
+import type { IApiError, TVoidApiResponse } from '../../types/common';
 
 /**
  * 메뉴를 생성합니다.
@@ -22,7 +19,7 @@ import type { IApiError } from '../../types/common';
  */
 export const usePostCreateMenu = () => {
   return useMutation<
-    TMenuMutationResponse,
+    TVoidApiResponse,
     AxiosError<IApiError>,
     { menu: ICreateMenuRequest; files?: File[] }
   >({

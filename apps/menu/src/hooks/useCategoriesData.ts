@@ -5,8 +5,8 @@ import { mockCategories } from '@/mocks/mockCategories';
 import { useEffect } from 'react';
 
 interface Props {
-  shopData: IGetShop | null;
-  tableNumber: number;
+  shopData?: IGetShop | null;
+  tableNumber?: number;
 }
 export const useCategoriesData = ({ shopData, tableNumber }: Props) => {
   const {
@@ -17,7 +17,7 @@ export const useCategoriesData = ({ shopData, tableNumber }: Props) => {
 
   const enabled = !categoriesStoreData && !!shopData?.shopCode && !!tableNumber;
   const { data: categoriesData } = useGetCategoriesWithMenus(
-    { shopCode: shopData?.shopCode ?? '', tableNumber },
+    { shopCode: shopData?.shopCode ?? '', tableNumber: tableNumber ?? 0 },
     { enabled }
   );
 

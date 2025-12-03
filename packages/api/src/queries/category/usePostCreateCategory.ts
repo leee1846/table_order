@@ -1,11 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { createCategory } from '../../fetchers/category';
-import type {
-  ICreateCategoryRequest,
-  TCategoryMutationResponse,
-} from '../../types/category';
-import { IApiError } from '../../types/common';
+import type { ICreateCategoryRequest } from '../../types/category';
+import { IApiError, TVoidApiResponse } from '../../types/common';
 
 /**
  * 카테고리를 생성합니다.
@@ -24,7 +21,7 @@ import { IApiError } from '../../types/common';
  */
 export const usePostCreateCategory = () => {
   return useMutation<
-    TCategoryMutationResponse,
+    TVoidApiResponse,
     AxiosError<IApiError>,
     ICreateCategoryRequest
   >({
