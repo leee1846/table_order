@@ -6,57 +6,30 @@ import { CartButton } from '@/pages/MainPage/CartButton';
 import { BreakTime } from '@/pages/MainPage/BreakTime';
 import { CartReminder } from '@/pages/MainPage/CartReminder';
 import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
-import { useGetCategoriesWithMenus, useGetShops } from '@repo/api/queries';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { checkCategorySaleStatus } from '@/utils/category';
-import { timerKeys, STORAGE_KEYS } from '@/constants/keys';
+import { timerKeys } from '@/constants/keys';
 import { Contents } from '@/pages/MainPage/Contents';
 import { useCartStore } from '@/stores/useCartStore';
-import { mockCategories } from '@/mocks/mockCategories';
-import storage from '@/utils/storage';
-import type { ICategoryWithMenus } from '@repo/api/types';
 import { useShopData } from '@/hooks/useShopData';
+import { useCategoriesData } from '@/hooks/useCategoriesData';
 
 // TODO: api를 통해 반환받은 data로 추후 변경 예정
 const useScrollLayout = true;
 const tableNumber = 1;
 
 export const MainPage = () => {
-  const { shopData: shopDataaa } = useShopData();
+  const { shopData } = useShopData();
+
+  const { data: categoriesStoreData, getVisibleCategories } = useCategoriesData(
+    {
+      shopData,
+      tableNumber,
+    }
+  );
 
   const { setCartOptions } = useCartStore();
-
-  const {
-    categories: categoriesStoreData,
-    setCategories: setCategoriesStoreData,
-    getVisibleCategories,
-  } = useCategoryStore();
-
-  // 스토리지에 데이터가 있는지 확인 (렌더링 전에 확인하여 API 호출 여부 결정)
-  const hasStorageData = storage.load<ICategoryWithMenus[]>(
-    STORAGE_KEYS.CATEGORIES
-  );
-
-  // 세션 스토리지에 데이터가 없고 스토어에도 데이터가 없을 때만 API 호출
-  const { data: categoriesData } = useGetCategoriesWithMenus(
-    { shopCode: shopDataaa?.shopCode ?? '', tableNumber },
-    {
-      enabled:
-        !hasStorageData &&
-        categoriesStoreData === null &&
-        !!shopDataaa?.shopCode &&
-        !!tableNumber,
-    }
-  );
-
-  // API 응답을 받으면 스토어에 저장 (세션 스토리지에도 자동 저장)
-  useEffect(() => {
-    if (categoriesData?.data) {
-      // TODO: mockData 삭제 예정 -> categoriesData.data를 넣어야함
-      setCategoriesStoreData(mockCategories);
-    }
-  }, [categoriesData, setCategoriesStoreData]);
 
   // 카테고리 노출 여부를 업데이트하는 함수
   const updateCategoryVisibility = () => {
