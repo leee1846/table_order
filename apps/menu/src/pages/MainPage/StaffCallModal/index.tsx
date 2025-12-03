@@ -7,6 +7,9 @@ import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
 import type { ICategoryWithMenus, IMenuBase } from '@repo/api/types';
 import { useState } from 'react';
 import type { ICartMenu } from '@/types/cart';
+import { usePostTableOrder } from '@repo/api/queries';
+import { useShopData } from '@/hooks/useShopData';
+import { toast, openDualActionDialog } from '@repo/feature/utils';
 
 interface Props {
   onClose: () => void;
@@ -91,6 +94,43 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
     } else {
       setSelectedMenu(menu);
     }
+  };
+
+  const { shopData } = useShopData();
+  const { mutateAsync: createTableOrder } = usePostTableOrder();
+  const requestOrder = () => {
+    if (!shopData) {
+      return;
+    }
+
+    openDualActionDialog({
+      title: t('요청하기'),
+      content: t('요청을 완료하시겠습니까?'),
+      primaryText: t('예'),
+      secondaryText: t('아니오'),
+      onConfirm: async () => {
+        // TODO: tableNumber 추후 추가 예정
+        await createTableOrder({
+          shopCode: shopData.shopCode,
+          tableNumber: 1,
+          orderType: 'MENU',
+          orders: selectedMenuList.map((menu) => ({
+            menuSeq: menu.menuSeq,
+            menuName: menu.menuName,
+            menuPrice: menu.menuPrice,
+            quantity: menu.quantity,
+            selectedOptions: [],
+          })),
+        });
+
+        toast(t('요청이 완료되었습니다.'), {
+          position: 'center-center',
+          duration: 1500,
+        });
+
+        onClose();
+      },
+    });
   };
 
   return (
@@ -182,12 +222,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
           </S.ChosenMenuList>
 
           <S.OrderButton>
-            <BasicButton
-              variant="Solid_Blue_2XL"
-              onClick={() => {
-                // TODO: 요청하기 기능 구현
-              }}
-            >
+            <BasicButton variant="Solid_Blue_2XL" onClick={requestOrder}>
               {t('요청하기')}
             </BasicButton>
           </S.OrderButton>

@@ -740,7 +740,7 @@ const staffCallMenus = [
     minQuantity: 1,
     optionGroupList: [],
   }),
-  createMenu(22, 7, '물건 요청', 0, {
+  createMenu(2222, 7, '물건 요청', 0, {
     menuDescription: '물건을 요청합니다 (물티슈, 젓가락 등)',
     minQuantity: 1,
     optionGroupList: [],
