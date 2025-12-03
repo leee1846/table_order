@@ -44,7 +44,6 @@ export const TableCard = ({ table }: Props) => {
       <S.TableCard>
         <S.TableContent>
           <S.TableName>{table.tableName}</S.TableName>
-          <S.TableStatus>빈테이블</S.TableStatus>
         </S.TableContent>
         <S.ButtonWrapper>
           <BasicButton

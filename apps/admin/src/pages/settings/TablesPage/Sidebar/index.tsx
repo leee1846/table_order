@@ -5,17 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import { AddTableGroupDialog } from '../dialogs/AddTableGroupDialog';
 const { colors } = theme;
 
-import { tableGroups } from '@/constants/mock';
 import { ROUTES } from '@/constants/routes';
 import { useState } from 'react';
 import { toast } from '@repo/feature/utils';
+import type { ITableGroup } from '@repo/api/types';
 
 interface SidebarProps {
-  selectedTableGroupId: number;
+  tableGroups: ITableGroup[];
+  selectedTableGroupId: number | null;
   onTableGroupSelect: (groupId: number) => void;
 }
 
 export const Sidebar = ({
+  tableGroups,
   selectedTableGroupId,
   onTableGroupSelect,
 }: SidebarProps) => {
@@ -44,11 +46,11 @@ export const Sidebar = ({
       <S.TableGroupList>
         {tableGroups.map((group) => (
           <S.TableGroupItem
-            key={group.id}
-            onClick={() => onTableGroupSelect(group.id)}
-            isSelected={selectedTableGroupId === group.id}
+            key={group.tableGroupSeq}
+            onClick={() => onTableGroupSelect(group.tableGroupSeq)}
+            isSelected={selectedTableGroupId === group.tableGroupSeq}
           >
-            {group.name}
+            {group.tableGroupName}
           </S.TableGroupItem>
         ))}
       </S.TableGroupList>

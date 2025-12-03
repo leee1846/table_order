@@ -37,4 +37,11 @@ export const queryKeys = {
     /** 재사용 정보 조회 */
     me: () => [...queryKeys.auth.all, 'me'] as const,
   },
+
+  table: {
+    all: ['table'] as const,
+    /** 테이블 그룹 리스트 조회 */
+    groupList: (shopCode: string) =>
+      [...queryKeys.table.all, 'groupList', shopCode] as const,
+  },
 } as const;

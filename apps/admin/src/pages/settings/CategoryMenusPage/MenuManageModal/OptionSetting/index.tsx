@@ -5,10 +5,10 @@ import { AddIcon, EditIcon, DeleteIcon } from '@repo/ui/icons';
 import { toast } from '@repo/feature/utils';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/optionSetting.style';
 import { OptionGroupManageModal } from './OptionGroupManageModal';
-import { useMenuForm } from '../context/MenuManageModalContext';
+import { useMenuManageModal } from '../context/MenuManageModalContext';
 
 export const OptionSetting = () => {
-  const { formValues, updateFormValues } = useMenuForm();
+  const { formValues, updateFormValues, mode } = useMenuManageModal();
   const [isOptionGroupManageModalOpen, setIsOptionGroupManageModalOpen] =
     useState(false);
   const [editingOptionGroupSeq, setEditingOptionGroupSeq] = useState<
@@ -39,13 +39,22 @@ export const OptionSetting = () => {
   };
 
   const handleDeleteOptionGroup = (optionGroupSeq: number) => {
-    const updatedList = (formValues.optionGroupList || []).map((group) =>
-      group.optionGroupSeq === optionGroupSeq
-        ? { ...group, isDeleted: true }
-        : group
-    );
+    if (mode === 'edit') {
+      // 수정 모드: isDeleted 값 변경
+      const updatedList = (formValues.optionGroupList || []).map((group) =>
+        group.optionGroupSeq === optionGroupSeq
+          ? { ...group, isDeleted: true }
+          : group
+      );
+      updateFormValues({ optionGroupList: updatedList });
+    } else {
+      // 생성 모드: 리스트에서 해당 객체 제거
+      const updatedList = (formValues.optionGroupList || []).filter(
+        (group) => group.optionGroupSeq !== optionGroupSeq
+      );
+      updateFormValues({ optionGroupList: updatedList });
+    }
 
-    updateFormValues({ optionGroupList: updatedList });
     toast('옵션 그룹이 삭제되었습니다.');
   };
 

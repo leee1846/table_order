@@ -31,4 +31,14 @@ export const ENDPOINTS = {
   SHOP: {
     LIST: '/shop/list',
   },
+
+  TABLE: {
+    GROUP_LIST: (shopCode: string) => `/table-group/${shopCode}`,
+    GROUP_CREATE: '/table-group',
+    GROUP_UPDATE: '/table-group',
+    GROUP_DELETE: '/table-group',
+    CREATE: '/table',
+    UPDATE: '/table',
+    DELETE: '/table',
+  },
 } as const;
