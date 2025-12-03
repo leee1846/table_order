@@ -131,16 +131,22 @@ export const MainPage = () => {
     );
   }
 
+  const nonStaffCallCategories = visibleCategories.filter(
+    (c) => !c.isStaffCall
+  );
+  const staffCallCategory = visibleCategories.find((c) => c.isStaffCall);
+
   return (
     <S.Container>
       <Header />
       <S.MainContent>
         <Sidebar
-          categories={visibleCategories}
+          categories={nonStaffCallCategories}
+          staffCallCategory={staffCallCategory}
           useScrollLayout={useScrollLayout}
         />
         <Contents
-          categories={visibleCategories}
+          categories={nonStaffCallCategories}
           useScrollLayout={useScrollLayout}
         />
         <CartButton categories={visibleCategories} />
