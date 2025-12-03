@@ -246,9 +246,3 @@ export type IUpdateMenuRequest = Omit<
 export interface IDeleteMenuParams {
   menuSeq: number;
 }
-
-// ============================================================================
-// 공통 Mutation Response (POST, PUT, DELETE 모두 동일한 응답 구조)
-// ============================================================================
-
-export type TMenuMutationResponse = IApiResponse<null>;

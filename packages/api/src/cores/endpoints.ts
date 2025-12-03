@@ -9,6 +9,8 @@ export const ENDPOINTS = {
 
   ORDER: {
     SEND_PICKUP_NOTIFICATION: '/orders/pickup-notification',
+    CREATE_TABLE_ORDER: (shopCode: string, tableNumber: number) =>
+      `/order/${shopCode}/${tableNumber}`,
   },
 
   CATEGORY: {

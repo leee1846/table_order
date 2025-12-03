@@ -1,11 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { deleteCategory } from '../../fetchers/category';
-import type {
-  IDeleteCategoryParams,
-  TCategoryMutationResponse,
-} from '../../types/category';
-import { IApiError } from '../../types/common';
+import type { IDeleteCategoryParams } from '../../types/category';
+import { IApiError, TVoidApiResponse } from '../../types/common';
 
 /**
  * 카테고리를 삭제합니다.
@@ -24,7 +21,7 @@ import { IApiError } from '../../types/common';
  */
 export const useDeleteCategory = () => {
   return useMutation<
-    TCategoryMutationResponse,
+    TVoidApiResponse,
     AxiosError<IApiError>,
     IDeleteCategoryParams
   >({

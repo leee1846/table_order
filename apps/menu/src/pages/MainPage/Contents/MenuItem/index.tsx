@@ -7,8 +7,8 @@ import { formatCurrency } from '@repo/util/string';
 import { Thumbnail } from '@/feature/Thumbnail';
 import { useCartStore } from '@/stores/useCartStore';
 import { toast } from '@repo/feature/utils';
-import { useCategoryStore } from '@/stores/useCategoryStore';
 import { useTranslation } from 'react-i18next';
+import { useCategoriesData } from '@/hooks/useCategoriesData';
 
 const IMAGE_SIZE = {
   1: {
@@ -34,7 +34,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   const [isMenuDetailOpen, setIsMenuDetailOpen] = useState(false);
 
   const { addToCart, updateCartItemQuantity, data: cartData } = useCartStore();
-  const { visibleCategories } = useCategoryStore();
+  const { visibleCategories } = useCategoriesData({});
 
   const onClickMenu = () => {
     // 품절되었을경우

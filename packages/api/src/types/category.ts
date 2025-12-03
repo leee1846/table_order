@@ -128,8 +128,6 @@ export interface IDeleteCategoryParams {
 // 공통 Mutation Response (POST, PUT, DELETE 모두 동일한 응답 구조)
 // ============================================================================
 
-export type TCategoryMutationResponse = IApiResponse<null>;
-
 export interface IGetShopCategoriesWithMenusParams {
   shopCode: string;
   tableNumber: number;

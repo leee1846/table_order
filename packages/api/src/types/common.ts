@@ -22,3 +22,5 @@ export interface ITokenPayload {
   iat: number;
   exp: number;
 }
+
+export type TVoidApiResponse = IApiResponse<null>;

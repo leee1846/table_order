@@ -17,6 +17,7 @@ import { useCategoriesData } from '@/hooks/useCategoriesData';
 
 // TODO: api를 통해 반환받은 data로 추후 변경 예정
 const useScrollLayout = true;
+// TODO: tableNumber 추후 변경 예정
 const tableNumber = 1;
 
 export const MainPage = () => {

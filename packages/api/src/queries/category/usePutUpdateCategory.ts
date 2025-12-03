@@ -1,11 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { updateCategory } from '../../fetchers/category';
-import type {
-  IUpdateCategoryRequest,
-  TCategoryMutationResponse,
-} from '../../types/category';
-import { IApiError } from '../../types/common';
+import type { IUpdateCategoryRequest } from '../../types/category';
+import { IApiError, TVoidApiResponse } from '../../types/common';
 
 /**
  * 카테고리를 수정합니다.
@@ -24,7 +21,7 @@ import { IApiError } from '../../types/common';
  */
 export const usePutUpdateCategory = () => {
   return useMutation<
-    TCategoryMutationResponse,
+    TVoidApiResponse,
     AxiosError<IApiError>,
     IUpdateCategoryRequest
   >({

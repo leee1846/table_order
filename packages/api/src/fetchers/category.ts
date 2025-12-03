@@ -6,9 +6,9 @@ import type {
   IGetCategoryListParams,
   IUpdateCategoryRequest,
   TGetCategoryListResponse,
-  TCategoryMutationResponse,
   IGetShopCategoriesWithMenusParams,
 } from '../types/category';
+import type { TVoidApiResponse } from '../types/common';
 
 /**
  * 카테고리 리스트를 조회합니다.
@@ -33,9 +33,9 @@ export const getCategoryList = async (
  */
 export const createCategory = async (
   params: ICreateCategoryRequest
-): Promise<TCategoryMutationResponse> => {
+): Promise<TVoidApiResponse> => {
   const axiosInstance = getAxiosInstance('private');
-  const response = await axiosInstance<TCategoryMutationResponse>({
+  const response = await axiosInstance<TVoidApiResponse>({
     method: 'POST',
     url: ENDPOINTS.CATEGORY.CREATE,
     data: params,
@@ -50,9 +50,9 @@ export const createCategory = async (
  */
 export const updateCategory = async (
   params: IUpdateCategoryRequest
-): Promise<TCategoryMutationResponse> => {
+): Promise<TVoidApiResponse> => {
   const axiosInstance = getAxiosInstance('private');
-  const response = await axiosInstance<TCategoryMutationResponse>({
+  const response = await axiosInstance<TVoidApiResponse>({
     method: 'PUT',
     url: ENDPOINTS.CATEGORY.UPDATE,
     data: params,
@@ -67,9 +67,9 @@ export const updateCategory = async (
  */
 export const deleteCategory = async (
   params: IDeleteCategoryParams
-): Promise<TCategoryMutationResponse> => {
+): Promise<TVoidApiResponse> => {
   const axiosInstance = getAxiosInstance('private');
-  const response = await axiosInstance<TCategoryMutationResponse>({
+  const response = await axiosInstance<TVoidApiResponse>({
     method: 'DELETE',
     url: ENDPOINTS.CATEGORY.DELETE,
     params: { categorySeq: params.categorySeq },

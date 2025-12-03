@@ -1,11 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { deleteMenu } from '../../fetchers/menu';
-import type {
-  IDeleteMenuParams,
-  TMenuMutationResponse,
-} from '../../types/menu';
-import { IApiError } from '../../types/common';
+import type { IDeleteMenuParams } from '../../types/menu';
+import { IApiError, TVoidApiResponse } from '../../types/common';
 
 /**
  * 메뉴를 삭제합니다.
@@ -24,7 +21,7 @@ import { IApiError } from '../../types/common';
  */
 export const useDeleteMenu = () => {
   return useMutation<
-    TMenuMutationResponse,
+    TVoidApiResponse,
     AxiosError<IApiError>,
     IDeleteMenuParams
   >({
