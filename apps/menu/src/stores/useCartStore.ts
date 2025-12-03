@@ -169,7 +169,7 @@ export const useCartStore = create<ICartStore>((set, get) => ({
 
   // 장바구니 비우기
   clearCart: () => {
-    storage.save(STORAGE_KEYS.CART, initialData.menus);
-    set({ data: initialData });
+    storage.save(STORAGE_KEYS.CART, { ...initialData, menus: [] });
+    set({ data: { ...initialData, menus: [] } });
   },
 }));

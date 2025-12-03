@@ -21,6 +21,7 @@ import * as S from '@/pages/MainPage/Contents/MenuDetailWithOptionsModal/menuDet
 import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import type { ICartMenu, ICartOption } from '@/types/cart';
+import { calculateMenuTotalPrice } from '@/utils/calculation';
 
 interface Props {
   onClose: () => void;
@@ -296,40 +297,21 @@ export const MenuDetailWithOptionsModal = ({
     };
 
   // 메뉴 총 가격 계산
-  // isMenuQuantityDependant에 따라 계산 방식이 다름:
-  // - true: 옵션 가격은 수량과 무관 (메뉴 가격만 수량에 곱해짐)
-  // - false: 옵션 가격도 수량에 곱해짐 (메뉴 + 옵션 전체에 수량 곱함)
-  const calculateMenuTotalPrice = (): number => {
-    // 그룹별로 옵션 가격 계산
-    let dependentOptionsPrice = 0; // 수량에 곱해지는 옵션 가격
-    let independentOptionsPrice = 0; // 수량과 무관한 옵션 가격
-
-    selectedOptions.forEach((item) => {
+  const getMenuTotalPrice = (): number => {
+    // selectedOptions를 MenuPriceOption 형태로 변환
+    const options = Array.from(selectedOptions.values()).map((item) => {
       const optionGroup = menu.optionGroupList.find(
         (group) => group.optionGroupSeq === item.option.optionGroupSeq
       );
 
-      if (!optionGroup) {
-        return;
-      }
-
-      // 옵션 가격 * 수량
-      const optionTotalPrice = item.option.optionPrice * item.quantity;
-
-      if (optionGroup.isMenuQuantityDependant) {
-        // 수량과 무관: 옵션 가격은 그대로
-        independentOptionsPrice += optionTotalPrice;
-      } else {
-        // 수량에 곱해짐: 옵션 가격도 수량에 곱함
-        dependentOptionsPrice += optionTotalPrice;
-      }
+      return {
+        optionPrice: item.option.optionPrice,
+        quantity: item.quantity,
+        isMenuQuantityDependant: optionGroup?.isMenuQuantityDependant ?? false,
+      };
     });
 
-    // 메뉴 가격 + 수량에 곱해지는 옵션 가격을 수량에 곱하고, 수량과 무관한 옵션 가격을 더함
-    return (
-      (menu.menuPrice + dependentOptionsPrice) * menuQuantity +
-      independentOptionsPrice
-    );
+    return calculateMenuTotalPrice(menu.menuPrice, menuQuantity, options);
   };
 
   // 옵션 그룹 제목 텍스트 생성 (필수 선택 개수 포함)
@@ -351,7 +333,7 @@ export const MenuDetailWithOptionsModal = ({
 
   // 계산된 값들
   const groupedSelectedOptions = groupSelectedOptionsByGroupAndOption();
-  const totalPrice = calculateMenuTotalPrice();
+  const totalPrice = getMenuTotalPrice();
   const hasSelectedOptions = groupedSelectedOptions.length > 0;
 
   const onClickAdd = () => {
@@ -397,10 +379,10 @@ export const MenuDetailWithOptionsModal = ({
       );
 
       const cartOption: ICartOption = {
+        optionGroupSeq: item.option.optionGroupSeq,
         optionSeq: item.option.optionSeq,
         optionName: item.option.optionName,
         optionPrice: item.option.optionPrice,
-        index: item.option.index,
         quantity: item.quantity,
         isMenuQuantityDependant: optionGroup?.isMenuQuantityDependant ?? false,
       };
@@ -604,7 +586,7 @@ export const MenuDetailWithOptionsModal = ({
               `}
             />
             <S.TotalInfo>
-              <p>합계</p>
+              <p>{t('합계')}</p>
               <p>{formatCurrency(totalPrice)}</p>
             </S.TotalInfo>
             <BasicButton

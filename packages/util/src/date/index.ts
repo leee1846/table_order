@@ -401,3 +401,20 @@ export const isExpired = (
 export const getCurrentDayOfWeek = (date: Date = new Date()): number => {
   return dayjs(date).day();
 };
+
+/**
+ * 오늘 날짜를 지정된 형식의 문자열로 반환합니다.
+ *
+ * @param format - 날짜 형식 (기본값: 'YYYY-MM-DD')
+ * @returns 지정된 형식의 오늘 날짜 문자열
+ *
+ * @example
+ * ```ts
+ * getTodayDateString(); // '2025-01-15'
+ * getTodayDateString('YYYY년 MM월 DD일'); // '2025년 01월 15일'
+ * getTodayDateString('YYYY/MM/DD'); // '2025/01/15'
+ * ```
+ */
+export const getTodayDateString = (format: string = 'YYYY-MM-DD'): string => {
+  return dayjs().format(format);
+};

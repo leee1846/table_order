@@ -1,9 +1,9 @@
 export interface ICartOption {
   isMenuQuantityDependant: boolean;
+  optionGroupSeq: number;
   optionSeq: number;
   optionName: string;
   optionPrice: number;
-  index: number;
   quantity: number;
 }
 

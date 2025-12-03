@@ -1,13 +1,22 @@
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import { apronIcon } from '@repo/ui/icons';
 import { useTranslation } from 'react-i18next';
+import { getTodayDateString } from '@repo/util/date';
 import * as S from '@/pages/MainPage/OrderCompleteModal/OrderCompleteModal.style';
+import type { IOrder } from '@repo/api/types';
+import { formatCurrency } from '@repo/util/string';
 
 interface Props {
+  orderData: IOrder[];
+  totalPrice: number;
   onClose: () => void;
 }
 
-export const OrderCompleteModal = ({ onClose }: Props) => {
+export const OrderCompleteModal = ({
+  orderData,
+  totalPrice,
+  onClose,
+}: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -22,57 +31,39 @@ export const OrderCompleteModal = ({ onClose }: Props) => {
 
         <S.RightContainer>
           <S.Title>{t('주문내역')}</S.Title>
-          <S.Date>2025??11?11</S.Date>
+          <S.Date>{getTodayDateString()}</S.Date>
           <S.OrderList>
-            <li>
-              <S.MenuInfo>
-                <p>메뉴명명명</p>
-                <p>10000????</p>
-                <p>10000????</p>
-              </S.MenuInfo>
+            {orderData.map((order) => (
+              <li key={order.menuSeq}>
+                <S.MenuInfo>
+                  <p>{order.menuName}</p>
+                  <p>{formatCurrency(order.quantity)}</p>
+                  <p>{formatCurrency(order.menuPrice)}</p>
+                </S.MenuInfo>
 
-              <S.OptionList>
-                <li>
-                  <div>
-                    <span />
-                    <p>옵션명명명</p>
-                  </div>
+                <S.OptionList>
+                  {order.selectedOptions.map((option) => (
+                    <li key={option.optionSeq}>
+                      <div>
+                        <span />
+                        <p>{option.optionName}</p>
+                      </div>
 
-                  <div>
-                    <p>10000????</p>
-                    <p>10000????</p>
-                  </div>
-                </li>
-                <li>
-                  <div>
-                    <span />
-                    <p>옵션명명명</p>
-                  </div>
-
-                  <div>
-                    <p>10000????</p>
-                    <p>10000????</p>
-                  </div>
-                </li>
-                <li>
-                  <div>
-                    <span />
-                    <p>옵션명명명</p>
-                  </div>
-
-                  <div>
-                    <p>10000????</p>
-                    <p>10000????</p>
-                  </div>
-                </li>
-              </S.OptionList>
-            </li>
+                      <div>
+                        <p>{formatCurrency(option.quantity)}</p>
+                        <p>{formatCurrency(option.optionPrice)}</p>
+                      </div>
+                    </li>
+                  ))}
+                </S.OptionList>
+              </li>
+            ))}
           </S.OrderList>
 
           <S.TotalContainer>
             <div>
               <p>{t('합계')}</p>
-              <p>10000????</p>
+              <p>{formatCurrency(totalPrice)}</p>
             </div>
             <BasicButton variant="Solid_Blue_2XL" onClick={onClose}>
               {t('메뉴판 보러가기')}

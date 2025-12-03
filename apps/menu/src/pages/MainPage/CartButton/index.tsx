@@ -6,7 +6,7 @@ import { OrderCompleteModal } from '@/pages/MainPage/OrderCompleteModal';
 import { PaymentsModal } from '@/pages/MainPage/PaymentsModal';
 import { SplitPaymentModal } from '@/pages/MainPage/SplitPaymentModal';
 import { useCartStore } from '@/stores/useCartStore';
-import type { ICategoryWithMenus } from '@repo/api/types';
+import type { ICategoryWithMenus, IOrder } from '@repo/api/types';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -20,8 +20,10 @@ export const CartButton = ({ categories }: Props) => {
   const [isCartListOpen, setIsCartListOpen] = useState(false);
 
   /** 주문 완료 모달 */
-  const [isOrderCompleteModalOpen, setIsOrderCompleteModalOpen] =
-    useState(false);
+  const [isOrderCompleteOrderData, setIsOrderCompleteOrderData] = useState<
+    IOrder[] | null
+  >(null);
+  const [orderTotalPrice, setOrderTotalPrice] = useState<number>(0);
 
   /** 결제 방법 선택 모달 */
   const [isPaymentsModalOpen, setIsPaymentsModalOpen] = useState(false);
@@ -51,6 +53,10 @@ export const CartButton = ({ categories }: Props) => {
         <CartList
           onClose={() => setIsCartListOpen(false)}
           openPaymentsModal={() => setIsPaymentsModalOpen(true)}
+          openOrderCompleteModal={(order, totalPrice) => {
+            setIsOrderCompleteOrderData(order);
+            setOrderTotalPrice(totalPrice);
+          }}
           categories={categories}
         />
       )}
@@ -71,9 +77,11 @@ export const CartButton = ({ categories }: Props) => {
       )}
 
       {/* 주문 완료 모달 */}
-      {isOrderCompleteModalOpen && (
+      {isOrderCompleteOrderData && (
         <OrderCompleteModal
-          onClose={() => setIsOrderCompleteModalOpen(false)}
+          onClose={() => setIsOrderCompleteOrderData(null)}
+          orderData={isOrderCompleteOrderData}
+          totalPrice={orderTotalPrice}
         />
       )}
     </>

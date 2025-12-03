@@ -125,7 +125,7 @@ export const OptionList = styled.ul`
     }
 
     & > div:first-of-type {
-      width: 70%;
+      width: 75%;
       display: flex;
       align-items: flex-start;
       gap: 4px;
@@ -144,7 +144,13 @@ export const OptionList = styled.ul`
     & > div:last-of-type {
       flex: 1;
       display: flex;
-      gap: 12.5px;
+      justify-content: flex-end;
+      gap: 20px;
+
+      & > p:last-of-type {
+        text-align: right;
+        min-width: 3rem;
+      }
     }
   }
 `;

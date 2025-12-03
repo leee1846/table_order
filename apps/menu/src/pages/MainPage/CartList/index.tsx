@@ -9,15 +9,24 @@ import { useCartStore } from '@/stores/useCartStore';
 import { formatCurrency } from '@repo/util/string';
 import { useState } from 'react';
 import { MenuDetailWithOptionsModal } from '../Contents/MenuDetailWithOptionsModal';
-import type { ICategoryWithMenus } from '@repo/api/types';
+import type { ICategoryWithMenus, IOrder } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
+import { usePostTableOrder } from '@repo/api/queries';
+import { useShopData } from '@/hooks/useShopData';
+import { calculateMenuTotalPrice } from '@/utils/calculation';
 
 interface Props {
   onClose: () => void;
   openPaymentsModal: () => void;
+  openOrderCompleteModal: (orders: IOrder[], totalPrice: number) => void;
   categories: ICategoryWithMenus[];
 }
-export const CartList = ({ onClose, openPaymentsModal, categories }: Props) => {
+export const CartList = ({
+  onClose,
+  openPaymentsModal,
+  openOrderCompleteModal,
+  categories,
+}: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
 
@@ -34,6 +43,7 @@ export const CartList = ({ onClose, openPaymentsModal, categories }: Props) => {
     data: cartData,
     removeFromCart,
     updateCartItemQuantity,
+    clearCart,
   } = useCartStore();
 
   const removeMenu = (index: number) => {
@@ -44,14 +54,64 @@ export const CartList = ({ onClose, openPaymentsModal, categories }: Props) => {
     });
   };
 
+  // 카트 메뉴의 총 가격 계산
+  const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
+    return calculateMenuTotalPrice(
+      cartMenu.menuPrice,
+      cartMenu.quantity,
+      cartMenu.selectedOptions
+    );
+  };
+
+  // 전체 카트의 총 합계 계산
+  const calculateTotalPrice = (): number => {
+    return cartData.menus.reduce((total, menu) => {
+      return total + calculateCartMenuPrice(menu);
+    }, 0);
+  };
+
+  // TODO: 추후 주문 방법 선택 기능 추가 예정
+  const isPayAfter = true;
+  // TODO: 추후 테이블 번호 선택 기능 추가 예정
+  const tableNumber = 1;
+
+  const { shopData } = useShopData();
+  const { mutateAsync: createTableOrder } = usePostTableOrder();
   const order = () => {
     openDualActionDialog({
       title: t('메뉴를 주문할까요?'),
       content: t('주방 접수된 이후에는 취소가 불가능해요.'),
       primaryText: t('주문하기'),
       secondaryText: t('이전으로'),
-      onConfirm: () => {
-        onClose();
+      onConfirm: async () => {
+        const orders = cartData.menus.map((menu) => ({
+          menuSeq: menu.menuSeq,
+          menuName: menu.menuName,
+          menuPrice: menu.menuPrice,
+          quantity: menu.quantity,
+          selectedOptions: menu.selectedOptions.map((selectedOption) => ({
+            optionSeq: selectedOption.optionSeq,
+            optionGroupSeq: selectedOption.optionGroupSeq,
+            optionName: selectedOption.optionName,
+            optionPrice: selectedOption.optionPrice,
+            quantity: selectedOption.quantity,
+          })),
+        }));
+
+        if (isPayAfter) {
+          await createTableOrder({
+            shopCode: shopData?.shopCode ?? '',
+            tableNumber,
+            orderType: 'MENU',
+            orders,
+          });
+
+          const totalPrice = calculateTotalPrice();
+          openOrderCompleteModal(orders, totalPrice);
+          clearCart();
+          onClose();
+          return;
+        }
         openPaymentsModal();
       },
     });
@@ -61,38 +121,6 @@ export const CartList = ({ onClose, openPaymentsModal, categories }: Props) => {
     setSelectedMenu(menu);
     setSelectedMenuIndex(index);
     setIsMenuDetailModalOpen(true);
-  };
-
-  // 카트 메뉴의 총 가격 계산
-  const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
-    let dependentOptionsPrice = 0; // 수량에 곱해지는 옵션 가격
-    let independentOptionsPrice = 0; // 수량과 무관한 옵션 가격
-
-    cartMenu.selectedOptions.forEach((option) => {
-      // 옵션 가격 * 수량
-      const optionTotalPrice = option.optionPrice * option.quantity;
-
-      if (option.isMenuQuantityDependant) {
-        // 수량과 무관: 옵션 가격은 그대로
-        independentOptionsPrice += optionTotalPrice;
-      } else {
-        // 수량에 곱해짐: 옵션 가격도 수량에 곱함
-        dependentOptionsPrice += optionTotalPrice;
-      }
-    });
-
-    // 메뉴 가격 + 수량에 곱해지는 옵션 가격을 수량에 곱하고, 수량과 무관한 옵션 가격을 더함
-    return (
-      (cartMenu.menuPrice + dependentOptionsPrice) * cartMenu.quantity +
-      independentOptionsPrice
-    );
-  };
-
-  // 전체 카트의 총 합계 계산
-  const calculateTotalPrice = (): number => {
-    return cartData.menus.reduce((total, menu) => {
-      return total + calculateCartMenuPrice(menu);
-    }, 0);
   };
 
   return createPortal(
@@ -171,7 +199,7 @@ export const CartList = ({ onClose, openPaymentsModal, categories }: Props) => {
       {isMenuDetailModalOpen &&
         selectedMenuData &&
         selectedMenu &&
-        selectedMenuIndex !== null && (
+        selectedMenuIndex && (
           <MenuDetailWithOptionsModal
             onClose={() => {
               setIsMenuDetailModalOpen(false);
