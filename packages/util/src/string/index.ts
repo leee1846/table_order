@@ -108,8 +108,9 @@ export const normalizeImageUrl = (
 };
 
 /**
- * 고유한 ID를 생성합니다.
+ * 이미지 파일의 고유한 ID를 생성합니다.
  * 타임스탬프를 기반으로 생성합니다.
+ *
  *
  * @returns 타임스탬프 기반 고유 ID 문자열
  *

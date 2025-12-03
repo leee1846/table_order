@@ -5,7 +5,6 @@ export const Container = styled.div`
   width: 100%;
   padding: 24px;
   display: flex;
-  justify-content: space-between;
   gap: 30px;
   background-color: ${theme.colors.white};
   border-radius: 1.25rem;
@@ -53,12 +52,14 @@ export const InfoContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  flex: 1;
 `;
 
 export const TitleContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
 
   & > span {
     display: -webkit-box;
@@ -68,6 +69,7 @@ export const TitleContainer = styled.div`
     text-overflow: ellipsis;
     color: ${theme.colors.grey[700]};
     ${TYPOGRAPHY.MT_1}
+    width: 100%;
   }
 
   & > div {

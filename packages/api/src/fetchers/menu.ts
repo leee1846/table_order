@@ -67,7 +67,6 @@ export const createMenu = async (params: {
 /**
  * 메뉴를 수정합니다.
  * PUT /menu
- * FormData 형식으로 요청 (menu는 JSON 문자열, files는 파일 리스트)
  */
 export const updateMenu = async (params: {
   menu: IUpdateMenuRequest;

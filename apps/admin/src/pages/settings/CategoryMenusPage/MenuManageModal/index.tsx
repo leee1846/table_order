@@ -18,11 +18,9 @@ interface Props {
 }
 
 const MenuManageModalContent = () => {
-  const { mode, formValues, menu, onClose, handleSubmit } =
-    useMenuManageModal();
+  const { mode, menu, onClose, handleSubmit } = useMenuManageModal();
 
   const modalTitle = mode === 'create' ? '메뉴 추가' : '메뉴 수정';
-  const menuName = formValues.menuName || menu?.menuName;
 
   return (
     <S.Container>
@@ -31,9 +29,9 @@ const MenuManageModalContent = () => {
           <p>메뉴 관리</p>
           <span />
           <div>
-            {menuName && mode === 'edit' && (
+            {mode === 'edit' && (
               <>
-                <p>{menuName}</p>
+                <p>{menu?.menuName}</p>
                 <ChevronForwardIcon
                   color={theme.colors.grey[600]}
                   width={24}

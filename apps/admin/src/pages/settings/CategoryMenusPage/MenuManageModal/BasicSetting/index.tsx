@@ -117,7 +117,9 @@ export const BasicSetting = () => {
                   onClick={() => handleSpiceLevelClick(level)}
                 >
                   <img
-                    src={currentSpiceLevel >= level ? chiliOnIcon : chiliOffIcon}
+                    src={
+                      currentSpiceLevel >= level ? chiliOnIcon : chiliOffIcon
+                    }
                     alt={`매운맛 ${level}단계`}
                   />
                 </S.ChiliLevelButton>

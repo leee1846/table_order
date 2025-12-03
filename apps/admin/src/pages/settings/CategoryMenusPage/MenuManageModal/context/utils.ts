@@ -5,8 +5,11 @@ import type {
   ICreateOptionGroup,
   IMenu,
   IMenuImage,
+  IOption,
   IOptionGroup,
   IUpdateMenuRequest,
+  IUpdateOption,
+  IUpdateOptionGroup,
 } from '@repo/api/types';
 import { generateId } from '@repo/util/string';
 import {
@@ -71,50 +74,107 @@ export const isExistingImage = (id: string) => id.startsWith('existing-');
 export const parseImageSeq = (id: string) =>
   parseInt(id.replace('existing-', ''), 10);
 
-/** 임시 ID(음수)가 있는 옵션 그룹을 ICreateOptionGroup으로 변환 */
+/** 옵션을 ICreateOption으로 변환 (음수 시퀀스 제거) */
+const toCreateOption = (option: IOption): ICreateOption => {
+  const {
+    optionSeq,
+    optionGroupSeq,
+    isDeleted,
+    quantity,
+    localeOptionName,
+    localeOptionNameStr,
+    mappedOptionGroupCode,
+    mappedOptionGroupName,
+    mappedHeadOptionGroupCode,
+    mappedUptDt,
+    isMapped,
+    createDate,
+    createMemberUuid,
+    updateDate,
+    updateMemberUuid,
+    ...createOption
+  } = option;
+  return createOption;
+};
+
+/** 옵션을 IUpdateOption으로 변환 (음수 시퀀스는 0으로) */
+const toUpdateOption = (
+  option: IOption,
+  optionGroupSeq: number
+): IUpdateOption => {
+  const {
+    quantity,
+    localeOptionName,
+    localeOptionNameStr,
+    mappedOptionGroupCode,
+    mappedOptionGroupName,
+    mappedHeadOptionGroupCode,
+    mappedUptDt,
+    isMapped,
+    createDate,
+    createMemberUuid,
+    updateDate,
+    updateMemberUuid,
+    ...updateOption
+  } = option;
+  return {
+    ...updateOption,
+    optionSeq: updateOption.optionSeq < 0 ? 0 : updateOption.optionSeq,
+    optionGroupSeq,
+  };
+};
+
+/** 신규 옵션 그룹을 ICreateOptionGroup으로 변환 */
+const toCreateOptionGroup = (group: IOptionGroup): ICreateOptionGroup => {
+  const {
+    optionGroupSeq, // 서버에 전송하지 않는 필드들을 제거하고 나머지만 사용
+    localeOptionGroupName,
+    localeOptionGroupNameStr,
+    optionList,
+    ...createGroup
+  } = group;
+
+  return {
+    ...createGroup, // 필요한 필드들만 포함
+    optionList: (optionList || []).map(toCreateOption), // 옵션 리스트를 변환하여 다시 넣음
+  };
+};
+
+/** 기존 옵션 그룹을 IUpdateOptionGroup으로 변환 */
+const toUpdateOptionGroup = (group: IOptionGroup): IUpdateOptionGroup => {
+  const {
+    localeOptionGroupName,
+    localeOptionGroupNameStr,
+    optionList,
+    ...updateGroup
+  } = group;
+  return {
+    ...updateGroup,
+    optionList: (optionList || []).map((opt) =>
+      toUpdateOption(opt, group.optionGroupSeq)
+    ),
+  };
+};
+
+/** POST 요청용: 옵션 그룹 리스트를 ICreateOptionGroup[]로 변환 */
 const convertOptionGroupList = (
   optionGroupList: IOptionGroup[] = []
 ): ICreateOptionGroup[] =>
-  optionGroupList.map((group) => {
-    if (group.optionGroupSeq < 0) {
-      const {
-        optionGroupSeq,
-        localeOptionGroupName,
-        localeOptionGroupNameStr,
-        optionList,
-        ...createGroup
-      } = group;
-      // optionList에서 optionSeq를 제거하여 ICreateOption[]로 변환
-      const createOptionList: ICreateOption[] = (optionList || []).map(
-        (option) => {
-          const {
-            optionSeq,
-            optionGroupSeq,
-            isDeleted,
-            quantity,
-            localeOptionName,
-            localeOptionNameStr,
-            mappedOptionGroupCode,
-            mappedOptionGroupName,
-            mappedHeadOptionGroupCode,
-            mappedUptDt,
-            isMapped,
-            createDate,
-            createMemberUuid,
-            updateDate,
-            updateMemberUuid,
-            ...createOption
-          } = option;
-          return createOption;
-        }
-      );
-      return {
-        ...createGroup,
-        optionList: createOptionList,
-      } as ICreateOptionGroup;
-    }
-    return group as unknown as ICreateOptionGroup;
-  });
+  optionGroupList.map((group) =>
+    group.optionGroupSeq < 0
+      ? toCreateOptionGroup(group)
+      : (group as unknown as ICreateOptionGroup)
+  );
+
+/** PUT 요청용: 옵션 그룹 리스트를 IUpdateOptionGroup[] 또는 ICreateOptionGroup[]로 변환 */
+const convertOptionGroupListForUpdate = (
+  optionGroupList: IOptionGroup[] = []
+): (IUpdateOptionGroup | ICreateOptionGroup)[] =>
+  optionGroupList.map((group) =>
+    group.optionGroupSeq < 0
+      ? toCreateOptionGroup(group)
+      : toUpdateOptionGroup(group)
+  );
 
 /** 메뉴 생성용 데이터 빌드 */
 export const buildMenuData = (
@@ -144,23 +204,30 @@ export const buildUpdateData = (
   menu: IMenu,
   formValues: FormValues,
   menuImageList: IMenuImage[]
-): IUpdateMenuRequest => ({
-  menuSeq: menu.menuSeq,
-  menuName: formValues.menuName ?? menu.menuName,
-  categorySeq: formValues.categorySeq ?? menu.categorySeq,
-  menuPrice: formValues.menuPrice ?? menu.menuPrice,
-  isOutOfStock: menu.isOutOfStock,
-  mappedMenuCode: formValues.mappedMenuCode ?? menu.mappedMenuCode,
-  isHidden: menu.isHidden,
-  isRecommended: formValues.isRecommended ?? menu.isRecommended,
-  menuDescription: formValues.menuDescription ?? menu.menuDescription,
-  isBest: formValues.isBest ?? menu.isBest,
-  isNew: formValues.isNew ?? menu.isNew,
-  spiceLevel: formValues.spiceLevel ?? menu.spiceLevel,
-  isTaxFree: formValues.isTaxFree ?? menu.isTaxFree,
-  minQuantity: formValues.minQuantity ?? menu.minQuantity,
-  optionGroupList: formValues.optionGroupList ?? menu.optionGroupList,
-  selectedLanguageCode:
-    formValues.selectedLanguageCode ?? menu.selectedLanguageCode,
-  menuImageList,
-});
+): IUpdateMenuRequest => {
+  const optionGroupList = formValues.optionGroupList ?? menu.optionGroupList;
+  const convertedOptionGroupList = optionGroupList
+    ? convertOptionGroupListForUpdate(optionGroupList)
+    : undefined;
+
+  return {
+    menuSeq: menu.menuSeq,
+    menuName: formValues.menuName ?? menu.menuName,
+    categorySeq: formValues.categorySeq ?? menu.categorySeq,
+    menuPrice: formValues.menuPrice ?? menu.menuPrice,
+    isOutOfStock: menu.isOutOfStock,
+    mappedMenuCode: formValues.mappedMenuCode ?? menu.mappedMenuCode,
+    isHidden: menu.isHidden,
+    isRecommended: formValues.isRecommended ?? menu.isRecommended,
+    menuDescription: formValues.menuDescription ?? menu.menuDescription,
+    isBest: formValues.isBest ?? menu.isBest,
+    isNew: formValues.isNew ?? menu.isNew,
+    spiceLevel: formValues.spiceLevel ?? menu.spiceLevel,
+    isTaxFree: formValues.isTaxFree ?? menu.isTaxFree,
+    minQuantity: formValues.minQuantity ?? menu.minQuantity,
+    optionGroupList: (convertedOptionGroupList as IOptionGroup[]) ?? undefined,
+    selectedLanguageCode:
+      formValues.selectedLanguageCode ?? menu.selectedLanguageCode,
+    menuImageList,
+  };
+};

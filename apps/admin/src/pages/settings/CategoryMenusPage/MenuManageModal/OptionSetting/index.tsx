@@ -15,7 +15,9 @@ export const OptionSetting = () => {
     number | null
   >(null);
 
-  const optionGroupList = formValues.optionGroupList || [];
+  const optionGroupList =
+    (formValues.optionGroupList || []).filter((group) => !group.isDeleted) ||
+    [];
 
   const handleOpenModal = (optionGroupSeq?: number) => {
     setEditingOptionGroupSeq(optionGroupSeq ?? null);
@@ -27,11 +29,7 @@ export const OptionSetting = () => {
     setEditingOptionGroupSeq(null);
   };
 
-  const handleEditOptionGroup = (optionGroupSeq: number | undefined) => {
-    if (optionGroupSeq == null) {
-      console.warn('옵션 그룹의 optionGroupSeq가 없습니다.');
-      return;
-    }
+  const handleEditOptionGroup = (optionGroupSeq: number) => {
     handleOpenModal(optionGroupSeq);
   };
 
@@ -40,15 +38,13 @@ export const OptionSetting = () => {
     handleCloseModal();
   };
 
-  const handleDeleteOptionGroup = (optionGroupSeq: number | undefined) => {
-    if (optionGroupSeq == null) {
-      console.warn('옵션 그룹의 optionGroupSeq가 없습니다.');
-      return;
-    }
-
-    const updatedList = optionGroupList.filter(
-      (group) => group.optionGroupSeq !== optionGroupSeq
+  const handleDeleteOptionGroup = (optionGroupSeq: number) => {
+    const updatedList = (formValues.optionGroupList || []).map((group) =>
+      group.optionGroupSeq === optionGroupSeq
+        ? { ...group, isDeleted: true }
+        : group
     );
+
     updateFormValues({ optionGroupList: updatedList });
     toast('옵션 그룹이 삭제되었습니다.');
   };
@@ -58,6 +54,10 @@ export const OptionSetting = () => {
       <S.Header>
         <p>옵션 그룹 설정</p>
       </S.Header>
+      <S.AddOptionGroupButton onClick={() => handleOpenModal()}>
+        <AddIcon width={22} height={22} color={theme.colors.grey[600]} />
+        <span>옵션 그룹 추가</span>
+      </S.AddOptionGroupButton>
 
       {optionGroupList.length > 0 && (
         <S.OptionGroups>
@@ -94,7 +94,7 @@ export const OptionSetting = () => {
                   </span>
                 </S.OptionNames>
 
-                <S.OptionButtons>
+                <S.OptionButtons onClick={(e) => e.stopPropagation()}>
                   <BasicButton
                     variant="Outline_Grey_XL"
                     icon={
@@ -129,11 +129,6 @@ export const OptionSetting = () => {
           })}
         </S.OptionGroups>
       )}
-
-      <S.AddOptionGroupButton onClick={() => handleOpenModal()}>
-        <AddIcon width={22} height={22} color={theme.colors.grey[600]} />
-        <span>옵션 그룹 추가</span>
-      </S.AddOptionGroupButton>
 
       {isOptionGroupManageModalOpen && (
         <OptionGroupManageModal

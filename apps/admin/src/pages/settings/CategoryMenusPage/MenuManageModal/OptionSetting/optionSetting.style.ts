@@ -12,6 +12,9 @@ export const optionButtonCss = css`
 
 export const Container = styled.div`
   margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 `;
 
 export const Header = styled.div`
@@ -28,7 +31,7 @@ export const Header = styled.div`
 
 export const AddOptionGroupButton = styled.button`
   width: 100%;
-  height: 5.625rem;
+  height: 4rem;
   background-color: ${theme.colors.grey[50]};
   border-radius: 1rem;
   border: 1px dashed ${theme.colors.grey[400]};
