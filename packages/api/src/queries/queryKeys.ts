@@ -1,4 +1,10 @@
 export const queryKeys = {
+  shop: {
+    all: ['shop'] as const,
+    /** 상점 리스트 조회 */
+    list: () => [...queryKeys.shop.all, 'list'] as const,
+  },
+
   category: {
     all: ['category'] as const,
     /** 카테고리 리스트 조회 */

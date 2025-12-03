@@ -43,7 +43,7 @@ const initialData: ICart = {
 };
 
 export const useCartStore = create<ICartStore>((set, get) => ({
-  data: initialData,
+  data: storage.load<ICart>(STORAGE_KEYS.CART) ?? initialData,
 
   // 스토리지에서 데이터 불러오기
   loadFromStorage: () => {

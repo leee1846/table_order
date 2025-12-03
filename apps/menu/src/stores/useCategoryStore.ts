@@ -30,7 +30,8 @@ export interface ICategoryStore {
 }
 
 const initialData = {
-  categories: null,
+  categories:
+    storage.load<ICategoryWithMenus[]>(STORAGE_KEYS.CATEGORIES) ?? null,
   visibilityMap: {},
 };
 
@@ -89,17 +90,14 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
       return [];
     }
 
-    return state.categories;
-    // TODO: 주석 제거해야 정상 동작함
-    // return state.data.filter((category: ICategoryWithMenus) => {
-    //   // isHidden이 true이면 숨김
-    //   if (category.isHidden) {
-    //     return false;
-    //   }
-
-    //   // visibilityMap 확인: false면 숨김, 없거나 true면 표시
-    //   const isVisible = state.visibilityMap[category.categorySeq];
-    //   return isVisible !== false;
-    // });
+    return state.categories.filter((category: ICategoryWithMenus) => {
+      // isHidden이 true이면 숨김
+      if (category.isHidden) {
+        return false;
+      }
+      // visibilityMap 확인: false면 숨김, 없거나 true면 표시
+      const isVisible = state.visibilityMap[category.categorySeq];
+      return isVisible !== false;
+    });
   },
 }));

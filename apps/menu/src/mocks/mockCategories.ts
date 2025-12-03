@@ -779,15 +779,15 @@ export const mockCategories: ICategoryWithMenus[] = [
     useSaleDay: false,
     useSaleTime: false,
   }),
-  createCategory(2, '치킨', chickenMenus, {
+  createCategory(2, '치킨ㄴㄴ', chickenMenus, {
     isHidden: false,
     isQuantitySelectable: true,
     isFirstOrderRequired: false,
     useSaleDay: true,
     saleDayOfWeek: [1, 2, 3, 4, 5], // 월~금
     useSaleTime: true,
-    saleStartTime: '11:00',
-    saleEndTime: '22:00',
+    saleStartTime: '1409',
+    saleEndTime: '2200',
   }),
   createCategory(3, '사이드 메뉴', sideMenus, {
     isHidden: false,

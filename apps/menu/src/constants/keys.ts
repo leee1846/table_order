@@ -9,6 +9,8 @@ export const EVENT_KEYS = {
 export const STORAGE_KEYS = {
   /** 선택한 다국어 코드 키 */
   I18N_LANGUAGE: 'i18Lng',
+  /** 선택한 상점 data 키 */
+  SHOP: 'shop',
   /** 카테고리 목록 data 키 */
   CATEGORIES: 'menu-categories',
   /** 장바구니 data 키 */

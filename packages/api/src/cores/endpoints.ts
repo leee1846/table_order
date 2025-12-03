@@ -6,9 +6,11 @@ export const ENDPOINTS = {
     LOGIN: '/login',
     TOKEN_REFRESH: '/token/refresh',
   },
+
   ORDER: {
     SEND_PICKUP_NOTIFICATION: '/orders/pickup-notification',
   },
+
   CATEGORY: {
     LIST: '/category/list',
     CREATE: '/category',
@@ -16,10 +18,15 @@ export const ENDPOINTS = {
     DELETE: '/category',
     MENUBOARD_LIST: (shopCode: string) => `/menuboard/${shopCode}`,
   },
+
   MENU: {
     LIST: '/menu/list',
     CREATE: '/menu',
     UPDATE: '/menu',
     DELETE: '/menu',
+  },
+
+  SHOP: {
+    LIST: '/shop/list',
   },
 } as const;

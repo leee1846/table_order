@@ -6,7 +6,7 @@ import { CartButton } from '@/pages/MainPage/CartButton';
 import { BreakTime } from '@/pages/MainPage/BreakTime';
 import { CartReminder } from '@/pages/MainPage/CartReminder';
 import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
-import { useGetCategoriesWithMenus } from '@repo/api/queries';
+import { useGetCategoriesWithMenus, useGetShops } from '@repo/api/queries';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { checkCategorySaleStatus } from '@/utils/category';
@@ -16,24 +16,20 @@ import { useCartStore } from '@/stores/useCartStore';
 import { mockCategories } from '@/mocks/mockCategories';
 import storage from '@/utils/storage';
 import type { ICategoryWithMenus } from '@repo/api/types';
+import { useShopData } from '@/hooks/useShopData';
 
 // TODO: api를 통해 반환받은 data로 추후 변경 예정
 const useScrollLayout = true;
+const tableNumber = 1;
 
 export const MainPage = () => {
-  // TODO: 실제 토큰에서 shopSeq를 가져와서 API 호출에 사용하도록 추후에 수정
-  // const token = getAccessToken() as string;
-  // const payload = decodeJwtToken<ITokenPayload>(token);
-  // const shopSeq = payload?.shopSeq ?? 0;
-  // test
+  const { shopData: shopDataaa } = useShopData();
 
-  const { loadFromStorage: loadCartFromStorage, setCartOptions } =
-    useCartStore();
+  const { setCartOptions } = useCartStore();
 
   const {
     categories: categoriesStoreData,
     setCategories: setCategoriesStoreData,
-    loadFromStorage: loadCategoryFromStorage,
     getVisibleCategories,
   } = useCategoryStore();
 
@@ -42,16 +38,16 @@ export const MainPage = () => {
     STORAGE_KEYS.CATEGORIES
   );
 
-  // 컴포넌트 마운트 시 세션 스토리지에서 데이터 로드
-  useEffect(() => {
-    loadCategoryFromStorage();
-    loadCartFromStorage();
-  }, [loadCartFromStorage, loadCategoryFromStorage]);
-
   // 세션 스토리지에 데이터가 없고 스토어에도 데이터가 없을 때만 API 호출
   const { data: categoriesData } = useGetCategoriesWithMenus(
-    { shopCode: 'NEXA000001', tableNumber: 1 },
-    { enabled: !hasStorageData && categoriesStoreData === null }
+    { shopCode: shopDataaa?.shopCode ?? '', tableNumber },
+    {
+      enabled:
+        !hasStorageData &&
+        categoriesStoreData === null &&
+        !!shopDataaa?.shopCode &&
+        !!tableNumber,
+    }
   );
 
   // API 응답을 받으면 스토어에 저장 (세션 스토리지에도 자동 저장)
