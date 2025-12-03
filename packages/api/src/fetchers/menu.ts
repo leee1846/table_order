@@ -68,14 +68,34 @@ export const createMenu = async (params: {
  * 메뉴를 수정합니다.
  * PUT /menu
  */
-export const updateMenu = async (
-  params: IUpdateMenuRequest
-): Promise<TMenuMutationResponse> => {
+export const updateMenu = async (params: {
+  menu: IUpdateMenuRequest;
+  files?: File[];
+}): Promise<TMenuMutationResponse> => {
   const axiosInstance = getAxiosInstance('private');
+
+  const formData = new FormData();
+
+  // menu를 JSON(application/json) Blob으로 추가
+  const menuBlob = new Blob([JSON.stringify(params.menu)], {
+    type: 'application/json',
+  });
+  formData.append('menu', menuBlob);
+
+  // files가 있으면 추가 (파일명과 menu.menuImageList.imageName이 일치해야 함)
+  if (params.files && params.files.length > 0) {
+    params.files.forEach((file) => {
+      formData.append('files', file);
+    });
+  }
+
   const response = await axiosInstance<TMenuMutationResponse>({
     method: 'PUT',
     url: ENDPOINTS.MENU.UPDATE,
-    data: params,
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
 
   return response.data;

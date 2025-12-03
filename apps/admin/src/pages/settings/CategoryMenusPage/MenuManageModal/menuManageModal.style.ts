@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
@@ -56,4 +57,12 @@ export const Titles = styled.div`
       ${TYPOGRAPHY.ST_1}
     }
   }
+`;
+
+export const SubmitButton = css`
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  margin-top: 40px;
+  z-index: ${theme.zIndex.modal};
 `;

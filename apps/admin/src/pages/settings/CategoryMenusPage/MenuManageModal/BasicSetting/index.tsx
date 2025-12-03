@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useCallback } from 'react';
 import { CheckButton, Input } from '@repo/ui/components';
 import {
   bestOnIcon,
@@ -9,44 +9,38 @@ import {
   newOnIcon,
 } from '@repo/ui/icons';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
-import { ImageSection } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection';
-import type { ICreateMenuRequest, IMenu } from '@repo/api/types';
+import { ImageSection } from './ImageSection';
+import { useMenuForm } from '../context/MenuManageModalContext';
 
-interface BasicSettingProps {
-  menu?: IMenu;
-  values?: Partial<ICreateMenuRequest>;
-  onChange?: (nextValue: Partial<ICreateMenuRequest>) => void;
-  onAddFiles?: (files: FileList | null) => void;
-}
+const SPICE_LEVELS = [1, 2, 3] as const;
 
-export const BasicSetting = ({
-  menu,
-  values,
-  onChange,
-  onAddFiles,
-}: BasicSettingProps) => {
+export const BasicSetting = () => {
   const descriptionInputId = useId();
+  const { formValues, updateFormValues } = useMenuForm();
+  const currentSpiceLevel = formValues.spiceLevel ?? 0;
 
-  const onClickChiliLevel = (level: number) => {
-    const currentSpiceLevel = values?.spiceLevel ?? 0;
-    const nextSpiceLevel =
-      currentSpiceLevel === 0
-        ? level
-        : currentSpiceLevel === level
-          ? level - 1
-          : level;
+  const handleSpiceLevelClick = useCallback(
+    (level: number) => {
+      // 같은 레벨 클릭 시 한 단계 낮춤, 아니면 해당 레벨로 설정
+      const nextLevel = currentSpiceLevel === level ? level - 1 : level;
+      updateFormValues({ spiceLevel: Math.max(0, nextLevel) });
+    },
+    [currentSpiceLevel, updateFormValues]
+  );
 
-    onChange?.({ spiceLevel: Math.max(0, nextSpiceLevel) });
-  };
+  const handlePriceChange = useCallback(
+    (value: string) => {
+      const numericString = value.replace(/[^0-9]/g, '');
+      updateFormValues({
+        menuPrice: numericString.length > 0 ? Number(numericString) : undefined,
+      });
+    },
+    [updateFormValues]
+  );
 
   return (
     <S.Container>
-      <ImageSection
-        menu={menu}
-        isBest={values?.isBest}
-        isNew={values?.isNew}
-        onAddFiles={onAddFiles}
-      />
+      <ImageSection />
 
       <S.ContentsSection>
         <S.HorizontalLayout>
@@ -57,8 +51,8 @@ export const BasicSetting = ({
             <Input
               placeholder="메뉴명을 입력해 주세요."
               customStyle={S.inputCss}
-              value={values?.menuName ?? ''}
-              onChange={(value) => onChange?.({ menuName: value })}
+              value={formValues.menuName ?? ''}
+              onChange={(value) => updateFormValues({ menuName: value })}
             />
           </S.VerticalLayout>
 
@@ -68,19 +62,24 @@ export const BasicSetting = ({
               <S.BadgeButton
                 type="button"
                 onClick={() =>
-                  onChange?.({ isBest: !(values?.isBest ?? false) })
+                  updateFormValues({ isBest: !(formValues.isBest ?? false) })
                 }
               >
                 <img
-                  src={values?.isBest ? bestOnIcon : bestOffIcon}
+                  src={formValues.isBest ? bestOnIcon : bestOffIcon}
                   alt="베스트"
                 />
               </S.BadgeButton>
               <S.BadgeButton
                 type="button"
-                onClick={() => onChange?.({ isNew: !(values?.isNew ?? false) })}
+                onClick={() =>
+                  updateFormValues({ isNew: !(formValues.isNew ?? false) })
+                }
               >
-                <img src={values?.isNew ? newOnIcon : newOffIcon} alt="신규" />
+                <img
+                  src={formValues.isNew ? newOnIcon : newOffIcon}
+                  alt="신규"
+                />
               </S.BadgeButton>
             </S.BadgeContainer>
           </S.VerticalLayout>
@@ -93,8 +92,8 @@ export const BasicSetting = ({
                 가격 <span>*</span>
               </S.Title>
               <CheckButton
-                checked={values?.isTaxFree ?? false}
-                onChange={(checked) => onChange?.({ isTaxFree: checked })}
+                checked={formValues.isTaxFree ?? false}
+                onChange={(checked) => updateFormValues({ isTaxFree: checked })}
                 customStyle={S.TaxFreeCss}
               >
                 <span>면세</span>
@@ -103,59 +102,26 @@ export const BasicSetting = ({
             <Input
               placeholder="가격을 입력해 주세요."
               customStyle={S.inputCss}
-              value={
-                values?.menuPrice !== undefined
-                  ? values.menuPrice.toString()
-                  : ''
-              }
-              onChange={(value) => {
-                const numericString = value.replace(/[^0-9]/g, '');
-                onChange?.({
-                  menuPrice:
-                    numericString.length > 0
-                      ? Number(numericString)
-                      : undefined,
-                });
-              }}
+              value={formValues.menuPrice?.toString() ?? ''}
+              onChange={handlePriceChange}
             />
           </S.VerticalLayout>
 
           <S.VerticalLayout>
             <S.Title>매운맛정도</S.Title>
             <S.BadgeContainer>
-              <S.ChiliLevelButton
-                type="button"
-                onClick={() => onClickChiliLevel(1)}
-              >
-                <img
-                  src={
-                    (values?.spiceLevel ?? 0) > 0 ? chiliOnIcon : chiliOffIcon
-                  }
-                  alt="매운맛 1단계"
-                />
-              </S.ChiliLevelButton>
-              <S.ChiliLevelButton
-                type="button"
-                onClick={() => onClickChiliLevel(2)}
-              >
-                <img
-                  src={
-                    (values?.spiceLevel ?? 0) > 1 ? chiliOnIcon : chiliOffIcon
-                  }
-                  alt="매운맛 2단계"
-                />
-              </S.ChiliLevelButton>
-              <S.ChiliLevelButton
-                type="button"
-                onClick={() => onClickChiliLevel(3)}
-              >
-                <img
-                  src={
-                    (values?.spiceLevel ?? 0) > 2 ? chiliOnIcon : chiliOffIcon
-                  }
-                  alt="매운맛 3단계"
-                />
-              </S.ChiliLevelButton>
+              {SPICE_LEVELS.map((level) => (
+                <S.ChiliLevelButton
+                  key={level}
+                  type="button"
+                  onClick={() => handleSpiceLevelClick(level)}
+                >
+                  <img
+                    src={currentSpiceLevel >= level ? chiliOnIcon : chiliOffIcon}
+                    alt={`매운맛 ${level}단계`}
+                  />
+                </S.ChiliLevelButton>
+              ))}
             </S.BadgeContainer>
           </S.VerticalLayout>
         </S.HorizontalLayout>
@@ -164,10 +130,10 @@ export const BasicSetting = ({
           <S.Title>메뉴 설명</S.Title>
           <S.Textarea
             id={`menu-description-${descriptionInputId}`}
-            value={values?.menuDescription ?? ''}
+            value={formValues.menuDescription ?? ''}
             placeholder="메뉴 설명을 입력해 주세요."
             onChange={(event) =>
-              onChange?.({ menuDescription: event.target.value })
+              updateFormValues({ menuDescription: event.target.value })
             }
           />
         </S.VerticalLayout>

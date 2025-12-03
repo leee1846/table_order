@@ -8,7 +8,7 @@ export const Container = styled.div`
   gap: 16px;
 `;
 
-export const SetionContainer = styled.div`
+export const SectionContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;

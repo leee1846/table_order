@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { theme } from '@repo/ui';
 import {
   AddIcon,
@@ -7,75 +7,62 @@ import {
   bestOnIcon,
   newOnIcon,
 } from '@repo/ui/icons';
-import * as S from './imageSection.style';
-import type { IMenu } from '@repo/api/types';
+import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection/imageSection.style';
 import { AddImageModal } from '../AddImageModal';
+import {
+  useMenuForm,
+  useMenuImages,
+  type MenuImageData,
+} from '../../context/MenuManageModalContext';
+import { BasicButton } from '@repo/ui/components';
 
-interface ImageSectionProps {
-  menu?: IMenu;
-  isBest?: boolean;
-  isNew?: boolean;
-  onAddFiles?: (files: FileList | null) => void;
-}
+type ImageModalMode = 'main' | 'additional';
 
-export const ImageSection = ({
-  menu,
-  isBest,
-  isNew,
-  onAddFiles,
-}: ImageSectionProps) => {
-  const mode = menu ? 'edit' : 'create';
+const getImageUrl = (image: MenuImageData | null): string | null => {
+  if (!image) return null;
+  return image.file
+    ? URL.createObjectURL(image.file)
+    : (image.imagePath ?? null);
+};
+
+export const ImageSection = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isAddImageModalOpen, setIsAddImageModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<ImageModalMode>('main');
 
-  const handleClickThumbnail = () => {
-    if (mode === 'create' && fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+  const { formValues } = useMenuForm();
+  const {
+    mainImage,
+    additionalImages,
+    setMainImage,
+    removeMainImage,
+    addAdditionalImages,
+    removeAdditionalImage,
+  } = useMenuImages();
+
+  const mainImageUrl = getImageUrl(mainImage);
+
+  const openModal = (mode: ImageModalMode) => {
+    setModalMode(mode);
+    setIsModalOpen(true);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      onAddFiles?.(files);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+
+    if (modalMode === 'main') {
+      setMainImage(files[0] as File);
+    } else {
+      addAdditionalImages(files);
     }
-    // 같은 파일을 다시 선택할 수 있도록 value 초기화
+
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  const handleSelectFromGallery = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  // 수정 모드일 때 메뉴 이미지 목록 가져오기
-  const menuImages = useMemo(() => {
-    if (mode === 'edit' && menu?.menuImageList) {
-      return menu.menuImageList.filter(
-        (image) => !image.isDeleted && image.imagePath
-      );
-    }
-    return [];
-  }, [mode, menu]);
-
-  // 메인 이미지 찾기
-  const mainImage = useMemo(() => {
-    if (menuImages.length === 0) {
-      return null;
-    }
-    return menuImages.find((image) => image.isMainImage) ?? menuImages[0];
-  }, [menuImages]);
-
-  // 추가 이미지 목록 (메인 이미지 제외)
-  const additionalImages = useMemo(() => {
-    if (!mainImage) {
-      return menuImages;
-    }
-    return menuImages.filter((image) => image.imageSeq !== mainImage.imageSeq);
-  }, [menuImages, mainImage]);
+  const handleSelectFromGallery = () => fileInputRef.current?.click();
 
   return (
     <S.Container>
@@ -83,27 +70,36 @@ export const ImageSection = ({
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        multiple
+        multiple={modalMode === 'additional'}
         style={{ display: 'none' }}
         onChange={handleFileChange}
       />
-      <S.Thumbnail>
+
+      <S.Thumbnail onClick={() => !mainImage && openModal('main')}>
         <S.BadgesContainer>
-          {isBest && <img src={bestOnIcon} alt="베스트" />}
-          {isNew && <img src={newOnIcon} alt="신규" />}
+          {formValues.isBest && <img src={bestOnIcon} alt="베스트" />}
+          {formValues.isNew && <img src={newOnIcon} alt="신규" />}
         </S.BadgesContainer>
 
-        {mode === 'edit' && mainImage ? (
+        {mainImage && mainImageUrl ? (
           <>
-            <S.ThumbnailActionButtons>
-              <S.ThumbnailActionButton type="button">
+            <S.ThumbnailActionButtons onClick={(e) => e.stopPropagation()}>
+              <BasicButton
+                onClick={() => openModal('main')}
+                customStyle={S.ThumbnailActionButton}
+                variant="Outline_Grey_S"
+              >
                 변경
-              </S.ThumbnailActionButton>
-              <S.ThumbnailActionButton type="button">
+              </BasicButton>
+              <BasicButton
+                css={S.ThumbnailActionButton}
+                onClick={removeMainImage}
+                variant="Solid_Sky_Blue_S"
+              >
                 삭제
-              </S.ThumbnailActionButton>
+              </BasicButton>
             </S.ThumbnailActionButtons>
-            <img src={mainImage.imagePath ?? ''} alt="메인 사진" />
+            <img src={mainImageUrl} alt="메인 사진" />
           </>
         ) : (
           <>
@@ -117,55 +113,46 @@ export const ImageSection = ({
           </>
         )}
       </S.Thumbnail>
-      {mode === 'edit' ? (
-        additionalImages.length > 0 ? (
-          <S.ImagesContainer>
-            <S.Gradient />
-            <S.ScrollableContent>
-              <S.ImageAddButton
-                type="button"
-                onClick={() => setIsAddImageModalOpen(true)}
-              >
-                <AddIcon
-                  width={20}
-                  height={20}
-                  color={theme.colors.grey[600]}
-                />
-              </S.ImageAddButton>
-              <ul>
-                {additionalImages.map((image) => (
-                  <li key={image.imageSeq}>
-                    <button type="button">
-                      <CloseIcon
-                        width={14}
-                        height={14}
-                        color={theme.colors.grey[200]}
-                      />
-                    </button>
-                    <img src={image.imagePath ?? ''} alt="추가 이미지" />
-                  </li>
-                ))}
-              </ul>
-            </S.ScrollableContent>
-          </S.ImagesContainer>
-        ) : (
-          <S.ImageAddButton
-            type="button"
-            onClick={() => setIsAddImageModalOpen(true)}
-          >
-            <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
-            <span>추가할 이미지가 있다면 선택해 주세요 </span>
-          </S.ImageAddButton>
-        )
+
+      {additionalImages.length > 0 ? (
+        <S.ImagesContainer>
+          <S.Gradient />
+          <S.ScrollableContent>
+            <S.ImageAddButton
+              type="button"
+              onClick={() => openModal('additional')}
+            >
+              <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
+            </S.ImageAddButton>
+            <ul>
+              {additionalImages.map((image) => (
+                <li key={image.id}>
+                  <button
+                    type="button"
+                    onClick={() => removeAdditionalImage(image.id)}
+                  >
+                    <CloseIcon
+                      width={14}
+                      height={14}
+                      color={theme.colors.grey[200]}
+                    />
+                  </button>
+                  <img src={getImageUrl(image) ?? ''} alt="추가 이미지" />
+                </li>
+              ))}
+            </ul>
+          </S.ScrollableContent>
+        </S.ImagesContainer>
       ) : (
-        <S.ImageAddButton onClick={handleClickThumbnail}>
+        <S.ImageAddButton type="button" onClick={() => openModal('additional')}>
           <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
-          <span>추가할 이미지가 있다면 선택해 주세요 </span>
+          <span>추가할 이미지가 있다면 선택해 주세요</span>
         </S.ImageAddButton>
       )}
+
       <AddImageModal
-        isOpen={isAddImageModalOpen}
-        onClose={() => setIsAddImageModalOpen(false)}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onSelectFromGallery={handleSelectFromGallery}
       />
     </S.Container>

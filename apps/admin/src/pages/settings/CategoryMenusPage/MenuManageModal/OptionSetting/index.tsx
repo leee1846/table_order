@@ -1,106 +1,145 @@
 import { useState } from 'react';
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
-import { AddIcon, DeleteIcon, EditIcon } from '@repo/ui/icons';
+import { AddIcon, EditIcon, DeleteIcon } from '@repo/ui/icons';
+import { toast } from '@repo/feature/utils';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/optionSetting.style';
-import { OptionGroupManageModal } from '../../OptionGroupManageModal';
-
-const OPTIONS = [
-  {
-    id: 1,
-    name: '옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름옵션 그룹 이름',
-    options: ['옵션 이름', '옵션 이름'],
-  },
-  {
-    id: 2,
-    name: '옵션 그룹 이름2',
-    options: ['옵션 이름', '옵션 이름', '옵션 이름', '옵션 이름', '옵션 이름'],
-  },
-  {
-    id: 3,
-    name: '옵션 그룹 이름3',
-    options: ['옵션 이름', '옵션 이름', '옵션 이름', '옵션 이름'],
-  },
-];
+import { OptionGroupManageModal } from './OptionGroupManageModal';
+import { useMenuForm } from '../context/MenuManageModalContext';
 
 export const OptionSetting = () => {
+  const { formValues, updateFormValues } = useMenuForm();
   const [isOptionGroupManageModalOpen, setIsOptionGroupManageModalOpen] =
     useState(false);
+  const [editingOptionGroupSeq, setEditingOptionGroupSeq] = useState<
+    number | null
+  >(null);
 
-  if (OPTIONS.length === 0) {
-    return (
-      <S.Container>
-        <S.Header>
-          <p>옵션 그룹 설정</p>
-        </S.Header>
-        <S.AddOptionGroupButton
-          type="button"
-          onClick={() => setIsOptionGroupManageModalOpen(true)}
-        >
-          <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
-          <span>옵션 그룹 추가</span>
-        </S.AddOptionGroupButton>
-      </S.Container>
+  const optionGroupList = formValues.optionGroupList || [];
+
+  const handleOpenModal = (optionGroupSeq?: number) => {
+    setEditingOptionGroupSeq(optionGroupSeq ?? null);
+    setIsOptionGroupManageModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsOptionGroupManageModalOpen(false);
+    setEditingOptionGroupSeq(null);
+  };
+
+  const handleEditOptionGroup = (optionGroupSeq: number | undefined) => {
+    if (optionGroupSeq == null) {
+      console.warn('옵션 그룹의 optionGroupSeq가 없습니다.');
+      return;
+    }
+    handleOpenModal(optionGroupSeq);
+  };
+
+  const handleCreated = () => {
+    // 생성된 옵션 그룹이 context에 저장되었으므로 모달을 닫음
+    handleCloseModal();
+  };
+
+  const handleDeleteOptionGroup = (optionGroupSeq: number | undefined) => {
+    if (optionGroupSeq == null) {
+      console.warn('옵션 그룹의 optionGroupSeq가 없습니다.');
+      return;
+    }
+
+    const updatedList = optionGroupList.filter(
+      (group) => group.optionGroupSeq !== optionGroupSeq
     );
-  }
+    updateFormValues({ optionGroupList: updatedList });
+    toast('옵션 그룹이 삭제되었습니다.');
+  };
 
   return (
     <S.Container>
       <S.Header>
         <p>옵션 그룹 설정</p>
-        <BasicButton
-          variant="Solid_Navy_M"
-          icon={
-            <AddIcon width={16} height={16} color={theme.colors.grey[200]} />
-          }
-          onClick={() => setIsOptionGroupManageModalOpen(true)}
-        >
-          옵션 그룹 추가하기
-        </BasicButton>
       </S.Header>
 
-      <S.OptionGroups>
-        {OPTIONS.map((option) => (
-          <S.OptionGroup key={option.id}>
-            <S.OptionNames>
-              <p>{option.name}</p>
+      {optionGroupList.length > 0 && (
+        <S.OptionGroups>
+          {optionGroupList.map((optionGroup, index) => {
+            // optionGroupSeq가 유효한 값인 경우에만 사용, 그 외에는 고유 key 생성
+            const hasValidOptionGroupSeq =
+              optionGroup.optionGroupSeq != null &&
+              optionGroup.optionGroupSeq !== 0;
+            const key = hasValidOptionGroupSeq
+              ? optionGroup.optionGroupSeq
+              : `temp-${index}`;
+            return (
+              <S.OptionGroup key={key}>
+                <S.OptionNames>
+                  <p>{optionGroup.optionGroupName}</p>
+                  <span>
+                    {optionGroup.optionList?.map((option, optionIndex) => {
+                      // optionSeq가 유효한 값(양수)인 경우에만 사용, 그 외에는 고유 key 생성
+                      const hasValidOptionSeq =
+                        option.optionSeq != null && option.optionSeq > 0;
+                      const key = hasValidOptionSeq
+                        ? option.optionSeq
+                        : `option-${index}-${optionIndex}`;
+                      return (
+                        <span key={key}>
+                          {option.optionName}
+                          {optionIndex <
+                          (optionGroup.optionList?.length ?? 0) - 1
+                            ? ', '
+                            : ''}
+                        </span>
+                      );
+                    })}
+                  </span>
+                </S.OptionNames>
 
-              <span>
-                {option.options.map((optionName) => optionName).join(',')}
-              </span>
-            </S.OptionNames>
+                <S.OptionButtons>
+                  <BasicButton
+                    variant="Outline_Grey_XL"
+                    icon={
+                      <EditIcon
+                        width={22}
+                        height={22}
+                        color={theme.colors.grey[700]}
+                      />
+                    }
+                    customStyle={S.optionButtonCss}
+                    onClick={() =>
+                      handleEditOptionGroup(optionGroup.optionGroupSeq)
+                    }
+                  />
+                  <BasicButton
+                    variant="Outline_Grey_XL"
+                    icon={
+                      <DeleteIcon
+                        width={22}
+                        height={22}
+                        color={theme.colors.grey[700]}
+                      />
+                    }
+                    customStyle={S.optionButtonCss}
+                    onClick={() =>
+                      handleDeleteOptionGroup(optionGroup.optionGroupSeq)
+                    }
+                  />
+                </S.OptionButtons>
+              </S.OptionGroup>
+            );
+          })}
+        </S.OptionGroups>
+      )}
 
-            <S.OptionButtons>
-              <BasicButton
-                variant="Outline_Grey_XL"
-                icon={
-                  <EditIcon
-                    width={22}
-                    height={22}
-                    color={theme.colors.grey[700]}
-                  />
-                }
-                customStyle={S.optionButtonCss}
-              />
-              <BasicButton
-                variant="Outline_Grey_XL"
-                icon={
-                  <DeleteIcon
-                    width={22}
-                    height={22}
-                    color={theme.colors.grey[700]}
-                  />
-                }
-                customStyle={S.optionButtonCss}
-              />
-            </S.OptionButtons>
-          </S.OptionGroup>
-        ))}
-      </S.OptionGroups>
+      <S.AddOptionGroupButton onClick={() => handleOpenModal()}>
+        <AddIcon width={22} height={22} color={theme.colors.grey[600]} />
+        <span>옵션 그룹 추가</span>
+      </S.AddOptionGroupButton>
 
       {isOptionGroupManageModalOpen && (
         <OptionGroupManageModal
-          onClose={() => setIsOptionGroupManageModalOpen(false)}
+          onClose={handleCloseModal}
+          optionGroupSeq={editingOptionGroupSeq}
+          onCreated={handleCreated}
         />
       )}
     </S.Container>

@@ -50,7 +50,28 @@ export const OptionButton = styled.button`
 
 export const DescriptionText = styled.p`
   ${TYPOGRAPHY.CT_2}
-  color: ${theme.colors.grey[500]};
+  color: ${theme.colors.grey[200]};
   text-align: center;
   margin-top: 4px;
+  background-color: ${theme.colors.grey[800]};
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  position: relative;
+  transform: translateY(-50%);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid ${theme.colors.grey[800]};
+  }
 `;

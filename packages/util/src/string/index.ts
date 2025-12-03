@@ -79,6 +79,8 @@ export const padZero = (num: number): string => {
  * normalizeImageUrl('') // ''
  * ```
  */
+
+// TODO: 개발 서버 올라가면 없애기
 export const normalizeImageUrl = (
   imagePath: string | null | undefined
 ): string | null => {
@@ -103,4 +105,19 @@ export const normalizeImageUrl = (
   // 상대 경로인 경우
   const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
   return `${baseUrl}${path}`;
+};
+
+/**
+ * 고유한 ID를 생성합니다.
+ * 타임스탬프를 기반으로 생성합니다.
+ *
+ * @returns 타임스탬프 기반 고유 ID 문자열
+ *
+ * @example
+ * ```ts
+ * generateId() // "1234567890123"
+ * ```
+ */
+export const generateId = (): string => {
+  return Date.now().toString();
 };

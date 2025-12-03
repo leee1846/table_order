@@ -41,6 +41,63 @@ export interface IOptionGroup extends ICommonResponseData {
 }
 
 // ============================================================================
+// 옵션 생성/수정 타입
+// ============================================================================
+
+/**
+ * 옵션 생성 시 사용하는 타입 (POST /menu)
+ */
+export interface ICreateOption {
+  optionName: string;
+  optionPrice: number;
+  index: number;
+  isOutOfStock: boolean;
+}
+
+/**
+ * 옵션 수정 시 사용하는 타입 (PUT /menu)
+ */
+export interface IUpdateOption {
+  optionSeq: number; // 기존 옵션: 기존 seq, 신규 옵션: 0
+  optionGroupSeq: number;
+  optionName: string;
+  optionPrice: number;
+  isDeleted: boolean; // true로 보내면 서버에서 삭제 처리
+  index: number;
+  isOutOfStock: boolean;
+}
+
+/**
+ * 옵션 그룹 생성 시 사용하는 타입 (POST /menu)
+ */
+export interface ICreateOptionGroup {
+  optionGroupName: string;
+  menuSeq: number;
+  index: number;
+  requiredQuantity: number;
+  isMultipleSelectable: boolean;
+  isOptionQuantitySelectable: boolean;
+  isMenuQuantityDependant: boolean;
+  optionList: ICreateOption[];
+}
+
+/**
+ * 옵션 그룹 수정 시 사용하는 타입 (PUT /menu)
+ */
+export interface IUpdateOptionGroup {
+  optionGroupSeq: number;
+  optionGroupName: string;
+  menuSeq: number;
+  index: number;
+  isDeleted: boolean; // true로 보내면 서버에서 삭제 처리
+  requiredQuantity: number;
+  isMultipleSelectable: boolean;
+  isOptionQuantitySelectable: boolean;
+  isMenuQuantityDependant: boolean;
+  optionList: IUpdateOption[];
+}
+
+// ============================================================================
 // 이미지 타입
 // ============================================================================
 
@@ -97,7 +154,6 @@ export interface IMenuBase {
   spiceLevel: number;
   isTaxFree: boolean;
   minQuantity: number;
-  touchKeyColorCode: string | null;
   localeMenuName: TLocale; // READ_ONLY (GET 응답에만 포함)
   localeMenuDescription: TLocale; // READ_ONLY (GET 응답에만 포함)
   createDate: string | null; // READ_ONLY (GET 응답에만 포함)
@@ -169,6 +225,7 @@ export type ICreateMenuRequest = Omit<
   | 'mappedMenuCode'
   | 'isHidden'
   | 'menuImageList'
+  | 'optionGroupList'
 > &
   Partial<
     Pick<
@@ -184,12 +241,11 @@ export type ICreateMenuRequest = Omit<
       | 'spiceLevel'
       | 'isTaxFree'
       | 'minQuantity'
-      | 'touchKeyColorCode'
-      | 'optionGroupList'
       | 'selectedLanguageCode'
     >
   > & {
     menuImageList?: ICreateMenuImage[];
+    optionGroupList?: ICreateOptionGroup[];
   };
 
 // ============================================================================
@@ -233,7 +289,6 @@ export type IUpdateMenuRequest = Omit<
       | 'spiceLevel'
       | 'isTaxFree'
       | 'minQuantity'
-      | 'touchKeyColorCode'
       | 'optionGroupList'
       | 'selectedLanguageCode'
     >

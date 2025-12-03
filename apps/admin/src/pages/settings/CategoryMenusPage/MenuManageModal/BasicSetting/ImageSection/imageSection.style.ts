@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 
@@ -21,6 +22,7 @@ export const Thumbnail = styled.div`
   background-color: ${theme.colors.primary[100]};
   border-radius: 1rem;
   overflow: hidden;
+  cursor: pointer;
 
   & > img {
     width: 100%;
@@ -45,26 +47,14 @@ export const BadgesContainer = styled.div`
 
 export const ThumbnailActionButtons = styled.div`
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 20px;
+  right: 20px;
   display: flex;
   gap: 4px;
   z-index: 1;
 `;
 
-export const ThumbnailActionButton = styled.button`
-  padding: 8px 16px;
-  background-color: ${theme.colors.grey[600]};
-  color: ${theme.colors.grey[200]};
-  border: none;
-  border-radius: 0.75rem;
-  cursor: pointer;
-  ${TYPOGRAPHY.ST_2}
-
-  &:hover {
-    background-color: ${theme.colors.grey[700]};
-  }
-`;
+export const ThumbnailActionButton = css``;
 
 export const Text = styled.p`
   ${TYPOGRAPHY.BD_1}

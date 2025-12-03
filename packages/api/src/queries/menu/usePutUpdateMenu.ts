@@ -16,7 +16,7 @@ import { IApiError } from '../../types/common';
  * const { mutateAsync: updateMenu } = usePutUpdateMenu();
  *
  * const handleUpdate = async () => {
- *   await updateMenu(data);
+ *   await updateMenu({ menu: data, files: [file1, file2] });
  *   // 성공 후 필요한 작업을 선택적으로 수행
  *   queryClient.invalidateQueries({ queryKey: queryKeys.menu.list(categorySeq) });
  * };
@@ -26,7 +26,7 @@ export const usePutUpdateMenu = () => {
   return useMutation<
     TMenuMutationResponse,
     AxiosError<IApiError>,
-    IUpdateMenuRequest
+    { menu: IUpdateMenuRequest; files?: File[] }
   >({
     mutationFn: updateMenu,
   });

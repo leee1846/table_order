@@ -89,8 +89,22 @@ export const OptionNames = styled.div`
     white-space: nowrap;
   }
 `;
-
 export const OptionButtons = styled.div`
   display: flex;
   gap: 8px;
+`;
+
+export const EmptyState = styled.div`
+  width: 100%;
+  height: 5rem;
+  background-color: ${theme.colors.grey[100]};
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & > p {
+    ${TYPOGRAPHY.CT_2}
+    color: ${theme.colors.grey[500]};
+  }
 `;

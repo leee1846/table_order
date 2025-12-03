@@ -13,6 +13,7 @@ import { MenuCopyModal } from '@/pages/settings/CategoryMenusPage/MenuCopyModal'
 import type { IMenu } from '@repo/api/types';
 import { queryKeys, useDeleteMenu } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
+import { css } from '@emotion/react';
 
 interface Props {
   menu: IMenu;
@@ -108,8 +109,11 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
                 <BasicButton
                   variant="Outline_Grey_L"
                   onClick={() => setIsMenuCopyModalOpen(true)}
+                  customStyle={css`
+                    display: none;
+                  `}
                 >
-                  복사/삭제
+                  복사/이동
                 </BasicButton>
                 <BasicButton
                   variant="Outline_Grey_L"

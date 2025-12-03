@@ -5,45 +5,25 @@ import {
   Input,
   ModalBackground,
 } from '@repo/ui/components';
-import { AddCircleIcon, CloseIcon, DeleteIcon } from '@repo/ui/icons';
-import * as S from '@/pages/settings/CategoryMenusPage/OptionGroupManageModal/optionGroupManageModal.style';
-
-const OPTIONS = [
-  {
-    id: 1,
-    name: '옵션1',
-    price: 1000,
-    isSoldOut: false,
-    posCode: '1234567890',
-  },
-  {
-    id: 2,
-    name: '옵션2',
-    price: 2000,
-    isSoldOut: true,
-    posCode: '1234567890',
-  },
-  {
-    id: 3,
-    name: '옵션3',
-    price: 3000,
-    isSoldOut: false,
-    posCode: '1234567890',
-  },
-];
+import { AddCircleIcon, CloseIcon } from '@repo/ui/icons';
+import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/OptionGroupManageModal/optionGroupManageModal.style';
 
 interface Props {
   onClose: () => void;
+  optionGroupSeq?: number | null;
 }
 
-export const OptionGroupManageModal = ({ onClose }: Props) => {
+export const OptionGroupManageModal = ({ onClose, optionGroupSeq }: Props) => {
+  const isEditMode = optionGroupSeq !== null && optionGroupSeq !== undefined;
+  const modalTitle = isEditMode ? '옵션 그룹 수정' : '옵션 그룹 추가';
+
   return (
     <ModalBackground onClick={onClose}>
       <S.Container>
         <S.CloseButton type="button" onClick={onClose}>
           <CloseIcon width={32} height={32} color={theme.colors.grey[700]} />
         </S.CloseButton>
-        <h1>옵션 그룹 추가</h1>
+        <h1>{modalTitle}</h1>
 
         <S.Contents>
           <S.TitleContainer>
@@ -60,48 +40,6 @@ export const OptionGroupManageModal = ({ onClose }: Props) => {
             <p>
               개별 옵션 <span>*</span>
             </p>
-            {OPTIONS.length > 0 && (
-              <S.OptionList>
-                {OPTIONS.map((option) => (
-                  <li key={option.id}>
-                    <CheckButton
-                      checked={false}
-                      onChange={() => {
-                        // noop
-                      }}
-                      customStyle={S.soldOutCss}
-                    >
-                      <span>품절</span>
-                    </CheckButton>
-                    <Input
-                      placeholder="옵션 이름을 입력해주세요."
-                      customStyle={S.inputCss}
-                    />
-                    <Input
-                      placeholder="옵션 가격을 입력해주세요."
-                      customStyle={S.inputCss}
-                    />
-                    <Input
-                      placeholder="포스 코드"
-                      customStyle={S.inputCss}
-                      disabled
-                    />
-                    <BasicButton
-                      variant="Outline_Grey_XL"
-                      icon={
-                        <DeleteIcon
-                          width={22}
-                          height={22}
-                          color={theme.colors.grey[700]}
-                        />
-                      }
-                      customStyle={S.deleteButtonCss}
-                    />
-                  </li>
-                ))}
-              </S.OptionList>
-            )}
-
             <S.OptionAddButton type="button">
               <AddCircleIcon
                 width={16}
