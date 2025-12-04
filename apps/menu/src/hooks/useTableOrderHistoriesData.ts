@@ -37,13 +37,18 @@ export const useTableOrderHistoriesData = ({
       !tableOrderHistoriesDataResponse?.data?.orderDetailMenuList ||
       tableOrderHistoriesDataResponse?.data?.orderDetailMenuList?.length < 1
     ) {
-      setTableOrderHistoriesData([]);
+      setTableOrderHistoriesData({
+        discountRate: 0,
+        orderDetailMenuList: [],
+      });
       return;
     }
 
-    setTableOrderHistoriesData(
-      tableOrderHistoriesDataResponse?.data?.orderDetailMenuList
-    );
+    setTableOrderHistoriesData({
+      discountRate: tableOrderHistoriesDataResponse?.data?.discountRate ?? 0,
+      orderDetailMenuList:
+        tableOrderHistoriesDataResponse?.data?.orderDetailMenuList ?? [],
+    });
   }, [tableOrderHistoriesDataResponse, setTableOrderHistoriesData]);
 
   const refresh = async () => {
@@ -52,11 +57,17 @@ export const useTableOrderHistoriesData = ({
       !result.data?.data?.orderDetailMenuList ||
       result.data.data.orderDetailMenuList.length < 1
     ) {
-      setTableOrderHistoriesData([]);
+      setTableOrderHistoriesData({
+        discountRate: 0,
+        orderDetailMenuList: [],
+      });
       return;
     }
 
-    setTableOrderHistoriesData(result.data.data.orderDetailMenuList);
+    setTableOrderHistoriesData({
+      discountRate: result.data.data.discountRate ?? 0,
+      orderDetailMenuList: result.data.data.orderDetailMenuList ?? [],
+    });
   };
 
   return {

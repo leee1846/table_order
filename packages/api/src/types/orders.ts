@@ -11,7 +11,7 @@ export interface ISendPickupNotificationRequest {
 /**
  * 픽업 알림 전송 응답 타입
  */
-export interface ISendPickupNotificationData {
+export interface ISendPickupNotificationData  {
   success: boolean;
   message?: string;
 }
@@ -65,10 +65,11 @@ export interface IOrderHistory {
   optionList: IOrderHistoryOption[];
 }
 
-export interface IGetTableOrderHistories {
+export interface IGetTableOrderHistories   {
   tableNumber: number;
   createDate: string;
   updateDate: string;
+  discountRate:number;
   orderDetailMenuList: IOrderHistory[];
 }
 

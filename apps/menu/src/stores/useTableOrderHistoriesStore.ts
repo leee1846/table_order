@@ -3,6 +3,11 @@ import storage from '@/utils/storage';
 import type { IOrderHistory } from '@repo/api/types';
 import { create } from '@repo/feature/zustand';
 
+export interface ITableOrderHistoriesData {
+  discountRate: number;
+  orderDetailMenuList: IOrderHistory[];
+}
+
 export interface ITableOrderHistoriesStore {
   /**
    * 테이블 주문 내역 데이터
@@ -10,16 +15,18 @@ export interface ITableOrderHistoriesStore {
    * api요청 후, 데이터가 없을경우 empty array
    * empty array일 경우, api새로 요청하지 않음.
    * */
-  data: IOrderHistory[] | null;
-  setData: (data: IOrderHistory[]) => void;
+  data: ITableOrderHistoriesData | null;
+  setData: (data: ITableOrderHistoriesData) => void;
   clearData: () => void;
 }
 
 export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
   (set) => ({
     data:
-      storage.load<IOrderHistory[]>(STORAGE_KEYS.TABLE_ORDER_HISTORIES) ?? null,
-    setData: (data: IOrderHistory[]) => {
+      storage.load<ITableOrderHistoriesData>(
+        STORAGE_KEYS.TABLE_ORDER_HISTORIES
+      ) ?? null,
+    setData: (data: ITableOrderHistoriesData) => {
       storage.save(STORAGE_KEYS.TABLE_ORDER_HISTORIES, data);
       set({ data });
     },
