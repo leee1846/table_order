@@ -55,7 +55,7 @@ export interface IGetCategoryListParams {
   shopSeq: number;
 }
 
-export type TGetCategoryListResponse = IApiResponse<ICategoryWithMenus[]>;
+export type TGetCategoryListResponse = IApiResponse<ICategory[]>;
 
 // ============================================================================
 // POST /category

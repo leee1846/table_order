@@ -2,6 +2,7 @@ import { Menu } from '@/pages/settings/CategoryMenusPage/Menus/Menu';
 import * as S from '@/pages/settings/CategoryMenusPage/Menus/menus.style';
 import type { IMenu } from '@repo/api/types';
 import { NoContent } from '@/feature/NoContent';
+import { FullscreenLoadingSpinner } from '@repo/ui/components';
 
 interface MenusProps {
   menus: IMenu[] | undefined;
@@ -21,7 +22,7 @@ export const Menus = ({
   }
 
   if (isLoading) {
-    return <NoContent>로딩 중입니다...</NoContent>;
+    return <FullscreenLoadingSpinner />;
   }
 
   if (!menus || menus.length === 0) {

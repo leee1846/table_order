@@ -2,6 +2,7 @@ import * as S from '@/pages/settings/CategoriesPage/Categories/categories.style'
 import { NoContent } from '@/feature/NoContent';
 import { Category } from '@/pages/settings/CategoriesPage/Categories/Category';
 import type { ICategory } from '@repo/api/types';
+import { FullscreenLoadingSpinner } from '@repo/ui/components';
 
 interface CategoriesProps {
   categories: ICategory[] | undefined;
@@ -15,7 +16,7 @@ export const Categories = ({
   shopSeq,
 }: CategoriesProps) => {
   if (isLoading) {
-    return <NoContent>로딩 중...</NoContent>;
+    return <FullscreenLoadingSpinner />;
   }
 
   if (!categories || categories.length === 0) {

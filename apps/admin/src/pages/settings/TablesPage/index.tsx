@@ -10,6 +10,7 @@ import { ROUTES } from '@/constants/routes';
 import { CreateTableDialog } from './dialogs/CreateTableDialog';
 import { useGetTableGroupList } from '@repo/api/queries';
 import type { ITableInfo } from '@repo/api/types';
+import { FullscreenLoadingSpinner } from '@repo/ui/components';
 
 export const TablesPage = () => {
   const [selectedTableGroupId, setSelectedTableGroupId] = useState<
@@ -63,11 +64,7 @@ export const TablesPage = () => {
 
   // 로딩 중이거나 shopCode가 없을 때
   if (isLoading || !shopCode) {
-    return (
-      <S.TablePageContainer>
-        <div>로딩 중...</div>
-      </S.TablePageContainer>
-    );
+    return <FullscreenLoadingSpinner />;
   }
 
   // 에러 발생 시

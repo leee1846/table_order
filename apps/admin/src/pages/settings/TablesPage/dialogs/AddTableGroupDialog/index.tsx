@@ -4,28 +4,43 @@ import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './addTableGroupDialog.styles';
 import { toast } from '@repo/feature/utils';
+import { createTableGroup } from '@repo/api/fetchers';
+import { useQueryClient } from '@repo/api/tanstack-query';
+import { queryKeys } from '@repo/api/queries';
 const { colors } = theme;
 
 interface AddTableGroupDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (groupName: string) => void;
 }
 
 export const AddTableGroupDialog = ({
   isOpen,
   onClose,
-  onSubmit,
 }: AddTableGroupDialogProps) => {
+  const queryClient = useQueryClient();
   const [groupName, setGroupName] = useState('');
 
-  const handleSubmit = () => {
-    if (groupName.trim()) {
-      onSubmit(groupName.trim());
-      setGroupName('');
-      onClose();
+  const handleSubmit = async () => {
+    if (groupName.trim() !== '') {
+      try {
+        await createTableGroup({
+          // TODO: 추후에 shopSeq 추가
+          shopSeq: 1,
+          tableGroupName: groupName,
+        });
+        // POST 요청이 성공(200)한 후에 조회 쿼리 무효화
+        await queryClient.invalidateQueries({
+          // TODO: 추후에 shopCode 추가
+          queryKey: queryKeys.table.groupList('NEXA000001'),
+        });
+
+        toast('테이블 그룹이 추가되었습니다.');
+        handleClose();
+      } catch (error) {
+        toast('테이블 그룹 추가에 실패했습니다.');
+      }
     }
-    toast('테이블 그룹이 추가되었습니다.');
   };
 
   const handleClose = () => {

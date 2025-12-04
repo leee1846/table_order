@@ -28,13 +28,7 @@ export const Sidebar = ({
   const handleAddTableGroup = () => {};
   return (
     <S.Sidebar>
-      <S.SidebarLogo
-        onClick={() => {
-          toast('test', {
-            position: 'top-center',
-          });
-        }}
-      >
+      <S.SidebarLogo>
         {/* <img
           src={logoImage}
           alt="캡스 스마트오더 로고"
