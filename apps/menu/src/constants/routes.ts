@@ -10,6 +10,11 @@ export const ROUTES = {
   SETTINGS: {
     path: '/settings',
 
+    TABLES: {
+      path: 'tables',
+      generate: () => '/settings/tables',
+    },
+
     MISCELLANEOUS: {
       path: 'misc',
       generate: () => '/settings/misc',

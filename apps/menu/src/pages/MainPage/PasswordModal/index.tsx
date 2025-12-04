@@ -1,0 +1,62 @@
+import { CloseIcon, UnlockedIcon, ArrowBackIcon } from '@repo/ui/icons';
+import { useThemeMode } from '@repo/ui';
+import { Keypad } from '@repo/ui/components';
+import * as S from '@/pages/MainPage/PasswordModal/passwordModal.style';
+import { useState } from 'react';
+
+interface Props {
+  onClose: () => void;
+}
+
+export const PasswordModal = ({ onClose }: Props) => {
+  const { theme } = useThemeMode();
+  const [password, setPassword] = useState<string | null>(null);
+
+  const handleNumberPress = (number: number) => {
+    setPassword((prev) => {
+      if (prev === null) {
+        return String(number);
+      }
+      return prev + String(number);
+    });
+  };
+
+  const deletePassword = () => {
+    setPassword((prev) => {
+      if (prev === null || prev.length === 0) {
+        return null;
+      }
+      if (prev.length === 1) {
+        return null;
+      }
+      return prev.slice(0, -1);
+    });
+  };
+
+  return (
+    <S.Container>
+      <S.CloseButton type="button" onClick={onClose}>
+        <CloseIcon width={42} height={42} color={theme.mode.grey[400]} />
+      </S.CloseButton>
+
+      <S.Content>
+        <UnlockedIcon width={80} height={80} color={theme.mode.grey[400]} />
+        <S.Title>비밀번호를 입력해 주세요</S.Title>
+        <S.PasswordContainer>
+          <li>{password && password.length > 0 && <span />}</li>
+          <li>{password && password.length > 1 && <span />}</li>
+          <li>{password && password.length > 2 && <span />}</li>
+          <li>{password && password.length > 3 && <span />}</li>
+        </S.PasswordContainer>
+        <Keypad
+          onNumberPress={handleNumberPress}
+          bottomRightAction={deletePassword}
+          bottomRightIcon={
+            <ArrowBackIcon width={28} height={28} color={theme.mode.grey[50]} />
+          }
+          customStyle={S.KeypadCss(theme)}
+        />
+      </S.Content>
+    </S.Container>
+  );
+};

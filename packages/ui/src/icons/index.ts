@@ -35,6 +35,7 @@ export { default as SettingsIcon } from './SettingsIcon';
 export { default as KeyboardArrowDownIcon } from './KeyboardArrowDownIcon';
 export { default as OrderListIcon } from './OrderListIcon';
 export { default as CallBellIcon } from './CallBellIcon';
+export { default as UnlockedIcon } from './UnlockedIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';

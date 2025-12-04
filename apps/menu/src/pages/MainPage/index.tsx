@@ -42,65 +42,66 @@ export const MainPage = () => {
 
   const { setCartOptions } = useCartStore();
 
-  /** 카테고리 노출 여부를 업데이트하는 함수 */
-  const updateCategoryVisibility = () => {
-    const currentCategoriesData = useCategoryStore.getState().categories;
-    const updateAllVisibility = useCategoryStore.getState().updateAllVisibility;
-
-    if (!currentCategoriesData) {
-      return;
-    }
-
-    const newVisibilityMap: Record<number, boolean> = {};
-
-    // 가장 빠른 다음 상태 변경 시간
-    let earliestNextChangeMs: number | null = null;
-
-    // 모든 카테고리의 판매 가능 여부 확인
-    currentCategoriesData.forEach((category) => {
-      const saleStatus = checkCategorySaleStatus({
-        useSaleDay: category.useSaleDay,
-        saleDayOfWeek: category.saleDayOfWeek,
-        useSaleTime: category.useSaleTime,
-        saleStartTime: category.saleStartTime,
-        saleEndTime: category.saleEndTime,
-        isSaleOnHoliday: category.isSaleOnHoliday,
-      });
-
-      // visibility 맵 업데이트
-      newVisibilityMap[category.categorySeq] = saleStatus.isAvailable;
-
-      // 가장 빠른 다음 상태 변경 시간 추적
-      if (saleStatus.nextChangeMs !== null) {
-        if (
-          earliestNextChangeMs === null ||
-          saleStatus.nextChangeMs < earliestNextChangeMs
-        ) {
-          earliestNextChangeMs = saleStatus.nextChangeMs;
-        }
-      }
-    });
-
-    // visibility 맵 업데이트 (visibleCategories는 자동으로 계산됨)
-    updateAllVisibility(newVisibilityMap);
-
-    // 다음 상태 변경을 위한 타이머 설정
-    if (earliestNextChangeMs !== null) {
-      globalTimerManager.setTimeout(
-        timerKeys.CATEGORY_VISIBILITY_UPDATE,
-        () => {
-          updateCategoryVisibility();
-        },
-        earliestNextChangeMs
-      );
-    }
-  };
-
   // 카테고리 데이터가 로드되면 visibility 업데이트 시작
   useEffect(() => {
     if (!categoriesStoreData) {
       return;
     }
+
+    /** 카테고리 노출 여부를 업데이트하는 함수 */
+    const updateCategoryVisibility = () => {
+      const currentCategoriesData = useCategoryStore.getState().categories;
+      const updateAllVisibility =
+        useCategoryStore.getState().updateAllVisibility;
+
+      if (!currentCategoriesData) {
+        return;
+      }
+
+      const newVisibilityMap: Record<number, boolean> = {};
+
+      // 가장 빠른 다음 상태 변경 시간
+      let earliestNextChangeMs: number | null = null;
+
+      // 모든 카테고리의 판매 가능 여부 확인
+      currentCategoriesData.forEach((category) => {
+        const saleStatus = checkCategorySaleStatus({
+          useSaleDay: category.useSaleDay,
+          saleDayOfWeek: category.saleDayOfWeek,
+          useSaleTime: category.useSaleTime,
+          saleStartTime: category.saleStartTime,
+          saleEndTime: category.saleEndTime,
+          isSaleOnHoliday: category.isSaleOnHoliday,
+        });
+
+        // visibility 맵 업데이트
+        newVisibilityMap[category.categorySeq] = saleStatus.isAvailable;
+
+        // 가장 빠른 다음 상태 변경 시간 추적
+        if (saleStatus.nextChangeMs !== null) {
+          if (
+            earliestNextChangeMs === null ||
+            saleStatus.nextChangeMs < earliestNextChangeMs
+          ) {
+            earliestNextChangeMs = saleStatus.nextChangeMs;
+          }
+        }
+      });
+
+      // visibility 맵 업데이트 (visibleCategories는 자동으로 계산됨)
+      updateAllVisibility(newVisibilityMap);
+
+      // 다음 상태 변경을 위한 타이머 설정
+      if (earliestNextChangeMs !== null) {
+        globalTimerManager.setTimeout(
+          timerKeys.CATEGORY_VISIBILITY_UPDATE,
+          () => {
+            updateCategoryVisibility();
+          },
+          earliestNextChangeMs
+        );
+      }
+    };
 
     // 초기 visibility 업데이트
     updateCategoryVisibility();
@@ -109,7 +110,6 @@ export const MainPage = () => {
     return () => {
       globalTimerManager.clear(timerKeys.CATEGORY_VISIBILITY_UPDATE);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoriesStoreData]);
 
   // visibleCategories 변경 시 cart options 업데이트

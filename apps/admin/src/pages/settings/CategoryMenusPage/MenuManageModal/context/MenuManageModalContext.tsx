@@ -145,6 +145,7 @@ export const MenuManageModalProvider = ({
       categorySeq,
       images.getMenuImageList()
     );
+
     console.log('생성', { menu: menuData, files });
 
     await runMutation(() => createMenu({ menu: menuData, files }));
@@ -299,6 +300,7 @@ export const useMenuImages = () => {
     addAdditionalImages,
     removeAdditionalImage,
   } = useMenuManageModal();
+
   return {
     mainImage,
     additionalImages,
