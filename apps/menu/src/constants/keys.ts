@@ -7,6 +7,8 @@ export const STORAGE_KEYS = {
   CATEGORIES: 'menu-categories',
   /** 장바구니 data 키 */
   CART: 'cart-menus',
+  /** 테이블 주문 내역 data 키 */
+  TABLE_ORDER_HISTORIES: 'table-order-histories',
 } as const;
 
 export const timerKeys = {

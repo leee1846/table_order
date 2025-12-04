@@ -16,7 +16,7 @@ export const useCategoriesData = ({ shopData, tableNumber }: Props) => {
   } = useCategoryStore();
 
   const enabled = !categoriesStoreData && !!shopData?.shopCode && !!tableNumber;
-  const { data: categoriesData } = useGetCategoriesWithMenus(
+  const { data: categoriesData, refetch } = useGetCategoriesWithMenus(
     { shopCode: shopData?.shopCode ?? '', tableNumber: tableNumber ?? 0 },
     { enabled }
   );
@@ -28,8 +28,16 @@ export const useCategoriesData = ({ shopData, tableNumber }: Props) => {
     }
   }, [categoriesData, setCategoriesStoreData]);
 
+  const refresh = async () => {
+    const result = await refetch();
+    if (result.data?.data) {
+      setCategoriesStoreData(result.data.data);
+    }
+  };
+
   return {
     data: categoriesStoreData,
     visibleCategories,
+    refresh,
   };
 };

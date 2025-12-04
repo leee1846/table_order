@@ -46,3 +46,36 @@ export interface ICreateTableOrderRequest {
   orderType: TOrderType;
   orders: IOrder[];
 }
+
+export interface IOrderHistoryOption {
+  orderDetailOptionSeq: number;
+  optionName: string;
+  optionPrice: number;
+  optionGroupName: string;
+  optionQuantity: number;
+}
+
+export interface IOrderHistory {
+  orderGroupUuid: string;
+  orderDetailMenuSeq: number;
+  menuName: string;
+  menuPrice: number;
+  menuQuantity: number;
+  menuCreateDate: string;
+  optionList: IOrderHistoryOption[];
+}
+
+export interface IGetTableOrderHistories {
+  tableNumber: number;
+  createDate: string;
+  updateDate: string;
+  orderDetailMenuList: IOrderHistory[];
+}
+
+export type TGetTableOrderHistoriesResponse =
+  IApiResponse<IGetTableOrderHistories>;
+
+export interface IGetTableOrderHistoriesParams {
+  shopCode: string;
+  tableNumber: number;
+}

@@ -4,6 +4,8 @@ import type {
   ISendPickupNotificationRequest,
   TSendPickupNotificationResponse,
   ICreateTableOrderRequest,
+  TGetTableOrderHistoriesResponse,
+  IGetTableOrderHistoriesParams,
 } from '../types/orders';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -23,6 +25,10 @@ export const sendPickupNotification = async (
   return response.data;
 };
 
+/**
+ * 테이블 후불 주문을 생성합니다.
+ * POST /order/{shopCode}/{tableNumber}
+ */
 export const createTableOrder = async ({
   shopCode,
   tableNumber,
@@ -35,6 +41,23 @@ export const createTableOrder = async ({
     url: ENDPOINTS.ORDER.CREATE_TABLE_ORDER(shopCode, tableNumber),
     params: { orderType },
     data: orders,
+  });
+
+  return response.data;
+};
+
+/**
+ * 테이블 주문 내역을 조회합니다.
+ * GET /order/{shopCode}/{tableNumber}
+ */
+export const getTableOrderHistories = async ({
+  shopCode,
+  tableNumber,
+}: IGetTableOrderHistoriesParams): Promise<TGetTableOrderHistoriesResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetTableOrderHistoriesResponse>({
+    method: 'GET',
+    url: ENDPOINTS.ORDER.TABLE_ORDER_HISTORY(shopCode, tableNumber),
   });
 
   return response.data;

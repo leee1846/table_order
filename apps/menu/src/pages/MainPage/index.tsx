@@ -15,6 +15,7 @@ import { useCartStore } from '@/stores/useCartStore';
 import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
+import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 
 // TODO: api를 통해 반환받은 data로 추후 변경 예정
 const useScrollLayout = false;
@@ -24,16 +25,24 @@ const tableNumber = 1;
 const showBreakTime = false;
 
 export const MainPage = () => {
+  /** 상점 데이터 로드 */
   const { shopData } = useShopData();
 
+  /** 카테고리 데이터 로드 */
   const { data: categoriesStoreData, visibleCategories } = useCategoriesData({
+    shopData,
+    tableNumber,
+  });
+
+  /** 테이블 주문 내역 데이터 로드 */
+  const { data: tableOrderHistoriesData } = useTableOrderHistoriesData({
     shopData,
     tableNumber,
   });
 
   const { setCartOptions } = useCartStore();
 
-  // 카테고리 노출 여부를 업데이트하는 함수
+  /** 카테고리 노출 여부를 업데이트하는 함수 */
   const updateCategoryVisibility = () => {
     const currentCategoriesData = useCategoryStore.getState().categories;
     const updateAllVisibility = useCategoryStore.getState().updateAllVisibility;
@@ -148,7 +157,7 @@ export const MainPage = () => {
 
   return (
     <S.Container>
-      <Header />
+      <Header orderHistories={tableOrderHistoriesData} />
       <S.MainContent>
         <Sidebar
           categories={nonStaffCallCategories}

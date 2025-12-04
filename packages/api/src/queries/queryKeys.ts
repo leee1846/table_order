@@ -30,6 +30,14 @@ export const queryKeys = {
     all: ['orders'] as const,
     /** 주문 리스트 조회 */
     list: () => [...queryKeys.orders.all, 'list'] as const,
+    /** 테이블 주문 내역 조회 */
+    tableOrderHistories: (shopCode: string, tableNumber: number) =>
+      [
+        ...queryKeys.orders.all,
+        'tableOrderHistories',
+        shopCode,
+        tableNumber,
+      ] as const,
   },
 
   auth: {

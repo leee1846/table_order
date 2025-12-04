@@ -2,41 +2,52 @@ import { BasicButton } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/OrderHistoryModal/orderHistoryModal.style';
 import { getTodayDateString } from '@repo/util/date';
 import { useTranslation } from 'react-i18next';
+import type { IOrderHistory } from '@repo/api/types';
+import { formatCurrency } from '@repo/util/string';
+import { NoContent } from '@/feature/NoContent';
 
-const orderList = Array.from({ length: 4 });
-const optionList = Array.from({ length: 4 });
-
-export const OrderHistoryModal = () => {
+interface Props {
+  orderHistories?: IOrderHistory[] | null;
+  onClose: () => void;
+}
+export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
   const { t } = useTranslation();
 
   return (
-    <S.Background>
+    <S.Background onClick={onClose}>
       <S.Container>
         <S.Header>
-          <p>????테이블 주문내역</p>
+          <p>{t('주문내역')}</p>
           <p>{getTodayDateString()}</p>
         </S.Header>
 
+        {!orderHistories ||
+          (orderHistories && orderHistories?.length < 1 && (
+            <NoContent paddingTop="0">
+              <p>{t('주문내역이 없습니다.')}</p>
+            </NoContent>
+          ))}
+
         <S.OrderList>
-          {orderList.map((_, index) => (
-            <li key={`order-${index + 1}`}>
+          {orderHistories?.map((orderHistory) => (
+            <li key={orderHistory.orderGroupUuid}>
               <S.MenuInfo>
-                <p>메뉴명명명??</p>
-                <p>10000????</p>
-                <p>10000????</p>
+                <p>{orderHistory.menuName}</p>
+                <p>{formatCurrency(orderHistory.menuQuantity)}</p>
+                <p>{formatCurrency(orderHistory.menuPrice)}</p>
               </S.MenuInfo>
 
               <S.OptionList>
-                {optionList.map((_, index) => (
-                  <li key={`option-${index + 1}`}>
+                {orderHistory.optionList.map((option) => (
+                  <li key={option.orderDetailOptionSeq}>
                     <div>
                       <span />
-                      <p>옵션명명명??</p>
+                      <p>{option.optionName}</p>
                     </div>
 
                     <div>
-                      <p>10000????</p>
-                      <p>10000????</p>
+                      <p>{formatCurrency(option.optionQuantity)}</p>
+                      <p>{formatCurrency(option.optionPrice)}</p>
                     </div>
                   </li>
                 ))}

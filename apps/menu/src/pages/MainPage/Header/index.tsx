@@ -5,8 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { useThemeMode } from '@repo/ui';
 import { useState } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
+import type { IOrderHistory } from '@repo/api/types';
 
-export const Header = () => {
+interface Props {
+  orderHistories?: IOrderHistory[] | null;
+}
+export const Header = ({ orderHistories }: Props) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const { toggleMode } = useThemeMode();
@@ -42,7 +46,12 @@ export const Header = () => {
         </S.RightContent>
       </S.Header>
 
-      {showOrderHistoryModal && <OrderHistoryModal />}
+      {showOrderHistoryModal && (
+        <OrderHistoryModal
+          orderHistories={orderHistories}
+          onClose={() => setShowOrderHistoryModal(false)}
+        />
+      )}
     </>
   );
 };

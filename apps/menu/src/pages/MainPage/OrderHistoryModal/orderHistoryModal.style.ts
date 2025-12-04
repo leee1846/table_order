@@ -120,10 +120,26 @@ export const OptionList = styled.ul`
 
 export const TotalContainer = styled.div`
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   width: 100%;
-  padding-top: 16px;
+  padding-top: 24px;
+  border-top: 1px solid ${({ theme }) => theme.mode.grey[200]};
 
-  & > button {
-    width: 100%;
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+
+    & > p:first-of-type {
+      ${TYPOGRAPHY.MT_7}
+      color: ${({ theme }) => theme.mode.grey[700]};
+    }
+    & > p:last-of-type {
+      ${TYPOGRAPHY.MT_2}
+      color: ${({ theme }) => theme.mode.primary[500]};
+    }
   }
 `;
