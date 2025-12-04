@@ -176,7 +176,7 @@ export const CartList = ({
                         type="button"
                         onClick={() => onClickOptionButton(menu, index)}
                       >
-                        옵션
+                        {t('옵션')}
                       </button>
                     </S.OptionButtonContainer>
                   )}
@@ -213,7 +213,7 @@ export const CartList = ({
       {isMenuDetailModalOpen &&
         selectedMenuData &&
         selectedMenu &&
-        selectedMenuIndex && (
+        selectedMenuIndex !== null && (
           <MenuDetailWithOptionsModal
             onClose={() => {
               setIsMenuDetailModalOpen(false);
