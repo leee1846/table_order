@@ -65,7 +65,6 @@ export interface ICreateTableGroupRequest {
 
 export interface IUpdateTableGroupRequest {
   tableGroupSeq: number;
-  shopSeq: number;
   tableGroupName: string;
 }
 
@@ -114,4 +113,3 @@ export interface IDeleteTableRequest {
   shopSeq: number;
   tableNumber: string;
 }
-

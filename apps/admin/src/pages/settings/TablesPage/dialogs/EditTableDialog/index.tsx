@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import { ModalBackground, Input, BasicButton } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { type TableInfoData } from '@/constants/mock';
+import { type ITableInfo } from '@repo/api/types';
+import { usePutUpdateTable, queryKeys } from '@repo/api/queries';
+import { useQueryClient } from '@repo/api/tanstack-query';
+import { toast } from '@repo/feature/utils';
 import * as S from './editTableDialog.styles';
 
 const { colors } = theme;
@@ -10,8 +13,9 @@ const { colors } = theme;
 interface EditTableDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (tableName: string) => void;
-  table: TableInfoData;
+  onSubmit?: (tableName: string) => void | Promise<void>;
+  table: ITableInfo;
+  shopCode: string;
 }
 
 export const EditTableDialog = ({
@@ -19,19 +23,48 @@ export const EditTableDialog = ({
   onClose,
   onSubmit,
   table,
+  shopCode,
 }: EditTableDialogProps) => {
+  const queryClient = useQueryClient();
+  const { mutateAsync: updateTable } = usePutUpdateTable();
   const [tableName, setTableName] = useState('');
 
   useEffect(() => {
     if (isOpen) {
-      setTableName(table.tableName);
+      setTableName(table.tableName || table.tableNumber);
     }
-  }, [isOpen, table.tableName]);
+  }, [isOpen, table.tableName, table.tableNumber]);
 
-  const handleSubmit = () => {
-    if (tableName.trim()) {
-      onSubmit(tableName.trim());
+  const handleSubmit = async () => {
+    if (!tableName.trim()) {
+      toast('테이블 이름을 입력해주세요.');
+      return;
+    }
+
+    try {
+      await updateTable({
+        tableSeq: table.tableSeq,
+        shopSeq: table.shopSeq,
+        tableNumber: table.tableNumber,
+        tableGroupSeq: table.tableGroupSeq,
+        tableName: tableName.trim(),
+        tablePositionX: table.tablePositionX,
+        tablePositionY: table.tablePositionY,
+      });
+
+      toast('테이블이 수정되었습니다.');
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.table.groupList(shopCode),
+      });
+
+      if (onSubmit) {
+        await onSubmit(tableName.trim());
+      }
+
       onClose();
+    } catch (error) {
+      toast('테이블 수정 중 오류가 발생했습니다.');
+      console.error('테이블 수정 오류:', error);
     }
   };
 
@@ -51,7 +84,7 @@ export const EditTableDialog = ({
           <CloseIcon width={32} height={32} color={colors.grey[600]} />
         </S.CloseButton>
         <S.ModalHeader>
-          <S.ModalTitle>{table.tableName} 테이블 수정</S.ModalTitle>
+          <S.ModalTitle>테이블 수정</S.ModalTitle>
         </S.ModalHeader>
         <S.ModalBody>
           <S.InputWrapper>
@@ -59,13 +92,13 @@ export const EditTableDialog = ({
             <Input
               value={tableName}
               onChange={setTableName}
-              placeholder={table.tableName}
+              placeholder={table.tableName || table.tableNumber}
             />
           </S.InputWrapper>
           <S.InputWrapper>
             <S.Label>테이블 ID</S.Label>
             <Input
-              value={table.id.toString()}
+              value={table.tableSeq.toString()}
               onChange={() => {}}
               disabled
               errorMessage="테이블 ID는 자동 생성되며. 임의 수정이 불가능해요."

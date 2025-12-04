@@ -95,7 +95,16 @@ export const MenuManageModalProvider = ({
   const mode: ModalMode = menu ? 'edit' : 'create';
 
   // 메뉴 생성/수정을 위한 mutation 훅
-  const { mutateAsync: createMenu } = usePostCreateMenu();
+  const { mutateAsync: createMenu } = usePostCreateMenu(); //TODO 이거 고치기..
+  // const { data: tableOrderHistoriesDataResponse, refetch } =
+  // useGetTableOrderHistories(
+  //   {
+  //     shopCode: shopData?.shopCode ?? '',
+  //     tableNumber: tableNumber ?? 0,
+  //   },
+  //   { enabled }
+  // );
+
   const { mutateAsync: updateMenu } = usePutUpdateMenu();
 
   // 폼 상태 관리 (메뉴명, 가격, 설명 등)

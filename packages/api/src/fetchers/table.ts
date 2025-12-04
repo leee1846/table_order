@@ -129,4 +129,3 @@ export const deleteTable = async (
 
   return response.data;
 };
-

@@ -1,23 +1,27 @@
 ﻿'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useQueryClient } from '@repo/api/tanstack-query';
 import { Sidebar } from './Sidebar';
 import * as S from './tablesPage.styles';
 import { TableCard } from './TableCard';
 import { BottomActions } from './BottomActions';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes';
 import { CreateTableDialog } from './dialogs/CreateTableDialog';
-import { useGetTableGroupList } from '@repo/api/queries';
+import {
+  useGetTableGroupList,
+  usePostCreateTable,
+  queryKeys,
+} from '@repo/api/queries';
 import type { ITableInfo } from '@repo/api/types';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
+import { toast } from '@repo/feature/utils';
 
 export const TablesPage = () => {
+  const queryClient = useQueryClient();
   const [selectedTableGroupId, setSelectedTableGroupId] = useState<
     number | null
   >(null);
   const [isCreateTableDialogOpen, setIsCreateTableDialogOpen] = useState(false);
-  const navigate = useNavigate();
 
   // shopCode 가져오기
   const shopCode = 'NEXA000001';
@@ -33,6 +37,9 @@ export const TablesPage = () => {
   );
 
   const tableGroups = tableGroupListResponse?.data || [];
+
+  // 테이블 생성 mutation
+  const { mutateAsync: createTable } = usePostCreateTable();
 
   // 첫 번째 테이블 그룹을 기본 선택
   useEffect(() => {
@@ -52,14 +59,46 @@ export const TablesPage = () => {
     );
   }, [tableGroups, selectedTableGroupId]);
 
-  const handleExit = () => {
-    // TODO: 나가기 처리 로직 구현
-    navigate(ROUTES.SETTINGS.NOTICES.generate());
+  // 테이블 추가 다이얼로그 열기
+  const handleAddTable = () => {
+    if (!selectedTableGroupId) {
+      toast('테이블 그룹을 선택해주세요.');
+      return;
+    }
+    setIsCreateTableDialogOpen(true);
   };
 
-  const handleAddTable = () => {
-    // TODO: 테이블 추가 처리 로직 구현
-    setIsCreateTableDialogOpen(true);
+  // 테이블 생성 처리
+  const handleCreateTable = async (tableName: string) => {
+    if (!selectedTableGroupId || !selectedGroup) {
+      toast('테이블 그룹을 선택해주세요.');
+      return;
+    }
+
+    try {
+      // 선택된 그룹의 다음 테이블 번호 계산
+      const existingTables = selectedGroup.tableList || [];
+      const maxTableNumber = existingTables.reduce((max, table) => {
+        const tableNum = parseInt(table.tableNumber, 10) || 0;
+        return Math.max(max, tableNum);
+      }, 0);
+      const nextTableNumber = String(maxTableNumber + 1);
+
+      await createTable({
+        shopSeq: selectedGroup.shopSeq,
+        tableNumber: nextTableNumber,
+        tableGroupSeq: selectedTableGroupId,
+        tableName: tableName || undefined,
+      });
+
+      toast('테이블이 추가되었습니다.');
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.table.groupList(shopCode),
+      });
+    } catch (error) {
+      toast('테이블 추가 중 오류가 발생했습니다.');
+      console.error('테이블 생성 오류:', error);
+    }
   };
 
   // 로딩 중이거나 shopCode가 없을 때
@@ -81,17 +120,10 @@ export const TablesPage = () => {
       <S.TableGridContainer>
         <S.GridContainer>
           {selectedGroup?.tableList?.map((table: ITableInfo) => (
-            <TableCard
-              key={table.tableSeq}
-              table={{
-                id: table.tableSeq,
-                tableNumber: Number(table.tableNumber),
-                tableName: table.tableName || table.tableNumber,
-              }}
-            />
+            <TableCard key={table.tableSeq} table={table} shopCode={shopCode} />
           ))}
         </S.GridContainer>
-        <BottomActions onExit={handleExit} onAddTable={handleAddTable} />
+        <BottomActions onAddTable={handleAddTable} />
       </S.TableGridContainer>
       <Sidebar
         tableGroups={tableGroups}
@@ -102,7 +134,7 @@ export const TablesPage = () => {
         <CreateTableDialog
           isOpen={isCreateTableDialogOpen}
           onClose={() => setIsCreateTableDialogOpen(false)}
-          onSubmit={handleAddTable}
+          onSubmit={handleCreateTable}
         />
       )}
     </S.TablePageContainer>

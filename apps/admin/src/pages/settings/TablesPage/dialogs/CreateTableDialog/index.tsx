@@ -9,7 +9,7 @@ const { colors } = theme;
 interface CreateTableDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (tableName: string) => void;
+  onSubmit: (tableName: string) => void | Promise<void>;
 }
 
 export const CreateTableDialog = ({
@@ -19,9 +19,9 @@ export const CreateTableDialog = ({
 }: CreateTableDialogProps) => {
   const [tableName, setTableName] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (tableName.trim()) {
-      onSubmit(tableName.trim());
+      await onSubmit(tableName.trim());
       onClose();
     }
   };

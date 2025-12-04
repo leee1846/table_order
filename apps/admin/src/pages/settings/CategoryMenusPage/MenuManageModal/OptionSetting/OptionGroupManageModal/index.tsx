@@ -103,6 +103,7 @@ export const OptionGroupManageModal = ({
           const hasValidOptionSeq =
             option.optionSeq != null && option.optionSeq > 0;
           return {
+            //TODO 유틸에서 쓰도록 해서 바꾸기
             id: hasValidOptionSeq
               ? `existing-${option.optionSeq}`
               : `new-${Date.now()}-${index}-${Math.random()}`,
@@ -293,7 +294,7 @@ export const OptionGroupManageModal = ({
       index: currentOptionGroupList.length + 1,
       optionList: optionListForForm,
       optionGroupSeq: tempOptionGroupSeq,
-      localeOptionGroupName: {} as any,
+      localeOptionGroupName: {} as any, //TODO any 빼기, useCallback 빼기,
       localeOptionGroupNameStr: {} as any,
     } as IOptionGroup;
 

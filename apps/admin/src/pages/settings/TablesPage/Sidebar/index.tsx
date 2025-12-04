@@ -49,7 +49,7 @@ export const Sidebar = ({
 
   const tableGroupListRef = useRef<HTMLUListElement>(null);
   const editDeleteButtonsRef = useRef<HTMLDivElement>(null);
-
+  const editTableGroupDialogRef = useRef<HTMLDivElement>(null);
   // 길게 누르기가 발생했을 때 처리하는 함수
   const handleLongPressStart = (group: ITableGroup) => {
     isLongPressRef.current = false; // 이전 길게 누르기 상태 초기화
@@ -158,11 +158,14 @@ export const Sidebar = ({
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       const target = event.target as Node;
 
-      // EditDeleteButtons 영역을 클릭한 경우는 무시
-      if (
-        editDeleteButtonsRef.current &&
-        editDeleteButtonsRef.current.contains(target)
-      ) {
+      // 모달이 열려있을 때는 모달 내부 클릭을 무시
+      if (isEditTableGroupDialogOpen) {
+        if (
+          editTableGroupDialogRef.current &&
+          editTableGroupDialogRef.current.contains(target)
+        ) {
+          return;
+        }
         return;
       }
 
@@ -195,7 +198,7 @@ export const Sidebar = ({
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, [editingGroupId]);
+  }, [editingGroupId, isEditTableGroupDialogOpen]);
 
   return (
     <S.Sidebar>
@@ -275,6 +278,7 @@ export const Sidebar = ({
       />
 
       <EditTableGroupDialog
+        ref={editTableGroupDialogRef}
         isOpen={isEditTableGroupDialogOpen}
         onClose={handleCloseEditDialog}
         tableGroup={

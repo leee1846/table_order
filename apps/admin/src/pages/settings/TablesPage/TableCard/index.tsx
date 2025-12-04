@@ -3,7 +3,7 @@
 import { BasicButton } from '@repo/ui/components';
 import { toast } from '@repo/feature/utils';
 import * as S from './tableCard.styles';
-import { type TableInfoData } from '@/constants/mock';
+import { type ITableInfo } from '@repo/api/types';
 import { css } from '@emotion/react';
 import { theme } from '@repo/ui';
 import { useState } from 'react';
@@ -12,10 +12,11 @@ import { openDualActionDialog } from '@repo/feature/utils';
 const { colors } = theme;
 
 interface Props {
-  table: TableInfoData;
+  table: ITableInfo;
+  shopCode: string;
 }
 
-export const TableCard = ({ table }: Props) => {
+export const TableCard = ({ table, shopCode }: Props) => {
   const [isTableEditDialogOpen, setIsTableEditDialogOpen] = useState(false);
   const handleEdit = () => {
     setIsTableEditDialogOpen(true);
@@ -23,7 +24,7 @@ export const TableCard = ({ table }: Props) => {
   const handleDelete = () => {
     openDualActionDialog({
       title: '정말 테이블을 삭제하시겠습니까?',
-      content: `테이블 명 : ${table.tableName}`,
+      content: `테이블 명 : ${table.tableName || table.tableNumber}`,
       primaryText: '확인',
       secondaryText: '취소',
       size: 'xsmall',
@@ -36,14 +37,11 @@ export const TableCard = ({ table }: Props) => {
   const handleCloseDialog = () => {
     setIsTableEditDialogOpen(false);
   };
-  const handleSubmit = (_tableName: string) => {
-    // TODO: API 호출로 테이블 정보 업데이트
-  };
   return (
     <>
       <S.TableCard>
         <S.TableContent>
-          <S.TableName>{table.tableName}</S.TableName>
+          <S.TableName>{table.tableName || table.tableNumber}</S.TableName>
         </S.TableContent>
         <S.ButtonWrapper>
           <BasicButton
@@ -68,8 +66,8 @@ export const TableCard = ({ table }: Props) => {
       <EditTableDialog
         isOpen={isTableEditDialogOpen}
         onClose={handleCloseDialog}
-        onSubmit={handleSubmit}
         table={table}
+        shopCode={shopCode}
       />
     </>
   );

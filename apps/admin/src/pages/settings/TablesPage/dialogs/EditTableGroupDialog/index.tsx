@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { ModalBackground, Input, BasicButton } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -16,11 +16,10 @@ interface EditTableGroupDialogProps {
   tableGroup: ITableGroup;
 }
 
-export const EditTableGroupDialog = ({
-  isOpen,
-  onClose,
-  tableGroup,
-}: EditTableGroupDialogProps) => {
+export const EditTableGroupDialog = forwardRef<
+  HTMLDivElement,
+  EditTableGroupDialogProps
+>(({ isOpen, onClose, tableGroup }, ref) => {
   const queryClient = useQueryClient();
   const [groupName, setGroupName] = useState('');
 
@@ -37,7 +36,6 @@ export const EditTableGroupDialog = ({
       try {
         await updateTableGroup({
           // TODO: 추후에 shopSeq 추가
-          shopSeq: 1,
           tableGroupSeq: tableGroup.tableGroupSeq,
           tableGroupName: groupName,
         });
@@ -66,7 +64,7 @@ export const EditTableGroupDialog = ({
 
   return (
     <ModalBackground onClick={handleClose}>
-      <S.ModalContainer>
+      <S.ModalContainer ref={ref}>
         <S.CloseButton onClick={handleClose} type="button">
           <CloseIcon width={32} height={32} color={colors.grey[600]} />
         </S.CloseButton>
@@ -92,4 +90,4 @@ export const EditTableGroupDialog = ({
       </S.ModalContainer>
     </ModalBackground>
   );
-};
+});
