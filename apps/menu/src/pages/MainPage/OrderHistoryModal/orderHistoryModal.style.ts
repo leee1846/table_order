@@ -113,7 +113,12 @@ export const OptionList = styled.ul`
     & > div:last-of-type {
       flex: 1;
       display: flex;
+      justify-content: space-between;
       gap: 12.5px;
+
+      & > p:last-of-type {
+        text-align: right;
+      }
     }
   }
 `;

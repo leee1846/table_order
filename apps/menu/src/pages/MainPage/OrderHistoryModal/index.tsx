@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import type { IOrderHistory } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
 import { NoContent } from '@/feature/NoContent';
+import { calculateMenuTotalPrice } from '@/utils/calculation';
 
 interface Props {
   orderHistories?: IOrderHistory[] | null;
@@ -12,6 +13,24 @@ interface Props {
 }
 export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
   const { t } = useTranslation();
+
+  const calculateTotalPrice = () => {
+    return (
+      orderHistories?.reduce((total, orderHistory) => {
+        return (
+          total +
+          calculateMenuTotalPrice(
+            orderHistory.menuPrice,
+            orderHistory.menuQuantity,
+            orderHistory.optionList.map((option) => ({
+              optionPrice: option.optionPrice,
+              quantity: option.optionQuantity,
+            }))
+          )
+        );
+      }, 0) ?? 0
+    );
+  };
 
   return (
     <S.Background onClick={onClose}>
@@ -59,7 +78,7 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
         <S.TotalContainer>
           <div>
             <p>{t('합계')}</p>
-            <p>10000????</p>
+            <p>{formatCurrency(calculateTotalPrice())}</p>
           </div>
           <BasicButton variant="Solid_Blue_2XL">{t('닫기')}</BasicButton>
         </S.TotalContainer>

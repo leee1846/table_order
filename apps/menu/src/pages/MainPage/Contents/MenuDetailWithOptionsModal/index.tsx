@@ -64,21 +64,19 @@ export const MenuDetailWithOptionsModal = ({
       return optionsMap;
     }
 
-    // menu의 optionGroupList에서 각 옵션을 찾아서 Map에 추가
+    // ICartOption을 IOption으로 변환 (menu.optionGroupList에서 최신 정보 가져오기)
     initialSelectedOptions.forEach((cartOption) => {
-      // 해당 optionSeq를 가진 옵션 찾기
-      for (const optionGroup of menu.optionGroupList) {
-        const option = optionGroup.optionList.find(
-          (opt) => opt.optionSeq === cartOption.optionSeq
-        );
-        if (option) {
-          const optionKey = getOptionKey(option);
-          optionsMap.set(optionKey, {
-            option: { ...option },
-            quantity: cartOption.quantity,
-          });
-          break;
-        }
+      // menu.optionGroupList에서 해당 옵션 찾기
+      const option = menu.optionGroupList
+        .flatMap((group) => group.optionList)
+        .find((opt) => opt.optionSeq === cartOption.optionSeq);
+
+      if (option) {
+        const optionKey = getOptionKey(option);
+        optionsMap.set(optionKey, {
+          option: { ...option },
+          quantity: cartOption.quantity,
+        });
       }
     });
 
@@ -299,15 +297,23 @@ export const MenuDetailWithOptionsModal = ({
   // 메뉴 총 가격 계산
   const getMenuTotalPrice = (): number => {
     // selectedOptions를 MenuPriceOption 형태로 변환
+    // 카트 저장 시와 동일하게 수량을 계산
     const options = Array.from(selectedOptions.values()).map((item) => {
       const optionGroup = menu.optionGroupList.find(
         (group) => group.optionGroupSeq === item.option.optionGroupSeq
       );
 
+      const isMenuQuantityDependant =
+        optionGroup?.isMenuQuantityDependant ?? false;
+
+      // isMenuQuantityDependant이 false인 경우, 메뉴 수량을 곱해서 계산
+      const calculatedQuantity = isMenuQuantityDependant
+        ? item.quantity
+        : menuQuantity * item.quantity;
+
       return {
         optionPrice: item.option.optionPrice,
-        quantity: item.quantity,
-        isMenuQuantityDependant: optionGroup?.isMenuQuantityDependant ?? false,
+        quantity: calculatedQuantity,
       };
     });
 
@@ -370,7 +376,7 @@ export const MenuDetailWithOptionsModal = ({
       }
     }
 
-    // 옵션을 카트 형식으로 변환 (모든 옵션에 isMenuQuantityDependant 정보 포함)
+    // 옵션을 카트 형식으로 변환
     const cartOptions: ICartMenu['selectedOptions'] = [];
 
     selectedOptions.forEach((item) => {
@@ -378,13 +384,21 @@ export const MenuDetailWithOptionsModal = ({
         (group) => group.optionGroupSeq === item.option.optionGroupSeq
       );
 
+      const isMenuQuantityDependant =
+        optionGroup?.isMenuQuantityDependant ?? false;
+
+      // isMenuQuantityDependant이 true일 경우: quantity는 그대로
+      // isMenuQuantityDependant이 false일 경우: quantity는 menuQuantity * item.quantity
+      const cartOptionQuantity = isMenuQuantityDependant
+        ? item.quantity
+        : menuQuantity * item.quantity;
+
       const cartOption: ICartOption = {
         optionGroupSeq: item.option.optionGroupSeq,
         optionSeq: item.option.optionSeq,
         optionName: item.option.optionName,
         optionPrice: item.option.optionPrice,
-        quantity: item.quantity,
-        isMenuQuantityDependant: optionGroup?.isMenuQuantityDependant ?? false,
+        quantity: cartOptionQuantity,
       };
 
       cartOptions.push(cartOption);

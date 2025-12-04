@@ -14,6 +14,7 @@ import type { ICartMenu } from '@/types/cart';
 import { usePostTableOrder } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
+import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 
 interface Props {
   onClose: () => void;
@@ -76,8 +77,20 @@ export const CartList = ({
   const tableNumber = 1;
 
   const { shopData } = useShopData();
+  const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData({
+    shopData,
+    tableNumber,
+  });
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const order = () => {
+    if (cartData.menus.length < 1) {
+      toast(t('현재 담긴 메뉴가 없어요.'), {
+        position: 'center-center',
+        duration: 2000,
+      });
+      return;
+    }
+
     openDualActionDialog({
       title: t('메뉴를 주문할까요?'),
       content: t('주방 접수된 이후에는 취소가 불가능해요.'),
@@ -106,6 +119,7 @@ export const CartList = ({
             orders,
           });
 
+          await refreshTableOrderHistories();
           const totalPrice = calculateTotalPrice();
           openOrderCompleteModal(orders, totalPrice);
           clearCart();
