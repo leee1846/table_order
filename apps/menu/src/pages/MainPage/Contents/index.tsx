@@ -4,6 +4,7 @@ import { TabContent } from '@/pages/MainPage/Contents/TabContent';
 import * as S from '@/pages/MainPage/Contents/contents.style';
 import type { ICategoryWithMenus } from '@repo/api/types';
 import { useTranslation } from 'react-i18next';
+import { DOM_IDS } from '@/constants/keys';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -32,7 +33,7 @@ export const Contents = ({
       />
     </S.Container>
   ) : (
-    <S.Container>
+    <S.Container id={DOM_IDS.CONTENTS_SCROLL_CONTAINER}>
       <TabContent selectedCategory={selectedCategory} />
     </S.Container>
   );

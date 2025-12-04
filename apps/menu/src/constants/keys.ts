@@ -21,4 +21,6 @@ export const DOM_IDS = {
   CATEGORY_SECTION_PREFIX: 'category-',
   /** 카테고리 섹션 ID 생성 함수 */
   getCategorySectionId: (categorySeq: number) => `category-${categorySeq}`,
+  /** Contents 스크롤 컨테이너 ID */
+  CONTENTS_SCROLL_CONTAINER: 'contents-scroll-container',
 } as const;

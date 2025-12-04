@@ -90,6 +90,19 @@ export function useCategoryNavigation({
     }, 800);
   });
 
+  // 탭 모드: 스크롤 컨테이너를 상단으로 이동
+  const scrollToTop = useRef(() => {
+    // Contents 컴포넌트의 스크롤 컨테이너 찾기
+    requestAnimationFrame(() => {
+      const scrollContainer = document.getElementById(
+        DOM_IDS.CONTENTS_SCROLL_CONTAINER
+      );
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  });
+
   // 카테고리 클릭 핸들러: 레이아웃 모드에 따라 스크롤 또는 탭 전환
   const handleCategoryClick = useRef((category: ICategoryWithMenus) => {
     const currentCategories = categoriesRef.current;
@@ -114,8 +127,10 @@ export function useCategoryNavigation({
     if (useScrollLayoutRef.current) {
       scrollToCategorySection.current(category.categorySeq);
       temporarilyDisableScrollObserver.current();
+    } else {
+      // 탭 모드: 스크롤 컨테이너를 상단으로 이동
+      scrollToTop.current();
     }
-    // 탭 모드: 상태 업데이트만으로 충분 (TabContent가 자동으로 반영)
   }).current;
 
   // categories 변경 시 selectedCategorySeq 동기화 (로딩 완료 후 유효성 검증)
