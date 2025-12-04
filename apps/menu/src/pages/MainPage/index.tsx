@@ -20,6 +20,8 @@ import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
 const useScrollLayout = false;
 // TODO: tableNumber 추후 변경 예정
 const tableNumber = 1;
+// TODO: breakTime 추후 변경 예정
+const showBreakTime = false;
 
 export const MainPage = () => {
   const { shopData } = useShopData();
@@ -106,11 +108,12 @@ export const MainPage = () => {
     const hasFirstOrderRequiredItems = visibleCategories.some(
       (category) => category.isFirstOrderRequired
     );
+
+    // 메뉴 장바구니에 담을 때 첫 주문 필수 항목이 있는지 여부
     setCartOptions({ hasFirstOrderRequiredItems });
   }, [visibleCategories, setCartOptions]);
 
   const [showCartReminder, setShowCartReminder] = useState(false);
-  const showBreakTime = false;
   const [showPickupAlarm, setShowPickupAlarm] = useState(false);
 
   const nonStaffCallCategories = visibleCategories.filter(

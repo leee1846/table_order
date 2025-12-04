@@ -58,12 +58,14 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
 
       // 카트에 첫 주문 필수 항목이 없고, 현재 선택한 메뉴도 첫 주문 필수 항목이 아닌 경우
       if (!hasFirstOrderRequiredMenu && !category.isFirstOrderRequired) {
+        const categoryName = firstOrderRequiredCategories
+          .map((c) => c.categoryName)
+          .join(', ');
         toast(
-          `[${firstOrderRequiredCategories.map((c) => c.categoryName).join(', ')}]\n 메뉴 중 1개 이상 주문해주세요.`,
-          {
-            position: 'top-center',
-            duration: 3000,
-          }
+          t('[{{categoryName}}]\n 메뉴 중 1개 이상 주문해주세요.', {
+            categoryName,
+          }),
+          { position: 'center-center', duration: 3000 }
         );
         return;
       }

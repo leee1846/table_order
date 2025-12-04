@@ -108,7 +108,6 @@ const createMenu = (
   minQuantity: options.minQuantity ?? 1,
   spiceLevel: options.spiceLevel ?? 0,
   isTaxFree: false,
-  touchKeyColorCode: null,
   mappedMenuCode: null,
   mappedMenuName: null,
   mappedCategoryCode: null,
@@ -786,7 +785,7 @@ export const mockCategories: ICategoryWithMenus[] = [
     useSaleDay: true,
     saleDayOfWeek: [1, 2, 3, 4, 5], // 월~금
     useSaleTime: true,
-    saleStartTime: '1457',
+    saleStartTime: '0900',
     saleEndTime: '2200',
   }),
   createCategory(3, '사이드 메뉴', sideMenus, {
@@ -796,7 +795,7 @@ export const mockCategories: ICategoryWithMenus[] = [
     useSaleDay: true,
     saleDayOfWeek: [1, 2, 3, 4, 5], // 월~금
     useSaleTime: true,
-    saleStartTime: '1458',
+    saleStartTime: '0900',
     saleEndTime: '2200',
   }),
   createCategory(4, '음료', drinkMenus, {
