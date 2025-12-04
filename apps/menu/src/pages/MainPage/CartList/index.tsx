@@ -16,6 +16,11 @@ import { useShopData } from '@/hooks/useShopData';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 
+// TODO: 추후 주문 방법 선택 기능 추가 예정
+const isPayAfter = true;
+// TODO: 추후 테이블 번호 선택 기능 추가 예정
+const tableNumber = 1;
+
 interface Props {
   onClose: () => void;
   openPaymentsModal: () => void;
@@ -70,11 +75,6 @@ export const CartList = ({
       return total + calculateCartMenuPrice(menu);
     }, 0);
   };
-
-  // TODO: 추후 주문 방법 선택 기능 추가 예정
-  const isPayAfter = true;
-  // TODO: 추후 테이블 번호 선택 기능 추가 예정
-  const tableNumber = 1;
 
   const { shopData } = useShopData();
   const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData({

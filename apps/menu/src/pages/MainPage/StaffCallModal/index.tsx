@@ -10,6 +10,10 @@ import type { ICartMenu } from '@/types/cart';
 import { usePostTableOrder } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
+import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+
+// TODO: 추후 테이블 번호 선택 기능 추가 예정
+const tableNumber = 1;
 
 interface Props {
   onClose: () => void;
@@ -97,9 +101,21 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
   };
 
   const { shopData } = useShopData();
+  const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData({
+    shopData,
+    tableNumber,
+  });
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const requestOrder = () => {
     if (!shopData) {
+      return;
+    }
+
+    if (selectedMenuList.length < 1) {
+      toast(t('선택한 요청사항이 없어요.'), {
+        position: 'center-center',
+        duration: 1000,
+      });
       return;
     }
 
@@ -122,6 +138,8 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
             selectedOptions: [],
           })),
         });
+
+        await refreshTableOrderHistories();
 
         toast(t('요청이 완료되었습니다.'), {
           position: 'center-center',
