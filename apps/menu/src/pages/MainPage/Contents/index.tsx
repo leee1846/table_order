@@ -8,9 +8,14 @@ import { useTranslation } from 'react-i18next';
 interface Props {
   categories: ICategoryWithMenus[];
   useScrollLayout: boolean;
+  selectedCategory?: ICategoryWithMenus;
 }
 
-export const Contents = ({ categories, useScrollLayout }: Props) => {
+export const Contents = ({
+  categories,
+  useScrollLayout,
+  selectedCategory,
+}: Props) => {
   const { t } = useTranslation();
 
   if (categories.length < 1) {
@@ -21,11 +26,14 @@ export const Contents = ({ categories, useScrollLayout }: Props) => {
 
   return useScrollLayout ? (
     <S.Container>
-      <ScrollContent categories={categories} />
+      <ScrollContent
+        categories={categories}
+        useScrollLayout={useScrollLayout}
+      />
     </S.Container>
   ) : (
     <S.Container>
-      <TabContent categories={categories} />
+      <TabContent selectedCategory={selectedCategory} />
     </S.Container>
   );
 };

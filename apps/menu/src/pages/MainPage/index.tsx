@@ -14,9 +14,10 @@ import { Contents } from '@/pages/MainPage/Contents';
 import { useCartStore } from '@/stores/useCartStore';
 import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
+import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
 
 // TODO: api를 통해 반환받은 data로 추후 변경 예정
-const useScrollLayout = true;
+const useScrollLayout = false;
 // TODO: tableNumber 추후 변경 예정
 const tableNumber = 1;
 
@@ -112,6 +113,17 @@ export const MainPage = () => {
   const showBreakTime = false;
   const [showPickupAlarm, setShowPickupAlarm] = useState(false);
 
+  const nonStaffCallCategories = visibleCategories.filter(
+    (c) => !c.isStaffCall
+  );
+  const staffCallCategory = visibleCategories.find((c) => c.isStaffCall);
+
+  // 카테고리 네비게이션 훅 호출
+  const categoryNavigation = useCategoryNavigation({
+    categories: nonStaffCallCategories,
+    useScrollLayout,
+  });
+
   if (showPickupAlarm) {
     return <PickupAlarm onClose={() => setShowPickupAlarm(false)} />;
   }
@@ -131,11 +143,6 @@ export const MainPage = () => {
     );
   }
 
-  const nonStaffCallCategories = visibleCategories.filter(
-    (c) => !c.isStaffCall
-  );
-  const staffCallCategory = visibleCategories.find((c) => c.isStaffCall);
-
   return (
     <S.Container>
       <Header />
@@ -144,10 +151,13 @@ export const MainPage = () => {
           categories={nonStaffCallCategories}
           staffCallCategory={staffCallCategory}
           useScrollLayout={useScrollLayout}
+          selectedCategorySeq={categoryNavigation.selectedCategorySeq}
+          handleCategoryClick={categoryNavigation.handleCategoryClick}
         />
         <Contents
           categories={nonStaffCallCategories}
           useScrollLayout={useScrollLayout}
+          selectedCategory={categoryNavigation.selectedCategory}
         />
         <CartButton categories={visibleCategories} />
       </S.MainContent>

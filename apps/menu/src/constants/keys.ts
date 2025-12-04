@@ -1,11 +1,3 @@
-export const EVENT_KEYS = {
-  SIDEBAR_CATEGORY_TAB_CLICK_EVENT_KEY: (id: number) =>
-    `sidebar-category-tab-click-${id}`,
-
-  SCROLL_CATEGORY_VISIBLE_EVENT_KEY: (id: number) =>
-    `scroll-category-visible-${id}`,
-};
-
 export const STORAGE_KEYS = {
   /** 선택한 다국어 코드 키 */
   I18N_LANGUAGE: 'i18Lng',
@@ -23,3 +15,10 @@ export const timerKeys = {
   /** 카테고리 노출 여부 업데이트 타이머 키 */
   CATEGORY_VISIBILITY_UPDATE: 'category-visibility-update',
 };
+
+export const DOM_IDS = {
+  /** 카테고리 섹션 ID 접두사 */
+  CATEGORY_SECTION_PREFIX: 'category-',
+  /** 카테고리 섹션 ID 생성 함수 */
+  getCategorySectionId: (categorySeq: number) => `category-${categorySeq}`,
+} as const;
