@@ -4,6 +4,8 @@ import { Keypad } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/PasswordModal/passwordModal.style';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes';
 
 interface Props {
   onClose: () => void;
@@ -12,6 +14,7 @@ interface Props {
 export const PasswordModal = ({ onClose }: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
+  const navigate = useNavigate();
 
   const [password, setPassword] = useState<string | null>(null);
 
@@ -29,10 +32,11 @@ export const PasswordModal = ({ onClose }: Props) => {
   };
 
   useEffect(() => {
+    // TODO: 비밀번호 검증 로직 추후 추가
     if (password && password.length > 3) {
-      console.log(password);
+      navigate(ROUTES.TABLES.generate());
     }
-  }, [password]);
+  }, [password, navigate]);
 
   const deletePassword = () => {
     setPassword((prev) => {
