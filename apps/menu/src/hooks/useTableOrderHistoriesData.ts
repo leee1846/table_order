@@ -16,7 +16,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
   const { shopData } = useShopData();
-  const { table } = useTableData();
+  const { data: tableData } = useTableData();
 
   const {
     data: tableOrderHistoriesData,
@@ -26,14 +26,14 @@ export const useTableOrderHistoriesData = (options?: Props) => {
 
   const enabled =
     !!shopData?.shopCode &&
-    !!table?.tableNumber &&
+    !!tableData?.tableNumber &&
     !tableOrderHistoriesData &&
     !skipInitialRequest;
   const { data: tableOrderHistoriesDataResponse, refetch } =
     useGetTableOrderHistories(
       {
         shopCode: shopData?.shopCode ?? '',
-        tableNumber: table?.tableNumber ?? 0,
+        tableNumber: tableData?.tableNumber ?? 0,
       },
       { enabled }
     );

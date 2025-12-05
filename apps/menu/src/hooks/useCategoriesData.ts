@@ -17,7 +17,7 @@ export const useCategoriesData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
   const { shopData } = useShopData();
-  const { table } = useTableData();
+  const { data: tableData } = useTableData();
 
   const {
     categories: categoriesStoreData,
@@ -28,13 +28,13 @@ export const useCategoriesData = (options?: Props) => {
   const enabled =
     !categoriesStoreData &&
     !!shopData?.shopCode &&
-    !!table?.tableNumber &&
+    !!tableData?.tableNumber &&
     !skipInitialRequest;
 
   const { data: categoriesData, refetch } = useGetCategoriesWithMenus(
     {
       shopCode: shopData?.shopCode ?? '',
-      tableNumber: table?.tableNumber ?? 0,
+      tableNumber: tableData?.tableNumber ?? 0,
     },
     { enabled }
   );

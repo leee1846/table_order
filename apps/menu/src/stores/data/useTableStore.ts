@@ -7,24 +7,27 @@ export interface ITable {
 }
 
 interface ITableStore {
-  table: ITable | null;
-  setTableAsync: (table: ITable) => void;
-  clearTable: () => void;
+  data: ITable | null;
+  setDataAsync: (data: ITable) => void;
+  clearData: () => void;
 }
 
 export const useTableStore = create<ITableStore>((set) => ({
-  table: storage.load<ITable>(STORAGE_KEYS.TABLE) ?? null,
+  data: {
+    tableNumber: 0,
+  },
+  // data: storage.load<ITable>(STORAGE_KEYS.TABLE) ?? null,
 
-  setTableAsync: (table: ITable) => {
+  setDataAsync: (data: ITable) => {
     return new Promise((resolve) => {
-      storage.save(STORAGE_KEYS.TABLE, table);
-      set({ table });
+      storage.save(STORAGE_KEYS.TABLE, data);
+      set({ data });
       resolve(true);
     });
   },
 
-  clearTable: () => {
+  clearData: () => {
     storage.remove(STORAGE_KEYS.TABLE);
-    set({ table: null });
+    set({ data: null });
   },
 }));

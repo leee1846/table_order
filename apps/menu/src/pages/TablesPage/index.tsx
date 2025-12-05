@@ -44,7 +44,7 @@ export const TablesPage = () => {
     batteryLevel: 100,
   }));
 
-  const { setTableAsync } = useTableData();
+  const { setDataAsync: setTableDataAsync } = useTableData();
   const { refresh: refreshCategoriesData } = useCategoriesData({
     skipInitialRequest: true,
   });
@@ -61,7 +61,7 @@ export const TablesPage = () => {
       return;
     }
 
-    await setTableAsync({ tableNumber: table.tableNumber });
+    await setTableDataAsync({ tableNumber: table.tableNumber });
     refreshCategoriesData();
     refreshTableOrderHistoriesData();
     navigate(ROUTES.ROOT.generate());

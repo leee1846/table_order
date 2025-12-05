@@ -16,14 +16,18 @@ export const useTableData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
   const navigate = useNavigate();
-  const { table, setTableAsync, clearTable } = useTableStore();
+  const { data, setDataAsync, clearData } = useTableStore();
 
   //TODO: table이 null일경우 선택한 테이블 조회 api 호출 추후 적용 예정
   useEffect(() => {
-    if (!!table && table?.tableNumber === 0) {
+    if (skipInitialRequest) {
+      return;
+    }
+
+    if (!!data && data?.tableNumber === 0) {
       navigate(ROUTES.TABLES.generate(), { replace: true });
     }
-  }, [table, navigate]);
+  }, [data, navigate, skipInitialRequest]);
 
-  return { table, setTableAsync, clearTable };
+  return { data, setDataAsync, clearData };
 };
