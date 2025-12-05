@@ -1,6 +1,8 @@
 export const queryKeys = {
   shop: {
     all: ['shop'] as const,
+    detail: (shopCode: string) =>
+      [...queryKeys.shop.all, 'detail', shopCode] as const,
     /** 상점 리스트 조회 */
     list: () => [...queryKeys.shop.all, 'list'] as const,
   },

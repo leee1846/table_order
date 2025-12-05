@@ -1,14 +1,16 @@
 import { IApiResponse } from './common';
 
-export interface IGetShop {
+// TODO: 타입이 정의되자않아 정의되면 변경 필요
+type TShopType = string;
+
+export interface IGetShopItem {
   shopSeq: number;
   shopName: string;
   isActive: boolean;
   address1: string;
   address2: string;
   businessNumber: string;
-  // TODO: 타입이 정의되자않아 정의되면 변경 필요
-  shopType: string;
+  shopType: TShopType;
   shopCode: string;
   ownerName: string;
   isCorporate: boolean;
@@ -41,4 +43,101 @@ export interface IGetShop {
   updateMemberUuid: string;
 }
 
-export type TGetShopResponse = IApiResponse<IGetShop[]>;
+export type TGetShopsResponse = IApiResponse<IGetShopItem[]>;
+
+export interface IShopTime {
+  shopSeq: number;
+  shopBusinessStartTime: string;
+  shopBusinessEndTime: string;
+  breakStartTime: string;
+  breakEndTime: string;
+  breakTimeMessage: string;
+  breakTimeLastOrderTime: string;
+  breakTimeLastOrderAlertTimeBefore: number;
+  breakTimeLastOrderMessage: string;
+  shopClosureStartTime: string;
+  shopClosureEndTime: string;
+  closureMessage: string;
+  closureLastOrderTime: string;
+  closureLastOrderAlertTimeBefore: number;
+  closureLastOrderMessage: string;
+}
+
+export type TMenuboardType = 'PLUS' | 'MINUS';
+export type TMenuboardTemplateType =
+  | 'DEFAULT'
+  | 'VERTICAL_TEXT'
+  | 'VERTICAL_IMAGE';
+export type TShopPosCode = 'OKPOS';
+export type TShopCardTerminalCode = 'VIRTUAL' | 'EASY' | 'NO_BUTTON';
+export type TShopLanguage = 'KO' | 'EN' | 'JP' | 'CH';
+
+export interface IShopSetting {
+  shopSeq: number;
+  useTheftPrevention: boolean;
+  serviceChargeRate: number;
+  currencySetting: string;
+  usePickupAlert: boolean;
+  useDarkTheme: boolean;
+  useOnlinePosMode: boolean;
+  useTableOccupancyTime: boolean;
+  menuboardType: TMenuboardType;
+  isMenuboardOrderable: boolean;
+  firstOrderMinAmount: number;
+  useCustomerCount: boolean;
+  useKidsCustomerCount: boolean;
+  isOrderSheetTotalVisible: boolean;
+  isOrderCompleteTotalVisible: boolean;
+  useSinglePageMenuboard: boolean;
+  menuboardAdminPassword: null;
+  isAdminLocked: boolean;
+  usePrepayment: boolean;
+  vanCode: string;
+  isSalesTotalVisible: boolean;
+  salesPassword: null;
+  menuboardTemplateType: TMenuboardTemplateType;
+  shopPosCode: TShopPosCode;
+  shopCardTerminalCode: TShopCardTerminalCode;
+  shopLanguage: TShopLanguage;
+  useLocaleBeforeOrder: boolean;
+  isMenuThreeColumnLayout: boolean;
+}
+
+export type TNetworkType = 'AUTO' | 'LAN' | 'WIFI';
+
+export interface IShopNetwork {
+  shopSeq: number;
+  networkType: TNetworkType;
+  ssid: string;
+  ipAddress: string;
+}
+
+export type TInitPageLayout = 'LIGHT' | 'DARK' | 'IMAGE';
+export type TOrderCompletePageLayout = 'DEFAULT' | 'RECEIPT';
+
+export interface IShopPage {
+  shopSeq: number;
+  initPageLayout: TInitPageLayout;
+  initPageLogoImagePath: string;
+  initPageShopName: string;
+  orderCompletePageLayout: TOrderCompletePageLayout;
+  orderCompletePageImagePath: string;
+  orderCompletePageDescription: string;
+}
+
+export interface IShopPageDetail {
+  pageSeq: number;
+  shopSeq: number;
+  imagePath: string;
+  pageDescription: string;
+}
+
+export interface IGetShop extends IGetShopItem {
+  shopTime: IShopTime;
+  shopSetting: IShopSetting;
+  shopNetwork: IShopNetwork;
+  shopPage: IShopPage;
+  shopPageDetailList: IShopPageDetail[];
+}
+
+export type TGetShopResponse = IApiResponse<IGetShop>;

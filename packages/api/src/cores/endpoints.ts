@@ -31,6 +31,7 @@ export const ENDPOINTS = {
   },
 
   SHOP: {
+    DETAIL: (shopCode: string) => `/shop/${shopCode}`,
     LIST: '/shop/list',
   },
 
