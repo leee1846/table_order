@@ -8,20 +8,19 @@ export interface ITable {
 
 interface ITableStore {
   table: ITable | null;
-  setTable: (table: ITable) => void;
+  setTableAsync: (table: ITable) => void;
   clearTable: () => void;
 }
 
 export const useTableStore = create<ITableStore>((set) => ({
-  // TODO: 초기값 주석 제거 예정
-  table: {
-    tableNumber: 0,
-  },
-  // table: storage.load<ITable>(STORAGE_KEYS.TABLE) ?? null,
+  table: storage.load<ITable>(STORAGE_KEYS.TABLE) ?? null,
 
-  setTable: (table: ITable) => {
-    storage.save(STORAGE_KEYS.TABLE, table);
-    set({ table });
+  setTableAsync: (table: ITable) => {
+    return new Promise((resolve) => {
+      storage.save(STORAGE_KEYS.TABLE, table);
+      set({ table });
+      resolve(true);
+    });
   },
 
   clearTable: () => {

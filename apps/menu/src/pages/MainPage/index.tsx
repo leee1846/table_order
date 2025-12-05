@@ -25,21 +25,15 @@ const showBreakTime = false;
 
 export const MainPage = () => {
   /** 상점 데이터 로드 */
-  const { shopData } = useShopData();
+  useShopData();
   /** 테이블 데이터 설정 */
-  const { table } = useTableData();
+  useTableData();
 
   /** 카테고리 데이터 로드 */
-  const { data: categoriesStoreData, visibleCategories } = useCategoriesData({
-    shopData,
-    tableNumber: table?.tableNumber,
-  });
+  const { data: categoriesStoreData, visibleCategories } = useCategoriesData();
 
   /** 테이블 주문 내역 데이터 로드 */
-  const { data: tableOrderHistoriesData } = useTableOrderHistoriesData({
-    shopData,
-    tableNumber: table?.tableNumber,
-  });
+  const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
 
   const { setCartOptions } = useCartStore();
 
@@ -159,6 +153,7 @@ export const MainPage = () => {
   return (
     <S.Container>
       <Header orderHistories={tableOrderHistoriesData} />
+
       <S.MainContent>
         <Sidebar
           categories={nonStaffCallCategories}
@@ -167,11 +162,13 @@ export const MainPage = () => {
           selectedCategorySeq={categoryNavigation.selectedCategorySeq}
           handleCategoryClick={categoryNavigation.handleCategoryClick}
         />
+
         <Contents
           categories={nonStaffCallCategories}
           useScrollLayout={useScrollLayout}
           selectedCategory={categoryNavigation.selectedCategory}
         />
+
         <CartButton categories={visibleCategories} />
       </S.MainContent>
     </S.Container>

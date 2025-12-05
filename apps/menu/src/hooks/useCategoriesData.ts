@@ -1,8 +1,9 @@
-import type { IGetShop } from '@repo/api/types';
 import { useGetCategoriesWithMenus } from '@repo/api/queries';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { mockCategories } from '@/mocks/mockCategories';
 import { useEffect } from 'react';
+import { useShopData } from '@/hooks/useShopData';
+import { useTableData } from '@/hooks/useTableData';
 
 interface Props {
   /**
@@ -11,11 +12,12 @@ interface Props {
    * @default false
    */
   skipInitialRequest?: boolean;
-  shopData?: IGetShop | null;
-  tableNumber?: number;
 }
 export const useCategoriesData = (options?: Props) => {
-  const { skipInitialRequest = false, shopData, tableNumber } = options || {};
+  const { skipInitialRequest = false } = options || {};
+
+  const { shopData } = useShopData();
+  const { table } = useTableData();
 
   const {
     categories: categoriesStoreData,
@@ -26,11 +28,14 @@ export const useCategoriesData = (options?: Props) => {
   const enabled =
     !categoriesStoreData &&
     !!shopData?.shopCode &&
-    !!tableNumber &&
+    !!table?.tableNumber &&
     !skipInitialRequest;
 
   const { data: categoriesData, refetch } = useGetCategoriesWithMenus(
-    { shopCode: shopData?.shopCode ?? '', tableNumber: tableNumber ?? 0 },
+    {
+      shopCode: shopData?.shopCode ?? '',
+      tableNumber: table?.tableNumber ?? 0,
+    },
     { enabled }
   );
 

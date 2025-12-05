@@ -78,10 +78,7 @@ export const CartList = ({
   };
 
   const { shopData } = useShopData();
-  const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData({
-    shopData,
-    tableNumber: table?.tableNumber,
-  });
+  const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData();
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const order = () => {
     if (cartData.menus.length < 1) {

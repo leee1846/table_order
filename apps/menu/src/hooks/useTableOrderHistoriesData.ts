@@ -1,7 +1,8 @@
 import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStore';
 import { useGetTableOrderHistories } from '@repo/api/queries';
-import type { IGetShop } from '@repo/api/types';
 import { useEffect } from 'react';
+import { useShopData } from '@/hooks/useShopData';
+import { useTableData } from '@/hooks/useTableData';
 
 interface Props {
   /**
@@ -10,11 +11,12 @@ interface Props {
    * @default false
    */
   skipInitialRequest?: boolean;
-  shopData?: IGetShop | null;
-  tableNumber?: number;
 }
 export const useTableOrderHistoriesData = (options?: Props) => {
-  const { skipInitialRequest = false, shopData, tableNumber } = options || {};
+  const { skipInitialRequest = false } = options || {};
+
+  const { shopData } = useShopData();
+  const { table } = useTableData();
 
   const {
     data: tableOrderHistoriesData,
@@ -24,14 +26,14 @@ export const useTableOrderHistoriesData = (options?: Props) => {
 
   const enabled =
     !!shopData?.shopCode &&
-    !!tableNumber &&
+    !!table?.tableNumber &&
     !tableOrderHistoriesData &&
     !skipInitialRequest;
   const { data: tableOrderHistoriesDataResponse, refetch } =
     useGetTableOrderHistories(
       {
         shopCode: shopData?.shopCode ?? '',
-        tableNumber: tableNumber ?? 0,
+        tableNumber: table?.tableNumber ?? 0,
       },
       { enabled }
     );
