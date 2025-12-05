@@ -10,8 +10,8 @@ export type { SettingsSidebarProps, TMenu, TSubMenu } from './types';
 
 export const SettingsSidebar = ({
   menus,
-  homeRoute,
-  logoContent = 'LOGO HERE',
+  logoElement,
+  onClickHomeButton,
 }: SettingsSidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -79,7 +79,7 @@ export const SettingsSidebar = ({
   return (
     <S.Layout>
       <S.Section>
-        <S.Logo>{logoContent}</S.Logo>
+        <S.Logo>{logoElement}</S.Logo>
 
         <S.List>
           {menus.map((menu) => {
@@ -124,7 +124,7 @@ export const SettingsSidebar = ({
           })}
         </S.List>
 
-        <S.FloatingHomeButton type="button" onClick={() => navigate(homeRoute)}>
+        <S.FloatingHomeButton type="button" onClick={onClickHomeButton}>
           <HomeFilledIcon
             width={24}
             height={24}

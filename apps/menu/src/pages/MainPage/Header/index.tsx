@@ -5,10 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { useThemeMode } from '@repo/ui';
 import { useState } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
-import type { IOrderHistory } from '@repo/api/types';
+import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
+import { PasswordModal } from '@/pages/MainPage/PasswordModal';
 
 interface Props {
-  orderHistories?: IOrderHistory[] | null;
+  orderHistories?: ITableOrderHistoriesData | null;
 }
 export const Header = ({ orderHistories }: Props) => {
   const theme = useTheme();
@@ -16,12 +17,13 @@ export const Header = ({ orderHistories }: Props) => {
   const { toggleMode } = useThemeMode();
 
   const [showOrderHistoryModal, setShowOrderHistoryModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   return (
     <>
       <S.Header>
         <S.LeftContent>
-          <button type="button" onClick={toggleMode}>
+          <button type="button" onClick={() => setShowPasswordModal(true)}>
             <span>logo버튼 영역</span>
           </button>
           <S.Divider />
@@ -32,7 +34,7 @@ export const Header = ({ orderHistories }: Props) => {
         </S.LeftContent>
 
         <S.RightContent>
-          <S.TableNumber>
+          <S.TableNumber onClick={toggleMode}>
             {t('{{number}}번 테이블', { number: '??' })}
           </S.TableNumber>
           <S.Divider />
@@ -51,6 +53,10 @@ export const Header = ({ orderHistories }: Props) => {
           orderHistories={orderHistories}
           onClose={() => setShowOrderHistoryModal(false)}
         />
+      )}
+
+      {showPasswordModal && (
+        <PasswordModal onClose={() => setShowPasswordModal(false)} />
       )}
     </>
   );

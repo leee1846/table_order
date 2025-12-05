@@ -1,29 +1,36 @@
+import { SerializedStyles } from '@emotion/react';
 import * as S from './keypad.styles';
 
 export type KeypadProps = {
   onNumberPress: (number: number) => void;
   bottomLeftLabel?: string;
   bottomLeftIcon?: React.ReactNode;
-  bottomLeftAction: () => void;
+  bottomLeftAction?: () => void;
   bottomRightLabel?: string;
   bottomRightAction?: () => void;
   bottomRightIcon?: React.ReactNode;
+  customStyle?: SerializedStyles;
 };
 
 export const Keypad = ({
   onNumberPress,
   bottomLeftLabel,
-  bottomLeftAction,
+  bottomLeftAction = () => {
+    // noop
+  },
   bottomRightLabel,
-  bottomRightAction,
+  bottomRightAction = () => {
+    // noop
+  },
   bottomRightIcon,
+  customStyle,
 }: KeypadProps) => {
   const handleNumberClick = (number: number) => {
     onNumberPress(number);
   };
 
   return (
-    <S.KeypadContainer>
+    <S.KeypadContainer css={customStyle}>
       <S.KeypadRow>
         <S.KeypadButton onClick={() => handleNumberClick(1)}>1</S.KeypadButton>
         <S.KeypadButton onClick={() => handleNumberClick(2)}>2</S.KeypadButton>

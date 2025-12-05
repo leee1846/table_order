@@ -3,10 +3,17 @@ export const ROUTES = {
     path: '/',
     generate: () => '/',
   },
+
   LOGIN: {
     path: '/login',
     generate: () => '/login',
   },
+
+  TABLES: {
+    path: 'tables',
+    generate: () => '/tables',
+  },
+
   SETTINGS: {
     path: '/settings',
 

@@ -1,3 +1,5 @@
+import { ButtonHTMLAttributes } from 'react';
+
 export type TSubMenu = {
   id: string | number;
   label: string;
@@ -14,6 +16,6 @@ export type TMenu = {
 
 export interface SettingsSidebarProps {
   menus: TMenu[];
-  homeRoute: string;
-  logoContent?: React.ReactNode;
+  logoElement: React.ReactElement<ButtonHTMLAttributes<HTMLButtonElement>>;
+  onClickHomeButton: () => void;
 }

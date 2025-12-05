@@ -114,9 +114,6 @@ export const config = [
       // 빈 함수 경고
       '@typescript-eslint/no-empty-function': 'warn',
 
-      // 빈 인터페이스 경고
-      '@typescript-eslint/no-empty-interface': 'warn',
-
       // require() 사용 경고 (ES6 import 권장)
       '@typescript-eslint/no-require-imports': 'warn',
 

@@ -3,8 +3,12 @@ import { SettingsSidebar } from '@repo/feature/components';
 import { createSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
 import { useGetCategoryList } from '@repo/api/queries';
+import { useNavigate } from 'react-router-dom';
+import { bestOnIcon } from '@repo/ui/icons';
 
 export const SidebarLayout = () => {
+  const navigate = useNavigate();
+
   // TODO: shopSeq는 인증 후 사용자 정보에서 주입되도록 교체 필요
   const shopSeq = 1;
   const { data: categoryListResponse } = useGetCategoryList({
@@ -31,7 +35,15 @@ export const SidebarLayout = () => {
   return (
     <SettingsSidebar
       menus={SIDEBAR_MENUS}
-      homeRoute={ROUTES.TABLES.generate()}
+      logoElement={
+        <button
+          type="button"
+          onClick={() => navigate(ROUTES.TABLES.generate())}
+        >
+          <img src={bestOnIcon} alt="logo" />
+        </button>
+      }
+      onClickHomeButton={() => navigate(ROUTES.TABLES.generate())}
     />
   );
 };

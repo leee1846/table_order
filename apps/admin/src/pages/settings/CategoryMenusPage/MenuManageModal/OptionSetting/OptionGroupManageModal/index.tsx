@@ -242,7 +242,9 @@ export const OptionGroupManageModal = ({
   );
 
   const handleSave = useCallback(() => {
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      return;
+    }
 
     const currentOptionGroupList = formValues.optionGroupList ?? [];
 

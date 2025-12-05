@@ -19,6 +19,11 @@ const LoginPage = lazy(() =>
     default: module.LoginPage,
   }))
 );
+const TablesPage = lazy(() =>
+  import('@/pages/TablesPage').then((module) => ({
+    default: module.TablesPage,
+  }))
+);
 const SidebarLayout = lazy(() =>
   import('@/pages/settings/SidebarLayout').then((module) => ({
     default: module.SidebarLayout,
@@ -63,7 +68,14 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
-
+      {
+        path: ROUTES.TABLES.path,
+        element: (
+          <Suspense fallback={<FullscreenLoadingSpinner />}>
+            <TablesPage />
+          </Suspense>
+        ),
+      },
       {
         path: ROUTES.SETTINGS.path,
         element: (
