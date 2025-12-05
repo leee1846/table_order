@@ -5,28 +5,45 @@ import { mockCategories } from '@/mocks/mockCategories';
 import { useEffect } from 'react';
 
 interface Props {
+  /**
+   * useEffect 실행을 건너뛸지 여부
+   * 초기 api요청 건너뛰기 여부
+   * @default false
+   */
+  skipInitialRequest?: boolean;
   shopData?: IGetShop | null;
   tableNumber?: number;
 }
-export const useCategoriesData = ({ shopData, tableNumber }: Props) => {
+export const useCategoriesData = (options?: Props) => {
+  const { skipInitialRequest = false, shopData, tableNumber } = options || {};
+
   const {
     categories: categoriesStoreData,
     setCategories: setCategoriesStoreData,
     visibleCategories,
   } = useCategoryStore();
 
-  const enabled = !categoriesStoreData && !!shopData?.shopCode && !!tableNumber;
+  const enabled =
+    !categoriesStoreData &&
+    !!shopData?.shopCode &&
+    !!tableNumber &&
+    !skipInitialRequest;
+
   const { data: categoriesData, refetch } = useGetCategoriesWithMenus(
     { shopCode: shopData?.shopCode ?? '', tableNumber: tableNumber ?? 0 },
     { enabled }
   );
 
   useEffect(() => {
+    if (skipInitialRequest) {
+      return;
+    }
+
     if (categoriesData?.data) {
       // TODO: mockData 삭제 예정 -> categoriesData.data를 넣어야함
       setCategoriesStoreData(mockCategories);
     }
-  }, [categoriesData, setCategoriesStoreData]);
+  }, [categoriesData, setCategoriesStoreData, skipInitialRequest]);
 
   const refresh = async () => {
     const result = await refetch();

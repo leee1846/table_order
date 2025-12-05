@@ -3,7 +3,17 @@ import { ROUTES } from '@/constants/routes';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const useTableData = () => {
+interface Props {
+  /**
+   * useEffect 실행을 건너뛸지 여부
+   * 초기 api요청 건너뛰기 여부
+   * @default false
+   */
+  skipInitialRequest?: boolean;
+}
+export const useTableData = (options?: Props) => {
+  const { skipInitialRequest = false } = options || {};
+
   const navigate = useNavigate();
   const { table, setTable, clearTable } = useTableStore();
 

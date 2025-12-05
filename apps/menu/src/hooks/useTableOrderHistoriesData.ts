@@ -4,13 +4,18 @@ import type { IGetShop } from '@repo/api/types';
 import { useEffect } from 'react';
 
 interface Props {
+  /**
+   * useEffect 실행을 건너뛸지 여부
+   * 초기 api요청 건너뛰기 여부
+   * @default false
+   */
+  skipInitialRequest?: boolean;
   shopData?: IGetShop | null;
   tableNumber?: number;
 }
-export const useTableOrderHistoriesData = ({
-  shopData,
-  tableNumber,
-}: Props) => {
+export const useTableOrderHistoriesData = (options?: Props) => {
+  const { skipInitialRequest = false, shopData, tableNumber } = options || {};
+
   const {
     data: tableOrderHistoriesData,
     setData: setTableOrderHistoriesData,
@@ -18,7 +23,10 @@ export const useTableOrderHistoriesData = ({
   } = useTableOrderHistoriesStore();
 
   const enabled =
-    !!shopData?.shopCode && !!tableNumber && !tableOrderHistoriesData;
+    !!shopData?.shopCode &&
+    !!tableNumber &&
+    !tableOrderHistoriesData &&
+    !skipInitialRequest;
   const { data: tableOrderHistoriesDataResponse, refetch } =
     useGetTableOrderHistories(
       {
@@ -29,6 +37,10 @@ export const useTableOrderHistoriesData = ({
     );
 
   useEffect(() => {
+    if (skipInitialRequest) {
+      return;
+    }
+
     if (!tableOrderHistoriesDataResponse) {
       return;
     }
@@ -49,7 +61,11 @@ export const useTableOrderHistoriesData = ({
       orderDetailMenuList:
         tableOrderHistoriesDataResponse?.data?.orderDetailMenuList ?? [],
     });
-  }, [tableOrderHistoriesDataResponse, setTableOrderHistoriesData]);
+  }, [
+    tableOrderHistoriesDataResponse,
+    setTableOrderHistoriesData,
+    skipInitialRequest,
+  ]);
 
   const refresh = async () => {
     const result = await refetch();
