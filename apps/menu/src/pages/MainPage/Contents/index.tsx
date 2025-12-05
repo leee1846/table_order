@@ -8,13 +8,13 @@ import { DOM_IDS } from '@/constants/keys';
 
 interface Props {
   categories: ICategoryWithMenus[];
-  useScrollLayout: boolean;
+  useSinglePageMenuboard: boolean;
   selectedCategory?: ICategoryWithMenus;
 }
 
 export const Contents = ({
   categories,
-  useScrollLayout,
+  useSinglePageMenuboard,
   selectedCategory,
 }: Props) => {
   const { t } = useTranslation();
@@ -25,16 +25,13 @@ export const Contents = ({
     );
   }
 
-  return useScrollLayout ? (
-    <S.Container>
-      <ScrollContent
-        categories={categories}
-        useScrollLayout={useScrollLayout}
-      />
-    </S.Container>
-  ) : (
+  return useSinglePageMenuboard ? (
     <S.Container id={DOM_IDS.CONTENTS_SCROLL_CONTAINER}>
       <TabContent selectedCategory={selectedCategory} />
+    </S.Container>
+  ) : (
+    <S.Container>
+      <ScrollContent categories={categories} />
     </S.Container>
   );
 };

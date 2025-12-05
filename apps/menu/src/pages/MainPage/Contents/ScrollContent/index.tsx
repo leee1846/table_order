@@ -5,7 +5,6 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 
 interface Props {
   categories: ICategoryWithMenus[];
-  useScrollLayout: boolean;
 }
 
 export const ScrollContent = ({ categories }: Props) => {

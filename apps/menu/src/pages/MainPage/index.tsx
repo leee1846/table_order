@@ -19,8 +19,6 @@ import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 
-// TODO: api를 통해 반환받은 data로 추후 변경 예정
-const useScrollLayout = false;
 // TODO: breakTime 추후 변경 예정
 const showBreakTime = false;
 
@@ -29,7 +27,7 @@ export const MainPage = () => {
   useShopData();
 
   /** 상점 상세 데이터 로드 */
-  useShopDetailData();
+  const { data: shopDetailData } = useShopDetailData();
 
   /** 테이블 데이터 로드 */
   useTableData();
@@ -133,7 +131,8 @@ export const MainPage = () => {
   // 카테고리 네비게이션 훅 호출
   const categoryNavigation = useCategoryNavigation({
     categories: nonStaffCallCategories,
-    useScrollLayout,
+    useSinglePageMenuboard:
+      shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false,
   });
 
   if (showPickupAlarm) {
@@ -163,14 +162,15 @@ export const MainPage = () => {
         <Sidebar
           categories={nonStaffCallCategories}
           staffCallCategory={staffCallCategory}
-          useScrollLayout={useScrollLayout}
           selectedCategorySeq={categoryNavigation.selectedCategorySeq}
           handleCategoryClick={categoryNavigation.handleCategoryClick}
         />
 
         <Contents
           categories={nonStaffCallCategories}
-          useScrollLayout={useScrollLayout}
+          useSinglePageMenuboard={
+            shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false
+          }
           selectedCategory={categoryNavigation.selectedCategory}
         />
 

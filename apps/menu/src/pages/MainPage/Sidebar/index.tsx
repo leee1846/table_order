@@ -9,7 +9,6 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 interface Props {
   categories: ICategoryWithMenus[];
   staffCallCategory?: ICategoryWithMenus;
-  useScrollLayout: boolean;
   selectedCategorySeq: number;
   handleCategoryClick: (category: ICategoryWithMenus) => void;
 }

@@ -13,7 +13,7 @@ const OBSERVER_OPTIONS: IntersectionObserverInit = {
 
 interface IParams {
   categories: ICategoryWithMenus[];
-  useScrollLayout: boolean;
+  useSinglePageMenuboard: boolean;
 }
 
 interface IReturn {
@@ -28,7 +28,7 @@ interface IReturn {
  */
 export function useCategoryNavigation({
   categories,
-  useScrollLayout,
+  useSinglePageMenuboard,
 }: IParams): IReturn {
   // 현재 선택된 카테고리 ID (Sidebar와 TabContent에서 공유)
   const [selectedCategorySeq, setSelectedCategorySeq] = useState(
@@ -51,13 +51,13 @@ export function useCategoryNavigation({
   const debounceCleanupRef = useRef<(() => void) | null>(null);
 
   // 최신 값 참조를 위한 refs (함수 안정성을 위해)
-  const useScrollLayoutRef = useRef(useScrollLayout);
+  const useSinglePageMenuboardRef = useRef(useSinglePageMenuboard);
   const categoriesRef = useRef(categories);
 
   // useScrollLayout 최신 값 유지
   useEffect(() => {
-    useScrollLayoutRef.current = useScrollLayout;
-  }, [useScrollLayout]);
+    useSinglePageMenuboardRef.current = useSinglePageMenuboard;
+  }, [useSinglePageMenuboard]);
 
   // categories 최신 값 유지
   useEffect(() => {
@@ -123,13 +123,13 @@ export function useCategoryNavigation({
     // 선택된 카테고리 상태 업데이트
     setSelectedCategorySeq(category.categorySeq);
 
-    // 스크롤 모드: 해당 섹션으로 스크롤 및 observer 일시 비활성화
-    if (useScrollLayoutRef.current) {
-      scrollToCategorySection.current(category.categorySeq);
-      temporarilyDisableScrollObserver.current();
-    } else {
+    if (useSinglePageMenuboardRef.current) {
       // 탭 모드: 스크롤 컨테이너를 상단으로 이동
       scrollToTop.current();
+    } else {
+      // 스크롤 모드: 해당 섹션으로 스크롤 및 observer 일시 비활성화
+      scrollToCategorySection.current(category.categorySeq);
+      temporarilyDisableScrollObserver.current();
     }
   }).current;
 
@@ -156,7 +156,7 @@ export function useCategoryNavigation({
     const observedSeqs = observedCategorySeqsRef.current;
 
     // 탭 모드에서는 observer 불필요
-    if (!useScrollLayout) {
+    if (useSinglePageMenuboard) {
       return;
     }
 
@@ -235,7 +235,7 @@ export function useCategoryNavigation({
       lastEmittedCategorySeqRef.current = null;
       observedSeqs.clear();
     };
-  }, [useScrollLayout]);
+  }, [useSinglePageMenuboard]);
 
   // useScrollLayout 변경 시 스크롤 애니메이션 타이머 정리
   useEffect(() => {
@@ -245,7 +245,7 @@ export function useCategoryNavigation({
         scrollAnimationTimerRef.current = null;
       }
     };
-  }, [useScrollLayout]);
+  }, [useSinglePageMenuboard]);
 
   // 카테고리 섹션을 IntersectionObserver에 등록 (스크롤 모드일 때만)
   useEffect(() => {
@@ -253,7 +253,7 @@ export function useCategoryNavigation({
     const observedSeqs = observedCategorySeqsRef.current;
 
     // 탭 모드이거나 observer가 없으면 이전 등록 제거 후 종료
-    if (!useScrollLayout || !observer) {
+    if (useSinglePageMenuboard || !observer) {
       if (observer) {
         observedSeqs.forEach((categorySeq) => {
           const element = document.getElementById(
@@ -312,7 +312,7 @@ export function useCategoryNavigation({
     return () => {
       cancelAnimationFrame(rafId);
     };
-  }, [categories, useScrollLayout]);
+  }, [categories, useSinglePageMenuboard]);
 
   // TabContent에서 사용할 선택된 카테고리 객체
   // 로딩 중이거나 유효하지 않은 selectedCategorySeq면 undefined 반환 (스타일 깨짐 방지)
