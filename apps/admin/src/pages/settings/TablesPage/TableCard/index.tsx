@@ -9,6 +9,8 @@ import { theme } from '@repo/ui';
 import { useState } from 'react';
 import { EditTableDialog } from '../dialogs/EditTableDialog';
 import { openDualActionDialog } from '@repo/feature/utils';
+import { useQueryClient } from '@repo/api/tanstack-query';
+import { useDeleteTable, queryKeys } from '@repo/api/queries';
 const { colors } = theme;
 
 interface Props {
@@ -17,6 +19,8 @@ interface Props {
 }
 
 export const TableCard = ({ table, shopCode }: Props) => {
+  const queryClient = useQueryClient();
+  const { mutateAsync: deleteTable } = useDeleteTable();
   const [isTableEditDialogOpen, setIsTableEditDialogOpen] = useState(false);
   const handleEdit = () => {
     setIsTableEditDialogOpen(true);
@@ -28,9 +32,20 @@ export const TableCard = ({ table, shopCode }: Props) => {
       primaryText: '확인',
       secondaryText: '취소',
       size: 'xsmall',
-      onConfirm: () => {
-        // TODO: 테이블 삭제 기능 구현
-        toast('테이블이 삭제되었습니다.');
+      onConfirm: async () => {
+        try {
+          await deleteTable({
+            tableSeq: table.tableSeq,
+            shopSeq: table.shopSeq,
+            tableNumber: table.tableNumber,
+          });
+          await queryClient.invalidateQueries({
+            queryKey: queryKeys.table.groupList(shopCode),
+          });
+          toast('테이블이 삭제되었습니다.');
+        } catch (error) {
+          toast('테이블 삭제에 실패했습니다.');
+        }
       },
     });
   };

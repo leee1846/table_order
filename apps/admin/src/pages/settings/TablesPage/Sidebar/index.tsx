@@ -5,9 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { AddTableGroupDialog } from '../dialogs/AddTableGroupDialog';
 import { EditTableGroupDialog } from '../dialogs/EditTableGroupDialog';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
-import { deleteTableGroup } from '@repo/api/fetchers';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys } from '@repo/api/queries';
+import { queryKeys, useDeleteTableGroup } from '@repo/api/queries';
 const { colors } = theme;
 
 import { ROUTES } from '@/constants/routes';
@@ -27,6 +26,7 @@ export const Sidebar = ({
 }: SidebarProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { mutateAsync: deleteTableGroup } = useDeleteTableGroup();
 
   const [isAddTableGroupDialogOpen, setIsAddTableGroupDialogOpen] =
     useState(false);
@@ -91,22 +91,27 @@ export const Sidebar = ({
       primaryText: '확인',
       secondaryText: '취소',
       size: 'xsmall',
-      onConfirm: async () => {
-        try {
-          await deleteTableGroup({
+      onConfirm: () => {
+        deleteTableGroup(
+          {
             // TODO: 추후에 shopSeq 추가
             shopSeq: 1,
             tableGroupSeq: group.tableGroupSeq,
-          });
-          await queryClient.invalidateQueries({
-            // TODO: 추후에 shopCode 추가
-            queryKey: queryKeys.table.groupList('NEXA000001'),
-          });
-          toast('테이블 그룹이 삭제되었습니다.');
-          setEditingGroupId(null);
-        } catch (error) {
-          toast('테이블 그룹 삭제에 실패했습니다.');
-        }
+          },
+          {
+            onSuccess: async () => {
+              await queryClient.invalidateQueries({
+                // TODO: 추후에 shopCode 추가
+                queryKey: queryKeys.table.groupList('NEXA000001'),
+              });
+              toast('테이블 그룹이 삭제되었습니다.');
+              setEditingGroupId(null);
+            },
+            onError: () => {
+              toast('테이블 그룹 삭제에 실패했습니다.');
+            },
+          }
+        );
       },
     });
     setEditingGroupId(null);

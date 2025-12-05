@@ -4,9 +4,8 @@ import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './addTableGroupDialog.styles';
 import { toast } from '@repo/feature/utils';
-import { createTableGroup } from '@repo/api/fetchers';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys } from '@repo/api/queries';
+import { queryKeys, usePostCreateTableGroup } from '@repo/api/queries';
 const { colors } = theme;
 
 interface AddTableGroupDialogProps {
@@ -20,6 +19,7 @@ export const AddTableGroupDialog = ({
 }: AddTableGroupDialogProps) => {
   const queryClient = useQueryClient();
   const [groupName, setGroupName] = useState('');
+  const { mutateAsync: createTableGroup } = usePostCreateTableGroup();
 
   const handleSubmit = async () => {
     if (groupName.trim() !== '') {

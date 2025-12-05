@@ -4,9 +4,8 @@ import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './editTableGroupDialog.styles';
 import { toast } from '@repo/feature/utils';
-import { updateTableGroup } from '@repo/api/fetchers';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys } from '@repo/api/queries';
+import { queryKeys, usePutUpdateTableGroup } from '@repo/api/queries';
 import type { ITableGroup } from '@repo/api/types';
 const { colors } = theme;
 
@@ -21,6 +20,7 @@ export const EditTableGroupDialog = forwardRef<
   EditTableGroupDialogProps
 >(({ isOpen, onClose, tableGroup }, ref) => {
   const queryClient = useQueryClient();
+  const { mutateAsync: updateTableGroup } = usePutUpdateTableGroup();
   const [groupName, setGroupName] = useState('');
 
   useEffect(() => {
