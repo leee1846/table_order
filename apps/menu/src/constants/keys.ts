@@ -11,6 +11,8 @@ export const STORAGE_KEYS = {
   TABLE_ORDER_HISTORIES: 'table-order-histories',
   /** 선택한 테이블 data 키 */
   TABLE: 'table',
+  /** 테이블 그룹 data 키 */
+  TABLE_GROUP: 'table-group',
 } as const;
 
 export const timerKeys = {

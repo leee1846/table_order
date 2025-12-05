@@ -12,6 +12,7 @@ interface Props {
   skipInitialRequest?: boolean;
 }
 export const useTableData = (options?: Props) => {
+  // TODO: 추후 선택한 table get api 적용예정
   const { skipInitialRequest = false } = options || {};
 
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { theme } from '@repo/ui';
+import { TYPOGRAPHY, theme } from '@repo/ui';
 
 const { colors } = theme;
 
@@ -12,6 +12,15 @@ export const Wrapper = styled.div`
   background: ${colors.grey[600]};
   flex: 1;
   overflow-y: auto;
+`;
+
+export const NoContent = styled.p`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: ${colors.grey[200]};
+  ${TYPOGRAPHY.ST_1}
 `;
 
 export const GridContainer = styled.div`

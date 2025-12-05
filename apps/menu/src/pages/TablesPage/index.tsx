@@ -1,39 +1,38 @@
 import { ROUTES } from '@/constants/routes';
 import { useShopData } from '@/hooks/useShopData';
-import { useGetTableGroupList } from '@repo/api/queries';
 import { TableGridContainer, type TableData } from '@repo/feature/components';
 import { useTableData } from '@/hooks/useTableData';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { Sidebar } from '@/pages/TablesPage/Sidebar';
+import * as S from '@/pages/TablesPage/tablePage.style';
+import { useTableGroupData } from '@/hooks/useTableGroupData';
 
 export const TablesPage = () => {
   const navigate = useNavigate();
 
   /** 상점 데이터 로드 */
-  const { shopData } = useShopData();
+  useShopData();
 
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
     number | null
   >(null);
 
-  /** 테이블 그룹 리스트 조회 */
-  const { data: tableGroups } = useGetTableGroupList(
-    { shopCode: shopData?.shopCode ?? '' },
-    { enabled: !!shopData?.shopCode }
-  );
+  /** 테이블 그룹 데이터 로드 */
+  const { data: tableGroupsData } = useTableGroupData();
 
   useEffect(() => {
-    if (!tableGroups) {
+    if (!tableGroupsData) {
       return;
     }
 
-    setSelectedTableGroupSeq(tableGroups?.data[0]?.tableGroupSeq ?? null);
-  }, [tableGroups]);
+    setSelectedTableGroupSeq(tableGroupsData[0]?.tableGroupSeq ?? null);
+  }, [tableGroupsData]);
 
   const currentTables =
-    tableGroups?.data?.find(
+    tableGroupsData?.find(
       (tableGroup) => tableGroup.tableGroupSeq === selectedTableGroupSeq
     )?.tableList ?? [];
   const tablesData = currentTables.map((table) => ({
@@ -66,11 +65,17 @@ export const TablesPage = () => {
   };
 
   return (
-    <div>
+    <S.Container>
       <TableGridContainer
         tables={tablesData}
         onTableClick={(table) => handleTableClick(table)}
       />
-    </div>
+
+      <Sidebar
+        tableGroups={tableGroupsData ?? []}
+        selectedTableGroupSeq={selectedTableGroupSeq ?? 0}
+        onTableGroupClick={setSelectedTableGroupSeq}
+      />
+    </S.Container>
   );
 };

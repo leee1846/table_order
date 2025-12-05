@@ -25,6 +25,10 @@ export const TableGridContainer = ({ tables, onTableClick }: Props) => {
   return (
     <S.Wrapper>
       <S.GridContainer>
+        {tables.length < 1 && (
+          <S.NoContent>테이블이 존재하지 않습니다.</S.NoContent>
+        )}
+
         {tables.map((table) => (
           <TableCard
             id={table.id}
