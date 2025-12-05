@@ -3,8 +3,7 @@ import { SIDEBAR_MENUS } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { bestOnIcon } from '@repo/ui/icons';
-
-const tableNumber = 1;
+import { useTableData } from '@/hooks/useTableData';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
@@ -13,8 +12,9 @@ export const SidebarLayout = () => {
     navigate(ROUTES.TABLES.generate());
   };
 
+  const { table } = useTableData();
   const onClickHomeButton = () => {
-    if (tableNumber) {
+    if (table?.tableNumber) {
       navigate(ROUTES.ROOT.generate());
       return;
     }

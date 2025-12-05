@@ -16,28 +16,29 @@ import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { useTableData } from '@/hooks/useTableData';
 
 // TODO: api를 통해 반환받은 data로 추후 변경 예정
 const useScrollLayout = false;
-// TODO: tableNumber 추후 변경 예정
-const tableNumber = 1;
 // TODO: breakTime 추후 변경 예정
 const showBreakTime = false;
 
 export const MainPage = () => {
   /** 상점 데이터 로드 */
   const { shopData } = useShopData();
+  /** 테이블 데이터 설정 */
+  const { table } = useTableData();
 
   /** 카테고리 데이터 로드 */
   const { data: categoriesStoreData, visibleCategories } = useCategoriesData({
     shopData,
-    tableNumber,
+    tableNumber: table?.tableNumber,
   });
 
   /** 테이블 주문 내역 데이터 로드 */
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData({
     shopData,
-    tableNumber,
+    tableNumber: table?.tableNumber,
   });
 
   const { setCartOptions } = useCartStore();

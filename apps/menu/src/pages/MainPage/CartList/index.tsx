@@ -15,11 +15,10 @@ import { usePostTableOrder } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { useTableData } from '@/hooks/useTableData';
 
 // TODO: 추후 주문 방법 선택 기능 추가 예정
 const isPayAfter = true;
-// TODO: 추후 테이블 번호 선택 기능 추가 예정
-const tableNumber = 1;
 
 interface Props {
   onClose: () => void;
@@ -35,6 +34,8 @@ export const CartList = ({
 }: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
+
+  const { table } = useTableData();
 
   const [isMenuDetailModalOpen, setIsMenuDetailModalOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<ICartMenu | null>(null);
@@ -79,7 +80,7 @@ export const CartList = ({
   const { shopData } = useShopData();
   const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData({
     shopData,
-    tableNumber,
+    tableNumber: table?.tableNumber,
   });
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const order = () => {
@@ -112,9 +113,13 @@ export const CartList = ({
         }));
 
         if (isPayAfter) {
+          if (!table?.tableNumber) {
+            return;
+          }
+
           await createTableOrder({
             shopCode: shopData?.shopCode ?? '',
-            tableNumber,
+            tableNumber: table.tableNumber,
             orderType: 'MENU',
             orders,
           });

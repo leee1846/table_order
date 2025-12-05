@@ -4,6 +4,7 @@ import { theme } from '@repo/ui';
 const { colors } = theme;
 
 export const Wrapper = styled.div`
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;

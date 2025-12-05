@@ -9,6 +9,8 @@ export const STORAGE_KEYS = {
   CART: 'cart-menus',
   /** 테이블 주문 내역 data 키 */
   TABLE_ORDER_HISTORIES: 'table-order-histories',
+  /** 선택한 테이블 data 키 */
+  TABLE: 'table',
 } as const;
 
 export const timerKeys = {

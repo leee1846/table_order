@@ -11,9 +11,7 @@ import { usePostTableOrder } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
-
-// TODO: 추후 테이블 번호 선택 기능 추가 예정
-const tableNumber = 1;
+import { useTableData } from '@/hooks/useTableData';
 
 interface Props {
   onClose: () => void;
@@ -101,9 +99,11 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
   };
 
   const { shopData } = useShopData();
+  const { table } = useTableData();
+
   const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData({
     shopData,
-    tableNumber,
+    tableNumber: table?.tableNumber,
   });
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const requestOrder = () => {
