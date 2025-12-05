@@ -21,8 +21,11 @@ export const Section = styled.section`
   position: relative;
 `;
 
-export const Logo = styled.p`
-  padding: 40px 20px 20px;
+export const Logo = styled.div`
+  & > button {
+    width: 100%;
+    padding: 40px 20px 20px;
+  }
 `;
 
 export const List = styled.ul`

@@ -3,17 +3,19 @@ export const ROUTES = {
     path: '/',
     generate: () => '/',
   },
+
   LOGIN: {
     path: '/login',
     generate: () => '/login',
   },
+
+  TABLES: {
+    path: 'tables',
+    generate: () => '/tables',
+  },
+
   SETTINGS: {
     path: '/settings',
-
-    TABLES: {
-      path: 'tables',
-      generate: () => '/settings/tables',
-    },
 
     MISCELLANEOUS: {
       path: 'misc',

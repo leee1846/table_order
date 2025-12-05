@@ -2,7 +2,7 @@ import { CloseIcon, UnlockedIcon, ArrowBackIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/PasswordModal/passwordModal.style';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
@@ -17,12 +17,22 @@ export const PasswordModal = ({ onClose }: Props) => {
 
   const handleNumberPress = (number: number) => {
     setPassword((prev) => {
+      if (prev && prev.length > 3) {
+        return prev;
+      }
+
       if (prev === null) {
         return String(number);
       }
       return prev + String(number);
     });
   };
+
+  useEffect(() => {
+    if (password && password.length > 3) {
+      console.log(password);
+    }
+  }, [password]);
 
   const deletePassword = () => {
     setPassword((prev) => {
