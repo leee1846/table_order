@@ -76,7 +76,7 @@ export interface IShopSetting {
   shopSeq: number;
   useTheftPrevention: boolean;
   serviceChargeRate: number;
-  currencySetting: string;
+  currencySetting: 'KRW' | 'USD';
   usePickupAlert: boolean;
   useDarkTheme: boolean;
   useOnlinePosMode: boolean;

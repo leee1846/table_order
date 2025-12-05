@@ -6,6 +6,8 @@ import type { ITableOrderHistoriesData } from '@/stores/data/useTableOrderHistor
 import { formatCurrency } from '@repo/util/string';
 import { NoContent } from '@/feature/NoContent';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { CURRENCY_SYMBOL } from '@/constants/common';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -14,6 +16,12 @@ interface Props {
 export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
   const { t } = useTranslation();
   const histories = orderHistories?.orderDetailMenuList;
+  const a: number = '1';
+  const b: number = 3;
+  console.log(a / b);
+  const { data: shopDetailData } = useShopDetailData();
+  const currencySymbol =
+    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
   const calculateTotalPrice = () => {
     if (!histories) {
@@ -98,7 +106,10 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
         <S.TotalContainer>
           <div>
             <p>{t('합계')}</p>
-            <p>{formatCurrency(calculateTotalPrice())}</p>
+            <p>
+              {currencySymbol}
+              {formatCurrency(calculateTotalPrice())}
+            </p>
           </div>
           <BasicButton variant="Solid_Blue_2XL">{t('닫기')}</BasicButton>
         </S.TotalContainer>

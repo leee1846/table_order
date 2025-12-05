@@ -9,6 +9,8 @@ import { useCartStore } from '@/stores/useCartStore';
 import { toast } from '@repo/feature/utils';
 import { useTranslation } from 'react-i18next';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { CURRENCY_SYMBOL } from '@/constants/common';
 
 const IMAGE_SIZE = {
   1: {
@@ -29,6 +31,11 @@ interface Props {
 }
 export const MenuItem = ({ layout, category, menu }: Props) => {
   const { t } = useTranslation();
+
+  const { data: shopDetailData } = useShopDetailData();
+  const currencySymbol =
+    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
+
   const firstImage = menu.menuImageList?.[0];
 
   const [isMenuDetailOpen, setIsMenuDetailOpen] = useState(false);
@@ -118,8 +125,10 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
         <S.Content>
           <S.MenuName>{menu.menuName}</S.MenuName>
           <S.MenuPrice>
-            {/* TODO 통화설정 추후 적용 */}
-            <span>{formatCurrency(menu.menuPrice)}</span>
+            <span>
+              {currencySymbol}
+              {formatCurrency(menu.menuPrice)}
+            </span>
           </S.MenuPrice>
           {layout === 1 && (
             <S.Description>{menu.menuDescription}</S.Description>

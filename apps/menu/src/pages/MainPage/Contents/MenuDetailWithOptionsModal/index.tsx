@@ -22,6 +22,8 @@ import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import type { ICartMenu, ICartOption } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
+import { CURRENCY_SYMBOL } from '@/constants/common';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 interface Props {
   onClose: () => void;
@@ -55,6 +57,10 @@ export const MenuDetailWithOptionsModal = ({
   const { t } = useTranslation();
   const { theme } = useThemeMode();
   const { addToCart, updateCartItem } = useCartStore();
+
+  const { data: shopDetailData } = useShopDetailData();
+  const currencySymbol =
+    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
   // 초기 선택된 옵션을 Map으로 변환
   const initializeSelectedOptions = (): SelectedOptionsMap => {
@@ -457,7 +463,10 @@ export const MenuDetailWithOptionsModal = ({
           )}
 
           <S.MenuName>{menu.menuName}</S.MenuName>
-          <S.Price>{formatCurrency(menu.menuPrice)}</S.Price>
+          <S.Price>
+            {currencySymbol}
+            {formatCurrency(menu.menuPrice)}
+          </S.Price>
           <S.Description>{menu.menuDescription}</S.Description>
         </S.MenuInfoContainer>
 
@@ -601,7 +610,10 @@ export const MenuDetailWithOptionsModal = ({
             />
             <S.TotalInfo>
               <p>{t('합계')}</p>
-              <p>{formatCurrency(totalPrice)}</p>
+              <p>
+                {currencySymbol}
+                {formatCurrency(totalPrice)}
+              </p>
             </S.TotalInfo>
             <BasicButton
               variant="Solid_Blue_2XL"

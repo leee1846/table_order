@@ -16,6 +16,8 @@ import { useShopData } from '@/hooks/useShopData';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useTableData } from '@/hooks/useTableData';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { CURRENCY_SYMBOL } from '@/constants/common';
 
 // TODO: 추후 주문 방법 선택 기능 추가 예정
 const isPayAfter = true;
@@ -35,7 +37,11 @@ export const CartList = ({
   const { t } = useTranslation();
   const { theme } = useThemeMode();
 
-  const { table } = useTableData();
+  const { data: tableData } = useTableData();
+
+  const { data: shopDetailData } = useShopDetailData();
+  const currencySymbol =
+    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
   const [isMenuDetailModalOpen, setIsMenuDetailModalOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<ICartMenu | null>(null);
@@ -110,13 +116,13 @@ export const CartList = ({
         }));
 
         if (isPayAfter) {
-          if (!table?.tableNumber) {
+          if (!tableData?.tableNumber) {
             return;
           }
 
           await createTableOrder({
             shopCode: shopData?.shopCode ?? '',
-            tableNumber: table.tableNumber,
+            tableNumber: tableData.tableNumber,
             orderType: 'MENU',
             orders,
           });
@@ -204,7 +210,10 @@ export const CartList = ({
         <S.TotalContainer>
           <S.TotalInfo>
             <p>{t('합계')}</p>
-            <p>{formatCurrency(calculateTotalPrice())}</p>
+            <p>
+              {currencySymbol}
+              {formatCurrency(calculateTotalPrice())}
+            </p>
           </S.TotalInfo>
           <BasicButton variant="Solid_Blue_2XL" onClick={order}>
             {t('주문하기')}

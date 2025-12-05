@@ -11,6 +11,8 @@ import 'swiper/css';
 import { useState } from 'react';
 import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { CURRENCY_SYMBOL } from '@/constants/common';
 
 interface Props {
   onClose: () => void;
@@ -22,6 +24,10 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const [currentCount, setCurrentCount] = useState(1);
 
   const { addToCart, data: cartData } = useCartStore();
+
+  const { data: shopDetailData } = useShopDetailData();
+  const currencySymbol =
+    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
   const images = menu.menuImageList?.filter((img) => img.imagePath) || [];
 
@@ -73,8 +79,10 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
           <Thumbnail menu={menu} image={undefined} width="100%" />
         )}
         <S.Name>{menu.menuName}</S.Name>
-        {/* TODO 화폐단위 추후 적용 */}
-        <S.Price>₩{formatCurrency(menu.menuPrice)}</S.Price>
+        <S.Price>
+          {currencySymbol}
+          {formatCurrency(menu.menuPrice)}
+        </S.Price>
         <S.Description>{menu.menuDescription}</S.Description>
         <NumberInput
           variant="square"
@@ -88,7 +96,10 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
         />
         <S.TotalContainer>
           <p>{t('합계')}</p>
-          <p>{formatCurrency(menu.menuPrice * currentCount)}</p>
+          <p>
+            {currencySymbol}
+            {formatCurrency(menu.menuPrice * currentCount)}
+          </p>
         </S.TotalContainer>
         <BasicButton
           variant="Solid_Blue_2XL"
