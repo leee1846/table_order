@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useThemeMode } from '@repo/ui';
 import { useState } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
-import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
+import type { ITableOrderHistoriesData } from '@/stores/data/useTableOrderHistoriesStore';
 import { PasswordModal } from '@/pages/MainPage/PasswordModal';
 
 interface Props {

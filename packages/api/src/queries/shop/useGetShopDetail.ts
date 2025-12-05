@@ -5,7 +5,7 @@ import { queryKeys } from '../queryKeys';
 import type { TGetShopResponse } from '../../types/shop';
 import type { IApiError } from '../../types/common';
 
-export const useGetShop = (
+export const useGetShopDetail = (
   shopCode: string,
   options?: Omit<
     UseQueryOptions<TGetShopResponse, AxiosError<IApiError>>,

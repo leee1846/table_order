@@ -13,6 +13,8 @@ export const STORAGE_KEYS = {
   TABLE: 'table',
   /** 테이블 그룹 data 키 */
   TABLE_GROUP: 'table-group',
+  /** 선택한 상점 상세 data 키 */
+  SHOP_DETAIL: 'shop-detail',
 } as const;
 
 export const timerKeys = {

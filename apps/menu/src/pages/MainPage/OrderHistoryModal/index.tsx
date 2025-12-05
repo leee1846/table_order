@@ -2,7 +2,7 @@ import { BasicButton } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/OrderHistoryModal/orderHistoryModal.style';
 import { getTodayDateString } from '@repo/util/date';
 import { useTranslation } from 'react-i18next';
-import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
+import type { ITableOrderHistoriesData } from '@/stores/data/useTableOrderHistoriesStore';
 import { formatCurrency } from '@repo/util/string';
 import { NoContent } from '@/feature/NoContent';
 import { calculateMenuTotalPrice } from '@/utils/calculation';

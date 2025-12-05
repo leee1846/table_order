@@ -6,7 +6,7 @@ import { CartButton } from '@/pages/MainPage/CartButton';
 import { BreakTime } from '@/pages/MainPage/BreakTime';
 import { CartReminder } from '@/pages/MainPage/CartReminder';
 import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
-import { useCategoryStore } from '@/stores/useCategoryStore';
+import { useCategoryStore } from '@/stores/data/useCategoryStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { checkCategorySaleStatus } from '@/utils/category';
 import { timerKeys } from '@/constants/keys';
@@ -17,6 +17,7 @@ import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useTableData } from '@/hooks/useTableData';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 // TODO: api를 통해 반환받은 data로 추후 변경 예정
 const useScrollLayout = false;
@@ -26,7 +27,11 @@ const showBreakTime = false;
 export const MainPage = () => {
   /** 상점 데이터 로드 */
   useShopData();
-  /** 테이블 데이터 설정 */
+
+  /** 상점 상세 데이터 로드 */
+  useShopDetailData();
+
+  /** 테이블 데이터 로드 */
   useTableData();
 
   /** 카테고리 데이터 로드 */

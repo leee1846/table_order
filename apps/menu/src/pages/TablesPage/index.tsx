@@ -9,12 +9,15 @@ import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { Sidebar } from '@/pages/TablesPage/Sidebar';
 import * as S from '@/pages/TablesPage/tablePage.style';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 export const TablesPage = () => {
   const navigate = useNavigate();
 
   /** 상점 데이터 로드 */
   useShopData();
+  /** 상점 상세 데이터 로드 */
+  useShopDetailData();
 
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
     number | null

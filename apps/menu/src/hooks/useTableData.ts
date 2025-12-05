@@ -1,4 +1,4 @@
-import { useTableStore } from '@/stores/useTableStore';
+import { useTableStore } from '@/stores/data/useTableStore';
 import { ROUTES } from '@/constants/routes';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';

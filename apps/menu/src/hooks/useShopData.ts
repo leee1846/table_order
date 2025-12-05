@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useGetShops } from '@repo/api/queries';
-import { useShopStore } from '@/stores/useShopStore';
+import { useShopStore } from '@/stores/data/useShopStore';
 
 interface Props {
   /**

@@ -1,5 +1,5 @@
 import { useGetCategoriesWithMenus } from '@repo/api/queries';
-import { useCategoryStore } from '@/stores/useCategoryStore';
+import { useCategoryStore } from '@/stores/data/useCategoryStore';
 import { mockCategories } from '@/mocks/mockCategories';
 import { useEffect } from 'react';
 import { useShopData } from '@/hooks/useShopData';
