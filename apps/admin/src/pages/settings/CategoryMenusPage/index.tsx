@@ -4,11 +4,9 @@ import { Menus } from '@/pages/settings/CategoryMenusPage/Menus';
 import { MenuManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal';
 import { useLocation, useParams } from 'react-router-dom';
 import * as S from '@/pages/settings/CategoryMenusPage/categoryMenusPage.style';
-import { useGetMenuList } from '@repo/api/queries';
+import { useGetMenuList, queryKeys } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys } from '@repo/api/queries';
-import type { IMenu } from '@repo/api/types';
-import type { TGetCategoryListResponse } from '@repo/api/types';
+import type { IMenu, TGetCategoryListResponse } from '@repo/api/types';
 
 export const CategoryMenusPage = () => {
   const [isMenuManageModalOpen, setIsMenuManageModalOpen] = useState(false);

@@ -99,7 +99,9 @@ export const EditTableDialog = ({
             <S.Label>테이블 ID</S.Label>
             <Input
               value={table.tableSeq.toString()}
-              onChange={() => {}}
+              onChange={() => {
+                // 테이블 ID는 수정 불가
+              }}
               disabled
               errorMessage="테이블 ID는 자동 생성되며. 임의 수정이 불가능해요."
             />

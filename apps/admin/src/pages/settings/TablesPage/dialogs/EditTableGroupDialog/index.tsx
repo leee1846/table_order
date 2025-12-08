@@ -30,7 +30,9 @@ export const EditTableGroupDialog = forwardRef<
   }, [tableGroup]);
 
   const handleSubmit = async () => {
-    if (!tableGroup) return;
+    if (!tableGroup) {
+      return;
+    }
 
     if (groupName.trim() !== '') {
       try {
@@ -47,7 +49,7 @@ export const EditTableGroupDialog = forwardRef<
 
         toast('테이블 그룹이 수정되었습니다.');
         handleClose();
-      } catch (error) {
+      } catch (_error) {
         toast('테이블 그룹 수정에 실패했습니다.');
       }
     }
@@ -91,3 +93,5 @@ export const EditTableGroupDialog = forwardRef<
     </ModalBackground>
   );
 });
+
+EditTableGroupDialog.displayName = 'EditTableGroupDialog';

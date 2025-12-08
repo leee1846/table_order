@@ -12,6 +12,7 @@ import type {
   IUpdateOptionGroup,
   ICreateOption,
   IUpdateOption,
+  TLocale,
 } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
 import { useMenuForm } from '../../context/MenuManageModalContext';
@@ -299,8 +300,8 @@ export const OptionGroupManageModal = ({
       index: currentOptionGroupList.length + 1,
       optionList: optionListForForm,
       optionGroupSeq: tempOptionGroupSeq,
-      localeOptionGroupName: {} as any, //TODO any 빼기, useCallback 빼기,
-      localeOptionGroupNameStr: {} as any,
+      localeOptionGroupName: {} as TLocale, //TODO any 빼기, useCallback 빼기,
+      localeOptionGroupNameStr: {} as TLocale,
     } as IOptionGroup;
 
     updateFormValues({

@@ -1,14 +1,13 @@
 ﻿'use client';
 
 import { BasicButton } from '@repo/ui/components';
-import { toast } from '@repo/feature/utils';
+import { toast, openDualActionDialog } from '@repo/feature/utils';
 import * as S from './tableCard.styles';
 import { type ITableInfo } from '@repo/api/types';
 import { css } from '@emotion/react';
 import { theme } from '@repo/ui';
 import { useState } from 'react';
 import { EditTableDialog } from '../dialogs/EditTableDialog';
-import { openDualActionDialog } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { useDeleteTable, queryKeys } from '@repo/api/queries';
 const { colors } = theme;

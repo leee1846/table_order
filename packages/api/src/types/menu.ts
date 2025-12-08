@@ -14,7 +14,7 @@ interface ICommonResponseData {
   updateMemberUuid: string;
 }
 
-type TLocale = Record<string, string> | null;
+export type TLocale = Record<string, string> | null;
 
 export interface IOption extends ICommonResponseData {
   optionSeq: number;
