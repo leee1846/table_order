@@ -2,4 +2,5 @@ export * from './useGetMenuList';
 export * from './usePostCreateMenu';
 export * from './usePutUpdateMenu';
 export * from './usePutUpdateMenuIndex';
+export * from './usePutUpdateMenuHidden';
 export * from './useDeleteMenu';

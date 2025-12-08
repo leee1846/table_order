@@ -6,6 +6,7 @@ import type {
   IGetMenuListParams,
   IUpdateMenuRequest,
   IUpdateMenuIndexRequest,
+  IUpdateMenuHiddenParams,
   TGetMenuListResponse,
 } from '../types/menu';
 import type { TVoidApiResponse } from '../types/common';
@@ -130,6 +131,23 @@ export const updateMenuIndex = async (
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'PUT',
     url: ENDPOINTS.MENU.INDEX_UPDATE,
+    data: params,
+  });
+
+  return response.data;
+};
+
+/**
+ * 메뉴 숨김 상태를 수정합니다.
+ * PUT /menu/hidden
+ */
+export const updateMenuHidden = async (
+  params: IUpdateMenuHiddenParams
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.MENU.HIDDEN,
     data: params,
   });
 

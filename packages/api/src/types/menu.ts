@@ -314,3 +314,15 @@ export interface IUpdateMenuIndexRequest {
   menuSeq: number;
   index: number;
 }
+
+// ============================================================================
+// PUT /menu/hidden
+// ============================================================================
+
+/**
+ * 메뉴 숨김 수정 요청 타입
+ */
+export interface IUpdateMenuHiddenParams {
+  menuSeq: number;
+  isHidden: boolean;
+}

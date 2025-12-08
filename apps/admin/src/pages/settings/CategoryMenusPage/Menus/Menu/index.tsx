@@ -11,7 +11,11 @@ import {
 import { formatCurrency, normalizeImageUrl } from '@repo/util/string';
 import { MenuCopyModal } from '@/pages/settings/CategoryMenusPage/MenuCopyModal';
 import type { IMenu } from '@repo/api/types';
-import { queryKeys, useDeleteMenu } from '@repo/api/queries';
+import {
+  queryKeys,
+  useDeleteMenu,
+  usePutUpdateMenuHidden,
+} from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { css } from '@emotion/react';
 
@@ -24,6 +28,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
   const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const deleteMenuMutation = useDeleteMenu();
+  const { mutateAsync: updateMenuHidden } = usePutUpdateMenuHidden();
 
   const thumbnailSrc = useMemo(() => {
     if (!menu.menuImageList || menu.menuImageList.length === 0) {
@@ -73,6 +78,33 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
         );
       },
     });
+  };
+
+  const handleToggleHidden = () => {
+    updateMenuHidden(
+      {
+        menuSeq: menu.menuSeq,
+        isHidden: !menu.isHidden,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.menu.list(menu.categorySeq),
+          });
+          toast(
+            menu.isHidden
+              ? '메뉴가 표시되었습니다.'
+              : '메뉴가 숨김 처리되었습니다.'
+          );
+        },
+        onError: (error) => {
+          toast(
+            error.response?.data?.status?.userMessage ||
+              '메뉴 숨김 상태 변경에 실패했습니다.'
+          );
+        },
+      }
+    );
   };
 
   return (
@@ -140,9 +172,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
               <ToggleButton
                 size="M"
                 isOn={menu.isHidden}
-                onChange={() => {
-                  // noop
-                }}
+                onChange={handleToggleHidden}
               />
             </div>
             <div>

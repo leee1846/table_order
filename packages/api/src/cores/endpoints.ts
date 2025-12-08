@@ -30,6 +30,7 @@ export const ENDPOINTS = {
     UPDATE: '/menu',
     DELETE: '/menu',
     INDEX_UPDATE: '/menu/index',
+    HIDDEN: '/menu/hidden',
   },
 
   SHOP: {
