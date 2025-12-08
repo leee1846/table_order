@@ -3,31 +3,33 @@ import { jpFlagIcon, koFlagIcon, chFlagIcon, usFlagIcon } from '@repo/ui/icons';
 import { useLanguageStore } from '@/stores/data/useLanguageStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 
-const FLAG_ICONS = {
-  ko: koFlagIcon,
-  en: usFlagIcon,
-  ch: chFlagIcon,
-  jp: jpFlagIcon,
+export type LanguageCode = 'ko' | 'en' | 'ch' | 'jp';
+
+export const LANGUAGE_CONFIG = {
+  ko: {
+    label: '한국어',
+    flag: koFlagIcon,
+  },
+  en: {
+    label: '영어',
+    flag: usFlagIcon,
+  },
+  ch: {
+    label: '중국어',
+    flag: chFlagIcon,
+  },
+  jp: {
+    label: '일본어',
+    flag: jpFlagIcon,
+  },
 } as const;
 
-export const LANGUAGE_CONFIG_LIST = [
-  {
-    label: '한국어',
-    value: 'ko',
-  },
-  {
-    label: '영어',
-    value: 'en',
-  },
-  {
-    label: '중국어',
-    value: 'ch',
-  },
-  {
-    label: '일본어',
-    value: 'jp',
-  },
-];
+export const LANGUAGE_CONFIG_LIST = Object.entries(LANGUAGE_CONFIG).map(
+  ([value, config]) => ({
+    value: value as LanguageCode,
+    label: config.label,
+  })
+);
 
 export const LanguageSelector = () => {
   const { data: shopDetailData } = useShopDetailData();
@@ -42,21 +44,19 @@ export const LanguageSelector = () => {
       <p>주문에 사용하실 언어를 선택해 주세요.</p>
       <S.Buttons>
         {shopDetailData.shoplocaleMapList.map((lang) => {
+          const config = LANGUAGE_CONFIG[lang.localeCode as LanguageCode];
+          if (!config) {
+            return null;
+          }
+
           return (
             <S.Button key={lang.localeCode}>
               <button
                 type="button"
                 onClick={() => setCurrentLanguage(lang.localeCode)}
               >
-                <img
-                  src={FLAG_ICONS[lang.localeCode as keyof typeof FLAG_ICONS]}
-                  alt={lang.localeCode}
-                />
-                {
-                  LANGUAGE_CONFIG_LIST.find(
-                    (item) => item.value === lang.localeCode
-                  )?.label
-                }
+                <img src={config.flag} alt={lang.localeCode} />
+                {config.label}
               </button>
             </S.Button>
           );
