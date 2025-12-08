@@ -15,6 +15,7 @@ import {
   queryKeys,
   useDeleteMenu,
   usePutUpdateMenuHidden,
+  usePutUpdateMenuOutOfStock,
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { css } from '@emotion/react';
@@ -29,6 +30,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
   const queryClient = useQueryClient();
   const deleteMenuMutation = useDeleteMenu();
   const { mutateAsync: updateMenuHidden } = usePutUpdateMenuHidden();
+  const { mutateAsync: updateMenuOutOfStock } = usePutUpdateMenuOutOfStock();
 
   const thumbnailSrc = useMemo(() => {
     if (!menu.menuImageList || menu.menuImageList.length === 0) {
@@ -101,6 +103,33 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
           toast(
             error.response?.data?.status?.userMessage ||
               '메뉴 숨김 상태 변경에 실패했습니다.'
+          );
+        },
+      }
+    );
+  };
+
+  const handleToggleOutOfStock = () => {
+    updateMenuOutOfStock(
+      {
+        menuSeq: menu.menuSeq,
+        isOutOfStock: !menu.isOutOfStock,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.menu.list(menu.categorySeq),
+          });
+          toast(
+            menu.isOutOfStock
+              ? '메뉴 품절이 해제되었습니다.'
+              : '메뉴가 품절 처리되었습니다.'
+          );
+        },
+        onError: (error) => {
+          toast(
+            error.response?.data?.status?.userMessage ||
+              '메뉴 품절 상태 변경에 실패했습니다.'
           );
         },
       }
@@ -180,9 +209,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
               <ToggleButton
                 size="M"
                 isOn={menu.isOutOfStock}
-                onChange={() => {
-                  // noop
-                }}
+                onChange={handleToggleOutOfStock}
               />
             </div>
           </S.ToggleContainer>

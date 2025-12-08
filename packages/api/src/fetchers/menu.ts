@@ -7,6 +7,7 @@ import type {
   IUpdateMenuRequest,
   IUpdateMenuIndexRequest,
   IUpdateMenuHiddenParams,
+  IUpdateMenuOutOfStockParams,
   TGetMenuListResponse,
 } from '../types/menu';
 import type { TVoidApiResponse } from '../types/common';
@@ -148,6 +149,23 @@ export const updateMenuHidden = async (
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'PUT',
     url: ENDPOINTS.MENU.HIDDEN,
+    data: params,
+  });
+
+  return response.data;
+};
+
+/**
+ * 메뉴 품절 상태를 수정합니다.
+ * PUT /menu/out-of-stock
+ */
+export const updateMenuOutOfStock = async (
+  params: IUpdateMenuOutOfStockParams
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.MENU.OUT_OF_STOCK,
     data: params,
   });
 

@@ -326,3 +326,15 @@ export interface IUpdateMenuHiddenParams {
   menuSeq: number;
   isHidden: boolean;
 }
+
+// ============================================================================
+// PUT /menu/out-of-stock
+// ============================================================================
+
+/**
+ * 메뉴 품절 수정 요청 타입
+ */
+export interface IUpdateMenuOutOfStockParams {
+  menuSeq: number;
+  isOutOfStock: boolean;
+}

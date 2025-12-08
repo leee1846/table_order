@@ -31,6 +31,7 @@ export const ENDPOINTS = {
     DELETE: '/menu',
     INDEX_UPDATE: '/menu/index',
     HIDDEN: '/menu/hidden',
+    OUT_OF_STOCK: '/menu/out-of-stock',
   },
 
   SHOP: {
