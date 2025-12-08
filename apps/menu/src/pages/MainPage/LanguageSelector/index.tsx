@@ -61,6 +61,13 @@ export const LanguageSelector = () => {
             </S.Button>
           );
         })}
+
+        <S.Button>
+          <button type="button" onClick={() => setCurrentLanguage('en')}>
+            <img src={usFlagIcon} alt="en" />
+            English
+          </button>
+        </S.Button>
       </S.Buttons>
     </S.Container>
   );

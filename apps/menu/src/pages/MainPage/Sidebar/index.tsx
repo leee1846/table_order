@@ -2,9 +2,9 @@ import { useState } from 'react';
 import * as S from '@/pages/MainPage/Sidebar/sidebar.style';
 import { CallBellIcon } from '@repo/ui/icons';
 import { baseTheme } from '@repo/ui';
-import { useTranslation } from 'react-i18next';
 import { StaffCallModal } from '@/pages/MainPage/StaffCallModal';
 import type { ICategoryWithMenus } from '@repo/api/types';
+import { useLanguageStore } from '@/stores/data/useLanguageStore';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -19,9 +19,8 @@ export const Sidebar = ({
   selectedCategorySeq,
   handleCategoryClick,
 }: Props) => {
-  const { t } = useTranslation();
-
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
+  const { data: currentLanguage } = useLanguageStore();
 
   return (
     <>
@@ -33,7 +32,8 @@ export const Sidebar = ({
             type="button"
             onClick={() => handleCategoryClick(category)}
           >
-            {category.categoryName}
+            {category.localeCategoryName?.[currentLanguage ?? 'ko'] ??
+              category.categoryName}
           </S.CategoryButton>
         ))}
 
@@ -45,7 +45,9 @@ export const Sidebar = ({
                 width={30}
                 height={30}
               />
-              {t('직원 호출')}
+              {staffCallCategory.localeCategoryName?.[
+                currentLanguage ?? 'ko'
+              ] ?? staffCallCategory.categoryName}
             </button>
           </S.StaffCall>
         )}

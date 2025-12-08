@@ -138,6 +138,7 @@ export const MainPage = () => {
   /**========= 다국어 선택 START ================================== */
   const [show, setShow] = useState(false);
   const { data: currentLanguage } = useLanguageStore();
+
   useEffect(() => {
     if (shopDetailData?.useLocale) {
       setShow(false);
@@ -151,6 +152,7 @@ export const MainPage = () => {
 
     setShow(true);
   }, [shopDetailData?.useLocale, currentLanguage]);
+
   if (show) {
     return <LanguageSelector />;
   }

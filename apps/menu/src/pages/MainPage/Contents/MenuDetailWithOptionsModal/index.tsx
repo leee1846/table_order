@@ -24,6 +24,7 @@ import type { ICartMenu, ICartOption } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useLanguageStore } from '@/stores/data/useLanguageStore';
 
 interface Props {
   onClose: () => void;
@@ -56,8 +57,8 @@ export const MenuDetailWithOptionsModal = ({
 }: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
+  const { data: currentLanguage } = useLanguageStore();
   const { addToCart, updateCartItem } = useCartStore();
-
   const { data: shopDetailData } = useShopDetailData();
   const currencySymbol =
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
@@ -80,7 +81,12 @@ export const MenuDetailWithOptionsModal = ({
       if (option) {
         const optionKey = getOptionKey(option);
         optionsMap.set(optionKey, {
-          option: { ...option },
+          option: {
+            ...option,
+            optionName:
+              option.localeOptionName?.[currentLanguage ?? 'ko'] ??
+              option.optionName,
+          },
           quantity: cartOption.quantity,
         });
       }
@@ -116,7 +122,7 @@ export const MenuDetailWithOptionsModal = ({
   const buildOptionDisplayText = (option: IOption): string => {
     const priceText = formatAdditionalPriceText(option.optionPrice);
     const outOfStockText = option.isOutOfStock ? ` (${t('품절')})` : '';
-    return `${option.optionName}${priceText}${outOfStockText}`;
+    return `${option.localeOptionName?.[currentLanguage ?? 'ko'] ?? option.optionName}${priceText}${outOfStockText}`;
   };
 
   // 다중 선택 가능한 옵션을 토글 (체크박스 방식)
@@ -160,7 +166,15 @@ export const MenuDetailWithOptionsModal = ({
       }
 
       // 선택되지 않은 경우: 옵션 추가 (수량 1)
-      newOptions.set(optionKey, { option: { ...option }, quantity: 1 });
+      newOptions.set(optionKey, {
+        option: {
+          ...option,
+          optionName:
+            option.localeOptionName?.[currentLanguage ?? 'ko'] ??
+            option.optionName,
+        },
+        quantity: 1,
+      });
       return newOptions;
     });
   };
@@ -179,7 +193,15 @@ export const MenuDetailWithOptionsModal = ({
 
       // 새 옵션 추가 (수량 1)
       const optionKey = getOptionKey(option);
-      newOptions.set(optionKey, { option: { ...option }, quantity: 1 });
+      newOptions.set(optionKey, {
+        option: {
+          ...option,
+          optionName:
+            option.localeOptionName?.[currentLanguage ?? 'ko'] ??
+            option.optionName,
+        },
+        quantity: 1,
+      });
       return newOptions;
     });
   };
@@ -260,7 +282,12 @@ export const MenuDetailWithOptionsModal = ({
 
         // 수량 업데이트
         newOptions.set(optionKey, {
-          option: { ...targetOption },
+          option: {
+            ...targetOption,
+            optionName:
+              targetOption.localeOptionName?.[currentLanguage ?? 'ko'] ??
+              targetOption.optionName,
+          },
           quantity: newQuantity,
         });
         return newOptions;
@@ -269,7 +296,12 @@ export const MenuDetailWithOptionsModal = ({
       // 수량 감소: 수량만 업데이트
       if (newQuantity < currentCount) {
         newOptions.set(optionKey, {
-          option: { ...targetOption },
+          option: {
+            ...targetOption,
+            optionName:
+              targetOption.localeOptionName?.[currentLanguage ?? 'ko'] ??
+              targetOption.optionName,
+          },
           quantity: newQuantity,
         });
         return newOptions;
@@ -293,7 +325,10 @@ export const MenuDetailWithOptionsModal = ({
         result.push({
           option: item.option,
           count: item.quantity,
-          groupName: optionGroup?.optionGroupName || '',
+          groupName:
+            optionGroup?.localeOptionGroupName?.[currentLanguage ?? 'ko'] ??
+            optionGroup?.optionGroupName ??
+            '',
         });
       });
 
@@ -344,7 +379,7 @@ export const MenuDetailWithOptionsModal = ({
         maxQuantity: optionGroup.maxQuantity,
       })})`;
     }
-    return `${optionGroup.optionGroupName} ${quantityText}`.trim();
+    return `${optionGroup.localeOptionGroupName?.[currentLanguage ?? 'ko'] ?? optionGroup.optionGroupName} ${quantityText}`.trim();
   };
 
   // 선택된 옵션 항목의 표시 텍스트 생성
@@ -353,7 +388,10 @@ export const MenuDetailWithOptionsModal = ({
   ): string => {
     const priceText = formatAdditionalPriceText(item.option.optionPrice);
     const quantityText = item.count > 1 ? ` x${item.count}` : '';
-    return `${item.groupName} : ${item.option.optionName}${priceText}${quantityText}`;
+    const optionName =
+      item.option.localeOptionName?.[currentLanguage ?? 'ko'] ??
+      item.option.optionName;
+    return `${item.groupName} : ${optionName}${priceText}${quantityText}`;
   };
 
   // 계산된 값들
@@ -432,7 +470,9 @@ export const MenuDetailWithOptionsModal = ({
       const cartOption: ICartOption = {
         optionGroupSeq: item.option.optionGroupSeq,
         optionSeq: item.option.optionSeq,
-        optionName: item.option.optionName,
+        optionName:
+          item.option.localeOptionName?.[currentLanguage ?? 'ko'] ??
+          item.option.optionName,
         optionPrice: item.option.optionPrice,
         quantity: cartOptionQuantity,
       };
@@ -445,7 +485,7 @@ export const MenuDetailWithOptionsModal = ({
     const cartMenu: ICartMenu = {
       categorySeq: menu.categorySeq,
       menuSeq: menu.menuSeq,
-      menuName: menu.menuName,
+      menuName: menu.localeMenuName?.[currentLanguage ?? 'ko'] ?? menu.menuName,
       menuPrice: menu.menuPrice,
       quantity: menuQuantity,
       selectedOptions: cartOptions,
@@ -492,12 +532,17 @@ export const MenuDetailWithOptionsModal = ({
             <Thumbnail menu={menu} image={undefined} width="100%" />
           )}
 
-          <S.MenuName>{menu.menuName}</S.MenuName>
+          <S.MenuName>
+            {menu.localeMenuName?.[currentLanguage ?? 'ko'] ?? menu.menuName}
+          </S.MenuName>
           <S.Price>
             {currencySymbol}
             {formatCurrency(menu.menuPrice)}
           </S.Price>
-          <S.Description>{menu.menuDescription}</S.Description>
+          <S.Description>
+            {menu.localeMenuDescription?.[currentLanguage ?? 'ko'] ??
+              menu.menuDescription}
+          </S.Description>
         </S.MenuInfoContainer>
 
         <S.OptionsContainer>
@@ -533,7 +578,9 @@ export const MenuDetailWithOptionsModal = ({
                         return (
                           <S.NumberInputContainer key={option.optionSeq}>
                             <S.OptionText soldOut={option.isOutOfStock}>
-                              {option.optionName}
+                              {option.localeOptionName?.[
+                                currentLanguage ?? 'ko'
+                              ] ?? option.optionName}
                               {formatAdditionalPriceText(option.optionPrice)}
                             </S.OptionText>
                             <NumberInput

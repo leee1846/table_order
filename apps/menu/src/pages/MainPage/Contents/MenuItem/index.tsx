@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
+import { useLanguageStore } from '@/stores/data/useLanguageStore';
 
 const IMAGE_SIZE = {
   1: {
@@ -31,8 +32,9 @@ interface Props {
 }
 export const MenuItem = ({ layout, category, menu }: Props) => {
   const { t } = useTranslation();
-
+  const { data: currentLanguage } = useLanguageStore();
   const { data: shopDetailData } = useShopDetailData();
+
   const currencySymbol =
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
@@ -123,7 +125,9 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
           width={IMAGE_SIZE[layout].width}
         />
         <S.Content>
-          <S.MenuName>{menu.menuName}</S.MenuName>
+          <S.MenuName>
+            {menu.localeMenuName?.[currentLanguage ?? 'ko'] ?? menu.menuName}
+          </S.MenuName>
           <S.MenuPrice>
             <span>
               {currencySymbol}
@@ -131,7 +135,10 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
             </span>
           </S.MenuPrice>
           {layout === 1 && (
-            <S.Description>{menu.menuDescription}</S.Description>
+            <S.Description>
+              {menu.localeMenuDescription?.[currentLanguage ?? 'ko'] ??
+                menu.menuDescription}
+            </S.Description>
           )}
         </S.Content>
       </S.Container>

@@ -11,6 +11,7 @@ import { usePostTableOrder } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { useLanguageStore } from '@/stores/data/useLanguageStore';
 
 interface Props {
   onClose: () => void;
@@ -20,6 +21,7 @@ interface Props {
 export const StaffCallModal = ({ onClose, category }: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
+  const { data: currentLanguage } = useLanguageStore();
 
   const [selectedMenu, setSelectedMenu] = useState<IMenuBase | null>(null);
   const [selectedMenuList, setSelectedMenuList] = useState<ICartMenu[]>([]);
@@ -69,7 +71,9 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
           const newCartMenu: ICartMenu = {
             categorySeq: sourceMenu.categorySeq,
             menuSeq: sourceMenu.menuSeq,
-            menuName: sourceMenu.menuName,
+            menuName:
+              sourceMenu.localeMenuName?.[currentLanguage ?? 'ko'] ??
+              sourceMenu.menuName,
             menuPrice: sourceMenu.menuPrice,
             quantity: newQuantity,
             selectedOptions: [],
@@ -172,7 +176,10 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
                       onClick={() => handleSelectMenu(menu)}
                       isSelected={selectedMenu?.menuSeq === menu.menuSeq}
                     >
-                      <p>{menu.menuName}</p>
+                      <p>
+                        {menu.localeMenuName?.[currentLanguage ?? 'ko'] ??
+                          menu.menuName}
+                      </p>
                       {selectedMenu?.menuSeq === menu.menuSeq && (
                         <div>
                           <S.DeleteButton

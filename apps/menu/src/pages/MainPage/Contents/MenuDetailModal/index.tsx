@@ -13,6 +13,7 @@ import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
+import { useLanguageStore } from '@/stores/data/useLanguageStore';
 
 interface Props {
   onClose: () => void;
@@ -20,6 +21,7 @@ interface Props {
 }
 export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const { t } = useTranslation();
+  const { data: currentLanguage } = useLanguageStore();
 
   const [currentCount, setCurrentCount] = useState(1);
 
@@ -48,7 +50,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
     addToCart({
       categorySeq: menu.categorySeq,
       menuSeq: menu.menuSeq,
-      menuName: menu.menuName,
+      menuName: menu.localeMenuName?.[currentLanguage ?? 'ko'] ?? menu.menuName,
       menuPrice: menu.menuPrice,
       quantity: prevCartData?.quantity ?? 0 + currentCount,
       selectedOptions: [],
@@ -78,12 +80,17 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
         ) : (
           <Thumbnail menu={menu} image={undefined} width="100%" />
         )}
-        <S.Name>{menu.menuName}</S.Name>
+        <S.Name>
+          {menu.localeMenuName?.[currentLanguage ?? 'ko'] ?? menu.menuName}
+        </S.Name>
         <S.Price>
           {currencySymbol}
           {formatCurrency(menu.menuPrice)}
         </S.Price>
-        <S.Description>{menu.menuDescription}</S.Description>
+        <S.Description>
+          {menu.localeMenuDescription?.[currentLanguage ?? 'ko'] ??
+            menu.menuDescription}
+        </S.Description>
         <NumberInput
           variant="square"
           value={currentCount}
