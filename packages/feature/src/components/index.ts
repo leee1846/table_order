@@ -32,3 +32,4 @@ export {
   BaseTitle,
 } from './shared/dialogStyles';
 export { ToastMessage } from './ToastMessage';
+export { SortableList, type SortableListProps } from './SortableList';

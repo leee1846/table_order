@@ -32,6 +32,7 @@ export const CategoriesPage = () => {
         isLoading={isLoading}
         shopSeq={shopSeq}
       />
+
       <S.AddButton onClick={openAddCategoryModal}>
         <button type="button" onClick={openAddCategoryModal}>
           <AddIcon color={theme.colors.grey[700]} />
@@ -42,7 +43,6 @@ export const CategoriesPage = () => {
         <CategoryManageModal
           onClose={closeAddCategoryModal}
           shopSeq={shopSeq}
-          categoryList={categoryListResponse?.data}
         />
       )}
     </S.Container>

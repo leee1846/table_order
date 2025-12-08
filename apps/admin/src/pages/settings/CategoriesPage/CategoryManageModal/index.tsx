@@ -25,13 +25,11 @@ interface Props {
   onClose: () => void;
   categoryData?: ICategory;
   shopSeq: number;
-  categoryList?: ICategory[];
 }
 export const CategoryManageModal = ({
   onClose,
   categoryData,
   shopSeq,
-  categoryList = [],
 }: Props) => {
   const isEdit = !!categoryData;
   const queryClient = useQueryClient();
@@ -106,15 +104,6 @@ export const CategoryManageModal = ({
     return '00 : 00 - 00 : 00';
   };
 
-  // index 계산: 기존 카테고리 중 최대 index + 1, 없으면 0
-  const calculateIndex = () => {
-    if (categoryList.length === 0) {
-      return 0;
-    }
-    const maxIndex = Math.max(...categoryList.map((cat) => cat.index));
-    return maxIndex + 1;
-  };
-
   // 수정 모드일 때 기존 데이터로 초기화
   useEffect(() => {
     if (isEdit && categoryData) {
@@ -177,9 +166,6 @@ export const CategoryManageModal = ({
         await createCategoryMutation.mutateAsync({
           shopSeq,
           categoryName,
-          index: calculateIndex(),
-          isHidden: false,
-          mappedCategoryCode: null,
           saleDayOfWeek:
             saleDayOfWeekNumbers.length > 0 ? saleDayOfWeekNumbers : null,
           saleStartTime: saleStartTime || null,

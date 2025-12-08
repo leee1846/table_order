@@ -14,10 +14,9 @@ import { useQueryClient } from '@repo/api/tanstack-query';
 interface Props {
   category: ICategory;
   shopSeq: number;
-  categoryList: ICategory[];
 }
 
-export const Category = ({ category, shopSeq, categoryList }: Props) => {
+export const Category = ({ category, shopSeq }: Props) => {
   const queryClient = useQueryClient();
   const [isCategoryManageModalOpen, setIsCategoryManageModalOpen] =
     useState(false);
@@ -186,7 +185,6 @@ export const Category = ({ category, shopSeq, categoryList }: Props) => {
           onClose={() => setIsCategoryManageModalOpen(false)}
           categoryData={category}
           shopSeq={shopSeq}
-          categoryList={categoryList}
         />
       )}
     </>

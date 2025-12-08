@@ -73,11 +73,13 @@ export type ICreateCategoryRequest = Omit<
   | 'localeCategoryDescription'
   | 'createDate'
   | 'updateDate'
+  | 'index'
+  | 'isHidden'
+  | 'mappedCategoryCode'
 > &
   Partial<
     Pick<
       ICategoryBase,
-      | 'mappedCategoryCode'
       | 'saleDayOfWeek'
       | 'saleStartTime'
       | 'saleEndTime'
@@ -135,4 +137,17 @@ export interface IGetShopCategoriesWithMenusParams {
 
 export interface ICategoryWithMenus extends ICategoryBase {
   menuInfoList: IMenu[];
+}
+
+// ============================================================================
+// PUT /category/index
+// ============================================================================
+
+/**
+ * 카테고리 순번 수정 요청 타입
+ * 변경된 카테고리 하나만 전송 (categorySeq와 index 포함)
+ */
+export interface IUpdateCategoryIndexRequest {
+  categorySeq: number;
+  index: number;
 }

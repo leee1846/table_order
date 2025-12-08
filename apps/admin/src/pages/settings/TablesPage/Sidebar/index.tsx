@@ -1,4 +1,4 @@
-﻿import { AddIcon, HomeFilledIcon, EditIcon, DeleteIcon } from '@repo/ui/icons';
+﻿import { AddIcon, HomeFilledIcon } from '@repo/ui/icons';
 import * as S from './sidebar.styles';
 import { theme } from '@repo/ui';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { EditTableGroupDialog } from '../dialogs/EditTableGroupDialog';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, useDeleteTableGroup } from '@repo/api/queries';
+import { TableGroupItem } from './TableGroupItem';
 const { colors } = theme;
 
 import { ROUTES } from '@/constants/routes';
@@ -40,44 +41,8 @@ export const Sidebar = ({
     'default' | 'bottom' | 'top'
   >('default');
 
-  // useState는 값 변경 시 리렌더링 유발하지만, useRef는 UI에 반영 X, 내부 로직에서만 사용
-  //길게 누르기 타이머 ID를 저장하는 ref
-  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // 길게 누르기가 발생했는지 추적하는 boolean 값
-  const isLongPressRef = useRef(false);
-
   const tableGroupListRef = useRef<HTMLUListElement>(null);
-  const editDeleteButtonsRef = useRef<HTMLDivElement>(null);
   const editTableGroupDialogRef = useRef<HTMLDivElement>(null);
-  // 길게 누르기가 발생했을 때 처리하는 함수
-  const handleLongPressStart = (group: ITableGroup) => {
-    isLongPressRef.current = false; // 이전 길게 누르기 상태 초기화
-    longPressTimerRef.current = setTimeout(() => {
-      isLongPressRef.current = true;
-      setEditingGroupId(group.tableGroupSeq);
-      onTableGroupSelect(group.tableGroupSeq); // 길게 누른 그룹을 선택 상태로 변경
-    }, 500);
-  };
-
-  const handleLongPressEnd = () => {
-    if (longPressTimerRef.current) {
-      clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = null;
-    }
-  };
-
-  const handleItemClick = (group: ITableGroup) => {
-    handleLongPressEnd();
-    if (!isLongPressRef.current) {
-      // 다른 그룹을 클릭한 경우 수정/삭제 버튼 숨김
-      if (editingGroupId !== null && editingGroupId !== group.tableGroupSeq) {
-        setEditingGroupId(null);
-      }
-      onTableGroupSelect(group.tableGroupSeq);
-    }
-    isLongPressRef.current = false;
-  };
 
   const handleEdit = (group: ITableGroup) => {
     setEditingGroupId(group.tableGroupSeq);
@@ -219,40 +184,18 @@ export const Sidebar = ({
       <S.TableGroupListWrapper>
         <S.TableGroupList ref={tableGroupListRef}>
           {tableGroups.map((group) => (
-            <S.TableGroupItemWrapper key={group.tableGroupSeq}>
-              <S.TableGroupItem
-                onClick={() => handleItemClick(group)}
-                onMouseDown={() => handleLongPressStart(group)}
-                onMouseUp={handleLongPressEnd}
-                onMouseLeave={handleLongPressEnd}
-                onTouchStart={() => handleLongPressStart(group)}
-                onTouchEnd={handleLongPressEnd}
-                isSelected={selectedTableGroupId === group.tableGroupSeq}
-              >
-                {group.tableGroupName}
-              </S.TableGroupItem>
-              {editingGroupId === group.tableGroupSeq && (
-                <S.EditDeleteButtons
-                  ref={editDeleteButtonsRef}
-                  buttonPosition={buttonPosition}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <S.EditButton onClick={() => handleEdit(group)} type="button">
-                    <EditIcon width={32} height={32} color={colors.grey[700]} />
-                  </S.EditButton>
-                  <S.DeleteButton
-                    onClick={() => handleDelete(group)}
-                    type="button"
-                  >
-                    <DeleteIcon
-                      width={32}
-                      height={32}
-                      color={colors.grey[700]}
-                    />
-                  </S.DeleteButton>
-                </S.EditDeleteButtons>
-              )}
-            </S.TableGroupItemWrapper>
+            <TableGroupItem
+              key={group.tableGroupSeq}
+              group={group}
+              isSelected={selectedTableGroupId === group.tableGroupSeq}
+              isEditing={editingGroupId === group.tableGroupSeq}
+              buttonPosition={buttonPosition}
+              editingGroupId={editingGroupId}
+              onSelect={onTableGroupSelect}
+              onEdit={() => handleEdit(group)}
+              onDelete={() => handleDelete(group)}
+              onEditingChange={setEditingGroupId}
+            />
           ))}
         </S.TableGroupList>
       </S.TableGroupListWrapper>

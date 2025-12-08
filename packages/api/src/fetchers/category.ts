@@ -5,6 +5,7 @@ import type {
   IDeleteCategoryParams,
   IGetCategoryListParams,
   IUpdateCategoryRequest,
+  IUpdateCategoryIndexRequest,
   TGetCategoryListResponse,
   IGetShopCategoriesWithMenusParams,
 } from '../types/category';
@@ -73,6 +74,23 @@ export const deleteCategory = async (
     method: 'DELETE',
     url: ENDPOINTS.CATEGORY.DELETE,
     params: { categorySeq: params.categorySeq },
+  });
+
+  return response.data;
+};
+
+/**
+ * 카테고리 순번을 수정합니다.
+ * PUT /category/index
+ */
+export const updateCategoryIndex = async (
+  params: IUpdateCategoryIndexRequest
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.CATEGORY.INDEX_UPDATE,
+    data: params,
   });
 
   return response.data;

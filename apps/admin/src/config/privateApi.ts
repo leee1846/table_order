@@ -15,7 +15,7 @@ export const privateApi = createAxiosInstance({
 privateApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token =
-      'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJORVhBMDAwMDAxIiwicm9sZSI6IlNIT1AiLCJzaG9wU2VxIjoxLCJ0b2tlbl90eXBlIjoiYWNjZXNzX3Rva2VuIiwiaWF0IjoxNzY0ODk0MTYwLCJleHAiOjE3NjQ5MDQ5NjB9.GRBnsS5Z7qv16Nx-CjVUdslSOTr2bNrXqMc6vfBVZ7ZSys_uI9W9qjV5z3A4XmNuX1eVMOXxuvj80S1usfEVug';
+      'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJORVhBMDAwMDAxIiwicm9sZSI6IlNIT1AiLCJzaG9wU2VxIjoxLCJ0b2tlbl90eXBlIjoiYWNjZXNzX3Rva2VuIiwiaWF0IjoxNzY0OTA3MzI4LCJleHAiOjE3NjYzNzg1NTd9.zQXTf4XJEbST47NRgsJGplkSC88v13rd59HvbThRD4UgzM715hRaTexau0u5X3veJBSsG5ATXTqmodfnwkF_VA';
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }

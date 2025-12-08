@@ -301,3 +301,16 @@ export type IUpdateMenuRequest = Omit<
 export interface IDeleteMenuParams {
   menuSeq: number;
 }
+
+// ============================================================================
+// PUT /menu/index
+// ============================================================================
+
+/**
+ * 메뉴 순번 수정 요청 타입
+ * 변경된 메뉴 하나만 전송 (menuSeq와 index 포함)
+ */
+export interface IUpdateMenuIndexRequest {
+  menuSeq: number;
+  index: number;
+}

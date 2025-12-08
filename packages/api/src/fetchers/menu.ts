@@ -5,6 +5,7 @@ import type {
   IDeleteMenuParams,
   IGetMenuListParams,
   IUpdateMenuRequest,
+  IUpdateMenuIndexRequest,
   TGetMenuListResponse,
 } from '../types/menu';
 import type { TVoidApiResponse } from '../types/common';
@@ -113,6 +114,23 @@ export const deleteMenu = async (
     method: 'DELETE',
     url: ENDPOINTS.MENU.DELETE,
     params: { menuSeq: params.menuSeq },
+  });
+
+  return response.data;
+};
+
+/**
+ * 메뉴 순번을 수정합니다.
+ * PUT /menu/index
+ */
+export const updateMenuIndex = async (
+  params: IUpdateMenuIndexRequest
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.MENU.INDEX_UPDATE,
+    data: params,
   });
 
   return response.data;

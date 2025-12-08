@@ -20,6 +20,7 @@ export const ENDPOINTS = {
     CREATE: '/category',
     UPDATE: '/category',
     DELETE: '/category',
+    INDEX_UPDATE: '/category/index',
     MENUBOARD_LIST: (shopCode: string) => `/menuboard/${shopCode}`,
   },
 
@@ -28,6 +29,7 @@ export const ENDPOINTS = {
     CREATE: '/menu',
     UPDATE: '/menu',
     DELETE: '/menu',
+    INDEX_UPDATE: '/menu/index',
   },
 
   SHOP: {
