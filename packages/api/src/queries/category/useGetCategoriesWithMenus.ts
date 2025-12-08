@@ -4,18 +4,18 @@ import { getCategoriesWithMenus } from '../../fetchers/category';
 import { queryKeys } from '../queryKeys';
 import type {
   IGetShopCategoriesWithMenusParams,
-  TGetCategoryListResponse,
+  TGetShopCategoriesWithMenusResponse,
 } from '../../types/category';
 import { IApiError } from '../../types/common';
 
 export const useGetCategoriesWithMenus = (
   params: IGetShopCategoriesWithMenusParams,
   options?: Omit<
-    UseQueryOptions<TGetCategoryListResponse, AxiosError<IApiError>>,
+    UseQueryOptions<TGetShopCategoriesWithMenusResponse, AxiosError<IApiError>>,
     'queryKey' | 'queryFn'
   >
 ) => {
-  return useQuery<TGetCategoryListResponse, AxiosError<IApiError>>({
+  return useQuery<TGetShopCategoriesWithMenusResponse, AxiosError<IApiError>>({
     queryKey: queryKeys.category.menuboardList(
       params.shopCode,
       params.tableNumber

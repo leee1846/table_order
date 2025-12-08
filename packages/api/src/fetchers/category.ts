@@ -9,6 +9,7 @@ import type {
   IUpdateCategoryHiddenParams,
   TGetCategoryListResponse,
   IGetShopCategoriesWithMenusParams,
+  TGetShopCategoriesWithMenusResponse,
 } from '../types/category';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -119,9 +120,9 @@ export const updateCategoryHidden = async (
  */
 export const getCategoriesWithMenus = async (
   params: IGetShopCategoriesWithMenusParams
-): Promise<TGetCategoryListResponse> => {
+): Promise<TGetShopCategoriesWithMenusResponse> => {
   const axiosInstance = getAxiosInstance('private');
-  const response = await axiosInstance<TGetCategoryListResponse>({
+  const response = await axiosInstance<TGetShopCategoriesWithMenusResponse>({
     method: 'GET',
     url: ENDPOINTS.CATEGORY.MENUBOARD_LIST(params.shopCode),
     params: {

@@ -139,6 +139,10 @@ export interface ICategoryWithMenus extends ICategoryBase {
   menuInfoList: IMenu[];
 }
 
+export type TGetShopCategoriesWithMenusResponse = IApiResponse<
+  ICategoryWithMenus[]
+>;
+
 // ============================================================================
 // PUT /category/index
 // ============================================================================

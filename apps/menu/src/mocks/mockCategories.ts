@@ -56,7 +56,8 @@ const createOptionGroup = (
   menuSeq: number,
   optionGroupName: string,
   options: {
-    requiredQuantity?: number;
+    minQuantity?: number;
+    maxQuantity?: number;
     isMultipleSelectable?: boolean;
     isOptionQuantitySelectable?: boolean;
     isMenuQuantityDependant?: boolean;
@@ -67,7 +68,8 @@ const createOptionGroup = (
   optionGroupSeq,
   menuSeq,
   optionGroupName,
-  requiredQuantity: options.requiredQuantity ?? 0,
+  minQuantity: options.minQuantity ?? 0,
+  maxQuantity: options.maxQuantity ?? 0,
   isMultipleSelectable: options.isMultipleSelectable ?? false,
   isOptionQuantitySelectable: options.isOptionQuantitySelectable ?? false,
   isMenuQuantityDependant: options.isMenuQuantityDependant ?? false,
@@ -176,7 +178,8 @@ const sizeOptions = createOptionGroup(
   1,
   '사이즈 선택',
   {
-    requiredQuantity: 1,
+    minQuantity: 1,
+    maxQuantity: 1,
     isMultipleSelectable: false,
     isOptionQuantitySelectable: false,
     isMenuQuantityDependant: true,
@@ -194,7 +197,8 @@ const drinkOptions = createOptionGroup(
   1,
   '음료 추가',
   {
-    requiredQuantity: 0,
+    minQuantity: 0,
+    maxQuantity: 0,
     isMultipleSelectable: true,
     isOptionQuantitySelectable: false,
     isMenuQuantityDependant: false,
@@ -213,7 +217,8 @@ const toppingOptions = createOptionGroup(
   1,
   '토핑 추가',
   {
-    requiredQuantity: 4,
+    minQuantity: 0,
+    maxQuantity: 4,
     isMultipleSelectable: false,
     isOptionQuantitySelectable: true,
     isMenuQuantityDependant: false,
@@ -232,7 +237,8 @@ const packagingOptions = createOptionGroup(
   1,
   '포장 옵션',
   {
-    requiredQuantity: 1,
+    minQuantity: 1,
+    maxQuantity: 1,
     isMultipleSelectable: false,
     isOptionQuantitySelectable: false,
     isMenuQuantityDependant: true,
@@ -250,7 +256,8 @@ const additionalOrderOptions = createOptionGroup(
   1,
   '추가 주문',
   {
-    requiredQuantity: 0,
+    minQuantity: 0,
+    maxQuantity: 0,
     isMultipleSelectable: true,
     isOptionQuantitySelectable: false,
     isMenuQuantityDependant: true,
@@ -268,7 +275,8 @@ const spiceOptions = createOptionGroup(
   2,
   '맵기 조절',
   {
-    requiredQuantity: 0,
+    minQuantity: 0,
+    maxQuantity: 1,
     isMultipleSelectable: false,
     isOptionQuantitySelectable: false,
     isMenuQuantityDependant: false,
@@ -287,7 +295,8 @@ const limitedQuantityOptions = createOptionGroup(
   3,
   '추가 메뉴',
   {
-    requiredQuantity: 3, // 최대 수량 제한
+    minQuantity: 0,
+    maxQuantity: 3, // 최대 수량 제한
     isMultipleSelectable: false,
     isOptionQuantitySelectable: true,
     isMenuQuantityDependant: false,
@@ -305,7 +314,8 @@ const outOfStockOptions = createOptionGroup(
   4,
   '추가 선택',
   {
-    requiredQuantity: 0,
+    minQuantity: 0,
+    maxQuantity: 0,
     isMultipleSelectable: true,
     isOptionQuantitySelectable: false,
     isMenuQuantityDependant: false,

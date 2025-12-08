@@ -115,7 +115,7 @@ export const MenuDetailWithOptionsModal = ({
   // 옵션의 전체 표시 텍스트 생성 (이름 + 가격 + 품절 여부)
   const buildOptionDisplayText = (option: IOption): string => {
     const priceText = formatAdditionalPriceText(option.optionPrice);
-    const outOfStockText = option.isOutOfStock ? ' (품절)' : '';
+    const outOfStockText = option.isOutOfStock ? ` (${t('품절')})` : '';
     return `${option.optionName}${priceText}${outOfStockText}`;
   };
 
@@ -138,7 +138,7 @@ export const MenuDetailWithOptionsModal = ({
       }
 
       // 선택되지 않은 경우: 옵션 추가 전 최대 수량 체크
-      if (optionGroup?.requiredQuantity && optionGroup.requiredQuantity > 0) {
+      if (optionGroup?.maxQuantity && optionGroup.maxQuantity > 0) {
         // 해당 옵션 그룹에서 현재 선택된 모든 옵션의 총 수량 계산
         let currentGroupTotalCount = 0;
         prevOptions.forEach((item) => {
@@ -148,10 +148,10 @@ export const MenuDetailWithOptionsModal = ({
         });
 
         // 최대 수량을 초과하는지 확인
-        if (currentGroupTotalCount + 1 > optionGroup.requiredQuantity) {
+        if (currentGroupTotalCount + 1 > optionGroup.maxQuantity) {
           toast(
             t('최대 수량({{maxQuantity}}개)을 이미 다 선택했습니다.', {
-              maxQuantity: optionGroup.requiredQuantity,
+              maxQuantity: optionGroup.maxQuantity,
             }),
             { position: 'center-center', duration: 2000 }
           );
@@ -227,10 +227,10 @@ export const MenuDetailWithOptionsModal = ({
 
       // 수량 증가: 최대 수량 체크
       if (newQuantity > currentCount) {
-        // isOptionQuantitySelectable이 true이고 requiredQuantity가 최대 수량 제한인 경우 체크
+        // isOptionQuantitySelectable이 true이고 maxQuantity가 최대 수량 제한인 경우 체크
         if (
           optionGroup?.isOptionQuantitySelectable &&
-          optionGroup.requiredQuantity > 0
+          optionGroup.maxQuantity > 0
         ) {
           // 해당 옵션 그룹에서 현재 선택된 모든 옵션의 총 수량 계산
           let currentGroupTotalCount = 0;
@@ -246,11 +246,11 @@ export const MenuDetailWithOptionsModal = ({
           // 최대 수량을 초과하는지 확인
           if (
             currentGroupTotalCount + additionalCount >
-            optionGroup.requiredQuantity
+            optionGroup.maxQuantity
           ) {
             toast(
               t('최대 수량({{maxQuantity}}개)을 이미 다 선택했습니다.', {
-                maxQuantity: optionGroup.requiredQuantity,
+                maxQuantity: optionGroup.maxQuantity,
               }),
               { position: 'center-center', duration: 2000 }
             );
@@ -326,12 +326,25 @@ export const MenuDetailWithOptionsModal = ({
     return calculateMenuTotalPrice(menu.menuPrice, menuQuantity, options);
   };
 
-  // 옵션 그룹 제목 텍스트 생성 (필수 선택 개수 포함)
+  // 옵션 그룹 제목 텍스트 생성 (최소/최대 선택 개수 포함)
   const buildOptionGroupTitleText = (optionGroup: IOptionGroup): string => {
-    const requiredText = optionGroup.requiredQuantity
-      ? `(${optionGroup.requiredQuantity}개 필수 선택)`
-      : '';
-    return `${optionGroup.optionGroupName} ${requiredText}`.trim();
+    let quantityText = '';
+    if (optionGroup.minQuantity > 0 && optionGroup.maxQuantity > 0) {
+      quantityText = `(${t('최소 {{minQuantity}}개', {
+        minQuantity: optionGroup.minQuantity,
+      })} / ${t('최대 {{maxQuantity}}개', {
+        maxQuantity: optionGroup.maxQuantity,
+      })})`;
+    } else if (optionGroup.minQuantity > 0) {
+      quantityText = `(${t('최소 {{minQuantity}}개', {
+        minQuantity: optionGroup.minQuantity,
+      })})`;
+    } else if (optionGroup.maxQuantity > 0) {
+      quantityText = `(${t('최대 {{maxQuantity}}개', {
+        maxQuantity: optionGroup.maxQuantity,
+      })})`;
+    }
+    return `${optionGroup.optionGroupName} ${quantityText}`.trim();
   };
 
   // 선택된 옵션 항목의 표시 텍스트 생성
@@ -359,26 +372,43 @@ export const MenuDetailWithOptionsModal = ({
       return;
     }
 
-    // 옵션 그룹별 필수 수량 체크
+    // 옵션 그룹별 최소/최대 수량 체크
     for (const optionGroup of menu.optionGroupList) {
-      if (optionGroup.requiredQuantity > 0) {
-        let selectedCountInGroup = 0;
-        selectedOptions.forEach((item) => {
-          if (item.option.optionGroupSeq === optionGroup.optionGroupSeq) {
-            selectedCountInGroup += item.quantity;
-          }
-        });
-
-        if (selectedCountInGroup < optionGroup.requiredQuantity) {
-          toast(
-            t('{{groupName}}에서 {{requiredQuantity}}개를 선택해주세요.', {
-              groupName: optionGroup.optionGroupName,
-              requiredQuantity: optionGroup.requiredQuantity,
-            }),
-            { position: 'center-center', duration: 2000 }
-          );
-          return;
+      let selectedCountInGroup = 0;
+      selectedOptions.forEach((item) => {
+        if (item.option.optionGroupSeq === optionGroup.optionGroupSeq) {
+          selectedCountInGroup += item.quantity;
         }
+      });
+
+      // 최소 수량 체크
+      if (
+        optionGroup.minQuantity > 0 &&
+        selectedCountInGroup < optionGroup.minQuantity
+      ) {
+        toast(
+          t('{{groupName}}에서 최소 {{minQuantity}}개를 선택해주세요.', {
+            groupName: optionGroup.optionGroupName,
+            minQuantity: optionGroup.minQuantity,
+          }),
+          { position: 'center-center', duration: 2000 }
+        );
+        return;
+      }
+
+      // 최대 수량 체크
+      if (
+        optionGroup.maxQuantity > 0 &&
+        selectedCountInGroup > optionGroup.maxQuantity
+      ) {
+        toast(
+          t('{{groupName}}에서 최대 {{maxQuantity}}개까지 선택 가능합니다.', {
+            groupName: optionGroup.optionGroupName,
+            maxQuantity: optionGroup.maxQuantity,
+          }),
+          { position: 'center-center', duration: 2000 }
+        );
+        return;
       }
     }
 
@@ -472,7 +502,9 @@ export const MenuDetailWithOptionsModal = ({
 
         <S.OptionsContainer>
           {!hasOptionGroups && (
-            <NoContent paddingTop="10%">옵션이 존재하지 않습니다.</NoContent>
+            <NoContent paddingTop="10%">
+              {t('옵션이 존재하지 않습니다.')}
+            </NoContent>
           )}
 
           {hasOptionGroups && (
@@ -481,8 +513,9 @@ export const MenuDetailWithOptionsModal = ({
                 <li key={optionGroup.optionGroupSeq}>
                   <S.OptionGroupName>
                     {buildOptionGroupTitleText(optionGroup)}
-                    {optionGroup.requiredQuantity ? (
-                      <span>필수/수량제한</span>
+                    {optionGroup.minQuantity > 0 ||
+                    optionGroup.maxQuantity > 0 ? (
+                      <span>{t('수량제한')}</span>
                     ) : (
                       ''
                     )}
@@ -579,11 +612,11 @@ export const MenuDetailWithOptionsModal = ({
         </S.OptionsContainer>
 
         <S.SelectedOptionsContainer>
-          <S.Title>선택한 옵션</S.Title>
+          <S.Title>{t('선택한 옵션')}</S.Title>
           <S.SelectedOptionsList>
             {!hasSelectedOptions ? (
               <li>
-                <p>선택한 옵션이 없습니다.</p>
+                <p>{t('선택한 옵션이 없습니다.')}</p>
               </li>
             ) : (
               groupedSelectedOptions.map((item) => (

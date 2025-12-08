@@ -31,7 +31,8 @@ export interface IOptionGroup extends ICommonResponseData {
   optionGroupSeq: number;
   optionGroupName: string;
   menuSeq: number;
-  requiredQuantity: number;
+  minQuantity: number;
+  maxQuantity: number;
   isMultipleSelectable: boolean;
   isOptionQuantitySelectable: boolean;
   isMenuQuantityDependant: boolean;
