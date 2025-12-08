@@ -4,8 +4,8 @@ import { css } from '@emotion/react';
 
 export const soldOutCss = css`
   flex-direction: column;
-  justify-content: space-between;
   white-space: nowrap;
+  transform: translateY(0.25rem);
 
   & > div {
     width: 1.5rem;
@@ -134,7 +134,7 @@ export const AdditionalsContainer = styled.div`
   justify-content: space-between;
   color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.ST_2}
-  & > div > input[type='number'] {
+  & > div > input[type='string'] {
     width: 2.5rem;
     border-bottom: 1.25px solid ${theme.colors.grey[500]};
     text-align: center;

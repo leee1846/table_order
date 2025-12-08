@@ -27,7 +27,8 @@ interface OptionFormData {
 }
 
 interface OptionGroupSettings {
-  requiredQuantity: number | '';
+  minQuantity: number;
+  maxQuantity: number;
   isOptionQuantitySelectable: boolean;
   isMultipleSelectable: boolean;
   isMenuQuantityDependant: boolean;
@@ -40,7 +41,8 @@ interface Props {
 }
 
 const DEFAULT_SETTINGS: OptionGroupSettings = {
-  requiredQuantity: '',
+  minQuantity: 0,
+  maxQuantity: 0,
   isOptionQuantitySelectable: false,
   isMultipleSelectable: false,
   isMenuQuantityDependant: false,
@@ -88,7 +90,8 @@ export const OptionGroupManageModal = ({
     if (existingOptionGroup) {
       setOptionGroupName(existingOptionGroup.optionGroupName ?? '');
       setSettings({
-        requiredQuantity: existingOptionGroup.requiredQuantity ?? '',
+        minQuantity: existingOptionGroup.minQuantity ?? 0,
+        maxQuantity: existingOptionGroup.maxQuantity ?? 0,
         isOptionQuantitySelectable:
           existingOptionGroup.isOptionQuantitySelectable ?? false,
         isMultipleSelectable: existingOptionGroup.isMultipleSelectable ?? false,
@@ -197,8 +200,8 @@ export const OptionGroupManageModal = ({
   const getCommonGroupData = useCallback(
     () => ({
       optionGroupName: optionGroupName.trim(),
-      requiredQuantity:
-        settings.requiredQuantity === '' ? 0 : settings.requiredQuantity,
+      minQuantity: settings.minQuantity,
+      maxQuantity: settings.maxQuantity,
       isMultipleSelectable: settings.isMultipleSelectable,
       isOptionQuantitySelectable: settings.isOptionQuantitySelectable,
       isMenuQuantityDependant: settings.isMenuQuantityDependant,
@@ -333,16 +336,6 @@ export const OptionGroupManageModal = ({
     handleOptionChange(id, 'optionPrice', parsedValue);
   };
 
-  const handleRequiredQuantityChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      updateSettings({
-        requiredQuantity: value === '' ? '' : parseInt(value, 10) || 0,
-      });
-    },
-    [updateSettings]
-  );
-
   return (
     <ModalBackground onClick={onClose}>
       <S.Container onClick={(e) => e.stopPropagation()}>
@@ -431,14 +424,32 @@ export const OptionGroupManageModal = ({
             <p>추가 설정</p>
             <S.AdditionalsContainer>
               <div>
-                필수
+                최소 수량
                 <input
-                  type="number"
-                  min="0"
-                  value={settings.requiredQuantity}
-                  onChange={handleRequiredQuantityChange}
+                  type="string"
+                  value={settings.minQuantity.toString()}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    updateSettings({
+                      minQuantity: Number(value),
+                    });
+                  }}
                 />
-                개 선택 (미설정 시 무제한 선택 가능)
+                개 선택
+              </div>
+              <div>
+                최대 수량
+                <input
+                  type="string"
+                  value={settings.maxQuantity}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    updateSettings({
+                      maxQuantity: Number(value) || 0,
+                    });
+                  }}
+                />
+                개 선택
               </div>
               <CheckButton
                 checked={settings.isOptionQuantitySelectable}

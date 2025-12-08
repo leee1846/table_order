@@ -91,7 +91,8 @@ export interface IUpdateOptionGroup {
   menuSeq: number;
   index: number;
   isDeleted: boolean; // true로 보내면 서버에서 삭제 처리
-  requiredQuantity: number;
+  minQuantity: number;
+  maxQuantity: number;
   isMultipleSelectable: boolean;
   isOptionQuantitySelectable: boolean;
   isMenuQuantityDependant: boolean;

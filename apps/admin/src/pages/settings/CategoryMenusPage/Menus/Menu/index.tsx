@@ -8,7 +8,7 @@ import {
   chiliOnIcon,
   newOnIcon,
 } from '@repo/ui/icons';
-import { formatCurrency, normalizeImageUrl } from '@repo/util/string';
+import { formatCurrency } from '@repo/util/string';
 import { MenuCopyModal } from '@/pages/settings/CategoryMenusPage/MenuCopyModal';
 import type { IMenu } from '@repo/api/types';
 import {
@@ -48,7 +48,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
     const mainImage =
       availableImages.find((image) => image.isMainImage) ?? availableImages[0];
 
-    return normalizeImageUrl(mainImage?.imagePath ?? null);
+    return mainImage?.imagePath ?? null;
   }, [menu.menuImageList]);
 
   const spiceLevel = menu.spiceLevel ?? 0;
