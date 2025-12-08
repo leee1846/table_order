@@ -15,17 +15,9 @@ import type {
   TLocale,
 } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
-import { useMenuForm } from '../../context/MenuManageModalContext';
+import { useMenuManageModal } from '../../context/MenuManageModalContext';
 import * as S from './optionGroupManageModal.style';
 import { toast } from '@repo/feature/utils';
-
-interface OptionFormData {
-  id: string;
-  optionName: string;
-  optionPrice: number;
-  isOutOfStock: boolean;
-  posCode?: string;
-}
 
 interface OptionGroupSettings {
   minQuantity: number;
@@ -49,11 +41,11 @@ const DEFAULT_SETTINGS: OptionGroupSettings = {
   isMenuQuantityDependant: false,
 };
 
-const createEmptyOption = (): OptionFormData => ({
-  id: `new-${Date.now()}-${Math.random()}`,
+const createEmptyOption = (): ICreateOption => ({
   optionName: '',
   optionPrice: 0,
   isOutOfStock: false,
+  index: 0,
 });
 
 export const OptionGroupManageModal = ({
@@ -61,22 +53,26 @@ export const OptionGroupManageModal = ({
   optionGroupSeq,
   onCreated,
 }: Props) => {
-  const { formValues, updateFormValues } = useMenuForm();
+  const { formValues, updateFormValues, mode } = useMenuManageModal();
+
+  // 옵션 그룹 생성 모드인지 수정 모드인지, optionGroupSeq가 null이면 생성 모드
   const isEditMode = optionGroupSeq != null;
 
+  // 메뉴가 생성 모드인지 수정 모드인지
+  const isMenuCreateMode = mode === 'create';
+
+  //옵션 그룹 수정 모드일 때만 동작하는 useMemo
   const existingOptionGroup = useMemo(() => {
     if (!isEditMode || !formValues.optionGroupList || optionGroupSeq == null) {
       return null;
     }
-    return (
-      formValues.optionGroupList.find(
-        (group) => group.optionGroupSeq === optionGroupSeq
-      ) ?? null
+    return formValues.optionGroupList.find(
+      (group) => group.optionGroupSeq === optionGroupSeq
     );
   }, [isEditMode, optionGroupSeq, formValues.optionGroupList]);
 
   const [optionGroupName, setOptionGroupName] = useState('');
-  const [options, setOptions] = useState<OptionFormData[]>([]);
+  const [options, setOptions] = useState<ICreateOption[] | IUpdateOption[]>([]);
   const [settings, setSettings] =
     useState<OptionGroupSettings>(DEFAULT_SETTINGS);
 
@@ -89,42 +85,35 @@ export const OptionGroupManageModal = ({
 
   useEffect(() => {
     if (existingOptionGroup) {
-      setOptionGroupName(existingOptionGroup.optionGroupName ?? '');
+      setOptionGroupName(existingOptionGroup.optionGroupName);
       setSettings({
-        minQuantity: existingOptionGroup.minQuantity ?? 0,
-        maxQuantity: existingOptionGroup.maxQuantity ?? 0,
+        minQuantity: existingOptionGroup.minQuantity,
+        maxQuantity: existingOptionGroup.maxQuantity,
         isOptionQuantitySelectable:
-          existingOptionGroup.isOptionQuantitySelectable ?? false,
-        isMultipleSelectable: existingOptionGroup.isMultipleSelectable ?? false,
-        isMenuQuantityDependant:
-          existingOptionGroup.isMenuQuantityDependant ?? false,
+          existingOptionGroup.isOptionQuantitySelectable,
+        isMultipleSelectable: existingOptionGroup.isMultipleSelectable,
+        isMenuQuantityDependant: existingOptionGroup.isMenuQuantityDependant,
       });
 
-      const convertedOptions: OptionFormData[] =
-        existingOptionGroup.optionList?.map((option, index) => {
-          // 서버에서 받은 optionSeq가 유효한 경우에만 existing- 접두사 사용
-          // optionSeq가 없거나 0 이하인 경우는 신규 옵션으로 처리 (고유 ID 생성)
-          const hasValidOptionSeq =
-            option.optionSeq != null && option.optionSeq > 0;
+      const convertedOptions: IUpdateOption[] =
+        existingOptionGroup.optionList?.map((option) => {
+          // FormValues의 옵션을 그대로 사용
           return {
-            //TODO 유틸에서 쓰도록 해서 바꾸기
-            id: hasValidOptionSeq
-              ? `existing-${option.optionSeq}`
-              : `new-${Date.now()}-${index}-${Math.random()}`,
-            optionName: option.optionName ?? '',
-            optionPrice: option.optionPrice ?? 0,
-            isOutOfStock: option.isOutOfStock ?? false,
-            posCode: option.mappedOptionGroupCode ?? '',
+            optionSeq: option.optionSeq,
+            optionGroupSeq: existingOptionGroup.optionGroupSeq,
+            optionName: option.optionName,
+            optionPrice: option.optionPrice,
+            isDeleted: existingOptionGroup.isDeleted,
+            index: option.index,
+            isOutOfStock: option.isOutOfStock,
           };
         }) ?? [];
 
-      setOptions(
-        convertedOptions.length > 0 ? convertedOptions : [createEmptyOption()]
-      );
+      setOptions(convertedOptions);
     } else if (optionGroupSeq == null) {
       setOptionGroupName('');
       setSettings(DEFAULT_SETTINGS);
-      setOptions([createEmptyOption()]);
+      setOptions([createEmptyOption()] as ICreateOption[]);
     }
   }, [existingOptionGroup, optionGroupSeq]);
 
@@ -132,22 +121,23 @@ export const OptionGroupManageModal = ({
     setOptions([...options, createEmptyOption()]);
   };
 
-  const handleDeleteOption = (id: string) => {
+  const handleDeleteOption = (index: number) => {
     if (options.length <= 1) {
       alert('최소 1개 이상의 옵션이 필요합니다.');
       return;
     }
-    setOptions(options.filter((option) => option.id !== id));
+    // 인덱스로 옵션 삭제
+    setOptions(options.filter((_, i) => i !== index));
   };
 
   const handleOptionChange = (
-    id: string,
-    field: keyof OptionFormData,
+    index: number,
+    field: keyof ICreateOption | keyof IUpdateOption,
     value: string | number | boolean
   ) => {
     setOptions(
-      options.map((option) =>
-        option.id === id ? { ...option, [field]: value } : option
+      options.map((option, i) =>
+        i === index ? { ...option, [field]: value } : option
       )
     );
   };
@@ -164,7 +154,7 @@ export const OptionGroupManageModal = ({
     }
 
     const getValidationError = (
-      option: OptionFormData | undefined,
+      option: ICreateOption | IUpdateOption | undefined,
       index: number
     ): string | null => {
       if (!option) {
@@ -198,53 +188,6 @@ export const OptionGroupManageModal = ({
     return true;
   };
 
-  const getCommonGroupData = useCallback(
-    () => ({
-      optionGroupName: optionGroupName.trim(),
-      minQuantity: settings.minQuantity,
-      maxQuantity: settings.maxQuantity,
-      isMultipleSelectable: settings.isMultipleSelectable,
-      isOptionQuantitySelectable: settings.isOptionQuantitySelectable,
-      isMenuQuantityDependant: settings.isMenuQuantityDependant,
-    }),
-    [optionGroupName, settings]
-  );
-
-  const buildUpdateOptionList = useCallback(
-    (optionGroupSeqValue: number): IUpdateOption[] =>
-      options.map((option, index) => {
-        // existing- 접두사가 있으면 서버에서 받은 optionSeq 사용
-        // 없으면 신규 옵션이므로 0으로 설정 (서버에서 새로 생성)
-        let optionSeq = 0;
-        if (option.id.startsWith('existing-')) {
-          const parsed = parseInt(option.id.replace('existing-', ''), 10);
-          // 파싱 실패 시 0 (신규 옵션으로 처리)
-          optionSeq = isNaN(parsed) || parsed <= 0 ? 0 : parsed;
-        }
-        return {
-          optionSeq, // 기존 옵션: 서버에서 받은 seq, 신규 옵션: 0
-          optionGroupSeq: optionGroupSeqValue,
-          optionName: option.optionName.trim(),
-          optionPrice: option.optionPrice,
-          isDeleted: false,
-          index: index + 1,
-          isOutOfStock: option.isOutOfStock,
-        };
-      }),
-    [options]
-  );
-
-  const buildCreateOptionList = useCallback(
-    (): ICreateOption[] =>
-      options.map((option, index) => ({
-        optionName: option.optionName.trim(),
-        optionPrice: option.optionPrice,
-        index: index + 1,
-        isOutOfStock: option.isOutOfStock,
-      })),
-    [options]
-  );
-
   const handleSave = useCallback(() => {
     if (!validateForm()) {
       return;
@@ -252,14 +195,154 @@ export const OptionGroupManageModal = ({
 
     const currentOptionGroupList = formValues.optionGroupList ?? [];
 
+    // 메뉴가 생성 모드인 경우
+    if (isMenuCreateMode) {
+      // ICreateOption 형식으로 옵션 리스트 생성 (optionSeq, optionGroupSeq, isDeleted 없음)
+      const createOptionList: ICreateOption[] = options.map(
+        (option, index) => ({
+          optionName: option.optionName.trim(),
+          optionPrice: option.optionPrice,
+          isOutOfStock: option.isOutOfStock,
+          index: index + 1,
+        })
+      );
+
+      // 기존 옵션 그룹을 수정하는 경우
+      if (isEditMode && existingOptionGroup) {
+        // IOptionGroup 형식으로 변환 (formValues에 저장하기 위해)
+        const optionListForForm = createOptionList.map((option) => ({
+          ...option,
+          optionSeq: existingOptionGroup.optionGroupSeq, // 기존 옵션 그룹의 임시 ID 사용
+          optionGroupSeq: existingOptionGroup.optionGroupSeq,
+          isDeleted: false,
+          quantity: 0,
+          localeOptionName: null,
+          localeOptionNameStr: null,
+          mappedOptionGroupCode: '',
+          mappedOptionGroupName: '',
+          mappedHeadOptionGroupCode: '',
+          mappedUptDt: '',
+          isMapped: false,
+          createDate: '',
+          createMemberUuid: '',
+          updateDate: '',
+          updateMemberUuid: '',
+        }));
+
+        const updatedOptionGroup: IOptionGroup = {
+          ...existingOptionGroup,
+          optionGroupName: optionGroupName.trim(),
+          optionList: optionListForForm,
+          minQuantity: settings.minQuantity,
+          maxQuantity: settings.maxQuantity,
+          isMultipleSelectable: settings.isMultipleSelectable,
+          isOptionQuantitySelectable: settings.isOptionQuantitySelectable,
+          isMenuQuantityDependant: settings.isMenuQuantityDependant,
+        };
+
+        const updatedList = currentOptionGroupList.map((group) =>
+          group.optionGroupSeq === optionGroupSeq ? updatedOptionGroup : group
+        );
+        updateFormValues({ optionGroupList: updatedList });
+        onClose();
+        return;
+      }
+
+      // 새로운 옵션 그룹을 추가하는 경우
+      // 음수 임시 ID 생성 (가장 작은 음수 값 찾기)
+      const minOptionGroupSeq = currentOptionGroupList.reduce(
+        (min, group) => Math.min(min, group.optionGroupSeq),
+        0
+      );
+      const tempOptionGroupSeq = minOptionGroupSeq - 1;
+
+      // IOptionGroup 형식으로 변환 (formValues에 저장하기 위해)
+      const optionListForForm = createOptionList.map((option) => ({
+        ...option,
+        optionSeq: tempOptionGroupSeq, // 임시 음수 ID
+        optionGroupSeq: tempOptionGroupSeq,
+        isDeleted: false,
+        quantity: 0,
+        localeOptionName: null,
+        localeOptionNameStr: null,
+        mappedOptionGroupCode: '',
+        mappedOptionGroupName: '',
+        mappedHeadOptionGroupCode: '',
+        mappedUptDt: '',
+        isMapped: false,
+        createDate: '',
+        createMemberUuid: '',
+        updateDate: '',
+        updateMemberUuid: '',
+      }));
+
+      const optionGroupWithTempId: IOptionGroup = {
+        optionGroupName: optionGroupName.trim(),
+        optionGroupSeq: tempOptionGroupSeq,
+        menuSeq: 0,
+        index: currentOptionGroupList.length + 1,
+        optionList: optionListForForm,
+        minQuantity: settings.minQuantity,
+        maxQuantity: settings.maxQuantity,
+        isMultipleSelectable: settings.isMultipleSelectable,
+        isOptionQuantitySelectable: settings.isOptionQuantitySelectable,
+        isMenuQuantityDependant: settings.isMenuQuantityDependant,
+        localeOptionGroupName: {} as TLocale,
+        localeOptionGroupNameStr: {} as TLocale,
+        isDeleted: false,
+        mappedOptionGroupCode: '',
+        mappedOptionGroupName: '',
+        mappedHeadOptionGroupCode: '',
+        mappedUptDt: '',
+        isMapped: false,
+        createDate: '',
+        createMemberUuid: '',
+        updateDate: '',
+        updateMemberUuid: '',
+      } as IOptionGroup;
+
+      updateFormValues({
+        optionGroupList: [...currentOptionGroupList, optionGroupWithTempId],
+      });
+      onCreated?.();
+      return;
+    }
+
+    // 메뉴가 수정 모드인 경우
     if (isEditMode && existingOptionGroup) {
+      // 기존 옵션 그룹 수정
+      // options를 IUpdateOption[]로 변환
+      // 기존 옵션은 optionSeq 유지, 신규 옵션은 optionSeq = 0
+      const updateOptionList: IUpdateOption[] = options.map((option, index) => {
+        // 'optionSeq' in option으로 체크하여 기존 옵션인지 신규 옵션인지 판단
+        const isExistingOption =
+          'optionSeq' in option &&
+          option.optionSeq != null &&
+          option.optionSeq > 0;
+
+        return {
+          optionSeq: isExistingOption ? option.optionSeq : 0, // 신규 옵션은 0
+          optionGroupSeq: existingOptionGroup.optionGroupSeq,
+          optionName: option.optionName.trim(),
+          optionPrice: option.optionPrice,
+          isDeleted: false,
+          index: index + 1,
+          isOutOfStock: option.isOutOfStock,
+        };
+      });
+
       const updateOptionGroup: IUpdateOptionGroup = {
-        ...getCommonGroupData(),
+        optionGroupName: optionGroupName.trim(),
         optionGroupSeq: existingOptionGroup.optionGroupSeq,
         menuSeq: existingOptionGroup.menuSeq,
         index: existingOptionGroup.index,
         isDeleted: false,
-        optionList: buildUpdateOptionList(existingOptionGroup.optionGroupSeq),
+        minQuantity: settings.minQuantity,
+        maxQuantity: settings.maxQuantity,
+        isMultipleSelectable: settings.isMultipleSelectable,
+        isOptionQuantitySelectable: settings.isOptionQuantitySelectable,
+        isMenuQuantityDependant: settings.isMenuQuantityDependant,
+        optionList: updateOptionList,
       };
 
       const updatedList = currentOptionGroupList.map((group) =>
@@ -272,15 +355,21 @@ export const OptionGroupManageModal = ({
       return;
     }
 
-    // 생성 모드
-    const tempOptionGroupSeq = -Date.now();
-    const createOptionList = buildCreateOptionList();
-    // ICreateOption[]을 IOption[]로 변환 (optionSeq는 0으로 설정, 서버에서 생성됨)
-    const optionListForForm = createOptionList.map((option) => ({
-      ...option,
-      optionSeq: 0, // 생성 모드에서는 0으로 설정 (실제로는 서버에서 생성)
-      optionGroupSeq: tempOptionGroupSeq,
+    // 메뉴 수정 모드에서 새로운 옵션 그룹 추가
+    // IUpdateOption 형식으로 옵션 리스트 생성 (optionSeq = 0, optionGroupSeq = 0)
+    const updateOptionList: IUpdateOption[] = options.map((option, index) => ({
+      optionSeq: 0, // 신규 옵션은 0
+      optionGroupSeq: 0, // 신규 옵션 그룹은 0
+      optionName: option.optionName.trim(),
+      optionPrice: option.optionPrice,
       isDeleted: false,
+      index: index + 1,
+      isOutOfStock: option.isOutOfStock,
+    }));
+
+    // IOptionGroup 형식으로 변환 (formValues에 저장하기 위해)
+    const optionListForForm = updateOptionList.map((option) => ({
+      ...option,
       quantity: 0,
       localeOptionName: null,
       localeOptionNameStr: null,
@@ -294,29 +383,47 @@ export const OptionGroupManageModal = ({
       updateDate: '',
       updateMemberUuid: '',
     }));
-    const optionGroupWithTempId: IOptionGroup = {
-      ...getCommonGroupData(),
-      menuSeq: 0,
+
+    const newOptionGroup: IOptionGroup = {
+      optionGroupName: optionGroupName.trim(),
+      optionGroupSeq: 0, // 신규 옵션 그룹은 0
+      menuSeq: formValues.categorySeq ? 0 : 0, // 실제 menuSeq는 서버에서 설정
       index: currentOptionGroupList.length + 1,
       optionList: optionListForForm,
-      optionGroupSeq: tempOptionGroupSeq,
-      localeOptionGroupName: {} as TLocale, //TODO any 빼기, useCallback 빼기,
+      minQuantity: settings.minQuantity,
+      maxQuantity: settings.maxQuantity,
+      isMultipleSelectable: settings.isMultipleSelectable,
+      isOptionQuantitySelectable: settings.isOptionQuantitySelectable,
+      isMenuQuantityDependant: settings.isMenuQuantityDependant,
+      localeOptionGroupName: {} as TLocale,
       localeOptionGroupNameStr: {} as TLocale,
+      isDeleted: false,
+      mappedOptionGroupCode: '',
+      mappedOptionGroupName: '',
+      mappedHeadOptionGroupCode: '',
+      mappedUptDt: '',
+      isMapped: false,
+      createDate: '',
+      createMemberUuid: '',
+      updateDate: '',
+      updateMemberUuid: '',
     } as IOptionGroup;
 
     updateFormValues({
-      optionGroupList: [...currentOptionGroupList, optionGroupWithTempId],
+      optionGroupList: [...currentOptionGroupList, newOptionGroup],
     });
     onCreated?.();
   }, [
     validateForm,
     formValues.optionGroupList,
+    formValues.categorySeq,
     isEditMode,
+    isMenuCreateMode,
     existingOptionGroup,
-    getCommonGroupData,
-    buildUpdateOptionList,
-    buildCreateOptionList,
     optionGroupSeq,
+    optionGroupName,
+    options,
+    settings,
     updateFormValues,
     onClose,
     onCreated,
@@ -324,17 +431,17 @@ export const OptionGroupManageModal = ({
 
   const modalTitle = isEditMode ? '옵션 그룹 수정' : '옵션 그룹 추가';
 
-  const handlePriceChange = (id: string, value: string) => {
+  const handlePriceChange = (index: number, value: string) => {
     const numericValue = value.replace(/,/g, '');
     const parsedValue = parseInt(numericValue, 10);
 
     // 숫자가 아니거나 음수인 경우 0으로 설정
     if (isNaN(parsedValue) || parsedValue < 0) {
-      handleOptionChange(id, 'optionPrice', 0);
+      handleOptionChange(index, 'optionPrice', 0);
       return;
     }
 
-    handleOptionChange(id, 'optionPrice', parsedValue);
+    handleOptionChange(index, 'optionPrice', parsedValue);
   };
 
   return (
@@ -364,51 +471,58 @@ export const OptionGroupManageModal = ({
             </p>
             {options.length > 0 && (
               <S.OptionList>
-                {options.map((option) => (
-                  <li key={option.id}>
-                    <CheckButton
-                      checked={option.isOutOfStock}
-                      onChange={(checked) =>
-                        handleOptionChange(option.id, 'isOutOfStock', checked)
-                      }
-                      customStyle={S.soldOutCss}
-                    >
-                      <span>품절</span>
-                    </CheckButton>
-                    <Input
-                      placeholder="옵션 이름을 입력해주세요."
-                      customStyle={S.inputCss}
-                      value={option.optionName}
-                      onChange={(value) =>
-                        handleOptionChange(option.id, 'optionName', value)
-                      }
-                    />
-                    <Input
-                      placeholder="옵션 가격을 입력해주세요."
-                      customStyle={S.inputCss}
-                      value={formatCurrency(option.optionPrice)}
-                      onChange={(value) => handlePriceChange(option.id, value)}
-                    />
-                    <Input
-                      placeholder="포스 코드"
-                      customStyle={S.inputCss}
-                      disabled
-                      value={option.posCode ?? ''}
-                    />
-                    <BasicButton
-                      variant="Outline_Grey_XL"
-                      icon={
-                        <DeleteIcon
-                          width={22}
-                          height={22}
-                          color={theme.colors.grey[700]}
-                        />
-                      }
-                      customStyle={S.deleteButtonCss}
-                      onClick={() => handleDeleteOption(option.id)}
-                    />
-                  </li>
-                ))}
+                {options.map((option, index) => {
+                  // key 생성: 기존 옵션은 optionSeq, 신규 옵션은 인덱스 기반
+                  const key =
+                    'optionSeq' in option && option.optionSeq > 0
+                      ? `option-${option.optionSeq}`
+                      : `new-option-${index}`;
+                  return (
+                    <li key={key}>
+                      <CheckButton
+                        checked={option.isOutOfStock}
+                        onChange={(checked) =>
+                          handleOptionChange(index, 'isOutOfStock', checked)
+                        }
+                        customStyle={S.soldOutCss}
+                      >
+                        <span>품절</span>
+                      </CheckButton>
+                      <Input
+                        placeholder="옵션 이름을 입력해주세요."
+                        customStyle={S.inputCss}
+                        value={option.optionName}
+                        onChange={(value) =>
+                          handleOptionChange(index, 'optionName', value)
+                        }
+                      />
+                      <Input
+                        placeholder="옵션 가격을 입력해주세요."
+                        customStyle={S.inputCss}
+                        value={formatCurrency(option.optionPrice)}
+                        onChange={(value) => handlePriceChange(index, value)}
+                      />
+                      <Input
+                        placeholder="포스 코드"
+                        customStyle={S.inputCss}
+                        disabled
+                        value={existingOptionGroup?.mappedOptionGroupCode ?? ''}
+                      />
+                      <BasicButton
+                        variant="Outline_Grey_XL"
+                        icon={
+                          <DeleteIcon
+                            width={22}
+                            height={22}
+                            color={theme.colors.grey[700]}
+                          />
+                        }
+                        customStyle={S.deleteButtonCss}
+                        onClick={() => handleDeleteOption(index)}
+                      />
+                    </li>
+                  );
+                })}
               </S.OptionList>
             )}
             <S.OptionAddButton type="button" onClick={handleAddOption}>

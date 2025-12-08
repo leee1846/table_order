@@ -155,7 +155,7 @@ export const FloatingButtonContainer = styled.div`
   left: 0;
   right: 0;
   width: 100%;
-  padding: 40px 28px 50px;
+  padding: 40px 0 50px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 39.67%);
 
   & > button {

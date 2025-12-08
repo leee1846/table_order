@@ -131,11 +131,14 @@ const toCreateOptionGroup = (group: IOptionGroup): ICreateOptionGroup => {
     localeOptionGroupName,
     localeOptionGroupNameStr,
     optionList,
+    minQuantity, // ICreateOptionGroup에는 minQuantity가 없고 requiredQuantity로 매핑
+    maxQuantity, // ICreateOptionGroup에는 maxQuantity가 없음
     ...createGroup
   } = group;
 
   return {
     ...createGroup, // 필요한 필드들만 포함
+    requiredQuantity: minQuantity, // minQuantity를 requiredQuantity로 매핑
     optionList: (optionList || []).map(toCreateOption), // 옵션 리스트를 변환하여 다시 넣음
   };
 };
@@ -171,7 +174,7 @@ const convertOptionGroupListForUpdate = (
   optionGroupList: IOptionGroup[] = []
 ): (IUpdateOptionGroup | ICreateOptionGroup)[] =>
   optionGroupList.map((group) =>
-    group.optionGroupSeq < 0
+    group.optionGroupSeq <= 0
       ? toCreateOptionGroup(group)
       : toUpdateOptionGroup(group)
   );

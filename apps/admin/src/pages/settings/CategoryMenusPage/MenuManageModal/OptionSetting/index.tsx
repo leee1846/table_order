@@ -15,9 +15,7 @@ export const OptionSetting = () => {
     number | null
   >(null);
 
-  const optionGroupList =
-    (formValues.optionGroupList || []).filter((group) => !group.isDeleted) ||
-    [];
+  const optionGroupList = formValues.optionGroupList || [];
 
   const handleOpenModal = (optionGroupSeq?: number) => {
     setEditingOptionGroupSeq(optionGroupSeq ?? null);
