@@ -20,7 +20,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
 
   const {
     data: tableOrderHistoriesData,
-    setData: setTableOrderHistoriesData,
+    setDataAsync: setTableOrderHistoriesData,
     clearData: clearTableOrderHistoriesData,
   } = useTableOrderHistoriesStore();
 
@@ -75,14 +75,14 @@ export const useTableOrderHistoriesData = (options?: Props) => {
       !result.data?.data?.orderDetailMenuList ||
       result.data.data.orderDetailMenuList.length < 1
     ) {
-      setTableOrderHistoriesData({
+      await setTableOrderHistoriesData({
         discountRate: 0,
         orderDetailMenuList: [],
       });
       return;
     }
 
-    setTableOrderHistoriesData({
+    await setTableOrderHistoriesData({
       discountRate: result.data.data.discountRate ?? 0,
       orderDetailMenuList: result.data.data.orderDetailMenuList ?? [],
     });

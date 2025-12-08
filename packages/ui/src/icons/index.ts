@@ -53,3 +53,7 @@ export { default as payAfterIcon } from './pay_after.svg';
 export { default as loadingBlueIcon } from './insider-loading-blue.json';
 export { default as loadingGreyIcon } from './insider-loading-lightGrey.json';
 export { default as waiterHandIcon } from './waiter_hand.svg';
+export { default as koFlagIcon } from './ko_flag.svg';
+export { default as usFlagIcon } from './us_flag.svg';
+export { default as chFlagIcon } from './ch_flag.svg';
+export { default as jpFlagIcon } from './jp_flag.svg';

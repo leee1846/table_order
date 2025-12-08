@@ -17,7 +17,7 @@ export interface ICategoryStore {
   visibleCategories: ICategoryWithMenus[];
 
   /** 데이터 설정 (세션 스토리지에도 저장) */
-  setCategories: (categories: ICategoryWithMenus[]) => void;
+  setCategoriesAsync: (categories: ICategoryWithMenus[]) => void;
   /** 데이터 초기화 (세션 스토리지에서도 삭제) */
   clearData: () => void;
 
@@ -67,15 +67,18 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
   ...initialData,
 
   // 데이터 설정 (스토리지에도 저장)
-  setCategories: (categories: ICategoryWithMenus[]) => {
-    storage.save(STORAGE_KEYS.CATEGORIES, categories);
-    set((state) => ({
-      categories,
-      visibleCategories: computeVisibleCategories(
+  setCategoriesAsync: (categories: ICategoryWithMenus[]) => {
+    return new Promise((resolve) => {
+      storage.save(STORAGE_KEYS.CATEGORIES, categories);
+      set((state) => ({
         categories,
-        state.visibilityMap
-      ),
-    }));
+        visibleCategories: computeVisibleCategories(
+          categories,
+          state.visibilityMap
+        ),
+      }));
+      resolve(true);
+    });
   },
 
   // 데이터 초기화 (스토리지에서도 삭제)

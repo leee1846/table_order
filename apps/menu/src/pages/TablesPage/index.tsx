@@ -54,6 +54,11 @@ export const TablesPage = () => {
       skipInitialRequest: true,
     });
 
+  const refreshMenuInitialData = async () => {
+    await refreshCategoriesData();
+    await refreshTableOrderHistoriesData();
+  };
+
   const handleTableClick = async (table: TableData) => {
     // TODO: 추후 오더포스 여부 체크 예정
     const isOrderpos = false;
@@ -62,8 +67,7 @@ export const TablesPage = () => {
     }
 
     await setTableDataAsync({ tableNumber: table.tableNumber });
-    refreshCategoriesData();
-    refreshTableOrderHistoriesData();
+    await refreshMenuInitialData();
     navigate(ROUTES.ROOT.generate());
   };
 

@@ -21,7 +21,7 @@ export const useCategoriesData = (options?: Props) => {
 
   const {
     categories: categoriesStoreData,
-    setCategories: setCategoriesStoreData,
+    setCategoriesAsync: setCategoriesStoreData,
     visibleCategories,
   } = useCategoryStore();
 
@@ -53,7 +53,7 @@ export const useCategoriesData = (options?: Props) => {
   const refresh = async () => {
     const result = await refetch();
     if (result.data?.data) {
-      setCategoriesStoreData(result.data.data);
+      await setCategoriesStoreData(result.data.data);
     }
   };
 

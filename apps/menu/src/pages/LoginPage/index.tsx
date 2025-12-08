@@ -1,6 +1,5 @@
 import { BasicButton, Input } from '@repo/ui/components';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import * as S from '@/pages/LoginPage/loginPage.style';
 import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -11,7 +10,6 @@ import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 
 export const LoginPage = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [id, setId] = useState('');
@@ -29,7 +27,7 @@ export const LoginPage = () => {
     if (value.length > 0) {
       setIdErrorMessage('');
     } else {
-      setIdErrorMessage(t('아이디를 입력해주세요.'));
+      setIdErrorMessage('아이디를 입력해주세요.');
     }
   };
 
@@ -39,18 +37,18 @@ export const LoginPage = () => {
     if (value.length > 0) {
       setPasswordErrorMessage('');
     } else {
-      setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
+      setPasswordErrorMessage('비밀번호를 입력해주세요.');
     }
   };
 
   const { mutateAsync: login } = usePostLogin();
   const handleLogin = async () => {
     if (!id) {
-      setIdErrorMessage(t('아이디를 입력해주세요.'));
+      setIdErrorMessage('아이디를 입력해주세요.');
       return;
     }
     if (!password) {
-      setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
+      setPasswordErrorMessage('비밀번호를 입력해주세요.');
       return;
     }
 
@@ -64,7 +62,7 @@ export const LoginPage = () => {
     // api는 성공 처리됨.
     if (!response.data.loginResult) {
       openConfirmDialog({
-        title: t('로그인 실패'),
+        title: '로그인 실패',
         content: response.status.userMessage,
       });
       return;
@@ -106,19 +104,19 @@ export const LoginPage = () => {
 
       <S.LoginContainer>
         <div>
-          <S.InputTitle>{t('아이디')}</S.InputTitle>
+          <S.InputTitle>아이디</S.InputTitle>
           <Input
-            placeholder={t('아이디를 입력해주세요.')}
+            placeholder="아이디를 입력해주세요."
             onChange={handleIdChange}
             value={id}
             errorMessage={idErrorMessage}
           />
         </div>
         <div>
-          <S.InputTitle>{t('비밀번호')}</S.InputTitle>
+          <S.InputTitle>비밀번호</S.InputTitle>
           <Input
             type={passwordInputType}
-            placeholder={t('비밀번호를 입력해주세요.')}
+            placeholder="비밀번호를 입력해주세요."
             onChange={handlePasswordChange}
             value={password}
             rightComponent={passwordInputTextVisibilityComponent()}
@@ -130,7 +128,7 @@ export const LoginPage = () => {
           customStyle={S.buttonCss}
           onClick={handleLogin}
         >
-          {t('로그인')}
+          로그인
         </BasicButton>
       </S.LoginContainer>
     </S.Container>

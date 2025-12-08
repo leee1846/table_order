@@ -16,7 +16,7 @@ export interface ITableOrderHistoriesStore {
    * empty array일 경우, api새로 요청하지 않음.
    * */
   data: ITableOrderHistoriesData | null;
-  setData: (data: ITableOrderHistoriesData) => void;
+  setDataAsync: (data: ITableOrderHistoriesData) => void;
   clearData: () => void;
 }
 
@@ -26,9 +26,12 @@ export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
       storage.load<ITableOrderHistoriesData>(
         STORAGE_KEYS.TABLE_ORDER_HISTORIES
       ) ?? null,
-    setData: (data: ITableOrderHistoriesData) => {
-      storage.save(STORAGE_KEYS.TABLE_ORDER_HISTORIES, data);
-      set({ data });
+    setDataAsync: (data: ITableOrderHistoriesData) => {
+      return new Promise((resolve) => {
+        storage.save(STORAGE_KEYS.TABLE_ORDER_HISTORIES, data);
+        set({ data });
+        resolve(true);
+      });
     },
     clearData: () => {
       storage.remove(STORAGE_KEYS.TABLE_ORDER_HISTORIES);

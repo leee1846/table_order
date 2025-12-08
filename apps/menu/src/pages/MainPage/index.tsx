@@ -18,27 +18,25 @@ import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { LanguageSelector } from './LanguageSelector';
+import { useLanguageStore } from '@/stores/data/useLanguageStore';
 
 // TODO: breakTime 추후 변경 예정
 const showBreakTime = false;
 
 export const MainPage = () => {
+  /** ======== 초기 data 로드 START ================================== */
   /** 상점 데이터 로드 */
   useShopData();
-
   /** 상점 상세 데이터 로드 */
   const { data: shopDetailData } = useShopDetailData();
-
   /** 테이블 데이터 로드 */
   useTableData();
-
   /** 카테고리 데이터 로드 */
   const { data: categoriesStoreData, visibleCategories } = useCategoriesData();
-
   /** 테이블 주문 내역 데이터 로드 */
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
-
-  const { setCartOptions } = useCartStore();
+  /** ======== 초기 data 로드 END ================================== */
 
   // 카테고리 데이터가 로드되면 visibility 업데이트 시작
   useEffect(() => {
@@ -110,6 +108,8 @@ export const MainPage = () => {
     };
   }, [categoriesStoreData]);
 
+  const { setCartOptions } = useCartStore();
+
   // visibleCategories 변경 시 cart options 업데이트
   useEffect(() => {
     const hasFirstOrderRequiredItems = visibleCategories.some(
@@ -134,6 +134,27 @@ export const MainPage = () => {
     useSinglePageMenuboard:
       shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false,
   });
+
+  /**========= 다국어 선택 START ================================== */
+  const [show, setShow] = useState(false);
+  const { data: currentLanguage } = useLanguageStore();
+  useEffect(() => {
+    if (shopDetailData?.useLocale) {
+      setShow(false);
+      return;
+    }
+
+    if (currentLanguage) {
+      setShow(false);
+      return;
+    }
+
+    setShow(true);
+  }, [shopDetailData?.useLocale, currentLanguage]);
+  if (show) {
+    return <LanguageSelector />;
+  }
+  /** ======== 다국어 선택 END ========================= */
 
   if (showPickupAlarm) {
     return <PickupAlarm onClose={() => setShowPickupAlarm(false)} />;
