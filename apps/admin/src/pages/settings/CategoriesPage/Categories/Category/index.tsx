@@ -5,7 +5,11 @@ import { ChevronForwardIcon, DeleteIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryManageModal';
 import type { ICategory } from '@repo/api/types';
-import { queryKeys, useDeleteCategory } from '@repo/api/queries';
+import {
+  queryKeys,
+  useDeleteCategory,
+  usePutUpdateCategoryHidden,
+} from '@repo/api/queries';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { DAYS } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
@@ -21,6 +25,7 @@ export const Category = ({ category, shopSeq }: Props) => {
   const [isCategoryManageModalOpen, setIsCategoryManageModalOpen] =
     useState(false);
   const deleteCategoryMutation = useDeleteCategory();
+  const { mutateAsync: updateCategoryHidden } = usePutUpdateCategoryHidden();
 
   // 판매 요일 표시 텍스트 생성
   const getSaleDayDisplay = (): string | null => {
@@ -77,6 +82,33 @@ export const Category = ({ category, shopSeq }: Props) => {
         );
       },
     });
+  };
+
+  const handleToggleHidden = () => {
+    updateCategoryHidden(
+      {
+        categorySeq: category.categorySeq,
+        isHidden: !category.isHidden,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.category.list(),
+          });
+          toast(
+            category.isHidden
+              ? '카테고리가 표시되었습니다.'
+              : '카테고리가 숨김 처리되었습니다.'
+          );
+        },
+        onError: (error) => {
+          toast(
+            error.response?.data?.status?.userMessage ||
+              '카테고리 숨김 상태 변경에 실패했습니다.'
+          );
+        },
+      }
+    );
   };
 
   const saleDayDisplay = getSaleDayDisplay();
@@ -155,9 +187,7 @@ export const Category = ({ category, shopSeq }: Props) => {
             <ToggleButton
               size="S"
               isOn={category.isHidden}
-              onChange={() => {
-                // noop
-              }}
+              onChange={handleToggleHidden}
             />
           </S.HiddenContainer>
 

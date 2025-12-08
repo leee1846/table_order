@@ -151,3 +151,15 @@ export interface IUpdateCategoryIndexRequest {
   categorySeq: number;
   index: number;
 }
+
+// ============================================================================
+// PUT /category/hidden
+// ============================================================================
+
+/**
+ * 카테고리 숨김 수정 요청 타입
+ */
+export interface IUpdateCategoryHiddenParams {
+  categorySeq: number;
+  isHidden: boolean;
+}

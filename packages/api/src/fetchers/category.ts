@@ -6,6 +6,7 @@ import type {
   IGetCategoryListParams,
   IUpdateCategoryRequest,
   IUpdateCategoryIndexRequest,
+  IUpdateCategoryHiddenParams,
   TGetCategoryListResponse,
   IGetShopCategoriesWithMenusParams,
 } from '../types/category';
@@ -90,6 +91,23 @@ export const updateCategoryIndex = async (
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'PUT',
     url: ENDPOINTS.CATEGORY.INDEX_UPDATE,
+    data: params,
+  });
+
+  return response.data;
+};
+
+/**
+ * 카테고리 숨김 상태를 수정합니다.
+ * PUT /category/hidden
+ */
+export const updateCategoryHidden = async (
+  params: IUpdateCategoryHiddenParams
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.CATEGORY.HIDDEN,
     data: params,
   });
 

@@ -21,6 +21,7 @@ export const ENDPOINTS = {
     UPDATE: '/category',
     DELETE: '/category',
     INDEX_UPDATE: '/category/index',
+    HIDDEN: '/category/hidden',
     MENUBOARD_LIST: (shopCode: string) => `/menuboard/${shopCode}`,
   },
 
