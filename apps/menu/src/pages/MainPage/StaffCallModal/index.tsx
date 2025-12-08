@@ -11,7 +11,6 @@ import { usePostTableOrder } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
-import { useTableData } from '@/hooks/useTableData';
 
 interface Props {
   onClose: () => void;
@@ -99,12 +98,8 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
   };
 
   const { shopData } = useShopData();
-  const { table } = useTableData();
 
-  const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData({
-    shopData,
-    tableNumber: table?.tableNumber,
-  });
+  const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData();
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const requestOrder = () => {
     if (!shopData) {

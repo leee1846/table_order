@@ -12,7 +12,7 @@ export const SidebarLayout = () => {
     navigate(ROUTES.TABLES.generate());
   };
 
-  const { table } = useTableData();
+  const { data: table } = useTableData({ skipInitialRequest: true });
   const onClickHomeButton = () => {
     if (table?.tableNumber) {
       navigate(ROUTES.ROOT.generate());
