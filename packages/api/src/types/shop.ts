@@ -125,6 +125,12 @@ export interface IShopPage {
   orderCompletePageDescription: string;
 }
 
+export interface IShopLocaleMap {
+  localeShopMapSeq: number;
+  shopSeq: number;
+  localeCode: string;
+}
+
 export interface IShopPageDetail {
   pageSeq: number;
   shopSeq: number;
@@ -137,6 +143,7 @@ export interface IGetShop extends IGetShopItem {
   shopSetting: IShopSetting;
   shopNetwork: IShopNetwork;
   shopPage: IShopPage;
+  shoplocaleMapList: IShopLocaleMap[];
   shopPageDetailList: IShopPageDetail[];
 }
 

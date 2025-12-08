@@ -1,6 +1,7 @@
 import * as S from '@/pages/MainPage/LanguageSelector/languageSelector.style';
 import { jpFlagIcon, koFlagIcon, chFlagIcon, usFlagIcon } from '@repo/ui/icons';
 import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 const FLAG_ICONS = {
   ko: koFlagIcon,
@@ -29,25 +30,33 @@ export const LANGUAGE_CONFIG_LIST = [
 ];
 
 export const LanguageSelector = () => {
+  const { data: shopDetailData } = useShopDetailData();
   const { setData: setCurrentLanguage } = useLanguageStore();
 
+  if (!shopDetailData) {
+    return null;
+  }
   return (
     <S.Container>
       <h1>언어 선택</h1>
       <p>주문에 사용하실 언어를 선택해 주세요.</p>
       <S.Buttons>
-        {LANGUAGE_CONFIG_LIST.map((lang) => {
+        {shopDetailData.shoplocaleMapList.map((lang) => {
           return (
-            <S.Button key={lang.value}>
+            <S.Button key={lang.localeCode}>
               <button
                 type="button"
-                onClick={() => setCurrentLanguage(lang.value)}
+                onClick={() => setCurrentLanguage(lang.localeCode)}
               >
                 <img
-                  src={FLAG_ICONS[lang.value as keyof typeof FLAG_ICONS]}
-                  alt={lang.label}
+                  src={FLAG_ICONS[lang.localeCode as keyof typeof FLAG_ICONS]}
+                  alt={lang.localeCode}
                 />
-                {lang.label}
+                {
+                  LANGUAGE_CONFIG_LIST.find(
+                    (item) => item.value === lang.localeCode
+                  )?.label
+                }
               </button>
             </S.Button>
           );
