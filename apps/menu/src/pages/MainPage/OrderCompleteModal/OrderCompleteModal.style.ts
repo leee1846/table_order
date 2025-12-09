@@ -33,11 +33,11 @@ export const LeftContainer = styled.div`
   }
 
   & > p:first-of-type {
-    font-size: 36px;
+    font-size: 2.25rem;
     font-style: normal;
     font-weight: 700;
-    line-height: 46px; /* 127.778% */
-    letter-spacing: -0.9px;
+    line-height: 2.875rem; /* 127.778% */
+    letter-spacing: -0.05625rem;
     margin-bottom: 16px;
     color: ${({ theme }) => theme.mode.undefined_palette[300]};
   }
@@ -61,11 +61,11 @@ export const Title = styled.p`
 
 export const Date = styled.p`
   text-align: right;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-style: normal;
   font-weight: 500;
-  line-height: 26px; /* 144.444% */
-  letter-spacing: -0.45px;
+  line-height: 1.625rem; /* 144.444% */
+  letter-spacing: -0.028125rem;
   color: ${({ theme }) => theme.mode.grey[600]};
   padding-bottom: 24px;
   border-bottom: 1px solid ${({ theme }) => theme.mode.grey[200]};

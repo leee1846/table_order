@@ -38,12 +38,13 @@ export const LanguageSelector = () => {
   if (!shopDetailData) {
     return null;
   }
+
   return (
     <S.Container>
       <h1>언어 선택</h1>
       <p>주문에 사용하실 언어를 선택해 주세요.</p>
       <S.Buttons>
-        {shopDetailData.shoplocaleMapList.map((lang) => {
+        {shopDetailData.shopSetting.shoplocaleMapList.map((lang) => {
           const config = LANGUAGE_CONFIG[lang.localeCode as LanguageCode];
           if (!config) {
             return null;
@@ -61,13 +62,6 @@ export const LanguageSelector = () => {
             </S.Button>
           );
         })}
-
-        <S.Button>
-          <button type="button" onClick={() => setCurrentLanguage('en')}>
-            <img src={usFlagIcon} alt="en" />
-            English
-          </button>
-        </S.Button>
       </S.Buttons>
     </S.Container>
   );

@@ -81,7 +81,7 @@ const Title = styled.h2<{ isMenu: boolean }>`
 `;
 
 const Content = styled.div<{ isMenu: boolean }>`
-  font-size: 14px;
+  font-size: 0.875rem;
   color: ${({ theme, isMenu }) =>
     isMenu ? theme.mode.grey[600] : theme.colors.grey[600]}s;
   margin-bottom: 24px;

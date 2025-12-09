@@ -20,6 +20,8 @@ import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LanguageSelector } from './LanguageSelector';
 import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { CustomerCountSelector } from '@/pages/MainPage/CustomerCountSelector';
+import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 
 // TODO: breakTime 추후 변경 예정
 const showBreakTime = false;
@@ -135,28 +137,57 @@ export const MainPage = () => {
       shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false,
   });
 
-  /**========= 다국어 선택 START ================================== */
-  const [show, setShow] = useState(false);
+  /**========= 고객 메뉴판 언어 선택 START ================================== */
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const { data: currentLanguage } = useLanguageStore();
 
   useEffect(() => {
-    if (shopDetailData?.useLocale) {
-      setShow(false);
+    if (!shopDetailData?.useLocale) {
+      setShowLanguageSelector(false);
       return;
     }
 
     if (currentLanguage) {
-      setShow(false);
+      setShowLanguageSelector(false);
       return;
     }
 
-    setShow(true);
+    setShowLanguageSelector(true);
   }, [shopDetailData?.useLocale, currentLanguage]);
+  /** ======== 고객 메뉴판 언어 선택 END ========================= */
 
-  if (show) {
+  /**========= 객수 선택 START ================================== */
+  const [showCustomerCountSelector, setShowCustomerCountSelector] =
+    useState(false);
+  const { data: customerCountData } = useCustomerCountStore();
+
+  useEffect(() => {
+    if (
+      !shopDetailData?.shopSetting?.useCustomerCount &&
+      !shopDetailData?.shopSetting?.useKidsCustomerCount
+    ) {
+      setShowCustomerCountSelector(false);
+      return;
+    }
+
+    if (customerCountData) {
+      setShowCustomerCountSelector(false);
+      return;
+    }
+
+    setShowCustomerCountSelector(true);
+  }, [shopDetailData?.shopSetting, customerCountData]);
+  /** ======== 객수 선택 END ========================= */
+
+  /** 고객 메뉴판 언어 선택 */
+  if (showLanguageSelector) {
     return <LanguageSelector />;
   }
-  /** ======== 다국어 선택 END ========================= */
+
+  /** 고객 객수 선택 */
+  if (showCustomerCountSelector) {
+    return <CustomerCountSelector />;
+  }
 
   if (showPickupAlarm) {
     return <PickupAlarm onClose={() => setShowPickupAlarm(false)} />;

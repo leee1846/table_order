@@ -18,11 +18,11 @@ export const Icon = styled.img`
 `;
 
 export const Title = styled.p`
-  font-size: 72px;
+  font-size: 4.5rem;
   font-style: normal;
   font-weight: 700;
-  line-height: 90px; /* 125% */
-  letter-spacing: -1.8px;
+  line-height: 5.625rem; /* 125% */
+  letter-spacing: -0.1125rem;
   color: ${({ theme }) => theme.mode.undefined_palette[400]};
   margin-bottom: 24px;
 `;

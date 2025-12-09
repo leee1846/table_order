@@ -1,0 +1,43 @@
+import storage from '@/utils/storage';
+import { STORAGE_KEYS } from '@/constants/keys';
+import { create } from '@repo/feature/zustand';
+
+export interface ICustomerCountStore {
+  data: {
+    adultCount: number;
+    childCount: number;
+  } | null;
+
+  setData: ({
+    adultCount,
+    childCount,
+  }: {
+    adultCount: number;
+    childCount: number;
+  }) => void;
+
+  clearData: () => void;
+}
+
+export const useCustomerCountStore = create<ICustomerCountStore>((set) => ({
+  data:
+    storage.load<{
+      adultCount: number;
+      childCount: number;
+    }>(STORAGE_KEYS.CUSTOMER_COUNT) ?? null,
+
+  setData: ({ adultCount, childCount }) => {
+    const resultData = {
+      adultCount,
+      childCount,
+    };
+
+    storage.save(STORAGE_KEYS.CUSTOMER_COUNT, resultData);
+    set({ data: resultData });
+  },
+
+  clearData: () => {
+    storage.remove(STORAGE_KEYS.CUSTOMER_COUNT);
+    set({ data: null });
+  },
+}));

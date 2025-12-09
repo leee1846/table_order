@@ -2,6 +2,7 @@ import { useShopDetailStore } from '@/stores/data/useShopDetailStore';
 import { useShopData } from './useShopData';
 import { useGetShopDetail } from '@repo/api/queries';
 import { useEffect } from 'react';
+import { mockShopDetail } from '@/mocks/mockShopDetail';
 
 interface Props {
   skipInitialRequest?: boolean;
@@ -29,7 +30,9 @@ export const useShopDetailData = (options?: Props) => {
       return;
     }
 
-    setShopDetailData(shopDetailDataResponse.data);
+    // TODO: Mock 데이터 삭제 예정
+    setShopDetailData(mockShopDetail);
+    // setShopDetailData(shopDetailDataResponse.data);
   }, [shopDetailDataResponse, setShopDetailData, skipInitialRequest]);
 
   const refresh = async () => {
