@@ -8,6 +8,7 @@ import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesSt
 import { PasswordModal } from '@/pages/MainPage/PasswordModal';
 import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useInactivityTimer } from '@/hooks/useInactivityTimer';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -15,6 +16,11 @@ interface Props {
 export const Header = ({ orderHistories }: Props) => {
   const theme = useTheme();
   const { t } = useTranslation();
+
+  /**
+   * 첫 터치 후 2분30초 카운트 관리
+   */
+  useInactivityTimer();
 
   const { data: tableData } = useTableData();
   const { data: shopDetailData } = useShopDetailData();

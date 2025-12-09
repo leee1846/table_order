@@ -29,5 +29,9 @@ export const useTableData = (options?: Props) => {
     }
   }, [data, navigate, skipInitialRequest]);
 
-  return { data, setDataAsync, clearData };
+  const refresh = async () => {
+    // TODO: 추후 선택한 table get api 적용예정
+  };
+
+  return { data, setDataAsync, clearData, refresh };
 };

@@ -6,6 +6,7 @@ import i18n from '@/config/i18n';
 export interface ILanguageStore {
   data: string | null;
   setData: (data: string) => void;
+  clearData: () => void;
 }
 
 export const useLanguageStore = create<ILanguageStore>((set) => ({
@@ -14,5 +15,10 @@ export const useLanguageStore = create<ILanguageStore>((set) => ({
     storage.save(STORAGE_KEYS.I18N_LANGUAGE, data);
     set({ data });
     i18n.changeLanguage(data);
+  },
+  clearData: () => {
+    storage.remove(STORAGE_KEYS.I18N_LANGUAGE);
+    set({ data: null });
+    i18n.changeLanguage('ko');
   },
 }));

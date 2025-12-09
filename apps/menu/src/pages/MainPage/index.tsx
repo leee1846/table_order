@@ -24,6 +24,7 @@ import { CustomerCountSelector } from '@/pages/MainPage/CustomerCountSelector';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useThemeMode } from '@repo/ui';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
+import { useInactivityTimer } from '@/hooks/useInactivityTimer';
 
 // TODO: breakTime 추후 변경 예정
 const showBreakTime = false;
@@ -114,33 +115,38 @@ export const MainPage = () => {
     };
   }, [categoriesStoreData]);
 
-  const { setCartOptions } = useCartStore();
-
-  // visibleCategories 변경 시 cart options 업데이트
-  useEffect(() => {
-    const hasFirstOrderRequiredItems = visibleCategories.some(
-      (category) => category.isFirstOrderRequired
-    );
-
-    // 메뉴 장바구니에 담을 때 첫 주문 필수 항목이 있는지 여부
-    setCartOptions({ hasFirstOrderRequiredItems });
-  }, [visibleCategories, setCartOptions]);
-
   const [showCartReminder, setShowCartReminder] = useState(false);
 
+  const staffCallCategory = visibleCategories.find((c) => c.isStaffCall);
   const nonStaffCallCategories = visibleCategories.filter(
     (c) => !c.isStaffCall
   );
-  const staffCallCategory = visibleCategories.find((c) => c.isStaffCall);
 
-  // 카테고리 네비게이션 훅 호출
+  /**========= 첫 터치 후 2분30초 카운트 관리 START =================================== */
+  useInactivityTimer();
+  /** ======== 첫 터치 후 2분30초 카운트 관리 END ===================================== */
+
+  /**========= 카테고리 사이드바 이벤트 관리 START ==================================== */
   const categoryNavigation = useCategoryNavigation({
     categories: nonStaffCallCategories,
     useSinglePageMenuboard:
       shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false,
   });
+  /** ======== 카테고리 사이드바 이벤트 관리 END ===================================== */
 
-  /**========= 다크모드 사용 여부 확인 START ================================== */
+  /**========= 노출되는 카테고리 중, 첫 주문 필수 항목이 있는지 여부 확인 START =========== */
+  const { setCartOptions } = useCartStore();
+  useEffect(() => {
+    const hasFirstOrderRequiredItems = visibleCategories.some(
+      (category) => category.isFirstOrderRequired
+    );
+
+    // 메뉴 장바구니에 담을 때 사용하는 옵션 업데이트
+    setCartOptions({ hasFirstOrderRequiredItems });
+  }, [visibleCategories, setCartOptions]);
+  /**========= 노출되는 카테고리 중, 첫 주문 필수 항목이 있는지 여부 확인 END ============= */
+
+  /**========= 다크모드 사용 여부 확인 START ======================================== */
   const { setMode } = useThemeMode();
   useEffect(() => {
     if (!shopDetailData?.shopSetting) {
@@ -155,9 +161,9 @@ export const MainPage = () => {
 
     setMode('light');
   }, [shopDetailData?.shopSetting, setMode]);
-  /** ======== 다크모드 사용 여부 확인 END ========================= */
+  /** ======== 다크모드 사용 여부 확인 END =========================================== */
 
-  /**========= 고객 메뉴판 언어 선택 START ================================== */
+  /**========= 고객 메뉴판 언어 선택 START ========================================== */
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const { data: currentLanguage } = useLanguageStore();
 
@@ -174,9 +180,9 @@ export const MainPage = () => {
 
     setShowLanguageSelector(true);
   }, [shopDetailData?.useLocale, currentLanguage]);
-  /** ======== 고객 메뉴판 언어 선택 END ========================= */
+  /** ======== 고객 메뉴판 언어 선택 END ========================================== */
 
-  /**========= 객수 선택 START ================================== */
+  /**========= 객수 선택 START ================================================== */
   const [showCustomerCountSelector, setShowCustomerCountSelector] =
     useState(false);
   const { data: customerCountData } = useCustomerCountStore();
@@ -197,7 +203,7 @@ export const MainPage = () => {
 
     setShowCustomerCountSelector(true);
   }, [shopDetailData?.shopSetting, customerCountData]);
-  /** ======== 객수 선택 END ========================= */
+  /** ======== 객수 선택 END ================================================== */
 
   /** 고객 메뉴판 언어 선택 */
   if (showLanguageSelector) {

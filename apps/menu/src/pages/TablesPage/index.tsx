@@ -18,13 +18,12 @@ export const TablesPage = () => {
   useShopData();
   /** 상점 상세 데이터 로드 */
   useShopDetailData();
+  /** 테이블 그룹 데이터 로드 */
+  const { data: tableGroupsData } = useTableGroupData();
 
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
     number | null
   >(null);
-
-  /** 테이블 그룹 데이터 로드 */
-  const { data: tableGroupsData } = useTableGroupData();
 
   useEffect(() => {
     if (!tableGroupsData) {
