@@ -103,6 +103,27 @@ export const CartList = ({
       return;
     }
 
+    const totalMenuQuantity = cartData.menus.reduce((total, menu) => {
+      return total + menu.quantity;
+    }, 0);
+
+    if (
+      shopDetailData?.shopSetting?.firstOrderMinAmount &&
+      shopDetailData?.shopSetting?.firstOrderMinAmount > 0 &&
+      totalMenuQuantity < shopDetailData?.shopSetting?.firstOrderMinAmount
+    ) {
+      toast(
+        t('최소 주문 수량은 {{minQuantity}}개 입니다.', {
+          minQuantity: shopDetailData?.shopSetting?.firstOrderMinAmount,
+        }),
+        {
+          position: 'center-center',
+          duration: 2000,
+        }
+      );
+      return;
+    }
+
     openDualActionDialog({
       title: t('메뉴를 주문할까요?'),
       content: t('주방 접수된 이후에는 취소가 불가능해요.'),
