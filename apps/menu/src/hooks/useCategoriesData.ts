@@ -53,7 +53,9 @@ export const useCategoriesData = (options?: Props) => {
   const refresh = async () => {
     const result = await refetch();
     if (result.data?.data) {
-      await setCategoriesStoreData(result.data.data);
+      // TODO: mockData 삭제 예정 -> categoriesData.data를 넣어야함
+      await setCategoriesStoreData(mockCategories);
+      // await setCategoriesStoreData(result.data.data);
     }
   };
 

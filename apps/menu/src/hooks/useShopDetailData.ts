@@ -38,7 +38,9 @@ export const useShopDetailData = (options?: Props) => {
   const refresh = async () => {
     const result = await refetch();
     if (result.data?.data) {
-      setShopDetailData(result.data.data);
+      setShopDetailData(mockShopDetail);
+      // TODO: Mock 데이터 삭제 예정
+      // setShopDetailData(result.data.data);
     }
   };
 
