@@ -5,9 +5,11 @@ import { useTranslation } from 'react-i18next';
 import type { ITableOrderHistoriesData } from '@/stores/data/useTableOrderHistoriesStore';
 import { formatCurrency } from '@repo/util/string';
 import { NoContent } from '@/feature/NoContent';
-import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
+
+// TODO: 총 금액 api 반환값으로 적용 예정
+const totalPrice = 0;
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -16,49 +18,10 @@ interface Props {
 export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
   const { t } = useTranslation();
   const histories = orderHistories?.orderDetailMenuList;
-  const a: number = '1';
-  const b: number = 3;
-  console.log(a / b);
+
   const { data: shopDetailData } = useShopDetailData();
   const currencySymbol =
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
-
-  const calculateTotalPrice = () => {
-    if (!histories) {
-      return 0;
-    }
-
-    const totalPrice =
-      histories.reduce((total, orderHistory) => {
-        return (
-          total +
-          calculateMenuTotalPrice(
-            orderHistory.menuPrice,
-            orderHistory.menuQuantity,
-            orderHistory.optionList.map((option) => ({
-              optionPrice: option.optionPrice,
-              quantity: option.optionQuantity,
-            }))
-          )
-        );
-      }, 0) ?? 0;
-
-    // 2) 할인율 정규화 (소수점 없애고 정수만 사용)
-    let rawRate = orderHistories?.discountRate ?? 0;
-
-    // 0.x 형태면 %로 환산
-    if (rawRate < 1) {
-      rawRate = rawRate * 100;
-    }
-
-    // 소수점 제거 (버림)
-    const discountRate = Math.floor(rawRate);
-
-    // 3) 할인 적용
-    const discountedTotal = Math.floor(totalPrice * (1 - discountRate / 100));
-
-    return discountedTotal;
-  };
 
   return (
     <S.Background onClick={onClose}>
@@ -108,7 +71,7 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
             <p>{t('합계')}</p>
             <p>
               {currencySymbol}
-              {formatCurrency(calculateTotalPrice())}
+              {formatCurrency(totalPrice)}
             </p>
           </div>
           <BasicButton variant="Solid_Blue_2XL">{t('닫기')}</BasicButton>

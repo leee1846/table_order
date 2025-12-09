@@ -337,8 +337,6 @@ export const MenuDetailWithOptionsModal = ({
 
   // 메뉴 총 가격 계산
   const getMenuTotalPrice = (): number => {
-    // selectedOptions를 MenuPriceOption 형태로 변환
-    // 카트 저장 시와 동일하게 수량을 계산
     const options = Array.from(selectedOptions.values()).map((item) => {
       const optionGroup = menu.optionGroupList.find(
         (group) => group.optionGroupSeq === item.option.optionGroupSeq
@@ -347,14 +345,10 @@ export const MenuDetailWithOptionsModal = ({
       const isMenuQuantityDependant =
         optionGroup?.isMenuQuantityDependant ?? false;
 
-      // isMenuQuantityDependant이 false인 경우, 메뉴 수량을 곱해서 계산
-      const calculatedQuantity = isMenuQuantityDependant
-        ? item.quantity
-        : menuQuantity * item.quantity;
-
       return {
         optionPrice: item.option.optionPrice,
-        quantity: calculatedQuantity,
+        quantity: item.quantity,
+        isMenuQuantityDependant,
       };
     });
 
@@ -461,12 +455,6 @@ export const MenuDetailWithOptionsModal = ({
       const isMenuQuantityDependant =
         optionGroup?.isMenuQuantityDependant ?? false;
 
-      // isMenuQuantityDependant이 true일 경우: quantity는 그대로
-      // isMenuQuantityDependant이 false일 경우: quantity는 menuQuantity * item.quantity
-      const cartOptionQuantity = isMenuQuantityDependant
-        ? item.quantity
-        : menuQuantity * item.quantity;
-
       const cartOption: ICartOption = {
         optionGroupSeq: item.option.optionGroupSeq,
         optionSeq: item.option.optionSeq,
@@ -474,7 +462,8 @@ export const MenuDetailWithOptionsModal = ({
           item.option.localeOptionName?.[currentLanguage ?? 'ko'] ??
           item.option.optionName,
         optionPrice: item.option.optionPrice,
-        quantity: cartOptionQuantity,
+        quantity: item.quantity,
+        isMenuQuantityDependant,
       };
 
       cartOptions.push(cartOption);

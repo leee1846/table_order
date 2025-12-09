@@ -14,8 +14,6 @@ export interface ICart extends ICartOptions {
 
 export interface ICartStore {
   data: ICart;
-  /** 스토리지에서 데이터 불러오기 */
-  loadFromStorage: () => void;
 
   setCartOptions: (options: ICartOptions) => void;
 
@@ -44,14 +42,6 @@ const initialData: ICart = {
 
 export const useCartStore = create<ICartStore>((set, get) => ({
   data: storage.load<ICart>(STORAGE_KEYS.CART) ?? initialData,
-
-  // 스토리지에서 데이터 불러오기
-  loadFromStorage: () => {
-    const storedData = storage.load<ICart>(STORAGE_KEYS.CART);
-    if (storedData) {
-      set({ data: storedData });
-    }
-  },
 
   setCartOptions: (options: ICartOptions) => {
     const newData = {

@@ -4,8 +4,10 @@
 export interface MenuPriceOption {
   /** 옵션 가격 */
   optionPrice: number;
-  /** 옵션 수량 (이미 메뉴 수량이 반영된 값) */
+  /** 옵션 수량 */
   quantity: number;
+  /** 메뉴 수량에 의존하는지 여부 (true: 메뉴 수량과 무관하게 옵션 수량만 사용, false: 메뉴 수량 * 옵션 수량 사용) */
+  isMenuQuantityDependant?: boolean;
 }
 
 /**
@@ -26,10 +28,14 @@ export const calculateMenuTotalPrice = (
   const menuTotalPrice = menuPrice * menuQuantity;
 
   // 옵션 가격 * 옵션 수량
-  const optionsTotalPrice = options.reduce(
-    (sum, option) => sum + option.optionPrice * option.quantity,
-    0
-  );
+  // isMenuQuantityDependant가 false인 경우, 메뉴 수량을 곱해서 계산
+  const optionsTotalPrice = options.reduce((sum, option) => {
+    const isMenuQuantityDependant = option.isMenuQuantityDependant ?? false;
+    const calculatedQuantity = isMenuQuantityDependant
+      ? option.quantity
+      : menuQuantity * option.quantity;
+    return sum + option.optionPrice * calculatedQuantity;
+  }, 0);
 
   return menuTotalPrice + optionsTotalPrice;
 };

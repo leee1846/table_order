@@ -132,7 +132,9 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
           shopCode: shopData.shopCode,
           tableNumber: tableData?.tableNumber ?? 0,
           orderType: 'MENU',
+          // 객수 미사용시 1명으로 처리
           customerCount: customerCountData?.adultCount ?? 1,
+          // 객수 미사용시 0명으로 처리
           kidsCustomerCount: customerCountData?.childCount ?? 0,
           orders: selectedMenuList.map((menu) => ({
             menuSeq: menu.menuSeq,

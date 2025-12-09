@@ -70,10 +70,16 @@ export const CartList = ({
 
   // 카트 메뉴의 총 가격 계산
   const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
+    const options = cartMenu.selectedOptions.map((option) => ({
+      optionPrice: option.optionPrice,
+      quantity: option.quantity,
+      isMenuQuantityDependant: option.isMenuQuantityDependant,
+    }));
+
     return calculateMenuTotalPrice(
       cartMenu.menuPrice,
       cartMenu.quantity,
-      cartMenu.selectedOptions
+      options
     );
   };
 
@@ -113,6 +119,7 @@ export const CartList = ({
             optionGroupSeq: selectedOption.optionGroupSeq,
             optionName: selectedOption.optionName,
             optionPrice: selectedOption.optionPrice,
+            isMenuQuantityDependant: selectedOption.isMenuQuantityDependant,
             quantity: selectedOption.quantity,
           })),
         }));
@@ -126,9 +133,20 @@ export const CartList = ({
             shopCode: shopData?.shopCode ?? '',
             tableNumber: tableData.tableNumber,
             orderType: 'MENU',
+            // 객수 미사용시 1명으로 처리
             customerCount: customerCountData?.adultCount ?? 1,
+            // 객수 미사용시 0명으로 처리
             kidsCustomerCount: customerCountData?.childCount ?? 0,
-            orders,
+
+            orders: orders.map((order) => ({
+              ...order,
+              selectedOptions: order.selectedOptions.map((option) => ({
+                ...option,
+                quantity: option.isMenuQuantityDependant
+                  ? option.quantity
+                  : order.quantity * option.quantity,
+              })),
+            })),
           });
 
           await refreshTableOrderHistories();
