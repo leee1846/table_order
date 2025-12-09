@@ -2,7 +2,6 @@ import { MenuIcon } from '@repo/ui/icons';
 import { useTheme } from '@emotion/react';
 import * as S from '@/pages/MainPage/Header/header.style';
 import { useTranslation } from 'react-i18next';
-import { useThemeMode } from '@repo/ui';
 import { useState } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
 import type { ITableOrderHistoriesData } from '@/stores/data/useTableOrderHistoriesStore';
@@ -14,7 +13,6 @@ interface Props {
 export const Header = ({ orderHistories }: Props) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { toggleMode } = useThemeMode();
 
   const [showOrderHistoryModal, setShowOrderHistoryModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -34,7 +32,7 @@ export const Header = ({ orderHistories }: Props) => {
         </S.LeftContent>
 
         <S.RightContent>
-          <S.TableNumber onClick={toggleMode}>
+          <S.TableNumber>
             {t('{{number}}번 테이블', { number: '??' })}
           </S.TableNumber>
           <S.Divider />

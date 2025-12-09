@@ -22,6 +22,7 @@ import { LanguageSelector } from './LanguageSelector';
 import { useLanguageStore } from '@/stores/data/useLanguageStore';
 import { CustomerCountSelector } from '@/pages/MainPage/CustomerCountSelector';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
+import { useThemeMode } from '@repo/ui';
 
 // TODO: breakTime 추후 변경 예정
 const showBreakTime = false;
@@ -136,6 +137,22 @@ export const MainPage = () => {
     useSinglePageMenuboard:
       shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false,
   });
+  /**========= 다크모드 사용 여부 확인 START ================================== */
+  const { setMode } = useThemeMode();
+  useEffect(() => {
+    if (!shopDetailData?.shopSetting) {
+      setMode('light');
+      return;
+    }
+
+    if (shopDetailData.shopSetting.useDarkTheme) {
+      setMode('dark');
+      return;
+    }
+
+    setMode('light');
+  }, [shopDetailData?.shopSetting, setMode]);
+  /** ======== 다크모드 사용 여부 확인 END ========================= */
 
   /**========= 고객 메뉴판 언어 선택 START ================================== */
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
