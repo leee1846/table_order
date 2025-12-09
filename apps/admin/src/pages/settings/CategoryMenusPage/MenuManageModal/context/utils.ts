@@ -74,74 +74,40 @@ export const isExistingImage = (id: string) => id.startsWith('existing-');
 export const parseImageSeq = (id: string) =>
   parseInt(id.replace('existing-', ''), 10);
 
-/** 옵션을 ICreateOption으로 변환 (음수 시퀀스 제거) */
-const toCreateOption = (option: IOption): ICreateOption => {
-  const {
-    optionSeq,
-    optionGroupSeq,
-    isDeleted,
-    quantity,
-    localeOptionName,
-    localeOptionNameStr,
-    mappedOptionGroupCode,
-    mappedOptionGroupName,
-    mappedHeadOptionGroupCode,
-    mappedUptDt,
-    isMapped,
-    createDate,
-    createMemberUuid,
-    updateDate,
-    updateMemberUuid,
-    ...createOption
-  } = option;
-  return createOption;
-};
+/** 옵션을 ICreateOption으로 변환 */
+const toCreateOption = (option: IOption): ICreateOption => ({
+  optionName: option.optionName,
+  optionPrice: option.optionPrice,
+  index: option.index,
+  isOutOfStock: option.isOutOfStock,
+});
 
-/** 옵션을 IUpdateOption으로 변환 (음수 시퀀스는 0으로) */
+/** 옵션을 IUpdateOption으로 변환 */
 const toUpdateOption = (
   option: IOption,
   optionGroupSeq: number
-): IUpdateOption => {
-  const {
-    quantity,
-    localeOptionName,
-    localeOptionNameStr,
-    mappedOptionGroupCode,
-    mappedOptionGroupName,
-    mappedHeadOptionGroupCode,
-    mappedUptDt,
-    isMapped,
-    createDate,
-    createMemberUuid,
-    updateDate,
-    updateMemberUuid,
-    ...updateOption
-  } = option;
-  return {
-    ...updateOption,
-    optionSeq: updateOption.optionSeq < 0 ? 0 : updateOption.optionSeq,
-    optionGroupSeq,
-  };
-};
+): IUpdateOption => ({
+  optionSeq: option.optionSeq > 0 ? option.optionSeq : 0,
+  optionGroupSeq,
+  optionName: option.optionName,
+  optionPrice: option.optionPrice,
+  isDeleted: option.isDeleted,
+  index: option.index,
+  isOutOfStock: option.isOutOfStock,
+});
 
 /** 신규 옵션 그룹을 ICreateOptionGroup으로 변환 */
-const toCreateOptionGroup = (group: IOptionGroup): ICreateOptionGroup => {
-  const {
-    optionGroupSeq, // 서버에 전송하지 않는 필드들을 제거하고 나머지만 사용
-    localeOptionGroupName,
-    localeOptionGroupNameStr,
-    optionList,
-    minQuantity, // ICreateOptionGroup에는 minQuantity가 없고 requiredQuantity로 매핑
-    maxQuantity, // ICreateOptionGroup에는 maxQuantity가 없음
-    ...createGroup
-  } = group;
-
-  return {
-    ...createGroup, // 필요한 필드들만 포함
-    requiredQuantity: minQuantity, // minQuantity를 requiredQuantity로 매핑
-    optionList: (optionList || []).map(toCreateOption), // 옵션 리스트를 변환하여 다시 넣음
-  };
-};
+const toCreateOptionGroup = (group: IOptionGroup): ICreateOptionGroup => ({
+  optionGroupName: group.optionGroupName,
+  menuSeq: group.menuSeq,
+  index: group.index,
+  minQuantity: group.minQuantity,
+  maxQuantity: group.maxQuantity,
+  isMultipleSelectable: group.isMultipleSelectable,
+  isOptionQuantitySelectable: group.isOptionQuantitySelectable,
+  isMenuQuantityDependant: group.isMenuQuantityDependant,
+  optionList: (group.optionList || []).map(toCreateOption),
+});
 
 /** 기존 옵션 그룹을 IUpdateOptionGroup으로 변환 */
 const toUpdateOptionGroup = (group: IOptionGroup): IUpdateOptionGroup => {
@@ -197,7 +163,7 @@ export const buildMenuData = (
   minQuantity: formValues.minQuantity ?? 0,
   optionGroupList: convertOptionGroupList(
     formValues.optionGroupList
-  ) as unknown as IOptionGroup[],
+  ) as unknown as ICreateOptionGroup[],
   selectedLanguageCode: formValues.selectedLanguageCode ?? 'KO',
   menuImageList,
 });

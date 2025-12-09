@@ -184,8 +184,6 @@ export const MenuManageModalProvider = ({
       menuImageList
     );
 
-    console.log('업데이트', { menu: updateData, files });
-
     await runMutation(() => updateMenu({ menu: updateData, files }));
   }, [menu, formValues, images, runMutation, updateMenu]);
 

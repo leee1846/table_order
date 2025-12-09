@@ -75,7 +75,8 @@ export interface ICreateOptionGroup {
   optionGroupName: string;
   menuSeq: number;
   index: number;
-  requiredQuantity: number;
+  minQuantity: number;
+  maxQuantity: number;
   isMultipleSelectable: boolean;
   isOptionQuantitySelectable: boolean;
   isMenuQuantityDependant: boolean;
