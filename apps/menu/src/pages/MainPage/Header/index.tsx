@@ -6,6 +6,8 @@ import { useState } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
 import type { ITableOrderHistoriesData } from '@/stores/data/useTableOrderHistoriesStore';
 import { PasswordModal } from '@/pages/MainPage/PasswordModal';
+import { useTableData } from '@/hooks/useTableData';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -13,6 +15,9 @@ interface Props {
 export const Header = ({ orderHistories }: Props) => {
   const theme = useTheme();
   const { t } = useTranslation();
+
+  const { data: tableData } = useTableData();
+  const { data: shopDetailData } = useShopDetailData();
 
   const [showOrderHistoryModal, setShowOrderHistoryModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -25,7 +30,7 @@ export const Header = ({ orderHistories }: Props) => {
             <span>logo버튼 영역</span>
           </button>
           <S.Divider />
-          <S.ShopName>shop 이름영역</S.ShopName>
+          <S.ShopName>{shopDetailData?.shopName ?? ''}</S.ShopName>
           <S.Description>
             브레이크타임 or 영업마감 라스트오더 문구 노출 영역(... 처리)
           </S.Description>
@@ -33,7 +38,7 @@ export const Header = ({ orderHistories }: Props) => {
 
         <S.RightContent>
           <S.TableNumber>
-            {t('{{number}}번 테이블', { number: '??' })}
+            {t('{{number}}번 테이블', { number: tableData?.tableNumber ?? 0 })}
           </S.TableNumber>
           <S.Divider />
           <S.OrderHistoryButton
