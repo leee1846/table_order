@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
-import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 
 const IMAGE_SIZE = {
   1: {

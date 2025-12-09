@@ -13,7 +13,7 @@ import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
-import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 
 interface Props {
   onClose: () => void;

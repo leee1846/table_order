@@ -11,7 +11,7 @@ import { usePostTableOrder } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
-import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useTableData } from '@/hooks/useTableData';
 

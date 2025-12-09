@@ -1,6 +1,6 @@
 import * as S from '@/pages/MainPage/LanguageSelector/languageSelector.style';
 import { jpFlagIcon, koFlagIcon, chFlagIcon, usFlagIcon } from '@repo/ui/icons';
-import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 export type LanguageCode = 'ko' | 'en' | 'ch' | 'jp';

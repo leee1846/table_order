@@ -1,4 +1,4 @@
-import { useShopDetailStore } from '@/stores/data/useShopDetailStore';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useShopData } from './useShopData';
 import { useGetShopDetail } from '@repo/api/queries';
 import { useEffect } from 'react';

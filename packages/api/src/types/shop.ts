@@ -84,6 +84,7 @@ export interface IShopSetting {
   serviceChargeRate: number;
   currencySetting: 'KRW' | 'USD';
   usePickupAlert: boolean;
+  pickupAlertMessage: string;
   useDarkTheme: boolean;
   useOnlinePosMode: boolean;
   useTableOccupancyTime: boolean;

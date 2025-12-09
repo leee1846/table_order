@@ -6,7 +6,7 @@ import { CartButton } from '@/pages/MainPage/CartButton';
 import { BreakTime } from '@/pages/MainPage/BreakTime';
 import { CartReminder } from '@/pages/MainPage/CartReminder';
 import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
-import { useCategoryStore } from '@/stores/data/useCategoryStore';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { checkCategorySaleStatus } from '@/utils/category';
 import { timerKeys } from '@/constants/keys';
@@ -19,10 +19,11 @@ import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LanguageSelector } from './LanguageSelector';
-import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 import { CustomerCountSelector } from '@/pages/MainPage/CustomerCountSelector';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useThemeMode } from '@repo/ui';
+import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 
 // TODO: breakTime 추후 변경 예정
 const showBreakTime = false;
@@ -40,6 +41,8 @@ export const MainPage = () => {
   /** 테이블 주문 내역 데이터 로드 */
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
   /** ======== 초기 data 로드 END ================================== */
+
+  const { data: showPickupAlarm } = usePickupAlarmStore();
 
   // 카테고리 데이터가 로드되면 visibility 업데이트 시작
   useEffect(() => {
@@ -124,7 +127,6 @@ export const MainPage = () => {
   }, [visibleCategories, setCartOptions]);
 
   const [showCartReminder, setShowCartReminder] = useState(false);
-  const [showPickupAlarm, setShowPickupAlarm] = useState(false);
 
   const nonStaffCallCategories = visibleCategories.filter(
     (c) => !c.isStaffCall
@@ -137,6 +139,7 @@ export const MainPage = () => {
     useSinglePageMenuboard:
       shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false,
   });
+
   /**========= 다크모드 사용 여부 확인 START ================================== */
   const { setMode } = useThemeMode();
   useEffect(() => {
@@ -206,8 +209,10 @@ export const MainPage = () => {
     return <CustomerCountSelector />;
   }
 
-  if (showPickupAlarm) {
-    return <PickupAlarm onClose={() => setShowPickupAlarm(false)} />;
+  // TODO: SSE 연결 처리 추후 예정
+  /** 픽업 알림 표시 */
+  if (shopDetailData?.shopSetting?.usePickupAlert && showPickupAlarm) {
+    return <PickupAlarm />;
   }
 
   if (showBreakTime) {

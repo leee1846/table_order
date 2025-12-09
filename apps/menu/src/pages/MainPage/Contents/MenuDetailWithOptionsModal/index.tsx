@@ -24,7 +24,7 @@ import type { ICartMenu, ICartOption } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 
 interface Props {
   onClose: () => void;

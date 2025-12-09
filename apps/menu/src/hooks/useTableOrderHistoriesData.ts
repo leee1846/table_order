@@ -1,4 +1,4 @@
-import { useTableOrderHistoriesStore } from '@/stores/data/useTableOrderHistoriesStore';
+import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStore';
 import { useGetTableOrderHistories } from '@repo/api/queries';
 import { useEffect } from 'react';
 import { useShopData } from '@/hooks/useShopData';

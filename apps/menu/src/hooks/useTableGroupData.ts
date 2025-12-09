@@ -1,6 +1,6 @@
 import { useGetTableGroupList } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
-import { useTableGroupStore } from '@/stores/data/useTableGroupStore';
+import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useEffect } from 'react';
 
 interface Props {

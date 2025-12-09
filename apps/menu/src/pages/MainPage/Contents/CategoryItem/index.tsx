@@ -3,7 +3,7 @@ import { MenuItem } from '@/pages/MainPage/Contents/MenuItem';
 import * as S from '@/pages/MainPage/Contents/CategoryItem/categoryItem.style';
 import { NoContent } from '@/feature/NoContent';
 import { useTranslation } from 'react-i18next';
-import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 
 interface Props {
   category: ICategoryWithMenus;

@@ -4,7 +4,7 @@ import { CallBellIcon } from '@repo/ui/icons';
 import { baseTheme } from '@repo/ui';
 import { StaffCallModal } from '@/pages/MainPage/StaffCallModal';
 import type { ICategoryWithMenus } from '@repo/api/types';
-import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
 
 interface Props {
   categories: ICategoryWithMenus[];

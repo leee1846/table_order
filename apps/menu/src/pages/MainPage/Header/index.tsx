@@ -4,7 +4,7 @@ import * as S from '@/pages/MainPage/Header/header.style';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
-import type { ITableOrderHistoriesData } from '@/stores/data/useTableOrderHistoriesStore';
+import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
 import { PasswordModal } from '@/pages/MainPage/PasswordModal';
 import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
