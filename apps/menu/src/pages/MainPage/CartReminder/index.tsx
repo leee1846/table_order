@@ -6,15 +6,29 @@ import { useTranslation, Trans } from 'react-i18next';
 import { css } from '@emotion/react';
 import { globalTimerManager } from '@/utils/timerManager';
 import { timerKeys } from '@/constants/keys';
+import { useCartReminderStore } from '@/stores/useCartReminderStore';
+import { useCartStore } from '@/stores/useCartStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useInitialPageStore } from '@/stores/useInitialPageStore';
+import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
+import { useCategoriesData } from '@/hooks/useCategoriesData';
+import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
-interface Props {
-  closePage: () => void;
-  resetCart: () => void;
-}
-export const CartReminder = ({ closePage, resetCart }: Props) => {
+export const CartReminder = () => {
   const { t } = useTranslation();
 
-  const [time, setTime] = useState(30);
+  const { hideCartReminder } = useCartReminderStore();
+  const { clearCart } = useCartStore();
+  const { clearData: clearLanguageData } = useLanguageStore();
+  const { showInitialPage } = useInitialPageStore();
+  const { clearData: clearCustomerCountData } = useCustomerCountStore();
+  const { refresh: refreshCategoriesData } = useCategoriesData();
+  const { refresh: refreshTableOrderHistoriesData } =
+    useTableOrderHistoriesData();
+  const { refresh: refreshShopDetailData } = useShopDetailData();
+
+  const [time, setTime] = useState(28);
 
   useEffect(() => {
     globalTimerManager.setInterval(
@@ -31,12 +45,40 @@ export const CartReminder = ({ closePage, resetCart }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (time === 0) {
-      globalTimerManager.clear(timerKeys.CART_REMINDER);
-      resetCart();
-      closePage();
-    }
-  }, [time, resetCart, closePage]);
+    const timerCallback = async () => {
+      if (time === 0) {
+        globalTimerManager.clear(timerKeys.CART_REMINDER);
+        // 메뉴 카테고리 api 요청
+        await refreshCategoriesData();
+        // 주문 내역 api 요청
+        await refreshTableOrderHistoriesData();
+        // 상점 상세 데이터 api 요청
+        await refreshShopDetailData();
+        // 장바구니 주문 유도 화면 숨기기
+        hideCartReminder();
+        // 장바구니 비우기
+        clearCart();
+        // 언어 선택 초기화
+        clearLanguageData();
+        // 초기 화면 노출
+        showInitialPage();
+        // 객수 선택 초기화
+        clearCustomerCountData();
+      }
+    };
+
+    timerCallback();
+  }, [
+    refreshCategoriesData,
+    hideCartReminder,
+    clearCart,
+    clearLanguageData,
+    showInitialPage,
+    clearCustomerCountData,
+    time,
+    refreshTableOrderHistoriesData,
+    refreshShopDetailData,
+  ]);
 
   return (
     <S.Container>
@@ -51,7 +93,7 @@ export const CartReminder = ({ closePage, resetCart }: Props) => {
       </S.Description>
       <BasicButton
         variant="Solid_Blue_2XL"
-        onClick={closePage}
+        onClick={hideCartReminder}
         customStyle={css`
           position: absolute;
           bottom: 40px;

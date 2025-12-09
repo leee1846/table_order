@@ -26,6 +26,7 @@ import { useThemeMode } from '@repo/ui';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { InitialPage } from '@/pages/MainPage/InitialPage';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
+import { useCartReminderStore } from '@/stores/useCartReminderStore';
 
 // TODO: breakTime 추후 변경 예정
 const showBreakTime = false;
@@ -116,8 +117,6 @@ export const MainPage = () => {
     };
   }, [categoriesStoreData]);
 
-  const [showCartReminder, setShowCartReminder] = useState(false);
-
   const staffCallCategory = visibleCategories.find((c) => c.isStaffCall);
   const nonStaffCallCategories = visibleCategories.filter(
     (c) => !c.isStaffCall
@@ -202,7 +201,11 @@ export const MainPage = () => {
   }, [shopDetailData?.shopSetting, customerCountData]);
   /** ======== 객수 선택 END ================================================== */
 
+  /** ======== 초기 화면 페이지 노출 여부 ======================================= */
   const { data: initialPageData } = useInitialPageStore();
+
+  /** ======== 장바구니 메뉴 주문 리마인더 노출 여부 ============================== */
+  const { data: cartReminderData } = useCartReminderStore();
 
   /** 초기 화면 노출 */
   if (initialPageData.showInitialPage) {
@@ -225,19 +228,13 @@ export const MainPage = () => {
     return <PickupAlarm />;
   }
 
-  if (showBreakTime) {
-    return <BreakTime />;
+  /** 장바구니 메뉴 주문 리마인더 표시 */
+  if (cartReminderData.showCartReminder) {
+    return <CartReminder />;
   }
 
-  if (showCartReminder) {
-    return (
-      <CartReminder
-        closePage={() => setShowCartReminder(false)}
-        resetCart={() => {
-          // TODO: Implement cart reset logic
-        }}
-      />
-    );
+  if (showBreakTime) {
+    return <BreakTime />;
   }
 
   return (

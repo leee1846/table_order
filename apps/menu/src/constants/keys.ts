@@ -30,6 +30,8 @@ export const timerKeys = {
   TOUCH_DETECT_TIMEOUT: 'touch-detect-timeout',
   /** 직원 호출 비활성화 타이머 키 */
   DISABLE_STAFF_CALL: 'disable-staff-call',
+  /** 터치 후 2분 타이머 키 */
+  TOUCH_AFTER_TIMEOUT: 'touch-after-timeout',
 };
 
 export const DOM_IDS = {

@@ -19,6 +19,9 @@ export interface ICustomerCountStore {
   clearData: () => void;
 }
 
+/**
+ * 객수 상태 저장 스토어
+ */
 export const useCustomerCountStore = create<ICustomerCountStore>((set) => ({
   data:
     storage.load<{

@@ -11,6 +11,9 @@ interface IInitialPageStore {
   hideInitialPage: () => void;
 }
 
+/**
+ * 초기 화면 노출 상태 저장 스토어
+ */
 export const useInitialPageStore = create<IInitialPageStore>((set) => ({
   data: {
     showInitialPage:

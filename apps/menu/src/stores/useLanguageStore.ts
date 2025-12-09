@@ -9,6 +9,9 @@ export interface ILanguageStore {
   clearData: () => void;
 }
 
+/**
+ * 언어 상태 저장 스토어
+ */
 export const useLanguageStore = create<ILanguageStore>((set) => ({
   data: storage.load<string>(STORAGE_KEYS.I18N_LANGUAGE) ?? null,
   setData: (data: string) => {

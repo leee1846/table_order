@@ -10,6 +10,10 @@ import { Sidebar } from '@/pages/TablesPage/Sidebar';
 import * as S from '@/pages/TablesPage/tablePage.style';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useCartStore } from '@/stores/useCartStore';
+import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
+import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useInitialPageStore } from '@/stores/useInitialPageStore';
 
 export const TablesPage = () => {
   const navigate = useNavigate();
@@ -47,6 +51,10 @@ export const TablesPage = () => {
   const { refresh: refreshCategoriesData } = useCategoriesData({
     skipInitialRequest: true,
   });
+  const { clearCart } = useCartStore();
+  const { clearData: clearCustomerCountData } = useCustomerCountStore();
+  const { clearData: clearLanguageData } = useLanguageStore();
+  const { showInitialPage } = useInitialPageStore();
 
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData({
@@ -54,8 +62,18 @@ export const TablesPage = () => {
     });
 
   const refreshMenuInitialData = async () => {
+    // 메뉴 카테고리 api 요청
     await refreshCategoriesData();
+    // 주문 내역 api 요청
     await refreshTableOrderHistoriesData();
+    // 장바구니 비우기
+    clearCart();
+    // 초기 화면 노출
+    showInitialPage();
+    // 언어 선택 초기화
+    clearLanguageData();
+    // 객수 선택 초기화
+    clearCustomerCountData();
   };
 
   const handleTableClick = async (table: TableData) => {

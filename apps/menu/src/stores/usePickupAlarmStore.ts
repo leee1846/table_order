@@ -5,6 +5,9 @@ interface IPickupAlarmStore {
   setData: (data: boolean) => void;
 }
 
+/**
+ * 픽업 알림 상태 저장 스토어
+ */
 export const usePickupAlarmStore = create<IPickupAlarmStore>((set) => ({
   data: false,
   setData: (data: boolean) => {

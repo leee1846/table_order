@@ -40,6 +40,9 @@ const initialData: ICart = {
   hasFirstOrderRequiredItems: false,
 };
 
+/**
+ * 장바구니 상태 저장 스토어
+ */
 export const useCartStore = create<ICartStore>((set, get) => ({
   data: storage.load<ICart>(STORAGE_KEYS.CART) ?? initialData,
 
