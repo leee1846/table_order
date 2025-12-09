@@ -28,6 +28,8 @@ export const timerKeys = {
   CATEGORY_VISIBILITY_UPDATE: 'category-visibility-update',
   /** 터치 감지 타이머 키 */
   TOUCH_DETECT_TIMEOUT: 'touch-detect-timeout',
+  /** 직원 호출 비활성화 타이머 키 */
+  DISABLE_STAFF_CALL: 'disable-staff-call',
 };
 
 export const DOM_IDS = {
