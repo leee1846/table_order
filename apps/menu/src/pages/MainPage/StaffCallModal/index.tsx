@@ -132,7 +132,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
           shopCode: shopData.shopCode,
           tableNumber: tableData?.tableNumber ?? 0,
           orderType: 'MENU',
-          customerCount: customerCountData?.adultCount ?? 0,
+          customerCount: customerCountData?.adultCount ?? 1,
           kidsCustomerCount: customerCountData?.childCount ?? 0,
           orders: selectedMenuList.map((menu) => ({
             menuSeq: menu.menuSeq,

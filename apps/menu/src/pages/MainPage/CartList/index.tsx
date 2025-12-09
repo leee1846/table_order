@@ -126,7 +126,7 @@ export const CartList = ({
             shopCode: shopData?.shopCode ?? '',
             tableNumber: tableData.tableNumber,
             orderType: 'MENU',
-            customerCount: customerCountData?.adultCount ?? 0,
+            customerCount: customerCountData?.adultCount ?? 1,
             kidsCustomerCount: customerCountData?.childCount ?? 0,
             orders,
           });
