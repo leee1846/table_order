@@ -5,6 +5,9 @@ import { baseTheme } from '@repo/ui';
 import { StaffCallModal } from '@/pages/MainPage/StaffCallModal';
 import type { ICategoryWithMenus } from '@repo/api/types';
 import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
+import { toast } from '@repo/feature/utils';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -19,8 +22,23 @@ export const Sidebar = ({
   selectedCategorySeq,
   handleCategoryClick,
 }: Props) => {
+  const { t } = useTranslation();
+
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
   const { data: currentLanguage } = useLanguageStore();
+  const { data: disableStaffCallData } = useDisableStaffCallStore();
+
+  const handleStaffCallClick = () => {
+    if (disableStaffCallData.disableStaffCall) {
+      toast(t('잠시 후 다시 시도해주세요.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
+      return;
+    }
+
+    setIsStaffCallModalOpen(true);
+  };
 
   return (
     <>
@@ -39,7 +57,7 @@ export const Sidebar = ({
 
         {staffCallCategory && (
           <S.StaffCall>
-            <button type="button" onClick={() => setIsStaffCallModalOpen(true)}>
+            <button type="button" onClick={handleStaffCallClick}>
               <CallBellIcon
                 color={baseTheme.colors.white}
                 width={30}

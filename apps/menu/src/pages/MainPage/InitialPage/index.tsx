@@ -55,6 +55,7 @@ export const InitialPage = () => {
                   주문을 시작하려면 화면을 터치해 주세요.
                 </S.SmallNotice>
               </S.LeftContainer>
+
               <S.RightContainer>
                 <S.Image src={item.imagePath} alt={item.pageDescription} />
               </S.RightContainer>

@@ -14,6 +14,7 @@ import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useTableData } from '@/hooks/useTableData';
+import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 
 interface Props {
   onClose: () => void;
@@ -23,7 +24,9 @@ interface Props {
 export const StaffCallModal = ({ onClose, category }: Props) => {
   const { t } = useTranslation();
   const { theme } = useThemeMode();
+
   const { data: currentLanguage } = useLanguageStore();
+  const { disableStaffCall } = useDisableStaffCallStore();
 
   const [selectedMenu, setSelectedMenu] = useState<IMenuBase | null>(null);
   const [selectedMenuList, setSelectedMenuList] = useState<ICartMenu[]>([]);
@@ -147,11 +150,11 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
         await refreshTableOrderHistories();
 
+        disableStaffCall();
         toast(t('요청이 완료되었습니다.'), {
           position: 'center-center',
           duration: 1500,
         });
-
         onClose();
       },
     });
