@@ -12,6 +12,8 @@ import { useShopData } from '@/hooks/useShopData';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useLanguageStore } from '@/stores/data/useLanguageStore';
+import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
+import { useTableData } from '@/hooks/useTableData';
 
 interface Props {
   onClose: () => void;
@@ -105,6 +107,8 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
   const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData();
   const { mutateAsync: createTableOrder } = usePostTableOrder();
+  const { data: customerCountData } = useCustomerCountStore();
+  const { data: tableData } = useTableData();
   const requestOrder = () => {
     if (!shopData) {
       return;
@@ -124,11 +128,12 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
       primaryText: t('예'),
       secondaryText: t('아니오'),
       onConfirm: async () => {
-        // TODO: tableNumber 추후 추가 예정
         await createTableOrder({
           shopCode: shopData.shopCode,
-          tableNumber: 1,
+          tableNumber: tableData?.tableNumber ?? 0,
           orderType: 'MENU',
+          customerCount: customerCountData?.adultCount ?? 0,
+          kidsCustomerCount: customerCountData?.childCount ?? 0,
           orders: selectedMenuList.map((menu) => ({
             menuSeq: menu.menuSeq,
             menuName: menu.menuName,

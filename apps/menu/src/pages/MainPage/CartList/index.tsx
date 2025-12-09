@@ -18,6 +18,7 @@ import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
+import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 
 // TODO: 추후 주문 방법 선택 기능 추가 예정
 const isPayAfter = true;
@@ -86,6 +87,7 @@ export const CartList = ({
   const { shopData } = useShopData();
   const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData();
   const { mutateAsync: createTableOrder } = usePostTableOrder();
+  const { data: customerCountData } = useCustomerCountStore();
   const order = () => {
     if (cartData.menus.length < 1) {
       toast(t('현재 담긴 메뉴가 없어요.'), {
@@ -124,6 +126,8 @@ export const CartList = ({
             shopCode: shopData?.shopCode ?? '',
             tableNumber: tableData.tableNumber,
             orderType: 'MENU',
+            customerCount: customerCountData?.adultCount ?? 0,
+            kidsCustomerCount: customerCountData?.childCount ?? 0,
             orders,
           });
 

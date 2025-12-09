@@ -34,12 +34,14 @@ export const createTableOrder = async ({
   tableNumber,
   orderType,
   orders,
+  customerCount,
+  kidsCustomerCount,
 }: ICreateTableOrderRequest) => {
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'POST',
     url: ENDPOINTS.ORDER.CREATE_TABLE_ORDER(shopCode, tableNumber),
-    params: { orderType },
+    params: { orderType, customerCount, kidsCustomerCount },
     data: orders,
   });
 

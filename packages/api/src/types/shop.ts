@@ -72,6 +72,12 @@ export type TShopPosCode = 'OKPOS';
 export type TShopCardTerminalCode = 'VIRTUAL' | 'EASY' | 'NO_BUTTON';
 export type TShopLanguage = 'KO' | 'EN' | 'JP' | 'CH';
 
+export interface IShopLocaleMap {
+  localeShopMapSeq: number;
+  shopSeq: number;
+  localeCode: string;
+}
+
 export interface IShopSetting {
   shopSeq: number;
   useTheftPrevention: boolean;
@@ -101,6 +107,7 @@ export interface IShopSetting {
   shopLanguage: TShopLanguage;
   useLocaleBeforeOrder: boolean;
   isMenuThreeColumnLayout: boolean;
+  shoplocaleMapList: IShopLocaleMap[];
 }
 
 export type TNetworkType = 'AUTO' | 'LAN' | 'WIFI';
@@ -125,12 +132,6 @@ export interface IShopPage {
   orderCompletePageDescription: string;
 }
 
-export interface IShopLocaleMap {
-  localeShopMapSeq: number;
-  shopSeq: number;
-  localeCode: string;
-}
-
 export interface IShopPageDetail {
   pageSeq: number;
   shopSeq: number;
@@ -143,7 +144,6 @@ export interface IGetShop extends IGetShopItem {
   shopSetting: IShopSetting;
   shopNetwork: IShopNetwork;
   shopPage: IShopPage;
-  shoplocaleMapList: IShopLocaleMap[];
   shopPageDetailList: IShopPageDetail[];
 }
 
