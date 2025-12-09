@@ -86,6 +86,8 @@ export const useTableOrderHistoriesData = (options?: Props) => {
       discountRate: result.data.data.discountRate ?? 0,
       orderDetailMenuList: result.data.data.orderDetailMenuList ?? [],
     });
+
+    return result.data.data;
   };
 
   return {

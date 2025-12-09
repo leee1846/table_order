@@ -28,6 +28,7 @@ export const Thumbnail = ({ menu, image, width = '100%' }: Props) => {
       )}
       {!imageError && image && image.imagePath && (
         <img
+          // TODO: 이미지 경로 수정
           src={image.imagePath ?? ''}
           alt={image.imageName}
           onLoad={() => setImageLoaded(true)}

@@ -10,8 +10,9 @@ import { useCartStore } from '@/stores/useCartStore';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useTableGroupData } from './useTableGroupData';
+import { useInitialPageStore } from '@/stores/useInitialPageStore';
 
-export const useInactivityTimer = () => {
+export const useTouchDetectTimer = () => {
   const { refresh: refreshShopData } = useShopData();
   const { refresh: refreshShopDetailData } = useShopDetailData();
   const { refresh: refreshTableData } = useTableData();
@@ -22,30 +23,39 @@ export const useInactivityTimer = () => {
   const { clearCart } = useCartStore();
   const { clearData: clearLanguageData } = useLanguageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
+  const { showInitialPage } = useInitialPageStore();
 
   useEffect(() => {
     const timerCallback = async () => {
-      globalTimerManager.clear(timerKeys.INACTIVITY_TIMEOUT);
+      globalTimerManager.clear(timerKeys.TOUCH_DETECT_TIMEOUT);
 
       await refreshShopData();
       await refreshShopDetailData();
       await refreshTableData();
       await refreshCategoriesData();
-      await refreshTableOrderHistoriesData();
+      const newTableOrderHistoriesData = await refreshTableOrderHistoriesData();
       await refreshTableGroupData();
       clearCart();
-      clearLanguageData();
-      clearCustomerCountData();
+
+      if (
+        newTableOrderHistoriesData &&
+        newTableOrderHistoriesData.orderDetailMenuList.length < 1
+      ) {
+        clearCustomerCountData();
+        clearLanguageData();
+        showInitialPage();
+      }
+
       //TODO: 추후 주석 제거 예정
       // window.location.reload();
     };
 
     const startTimer = () => {
       // 이미 타이머 실행 중이면 제거
-      globalTimerManager.clear(timerKeys.INACTIVITY_TIMEOUT);
+      globalTimerManager.clear(timerKeys.TOUCH_DETECT_TIMEOUT);
 
       globalTimerManager.setTimeout(
-        timerKeys.INACTIVITY_TIMEOUT,
+        timerKeys.TOUCH_DETECT_TIMEOUT,
         timerCallback,
         150000 // 2분 30초
       );
@@ -65,7 +75,7 @@ export const useInactivityTimer = () => {
 
     return () => {
       document.removeEventListener('touchstart', handleTouch);
-      globalTimerManager.clear(timerKeys.INACTIVITY_TIMEOUT);
+      globalTimerManager.clear(timerKeys.TOUCH_DETECT_TIMEOUT);
     };
   }, []);
 };

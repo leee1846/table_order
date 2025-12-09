@@ -8,7 +8,7 @@ import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesSt
 import { PasswordModal } from '@/pages/MainPage/PasswordModal';
 import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { useInactivityTimer } from '@/hooks/useInactivityTimer';
+import { useTouchDetectTimer } from '@/hooks/useTouchDetectTimer';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -20,7 +20,7 @@ export const Header = ({ orderHistories }: Props) => {
   /**
    * 첫 터치 후 2분30초 카운트 관리
    */
-  useInactivityTimer();
+  useTouchDetectTimer();
 
   const { data: tableData } = useTableData();
   const { data: shopDetailData } = useShopDetailData();

@@ -17,6 +17,8 @@ export const STORAGE_KEYS = {
   SHOP_DETAIL: 'shop-detail',
   /** 객수 data 키 */
   CUSTOMER_COUNT: 'customer-count',
+  /** 초기 화면 노출 여부 data 키 */
+  INITIAL_PAGE_SHOW: 'initial-page-show',
 } as const;
 
 export const timerKeys = {
@@ -24,8 +26,8 @@ export const timerKeys = {
   CART_REMINDER: 'cart-reminder',
   /** 카테고리 노출 여부 업데이트 타이머 키 */
   CATEGORY_VISIBILITY_UPDATE: 'category-visibility-update',
-  /** 비활성 타이머 키 */
-  INACTIVITY_TIMEOUT: 'inactivity-timeout',
+  /** 터치 감지 타이머 키 */
+  TOUCH_DETECT_TIMEOUT: 'touch-detect-timeout',
 };
 
 export const DOM_IDS = {

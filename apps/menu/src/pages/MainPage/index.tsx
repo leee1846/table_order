@@ -24,7 +24,8 @@ import { CustomerCountSelector } from '@/pages/MainPage/CustomerCountSelector';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useThemeMode } from '@repo/ui';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
-import { useInactivityTimer } from '@/hooks/useInactivityTimer';
+import { InitialPage } from '@/pages/MainPage/InitialPage';
+import { useInitialPageStore } from '@/stores/useInitialPageStore';
 
 // TODO: breakTime 추후 변경 예정
 const showBreakTime = false;
@@ -122,10 +123,6 @@ export const MainPage = () => {
     (c) => !c.isStaffCall
   );
 
-  /**========= 첫 터치 후 2분30초 카운트 관리 START =================================== */
-  useInactivityTimer();
-  /** ======== 첫 터치 후 2분30초 카운트 관리 END ===================================== */
-
   /**========= 카테고리 사이드바 이벤트 관리 START ==================================== */
   const categoryNavigation = useCategoryNavigation({
     categories: nonStaffCallCategories,
@@ -204,6 +201,13 @@ export const MainPage = () => {
     setShowCustomerCountSelector(true);
   }, [shopDetailData?.shopSetting, customerCountData]);
   /** ======== 객수 선택 END ================================================== */
+
+  const { data: initialPageData } = useInitialPageStore();
+
+  /** 초기 화면 노출 */
+  if (initialPageData.showInitialPage) {
+    return <InitialPage />;
+  }
 
   /** 고객 메뉴판 언어 선택 */
   if (showLanguageSelector) {
