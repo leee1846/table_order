@@ -17,7 +17,7 @@ export const MiscellaneousPage = () => {
           <SettingsIcon color={theme.colors.grey[800]} width={40} height={40} />
         </div>
         <BasicButton variant="Solid_Navy_XL" onClick={() => {}}>
-          저장하기
+          {t('저장하기')}
         </BasicButton>
       </header>
 

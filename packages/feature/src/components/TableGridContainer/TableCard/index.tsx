@@ -8,6 +8,7 @@ import {
 import * as S from './tableCard.styles';
 import { theme } from '@repo/ui';
 import { formatCurrency } from '@repo/util/string';
+import { useTranslation } from 'react-i18next';
 
 const { colors } = theme;
 
@@ -19,6 +20,7 @@ interface Props {
   batteryLevel: number;
   totalAmount?: number;
   onClick?: () => void;
+  useTranslation: typeof useTranslation;
 }
 
 export const TableCard = ({
@@ -29,7 +31,10 @@ export const TableCard = ({
   menuItems = [],
   batteryLevel,
   totalAmount,
+  useTranslation,
 }: Props) => {
+  const { t } = useTranslation();
+
   const batteryIcon =
     batteryLevel > 51 ? (
       <FullBatteryIcon color={colors.grey[800]} />
@@ -61,7 +66,7 @@ export const TableCard = ({
         {batteryIcon}
 
         {menuItems.length === 0 ? (
-          <S.StatusText>빈 테이블</S.StatusText>
+          <S.StatusText>{t('빈 테이블')}</S.StatusText>
         ) : (
           <S.TotalAmount>{formatCurrency(totalAmount ?? 0)}</S.TotalAmount>
         )}

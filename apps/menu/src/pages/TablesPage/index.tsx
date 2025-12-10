@@ -14,6 +14,7 @@ import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 
 export const TablesPage = () => {
   const navigate = useNavigate();
@@ -92,6 +93,7 @@ export const TablesPage = () => {
     <S.Container>
       <TableGridContainer
         tables={tablesData}
+        useTranslation={useAdminTranslation}
         onTableClick={(table) => handleTableClick(table)}
       />
 

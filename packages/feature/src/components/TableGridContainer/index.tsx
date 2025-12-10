@@ -2,6 +2,7 @@
 
 import * as S from './tableGridContainer.styles';
 import { TableCard } from './TableCard';
+import { useTranslation } from 'react-i18next';
 
 export interface TableData {
   id: number;
@@ -15,9 +16,16 @@ export interface TableData {
 interface Props {
   tables: TableData[];
   onTableClick?: (table: TableData) => void;
+  useTranslation: typeof useTranslation;
 }
 
-export const TableGridContainer = ({ tables, onTableClick }: Props) => {
+export const TableGridContainer = ({
+  useTranslation,
+  tables,
+  onTableClick,
+}: Props) => {
+  const { t } = useTranslation();
+
   const handleTableClick = (table: TableData) => {
     onTableClick?.(table);
   };
@@ -26,7 +34,7 @@ export const TableGridContainer = ({ tables, onTableClick }: Props) => {
     <S.Wrapper>
       <S.GridContainer>
         {tables.length < 1 && (
-          <S.NoContent>테이블이 존재하지 않습니다.</S.NoContent>
+          <S.NoContent>{t('테이블이 존재하지 않습니다.')}</S.NoContent>
         )}
 
         {tables.map((table) => (
@@ -39,6 +47,7 @@ export const TableGridContainer = ({ tables, onTableClick }: Props) => {
             totalAmount={table.totalAmount}
             orderTime={table.orderTime}
             menuItems={table.menuItems}
+            useTranslation={useTranslation}
           />
         ))}
       </S.GridContainer>

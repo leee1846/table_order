@@ -3,6 +3,7 @@ import { bestOnIcon } from '@repo/ui/icons';
 import type { ITableGroup } from '@repo/api/types';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 
 interface Props {
   tableGroups?: ITableGroup[];
@@ -15,6 +16,7 @@ export const Sidebar = ({
   onTableGroupClick,
 }: Props) => {
   const navigate = useNavigate();
+  const { t } = useAdminTranslation();
 
   const onClickManagement = () => {
     navigate(ROUTES.SETTINGS.MISCELLANEOUS.generate());
@@ -38,7 +40,7 @@ export const Sidebar = ({
         ))}
 
         <CommonStyles.MenuItem isSelected={false} onClick={onClickManagement}>
-          관리
+          {t('관리')}
         </CommonStyles.MenuItem>
       </CommonStyles.MenuList>
     </CommonStyles.SidebarContainer>
