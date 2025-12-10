@@ -25,7 +25,7 @@ export const LanguageSelector = () => {
       <h1>언어 선택</h1>
       <p>주문에 사용하실 언어를 선택해 주세요.</p>
       <S.Buttons>
-        {shopDetailData.shopSetting.shoplocaleMapList.map((lang) => {
+        {shopDetailData.shopSetting.shopLocaleMapList.map((lang) => {
           const config = LANGUAGE_CONFIG[lang.localeCode as LanguageCode];
           if (!config) {
             return null;

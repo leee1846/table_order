@@ -76,7 +76,7 @@ const createShopDetail = (): IGetShop => ({
     useSinglePageMenuboard: false,
     menuboardAdminPassword: null,
     isAdminLocked: false,
-    usePrepayment: false,
+    usePrepayment: true,
     vanCode: '',
     isSalesTotalVisible: true,
     salesPassword: null,
@@ -86,7 +86,7 @@ const createShopDetail = (): IGetShop => ({
     shopLanguage: 'KO',
     useLocaleBeforeOrder: true,
     isMenuThreeColumnLayout: false,
-    shoplocaleMapList: [
+    shopLocaleMapList: [
       {
         localeShopMapSeq: 1,
         shopSeq: 1,

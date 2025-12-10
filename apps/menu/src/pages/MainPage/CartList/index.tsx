@@ -8,37 +8,27 @@ import { useCartStore } from '@/stores/useCartStore';
 import { formatCurrency } from '@repo/util/string';
 import { useState } from 'react';
 import { MenuDetailWithOptionsModal } from '../Contents/MenuDetailWithOptionsModal';
-import type { ICategoryWithMenus, IOrder } from '@repo/api/types';
+import type { ICategoryWithMenus } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
-import { usePostTableOrder } from '@repo/api/queries';
-import { useShopData } from '@/hooks/useShopData';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
-import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
-import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
-import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
-
-// TODO: 추후 주문 방법 선택 기능 추가 예정
-const isPayAfter = true;
 
 interface Props {
   onClose: () => void;
-  openPaymentsModal: () => void;
-  openOrderCompleteModal: (orders: IOrder[], totalPrice: number) => void;
   categories: ICategoryWithMenus[];
+  executePostpaidOrder: () => Promise<boolean>;
+  openPaymentsModal: () => void;
 }
 export const CartList = ({
   onClose,
-  openPaymentsModal,
-  openOrderCompleteModal,
   categories,
+  executePostpaidOrder,
+  openPaymentsModal,
 }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
-
-  const { data: tableData } = useTableData();
 
   const { data: shopDetailData } = useShopDetailData();
   const currencySymbol =
@@ -57,7 +47,7 @@ export const CartList = ({
     data: cartData,
     removeFromCart,
     updateCartItemQuantity,
-    clearCart,
+    // clearCart,
   } = useCartStore();
 
   const removeMenu = (index: number) => {
@@ -90,10 +80,6 @@ export const CartList = ({
     }, 0);
   };
 
-  const { shopData } = useShopData();
-  const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData();
-  const { mutateAsync: createTableOrder } = usePostTableOrder();
-  const { data: customerCountData } = useCustomerCountStore();
   const order = () => {
     if (cartData.menus.length < 1) {
       toast(t('현재 담긴 메뉴가 없어요.'), {
@@ -130,54 +116,17 @@ export const CartList = ({
       primaryText: t('주문하기'),
       secondaryText: t('이전으로'),
       onConfirm: async () => {
-        const orders = cartData.menus.map((menu) => ({
-          menuSeq: menu.menuSeq,
-          menuName: menu.menuName,
-          menuPrice: menu.menuPrice,
-          quantity: menu.quantity,
-          selectedOptions: menu.selectedOptions.map((selectedOption) => ({
-            optionSeq: selectedOption.optionSeq,
-            optionGroupSeq: selectedOption.optionGroupSeq,
-            optionName: selectedOption.optionName,
-            optionPrice: selectedOption.optionPrice,
-            isMenuQuantityDependant: selectedOption.isMenuQuantityDependant,
-            quantity: selectedOption.quantity,
-          })),
-        }));
-
-        if (isPayAfter) {
-          if (!tableData?.tableNumber) {
-            return;
-          }
-
-          await createTableOrder({
-            shopCode: shopData?.shopCode ?? '',
-            tableNumber: tableData.tableNumber,
-            orderType: 'MENU',
-            // 객수 미사용시 1명으로 처리
-            customerCount: customerCountData?.adultCount ?? 1,
-            // 객수 미사용시 0명으로 처리
-            kidsCustomerCount: customerCountData?.childCount ?? 0,
-            totalAmount: calculateTotalPrice(),
-            orders: orders.map((order) => ({
-              ...order,
-              selectedOptions: order.selectedOptions.map((option) => ({
-                ...option,
-                quantity: option.isMenuQuantityDependant
-                  ? option.quantity
-                  : order.quantity * option.quantity,
-              })),
-            })),
-          });
-
-          await refreshTableOrderHistories();
-          const totalPrice = calculateTotalPrice();
-          openOrderCompleteModal(orders, totalPrice);
-          clearCart();
-          onClose();
+        // 선불
+        if (shopDetailData?.shopSetting?.usePrepayment) {
+          openPaymentsModal();
           return;
         }
-        openPaymentsModal();
+
+        // 후불
+        const result = await executePostpaidOrder();
+        if (result) {
+          onClose();
+        }
       },
     });
   };

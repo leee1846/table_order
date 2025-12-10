@@ -8,6 +8,7 @@ import {
 } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { openDualActionDialog } from '@repo/feature/utils';
 
 interface Props {
   onClose: () => void;
@@ -16,16 +17,34 @@ interface Props {
     method: 'card' | 'cash' | 'split' | 'payAfter'
   ) => void;
   openNextModal: () => void;
+  executePostpaidOrder: () => Promise<boolean>;
 }
 export const PaymentsModal = ({
   onClose,
   selectedPaymentMethod,
   setSelectedPaymentMethod,
   openNextModal,
+  executePostpaidOrder,
 }: Props) => {
   const { t } = useCustomerTranslation();
 
   const onClickNext = () => {
+    if (selectedPaymentMethod === 'cash') {
+      openDualActionDialog({
+        title: t('현금 결제'),
+        content: t('현금 결제로 주문하시겠습니까?'),
+        primaryText: t('주문하기'),
+        secondaryText: t('취소'),
+        onConfirm: async () => {
+          const result = await executePostpaidOrder();
+          if (result) {
+            onClose();
+          }
+        },
+      });
+      return;
+    }
+
     onClose();
     openNextModal();
   };
