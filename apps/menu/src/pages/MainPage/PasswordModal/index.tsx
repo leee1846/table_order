@@ -3,7 +3,6 @@ import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/PasswordModal/passwordModal.style';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 
@@ -12,7 +11,6 @@ interface Props {
 }
 
 export const PasswordModal = ({ onClose }: Props) => {
-  const { t } = useTranslation();
   const { theme } = useThemeMode();
   const navigate = useNavigate();
 
@@ -58,7 +56,7 @@ export const PasswordModal = ({ onClose }: Props) => {
 
       <S.Content>
         <UnlockedIcon width={80} height={80} color={theme.mode.grey[400]} />
-        <S.Title>{t('비밀번호를 입력해 주세요')}</S.Title>
+        <S.Title>비밀번호를 입력해 주세요</S.Title>
         <S.PasswordContainer>
           <li>{password && password.length > 0 && <span />}</li>
           <li>{password && password.length > 1 && <span />}</li>

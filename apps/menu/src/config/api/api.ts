@@ -1,7 +1,7 @@
 import { registerAxiosInstances } from '@repo/api/cores';
-import { privateApi } from '@/config/privateApi';
-import { publicApi } from '@/config/publicApi';
-import { rawApi } from '@/config/rawApi';
+import { privateApi } from '@/config/api/privateApi';
+import { publicApi } from '@/config/api/publicApi';
+import { rawApi } from '@/config/api/rawApi';
 
 /**
  * Axios Instance Registry 등록

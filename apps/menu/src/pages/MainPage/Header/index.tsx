@@ -1,7 +1,6 @@
 import { MenuIcon } from '@repo/ui/icons';
 import { useTheme } from '@emotion/react';
 import * as S from '@/pages/MainPage/Header/header.style';
-import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
 import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
@@ -9,17 +8,16 @@ import { PasswordModal } from '@/pages/MainPage/PasswordModal';
 import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTouchDetectTimer } from '@/hooks/useTouchDetectTimer';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
 }
 export const Header = ({ orderHistories }: Props) => {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
 
-  /**
-   * 첫 터치 후 2분30초 카운트 관리
-   */
+  /** 첫 터치 후 2분30초 카운트 관리 */
   useTouchDetectTimer();
 
   const { data: tableData } = useTableData();
