@@ -46,6 +46,7 @@ export interface ICreateTableOrderRequest {
   orderType: TOrderType;
   customerCount: number;
   kidsCustomerCount: number;
+  totalAmount: number;
   orders: IOrder[];
 }
 

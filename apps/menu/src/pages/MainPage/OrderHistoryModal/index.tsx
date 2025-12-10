@@ -1,12 +1,12 @@
 import { BasicButton } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/OrderHistoryModal/orderHistoryModal.style';
 import { getTodayDateString } from '@repo/util/date';
-import { useTranslation } from 'react-i18next';
 import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
 import { formatCurrency } from '@repo/util/string';
 import { NoContent } from '@/feature/NoContent';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 // TODO: 총 금액 api 반환값으로 적용 예정
 const totalPrice = 0;
@@ -16,7 +16,7 @@ interface Props {
   onClose: () => void;
 }
 export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
   const histories = orderHistories?.orderDetailMenuList;
 
   const { data: shopDetailData } = useShopDetailData();

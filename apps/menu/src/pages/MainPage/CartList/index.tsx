@@ -1,7 +1,6 @@
 import { createPortal } from 'react-dom';
 import * as S from '@/pages/MainPage/CartList/cartList.style';
 import { BasicButton, NumberInput } from '@repo/ui/components';
-import { useTranslation } from 'react-i18next';
 import { DeleteIcon, EmptedCartIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
@@ -19,6 +18,7 @@ import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 // TODO: 추후 주문 방법 선택 기능 추가 예정
 const isPayAfter = true;
@@ -35,7 +35,7 @@ export const CartList = ({
   openOrderCompleteModal,
   categories,
 }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
 
   const { data: tableData } = useTableData();

@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import * as S from '@/pages/MainPage/CartButton/cartButton.style';
 import { useState } from 'react';
 import { CartList } from '@/pages/MainPage/CartList';
@@ -7,13 +6,14 @@ import { PaymentsModal } from '@/pages/MainPage/PaymentsModal';
 import { SplitPaymentModal } from '@/pages/MainPage/SplitPaymentModal';
 import { useCartStore } from '@/stores/useCartStore';
 import type { ICategoryWithMenus, IOrder } from '@repo/api/types';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   categories: ICategoryWithMenus[];
 }
 
 export const CartButton = ({ categories }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
   const { data: cartData } = useCartStore();
 
   /** 장바구니 모달 */

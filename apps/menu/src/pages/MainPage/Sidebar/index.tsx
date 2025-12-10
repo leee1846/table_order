@@ -7,7 +7,7 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { toast } from '@repo/feature/utils';
-import { useTranslation } from 'react-i18next';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -22,7 +22,7 @@ export const Sidebar = ({
   selectedCategorySeq,
   handleCategoryClick,
 }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
 
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
   const { data: currentLanguage } = useLanguageStore();

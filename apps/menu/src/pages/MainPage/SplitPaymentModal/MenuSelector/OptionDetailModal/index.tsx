@@ -2,7 +2,7 @@ import { BasicButton, ModalBackground } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/SplitPaymentModal/MenuSelector/OptionDetailModal/optionDetailModal.style';
 import { CloseIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
-import { useTranslation } from 'react-i18next';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 const optionList = Array.from({ length: 4 });
 
@@ -10,7 +10,7 @@ interface Props {
   onClose: () => void;
 }
 export const OptionDetailModal = ({ onClose }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
 
   return (

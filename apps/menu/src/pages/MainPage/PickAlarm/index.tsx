@@ -4,10 +4,10 @@ import { BasicButton } from '@repo/ui/components';
 import { css } from '@emotion/react';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { useTranslation } from 'react-i18next';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 export const PickupAlarm = () => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
 
   const { data: shopDetailData } = useShopDetailData();
   const { setData: setShowPickupAlarm } = usePickupAlarmStore();

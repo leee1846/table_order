@@ -1,7 +1,6 @@
 import { createPortal } from 'react-dom';
 import { useState } from 'react';
 import { css } from '@emotion/react';
-import { useTranslation } from 'react-i18next';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import {
@@ -25,6 +24,7 @@ import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   onClose: () => void;
@@ -55,7 +55,7 @@ export const MenuDetailWithOptionsModal = ({
   initialSelectedOptions = [],
   cartItemIndex,
 }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
   const { data: currentLanguage } = useLanguageStore();
   const { addToCart, updateCartItem } = useCartStore();

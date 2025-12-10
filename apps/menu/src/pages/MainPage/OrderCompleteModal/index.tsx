@@ -1,10 +1,10 @@
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import { apronIcon } from '@repo/ui/icons';
-import { useTranslation } from 'react-i18next';
 import { getTodayDateString } from '@repo/util/date';
 import * as S from '@/pages/MainPage/OrderCompleteModal/OrderCompleteModal.style';
 import type { IOrder } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   orderData: IOrder[];
@@ -17,7 +17,7 @@ export const OrderCompleteModal = ({
   totalPrice,
   onClose,
 }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
 
   return (
     <ModalBackground position="center" onClick={onClose}>

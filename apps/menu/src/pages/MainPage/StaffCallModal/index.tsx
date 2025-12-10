@@ -1,6 +1,5 @@
 import { BasicButton, ModalBackground, NumberInput } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/StaffCallModal/staffCallModal.style';
-import { useTranslation } from 'react-i18next';
 import { CloseIcon, DeleteIcon } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
@@ -15,6 +14,7 @@ import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useTableData } from '@/hooks/useTableData';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   onClose: () => void;
@@ -22,7 +22,7 @@ interface Props {
 }
 
 export const StaffCallModal = ({ onClose, category }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
 
   const { data: currentLanguage } = useLanguageStore();
@@ -139,6 +139,8 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
           customerCount: customerCountData?.adultCount ?? 1,
           // 객수 미사용시 0명으로 처리
           kidsCustomerCount: customerCountData?.childCount ?? 0,
+          // TODO: 총 금액 계산 로직 추가 예정
+          totalAmount: 0,
           orders: selectedMenuList.map((menu) => ({
             menuSeq: menu.menuSeq,
             menuName: menu.menuName,

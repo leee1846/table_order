@@ -1,16 +1,16 @@
 import { CheckButton } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/SplitPaymentModal/MenuSelector/menuSelector.style';
 import { css } from '@emotion/react';
-import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { OptionDetailModal } from '@/pages/MainPage/SplitPaymentModal/MenuSelector/OptionDetailModal';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 export const MenuSelector = () => {
   const menuList = Array.from(
     { length: 40 },
     (_, index) => `menu-${index + 1}`
   );
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
 
   const [isOptionDetailModalOpen, setIsOptionDetailModalOpen] = useState(false);
 

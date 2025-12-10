@@ -7,11 +7,11 @@ import { formatCurrency } from '@repo/util/string';
 import { Thumbnail } from '@/feature/Thumbnail';
 import { useCartStore } from '@/stores/useCartStore';
 import { toast } from '@repo/feature/utils';
-import { useTranslation } from 'react-i18next';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 const IMAGE_SIZE = {
   1: {
@@ -31,7 +31,7 @@ interface Props {
   menu: IMenu;
 }
 export const MenuItem = ({ layout, category, menu }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
   const { data: currentLanguage } = useLanguageStore();
   const { data: shopDetailData } = useShopDetailData();
 

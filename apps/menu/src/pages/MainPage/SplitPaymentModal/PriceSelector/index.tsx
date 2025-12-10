@@ -1,16 +1,16 @@
 import { css } from '@emotion/react';
 import { CheckButton, NumberInput } from '@repo/ui/components';
-import { useTranslation } from 'react-i18next';
 import * as S from '@/pages/MainPage/SplitPaymentModal/PriceSelector/priceSelector.style';
 import { useState } from 'react';
 import { PriceChangeKeypad } from '@/pages/MainPage/SplitPaymentModal/PriceSelector/PriceChangeKeypad';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 export const PriceSelector = () => {
   const menuList = Array.from(
     { length: 40 },
     (_, index) => `menu-${index + 1}`
   );
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
 
   const [isKeypadOpen, setIsKeypadOpen] = useState(false);
 

@@ -2,7 +2,7 @@ import { BasicButton, Keypad, ModalBackground } from '@repo/ui/components';
 import { ArrowBackIcon, CloseIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import * as S from '@/pages/MainPage/SplitPaymentModal/PriceSelector/PriceChangeKeypad/priceChangeKeypad.style';
-import { useTranslation } from 'react-i18next';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   onClose: () => void;
@@ -10,7 +10,7 @@ interface Props {
 
 export const PriceChangeKeypad = ({ onClose }: Props) => {
   const { theme } = useThemeMode();
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
 
   return (
     <ModalBackground onClick={onClose}>

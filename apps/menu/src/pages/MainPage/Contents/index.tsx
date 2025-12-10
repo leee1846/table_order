@@ -3,8 +3,8 @@ import { ScrollContent } from '@/pages/MainPage/Contents/ScrollContent';
 import { TabContent } from '@/pages/MainPage/Contents/TabContent';
 import * as S from '@/pages/MainPage/Contents/contents.style';
 import type { ICategoryWithMenus } from '@repo/api/types';
-import { useTranslation } from 'react-i18next';
 import { DOM_IDS } from '@/constants/keys';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -17,7 +17,7 @@ export const Contents = ({
   useSinglePageMenuboard,
   selectedCategory,
 }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
 
   if (categories.length < 1) {
     return (

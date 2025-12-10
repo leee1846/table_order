@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BasicButton } from '@repo/ui/components';
 import { speechBubbleIcon } from '@repo/ui/icons';
 import * as S from './cartReminder.style';
-import { useTranslation, Trans } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { css } from '@emotion/react';
 import { globalTimerManager } from '@/utils/timerManager';
 import { timerKeys } from '@/constants/keys';
@@ -14,9 +14,10 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 export const CartReminder = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useCustomerTranslation();
 
   const { hideCartReminder } = useCartReminderStore();
   const { clearCart } = useCartStore();
@@ -89,6 +90,7 @@ export const CartReminder = () => {
           i18nKey="화면 조작이 없어 <span>{{time}}</span>초 후 화면이 초기화 됩니다."
           values={{ time }}
           components={{ span: <span /> }}
+          i18n={i18n}
         />
       </S.Description>
       <BasicButton

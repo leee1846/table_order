@@ -1,9 +1,9 @@
 import { clockIcon } from '@repo/ui/icons';
-import { useTranslation } from 'react-i18next';
 import * as S from '@/pages/MainPage/BreakTime/breakTime.style';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 export const BreakTime = () => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
 
   return (
     <S.Container>

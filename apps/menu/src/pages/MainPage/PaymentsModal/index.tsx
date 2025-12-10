@@ -1,5 +1,4 @@
 import { BasicButton, ModalBackground } from '@repo/ui/components';
-import { useTranslation } from 'react-i18next';
 import * as S from '@/pages/MainPage/PaymentsModal/paymentsModal.style';
 import {
   cardIcon,
@@ -8,6 +7,7 @@ import {
   payAfterIcon,
 } from '@repo/ui/icons';
 import { css } from '@emotion/react';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   onClose: () => void;
@@ -23,7 +23,7 @@ export const PaymentsModal = ({
   setSelectedPaymentMethod,
   openNextModal,
 }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
 
   const onClickNext = () => {
     onClose();

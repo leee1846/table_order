@@ -1,15 +1,15 @@
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/SplitPaymentModal/splitPaymentModal.style';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { MenuSelector } from '@/pages/MainPage/SplitPaymentModal/MenuSelector';
 import { PriceSelector } from '@/pages/MainPage/SplitPaymentModal/PriceSelector';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   onClose: () => void;
 }
 export const SplitPaymentModal = ({ onClose }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
   const [isMenuSplit, setIsMenuSplit] = useState(true);
   const orderList = Array.from({ length: 4 });
   const optionList = Array.from({ length: 4 });

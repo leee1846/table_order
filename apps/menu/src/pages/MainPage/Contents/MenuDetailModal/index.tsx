@@ -1,6 +1,5 @@
 import { createPortal } from 'react-dom';
 import { BasicButton, ModalBackground, NumberInput } from '@repo/ui/components';
-import { useTranslation } from 'react-i18next';
 import * as S from '@/pages/MainPage/Contents/MenuDetailModal/menuDetailModal.style';
 import { css } from '@emotion/react';
 import type { IMenu } from '@repo/api/types';
@@ -14,13 +13,14 @@ import { useCartStore } from '@/stores/useCartStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   onClose: () => void;
   menu: IMenu;
 }
 export const MenuDetailModal = ({ onClose, menu }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useCustomerTranslation();
   const { data: currentLanguage } = useLanguageStore();
 
   const [currentCount, setCurrentCount] = useState(1);
