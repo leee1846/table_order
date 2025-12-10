@@ -15,6 +15,8 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import storage from '@/utils/storage';
+import { STORAGE_KEYS } from '@/constants/keys';
 
 export const TablesPage = () => {
   const navigate = useNavigate();
@@ -86,6 +88,7 @@ export const TablesPage = () => {
 
     await setTableDataAsync({ tableNumber: table.tableNumber });
     await refreshMenuInitialData();
+    storage.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
     navigate(ROUTES.ROOT.generate());
   };
 

@@ -8,6 +8,9 @@ import {
 import { ROUTES } from '@/constants/routes';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { getAccessToken } from '@repo/api/auth';
+import storage from './utils/storage';
+import { STORAGE_KEYS } from './constants/keys';
+import { useTableStore, type ITable } from './stores/useTableStore';
 
 const MainPage = lazy(() =>
   import('@/pages/MainPage').then((module) => ({
@@ -36,12 +39,26 @@ const MiscellaneousPage = lazy(() =>
 );
 
 /**
- * 모든 보호된 라우트에 공통으로 적용되는 인증 체크 loader
+ * 로그인 여부 확인 loader
  */
-const protectedRouteLoader = () => {
+const authCheckerLoader = () => {
   const token = getAccessToken();
   if (!token) {
-    return redirect(ROUTES.LOGIN.path);
+    return redirect(ROUTES.LOGIN.generate());
+  }
+  return null;
+};
+
+/**
+ * 관리자 페이지 접근을 위한 비밀번호 인증 상태 확인 loader
+ */
+const adminVerificationCheckLoader = () => {
+  const tableData = storage.load<ITable>(STORAGE_KEYS.TABLE) ?? null;
+  const isVerified =
+    storage.load<boolean>(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED) ?? false;
+  if (tableData && tableData.tableNumber > 0 && !isVerified) {
+    window.location.replace(ROUTES.ROOT.generate());
+    return null;
   }
   return null;
 };
@@ -56,8 +73,11 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    // 모든 보호된 라우트의 부모 라우트
-    loader: protectedRouteLoader,
+    /**
+     * 토큰 여부를 확인하기 위한 loader
+     * 로그인 페이지를 제외한 모든 페이지에서 확인
+     * */
+    loader: authCheckerLoader,
     element: <Outlet />,
     children: [
       {
@@ -69,31 +89,41 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: ROUTES.TABLES.path,
-        element: (
-          <Suspense fallback={<FullscreenLoadingSpinner />}>
-            <TablesPage />
-          </Suspense>
-        ),
-      },
-      {
-        path: ROUTES.SETTINGS.path,
-        element: (
-          <Suspense fallback={<FullscreenLoadingSpinner />}>
-            <SidebarLayout />
-          </Suspense>
-        ),
+        /**
+         * 관리자 페이지 접근을 위한 비밀번호 인증 상태를 확인하기 위한 loader
+         * 메인 페이지를 제외한 모든 페이지에서 확인
+         * */
+        loader: adminVerificationCheckLoader,
+        element: <Outlet />,
         children: [
           {
-            // /settings → /settings/misc
-            index: true,
+            path: ROUTES.TABLES.path,
             element: (
-              <Navigate to={ROUTES.SETTINGS.MISCELLANEOUS.path} replace />
+              <Suspense fallback={<FullscreenLoadingSpinner />}>
+                <TablesPage />
+              </Suspense>
             ),
           },
           {
-            path: ROUTES.SETTINGS.MISCELLANEOUS.path,
-            element: <MiscellaneousPage />,
+            path: ROUTES.SETTINGS.path,
+            element: (
+              <Suspense fallback={<FullscreenLoadingSpinner />}>
+                <SidebarLayout />
+              </Suspense>
+            ),
+            children: [
+              {
+                // /settings → /settings/misc
+                index: true,
+                element: (
+                  <Navigate to={ROUTES.SETTINGS.MISCELLANEOUS.path} replace />
+                ),
+              },
+              {
+                path: ROUTES.SETTINGS.MISCELLANEOUS.path,
+                element: <MiscellaneousPage />,
+              },
+            ],
           },
         ],
       },

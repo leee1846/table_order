@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import storage from '@/utils/storage';
+import { STORAGE_KEYS } from '@/constants/keys';
 
 interface Props {
   onClose: () => void;
@@ -34,6 +36,7 @@ export const PasswordModal = ({ onClose }: Props) => {
   useEffect(() => {
     // TODO: 비밀번호 검증 로직 추후 추가
     if (password && password.length > 3) {
+      storage.save(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED, true);
       navigate(ROUTES.TABLES.generate());
     }
   }, [password, navigate]);

@@ -21,6 +21,8 @@ export const STORAGE_KEYS = {
   CUSTOMER_COUNT: 'customer-count',
   /** 초기 화면 노출 여부 data 키 */
   INITIAL_PAGE_SHOW: 'initial-page-show',
+  /** 비밀번호 인증 완료 여부 키 */
+  ADMIN_PASSWORD_VERIFIED: 'admin-password-verified',
 } as const;
 
 export const TIMER_KEYS = {
