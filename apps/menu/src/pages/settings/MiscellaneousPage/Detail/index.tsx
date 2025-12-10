@@ -2,32 +2,34 @@ import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Detail/detail.style';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
 import { useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 
 export const Detail = () => {
   const [isTestOn, setIsTestOn] = useState(false);
+  const { t } = useAdminTranslation();
 
   return (
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
-        <UIStyles.setting.Title>버전 및 네트워크</UIStyles.setting.Title>
+        <UIStyles.setting.Title>{t('버전 및 네트워크')}</UIStyles.setting.Title>
         <S.Versions>
           <p>
-            메뉴판 현재 버전 <span>2.??.??</span>
+            {t('메뉴판 현재 버전')} <span>2.??.??</span>
           </p>
           <div />
           <p>
-            현재 버전 <span>2.??.??</span>
+            {t('현재 버전')} <span>2.??.??</span>
           </p>
           <div />
           <p>
-            Add On 버전 <span>2.??</span>
+            {t('Add On 버전')} <span>2.??</span>
           </p>
         </S.Versions>
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
-          <p>오더포스 모드 사용</p>
+          <p>{t('오더포스 모드 사용')}</p>
           <ToggleButton
             size="M"
             isOn={isTestOn}
@@ -35,11 +37,11 @@ export const Detail = () => {
           />
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
-          <p>카드 단말기</p>
+          <p>{t('카드 단말기')}</p>
           <Dropdown options={[]} value={''} onChange={() => {}} />
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
-          <p>KDS 모드 사용</p>
+          <p>{t('KDS 모드 사용')}</p>
           <ToggleButton
             size="M"
             isOn={isTestOn}
@@ -47,7 +49,7 @@ export const Detail = () => {
           />
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
-          <p>웨이팅 모드 사용</p>
+          <p>{t('웨이팅 모드 사용')}</p>
           <ToggleButton
             size="M"
             disabled={true}

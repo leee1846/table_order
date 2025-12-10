@@ -1,12 +1,14 @@
 import { SettingsSidebar } from '@repo/feature/components';
-import { SIDEBAR_MENUS } from '@/constants/settings';
+import { getSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { bestOnIcon } from '@repo/ui/icons';
 import { useTableData } from '@/hooks/useTableData';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
+  const { t } = useAdminTranslation();
 
   const onClickLogo = () => {
     navigate(ROUTES.TABLES.generate());
@@ -24,7 +26,7 @@ export const SidebarLayout = () => {
 
   return (
     <SettingsSidebar
-      menus={SIDEBAR_MENUS}
+      menus={getSidebarMenus(t)}
       logoElement={
         <button type="button" onClick={onClickLogo}>
           <img src={bestOnIcon} alt="logo" />

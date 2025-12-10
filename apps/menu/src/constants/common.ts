@@ -11,15 +11,15 @@ export const LANGUAGE_CONFIG = {
     flag: koFlagIcon,
   },
   en: {
-    label: '영어',
+    label: 'English',
     flag: usFlagIcon,
   },
   ch: {
-    label: '중국어',
+    label: '中文',
     flag: chFlagIcon,
   },
   jp: {
-    label: '일본어',
+    label: '日本語',
     flag: jpFlagIcon,
   },
 } as const;

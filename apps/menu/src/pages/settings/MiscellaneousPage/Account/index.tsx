@@ -10,7 +10,7 @@ import { LANGUAGE_CONFIG } from '@/constants/common';
 import { STORAGE_KEYS } from '@/constants/keys';
 
 export const Account = () => {
-  const { i18n } = useAdminTranslation();
+  const { i18n, t } = useAdminTranslation();
 
   const currentLanguage = i18n.language || 'ko';
   const supportedLanguages = getAdminSupportedLanguages();
@@ -36,7 +36,7 @@ export const Account = () => {
         <S.TitleContainer>
           <UIStyles.setting.Title>유저의 계정???</UIStyles.setting.Title>
           <BasicButton variant="Outline_Grey_M" onClick={() => {}}>
-            로그아웃
+            {t('로그아웃')}
           </BasicButton>
         </S.TitleContainer>
         <S.SID>
@@ -49,17 +49,19 @@ export const Account = () => {
           <p>매장 이름???</p>
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
-          <p>언어 선택</p>
-          {languageList.map((lang) => (
-            <RadioButton
-              key={lang.value}
-              checked={currentLanguage === lang.value}
-              value={lang.value}
-              onChange={() => handleLanguageChange(lang.value)}
-            >
-              <span>{lang.label}</span>
-            </RadioButton>
-          ))}
+          <p>{t('언어 선택')}</p>
+          <S.LanguageList>
+            {languageList.map((lang) => (
+              <RadioButton
+                key={lang.value}
+                checked={currentLanguage === lang.value}
+                value={lang.value}
+                onChange={() => handleLanguageChange(lang.value)}
+              >
+                <span>{lang.label}</span>
+              </RadioButton>
+            ))}
+          </S.LanguageList>
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>

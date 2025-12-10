@@ -5,6 +5,7 @@ import * as S from '@/pages/MainPage/PasswordModal/passwordModal.style';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 
 interface Props {
   onClose: () => void;
@@ -13,6 +14,7 @@ interface Props {
 export const PasswordModal = ({ onClose }: Props) => {
   const { theme } = useThemeMode();
   const navigate = useNavigate();
+  const { t } = useAdminTranslation();
 
   const [password, setPassword] = useState<string | null>(null);
 
@@ -56,7 +58,7 @@ export const PasswordModal = ({ onClose }: Props) => {
 
       <S.Content>
         <UnlockedIcon width={80} height={80} color={theme.mode.grey[400]} />
-        <S.Title>비밀번호를 입력해 주세요</S.Title>
+        <S.Title>{t('비밀번호를 입력해 주세요')}</S.Title>
         <S.PasswordContainer>
           <li>{password && password.length > 0 && <span />}</li>
           <li>{password && password.length > 1 && <span />}</li>

@@ -8,9 +8,11 @@ import { openConfirmDialog } from '@repo/feature/utils';
 import { setAccessToken, setRefreshToken } from '@repo/api/auth';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const { t } = useAdminTranslation();
 
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
@@ -27,7 +29,7 @@ export const LoginPage = () => {
     if (value.length > 0) {
       setIdErrorMessage('');
     } else {
-      setIdErrorMessage('아이디를 입력해주세요.');
+      setIdErrorMessage(t('아이디를 입력해주세요.'));
     }
   };
 
@@ -37,18 +39,18 @@ export const LoginPage = () => {
     if (value.length > 0) {
       setPasswordErrorMessage('');
     } else {
-      setPasswordErrorMessage('비밀번호를 입력해주세요.');
+      setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
     }
   };
 
   const { mutateAsync: login } = usePostLogin();
   const handleLogin = async () => {
     if (!id) {
-      setIdErrorMessage('아이디를 입력해주세요.');
+      setIdErrorMessage(t('아이디를 입력해주세요.'));
       return;
     }
     if (!password) {
-      setPasswordErrorMessage('비밀번호를 입력해주세요.');
+      setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
       return;
     }
 
@@ -62,7 +64,7 @@ export const LoginPage = () => {
     // api는 성공 처리됨.
     if (!response.data.loginResult) {
       openConfirmDialog({
-        title: '로그인 실패',
+        title: t('로그인 실패'),
         content: response.status.userMessage,
       });
       return;
@@ -104,19 +106,19 @@ export const LoginPage = () => {
 
       <S.LoginContainer>
         <div>
-          <S.InputTitle>아이디</S.InputTitle>
+          <S.InputTitle>{t('아이디')}</S.InputTitle>
           <Input
-            placeholder="아이디를 입력해주세요."
+            placeholder={t('아이디를 입력해주세요.')}
             onChange={handleIdChange}
             value={id}
             errorMessage={idErrorMessage}
           />
         </div>
         <div>
-          <S.InputTitle>비밀번호</S.InputTitle>
+          <S.InputTitle>{t('비밀번호')}</S.InputTitle>
           <Input
             type={passwordInputType}
-            placeholder="비밀번호를 입력해주세요."
+            placeholder={t('비밀번호를 입력해주세요.')}
             onChange={handlePasswordChange}
             value={password}
             rightComponent={passwordInputTextVisibilityComponent()}
@@ -128,7 +130,7 @@ export const LoginPage = () => {
           customStyle={S.buttonCss}
           onClick={handleLogin}
         >
-          로그인
+          {t('로그인')}
         </BasicButton>
       </S.LoginContainer>
     </S.Container>

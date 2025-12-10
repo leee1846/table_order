@@ -22,3 +22,10 @@ export const SID = styled.p`
     ${TYPOGRAPHY.BD_1}
   }
 `;
+
+export const LanguageList = styled.div`
+  display: flex;
+  gap: 14px;
+  color: ${theme.colors.grey[600]};
+  ${TYPOGRAPHY.ST_4}
+`;
