@@ -8,9 +8,6 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
-// TODO: 총 금액 api 반환값으로 적용 예정
-const totalPrice = 0;
-
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
   onClose: () => void;
@@ -71,7 +68,7 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
             <p>{t('합계')}</p>
             <p>
               {currencySymbol}
-              {formatCurrency(totalPrice)}
+              {formatCurrency(orderHistories?.totalAmount ?? 0)}
             </p>
           </div>
           <BasicButton variant="Solid_Blue_2XL">{t('닫기')}</BasicButton>

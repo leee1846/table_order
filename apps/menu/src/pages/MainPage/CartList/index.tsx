@@ -158,7 +158,7 @@ export const CartList = ({
             customerCount: customerCountData?.adultCount ?? 1,
             // 객수 미사용시 0명으로 처리
             kidsCustomerCount: customerCountData?.childCount ?? 0,
-
+            totalAmount: calculateTotalPrice(),
             orders: orders.map((order) => ({
               ...order,
               selectedOptions: order.selectedOptions.map((option) => ({

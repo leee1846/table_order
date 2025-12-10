@@ -53,6 +53,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
     ) {
       setTableOrderHistoriesData({
         discountRate: 0,
+        totalAmount: 0,
         orderDetailMenuList: [],
       });
       return;
@@ -60,6 +61,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
 
     setTableOrderHistoriesData({
       discountRate: tableOrderHistoriesDataResponse?.data?.discountRate ?? 0,
+      totalAmount: tableOrderHistoriesDataResponse?.data?.totalAmount ?? 0,
       orderDetailMenuList:
         tableOrderHistoriesDataResponse?.data?.orderDetailMenuList ?? [],
     });
@@ -77,6 +79,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
     ) {
       await setTableOrderHistoriesData({
         discountRate: 0,
+        totalAmount: 0,
         orderDetailMenuList: [],
       });
       return;
@@ -84,6 +87,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
 
     await setTableOrderHistoriesData({
       discountRate: result.data.data.discountRate ?? 0,
+      totalAmount: result.data.data.totalAmount ?? 0,
       orderDetailMenuList: result.data.data.orderDetailMenuList ?? [],
     });
 

@@ -5,6 +5,7 @@ import { create } from '@repo/feature/zustand';
 
 export interface ITableOrderHistoriesData {
   discountRate: number;
+  totalAmount: number;
   orderDetailMenuList: IOrderHistory[];
 }
 

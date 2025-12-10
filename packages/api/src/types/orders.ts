@@ -69,6 +69,7 @@ export interface IOrderHistory {
 }
 
 export interface IGetTableOrderHistories {
+  totalAmount: number;
   tableNumber: number;
   createDate: string;
   updateDate: string;

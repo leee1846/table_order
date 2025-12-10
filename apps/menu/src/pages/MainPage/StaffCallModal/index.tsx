@@ -139,7 +139,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
           customerCount: customerCountData?.adultCount ?? 1,
           // 객수 미사용시 0명으로 처리
           kidsCustomerCount: customerCountData?.childCount ?? 0,
-          // TODO: 총 금액 계산 로직 추가 예정
+          // 직원호출 메뉴는 0원만 가능함
           totalAmount: 0,
           orders: selectedMenuList.map((menu) => ({
             menuSeq: menu.menuSeq,
