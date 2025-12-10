@@ -9,7 +9,7 @@ import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { checkCategorySaleStatus } from '@/utils/category';
-import { timerKeys } from '@/constants/keys';
+import { TIMER_KEYS } from '@/constants/keys';
 import { Contents } from '@/pages/MainPage/Contents';
 import { useCartStore } from '@/stores/useCartStore';
 import { useShopData } from '@/hooks/useShopData';
@@ -99,7 +99,7 @@ export const MainPage = () => {
       // 다음 상태 변경을 위한 타이머 설정
       if (earliestNextChangeMs !== null) {
         globalTimerManager.setTimeout(
-          timerKeys.CATEGORY_VISIBILITY_UPDATE,
+          TIMER_KEYS.CATEGORY_VISIBILITY_UPDATE,
           () => {
             updateCategoryVisibility();
           },
@@ -113,7 +113,7 @@ export const MainPage = () => {
 
     // cleanup: 데이터 변경 또는 언마운트 시 타이머 정리
     return () => {
-      globalTimerManager.clear(timerKeys.CATEGORY_VISIBILITY_UPDATE);
+      globalTimerManager.clear(TIMER_KEYS.CATEGORY_VISIBILITY_UPDATE);
     };
   }, [categoriesStoreData]);
 

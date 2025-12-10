@@ -23,17 +23,19 @@ export const STORAGE_KEYS = {
   INITIAL_PAGE_SHOW: 'initial-page-show',
 } as const;
 
-export const timerKeys = {
+export const TIMER_KEYS = {
   /** 장바구니 알림 내부 타이머 키 */
   CART_REMINDER: 'cart-reminder',
   /** 카테고리 노출 여부 업데이트 타이머 키 */
   CATEGORY_VISIBILITY_UPDATE: 'category-visibility-update',
-  /** 터치 감지 타이머 키 */
-  TOUCH_DETECT_TIMEOUT: 'touch-detect-timeout',
   /** 직원 호출 비활성화 타이머 키 */
   DISABLE_STAFF_CALL: 'disable-staff-call',
-  /** 터치 후 2분 타이머 키 */
-  TOUCH_AFTER_TIMEOUT: 'touch-after-timeout',
+  /** API 리셋 타이머 키 */
+  API_RESET_TIMEOUT: 'api-reset-timeout',
+  /** 장바구니 주문 유도 타이머 키 */
+  CART_ORDER_REMINDER: 'cart-order-reminder',
+  /** 로고 클릭 리셋 타이머 키 */
+  LOGO_CLICK_COUNTDOWN_RESET: 'logo-click-countdown-reset',
 };
 
 export const DOM_IDS = {

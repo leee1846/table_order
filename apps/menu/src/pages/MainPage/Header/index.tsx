@@ -1,7 +1,7 @@
 import { MenuIcon } from '@repo/ui/icons';
 import { useTheme } from '@emotion/react';
 import * as S from '@/pages/MainPage/Header/header.style';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
 import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
 import { PasswordModal } from '@/pages/MainPage/PasswordModal';
@@ -9,6 +9,8 @@ import { useTableData } from '@/hooks/useTableData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTouchDetectTimer } from '@/hooks/useTouchDetectTimer';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { globalTimerManager } from '@/utils/timerManager';
+import { TIMER_KEYS } from '@/constants/keys';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -25,12 +27,40 @@ export const Header = ({ orderHistories }: Props) => {
 
   const [showOrderHistoryModal, setShowOrderHistoryModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const clickCountRef = useRef(0);
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      globalTimerManager.clear(TIMER_KEYS.LOGO_CLICK_COUNTDOWN_RESET);
+    };
+  }, []);
+
+  const handleLogoClick = () => {
+    clickCountRef.current += 1;
+
+    // 3번 연속 클릭 시 모달 열기
+    if (clickCountRef.current === 3) {
+      globalTimerManager.clear(TIMER_KEYS.LOGO_CLICK_COUNTDOWN_RESET);
+      setShowPasswordModal(true);
+      clickCountRef.current = 0;
+      return;
+    }
+
+    globalTimerManager.setTimeout(
+      TIMER_KEYS.LOGO_CLICK_COUNTDOWN_RESET,
+      () => {
+        clickCountRef.current = 0;
+      },
+      600
+    );
+  };
 
   return (
     <>
       <S.Header>
         <S.LeftContent>
-          <button type="button" onClick={() => setShowPasswordModal(true)}>
+          <button type="button" onClick={handleLogoClick}>
             <img
               src={shopDetailData?.shopPage?.initPageLogoImagePath ?? ''}
               alt="logo"

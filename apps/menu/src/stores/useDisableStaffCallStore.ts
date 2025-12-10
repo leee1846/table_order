@@ -1,4 +1,4 @@
-import { timerKeys } from '@/constants/keys';
+import { TIMER_KEYS } from '@/constants/keys';
 import { globalTimerManager } from '@/utils/timerManager';
 import { create } from '@repo/feature/zustand';
 
@@ -21,7 +21,7 @@ export const useDisableStaffCallStore = create<IDisableStaffCallStore>(
     disableStaffCall: () => {
       set({ data: { disableStaffCall: true } });
       globalTimerManager.setTimeout(
-        timerKeys.DISABLE_STAFF_CALL,
+        TIMER_KEYS.DISABLE_STAFF_CALL,
         () => {
           set({ data: { disableStaffCall: false } });
         },

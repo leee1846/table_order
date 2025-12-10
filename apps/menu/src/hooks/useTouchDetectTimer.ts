@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { globalTimerManager } from '@/utils/timerManager';
-import { timerKeys } from '@/constants/keys';
+import { TIMER_KEYS } from '@/constants/keys';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
@@ -25,7 +25,7 @@ export const useTouchDetectTimer = () => {
 
   useEffect(() => {
     const timerCallback = async () => {
-      globalTimerManager.clear(timerKeys.TOUCH_DETECT_TIMEOUT);
+      globalTimerManager.clear(TIMER_KEYS.API_RESET_TIMEOUT);
 
       // 상점 상세 데이터 api 요청
       await refreshShopDetailData();
@@ -56,16 +56,16 @@ export const useTouchDetectTimer = () => {
 
     const startResetTimer = () => {
       // 이미 타이머 실행 중이면 제거
-      globalTimerManager.clear(timerKeys.TOUCH_DETECT_TIMEOUT);
+      globalTimerManager.clear(TIMER_KEYS.API_RESET_TIMEOUT);
       globalTimerManager.setTimeout(
-        timerKeys.TOUCH_DETECT_TIMEOUT,
+        TIMER_KEYS.API_RESET_TIMEOUT,
         timerCallback,
         150000 // 2분 30초
       );
     };
 
     const orderReminderTimerCallback = () => {
-      globalTimerManager.clear(timerKeys.TOUCH_AFTER_TIMEOUT);
+      globalTimerManager.clear(TIMER_KEYS.CART_ORDER_REMINDER);
       showCartReminder();
     };
 
@@ -74,9 +74,9 @@ export const useTouchDetectTimer = () => {
         return;
       }
 
-      globalTimerManager.clear(timerKeys.TOUCH_AFTER_TIMEOUT);
+      globalTimerManager.clear(TIMER_KEYS.CART_ORDER_REMINDER);
       globalTimerManager.setTimeout(
-        timerKeys.TOUCH_AFTER_TIMEOUT,
+        TIMER_KEYS.CART_ORDER_REMINDER,
         orderReminderTimerCallback,
         120000 // 2분
       );
@@ -96,8 +96,8 @@ export const useTouchDetectTimer = () => {
 
     return () => {
       document.removeEventListener('touchstart', handleTouch);
-      globalTimerManager.clear(timerKeys.TOUCH_DETECT_TIMEOUT);
-      globalTimerManager.clear(timerKeys.TOUCH_AFTER_TIMEOUT);
+      globalTimerManager.clear(TIMER_KEYS.API_RESET_TIMEOUT);
+      globalTimerManager.clear(TIMER_KEYS.CART_ORDER_REMINDER);
     };
   }, [
     cartData,

@@ -5,7 +5,7 @@ import * as S from './cartReminder.style';
 import { Trans } from 'react-i18next';
 import { css } from '@emotion/react';
 import { globalTimerManager } from '@/utils/timerManager';
-import { timerKeys } from '@/constants/keys';
+import { TIMER_KEYS } from '@/constants/keys';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useLanguageStore } from '@/stores/useLanguageStore';
@@ -33,7 +33,7 @@ export const CartReminder = () => {
 
   useEffect(() => {
     globalTimerManager.setInterval(
-      timerKeys.CART_REMINDER,
+      TIMER_KEYS.CART_REMINDER,
       () => {
         setTime((prev) => prev - 1);
       },
@@ -41,14 +41,14 @@ export const CartReminder = () => {
     );
 
     return () => {
-      globalTimerManager.clear(timerKeys.CART_REMINDER);
+      globalTimerManager.clear(TIMER_KEYS.CART_REMINDER);
     };
   }, []);
 
   useEffect(() => {
     const timerCallback = async () => {
       if (time === 0) {
-        globalTimerManager.clear(timerKeys.CART_REMINDER);
+        globalTimerManager.clear(TIMER_KEYS.CART_REMINDER);
         // 메뉴 카테고리 api 요청
         await refreshCategoriesData();
         // 주문 내역 api 요청
