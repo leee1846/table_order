@@ -31,7 +31,10 @@ export const Header = ({ orderHistories }: Props) => {
       <S.Header>
         <S.LeftContent>
           <button type="button" onClick={() => setShowPasswordModal(true)}>
-            <span>logo버튼 영역</span>
+            <img
+              src={shopDetailData?.shopPage?.initPageLogoImagePath ?? ''}
+              alt="logo"
+            />
           </button>
           <S.Divider />
           <S.ShopName>{shopDetailData?.shopName ?? ''}</S.ShopName>

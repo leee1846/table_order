@@ -24,6 +24,14 @@ export const LeftContent = styled.div`
   align-items: center;
   gap: 6px;
   white-space: nowrap;
+
+  & > button {
+    width: 6.25rem;
+
+    & > img {
+      width: 100%;
+    }
+  }
 `;
 
 export const Divider = styled.span`
