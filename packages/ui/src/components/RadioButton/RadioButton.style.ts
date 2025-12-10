@@ -43,7 +43,7 @@ const getBackgroundColor = (
     return theme.mode.grey[100];
   }
 
-  return theme.colors.white;
+  return 'transparent';
 };
 
 const getRadioButtonStyles = (

@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { colors } from '../../theme/colors';
 import { TVariant } from '.';
 import { TYPOGRAPHY } from '../../theme/typography';
 import { baseTheme, Theme } from '../../index';
@@ -74,55 +73,6 @@ const getTextColor = (
   return theme.mode.grey[900];
 };
 
-const getFocusBackgroundColor = (
-  variant: TVariant,
-  value: number,
-  disabled: boolean,
-  theme: Theme
-): string => {
-  if (disabled) {
-    return theme.mode.undefined_palette[800];
-  }
-  // rounded variant이고 value가 0보다 클 때만 primary 색상 사용
-  if (isRoundedActive(variant, value)) {
-    return colors.primary[500];
-  }
-
-  return theme.mode.white;
-};
-
-const getFocusTextColor = (
-  variant: TVariant,
-  value: number,
-  disabled: boolean,
-  theme: Theme
-): string => {
-  if (disabled) {
-    return colors.grey[500];
-  }
-  // rounded variant이고 value가 0보다 클 때만 white 색상 사용
-  if (isRoundedActive(variant, value)) {
-    return colors.white;
-  }
-  return theme.mode.grey[900];
-};
-
-const getFocusIconColor = (
-  variant: TVariant,
-  value: number,
-  disabled: boolean,
-  theme: Theme
-): string => {
-  if (disabled) {
-    return colors.grey[400];
-  }
-  // rounded variant이고 value가 0보다 클 때만 white 색상 사용
-  if (isRoundedActive(variant, value)) {
-    return colors.white;
-  }
-  return theme.mode.grey[800];
-};
-
 export const Container = styled.div<Props>`
   display: flex;
   align-items: center;
@@ -170,25 +120,6 @@ export const Container = styled.div<Props>`
 
     &:disabled {
       cursor: not-allowed;
-    }
-  }
-
-  &:focus-within {
-    background-color: ${({ variant, value, disabled, theme }) =>
-      getFocusBackgroundColor(variant, value, disabled, theme)};
-
-    & > input {
-      color: ${({ variant, value, disabled, theme }) =>
-        getFocusTextColor(variant, value, disabled, theme)};
-    }
-
-    & > button {
-      & > svg {
-        color: ${({ variant, value, disabled, theme }) =>
-          getFocusIconColor(variant, value, disabled, theme)} !important;
-        fill: ${({ variant, value, disabled, theme }) =>
-          getFocusIconColor(variant, value, disabled, theme)} !important;
-      }
     }
   }
 `;
