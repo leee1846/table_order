@@ -99,6 +99,11 @@ export interface IShopSetting {
   menuboardAdminPassword: null;
   isAdminLocked: boolean;
   usePrepayment: boolean;
+  useDutchPay?: boolean;
+  usePostpaidAfterPrepay?: boolean;
+  useAutoReset?: boolean;
+  useCashPopup?: boolean;
+  useCashPayment?: boolean;
   vanCode: string;
   isSalesTotalVisible: boolean;
   salesPassword: null;
@@ -108,7 +113,7 @@ export interface IShopSetting {
   shopLanguage: TShopLanguage;
   useLocaleBeforeOrder: boolean;
   isMenuThreeColumnLayout: boolean;
-  shoplocaleMapList: IShopLocaleMap[];
+  shopLocaleMapList: IShopLocaleMap[];
 }
 
 export type TNetworkType = 'AUTO' | 'LAN' | 'WIFI';

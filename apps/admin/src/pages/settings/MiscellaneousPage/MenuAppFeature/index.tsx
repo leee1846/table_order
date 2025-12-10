@@ -1,34 +1,168 @@
+import { useEffect, useRef, useState } from 'react';
+import type { IShopSetting, IShopTime } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import { BasicButton, ToggleButton } from '@repo/ui/components';
-import { useRef, useState } from 'react';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/MenuAppFeature/menuAppFeature.style';
 import { useTimeInput } from '@/hooks/useTimeInput';
+import { theme } from '@repo/ui';
+import { MenuBookIcon } from '@repo/ui/icons';
 
-export const MenuAppFeature = () => {
-  const [isTestOn, setIsTestOn] = useState(false);
+interface MenuAppFeatureProps {
+  shopSetting?: IShopSetting;
+  shopTime?: IShopTime;
+}
+
+const numberToString = (value?: number | null) =>
+  value === undefined || value === null ? '' : String(value);
+
+export const MenuAppFeature = ({
+  shopSetting,
+  shopTime,
+}: MenuAppFeatureProps) => {
+  const [isOrderable, setIsOrderable] = useState(false);
+  const [firstOrderMinAmount, setFirstOrderMinAmount] = useState('');
+  const [useCustomerCount, setUseCustomerCount] = useState(false);
+  const [useKidsCustomerCount, setUseKidsCustomerCount] = useState(false);
+  const [isOrderSheetTotalVisible, setIsOrderSheetTotalVisible] =
+    useState(false);
+  const [isOrderCompleteTotalVisible, setIsOrderCompleteTotalVisible] =
+    useState(false);
+  const [useSinglePageMenuboard, setUseSinglePageMenuboard] = useState(false);
+  const [menuboardAdminPassword, setMenuboardAdminPassword] = useState('');
+  const [isAdminLocked, setIsAdminLocked] = useState(false);
+  const [useTheftPrevention, setUseTheftPrevention] = useState(false);
+  const [usePickupAlert, setUsePickupAlert] = useState(false);
+  const [pickupAlertMessage, setPickupAlertMessage] = useState('');
 
   const breakTimeEndHourRef = useRef<HTMLInputElement>(null);
   const breakTimeStartTime = useTimeInput({ nextRef: breakTimeEndHourRef });
   const breakTimeEndTime = useTimeInput();
-
   const breakTimeLastOrderHourRef = useRef<HTMLInputElement>(null);
   const breakTimeLastOrderTime = useTimeInput({
     nextRef: breakTimeLastOrderHourRef,
   });
 
-  const [breakTimeLastOrderMinutes, setBreakTimeLastOrderMinutes] = useState<
-    string | null
-  >(null);
+  const { setTime: setBreakStartTime } = breakTimeStartTime;
+  const { setTime: setBreakEndTime } = breakTimeEndTime;
+  const { setTime: setBreakLastOrderTime } = breakTimeLastOrderTime;
+
+  // TODO 컬럼 추가해주시기로 함
+  const [useBreakTime, setUseBreakTime] = useState(false);
+  const [breakTimeLastOrderMinutes, setBreakTimeLastOrderMinutes] =
+    useState('');
+  const [breakTimeMessage, setBreakTimeMessage] = useState('');
+  const [breakTimeLastOrderMessage, setBreakTimeLastOrderMessage] =
+    useState('');
+
+  const closureEndHourRef = useRef<HTMLInputElement>(null);
+  const closureStartTime = useTimeInput({ nextRef: closureEndHourRef });
+  const closureEndTime = useTimeInput();
+  const closureLastOrderHourRef = useRef<HTMLInputElement>(null);
+  const closureLastOrderTime = useTimeInput({
+    nextRef: closureLastOrderHourRef,
+  });
+
+  const { setTime: setClosureStartTime } = closureStartTime;
+  const { setTime: setClosureEndTime } = closureEndTime;
+  const { setTime: setClosureLastOrderTime } = closureLastOrderTime;
+
+  // TODO 컬럼 추가해주시기로 함
+  const [useClosureNotice, setUseClosureNotice] = useState(false);
+  const [closureLastOrderMinutes, setClosureLastOrderMinutes] = useState('');
+  const [closureLastOrderMessage, setClosureLastOrderMessage] = useState('');
+  const [closureMessage, setClosureMessage] = useState('');
+
+  useEffect(() => {
+    if (!shopSetting) {
+      return;
+    }
+
+    setIsOrderable(Boolean(shopSetting.isMenuboardOrderable));
+    setFirstOrderMinAmount(
+      shopSetting.firstOrderMinAmount !== undefined
+        ? String(shopSetting.firstOrderMinAmount)
+        : ''
+    );
+    setUseCustomerCount(Boolean(shopSetting.useCustomerCount));
+    setUseKidsCustomerCount(Boolean(shopSetting.useKidsCustomerCount));
+    setIsOrderSheetTotalVisible(Boolean(shopSetting.isOrderSheetTotalVisible));
+    setIsOrderCompleteTotalVisible(
+      Boolean(shopSetting.isOrderCompleteTotalVisible)
+    );
+    setUseSinglePageMenuboard(Boolean(shopSetting.useSinglePageMenuboard));
+    setMenuboardAdminPassword(shopSetting.menuboardAdminPassword ?? '');
+    setIsAdminLocked(Boolean(shopSetting.isAdminLocked));
+    setUseTheftPrevention(Boolean(shopSetting.useTheftPrevention));
+    setUsePickupAlert(Boolean(shopSetting.usePickupAlert));
+    setPickupAlertMessage(shopSetting.pickupAlertMessage ?? '');
+  }, [shopSetting]);
+
+  useEffect(() => {
+    if (!shopTime) {
+      return;
+    }
+
+    setUseBreakTime(
+      Boolean(
+        shopTime.breakStartTime ||
+        shopTime.breakEndTime ||
+        shopTime.breakTimeMessage ||
+        shopTime.breakTimeLastOrderTime
+      )
+    );
+    setBreakTimeLastOrderMinutes(
+      numberToString(shopTime.breakTimeLastOrderAlertTimeBefore)
+    );
+    setBreakTimeMessage(shopTime.breakTimeMessage ?? '');
+    setBreakTimeLastOrderMessage(shopTime.breakTimeLastOrderMessage ?? '');
+    setBreakStartTime(shopTime.breakStartTime);
+    setBreakEndTime(shopTime.breakEndTime);
+    setBreakLastOrderTime(shopTime.breakTimeLastOrderTime);
+
+    setUseClosureNotice(
+      Boolean(
+        shopTime.shopClosureStartTime ||
+        shopTime.shopClosureEndTime ||
+        shopTime.closureMessage ||
+        shopTime.closureLastOrderTime
+      )
+    );
+    setClosureLastOrderMinutes(
+      numberToString(shopTime.closureLastOrderAlertTimeBefore)
+    );
+    setClosureMessage(shopTime.closureMessage ?? '');
+    setClosureLastOrderMessage(shopTime.closureLastOrderMessage ?? '');
+    setClosureStartTime(shopTime.shopClosureStartTime);
+    setClosureEndTime(shopTime.shopClosureEndTime);
+    setClosureLastOrderTime(shopTime.closureLastOrderTime);
+  }, [
+    shopTime,
+    setBreakEndTime,
+    setBreakLastOrderTime,
+    setBreakStartTime,
+    setClosureEndTime,
+    setClosureLastOrderTime,
+    setClosureStartTime,
+  ]);
 
   return (
-    <SectionWrapper title="메뉴판 기능 설정">
+    <SectionWrapper
+      title="메뉴판 기능"
+      icon={
+        <MenuBookIcon
+          width={32}
+          height={32}
+          color={theme.colors.primary[500]}
+        />
+      }
+    >
       <UIStyles.setting.ContentLayout>
         <p>주문하기 사용</p>
         <ToggleButton
           size="M"
-          isOn={isTestOn}
-          onChange={() => setIsTestOn(!isTestOn)}
+          isOn={isOrderable}
+          onChange={() => setIsOrderable(!isOrderable)}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
@@ -39,58 +173,78 @@ export const MenuAppFeature = () => {
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>첫주문 금액</p>
-        <input type="text" />
+        <input
+          type="text"
+          value={firstOrderMinAmount}
+          onChange={(event) => setFirstOrderMinAmount(event.target.value)}
+        />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>객수사용</p>
         <ToggleButton
           size="M"
-          isOn={isTestOn}
-          onChange={() => setIsTestOn(!isTestOn)}
+          isOn={useCustomerCount}
+          onChange={() => setUseCustomerCount(!useCustomerCount)}
+        />
+      </UIStyles.setting.ContentLayout>
+      <UIStyles.setting.ContentLayout>
+        <p>어린이 객수 사용</p>
+        <ToggleButton
+          size="M"
+          isOn={useKidsCustomerCount}
+          onChange={() => setUseKidsCustomerCount(!useKidsCustomerCount)}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>주문서 합계금액 노출 여부</p>
         <ToggleButton
           size="M"
-          isOn={isTestOn}
-          onChange={() => setIsTestOn(!isTestOn)}
+          isOn={isOrderSheetTotalVisible}
+          onChange={() =>
+            setIsOrderSheetTotalVisible(!isOrderSheetTotalVisible)
+          }
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>주문완료 페이지 총금액 노출 여부</p>
         <ToggleButton
           size="M"
-          isOn={isTestOn}
-          onChange={() => setIsTestOn(!isTestOn)}
+          isOn={isOrderCompleteTotalVisible}
+          onChange={() =>
+            setIsOrderCompleteTotalVisible(!isOrderCompleteTotalVisible)
+          }
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>단일페이지 메뉴 사용</p>
         <ToggleButton
           size="M"
-          isOn={isTestOn}
-          onChange={() => setIsTestOn(!isTestOn)}
+          isOn={useSinglePageMenuboard}
+          onChange={() => setUseSinglePageMenuboard(!useSinglePageMenuboard)}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>메뉴판 관리 비밀번호</p>
-        <input type="text" />
+        <input
+          type="text"
+          value={menuboardAdminPassword}
+          onChange={(event) => setMenuboardAdminPassword(event.target.value)}
+        />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>관리잠금</p>
         <ToggleButton
           size="M"
-          isOn={isTestOn}
-          onChange={() => setIsTestOn(!isTestOn)}
+          isOn={isAdminLocked}
+          onChange={() => setIsAdminLocked(!isAdminLocked)}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>도난방지 알림팝업</p>
         <ToggleButton
           size="M"
-          isOn={isTestOn}
-          onChange={() => setIsTestOn(!isTestOn)}
+          isOn={useTheftPrevention}
+          onChange={() => setUseTheftPrevention(!useTheftPrevention)}
         />
       </UIStyles.setting.ContentLayout>
       <div>
@@ -98,13 +252,16 @@ export const MenuAppFeature = () => {
           <p>픽업 메세지 사용</p>
           <ToggleButton
             size="M"
-            isOn={isTestOn}
-            onChange={() => setIsTestOn(!isTestOn)}
+            isOn={usePickupAlert}
+            onChange={() => setUsePickupAlert(!usePickupAlert)}
           />
         </UIStyles.setting.ContentLayout>
-        {isTestOn && (
+        {usePickupAlert && (
           <S.TextAreaContainer>
-            <textarea />
+            <textarea
+              value={pickupAlertMessage}
+              onChange={(event) => setPickupAlertMessage(event.target.value)}
+            />
           </S.TextAreaContainer>
         )}
       </div>
@@ -113,11 +270,11 @@ export const MenuAppFeature = () => {
           <p>브레이크타임 사용</p>
           <ToggleButton
             size="M"
-            isOn={isTestOn}
-            onChange={() => setIsTestOn(!isTestOn)}
+            isOn={useBreakTime}
+            onChange={() => setUseBreakTime(!useBreakTime)}
           />
         </UIStyles.setting.ContentLayout>
-        {isTestOn && (
+        {useBreakTime && (
           <S.InnerSection>
             <S.InnerSectionItem>
               <p>브레이크타임 </p>
@@ -192,9 +349,9 @@ export const MenuAppFeature = () => {
               <UIStyles.setting.SingleTimeInput>
                 <input
                   type="number"
-                  value={breakTimeLastOrderMinutes ?? ''}
-                  onChange={(e) =>
-                    setBreakTimeLastOrderMinutes(e.target.value ?? null)
+                  value={breakTimeLastOrderMinutes}
+                  onChange={(event) =>
+                    setBreakTimeLastOrderMinutes(event.target.value)
                   }
                 />
                 <span>분전</span>
@@ -203,11 +360,19 @@ export const MenuAppFeature = () => {
             <S.TextAreasContainer>
               <div>
                 <p>주문 마감 사전 안내 메세지</p>
-                <textarea />
+                <textarea
+                  value={breakTimeLastOrderMessage}
+                  onChange={(event) =>
+                    setBreakTimeLastOrderMessage(event.target.value)
+                  }
+                />
               </div>
               <div>
                 <p>브레이크타임 안내 메세지</p>
-                <textarea />
+                <textarea
+                  value={breakTimeMessage}
+                  onChange={(event) => setBreakTimeMessage(event.target.value)}
+                />
               </div>
             </S.TextAreasContainer>
           </S.InnerSection>
@@ -219,11 +384,11 @@ export const MenuAppFeature = () => {
           <p>영업마감안내 사용</p>
           <ToggleButton
             size="M"
-            isOn={isTestOn}
-            onChange={() => setIsTestOn(!isTestOn)}
+            isOn={useClosureNotice}
+            onChange={() => setUseClosureNotice(!useClosureNotice)}
           />
         </UIStyles.setting.ContentLayout>
-        {isTestOn && (
+        {useClosureNotice && (
           <S.InnerSection>
             <S.InnerSectionItem>
               <p>영업마감시간</p>
@@ -232,40 +397,40 @@ export const MenuAppFeature = () => {
                   type="text"
                   inputMode="numeric"
                   placeholder="00"
-                  value={breakTimeStartTime.hour}
-                  onChange={breakTimeStartTime.handleHourChange}
+                  value={closureStartTime.hour}
+                  onChange={closureStartTime.handleHourChange}
                   maxLength={2}
                 />
                 <span>:</span>
                 <input
-                  ref={breakTimeStartTime.minuteRef}
+                  ref={closureStartTime.minuteRef}
                   type="text"
                   inputMode="numeric"
                   placeholder="00"
-                  value={breakTimeStartTime.minute}
-                  onChange={breakTimeStartTime.handleMinuteChange}
-                  onKeyDown={breakTimeStartTime.handleMinuteKeyDown}
+                  value={closureStartTime.minute}
+                  onChange={closureStartTime.handleMinuteChange}
+                  onKeyDown={closureStartTime.handleMinuteKeyDown}
                   maxLength={2}
                 />
                 <span>-</span>
                 <input
-                  ref={breakTimeEndHourRef}
+                  ref={closureEndHourRef}
                   type="text"
                   inputMode="numeric"
                   placeholder="00"
-                  value={breakTimeEndTime.hour}
-                  onChange={breakTimeEndTime.handleHourChange}
+                  value={closureEndTime.hour}
+                  onChange={closureEndTime.handleHourChange}
                   maxLength={2}
                 />
                 <span>:</span>
                 <input
-                  ref={breakTimeEndTime.minuteRef}
+                  ref={closureEndTime.minuteRef}
                   type="text"
                   inputMode="numeric"
                   placeholder="00"
-                  value={breakTimeEndTime.minute}
-                  onChange={breakTimeEndTime.handleMinuteChange}
-                  onKeyDown={breakTimeEndTime.handleMinuteKeyDown}
+                  value={closureEndTime.minute}
+                  onChange={closureEndTime.handleMinuteChange}
+                  onKeyDown={closureEndTime.handleMinuteKeyDown}
                   maxLength={2}
                 />
               </UIStyles.setting.TimeRangeInput>
@@ -277,8 +442,8 @@ export const MenuAppFeature = () => {
                   type="text"
                   inputMode="numeric"
                   placeholder="00"
-                  value={breakTimeLastOrderTime.hour}
-                  onChange={breakTimeLastOrderTime.handleHourChange}
+                  value={closureLastOrderTime.hour}
+                  onChange={closureLastOrderTime.handleHourChange}
                   maxLength={2}
                 />
                 <span>:</span>
@@ -286,9 +451,9 @@ export const MenuAppFeature = () => {
                   type="text"
                   inputMode="numeric"
                   placeholder="00"
-                  value={breakTimeLastOrderTime.minute}
-                  onChange={breakTimeLastOrderTime.handleMinuteChange}
-                  onKeyDown={breakTimeLastOrderTime.handleMinuteKeyDown}
+                  value={closureLastOrderTime.minute}
+                  onChange={closureLastOrderTime.handleMinuteChange}
+                  onKeyDown={closureLastOrderTime.handleMinuteKeyDown}
                   maxLength={2}
                 />
               </UIStyles.setting.SingleTimeInput>
@@ -298,9 +463,9 @@ export const MenuAppFeature = () => {
               <UIStyles.setting.SingleTimeInput>
                 <input
                   type="number"
-                  value={breakTimeLastOrderMinutes ?? ''}
-                  onChange={(e) =>
-                    setBreakTimeLastOrderMinutes(e.target.value ?? null)
+                  value={closureLastOrderMinutes}
+                  onChange={(event) =>
+                    setClosureLastOrderMinutes(event.target.value)
                   }
                 />
                 <span>분전</span>
@@ -309,11 +474,19 @@ export const MenuAppFeature = () => {
             <S.TextAreasContainer>
               <div>
                 <p>주문 마감 사전 안내 메세지</p>
-                <textarea />
+                <textarea
+                  value={closureLastOrderMessage}
+                  onChange={(event) =>
+                    setClosureLastOrderMessage(event.target.value)
+                  }
+                />
               </div>
               <div>
                 <p>영업마감 안내 메세지</p>
-                <textarea />
+                <textarea
+                  value={closureMessage}
+                  onChange={(event) => setClosureMessage(event.target.value)}
+                />
               </div>
             </S.TextAreasContainer>
           </S.InnerSection>

@@ -1,4 +1,14 @@
 export const ROUTES = {
+  LOGIN: {
+    path: '/login',
+    generate: () => '/login',
+  },
+
+  ROOT: {
+    path: '/',
+    generate: () => '/',
+  },
+
   SETTINGS: {
     path: '/settings',
 

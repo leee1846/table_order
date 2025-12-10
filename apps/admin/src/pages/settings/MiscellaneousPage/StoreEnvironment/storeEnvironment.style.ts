@@ -19,6 +19,11 @@ export const TimeRangeContainer = styled.div`
     border-color: #9e9e9e;
   }
 `;
+export const TitleContentContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
 
 export const TimeInputGroup = styled.div`
   display: flex;

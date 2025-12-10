@@ -1,5 +1,16 @@
-import { useState, useRef, type ChangeEvent, type KeyboardEvent } from 'react';
-import { extractNumbers, validateHour, validateMinute } from '@repo/util/time';
+import {
+  useCallback,
+  useState,
+  useRef,
+  type ChangeEvent,
+  type KeyboardEvent,
+} from 'react';
+import {
+  extractNumbers,
+  parseTimeString,
+  validateHour,
+  validateMinute,
+} from '@repo/util/time';
 
 interface Props {
   /**
@@ -12,6 +23,7 @@ interface Return {
   hour: string;
   minute: string;
   minuteRef: React.RefObject<HTMLInputElement | null>;
+  setTime: (timeString: string | null | undefined) => void;
   handleHourChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleMinuteChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleMinuteKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
@@ -39,6 +51,16 @@ export const useTimeInput = (props?: Props): Return => {
   const [hour, setHour] = useState('');
   const [minute, setMinute] = useState('');
   const minuteRef = useRef<HTMLInputElement>(null);
+
+  const setTime = useCallback((timeString: string | null | undefined) => {
+    const sanitized = extractNumbers(timeString ?? '');
+    const { hour: parsedHour, minute: parsedMinute } = parseTimeString(
+      sanitized.length === 4 ? sanitized : ''
+    );
+
+    setHour(parsedHour);
+    setMinute(parsedMinute);
+  }, []);
 
   const handleHourChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = extractNumbers(e.target.value);
@@ -88,6 +110,7 @@ export const useTimeInput = (props?: Props): Return => {
     hour,
     minute,
     minuteRef,
+    setTime,
     handleHourChange,
     handleMinuteChange,
     handleMinuteKeyDown,

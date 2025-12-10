@@ -7,7 +7,13 @@ import {
 } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
+import { getAccessToken } from '@repo/api/auth';
 
+const LoginPage = lazy(() =>
+  import('@/pages/LoginPage').then((module) => ({
+    default: module.LoginPage,
+  }))
+);
 const SettingSidebar = lazy(() =>
   import('@/pages/settings/SidebarLayout').then((module) => ({
     default: module.SidebarLayout,
@@ -81,108 +87,134 @@ const MiscellaneousPage = lazy(() =>
   }))
 );
 
+/**
+ * 모든 보호된 라우트에 공통으로 적용되는 인증 체크 loader
+ */
+const protectedRouteLoader = () => {
+  const token = getAccessToken();
+  if (!token) {
+    return redirect(ROUTES.LOGIN.path);
+  }
+  return null;
+};
+
 export const router = createBrowserRouter([
   {
-    // 루트 경로 → /tables로 리디렉트
-    path: '/',
-    element: <Navigate to={ROUTES.TABLES.path} replace />,
-  },
-  {
-    // /tables
-    path: ROUTES.TABLES.path,
+    path: ROUTES.LOGIN.path,
     element: (
       <Suspense fallback={<FullscreenLoadingSpinner />}>
-        <TablesPage />
+        <LoginPage />
       </Suspense>
     ),
   },
   {
-    // /tables/:tableNum
-    path: ROUTES.TABLE_DETAIL.path,
-    element: (
-      <Suspense fallback={<FullscreenLoadingSpinner />}>
-        <TableDetailPage />
-      </Suspense>
-    ),
-  },
-
-  {
-    path: ROUTES.SETTINGS.path,
-    element: (
-      <Suspense fallback={<FullscreenLoadingSpinner />}>
-        <SettingSidebar />
-      </Suspense>
-    ),
+    loader: protectedRouteLoader,
+    element: <Outlet />,
     children: [
       {
-        // /settings → /settings/categories
-        index: true,
-        element: <Navigate to={ROUTES.SETTINGS.CATEGORIES.path} replace />,
+        // 루트 경로 → /tables로 리디렉트
+        path: '/',
+        element: <Navigate to={ROUTES.TABLES.path} replace />,
       },
       {
-        path: ROUTES.SETTINGS.NOTICES.path,
-        element: <NoticesPage />,
+        // /tables
+        path: ROUTES.TABLES.path,
+        element: (
+          <Suspense fallback={<FullscreenLoadingSpinner />}>
+            <TablesPage />
+          </Suspense>
+        ),
       },
       {
-        path: ROUTES.SETTINGS.CATEGORIES.path,
-        element: <CategoriesPage />,
+        // /tables/:tableNum
+        path: ROUTES.TABLE_DETAIL.path,
+        element: (
+          <Suspense fallback={<FullscreenLoadingSpinner />}>
+            <TableDetailPage />
+          </Suspense>
+        ),
       },
+
       {
-        // /settings/categories/:id → 바로 menus로 리디렉트
-        path: `${ROUTES.SETTINGS.CATEGORIES.path}/:id`,
-        loader: ({ params }) =>
-          redirect(ROUTES.SETTINGS.CATEGORY_MENUS.generate(params.id!)),
-      },
-      {
-        path: ROUTES.SETTINGS.CATEGORY_MENUS.path,
-        element: <CategoryMenusPage />,
-      },
-      {
-        path: ROUTES.SETTINGS.SALES.path,
-        element: <Outlet />,
+        path: ROUTES.SETTINGS.path,
+        element: (
+          <Suspense fallback={<FullscreenLoadingSpinner />}>
+            <SettingSidebar />
+          </Suspense>
+        ),
         children: [
           {
+            // /settings → /settings/categories
             index: true,
-            loader: () => redirect(ROUTES.SETTINGS.SALES.SUMMARY.generate()),
+            element: <Navigate to={ROUTES.SETTINGS.CATEGORIES.path} replace />,
           },
           {
-            path: ROUTES.SETTINGS.SALES.SUMMARY.path,
-            element: <SalesSummaryPage />,
+            path: ROUTES.SETTINGS.NOTICES.path,
+            element: <NoticesPage />,
           },
           {
-            path: ROUTES.SETTINGS.SALES.ORDER.path,
-            element: <SalesOrderPage />,
+            path: ROUTES.SETTINGS.CATEGORIES.path,
+            element: <CategoriesPage />,
           },
           {
-            path: ROUTES.SETTINGS.SALES.CARD.path,
-            element: <SalesCardPage />,
+            // /settings/categories/:id → 바로 menus로 리디렉트
+            path: `${ROUTES.SETTINGS.CATEGORIES.path}/:id`,
+            loader: ({ params }) =>
+              redirect(ROUTES.SETTINGS.CATEGORY_MENUS.generate(params.id!)),
           },
           {
-            path: ROUTES.SETTINGS.SALES.CASH.path,
-            element: <SalesCashPage />,
+            path: ROUTES.SETTINGS.CATEGORY_MENUS.path,
+            element: <CategoryMenusPage />,
           },
           {
-            path: ROUTES.SETTINGS.SALES.MENU.path,
-            element: <SalesMenuPage />,
+            path: ROUTES.SETTINGS.SALES.path,
+            element: <Outlet />,
+            children: [
+              {
+                index: true,
+                loader: () =>
+                  redirect(ROUTES.SETTINGS.SALES.SUMMARY.generate()),
+              },
+              {
+                path: ROUTES.SETTINGS.SALES.SUMMARY.path,
+                element: <SalesSummaryPage />,
+              },
+              {
+                path: ROUTES.SETTINGS.SALES.ORDER.path,
+                element: <SalesOrderPage />,
+              },
+              {
+                path: ROUTES.SETTINGS.SALES.CARD.path,
+                element: <SalesCardPage />,
+              },
+              {
+                path: ROUTES.SETTINGS.SALES.CASH.path,
+                element: <SalesCashPage />,
+              },
+              {
+                path: ROUTES.SETTINGS.SALES.MENU.path,
+                element: <SalesMenuPage />,
+              },
+            ],
+          },
+          {
+            path: ROUTES.SETTINGS.STYLE.path,
+            element: <StylePage />,
+          },
+          {
+            path: ROUTES.SETTINGS.MISCELLANEOUS.path,
+            element: <MiscellaneousPage />,
           },
         ],
       },
       {
-        path: ROUTES.SETTINGS.STYLE.path,
-        element: <StylePage />,
-      },
-      {
-        path: ROUTES.SETTINGS.MISCELLANEOUS.path,
-        element: <MiscellaneousPage />,
+        path: ROUTES.SETTINGS.TABLES.generate(),
+        element: (
+          <Suspense fallback={<FullscreenLoadingSpinner />}>
+            <SettingsTablesPage />
+          </Suspense>
+        ),
       },
     ],
-  },
-  {
-    path: ROUTES.SETTINGS.TABLES.generate(),
-    element: (
-      <Suspense fallback={<FullscreenLoadingSpinner />}>
-        <SettingsTablesPage />
-      </Suspense>
-    ),
   },
 ]);

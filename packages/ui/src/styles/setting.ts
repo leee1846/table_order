@@ -12,13 +12,13 @@ export const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 24px;
+  padding: 24px 0;
   border-bottom: 1px solid ${theme.colors.grey[400]};
 `;
 
 export const Title = styled.p`
   color: ${theme.colors.grey[800]};
-  ${TYPOGRAPHY.MT_6}
+  ${TYPOGRAPHY.MT_4}
 `;
 
 export const ContentsLayout = styled.div`

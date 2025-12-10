@@ -1,6 +1,6 @@
-import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
-import { SettingsIcon } from '@repo/ui/icons';
+import { useGetShopDetail } from '@repo/api/queries';
+import { useAuth } from '@/hooks/useAuth';
 import * as S from '@/pages/settings/MiscellaneousPage/MiscellaneousPage.style';
 import { Account } from '@/pages/settings/MiscellaneousPage/Account';
 import { Network } from '@/pages/settings/MiscellaneousPage/Network';
@@ -12,12 +12,19 @@ import { Intergration } from '@/pages/settings/MiscellaneousPage/Intergration';
 import { Language } from '@/pages/settings/MiscellaneousPage/Language';
 
 export const MiscellaneousPage = () => {
+  const { shopCode, tokenPayload } = useAuth();
+
+  const { data: shopDetailResponse } = useGetShopDetail(shopCode ?? '', {
+    enabled: !!shopCode,
+  });
+
+  const shopInfo = shopDetailResponse?.data;
+
   return (
     <S.Container>
       <header>
         <div>
           <h1>설정</h1>
-          <SettingsIcon color={theme.colors.grey[800]} width={40} height={40} />
         </div>
         <BasicButton variant="Solid_Navy_XL" onClick={() => {}}>
           저장하기
@@ -25,14 +32,24 @@ export const MiscellaneousPage = () => {
       </header>
 
       <S.Sections>
-        <Account />
-        <Network />
-        <StoreEnvironment />
-        <MenuAppFeature />
-        <Payment />
-        <MenuAppView />
-        <Intergration />
-        <Language />
+        <Account
+          shopName={shopInfo?.shopName}
+          shopCode={shopInfo?.shopCode}
+          userId={tokenPayload?.sub}
+        />
+        <Network shopNetwork={shopInfo?.shopNetwork} />
+        <StoreEnvironment
+          shopSetting={shopInfo?.shopSetting}
+          shopTime={shopInfo?.shopTime}
+        />
+        <MenuAppFeature
+          shopSetting={shopInfo?.shopSetting}
+          shopTime={shopInfo?.shopTime}
+        />
+        <Payment shopSetting={shopInfo?.shopSetting} />
+        <MenuAppView shopSetting={shopInfo?.shopSetting} />
+        <Intergration shopSetting={shopInfo?.shopSetting} />
+        <Language shopSetting={shopInfo?.shopSetting} />
       </S.Sections>
     </S.Container>
   );

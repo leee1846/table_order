@@ -1,27 +1,67 @@
 import { BasicButton, Dropdown } from '@repo/ui/components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { IShopNetwork, TNetworkType } from '@repo/api/types';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Network/network.style';
+import { NetworkIcon } from '@repo/ui/icons';
+import { theme } from '@repo/ui';
+
+type NetworkSettingOption = 'auto' | 'wired' | 'wifi';
 
 const networkSettings = [
-  { value: 'auto', label: '자동' },
-  { value: 'wired', label: '유선' },
-  { value: 'wifi', label: '무선' },
+  { value: 'auto' as NetworkSettingOption, label: '자동' },
+  { value: 'wired' as NetworkSettingOption, label: '유선' },
+  { value: 'wifi' as NetworkSettingOption, label: '무선' },
 ];
 
-export const Network = () => {
-  const [networkSetting, setNetworkSetting] = useState<
-    'auto' | 'wired' | 'wifi'
-  >('auto');
+interface NetworkProps {
+  shopNetwork?: IShopNetwork;
+}
 
-  const handleNetworkSettingChange = (value: 'auto' | 'wired' | 'wifi') => {
+const toNetworkSettingOption = (
+  networkType?: TNetworkType
+): NetworkSettingOption => {
+  switch (networkType) {
+    case 'LAN':
+      return 'wired';
+    case 'WIFI':
+      return 'wifi';
+    default:
+      return 'auto';
+  }
+};
+
+export const Network = ({ shopNetwork }: NetworkProps) => {
+  const [networkSetting, setNetworkSetting] =
+    useState<NetworkSettingOption>('auto');
+  const [ssid, setSsid] = useState('');
+  const [ipAddress, setIpAddress] = useState('');
+
+  useEffect(() => {
+    if (!shopNetwork) {
+      return;
+    }
+
+    setNetworkSetting(toNetworkSettingOption(shopNetwork.networkType));
+    setSsid(shopNetwork.ssid ?? '');
+    setIpAddress(shopNetwork.ipAddress ?? '');
+  }, [shopNetwork]);
+
+  const handleNetworkSettingChange = (value: NetworkSettingOption) => {
     setNetworkSetting(value);
   };
 
   return (
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
-        <UIStyles.setting.Title>버전 및 네트워크</UIStyles.setting.Title>
+        <S.TitleContentContainer>
+          <NetworkIcon
+            width={32}
+            height={32}
+            color={theme.colors.primary[500]}
+          />
+          <UIStyles.setting.Title>버전 및 네트워크</UIStyles.setting.Title>
+        </S.TitleContentContainer>
         <S.Versions>
           <p>
             현재 버전 <span>2.??.??</span>
@@ -30,17 +70,13 @@ export const Network = () => {
           <p>
             최신 버전 <span>2.??.??</span>
           </p>
-          <div />
-          <p>
-            Add On 버전 <span>2.??</span>
-          </p>
         </S.Versions>
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
           <p>Android ID</p>
-          <p>?????????</p>
+          <p>-</p>
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
           <p>네트워크 설정</p>
@@ -48,7 +84,7 @@ export const Network = () => {
             options={networkSettings}
             value={networkSetting}
             onChange={(value) =>
-              handleNetworkSettingChange(value as 'auto' | 'wired' | 'wifi')
+              handleNetworkSettingChange(value as NetworkSettingOption)
             }
           />
         </UIStyles.setting.ContentLayout>
@@ -62,18 +98,22 @@ export const Network = () => {
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
           <p>SSID</p>
-          <p>?????????</p>
+          <p>{ssid || '-'}</p>
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
           <p>IP</p>
-          <p>?????????</p>
+          <p>{ipAddress || '-'}</p>
         </UIStyles.setting.ContentLayout>
 
         {networkSetting === 'wifi' && (
           <>
             <UIStyles.setting.ContentLayout>
               <p>SSID</p>
-              <input type="text" />
+              <input
+                type="text"
+                value={ssid}
+                onChange={(event) => setSsid(event.target.value)}
+              />
             </UIStyles.setting.ContentLayout>
             <UIStyles.setting.ContentLayout>
               <p>암호</p>
@@ -85,7 +125,11 @@ export const Network = () => {
         {networkSetting !== 'auto' && (
           <UIStyles.setting.ContentLayout>
             <p>IP Address</p>
-            <input type="text" />
+            <input
+              type="text"
+              value={ipAddress}
+              onChange={(event) => setIpAddress(event.target.value)}
+            />
           </UIStyles.setting.ContentLayout>
         )}
       </UIStyles.setting.ContentsLayout>

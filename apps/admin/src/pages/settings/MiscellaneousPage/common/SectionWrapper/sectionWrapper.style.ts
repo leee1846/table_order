@@ -3,16 +3,22 @@ import { theme } from '@repo/ui';
 
 export const HeaderButton = styled.button`
   display: flex;
-
   flex-direction: column;
   width: 100%;
   gap: 24px;
+`;
+
+export const TitleContentContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 export const Header = styled.div<{ isOpen: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  ${({ isOpen }) => isOpen && 'padding-top: 20px;'};
 
   & > svg {
     transform: ${({ isOpen }) => (isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};

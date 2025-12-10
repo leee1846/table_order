@@ -1,6 +1,12 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
+export const TitleContentContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
 export const Versions = styled.div`
   display: flex;
   align-items: center;

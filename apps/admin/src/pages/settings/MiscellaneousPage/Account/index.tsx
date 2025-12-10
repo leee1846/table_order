@@ -1,30 +1,39 @@
-import { BasicButton, ChipButton } from '@repo/ui/components';
+import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
+import { theme } from '@repo/ui';
+import { UserIcon } from '@repo/ui/icons';
 
-export const Account = () => {
+interface AccountProps {
+  shopName?: string;
+  shopCode?: string;
+  userId?: string;
+}
+
+export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
   return (
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
         <S.TitleContainer>
-          <UIStyles.setting.Title>유저의 계정???</UIStyles.setting.Title>
-          <BasicButton variant="Outline_Grey_M" onClick={() => {}}>
-            로그아웃
-          </BasicButton>
+          <UserIcon width={32} height={32} color={theme.colors.primary[500]} />
+          <UIStyles.setting.Title>계정</UIStyles.setting.Title>
         </S.TitleContainer>
-        <S.SID>
-          SID <span>?????</span>
-        </S.SID>
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
-          <p>매장 이름???</p>
           <S.Content>
-            <ChipButton variant="darkgrey" size="M">
-              리셋
-            </ChipButton>
+            <S.ShopName>{shopName}</S.ShopName>
+            <S.UserId>{userId}</S.UserId>
+            <S.SID>
+              <span>SID</span>
+              <span>{shopCode}</span>
+            </S.SID>
           </S.Content>
+
+          <BasicButton variant="Outline_Grey_M" onClick={() => {}}>
+            로그아웃
+          </BasicButton>
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>

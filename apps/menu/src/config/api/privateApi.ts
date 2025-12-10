@@ -1,7 +1,7 @@
 import {
   accessTokenRefreshManager,
   getAccessToken,
-  removeAccessToken,
+  removeAuthTokens,
 } from '@repo/api/auth';
 import { createAxiosInstance } from '@repo/api/cores';
 import {
@@ -19,7 +19,7 @@ import { getCurrentUnixTime } from '@repo/util/time';
 import { ROUTES } from '@/constants/routes';
 
 const forceReLogin = () => {
-  removeAccessToken();
+  removeAuthTokens();
   openConfirmDialog({
     title: '인증 만료',
     content: '인증이 유효하지 않습니다.\n 로그인 후 다시 시도해주세요.',

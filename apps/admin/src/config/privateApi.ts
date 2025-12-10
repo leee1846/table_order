@@ -1,24 +1,70 @@
 import { createAxiosInstance } from '@repo/api/cores';
-import type {
-  AxiosError,
-  InternalAxiosRequestConfig,
-  AxiosResponse,
-  AxiosRequestConfig,
+import {
+  axios,
+  type AxiosError,
+  type InternalAxiosRequestConfig,
+  type AxiosResponse,
+  type AxiosRequestConfig,
 } from '@repo/api/axios';
-import type { IApiError } from '@repo/api/types';
+import type { IApiError, ITokenPayload } from '@repo/api/types';
 import { openConfirmDialog } from '@repo/feature/utils';
+import {
+  accessTokenRefreshManager,
+  getAccessToken,
+  removeAuthTokens,
+} from '@repo/api/auth';
+import { ROUTES } from '@/constants/routes';
+import { decodeJwtToken } from '@repo/util/function';
+import { isExpired } from '@repo/util/date';
+import { getCurrentUnixTime } from '@repo/util/time';
+import { useAuthStore } from '@/stores/useAuthStore';
+
+const forceReLogin = () => {
+  // access token과 refresh token 모두 삭제
+  removeAuthTokens();
+  openConfirmDialog({
+    title: '인증 만료',
+    content: '인증이 유효하지 않습니다.\n 로그인 후 다시 시도해주세요.',
+    onConfirm: () => {
+      window.location.href = ROUTES.LOGIN.generate();
+    },
+  });
+};
+
+accessTokenRefreshManager.configure({
+  onRefreshFailed: forceReLogin,
+});
 
 export const privateApi = createAxiosInstance({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 privateApi.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token =
-      'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJORVhBMDAwMDAxIiwicm9sZSI6IlNIT1AiLCJzaG9wU2VxIjoxLCJ0b2tlbl90eXBlIjoiYWNjZXNzX3Rva2VuIiwiaWF0IjoxNzY0OTA3MzI4LCJleHAiOjE3NjYzNzg1NTd9.zQXTf4XJEbST47NRgsJGplkSC88v13rd59HvbThRD4UgzM715hRaTexau0u5X3veJBSsG5ATXTqmodfnwkF_VA';
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config: InternalAxiosRequestConfig) => {
+    let accessToken = getAccessToken();
+
+    // 토큰이 없을경우
+    if (!accessToken) {
+      forceReLogin();
+      throw new axios.Cancel('No access token');
     }
+
+    // 토큰이 유효하지 않을경우
+    const payload = decodeJwtToken<ITokenPayload>(accessToken);
+    if (!payload) {
+      forceReLogin();
+      throw new axios.Cancel('Invalid access token');
+    }
+
+    // 토큰 만료 120초 전에 갱신 요청
+    if (isExpired(payload.exp, 120, getCurrentUnixTime())) {
+      accessToken = await accessTokenRefreshManager.runRefresh();
+      // 토큰 갱신 후 Store 업데이트
+      useAuthStore.getState().refreshTokenInfo();
+    }
+
+    // 토큰 헤더 추가
+    config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },
   (error: AxiosError) => {
@@ -31,11 +77,23 @@ privateApi.interceptors.response.use(
     return response;
   },
   (error: AxiosError<IApiError>) => {
-    const ignoreGlobalErrors = (
-      error.config as AxiosRequestConfig & { ignoreGlobalErrors?: number[] }
-    )?.ignoreGlobalErrors;
-    const statusCode = error.response?.status;
+    // interceptor 취소 에러일경우
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
 
+    // 토큰 리프레시 실패 시, 에러처리는 accessTokenRefreshManager.configure 에서 처리
+    if (accessTokenRefreshManager.isRefreshFailed()) {
+      return Promise.reject(error);
+    }
+
+    const config = error.config as AxiosRequestConfig;
+    const statusCode = error.response?.status;
+    const ignoreGlobalErrors =
+      (config as AxiosRequestConfig & { ignoreGlobalErrors?: number[] })
+        ?.ignoreGlobalErrors ?? [];
+
+    // tanstack query 커스텀 hook 실행시 무시하고싶은 error code가 존재할경우
     if (
       ignoreGlobalErrors &&
       statusCode &&
@@ -44,6 +102,12 @@ privateApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // 토큰 만료 or 토큰 존재하지 않을경우, 재요청하여 request interceptor에서 처리
+    if (error.response?.status === 401) {
+      return privateApi(config);
+    }
+
+    // 나머지 모든 error dialog 처리
     openConfirmDialog({
       title: 'Server Error',
       content:

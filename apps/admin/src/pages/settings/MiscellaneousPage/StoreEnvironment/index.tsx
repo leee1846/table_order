@@ -1,19 +1,60 @@
+import { useEffect, useRef, useState } from 'react';
+import type { IShopSetting, IShopTime, TMenuboardType } from '@repo/api/types';
 import * as UIStyles from '@repo/ui/styles';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
-import { useState, useRef } from 'react';
 import { useTimeInput } from '@/hooks/useTimeInput';
+import { StoreIcon } from '@repo/ui/icons';
+import { theme } from '@repo/ui';
+import * as S from './storeEnvironment.style';
 
-export const StoreEnvironment = () => {
+interface StoreEnvironmentProps {
+  shopSetting?: IShopSetting;
+  shopTime?: IShopTime;
+}
+
+const menuboardTypeOptions = [
+  { value: 'PLUS' as TMenuboardType, label: '플러스형' },
+  { value: 'MINUS' as TMenuboardType, label: '마이너스형' },
+];
+
+export const StoreEnvironment = ({
+  shopSetting,
+  shopTime,
+}: StoreEnvironmentProps) => {
   const [tableOccupationTime, setTableOccupationTime] = useState(false);
+  const [menuboardType, setMenuboardType] = useState<TMenuboardType | ''>('');
 
   const endHourRef = useRef<HTMLInputElement>(null);
   const startTime = useTimeInput({ nextRef: endHourRef });
   const endTime = useTimeInput();
+  const { setTime: setStartTime } = startTime;
+  const { setTime: setEndTime } = endTime;
+
+  useEffect(() => {
+    if (!shopSetting) {
+      return;
+    }
+
+    setTableOccupationTime(Boolean(shopSetting.useTableOccupancyTime));
+    setMenuboardType(shopSetting.menuboardType ?? '');
+  }, [shopSetting]);
+
+  useEffect(() => {
+    if (!shopTime) {
+      return;
+    }
+
+    setStartTime(shopTime.shopBusinessStartTime);
+    setEndTime(shopTime.shopBusinessEndTime);
+  }, [shopTime, setEndTime, setStartTime]);
 
   return (
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
-        <UIStyles.setting.Title>매장 환경</UIStyles.setting.Title>
+        <S.TitleContentContainer>
+          <StoreIcon width={32} height={32} color={theme.colors.primary[500]} />
+          <UIStyles.setting.Title>매장 환경</UIStyles.setting.Title>
+        </S.TitleContentContainer>
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
@@ -72,7 +113,11 @@ export const StoreEnvironment = () => {
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
           <p>메뉴판 타입</p>
-          <Dropdown options={[]} value={''} onChange={() => {}} />
+          <Dropdown
+            options={menuboardTypeOptions}
+            value={menuboardType}
+            onChange={(value) => setMenuboardType(value as TMenuboardType | '')}
+          />
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>

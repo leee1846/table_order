@@ -36,6 +36,14 @@ export { default as KeyboardArrowDownIcon } from './KeyboardArrowDownIcon';
 export { default as OrderListIcon } from './OrderListIcon';
 export { default as CallBellIcon } from './CallBellIcon';
 export { default as UnlockedIcon } from './UnlockedIcon';
+export { default as UserIcon } from './UserIcon';
+export { default as NetworkIcon } from './NetworkIcon';
+export { default as StoreIcon } from './StoreIcon';
+export { default as DisplayIcon } from './DisplayIcon';
+export { default as PaymentsIcon } from './PaymentsIcon';
+export { default as LanguageIcon } from './LanguageIcon';
+export { default as ConnectionIcon } from './ConnectionIcon';
+export { default as MenuBookIcon } from './MenuBookIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';
