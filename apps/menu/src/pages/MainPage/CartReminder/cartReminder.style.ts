@@ -2,6 +2,11 @@ import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,6 +14,7 @@ export const Container = styled.div`
   width: 100vw;
   height: 100vh;
   background-color: ${({ theme }) => theme.mode.undefined_palette[900]};
+  z-index: ${({ theme }) => theme.zIndex.popover};
 `;
 
 export const Icon = styled.img`
