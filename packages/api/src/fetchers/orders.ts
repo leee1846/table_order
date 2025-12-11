@@ -6,6 +6,8 @@ import type {
   ICreateTableOrderRequest,
   TGetTableOrderHistoriesResponse,
   IGetTableOrderHistoriesParams,
+  TGetCurrentTableListResponse,
+  IGetCurrentTableListParams,
 } from '../types/orders';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -61,6 +63,22 @@ export const getTableOrderHistories = async ({
   const response = await axiosInstance<TGetTableOrderHistoriesResponse>({
     method: 'GET',
     url: ENDPOINTS.ORDER.TABLE_ORDER_HISTORY(shopCode, tableNumber),
+  });
+
+  return response.data;
+};
+
+/**
+ * 테이블 그룹 및 주문 조회
+ * GET /order/{shopCode}
+ */
+export const getCurrentTableList = async ({
+  shopCode,
+}: IGetCurrentTableListParams): Promise<TGetCurrentTableListResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetCurrentTableListResponse>({
+    method: 'GET',
+    url: ENDPOINTS.ORDER.CURRENT_TABLE_LIST(shopCode),
   });
 
   return response.data;

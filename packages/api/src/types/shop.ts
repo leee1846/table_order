@@ -14,7 +14,6 @@ export interface IGetShopItem {
   shopCode: string;
   ownerName: string;
   isCorporate: boolean;
-  // TODO: 타입이 정의되자않아 정의되면 변경 필요
   businessType: string;
   managerName: string;
   managerPhoneNumber: string;
@@ -24,11 +23,8 @@ export interface IGetShopItem {
   useLocale: boolean;
   isTestShop: boolean;
   etcNote: string;
-  // TODO: 타입이 정의되자않아 정의되면 변경 필요
   shopBusinessCategory: string;
-  // TODO: 타입이 정의되자않아 정의되면 변경 필요
   shopBusinessStatus: string;
-  // TODO: 타입이 정의되자않아 정의되면 변경 필요
   shopCountryCode: string;
   isEarlyBetaUpdate: boolean;
   isEarlyUpdate: boolean;

@@ -68,15 +68,6 @@ export const Menus = ({
       index: newIndex,
     };
 
-    console.log(
-      'draggedMenu',
-      draggedMenu,
-      typeof draggedMenu.menuSeq,
-      typeof draggedMenu.index
-    );
-
-    console.log('updateData', updateData);
-
     try {
       await updateMenuIndex(updateData);
       // 성공 시 서버 데이터 갱신

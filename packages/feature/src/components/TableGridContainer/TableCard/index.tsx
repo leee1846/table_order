@@ -15,10 +15,10 @@ const { colors } = theme;
 interface Props {
   id: number;
   tableNumber: number;
-  orderTime?: string;
-  menuItems?: Array<{ name: string; quantity: number }>;
+  orderTime: string | null;
+  menuItems: Array<{ name: string; quantity: number }> | null;
   batteryLevel: number;
-  totalAmount?: number;
+  totalAmount: number | null;
   onClick?: () => void;
   useTranslation: typeof useTranslation;
 }
@@ -47,14 +47,14 @@ export const TableCard = ({
   return (
     <S.CardContainer onClick={onClick}>
       <S.CardHeader>
-        <S.TableNumber isEmpty={menuItems.length === 0}>
+        <S.TableNumber isEmpty={menuItems?.length === 0}>
           {tableNumber}
         </S.TableNumber>
         <S.OrderTime>{orderTime}</S.OrderTime>
       </S.CardHeader>
 
       <S.CardContent>
-        {menuItems.map((item, idx) => (
+        {menuItems?.slice(0, 3).map((item, idx) => (
           <S.MenuItem key={`item-${tableNumber}-${id}-${idx + 1}`}>
             <S.MenuItemName>{item.name}</S.MenuItemName>
             <S.MenuItemQuantity>{item.quantity}</S.MenuItemQuantity>
@@ -65,7 +65,7 @@ export const TableCard = ({
       <S.CardFooter>
         {batteryIcon}
 
-        {menuItems.length === 0 ? (
+        {menuItems?.length === 0 ? (
           <S.StatusText>{t('빈 테이블')}</S.StatusText>
         ) : (
           <S.TotalAmount>{formatCurrency(totalAmount ?? 0)}</S.TotalAmount>

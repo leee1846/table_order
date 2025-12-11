@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import * as S from './tableDetailContainer.styles';
 import { OrderPanel } from './orderSection/OrderPanel';
 import { ActionGrid } from './actionSection/ActionGrid';
@@ -19,8 +19,21 @@ import {
 } from './orderSection/dialogs/SplitPaymentDialog';
 import type { Order, OrderItem } from './orderSection/types';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
+import { useGetTableOrderHistories } from '@repo/api/queries';
+import type { IGetTableOrderHistories } from '@repo/api/types';
+import { FullscreenLoadingSpinner } from '@repo/ui/components';
 
-export const TableDetailContainer = () => {
+export interface TableDetailContainerProps {
+  shopCode: string;
+  tableNumber: number;
+  numberOfPeople?: number;
+}
+
+export const TableDetailContainer = ({
+  shopCode,
+  tableNumber,
+  numberOfPeople = 0,
+}: TableDetailContainerProps) => {
   //메뉴 추가 모달
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
   //선택 취소 모달
@@ -59,31 +72,75 @@ export const TableDetailContainer = () => {
   //분할 결제 내역
   const [splitPayments, setSplitPayments] = useState<SplitPayment[]>([]);
 
-  const order: Order = {
-    tableName: '2번 테이블',
-    numberOfPeople: 3,
-    items: [
-      {
-        id: '1',
-        name: '김치찌개김치찌개김치찌개김치찌개',
-        qty: 1,
-        unitPrice: 9000,
-        options: [
-          { id: '1-1', name: '옵션1', qty: 3, unitPrice: 300 },
-          { id: '1-2', name: '옵션2', qty: 1, unitPrice: 1000 },
-        ],
-      },
-      {
-        id: '2',
-        name: '삼겹살',
-        qty: 999,
-        unitPrice: 10000,
-      },
-    ],
-    totalCount: 2,
-    totalPrice: 74000,
-    orderTime: '24:59',
-  };
+  // API 데이터 가져오기
+  const { data: orderHistoriesResponse, isLoading } = useGetTableOrderHistories(
+    {
+      shopCode,
+      tableNumber,
+    },
+    {
+      enabled: !!shopCode && !!tableNumber,
+    }
+  );
+
+  // API 응답을 Order 타입으로 변환
+  const order: Order | null = useMemo(() => {
+    if (!orderHistoriesResponse?.data) {
+      return null;
+    }
+
+    const data: IGetTableOrderHistories = orderHistoriesResponse.data;
+
+    // orderDetailMenuList를 OrderItem[]로 변환
+    const items: OrderItem[] =
+      data.orderDetailMenuList?.map((menu) => {
+        const options =
+          menu.optionList && menu.optionList.length > 0
+            ? menu.optionList.map((option) => ({
+                id: `${menu.orderDetailMenuSeq}-${option.orderDetailOptionSeq}`,
+                name: option.optionName,
+                qty: option.optionQuantity,
+                unitPrice: option.optionPrice,
+              }))
+            : undefined;
+
+        return {
+          id: String(menu.orderDetailMenuSeq),
+          name: menu.menuName,
+          qty: menu.menuQuantity,
+          unitPrice: menu.menuPrice,
+          options,
+        };
+      }) || [];
+
+    // updateDate에서 시간만 추출 (HH:mm 형식)
+    const orderTime = data.updateDate
+      ? new Date(data.updateDate).toLocaleTimeString('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        })
+      : '';
+
+    return {
+      tableName: `${tableNumber}번 테이블`,
+      numberOfPeople,
+      items,
+      totalCount: items.length,
+      totalPrice: data.totalAmount || 0,
+      orderTime,
+    };
+  }, [orderHistoriesResponse, tableNumber, numberOfPeople]);
+
+  // 로딩 중일 때
+  if (isLoading) {
+    return <FullscreenLoadingSpinner />;
+  }
+
+  // 데이터가 없을 때
+  if (!order) {
+    return null;
+  }
 
   const handleActionPress = (id: string) => {
     const actionHandlers: Record<string, () => void> = {

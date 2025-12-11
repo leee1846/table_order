@@ -13,6 +13,7 @@ export const ENDPOINTS = {
       `/order/${shopCode}/${tableNumber}`,
     TABLE_ORDER_HISTORY: (shopCode: string, tableNumber: number) =>
       `/order/${shopCode}/${tableNumber}`,
+    CURRENT_TABLE_LIST: (shopCode: string) => `/order/${shopCode}`,
   },
 
   CATEGORY: {

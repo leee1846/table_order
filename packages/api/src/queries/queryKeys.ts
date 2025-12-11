@@ -40,6 +40,9 @@ export const queryKeys = {
         shopCode,
         tableNumber,
       ] as const,
+    /** 현재 테이블 목록 조회 */
+    currentTableList: (shopCode: string) =>
+      [...queryKeys.orders.all, 'currentTableList', shopCode] as const,
   },
 
   auth: {

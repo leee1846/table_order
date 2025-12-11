@@ -8,9 +8,9 @@ export interface TableData {
   id: number;
   tableNumber: number;
   batteryLevel: number;
-  totalAmount?: number;
-  orderTime?: string;
-  menuItems?: Array<{ name: string; quantity: number }>;
+  totalAmount?: number | null;
+  orderTime?: string | null;
+  menuItems?: Array<{ name: string; quantity: number }> | null;
 }
 
 interface Props {
@@ -44,9 +44,9 @@ export const TableGridContainer = ({
             tableNumber={table.tableNumber}
             onClick={() => handleTableClick(table)}
             batteryLevel={table.batteryLevel}
-            totalAmount={table.totalAmount}
-            orderTime={table.orderTime}
-            menuItems={table.menuItems}
+            totalAmount={table.totalAmount ?? null}
+            orderTime={table.orderTime ?? null}
+            menuItems={table.menuItems ?? null}
             useTranslation={useTranslation}
           />
         ))}

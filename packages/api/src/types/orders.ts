@@ -84,3 +84,51 @@ export interface IGetTableOrderHistoriesParams {
   shopCode: string;
   tableNumber: number;
 }
+
+/**
+ * 테이블 현재 상태 옵션 정보
+ */
+export interface ITableCurrentStatusOption {
+  orderDetailOptionSeq: number;
+  optionName: string;
+  optionPrice: number;
+  optionGroupName: string;
+  optionQuantity: number;
+}
+
+/**
+ * 테이블 현재 상태 메뉴 정보
+ */
+export interface ITableCurrentStatus {
+  orderGroupUuid: string;
+  orderDetailMenuSeq: number;
+  menuName: string;
+  menuPrice: number;
+  menuQuantity: number;
+  menuCreateDate: string;
+  optionList: ITableCurrentStatusOption[];
+}
+
+/**
+ * 현재 테이블 정보 (GET /order/{shopCode} 응답)
+ */
+export interface ICurrentTable {
+  tableNumber: string;
+  createDate: string;
+  updateDate: string;
+  discountRate: number | null;
+  totalAmount: number | null;
+  orderDetailMenuList: ITableCurrentStatus[];
+}
+
+/**
+ * 현재 테이블 목록 조회 응답 타입
+ */
+export type TGetCurrentTableListResponse = IApiResponse<ICurrentTable[]>;
+
+/**
+ * 현재 테이블 목록 조회 파라미터
+ */
+export interface IGetCurrentTableListParams {
+  shopCode: string;
+}

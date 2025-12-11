@@ -9,7 +9,7 @@ const storage = {
    */
   save: <T>(key: string, data: T): boolean => {
     try {
-      sessionStorage.setItem(key, JSON.stringify(data));
+      localStorage.setItem(key, JSON.stringify(data));
       return true;
     } catch {
       return false;
@@ -21,7 +21,7 @@ const storage = {
    */
   load: <T>(key: string): T | null => {
     try {
-      const item = sessionStorage.getItem(key);
+      const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : null;
     } catch {
       return null;
@@ -31,9 +31,11 @@ const storage = {
   /**
    * 스토리지에서 데이터 삭제
    */
+
+  //TODO 결제 후 초기화 필요 (손님이 떠난 후)
   remove: (key: string): void => {
     try {
-      sessionStorage.removeItem(key);
+      localStorage.removeItem(key);
     } catch {
       // ignore
     }
