@@ -9,6 +9,7 @@ import {
 import { css } from '@emotion/react';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { openDualActionDialog } from '@repo/feature/utils';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 interface Props {
   onClose: () => void;
@@ -27,6 +28,7 @@ export const PaymentsModal = ({
   executePostpaidOrder,
 }: Props) => {
   const { t } = useCustomerTranslation();
+  const { data: shopDetailData } = useShopDetailData();
 
   const onClickNext = () => {
     if (selectedPaymentMethod === 'cash') {
@@ -62,30 +64,36 @@ export const PaymentsModal = ({
             <img src={cardIcon} alt="카드 결제" />
             {t('카드 결제')}
           </S.PaymentMethodItem>
-          <S.PaymentMethodItem
-            type="button"
-            isSelected={selectedPaymentMethod === 'cash'}
-            onClick={() => setSelectedPaymentMethod('cash')}
-          >
-            <img src={currencyIcon} alt="현금 결제" />
-            {t('현금 결제')}
-          </S.PaymentMethodItem>
-          <S.PaymentMethodItem
-            type="button"
-            isSelected={selectedPaymentMethod === 'split'}
-            onClick={() => setSelectedPaymentMethod('split')}
-          >
-            <img src={splitIcon} alt="나눠서 결제" />
-            {t('나눠서 결제')}
-          </S.PaymentMethodItem>
-          <S.PaymentMethodItem
-            type="button"
-            isSelected={selectedPaymentMethod === 'payAfter'}
-            onClick={() => setSelectedPaymentMethod('payAfter')}
-          >
-            <img src={payAfterIcon} alt="후불 결제" />
-            {t('후불 결제')}
-          </S.PaymentMethodItem>
+          {shopDetailData?.shopSetting?.usePrepaymentCashPayment && (
+            <S.PaymentMethodItem
+              type="button"
+              isSelected={selectedPaymentMethod === 'cash'}
+              onClick={() => setSelectedPaymentMethod('cash')}
+            >
+              <img src={currencyIcon} alt="현금 결제" />
+              {t('현금 결제')}
+            </S.PaymentMethodItem>
+          )}
+          {shopDetailData?.shopSetting?.usePrepaymentDutch && (
+            <S.PaymentMethodItem
+              type="button"
+              isSelected={selectedPaymentMethod === 'split'}
+              onClick={() => setSelectedPaymentMethod('split')}
+            >
+              <img src={splitIcon} alt="나눠서 결제" />
+              {t('나눠서 결제')}
+            </S.PaymentMethodItem>
+          )}
+          {shopDetailData?.shopSetting?.usePrepaymentDeferredPayment && (
+            <S.PaymentMethodItem
+              type="button"
+              isSelected={selectedPaymentMethod === 'payAfter'}
+              onClick={() => setSelectedPaymentMethod('payAfter')}
+            >
+              <img src={payAfterIcon} alt="후불 결제" />
+              {t('후불 결제')}
+            </S.PaymentMethodItem>
+          )}
         </S.PaymentMethodList>
         <BasicButton
           variant="Solid_Blue_2XL"
