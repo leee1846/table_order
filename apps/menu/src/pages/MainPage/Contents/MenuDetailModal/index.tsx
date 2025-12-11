@@ -69,7 +69,11 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
       <S.Container>
         {images.length > 0 ? (
           <S.SwiperContainer>
-            <Swiper spaceBetween={0} slidesPerView={1} loop>
+            <Swiper
+              spaceBetween={0}
+              slidesPerView={1}
+              loop={images.length >= 2}
+            >
               {images.map((image) => (
                 <SwiperSlide key={image.imageSeq}>
                   <Thumbnail menu={menu} image={image} width="100%" />

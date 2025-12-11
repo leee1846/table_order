@@ -132,6 +132,7 @@ export interface IShopPage {
   orderCompletePageLayout: TOrderCompletePageLayout;
   orderCompletePageImagePath: string;
   orderCompletePageDescription: string;
+  shopPageDetailList: IShopPageDetail[];
 }
 
 export interface IShopPageDetail {
@@ -146,7 +147,6 @@ export interface IGetShop extends IGetShopItem {
   shopSetting: IShopSetting;
   shopNetwork: IShopNetwork;
   shopPage: IShopPage;
-  shopPageDetailList: IShopPageDetail[];
 }
 
 export type TGetShopResponse = IApiResponse<IGetShop>;

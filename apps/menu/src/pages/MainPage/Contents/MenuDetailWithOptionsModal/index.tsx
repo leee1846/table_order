@@ -509,7 +509,11 @@ export const MenuDetailWithOptionsModal = ({
         <S.MenuInfoContainer>
           {hasImages ? (
             <S.SwiperContainer>
-              <Swiper spaceBetween={0} slidesPerView={1} loop>
+              <Swiper
+                spaceBetween={0}
+                slidesPerView={1}
+                loop={menuImages.length >= 2}
+              >
                 {menuImages.map((image) => (
                   <SwiperSlide key={image.imageSeq}>
                     <Thumbnail menu={menu} image={image} width="100%" />

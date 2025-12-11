@@ -1,7 +1,7 @@
 import { ROUTES } from '@/constants/routes';
 import { useShopData } from '@/hooks/useShopData';
 import { TableGridContainer, type TableData } from '@repo/feature/components';
-import { useTableData } from '@/hooks/useTableData';
+import { useDeviceData } from '@/hooks/useDeviceData';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
@@ -50,7 +50,7 @@ export const TablesPage = () => {
     batteryLevel: 100,
   }));
 
-  const { setDataAsync: setTableDataAsync } = useTableData();
+  const { setDataAsync: setDeviceDataAsync } = useDeviceData();
   const { refresh: refreshCategoriesData } = useCategoriesData({
     skipInitialRequest: true,
   });
@@ -68,15 +68,17 @@ export const TablesPage = () => {
     // 메뉴 카테고리 api 요청
     await refreshCategoriesData();
     // 주문 내역 api 요청
-    await refreshTableOrderHistoriesData();
+    const response = await refreshTableOrderHistoriesData();
+    if (response && response.orderDetailMenuList.length < 1) {
+      // 객수 선택 초기화
+      clearCustomerCountData();
+    }
     // 장바구니 비우기
     clearCart();
     // 초기 화면 노출
     showInitialPage();
     // 언어 선택 초기화
     clearLanguageData();
-    // 객수 선택 초기화
-    clearCustomerCountData();
   };
 
   const handleTableClick = async (table: TableData) => {
@@ -86,7 +88,9 @@ export const TablesPage = () => {
       return;
     }
 
-    await setTableDataAsync({ tableNumber: table.tableNumber });
+    await setDeviceDataAsync({
+      tableNumber: table.tableNumber,
+    });
     await refreshMenuInitialData();
     storage.session.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
     navigate(ROUTES.ROOT.generate());

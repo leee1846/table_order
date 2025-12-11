@@ -5,3 +5,4 @@ export * from './category';
 export * from './menu';
 export * from './shop';
 export * from './table';
+export * from './device';

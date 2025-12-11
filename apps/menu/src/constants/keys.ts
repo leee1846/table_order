@@ -11,8 +11,8 @@ export const STORAGE_KEYS = {
   CART: 'cart-menus',
   /** 테이블 주문 내역 data 키 */
   TABLE_ORDER_HISTORIES: 'table-order-histories',
-  /** 선택한 테이블 data 키 */
-  TABLE: 'table',
+  /** 선택한 디바이스 data 키 */
+  DEVICE: 'device',
   /** 테이블 그룹 data 키 */
   TABLE_GROUP: 'table-group',
   /** 선택한 상점 상세 data 키 */

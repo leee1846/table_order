@@ -16,7 +16,7 @@ import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
-import { useTableData } from '@/hooks/useTableData';
+import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LanguageSelector } from './LanguageSelector';
 import { useLanguageStore } from '@/stores/useLanguageStore';
@@ -27,6 +27,7 @@ import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { InitialPage } from '@/pages/MainPage/InitialPage';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
+import { AdminAccessPasswordModal } from '@/pages/MainPage/AdminAccessPasswordModal';
 
 // TODO: breakTime 추후 변경 예정
 const showBreakTime = false;
@@ -38,7 +39,11 @@ export const MainPage = () => {
   /** 상점 상세 데이터 로드 */
   const { data: shopDetailData } = useShopDetailData();
   /** 테이블 데이터 로드 */
-  useTableData();
+  const {
+    data: deviceData,
+    error: deviceDataError,
+    clearData: clearDeviceData,
+  } = useDeviceData();
   /** 카테고리 데이터 로드 */
   const { data: categoriesStoreData, visibleCategories } = useCategoriesData();
   /** 테이블 주문 내역 데이터 로드 */
@@ -201,11 +206,44 @@ export const MainPage = () => {
   }, [shopDetailData?.shopSetting, customerCountData]);
   /** ======== 객수 선택 END ================================================== */
 
+  /**========= 관리자 접근 비밀번호 모달 노출 여부 ================================ */
+  const [showAdminAccessPasswordModal, setShowAdminAccessPasswordModal] =
+    useState(false);
+  useEffect(() => {
+    // 선택한 테이블이 존재하지 않을 경우 모달 노출
+    if (deviceDataError?.response?.status === 404) {
+      clearDeviceData();
+      setShowAdminAccessPasswordModal(true);
+      return;
+    }
+
+    if (!deviceData) {
+      return;
+    }
+
+    if (deviceData && !deviceData?.tableNumber) {
+      setShowAdminAccessPasswordModal(true);
+      return;
+    }
+
+    setShowAdminAccessPasswordModal(false);
+  }, [deviceData, deviceDataError, clearDeviceData]);
+  /** ======== 관리자 접근 비밀번호 모달 노출 여부 ================================ */
+
   /** ======== 초기 화면 페이지 노출 여부 ======================================= */
   const { data: initialPageData } = useInitialPageStore();
 
   /** ======== 장바구니 메뉴 주문 리마인더 노출 여부 ============================== */
   const { data: cartReminderData } = useCartReminderStore();
+
+  /** 관리자 접근 비밀번호 모달 노출 */
+  if (showAdminAccessPasswordModal) {
+    return (
+      <AdminAccessPasswordModal
+        onClose={() => setShowAdminAccessPasswordModal(false)}
+      />
+    );
+  }
 
   /** 초기 화면 노출 */
   if (initialPageData.showInitialPage) {
@@ -239,7 +277,12 @@ export const MainPage = () => {
 
   return (
     <S.Container>
-      <Header orderHistories={tableOrderHistoriesData} />
+      <Header
+        orderHistories={tableOrderHistoriesData}
+        openAdminAccessPasswordModal={() =>
+          setShowAdminAccessPasswordModal(true)
+        }
+      />
 
       <S.MainContent>
         <Sidebar

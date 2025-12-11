@@ -10,7 +10,7 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopData } from '@/hooks/useShopData';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
-import { useTableData } from '@/hooks/useTableData';
+import { useDeviceData } from '@/hooks/useDeviceData';
 import { usePostTableOrder } from '@repo/api/queries';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import type { ICartMenu } from '@/types/cart';
@@ -47,7 +47,7 @@ export const CartButton = ({ categories }: Props) => {
 
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const { shopData } = useShopData();
-  const { data: tableData } = useTableData();
+  const { data: deviceData } = useDeviceData();
   const { data: customerCountData } = useCustomerCountStore();
   const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData();
 
@@ -93,7 +93,7 @@ export const CartButton = ({ categories }: Props) => {
 
       await createTableOrder({
         shopCode: shopData?.shopCode ?? '',
-        tableNumber: tableData?.tableNumber ?? 0,
+        tableNumber: deviceData?.tableNumber ?? 0,
         orderType: 'MENU',
         // 객수 미사용시 1명으로 처리
         customerCount: customerCountData?.adultCount ?? 1,

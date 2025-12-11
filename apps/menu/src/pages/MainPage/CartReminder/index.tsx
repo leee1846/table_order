@@ -51,10 +51,15 @@ export const CartReminder = () => {
         globalTimerManager.clear(TIMER_KEYS.CART_REMINDER);
         // 메뉴 카테고리 api 요청
         await refreshCategoriesData();
-        // 주문 내역 api 요청
-        await refreshTableOrderHistoriesData();
         // 상점 상세 데이터 api 요청
         await refreshShopDetailData();
+        // 주문 내역 api 요청
+        const response = await refreshTableOrderHistoriesData();
+        // 주문내역이 없을경우
+        if (response && response.orderDetailMenuList.length < 1) {
+          // 객수 선택 초기화
+          clearCustomerCountData();
+        }
         // 장바구니 주문 유도 화면 숨기기
         hideCartReminder();
         // 장바구니 비우기
@@ -63,8 +68,6 @@ export const CartReminder = () => {
         clearLanguageData();
         // 초기 화면 노출
         showInitialPage();
-        // 객수 선택 초기화
-        clearCustomerCountData();
       }
     };
 

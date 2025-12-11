@@ -128,29 +128,28 @@ const createShopDetail = (): IGetShop => ({
     orderCompletePageImagePath:
       'https://via.placeholder.com/800x600/4ECDC4/FFFFFF?text=주문+완료',
     orderCompletePageDescription: '주문이 완료되었습니다',
+    // IShopPageDetail[]
+    shopPageDetailList: [
+      {
+        pageSeq: 1,
+        shopSeq: 1,
+        imagePath: 'https://picsum.photos/1920/1080?random=1',
+        pageDescription: '환영합니다! 맛있는 한식을 만나보세요',
+      },
+      {
+        pageSeq: 2,
+        shopSeq: 1,
+        imagePath: 'https://picsum.photos/1920/1080?random=2',
+        pageDescription: '신선한 재료로 만든 정성스러운 한식 메뉴',
+      },
+      {
+        pageSeq: 3,
+        shopSeq: 1,
+        imagePath: 'https://picsum.photos/1920/1080?random=3',
+        pageDescription: '편안하고 깔끔한 분위기에서 식사하세요',
+      },
+    ],
   },
-
-  // IShopPageDetail[]
-  shopPageDetailList: [
-    {
-      pageSeq: 1,
-      shopSeq: 1,
-      imagePath: 'https://picsum.photos/1920/1080?random=1',
-      pageDescription: '환영합니다! 맛있는 한식을 만나보세요',
-    },
-    {
-      pageSeq: 2,
-      shopSeq: 1,
-      imagePath: 'https://picsum.photos/1920/1080?random=2',
-      pageDescription: '신선한 재료로 만든 정성스러운 한식 메뉴',
-    },
-    {
-      pageSeq: 3,
-      shopSeq: 1,
-      imagePath: 'https://picsum.photos/1920/1080?random=3',
-      pageDescription: '편안하고 깔끔한 분위기에서 식사하세요',
-    },
-  ],
 });
 
 export const mockShopDetail: IGetShop = createShopDetail();

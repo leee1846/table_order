@@ -12,11 +12,14 @@ export const InitialPage = () => {
     return null;
   }
 
+  const hasEnoughSlides =
+    shopDetailData.shopPage.shopPageDetailList.length >= 2;
+
   if (shopDetailData.shopPage.initPageLayout === 'IMAGE') {
     return (
       <S.Container onClick={hideInitialPage}>
-        <Swiper spaceBetween={0} slidesPerView={1} loop>
-          {shopDetailData.shopPageDetailList.map((item) => (
+        <Swiper spaceBetween={0} slidesPerView={1} loop={hasEnoughSlides}>
+          {shopDetailData.shopPage.shopPageDetailList.map((item) => (
             // TODO: 이미지 경로 수정
             <SwiperSlide key={item.pageSeq}>
               <S.Image src={item.imagePath} alt={item.pageDescription} />
@@ -30,8 +33,8 @@ export const InitialPage = () => {
 
   return (
     <S.Container onClick={hideInitialPage}>
-      <Swiper spaceBetween={0} slidesPerView={1} loop>
-        {shopDetailData.shopPageDetailList.map((item) => (
+      <Swiper spaceBetween={0} slidesPerView={1} loop={hasEnoughSlides}>
+        {shopDetailData.shopPage.shopPageDetailList.map((item) => (
           <SwiperSlide key={item.pageSeq}>
             <S.DarkLightContainer>
               <S.LeftContainer

@@ -4,8 +4,7 @@ import * as S from '@/pages/MainPage/Header/header.style';
 import { useState, useRef, useEffect } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
 import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
-import { PasswordModal } from '@/pages/MainPage/PasswordModal';
-import { useTableData } from '@/hooks/useTableData';
+import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTouchDetectTimer } from '@/hooks/useTouchDetectTimer';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -14,19 +13,22 @@ import { TIMER_KEYS } from '@/constants/keys';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
+  openAdminAccessPasswordModal: () => void;
 }
-export const Header = ({ orderHistories }: Props) => {
+export const Header = ({
+  orderHistories,
+  openAdminAccessPasswordModal,
+}: Props) => {
   const theme = useTheme();
   const { t } = useCustomerTranslation();
 
   /** 첫 터치 후 2분30초 카운트 관리 */
   useTouchDetectTimer();
 
-  const { data: tableData } = useTableData();
+  const { data: deviceData } = useDeviceData();
   const { data: shopDetailData } = useShopDetailData();
 
   const [showOrderHistoryModal, setShowOrderHistoryModal] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const clickCountRef = useRef(0);
 
   // 컴포넌트 언마운트 시 타이머 정리
@@ -42,7 +44,7 @@ export const Header = ({ orderHistories }: Props) => {
     // 3번 연속 클릭 시 모달 열기
     if (clickCountRef.current === 3) {
       globalTimerManager.clear(TIMER_KEYS.LOGO_CLICK_COUNTDOWN_RESET);
-      setShowPasswordModal(true);
+      openAdminAccessPasswordModal();
       clickCountRef.current = 0;
       return;
     }
@@ -75,7 +77,7 @@ export const Header = ({ orderHistories }: Props) => {
 
         <S.RightContent>
           <S.TableNumber>
-            {t('{{number}}번 테이블', { number: tableData?.tableNumber ?? 0 })}
+            {t('{{number}}번 테이블', { number: deviceData?.tableNumber ?? 0 })}
           </S.TableNumber>
           <S.Divider />
           <S.OrderHistoryButton
@@ -93,10 +95,6 @@ export const Header = ({ orderHistories }: Props) => {
           orderHistories={orderHistories}
           onClose={() => setShowOrderHistoryModal(false)}
         />
-      )}
-
-      {showPasswordModal && (
-        <PasswordModal onClose={() => setShowPasswordModal(false)} />
       )}
     </>
   );

@@ -2,7 +2,7 @@ import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStor
 import { useGetTableOrderHistories } from '@repo/api/queries';
 import { useEffect } from 'react';
 import { useShopData } from '@/hooks/useShopData';
-import { useTableData } from '@/hooks/useTableData';
+import { useDeviceData } from '@/hooks/useDeviceData';
 
 interface Props {
   /**
@@ -16,7 +16,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
   const { shopData } = useShopData();
-  const { data: tableData } = useTableData();
+  const { data: deviceData } = useDeviceData();
 
   const {
     data: tableOrderHistoriesData,
@@ -26,14 +26,14 @@ export const useTableOrderHistoriesData = (options?: Props) => {
 
   const enabled =
     !!shopData?.shopCode &&
-    !!tableData?.tableNumber &&
+    !!deviceData?.tableNumber &&
     !tableOrderHistoriesData &&
     !skipInitialRequest;
   const { data: tableOrderHistoriesDataResponse, refetch } =
     useGetTableOrderHistories(
       {
         shopCode: shopData?.shopCode ?? '',
-        tableNumber: tableData?.tableNumber ?? 0,
+        tableNumber: deviceData?.tableNumber ?? 0,
       },
       { enabled }
     );
@@ -82,7 +82,12 @@ export const useTableOrderHistoriesData = (options?: Props) => {
         totalAmount: 0,
         orderDetailMenuList: [],
       });
-      return;
+
+      return {
+        discountRate: 0,
+        totalAmount: 0,
+        orderDetailMenuList: [],
+      };
     }
 
     await setTableOrderHistoriesData({

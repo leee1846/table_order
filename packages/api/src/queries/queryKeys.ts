@@ -57,4 +57,11 @@ export const queryKeys = {
     groupList: (shopCode: string) =>
       [...queryKeys.table.all, 'groupList', shopCode] as const,
   },
+
+  device: {
+    all: ['device'] as const,
+    /** 디바이스 상세 조회 */
+    detail: (shopCode: string, androidId: string) =>
+      [...queryKeys.device.all, 'detail', shopCode, androidId] as const,
+  },
 } as const;

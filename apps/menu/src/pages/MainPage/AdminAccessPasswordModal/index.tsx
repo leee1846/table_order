@@ -1,7 +1,7 @@
 import { CloseIcon, UnlockedIcon, ArrowBackIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
-import * as S from '@/pages/MainPage/PasswordModal/passwordModal.style';
+import * as S from '@/pages/MainPage/AdminAccessPasswordModal/adminAccessPasswordModal.style';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
@@ -13,7 +13,7 @@ interface Props {
   onClose: () => void;
 }
 
-export const PasswordModal = ({ onClose }: Props) => {
+export const AdminAccessPasswordModal = ({ onClose }: Props) => {
   const { theme } = useThemeMode();
   const navigate = useNavigate();
   const { t } = useAdminTranslation();

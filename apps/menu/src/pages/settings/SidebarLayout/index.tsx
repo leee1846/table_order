@@ -3,7 +3,7 @@ import { getSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { bestOnIcon } from '@repo/ui/icons';
-import { useTableData } from '@/hooks/useTableData';
+import { useDeviceData } from '@/hooks/useDeviceData';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { storage } from '@repo/util/function';
 import { STORAGE_KEYS } from '@/constants/keys';
@@ -16,9 +16,9 @@ export const SidebarLayout = () => {
     navigate(ROUTES.TABLES.generate());
   };
 
-  const { data: table } = useTableData({ skipInitialRequest: true });
+  const { data: deviceData } = useDeviceData({ skipInitialRequest: true });
   const onClickHomeButton = () => {
-    if (table?.tableNumber) {
+    if (deviceData?.tableNumber) {
       storage.session.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
       navigate(ROUTES.ROOT.generate());
       return;
