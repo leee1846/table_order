@@ -94,7 +94,6 @@ export interface IShopSetting {
   useSinglePageMenuboard: boolean;
   menuboardAdminPassword: null;
   isAdminLocked: boolean;
-  usePrepayment: boolean;
   useDutchPay?: boolean;
   usePostpaidAfterPrepay?: boolean;
   useAutoReset?: boolean;
@@ -109,6 +108,12 @@ export interface IShopSetting {
   shopLanguage: TShopLanguage;
   useLocaleBeforeOrder: boolean;
   isMenuThreeColumnLayout: boolean;
+  usePrepayment: boolean;
+  usePrepaymentDutch: boolean;
+  usePrepaymentDeferredPayment: boolean;
+  usePrepaymentAutoReset: boolean;
+  usePrepaymentCashPayment: boolean;
+  usePrepaymentCashPaymentInducement: boolean;
   shopLocaleMapList: IShopLocaleMap[];
 }
 

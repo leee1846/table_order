@@ -47,7 +47,7 @@ export const ShopName = styled.p`
 
 export const Description = styled.p`
   ${TYPOGRAPHY.ST_2}
-  color: ${({ theme }) => theme.mode.grey[500]};
+  color: ${({ theme }) => theme.mode.semantic[400]};
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
