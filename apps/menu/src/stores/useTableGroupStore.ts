@@ -14,15 +14,15 @@ export interface ITableGroupStore {
  * - API 응답을 받아 스토리지에 저장
  */
 export const useTableGroupStore = create<ITableGroupStore>((set) => ({
-  data: storage.load<ITableGroup[]>(STORAGE_KEYS.TABLE_GROUP) ?? null,
+  data: storage.session.load<ITableGroup[]>(STORAGE_KEYS.TABLE_GROUP) ?? null,
 
   setData: (data: ITableGroup[]) => {
-    storage.save(STORAGE_KEYS.TABLE_GROUP, data);
+    storage.session.save(STORAGE_KEYS.TABLE_GROUP, data);
     set({ data });
   },
 
   clearData: () => {
-    storage.remove(STORAGE_KEYS.TABLE_GROUP);
+    storage.session.remove(STORAGE_KEYS.TABLE_GROUP);
     set({ data: null });
   },
 }));

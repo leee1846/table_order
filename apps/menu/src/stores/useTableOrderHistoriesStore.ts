@@ -28,18 +28,18 @@ export interface ITableOrderHistoriesStore {
 export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
   (set) => ({
     data:
-      storage.load<ITableOrderHistoriesData>(
+      storage.session.load<ITableOrderHistoriesData>(
         STORAGE_KEYS.TABLE_ORDER_HISTORIES
       ) ?? null,
     setDataAsync: (data: ITableOrderHistoriesData) => {
       return new Promise((resolve) => {
-        storage.save(STORAGE_KEYS.TABLE_ORDER_HISTORIES, data);
+        storage.session.save(STORAGE_KEYS.TABLE_ORDER_HISTORIES, data);
         set({ data });
         resolve(true);
       });
     },
     clearData: () => {
-      storage.remove(STORAGE_KEYS.TABLE_ORDER_HISTORIES);
+      storage.session.remove(STORAGE_KEYS.TABLE_ORDER_HISTORIES);
       set({ data: null });
     },
   })

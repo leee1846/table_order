@@ -24,7 +24,7 @@ export interface ICustomerCountStore {
  */
 export const useCustomerCountStore = create<ICustomerCountStore>((set) => ({
   data:
-    storage.load<{
+    storage.session.load<{
       adultCount: number;
       childCount: number;
     }>(STORAGE_KEYS.CUSTOMER_COUNT) ?? null,
@@ -35,12 +35,12 @@ export const useCustomerCountStore = create<ICustomerCountStore>((set) => ({
       childCount,
     };
 
-    storage.save(STORAGE_KEYS.CUSTOMER_COUNT, resultData);
+    storage.session.save(STORAGE_KEYS.CUSTOMER_COUNT, resultData);
     set({ data: resultData });
   },
 
   clearData: () => {
-    storage.remove(STORAGE_KEYS.CUSTOMER_COUNT);
+    storage.session.remove(STORAGE_KEYS.CUSTOMER_COUNT);
     set({ data: null });
   },
 }));

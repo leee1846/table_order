@@ -36,7 +36,7 @@ export const PasswordModal = ({ onClose }: Props) => {
   useEffect(() => {
     // TODO: 비밀번호 검증 로직 추후 추가
     if (password && password.length > 3) {
-      storage.save(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED, true);
+      storage.session.save(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED, true);
       navigate(ROUTES.TABLES.generate());
     }
   }, [password, navigate]);

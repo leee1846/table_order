@@ -1,15 +1,27 @@
 /**
  * Storage 유틸리티
- * 현재는 세션 스토리지 사용, 추후 앱 스토리지로 변경 가능
+ * localStorage와 sessionStorage 중 선택하여 사용 가능
  */
 
-const storage = {
+type TStorage = 'local' | 'session';
+
+/**
+ * 스토리지 타입에 따라 적절한 Storage 객체 반환
+ */
+const getStorage = (type: TStorage): Storage => {
+  return type === 'local' ? localStorage : sessionStorage;
+};
+
+/**
+ * 스토리지 인터페이스 생성
+ */
+const createStorageInterface = (type: TStorage) => ({
   /**
    * 스토리지에 데이터 저장
    */
   save: <T>(key: string, data: T): boolean => {
     try {
-      sessionStorage.setItem(key, JSON.stringify(data));
+      getStorage(type).setItem(key, JSON.stringify(data));
       return true;
     } catch {
       return false;
@@ -21,7 +33,7 @@ const storage = {
    */
   load: <T>(key: string): T | null => {
     try {
-      const item = sessionStorage.getItem(key);
+      const item = getStorage(type).getItem(key);
       return item ? JSON.parse(item) : null;
     } catch {
       return null;
@@ -33,7 +45,7 @@ const storage = {
    */
   remove: (key: string): void => {
     try {
-      sessionStorage.removeItem(key);
+      getStorage(type).removeItem(key);
     } catch {
       // ignore
     }
@@ -44,11 +56,25 @@ const storage = {
    */
   clear: (): void => {
     try {
-      sessionStorage.clear();
+      getStorage(type).clear();
     } catch {
       // ignore
     }
   },
+});
+
+const storage = {
+  /**
+   * localStorage 사용
+   * 예: storage.local.save('key', data)
+   */
+  local: createStorageInterface('local'),
+
+  /**
+   * sessionStorage 사용
+   * 예: storage.session.save('key', data)
+   */
+  session: createStorageInterface('session'),
 };
 
 export default storage;

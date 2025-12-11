@@ -10,7 +10,9 @@ import storage from '@/utils/storage';
 
 const getInitialLanguage = (): string => {
   try {
-    const stored = storage.load<string>(STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE);
+    const stored = storage.session.load<string>(
+      STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE
+    );
     if (stored) {
       return stored;
     }

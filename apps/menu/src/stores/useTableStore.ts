@@ -17,18 +17,18 @@ interface ITableStore {
  * - API 응답을 받아 스토리지에 저장
  */
 export const useTableStore = create<ITableStore>((set) => ({
-  data: storage.load<ITable>(STORAGE_KEYS.TABLE) ?? null,
+  data: storage.session.load<ITable>(STORAGE_KEYS.TABLE) ?? null,
 
   setDataAsync: (data: ITable) => {
     return new Promise((resolve) => {
-      storage.save(STORAGE_KEYS.TABLE, data);
+      storage.session.save(STORAGE_KEYS.TABLE, data);
       set({ data });
       resolve(true);
     });
   },
 
   clearData: () => {
-    storage.remove(STORAGE_KEYS.TABLE);
+    storage.session.remove(STORAGE_KEYS.TABLE);
     set({ data: null });
   },
 }));

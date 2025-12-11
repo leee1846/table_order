@@ -88,7 +88,7 @@ export const TablesPage = () => {
 
     await setTableDataAsync({ tableNumber: table.tableNumber });
     await refreshMenuInitialData();
-    storage.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
+    storage.session.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
     navigate(ROUTES.ROOT.generate());
   };
 

@@ -17,14 +17,14 @@ interface IInitialPageStore {
 export const useInitialPageStore = create<IInitialPageStore>((set) => ({
   data: {
     showInitialPage:
-      storage.load<boolean>(STORAGE_KEYS.INITIAL_PAGE_SHOW) ?? true,
+      storage.session.load<boolean>(STORAGE_KEYS.INITIAL_PAGE_SHOW) ?? true,
   },
   showInitialPage: () => {
-    storage.save(STORAGE_KEYS.INITIAL_PAGE_SHOW, true);
+    storage.session.save(STORAGE_KEYS.INITIAL_PAGE_SHOW, true);
     set({ data: { showInitialPage: true } });
   },
   hideInitialPage: () => {
-    storage.save(STORAGE_KEYS.INITIAL_PAGE_SHOW, false);
+    storage.session.save(STORAGE_KEYS.INITIAL_PAGE_SHOW, false);
     set({ data: { showInitialPage: false } });
   },
 }));

@@ -19,7 +19,7 @@ export const SidebarLayout = () => {
   const { data: table } = useTableData({ skipInitialRequest: true });
   const onClickHomeButton = () => {
     if (table?.tableNumber) {
-      storage.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
+      storage.session.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
       navigate(ROUTES.ROOT.generate());
       return;
     }

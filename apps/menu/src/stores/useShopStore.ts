@@ -15,13 +15,13 @@ export interface IShopStore {
  * - API 응답을 받아 스토리지에 저장
  */
 export const useShopStore = create<IShopStore>((set) => ({
-  data: storage.load<IGetShopItem>(STORAGE_KEYS.SHOP) ?? null,
+  data: storage.session.load<IGetShopItem>(STORAGE_KEYS.SHOP) ?? null,
   setData: (data: IGetShopItem) => {
-    storage.save(STORAGE_KEYS.SHOP, data);
+    storage.session.save(STORAGE_KEYS.SHOP, data);
     set({ data });
   },
   clearData: () => {
-    storage.remove(STORAGE_KEYS.SHOP);
+    storage.session.remove(STORAGE_KEYS.SHOP);
     set({ data: null });
   },
 }));

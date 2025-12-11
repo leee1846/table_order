@@ -53,9 +53,10 @@ const authCheckerLoader = () => {
  * 관리자 페이지 접근을 위한 비밀번호 인증 상태 확인 loader
  */
 const adminVerificationCheckLoader = () => {
-  const tableData = storage.load<ITable>(STORAGE_KEYS.TABLE) ?? null;
+  const tableData = storage.session.load<ITable>(STORAGE_KEYS.TABLE) ?? null;
   const isVerified =
-    storage.load<boolean>(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED) ?? false;
+    storage.session.load<boolean>(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED) ??
+    false;
   if (tableData && tableData.tableNumber > 0 && !isVerified) {
     window.location.replace(ROUTES.ROOT.generate());
     return null;

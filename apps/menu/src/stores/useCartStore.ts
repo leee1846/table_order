@@ -44,14 +44,14 @@ const initialData: ICart = {
  * 장바구니 상태 저장 스토어
  */
 export const useCartStore = create<ICartStore>((set, get) => ({
-  data: storage.load<ICart>(STORAGE_KEYS.CART) ?? initialData,
+  data: storage.session.load<ICart>(STORAGE_KEYS.CART) ?? initialData,
 
   setCartOptions: (options: ICartOptions) => {
     const newData = {
       ...get().data,
       ...options,
     };
-    storage.save(STORAGE_KEYS.CART, newData);
+    storage.session.save(STORAGE_KEYS.CART, newData);
     set({ data: newData });
   },
 
@@ -106,7 +106,7 @@ export const useCartStore = create<ICartStore>((set, get) => ({
       ...get().data,
       menus: newMenus,
     };
-    storage.save(STORAGE_KEYS.CART, newItems);
+    storage.session.save(STORAGE_KEYS.CART, newItems);
     set({ data: newItems });
   },
 
@@ -123,7 +123,7 @@ export const useCartStore = create<ICartStore>((set, get) => ({
       ...get().data,
       menus: newMenus,
     };
-    storage.save(STORAGE_KEYS.CART, newData);
+    storage.session.save(STORAGE_KEYS.CART, newData);
     set({ data: newData });
   },
 
@@ -138,7 +138,7 @@ export const useCartStore = create<ICartStore>((set, get) => ({
       ...get().data,
       menus: newMenus,
     };
-    storage.save(STORAGE_KEYS.CART, newData);
+    storage.session.save(STORAGE_KEYS.CART, newData);
     set({ data: newData });
   },
 
@@ -156,13 +156,13 @@ export const useCartStore = create<ICartStore>((set, get) => ({
       ...get().data,
       menus: newMenus,
     };
-    storage.save(STORAGE_KEYS.CART, newData);
+    storage.session.save(STORAGE_KEYS.CART, newData);
     set({ data: newData });
   },
 
   // 장바구니 비우기
   clearCart: () => {
-    storage.save(STORAGE_KEYS.CART, { ...initialData, menus: [] });
+    storage.session.save(STORAGE_KEYS.CART, { ...initialData, menus: [] });
     set({ data: { ...initialData, menus: [] } });
   },
 }));

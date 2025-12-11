@@ -45,7 +45,7 @@ const computeVisibleCategories = (
 };
 
 const initialCategories =
-  storage.load<ICategoryWithMenus[]>(STORAGE_KEYS.CATEGORIES) ?? null;
+  storage.session.load<ICategoryWithMenus[]>(STORAGE_KEYS.CATEGORIES) ?? null;
 const initialVisibilityMap = {};
 
 const initialData = {
@@ -69,7 +69,7 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
   // 데이터 설정 (스토리지에도 저장)
   setCategoriesAsync: (categories: ICategoryWithMenus[]) => {
     return new Promise((resolve) => {
-      storage.save(STORAGE_KEYS.CATEGORIES, categories);
+      storage.session.save(STORAGE_KEYS.CATEGORIES, categories);
       set((state) => ({
         categories,
         visibleCategories: computeVisibleCategories(
@@ -83,7 +83,7 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
 
   // 데이터 초기화 (스토리지에서도 삭제)
   clearData: () => {
-    storage.remove(STORAGE_KEYS.CATEGORIES);
+    storage.session.remove(STORAGE_KEYS.CATEGORIES);
     set({ ...initialData });
   },
 
