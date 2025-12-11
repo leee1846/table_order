@@ -8,9 +8,9 @@ import {
 import { ROUTES } from '@/constants/routes';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { getAccessToken } from '@repo/api/auth';
-import storage from './utils/storage';
+import { storage } from '@repo/util/function';
 import { STORAGE_KEYS } from './constants/keys';
-import { useTableStore, type ITable } from './stores/useTableStore';
+import { type ITable } from './stores/useTableStore';
 
 const MainPage = lazy(() =>
   import('@/pages/MainPage').then((module) => ({

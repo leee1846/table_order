@@ -1,4 +1,4 @@
-import storage from '@/utils/storage';
+import { storage } from '@repo/util/function';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { create } from '@repo/feature/zustand';
 

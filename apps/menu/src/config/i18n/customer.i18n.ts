@@ -6,7 +6,7 @@ import {
 import koTranslation from '@/locales/ko/translation.json';
 import enTranslation from '@/locales/en/translation.json';
 import { STORAGE_KEYS } from '@/constants/keys';
-import storage from '@/utils/storage';
+import { storage } from '@repo/util/function';
 
 const getInitialLanguage = (): string => {
   try {

@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '@/constants/keys';
-import storage from '@/utils/storage';
+import { storage } from '@repo/util/function';
 import { create } from '@repo/feature/zustand';
 import i18n from '@/config/i18n/customer.i18n';
 

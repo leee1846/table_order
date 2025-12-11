@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '@/constants/keys';
-import storage from '@/utils/storage';
+import { storage } from '@repo/util/function';
 import type { IOrderHistory } from '@repo/api/types';
 import { create } from '@repo/feature/zustand';
 

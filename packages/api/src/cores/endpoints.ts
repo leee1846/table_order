@@ -49,4 +49,8 @@ export const ENDPOINTS = {
     UPDATE: '/table',
     DELETE: '/table',
   },
+
+  DEVICE: {
+    SHOP: (shopCode: string) => `/device/${shopCode}`,
+  },
 } as const;

@@ -1,7 +1,7 @@
 import { create } from '@repo/feature/zustand';
 import type { IGetShop } from '@repo/api/types';
 import { STORAGE_KEYS } from '@/constants/keys';
-import storage from '@/utils/storage';
+import { storage } from '@repo/util/function';
 
 interface IShopDetailStore {
   data: IGetShop | null;

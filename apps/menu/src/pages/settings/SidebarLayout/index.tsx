@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { bestOnIcon } from '@repo/ui/icons';
 import { useTableData } from '@/hooks/useTableData';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import storage from '@/utils/storage';
+import { storage } from '@repo/util/function';
 import { STORAGE_KEYS } from '@/constants/keys';
 
 export const SidebarLayout = () => {

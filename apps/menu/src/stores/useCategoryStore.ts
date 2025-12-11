@@ -1,7 +1,7 @@
 import { create } from '@repo/feature/zustand';
 import type { ICategoryWithMenus } from '@repo/api/types';
 import { STORAGE_KEYS } from '@/constants/keys';
-import storage from '@/utils/storage';
+import { storage } from '@repo/util/function';
 
 /**
  * 카테고리 요일/시간 기반의 노출여부 상태 관리

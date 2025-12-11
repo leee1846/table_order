@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import storage from '@/utils/storage';
+import { storage } from '@repo/util/function';
 import { STORAGE_KEYS } from '@/constants/keys';
 
 interface Props {

@@ -15,7 +15,7 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import storage from '@/utils/storage';
+import { storage } from '@repo/util/function';
 import { STORAGE_KEYS } from '@/constants/keys';
 
 export const TablesPage = () => {
