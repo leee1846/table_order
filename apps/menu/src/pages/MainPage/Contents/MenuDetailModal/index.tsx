@@ -50,7 +50,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
     addToCart({
       categorySeq: menu.categorySeq,
       menuSeq: menu.menuSeq,
-      menuName: menu.localeMenuName?.[currentLanguage ?? 'ko'] ?? menu.menuName,
+      menuName: menu.localeMenuName?.[currentLanguage ?? 'KO'] ?? menu.menuName,
       menuPrice: menu.menuPrice,
       quantity: prevCartData?.quantity ?? 0 + currentCount,
       selectedOptions: [],
@@ -85,14 +85,14 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
           <Thumbnail menu={menu} image={undefined} width="100%" />
         )}
         <S.Name>
-          {menu.localeMenuName?.[currentLanguage ?? 'ko'] ?? menu.menuName}
+          {menu.localeMenuName?.[currentLanguage ?? 'KO'] ?? menu.menuName}
         </S.Name>
         <S.Price>
           {currencySymbol}
           {formatCurrency(menu.menuPrice)}
         </S.Price>
         <S.Description>
-          {menu.localeMenuDescription?.[currentLanguage ?? 'ko'] ??
+          {menu.localeMenuDescription?.[currentLanguage ?? 'KO'] ??
             menu.menuDescription}
         </S.Description>
         <NumberInput

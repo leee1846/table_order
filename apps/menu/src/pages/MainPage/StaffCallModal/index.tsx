@@ -77,7 +77,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
             categorySeq: sourceMenu.categorySeq,
             menuSeq: sourceMenu.menuSeq,
             menuName:
-              sourceMenu.localeMenuName?.[currentLanguage ?? 'ko'] ??
+              sourceMenu.localeMenuName?.[currentLanguage ?? 'KO'] ??
               sourceMenu.menuName,
             menuPrice: sourceMenu.menuPrice,
             quantity: newQuantity,
@@ -189,7 +189,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
                       isSelected={selectedMenu?.menuSeq === menu.menuSeq}
                     >
                       <p>
-                        {menu.localeMenuName?.[currentLanguage ?? 'ko'] ??
+                        {menu.localeMenuName?.[currentLanguage ?? 'KO'] ??
                           menu.menuName}
                       </p>
                       {selectedMenu?.menuSeq === menu.menuSeq && (

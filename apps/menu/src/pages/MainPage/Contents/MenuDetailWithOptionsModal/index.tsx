@@ -84,7 +84,7 @@ export const MenuDetailWithOptionsModal = ({
           option: {
             ...option,
             optionName:
-              option.localeOptionName?.[currentLanguage ?? 'ko'] ??
+              option.localeOptionName?.[currentLanguage ?? 'KO'] ??
               option.optionName,
           },
           quantity: cartOption.quantity,
@@ -122,7 +122,7 @@ export const MenuDetailWithOptionsModal = ({
   const buildOptionDisplayText = (option: IOption): string => {
     const priceText = formatAdditionalPriceText(option.optionPrice);
     const outOfStockText = option.isOutOfStock ? ` (${t('품절')})` : '';
-    return `${option.localeOptionName?.[currentLanguage ?? 'ko'] ?? option.optionName}${priceText}${outOfStockText}`;
+    return `${option.localeOptionName?.[currentLanguage ?? 'KO'] ?? option.optionName}${priceText}${outOfStockText}`;
   };
 
   // 다중 선택 가능한 옵션을 토글 (체크박스 방식)
@@ -170,7 +170,7 @@ export const MenuDetailWithOptionsModal = ({
         option: {
           ...option,
           optionName:
-            option.localeOptionName?.[currentLanguage ?? 'ko'] ??
+            option.localeOptionName?.[currentLanguage ?? 'KO'] ??
             option.optionName,
         },
         quantity: 1,
@@ -197,7 +197,7 @@ export const MenuDetailWithOptionsModal = ({
         option: {
           ...option,
           optionName:
-            option.localeOptionName?.[currentLanguage ?? 'ko'] ??
+            option.localeOptionName?.[currentLanguage ?? 'KO'] ??
             option.optionName,
         },
         quantity: 1,
@@ -285,7 +285,7 @@ export const MenuDetailWithOptionsModal = ({
           option: {
             ...targetOption,
             optionName:
-              targetOption.localeOptionName?.[currentLanguage ?? 'ko'] ??
+              targetOption.localeOptionName?.[currentLanguage ?? 'KO'] ??
               targetOption.optionName,
           },
           quantity: newQuantity,
@@ -299,7 +299,7 @@ export const MenuDetailWithOptionsModal = ({
           option: {
             ...targetOption,
             optionName:
-              targetOption.localeOptionName?.[currentLanguage ?? 'ko'] ??
+              targetOption.localeOptionName?.[currentLanguage ?? 'KO'] ??
               targetOption.optionName,
           },
           quantity: newQuantity,
@@ -326,7 +326,7 @@ export const MenuDetailWithOptionsModal = ({
           option: item.option,
           count: item.quantity,
           groupName:
-            optionGroup?.localeOptionGroupName?.[currentLanguage ?? 'ko'] ??
+            optionGroup?.localeOptionGroupName?.[currentLanguage ?? 'KO'] ??
             optionGroup?.optionGroupName ??
             '',
         });
@@ -373,7 +373,7 @@ export const MenuDetailWithOptionsModal = ({
         maxQuantity: optionGroup.maxQuantity,
       })})`;
     }
-    return `${optionGroup.localeOptionGroupName?.[currentLanguage ?? 'ko'] ?? optionGroup.optionGroupName} ${quantityText}`.trim();
+    return `${optionGroup.localeOptionGroupName?.[currentLanguage ?? 'KO'] ?? optionGroup.optionGroupName} ${quantityText}`.trim();
   };
 
   // 선택된 옵션 항목의 표시 텍스트 생성
@@ -383,7 +383,7 @@ export const MenuDetailWithOptionsModal = ({
     const priceText = formatAdditionalPriceText(item.option.optionPrice);
     const quantityText = item.count > 1 ? ` x${item.count}` : '';
     const optionName =
-      item.option.localeOptionName?.[currentLanguage ?? 'ko'] ??
+      item.option.localeOptionName?.[currentLanguage ?? 'KO'] ??
       item.option.optionName;
     return `${item.groupName} : ${optionName}${priceText}${quantityText}`;
   };
@@ -459,7 +459,7 @@ export const MenuDetailWithOptionsModal = ({
         optionGroupSeq: item.option.optionGroupSeq,
         optionSeq: item.option.optionSeq,
         optionName:
-          item.option.localeOptionName?.[currentLanguage ?? 'ko'] ??
+          item.option.localeOptionName?.[currentLanguage ?? 'KO'] ??
           item.option.optionName,
         optionPrice: item.option.optionPrice,
         quantity: item.quantity,
@@ -474,7 +474,7 @@ export const MenuDetailWithOptionsModal = ({
     const cartMenu: ICartMenu = {
       categorySeq: menu.categorySeq,
       menuSeq: menu.menuSeq,
-      menuName: menu.localeMenuName?.[currentLanguage ?? 'ko'] ?? menu.menuName,
+      menuName: menu.localeMenuName?.[currentLanguage ?? 'KO'] ?? menu.menuName,
       menuPrice: menu.menuPrice,
       quantity: menuQuantity,
       selectedOptions: cartOptions,
@@ -526,14 +526,14 @@ export const MenuDetailWithOptionsModal = ({
           )}
 
           <S.MenuName>
-            {menu.localeMenuName?.[currentLanguage ?? 'ko'] ?? menu.menuName}
+            {menu.localeMenuName?.[currentLanguage ?? 'KO'] ?? menu.menuName}
           </S.MenuName>
           <S.Price>
             {currencySymbol}
             {formatCurrency(menu.menuPrice)}
           </S.Price>
           <S.Description>
-            {menu.localeMenuDescription?.[currentLanguage ?? 'ko'] ??
+            {menu.localeMenuDescription?.[currentLanguage ?? 'KO'] ??
               menu.menuDescription}
           </S.Description>
         </S.MenuInfoContainer>
@@ -572,7 +572,7 @@ export const MenuDetailWithOptionsModal = ({
                           <S.NumberInputContainer key={option.optionSeq}>
                             <S.OptionText soldOut={option.isOutOfStock}>
                               {option.localeOptionName?.[
-                                currentLanguage ?? 'ko'
+                                currentLanguage ?? 'KO'
                               ] ?? option.optionName}
                               {formatAdditionalPriceText(option.optionPrice)}
                             </S.OptionText>

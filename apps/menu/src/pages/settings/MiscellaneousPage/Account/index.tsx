@@ -13,7 +13,7 @@ import { storage } from '@repo/util/function';
 export const Account = () => {
   const { i18n, t } = useAdminTranslation();
 
-  const currentLanguage = i18n.language || 'ko';
+  const currentLanguage = i18n.language || 'KO';
   const supportedLanguages = getAdminSupportedLanguages();
 
   const languageList = supportedLanguages

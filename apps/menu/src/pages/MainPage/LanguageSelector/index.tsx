@@ -3,7 +3,7 @@ import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LANGUAGE_CONFIG } from '@/constants/common';
 
-export type LanguageCode = 'ko' | 'en' | 'ch' | 'jp';
+export type LanguageCode = 'KO' | 'EN' | 'CH' | 'JP' | 'RU';
 
 export const LANGUAGE_CONFIG_LIST = Object.entries(LANGUAGE_CONFIG).map(
   ([value, config]) => ({

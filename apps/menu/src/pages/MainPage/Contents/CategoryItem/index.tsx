@@ -17,11 +17,11 @@ export const CategoryItem = ({ category }: Props) => {
     <S.Container>
       <div>
         <S.CategoryName>
-          {category.localeCategoryName?.[currentLanguage ?? 'ko'] ??
+          {category.localeCategoryName?.[currentLanguage ?? 'KO'] ??
             category.categoryName}
         </S.CategoryName>
         <S.CategoryDescription>
-          {category.localeCategoryDescription?.[currentLanguage ?? 'ko'] ??
+          {category.localeCategoryDescription?.[currentLanguage ?? 'KO'] ??
             category.categoryDescription}
         </S.CategoryDescription>
       </div>

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useGetDeviceDetail } from '@repo/api/queries';
 import { useShopData } from './useShopData';
 
-/** TODO: 추후 선택한 table get api 적용예정 */
+/** TODO: 추후 app으로부터 받은 정보 저장 예정 */
 const androidId = 'aa7caf6c0894c26f';
 
 interface Props {

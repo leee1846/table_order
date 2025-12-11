@@ -126,7 +126,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
         />
         <S.Content>
           <S.MenuName>
-            {menu.localeMenuName?.[currentLanguage ?? 'ko'] ?? menu.menuName}
+            {menu.localeMenuName?.[currentLanguage ?? 'KO'] ?? menu.menuName}
           </S.MenuName>
           <S.MenuPrice>
             <span>
@@ -136,7 +136,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
           </S.MenuPrice>
           {layout === 1 && (
             <S.Description>
-              {menu.localeMenuDescription?.[currentLanguage ?? 'ko'] ??
+              {menu.localeMenuDescription?.[currentLanguage ?? 'KO'] ??
                 menu.menuDescription}
             </S.Description>
           )}

@@ -166,10 +166,19 @@ export const MainPage = () => {
 
   /**========= 고객 메뉴판 언어 선택 START ========================================== */
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
-  const { data: currentLanguage } = useLanguageStore();
+  const { data: currentLanguage, setData: setCurrentLanguage } =
+    useLanguageStore();
 
   useEffect(() => {
-    if (!shopDetailData?.useLocale) {
+    if (!shopDetailData) {
+      return;
+    }
+
+    if (shopDetailData.shopSetting.shopLanguage) {
+      setCurrentLanguage(shopDetailData.shopSetting.shopLanguage);
+    }
+
+    if (!shopDetailData.useLocale) {
       setShowLanguageSelector(false);
       return;
     }
@@ -180,7 +189,7 @@ export const MainPage = () => {
     }
 
     setShowLanguageSelector(true);
-  }, [shopDetailData?.useLocale, currentLanguage]);
+  }, [shopDetailData, currentLanguage]);
   /** ======== 고객 메뉴판 언어 선택 END ========================================== */
 
   /**========= 객수 선택 START ================================================== */

@@ -17,17 +17,17 @@ const getInitialLanguage = (): string => {
       return stored;
     }
   } catch (_error) {
-    return 'ko';
+    return 'KO';
   }
 
-  return 'ko';
+  return 'KO';
 };
 
 const resources = {
-  ko: {
+  KO: {
     customer: koTranslation,
   },
-  en: {
+  EN: {
     customer: enTranslation,
   },
 };
@@ -38,7 +38,7 @@ const customerI18n = i18n.createInstance();
 customerI18n.use(initReactI18next).init({
   resources,
   lng: getInitialLanguage(),
-  fallbackLng: 'ko',
+  fallbackLng: 'KO',
   defaultNS: 'customer',
   interpolation: {
     escapeValue: false,

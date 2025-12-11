@@ -6,20 +6,25 @@ export const CURRENCY_SYMBOL: Record<'KRW' | 'USD', string> = {
 };
 
 export const LANGUAGE_CONFIG = {
-  ko: {
+  KO: {
     label: '한국어',
     flag: koFlagIcon,
   },
-  en: {
+  EN: {
     label: 'English',
     flag: usFlagIcon,
   },
-  ch: {
+  CH: {
     label: '中文',
     flag: chFlagIcon,
   },
-  jp: {
+  JP: {
     label: '日本語',
+    flag: jpFlagIcon,
+  },
+  RU: {
+    label: 'Русский',
+    // TODO: 러시아 플래그 아이콘 추가 예정
     flag: jpFlagIcon,
   },
 } as const;

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { baseTheme, TYPOGRAPHY } from '@repo/ui';
+import { TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.button`
   position: fixed;
@@ -18,7 +18,7 @@ export const Container = styled.button`
   border-radius: 1rem 0 0 1rem;
 
   & > p:first-of-type {
-    color: ${baseTheme.colors.white};
+    color: ${({ theme }) => theme.mode.undefined_palette[700]};
     ${TYPOGRAPHY.MT_5}
   }
 
@@ -29,7 +29,7 @@ export const Container = styled.button`
     width: fit-content;
     padding: 0 4px;
     height: 2.375rem;
-    background-color: ${baseTheme.colors.white};
+    background-color: ${({ theme }) => theme.mode.undefined_palette[700]};
     border-radius: 50%;
     display: flex;
     align-items: center;

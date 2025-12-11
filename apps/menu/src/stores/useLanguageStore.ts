@@ -23,6 +23,6 @@ export const useLanguageStore = create<ILanguageStore>((set) => ({
   clearData: () => {
     storage.session.remove(STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE);
     set({ data: null });
-    i18n.changeLanguage('ko');
+    i18n.changeLanguage('KO');
   },
 }));

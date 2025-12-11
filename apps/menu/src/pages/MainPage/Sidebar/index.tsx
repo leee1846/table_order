@@ -50,7 +50,7 @@ export const Sidebar = ({
             type="button"
             onClick={() => handleCategoryClick(category)}
           >
-            {category.localeCategoryName?.[currentLanguage ?? 'ko'] ??
+            {category.localeCategoryName?.[currentLanguage ?? 'KO'] ??
               category.categoryName}
           </S.CategoryButton>
         ))}
@@ -64,7 +64,7 @@ export const Sidebar = ({
                 height={30}
               />
               {staffCallCategory.localeCategoryName?.[
-                currentLanguage ?? 'ko'
+                currentLanguage ?? 'KO'
               ] ?? staffCallCategory.categoryName}
             </button>
           </S.StaffCall>
