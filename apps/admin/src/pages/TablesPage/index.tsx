@@ -206,7 +206,6 @@ export const TablesPage = () => {
           onComplete={() => {
             setShowCustomerCountSelector(false);
             navigate(ROUTES.TABLE_DETAIL.generate(selectedTableNumber));
-            setSelectedTableNumber(null);
           }}
         />
       )}

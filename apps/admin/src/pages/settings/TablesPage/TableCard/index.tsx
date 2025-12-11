@@ -34,7 +34,6 @@ export const TableCard = ({ table, shopCode }: Props) => {
       onConfirm: async () => {
         try {
           await deleteTable({
-            tableSeq: table.tableSeq,
             shopSeq: table.shopSeq,
             tableNumber: table.tableNumber,
           });

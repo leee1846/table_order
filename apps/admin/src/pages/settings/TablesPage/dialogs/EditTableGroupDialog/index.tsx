@@ -7,6 +7,7 @@ import { toast } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePutUpdateTableGroup } from '@repo/api/queries';
 import type { ITableGroup } from '@repo/api/types';
+import { useAuth } from '@/hooks/useAuth';
 const { colors } = theme;
 
 interface EditTableGroupDialogProps {
@@ -22,6 +23,7 @@ export const EditTableGroupDialog = forwardRef<
   const queryClient = useQueryClient();
   const { mutateAsync: updateTableGroup } = usePutUpdateTableGroup();
   const [groupName, setGroupName] = useState('');
+  const { shopCode } = useAuth();
 
   useEffect(() => {
     if (tableGroup) {
@@ -37,14 +39,12 @@ export const EditTableGroupDialog = forwardRef<
     if (groupName.trim() !== '') {
       try {
         await updateTableGroup({
-          // TODO: 추후에 shopSeq 추가
           tableGroupSeq: tableGroup.tableGroupSeq,
           tableGroupName: groupName,
         });
 
         await queryClient.invalidateQueries({
-          // TODO: 추후에 shopCode 추가
-          queryKey: queryKeys.table.groupList('NEXA000001'),
+          queryKey: queryKeys.table.groupList(shopCode!),
         });
 
         toast('테이블 그룹이 수정되었습니다.');

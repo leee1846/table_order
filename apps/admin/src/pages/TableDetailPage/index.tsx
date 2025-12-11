@@ -35,14 +35,6 @@ export const TableDetailPage = () => {
 
   return (
     <S.Container>
-      {parsedTableNumber && customerCount && (
-        <S.CustomerCountBar>
-          <span>테이블 {parsedTableNumber}번</span>
-          <strong>
-            성인 {customerCount.adultCount}명 · 아동 {customerCount.childCount}명
-          </strong>
-        </S.CustomerCountBar>
-      )}
       <TableDetailContainer
         shopCode={shopCode}
         tableNumber={parsedTableNumber}

@@ -44,9 +44,6 @@ export const EditTableDialog = ({
     try {
       await updateTable({
         tableSeq: table.tableSeq,
-        shopSeq: table.shopSeq,
-        tableNumber: table.tableNumber,
-        tableGroupSeq: table.tableGroupSeq,
         tableName: tableName.trim(),
         tablePositionX: table.tablePositionX,
         tablePositionY: table.tablePositionY,

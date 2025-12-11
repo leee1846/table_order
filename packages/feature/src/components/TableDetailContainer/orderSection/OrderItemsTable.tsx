@@ -55,6 +55,7 @@ export function OrderItemsTable({
 
 const TableWrap = styled.div`
   padding: 8px;
+  height: 100%;
   overflow: auto;
 `;
 

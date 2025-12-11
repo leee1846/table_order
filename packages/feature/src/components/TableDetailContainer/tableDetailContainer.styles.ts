@@ -17,6 +17,8 @@ export const Layout = styled.div`
 export const Left = styled.div`
   background: ${colors.white};
   padding: 30px 24px;
+  height: 100%;
+  overflow: hidden;
 `;
 
 export const Right = styled.div`

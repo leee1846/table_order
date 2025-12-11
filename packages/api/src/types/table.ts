@@ -96,9 +96,6 @@ export interface ICreateTableRequest {
 
 export interface IUpdateTableRequest {
   tableSeq: number;
-  shopSeq: number;
-  tableNumber: string;
-  tableGroupSeq: number;
   tableName?: string;
   tablePositionX?: number;
   tablePositionY?: number;
@@ -109,7 +106,6 @@ export interface IUpdateTableRequest {
 // ============================================================================
 
 export interface IDeleteTableRequest {
-  tableSeq: number;
   shopSeq: number;
   tableNumber: string;
 }
