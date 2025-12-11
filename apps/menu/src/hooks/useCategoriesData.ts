@@ -3,7 +3,7 @@ import { useCategoryStore } from '@/stores/useCategoryStore';
 import { mockCategories } from '@/mocks/mockCategories';
 import { useEffect } from 'react';
 import { useShopData } from '@/hooks/useShopData';
-import { useTableData } from '@/hooks/useTableData';
+import { useDeviceData } from '@/hooks/useDeviceData';
 
 interface Props {
   /**
@@ -17,7 +17,7 @@ export const useCategoriesData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
   const { shopData } = useShopData();
-  const { data: tableData } = useTableData();
+  const { data: deviceData } = useDeviceData();
 
   const {
     categories: categoriesStoreData,
@@ -28,13 +28,13 @@ export const useCategoriesData = (options?: Props) => {
   const enabled =
     !categoriesStoreData &&
     !!shopData?.shopCode &&
-    !!tableData?.tableNumber &&
+    !!deviceData?.tableNumber &&
     !skipInitialRequest;
 
   const { data: categoriesData, refetch } = useGetCategoriesWithMenus(
     {
       shopCode: shopData?.shopCode ?? '',
-      tableNumber: tableData?.tableNumber ?? 0,
+      tableNumber: deviceData?.tableNumber ?? 0,
     },
     { enabled }
   );
@@ -46,6 +46,7 @@ export const useCategoriesData = (options?: Props) => {
 
     if (categoriesData?.data) {
       // TODO: mockData 삭제 예정 -> categoriesData.data를 넣어야함
+      // setCategoriesStoreData(categoriesData.data);
       setCategoriesStoreData(mockCategories);
     }
   }, [categoriesData, setCategoriesStoreData, skipInitialRequest]);
@@ -54,8 +55,8 @@ export const useCategoriesData = (options?: Props) => {
     const result = await refetch();
     if (result.data?.data) {
       // TODO: mockData 삭제 예정 -> categoriesData.data를 넣어야함
-      await setCategoriesStoreData(mockCategories);
       // await setCategoriesStoreData(result.data.data);
+      await setCategoriesStoreData(mockCategories);
     }
   };
 
