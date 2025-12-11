@@ -8,6 +8,7 @@ import {
 import { type LanguageCode } from '@/pages/MainPage/LanguageSelector';
 import { LANGUAGE_CONFIG } from '@/constants/common';
 import { STORAGE_KEYS } from '@/constants/keys';
+import { storage } from '@repo/util/function';
 
 export const Account = () => {
   const { i18n, t } = useAdminTranslation();
@@ -24,10 +25,7 @@ export const Account = () => {
 
   const handleLanguageChange = (lang: string) => {
     i18n.changeLanguage(lang);
-    localStorage.setItem(
-      STORAGE_KEYS.ADMIN_I18N_LANGUAGE,
-      JSON.stringify(lang)
-    );
+    storage.local.save(STORAGE_KEYS.ADMIN_I18N_LANGUAGE, lang);
   };
 
   return (

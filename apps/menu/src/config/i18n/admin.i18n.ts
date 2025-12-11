@@ -6,13 +6,13 @@ import {
 import koTranslation from '@/locales/ko/translation.json';
 import enTranslation from '@/locales/en/translation.json';
 import { STORAGE_KEYS } from '@/constants/keys';
+import { storage } from '@repo/util/function';
 
 const getInitialLanguage = (): string => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEYS.ADMIN_I18N_LANGUAGE);
+    const stored = storage.local.load<string>(STORAGE_KEYS.ADMIN_I18N_LANGUAGE);
     if (stored) {
-      // JSON.stringify로 저장했으므로 JSON.parse로 읽어야 함
-      return JSON.parse(stored);
+      return stored;
     }
   } catch (_error) {
     return 'ko';
