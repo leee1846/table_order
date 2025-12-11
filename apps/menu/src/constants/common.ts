@@ -1,4 +1,10 @@
-import { jpFlagIcon, koFlagIcon, chFlagIcon, usFlagIcon } from '@repo/ui/icons';
+import {
+  jpFlagIcon,
+  koFlagIcon,
+  chFlagIcon,
+  usFlagIcon,
+  ruFlagIcon,
+} from '@repo/ui/icons';
 
 export const CURRENCY_SYMBOL: Record<'KRW' | 'USD', string> = {
   KRW: '₩',
@@ -24,7 +30,6 @@ export const LANGUAGE_CONFIG = {
   },
   RU: {
     label: 'Русский',
-    // TODO: 러시아 플래그 아이콘 추가 예정
-    flag: jpFlagIcon,
+    flag: ruFlagIcon,
   },
 } as const;
