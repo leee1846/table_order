@@ -172,10 +172,15 @@ export const MainPage = () => {
       return;
     }
 
+    // 사용자가 이미 언어를 선택한 경우 기본값으로 덮어쓰지 않음
+    if (languageData.isSelected) {
+      return;
+    }
+
     setLanguageData({
       currentLanguage: shopDetailData.shopSetting.shopLanguage,
     });
-  }, [shopDetailData, setLanguageData]);
+  }, [shopDetailData, setLanguageData, languageData.isSelected]);
   /** ======== 고객 메뉴판 기본 언어 설정 END ===================================== */
 
   /**========= 고객 메뉴판 언어 선택 화면 노출 여부 START ============================ */

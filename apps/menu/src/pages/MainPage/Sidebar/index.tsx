@@ -10,6 +10,7 @@ import { toast } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LANGUAGE_CONFIG } from '@/constants/common';
+import { LanguageSelectorModal } from '@/pages/MainPage/LanguageSelectorModal';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -27,6 +28,8 @@ export const Sidebar = ({
   const { t } = useCustomerTranslation();
 
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+
   const { data: languageData } = useCustomerLanguageStore();
   const { data: disableStaffCallData } = useDisableStaffCallStore();
   const { data: shopDetailData } = useShopDetailData();
@@ -78,7 +81,10 @@ export const Sidebar = ({
           )}
           {shopDetailData?.useLocale && (
             <S.Language>
-              <button type="button" onClick={handleStaffCallClick}>
+              <button
+                type="button"
+                onClick={() => setIsLanguageModalOpen(true)}
+              >
                 <img src={currentLanguageIcon} alt="LANGUAGE" />
                 LANGUAGE
               </button>
@@ -92,6 +98,10 @@ export const Sidebar = ({
           onClose={() => setIsStaffCallModalOpen(false)}
           category={staffCallCategory}
         />
+      )}
+
+      {isLanguageModalOpen && (
+        <LanguageSelectorModal onClose={() => setIsLanguageModalOpen(false)} />
       )}
     </>
   );
