@@ -42,7 +42,7 @@ export const CartButton = ({ categories }: Props) => {
     if (selectedPaymentMethod === 'split') {
       setIsSplitPaymentModalOpen(true);
     }
-    setIsPaymentsModalOpen(false);
+    // setIsPaymentsModalOpen(false);
   };
 
   const { mutateAsync: createTableOrder } = usePostTableOrder();
@@ -122,7 +122,7 @@ export const CartButton = ({ categories }: Props) => {
       return false;
     }
   };
-
+  console.log(isPaymentsModalOpen);
   return (
     <>
       <S.Container type="button" onClick={() => setIsCartListOpen(true)}>
@@ -147,7 +147,6 @@ export const CartButton = ({ categories }: Props) => {
           selectedPaymentMethod={selectedPaymentMethod}
           setSelectedPaymentMethod={setSelectedPaymentMethod}
           openNextModal={openPaymentModal}
-          executePostpaidOrder={executePostpaidOrder}
         />
       )}
 

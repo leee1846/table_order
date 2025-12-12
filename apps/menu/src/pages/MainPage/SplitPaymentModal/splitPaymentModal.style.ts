@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.div`
+  position: relative;
   width: 71.25rem;
   max-width: calc(100vw - 2rem);
   height: 43.75rem;
@@ -10,6 +11,13 @@ export const Container = styled.div`
   background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
   border-radius: 1.25rem;
   overflow: hidden;
+`;
+
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  cursor: pointer;
 `;
 
 export const LeftContainer = styled.div`
@@ -97,7 +105,7 @@ export const RightContainer = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
-  padding: 24px;
+  padding: 40px 24px 24px;
 
   & > p {
     ${TYPOGRAPHY.MT_4}

@@ -4,12 +4,16 @@ import { useState } from 'react';
 import { MenuSelector } from '@/pages/MainPage/SplitPaymentModal/MenuSelector';
 import { PriceSelector } from '@/pages/MainPage/SplitPaymentModal/PriceSelector';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { CloseIcon } from '@repo/ui/icons';
+import { useThemeMode } from '@repo/ui';
 
 interface Props {
   onClose: () => void;
 }
 export const SplitPaymentModal = ({ onClose }: Props) => {
   const { t } = useCustomerTranslation();
+  const { theme } = useThemeMode();
+
   const [isMenuSplit, setIsMenuSplit] = useState(true);
   const orderList = Array.from({ length: 4 });
   const optionList = Array.from({ length: 4 });
@@ -17,6 +21,10 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   return (
     <ModalBackground onClick={onClose}>
       <S.Container>
+        <S.CloseButton type="button" onClick={onClose}>
+          <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
+        </S.CloseButton>
+
         <S.LeftContainer>
           <p>{t('분할 결제 방식을 선택하세요')}</p>
           <S.ToggleButtonContainer>
