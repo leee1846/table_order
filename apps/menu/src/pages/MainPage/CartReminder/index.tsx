@@ -8,7 +8,7 @@ import { globalTimerManager } from '@/utils/timerManager';
 import { TIMER_KEYS } from '@/constants/keys';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useCartStore } from '@/stores/useCartStore';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
@@ -21,7 +21,7 @@ export const CartReminder = () => {
 
   const { hideCartReminder } = useCartReminderStore();
   const { clearCart } = useCartStore();
-  const { clearData: clearLanguageData } = useLanguageStore();
+  const { clearData: clearLanguageData } = useCustomerLanguageStore();
   const { showInitialPage } = useInitialPageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { refresh: refreshCategoriesData } = useCategoriesData();

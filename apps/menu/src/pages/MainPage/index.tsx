@@ -19,7 +19,7 @@ import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LanguageSelector } from './LanguageSelector';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { CustomerCountSelector } from '@/pages/MainPage/CustomerCountSelector';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useThemeMode } from '@repo/ui';
@@ -165,7 +165,8 @@ export const MainPage = () => {
   /** ======== 다크모드 사용 여부 확인 END ========================================== */
 
   /**========= 고객 메뉴판 기본 언어 설정 START ===================================== */
-  const { data: languageData, setData: setLanguageData } = useLanguageStore();
+  const { data: languageData, setData: setLanguageData } =
+    useCustomerLanguageStore();
   useEffect(() => {
     if (!shopDetailData) {
       return;

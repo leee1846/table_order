@@ -2,7 +2,7 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 import { MenuItem } from '@/pages/MainPage/Contents/MenuItem';
 import * as S from '@/pages/MainPage/Contents/CategoryItem/categoryItem.style';
 import { NoContent } from '@/feature/NoContent';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 export const CategoryItem = ({ category }: Props) => {
   const layout: 1 | 2 | 3 = category.useTwoColumnLayout ? 2 : 1;
   const { t } = useCustomerTranslation();
-  const { data: languageData } = useLanguageStore();
+  const { data: languageData } = useCustomerLanguageStore();
 
   return (
     <S.Container>

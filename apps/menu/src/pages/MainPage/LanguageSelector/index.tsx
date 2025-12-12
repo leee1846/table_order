@@ -1,5 +1,5 @@
 import * as S from '@/pages/MainPage/LanguageSelector/languageSelector.style';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LANGUAGE_CONFIG } from '@/constants/common';
 import type { TShopLanguage } from '@repo/api/types';
@@ -13,7 +13,7 @@ export const LANGUAGE_CONFIG_LIST = Object.entries(LANGUAGE_CONFIG).map(
 
 export const LanguageSelector = () => {
   const { data: shopDetailData } = useShopDetailData();
-  const { setData: setLanguageData } = useLanguageStore();
+  const { setData: setLanguageData } = useCustomerLanguageStore();
 
   if (!shopDetailData) {
     return null;

@@ -5,7 +5,7 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useCartStore } from '@/stores/useCartStore';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
@@ -18,7 +18,7 @@ export const useTouchDetectTimer = () => {
     useTableOrderHistoriesData();
   const { refresh: refreshTableGroupData } = useTableGroupData();
   const { data: cartData, clearCart } = useCartStore();
-  const { clearData: clearLanguageData } = useLanguageStore();
+  const { clearData: clearLanguageData } = useCustomerLanguageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { showInitialPage } = useInitialPageStore();
   const { showCartReminder } = useCartReminderStore();

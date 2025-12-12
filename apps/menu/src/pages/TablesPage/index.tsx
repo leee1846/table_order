@@ -12,7 +12,7 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { storage } from '@repo/util/function';
@@ -56,7 +56,7 @@ export const TablesPage = () => {
   });
   const { clearCart } = useCartStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
-  const { clearData: clearLanguageData } = useLanguageStore();
+  const { clearData: clearLanguageData } = useCustomerLanguageStore();
   const { showInitialPage } = useInitialPageStore();
 
   const { refresh: refreshTableOrderHistoriesData } =

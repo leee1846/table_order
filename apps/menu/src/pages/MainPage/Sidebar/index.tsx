@@ -4,7 +4,7 @@ import { CallBellIcon } from '@repo/ui/icons';
 import { baseTheme } from '@repo/ui';
 import { StaffCallModal } from '@/pages/MainPage/StaffCallModal';
 import type { ICategoryWithMenus } from '@repo/api/types';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { toast } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -25,7 +25,7 @@ export const Sidebar = ({
   const { t } = useCustomerTranslation();
 
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
-  const { data: languageData } = useLanguageStore();
+  const { data: languageData } = useCustomerLanguageStore();
   const { data: disableStaffCallData } = useDisableStaffCallStore();
 
   const handleStaffCallClick = () => {

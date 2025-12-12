@@ -10,7 +10,7 @@ import { toast } from '@repo/feature/utils';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 const IMAGE_SIZE = {
@@ -32,7 +32,7 @@ interface Props {
 }
 export const MenuItem = ({ layout, category, menu }: Props) => {
   const { t } = useCustomerTranslation();
-  const { data: languageData } = useLanguageStore();
+  const { data: languageData } = useCustomerLanguageStore();
   const { data: shopDetailData } = useShopDetailData();
 
   const currencySymbol =

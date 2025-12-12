@@ -1,6 +1,6 @@
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import { LANGUAGE_CONFIG } from '@/constants/common';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useEffect, useState } from 'react';
 import type { TShopLanguage } from '@repo/api/types';
@@ -11,7 +11,8 @@ interface Props {
 
 export const LanguageSelectorModal = ({ onClose }: Props) => {
   const { data: shopDetailData } = useShopDetailData();
-  const { data: languageData, setData: setLanguageData } = useLanguageStore();
+  const { data: languageData, setData: setLanguageData } =
+    useCustomerLanguageStore();
 
   const [tempSelectedLanguage, setTempSelectedLanguage] =
     useState<TShopLanguage | null>(null);

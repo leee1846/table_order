@@ -23,7 +23,7 @@ import type { ICartMenu, ICartOption } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
@@ -57,7 +57,7 @@ export const MenuDetailWithOptionsModal = ({
 }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
-  const { data: languageData } = useLanguageStore();
+  const { data: languageData } = useCustomerLanguageStore();
   const { addToCart, updateCartItem } = useCartStore();
   const { data: shopDetailData } = useShopDetailData();
   const currencySymbol =

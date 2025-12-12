@@ -12,7 +12,7 @@ import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
 }
 export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const { t } = useCustomerTranslation();
-  const { data: languageData } = useLanguageStore();
+  const { data: languageData } = useCustomerLanguageStore();
 
   const [currentCount, setCurrentCount] = useState(1);
 

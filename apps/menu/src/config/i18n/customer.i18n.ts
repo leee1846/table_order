@@ -7,7 +7,7 @@ import koTranslation from '@/locales/ko/translation.json';
 import enTranslation from '@/locales/en/translation.json';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { storage } from '@repo/util/function';
-import type { ILanguageData } from '@/stores/useLanguageStore';
+import type { ILanguageData } from '@/stores/useCustomerLanguageStore';
 import type { TShopLanguage } from '@repo/api/types';
 
 const getInitialLanguage = (): TShopLanguage => {

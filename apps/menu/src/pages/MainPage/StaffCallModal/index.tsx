@@ -10,7 +10,7 @@ import { usePostTableOrder } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
-import { useLanguageStore } from '@/stores/useLanguageStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
@@ -25,7 +25,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
 
-  const { data: languageData } = useLanguageStore();
+  const { data: languageData } = useCustomerLanguageStore();
   const { disableStaffCall } = useDisableStaffCallStore();
 
   const [selectedMenu, setSelectedMenu] = useState<IMenuBase | null>(null);
