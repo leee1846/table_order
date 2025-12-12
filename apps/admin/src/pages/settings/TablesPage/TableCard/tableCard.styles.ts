@@ -10,6 +10,8 @@ export const TableCard = styled.div`
   justify-content: space-between;
   border-radius: 12px;
   overflow: hidden;
+  width: 190px;
+  height: 154px;
 `;
 
 export const TableContent = styled.div`

@@ -16,13 +16,13 @@ export const TableArea = styled.div`
   justify-content: center;
   background: ${colors.grey[600]};
   overflow-y: auto;
-  padding: 50px;
+  padding: 100px;
 `;
 
 export const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  grid-auto-rows: 154px;
+  grid-auto-rows: minmax(154px, 1fr);
   gap: 12px;
   justify-content: start;
   align-content: start;
