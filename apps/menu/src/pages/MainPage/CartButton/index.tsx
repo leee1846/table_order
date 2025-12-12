@@ -33,8 +33,8 @@ export const CartButton = ({ categories }: Props) => {
   /** 결제 방법 선택 모달 */
   const [isPaymentsModalOpen, setIsPaymentsModalOpen] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
-    'card' | 'cash' | 'split' | 'payAfter'
-  >('card');
+    'card' | 'cash' | 'split' | 'payAfter' | null
+  >(null);
   /** 분할 결제 모달 */
   const [isSplitPaymentModalOpen, setIsSplitPaymentModalOpen] = useState(false);
 
@@ -43,6 +43,11 @@ export const CartButton = ({ categories }: Props) => {
       setIsSplitPaymentModalOpen(true);
     }
     // setIsPaymentsModalOpen(false);
+  };
+
+  const closePaymentsModal = () => {
+    setIsPaymentsModalOpen(false);
+    setSelectedPaymentMethod(null);
   };
 
   const { mutateAsync: createTableOrder } = usePostTableOrder();
@@ -143,7 +148,7 @@ export const CartButton = ({ categories }: Props) => {
       {/* 결제 방법 선택 모달 */}
       {isPaymentsModalOpen && (
         <PaymentsModal
-          onClose={() => setIsPaymentsModalOpen(false)}
+          onClose={closePaymentsModal}
           selectedPaymentMethod={selectedPaymentMethod}
           setSelectedPaymentMethod={setSelectedPaymentMethod}
           openNextModal={openPaymentModal}

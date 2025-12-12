@@ -12,7 +12,7 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 interface Props {
   onClose: () => void;
-  selectedPaymentMethod: 'card' | 'cash' | 'split' | 'payAfter';
+  selectedPaymentMethod: 'card' | 'cash' | 'split' | 'payAfter' | null;
   setSelectedPaymentMethod: (
     method: 'card' | 'cash' | 'split' | 'payAfter'
   ) => void;
