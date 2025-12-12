@@ -98,7 +98,8 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
                 setSelectedMenus={setSelectedMenus}
               />
             )}
-            {!isPaymentByMenu && <PriceSelector />}
+
+            {!isPaymentByMenu && <PriceSelector totalPrice={totalPrice} />}
 
             <S.SelectorTotalContainer>
               <S.TotalInfo>
