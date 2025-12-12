@@ -122,7 +122,7 @@ export const CartButton = ({ categories }: Props) => {
       return false;
     }
   };
-  console.log(isPaymentsModalOpen);
+
   return (
     <>
       <S.Container type="button" onClick={() => setIsCartListOpen(true)}>

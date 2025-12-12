@@ -145,6 +145,7 @@ export const MenuInfo = styled.div`
 
   & > p:nth-of-type(2) {
     width: 10%;
+    text-align: right;
   }
 
   & > p:last-of-type {
@@ -169,7 +170,7 @@ export const OptionList = styled.ul`
     }
 
     & > div:first-of-type {
-      width: 70%;
+      width: 80%;
       display: flex;
       align-items: flex-start;
       gap: 4px;
@@ -188,7 +189,8 @@ export const OptionList = styled.ul`
     & > div:last-of-type {
       flex: 1;
       display: flex;
-      gap: 12.5px;
+      justify-content: space-between;
+      gap: 10px;
     }
   }
 `;

@@ -6,6 +6,9 @@ import { PriceSelector } from '@/pages/MainPage/SplitPaymentModal/PriceSelector'
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { CloseIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
+import { useCartStore } from '@/stores/useCartStore';
+import type { ICartMenuWithId } from '@/types/cart';
+import { formatCurrency } from '@repo/util/string';
 
 interface Props {
   onClose: () => void;
@@ -14,9 +17,28 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
 
-  const [isMenuSplit, setIsMenuSplit] = useState(true);
-  const orderList = Array.from({ length: 4 });
-  const optionList = Array.from({ length: 4 });
+  const [isPaymentByMenu, setIsPaymentByMenu] = useState(true);
+  const [selectedMenus, setSelectedMenus] = useState<ICartMenuWithId[]>([]);
+
+  const { data: cartData } = useCartStore();
+  const menus = cartData.menus.flatMap((menu, menuIndex) =>
+    Array.from({ length: menu.quantity }, (_, index) => ({
+      ...menu,
+      quantity: 1,
+      id: `${menu.menuSeq}-${menuIndex}-${index}`,
+    }))
+  );
+
+  const onChangeMethod = (byMenu: boolean) => {
+    setIsPaymentByMenu((prev) => {
+      if (prev === byMenu) {
+        return prev;
+      }
+
+      setSelectedMenus([]);
+      return byMenu;
+    });
+  };
 
   return (
     <ModalBackground onClick={onClose}>
@@ -29,22 +51,28 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
           <p>{t('분할 결제 방식을 선택하세요')}</p>
           <S.ToggleButtonContainer>
             <S.ToggleButton
-              isActive={isMenuSplit}
-              onClick={() => setIsMenuSplit(true)}
+              isActive={isPaymentByMenu}
+              onClick={() => onChangeMethod(true)}
             >
               {t('메뉴별로 나누기')}
             </S.ToggleButton>
             <S.ToggleButton
-              isActive={!isMenuSplit}
-              onClick={() => setIsMenuSplit(false)}
+              isActive={!isPaymentByMenu}
+              onClick={() => onChangeMethod(false)}
             >
               {t('인원 수로 나누기')}
             </S.ToggleButton>
           </S.ToggleButtonContainer>
 
           <S.SelectorContainer>
-            {isMenuSplit && <MenuSelector />}
-            {!isMenuSplit && <PriceSelector />}
+            {isPaymentByMenu && (
+              <MenuSelector
+                menus={menus}
+                selectedMenus={selectedMenus}
+                setSelectedMenus={setSelectedMenus}
+              />
+            )}
+            {!isPaymentByMenu && <PriceSelector />}
 
             <S.SelectorTotalContainer>
               <S.TotalInfo>
@@ -65,25 +93,25 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
           </p>
 
           <S.OrderList>
-            {orderList.map((_, index) => (
-              <li key={`order-${index + 1}`}>
+            {selectedMenus.map((menu) => (
+              <li key={menu.id}>
                 <S.MenuInfo>
-                  <p>메뉴명명명??</p>
-                  <p>10000????</p>
-                  <p>10000????</p>
+                  <p>{menu.menuName}</p>
+                  <p>{formatCurrency(menu.quantity)}</p>
+                  <p>{formatCurrency(menu.menuPrice)}</p>
                 </S.MenuInfo>
 
                 <S.OptionList>
-                  {optionList.map((_, index) => (
-                    <li key={`option-${index + 1}`}>
+                  {menu.selectedOptions.map((option, index) => (
+                    <li key={`${option.optionSeq}-${index + 1}`}>
                       <div>
                         <span />
-                        <p>옵션명명명??</p>
+                        <p>{option.optionName}</p>
                       </div>
 
                       <div>
-                        <p>10000????</p>
-                        <p>10000????</p>
+                        <p>{formatCurrency(option.quantity)}</p>
+                        <p>{formatCurrency(option.optionPrice)}</p>
                       </div>
                     </li>
                   ))}

@@ -15,3 +15,7 @@ export interface ICartMenu {
   quantity: number;
   selectedOptions: ICartOption[];
 }
+
+export interface ICartMenuWithId extends ICartMenu {
+  id: string;
+}

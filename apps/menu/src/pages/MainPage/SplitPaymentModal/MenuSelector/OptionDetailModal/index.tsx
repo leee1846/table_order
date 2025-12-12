@@ -3,15 +3,20 @@ import * as S from '@/pages/MainPage/SplitPaymentModal/MenuSelector/OptionDetail
 import { CloseIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
-
-const optionList = Array.from({ length: 4 });
+import type { ICartMenu } from '@/types/cart';
+import { formatCurrency } from '@repo/util/string';
 
 interface Props {
+  menu?: ICartMenu;
   onClose: () => void;
 }
-export const OptionDetailModal = ({ onClose }: Props) => {
+export const OptionDetailModal = ({ menu, onClose }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
+
+  if (!menu) {
+    return null;
+  }
 
   return (
     <ModalBackground onClick={onClose}>
@@ -24,22 +29,22 @@ export const OptionDetailModal = ({ onClose }: Props) => {
 
         <S.OptionsContainer>
           <S.MenuInfo>
-            <p>메뉴명명명??</p>
-            <p>10000????</p>
-            <p>10000????</p>
+            <p>{menu.menuName}</p>
+            <p>{formatCurrency(menu.quantity)}</p>
+            <p>{formatCurrency(menu.menuPrice)}</p>
           </S.MenuInfo>
 
           <S.OptionList>
-            {optionList.map((_, index) => (
-              <li key={`option-${index + 1}`}>
+            {menu.selectedOptions.map((option, index) => (
+              <li key={`${option.optionSeq}-${index + 1}`}>
                 <div>
                   <span />
-                  <p>옵션명명명??</p>
+                  <p>{option.optionName}</p>
                 </div>
 
                 <div>
-                  <p>10000????</p>
-                  <p>10000????</p>
+                  <p>{formatCurrency(option.quantity)}</p>
+                  <p>{formatCurrency(option.optionPrice)}</p>
                 </div>
               </li>
             ))}
