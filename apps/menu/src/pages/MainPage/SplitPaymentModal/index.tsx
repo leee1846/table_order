@@ -7,8 +7,10 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { CloseIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { useCartStore } from '@/stores/useCartStore';
-import type { ICartMenuWithId } from '@/types/cart';
+import type { ICartMenuWithId, ICartMenu } from '@/types/cart';
 import { formatCurrency } from '@repo/util/string';
+import { useDeviceData } from '@/hooks/useDeviceData';
+import { calculateMenuTotalPrice } from '@/utils/calculation';
 
 interface Props {
   onClose: () => void;
@@ -16,6 +18,8 @@ interface Props {
 export const SplitPaymentModal = ({ onClose }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
+
+  const { data: deviceData } = useDeviceData();
 
   const [isPaymentByMenu, setIsPaymentByMenu] = useState(true);
   const [selectedMenus, setSelectedMenus] = useState<ICartMenuWithId[]>([]);
@@ -28,6 +32,28 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       id: `${menu.menuSeq}-${menuIndex}-${index}`,
     }))
   );
+
+  const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
+    const options = cartMenu.selectedOptions.map((option) => ({
+      optionPrice: option.optionPrice,
+      quantity: option.quantity,
+      isMenuQuantityDependant: option.isMenuQuantityDependant,
+    }));
+
+    return calculateMenuTotalPrice(
+      cartMenu.menuPrice,
+      cartMenu.quantity,
+      options
+    );
+  };
+
+  const calculateTotalPrice = (): number => {
+    return cartData.menus.reduce((total, menu) => {
+      return total + calculateCartMenuPrice(menu);
+    }, 0);
+  };
+
+  const totalPrice = calculateTotalPrice();
 
   const onChangeMethod = (byMenu: boolean) => {
     setIsPaymentByMenu((prev) => {
@@ -77,11 +103,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
             <S.SelectorTotalContainer>
               <S.TotalInfo>
                 <p>{t('총 결제금액')}</p>
-                <p>{t('{{amount}}원', { amount: 10000 })}</p>
+                <p>{t('{{amount}}원', { amount: totalPrice })}</p>
               </S.TotalInfo>
               <S.RemainingAmount>
                 <p>{t('남은 결제 금액')}</p>
-                <p>{t('{{amount}}원', { amount: 10000 })}</p>
+                <p>{t('{{amount}}원', { amount: '????' })}</p>
               </S.RemainingAmount>
             </S.SelectorTotalContainer>
           </S.SelectorContainer>
@@ -89,11 +115,12 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
         <S.RightContainer>
           <p>
-            {t('테이블')} ??(테이블번호) {t('주문내역')}
+            {t('테이블')}
+            {deviceData?.tableNumber} {t('총 주문내역')}
           </p>
 
           <S.OrderList>
-            {selectedMenus.map((menu) => (
+            {menus.map((menu) => (
               <li key={menu.id}>
                 <S.MenuInfo>
                   <p>{menu.menuName}</p>

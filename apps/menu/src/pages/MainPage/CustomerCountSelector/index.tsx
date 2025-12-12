@@ -7,6 +7,7 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
+// TODO: 테이블 다른 디바이스가 함께 사용하기 기능이라면 화면을 띄우면 안됨
 export const CustomerCountSelector = () => {
   const { theme } = useThemeMode();
   const { t } = useCustomerTranslation();
