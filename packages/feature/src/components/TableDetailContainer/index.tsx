@@ -86,7 +86,14 @@ export const TableDetailContainer = ({
   // API 응답을 Order 타입으로 변환
   const order: Order | null = useMemo(() => {
     if (!orderHistoriesResponse?.data) {
-      return null;
+      return {
+        tableName: `${tableNumber}번 테이블`,
+        numberOfPeople,
+        items: [],
+        totalCount: 0,
+        totalPrice: 0,
+        orderTime: '',
+      };
     }
 
     const data: IGetTableOrderHistories = orderHistoriesResponse.data;
