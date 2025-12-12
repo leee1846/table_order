@@ -8,6 +8,8 @@ import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { toast } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { LANGUAGE_CONFIG } from '@/constants/common';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -27,6 +29,11 @@ export const Sidebar = ({
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
   const { data: languageData } = useCustomerLanguageStore();
   const { data: disableStaffCallData } = useDisableStaffCallStore();
+  const { data: shopDetailData } = useShopDetailData();
+
+  const { setData: setLanguageData } = useCustomerLanguageStore();
+  const currentLanguageIcon =
+    LANGUAGE_CONFIG[languageData.currentLanguage].flag;
 
   const handleStaffCallClick = () => {
     if (disableStaffCallData.disableStaffCall) {
@@ -55,20 +62,30 @@ export const Sidebar = ({
           </S.CategoryButton>
         ))}
 
-        {staffCallCategory && (
-          <S.StaffCall>
-            <button type="button" onClick={handleStaffCallClick}>
-              <CallBellIcon
-                color={baseTheme.colors.white}
-                width={30}
-                height={30}
-              />
-              {staffCallCategory.localeCategoryName?.[
-                languageData.currentLanguage
-              ] ?? staffCallCategory.categoryName}
-            </button>
-          </S.StaffCall>
-        )}
+        <S.FloatingContainer>
+          {staffCallCategory && (
+            <S.StaffCall>
+              <button type="button" onClick={handleStaffCallClick}>
+                <CallBellIcon
+                  color={baseTheme.colors.white}
+                  width={30}
+                  height={30}
+                />
+                {staffCallCategory.localeCategoryName?.[
+                  languageData.currentLanguage
+                ] ?? staffCallCategory.categoryName}
+              </button>
+            </S.StaffCall>
+          )}
+          {shopDetailData?.useLocale && (
+            <S.Language>
+              <button type="button" onClick={handleStaffCallClick}>
+                <img src={currentLanguageIcon} alt="LANGUAGE" />
+                LANGUAGE
+              </button>
+            </S.Language>
+          )}
+        </S.FloatingContainer>
       </S.Container>
 
       {isStaffCallModalOpen && staffCallCategory && (

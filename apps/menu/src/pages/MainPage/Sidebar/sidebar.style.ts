@@ -33,13 +33,20 @@ export const CategoryButton = styled.button<{
   ${TYPOGRAPHY.MT_5}
 `;
 
-export const StaffCall = styled.div`
+export const FloatingContainer = styled.div`
   position: sticky;
   bottom: 0;
   width: 100%;
-  padding: 20px 12px 40px;
   background-color: ${({ theme }) => theme.mode.undefined_palette[600]};
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 20px 12px 40px;
+`;
+
+export const StaffCall = styled.div`
+  width: 100%;
 
   & > button {
     width: 100%;
@@ -53,5 +60,33 @@ export const StaffCall = styled.div`
     gap: 4px;
     color: ${baseTheme.colors.white};
     ${TYPOGRAPHY.MT_7}
+
+    & > img {
+      width: 30px;
+      height: 30px;
+    }
+  }
+`;
+
+export const Language = styled.div`
+  width: 100%;
+
+  & > button {
+    width: 100%;
+    padding: 18px;
+    background-color: ${baseTheme.colors.grey[800]};
+    border-bottom: 1px solid ${baseTheme.colors.grey[700]};
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: ${baseTheme.colors.grey[400]};
+    ${TYPOGRAPHY.ST_4}
+
+    & > img {
+      width: 30px;
+      height: 30px;
+    }
   }
 `;
