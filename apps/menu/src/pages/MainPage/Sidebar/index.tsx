@@ -31,7 +31,6 @@ export const Sidebar = ({
   const { data: disableStaffCallData } = useDisableStaffCallStore();
   const { data: shopDetailData } = useShopDetailData();
 
-  const { setData: setLanguageData } = useCustomerLanguageStore();
   const currentLanguageIcon =
     LANGUAGE_CONFIG[languageData.currentLanguage].flag;
 
