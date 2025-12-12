@@ -32,7 +32,7 @@ interface Props {
 }
 export const MenuItem = ({ layout, category, menu }: Props) => {
   const { t } = useCustomerTranslation();
-  const { data: currentLanguage } = useLanguageStore();
+  const { data: languageData } = useLanguageStore();
   const { data: shopDetailData } = useShopDetailData();
 
   const currencySymbol =
@@ -126,7 +126,8 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
         />
         <S.Content>
           <S.MenuName>
-            {menu.localeMenuName?.[currentLanguage ?? 'KO'] ?? menu.menuName}
+            {menu.localeMenuName?.[languageData.currentLanguage] ??
+              menu.menuName}
           </S.MenuName>
           <S.MenuPrice>
             <span>
@@ -136,7 +137,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
           </S.MenuPrice>
           {layout === 1 && (
             <S.Description>
-              {menu.localeMenuDescription?.[currentLanguage ?? 'KO'] ??
+              {menu.localeMenuDescription?.[languageData.currentLanguage] ??
                 menu.menuDescription}
             </S.Description>
           )}

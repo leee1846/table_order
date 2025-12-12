@@ -2,19 +2,18 @@ import * as S from '@/pages/MainPage/LanguageSelector/languageSelector.style';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LANGUAGE_CONFIG } from '@/constants/common';
-
-export type LanguageCode = 'KO' | 'EN' | 'CH' | 'JP' | 'RU';
+import type { TShopLanguage } from '@repo/api/types';
 
 export const LANGUAGE_CONFIG_LIST = Object.entries(LANGUAGE_CONFIG).map(
   ([value, config]) => ({
-    value: value as LanguageCode,
+    value: value as TShopLanguage,
     label: config.label,
   })
 );
 
 export const LanguageSelector = () => {
   const { data: shopDetailData } = useShopDetailData();
-  const { setData: setCurrentLanguage } = useLanguageStore();
+  const { setData: setLanguageData } = useLanguageStore();
 
   if (!shopDetailData) {
     return null;
@@ -26,7 +25,7 @@ export const LanguageSelector = () => {
       <p>주문에 사용하실 언어를 선택해 주세요.</p>
       <S.Buttons>
         {shopDetailData.shopSetting.shopLocaleMapList.map((lang) => {
-          const config = LANGUAGE_CONFIG[lang.localeCode as LanguageCode];
+          const config = LANGUAGE_CONFIG[lang.localeCode as TShopLanguage];
           if (!config) {
             return null;
           }
@@ -35,7 +34,12 @@ export const LanguageSelector = () => {
             <S.Button key={lang.localeCode}>
               <button
                 type="button"
-                onClick={() => setCurrentLanguage(lang.localeCode)}
+                onClick={() =>
+                  setLanguageData({
+                    currentLanguage: lang.localeCode as TShopLanguage,
+                    isSelected: true,
+                  })
+                }
               >
                 <img src={config.flag} alt={lang.localeCode} />
                 {config.label}

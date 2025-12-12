@@ -66,12 +66,12 @@ export type TMenuboardTemplateType =
   | 'VERTICAL_IMAGE';
 export type TShopPosCode = 'OKPOS';
 export type TShopCardTerminalCode = 'VIRTUAL' | 'EASY' | 'NO_BUTTON';
-export type TShopLanguage = 'KO' | 'EN' | 'JP' | 'CH';
+export type TShopLanguage = 'KO' | 'EN' | 'JP' | 'CH' | 'RU';
 
 export interface IShopLocaleMap {
   localeShopMapSeq: number;
   shopSeq: number;
-  localeCode: string;
+  localeCode: TShopLanguage;
 }
 
 export interface IShopSetting {

@@ -5,10 +5,10 @@ import {
   useAdminTranslation,
   getAdminSupportedLanguages,
 } from '@/config/i18n/admin.i18n';
-import { type LanguageCode } from '@/pages/MainPage/LanguageSelector';
 import { LANGUAGE_CONFIG } from '@/constants/common';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { storage } from '@repo/util/function';
+import type { TShopLanguage } from '@repo/api/types';
 
 export const Account = () => {
   const { i18n, t } = useAdminTranslation();
@@ -19,8 +19,8 @@ export const Account = () => {
   const languageList = supportedLanguages
     .filter((lang) => lang in LANGUAGE_CONFIG)
     .map((lang) => ({
-      value: lang as LanguageCode,
-      label: LANGUAGE_CONFIG[lang as LanguageCode].label,
+      value: lang as TShopLanguage,
+      label: LANGUAGE_CONFIG[lang as TShopLanguage].label,
     }));
 
   const handleLanguageChange = (lang: string) => {

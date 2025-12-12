@@ -11,17 +11,17 @@ interface Props {
 export const CategoryItem = ({ category }: Props) => {
   const layout: 1 | 2 | 3 = category.useTwoColumnLayout ? 2 : 1;
   const { t } = useCustomerTranslation();
-  const { data: currentLanguage } = useLanguageStore();
+  const { data: languageData } = useLanguageStore();
 
   return (
     <S.Container>
       <div>
         <S.CategoryName>
-          {category.localeCategoryName?.[currentLanguage ?? 'KO'] ??
+          {category.localeCategoryName?.[languageData.currentLanguage] ??
             category.categoryName}
         </S.CategoryName>
         <S.CategoryDescription>
-          {category.localeCategoryDescription?.[currentLanguage ?? 'KO'] ??
+          {category.localeCategoryDescription?.[languageData.currentLanguage] ??
             category.categoryDescription}
         </S.CategoryDescription>
       </div>

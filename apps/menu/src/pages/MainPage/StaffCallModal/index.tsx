@@ -25,7 +25,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
 
-  const { data: currentLanguage } = useLanguageStore();
+  const { data: languageData } = useLanguageStore();
   const { disableStaffCall } = useDisableStaffCallStore();
 
   const [selectedMenu, setSelectedMenu] = useState<IMenuBase | null>(null);
@@ -77,7 +77,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
             categorySeq: sourceMenu.categorySeq,
             menuSeq: sourceMenu.menuSeq,
             menuName:
-              sourceMenu.localeMenuName?.[currentLanguage ?? 'KO'] ??
+              sourceMenu.localeMenuName?.[languageData.currentLanguage] ??
               sourceMenu.menuName,
             menuPrice: sourceMenu.menuPrice,
             quantity: newQuantity,
@@ -189,7 +189,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
                       isSelected={selectedMenu?.menuSeq === menu.menuSeq}
                     >
                       <p>
-                        {menu.localeMenuName?.[currentLanguage ?? 'KO'] ??
+                        {menu.localeMenuName?.[languageData.currentLanguage] ??
                           menu.menuName}
                       </p>
                       {selectedMenu?.menuSeq === menu.menuSeq && (

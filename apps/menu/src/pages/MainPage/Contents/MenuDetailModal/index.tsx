@@ -21,7 +21,7 @@ interface Props {
 }
 export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const { t } = useCustomerTranslation();
-  const { data: currentLanguage } = useLanguageStore();
+  const { data: languageData } = useLanguageStore();
 
   const [currentCount, setCurrentCount] = useState(1);
 
@@ -50,7 +50,8 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
     addToCart({
       categorySeq: menu.categorySeq,
       menuSeq: menu.menuSeq,
-      menuName: menu.localeMenuName?.[currentLanguage ?? 'KO'] ?? menu.menuName,
+      menuName:
+        menu.localeMenuName?.[languageData.currentLanguage] ?? menu.menuName,
       menuPrice: menu.menuPrice,
       quantity: prevCartData?.quantity ?? 0 + currentCount,
       selectedOptions: [],
@@ -85,14 +86,14 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
           <Thumbnail menu={menu} image={undefined} width="100%" />
         )}
         <S.Name>
-          {menu.localeMenuName?.[currentLanguage ?? 'KO'] ?? menu.menuName}
+          {menu.localeMenuName?.[languageData.currentLanguage] ?? menu.menuName}
         </S.Name>
         <S.Price>
           {currencySymbol}
           {formatCurrency(menu.menuPrice)}
         </S.Price>
         <S.Description>
-          {menu.localeMenuDescription?.[currentLanguage ?? 'KO'] ??
+          {menu.localeMenuDescription?.[languageData.currentLanguage] ??
             menu.menuDescription}
         </S.Description>
         <NumberInput

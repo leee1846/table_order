@@ -25,7 +25,7 @@ export const Sidebar = ({
   const { t } = useCustomerTranslation();
 
   const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
-  const { data: currentLanguage } = useLanguageStore();
+  const { data: languageData } = useLanguageStore();
   const { data: disableStaffCallData } = useDisableStaffCallStore();
 
   const handleStaffCallClick = () => {
@@ -50,7 +50,7 @@ export const Sidebar = ({
             type="button"
             onClick={() => handleCategoryClick(category)}
           >
-            {category.localeCategoryName?.[currentLanguage ?? 'KO'] ??
+            {category.localeCategoryName?.[languageData.currentLanguage] ??
               category.categoryName}
           </S.CategoryButton>
         ))}
@@ -64,7 +64,7 @@ export const Sidebar = ({
                 height={30}
               />
               {staffCallCategory.localeCategoryName?.[
-                currentLanguage ?? 'KO'
+                languageData.currentLanguage
               ] ?? staffCallCategory.categoryName}
             </button>
           </S.StaffCall>

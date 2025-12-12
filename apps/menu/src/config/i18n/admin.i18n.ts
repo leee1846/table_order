@@ -7,10 +7,13 @@ import koTranslation from '@/locales/ko/translation.json';
 import enTranslation from '@/locales/en/translation.json';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { storage } from '@repo/util/function';
+import type { TShopLanguage } from '@repo/api/types';
 
-const getInitialLanguage = (): string => {
+const getInitialLanguage = (): TShopLanguage => {
   try {
-    const stored = storage.local.load<string>(STORAGE_KEYS.ADMIN_I18N_LANGUAGE);
+    const stored = storage.local.load<TShopLanguage>(
+      STORAGE_KEYS.ADMIN_I18N_LANGUAGE
+    );
     if (stored) {
       return stored;
     }
@@ -21,12 +24,24 @@ const getInitialLanguage = (): string => {
   return 'KO';
 };
 
-const resources = {
+const resources: Record<TShopLanguage, { admin: Record<string, string> }> = {
   KO: {
     admin: koTranslation,
   },
   EN: {
     admin: enTranslation,
+  },
+  JP: {
+    // TODO: 일본어 번역 추가
+    admin: koTranslation,
+  },
+  CH: {
+    // TODO: 중국어 번역 추가
+    admin: koTranslation,
+  },
+  RU: {
+    // TODO: 러시아어 번역 추가
+    admin: koTranslation,
   },
 };
 
@@ -34,7 +49,7 @@ const adminI18n = i18n.createInstance();
 adminI18n.use(initReactI18next).init({
   resources,
   lng: getInitialLanguage(),
-  fallbackLng: 'KO',
+  fallbackLng: 'KO' as TShopLanguage,
   defaultNS: 'admin',
   interpolation: {
     escapeValue: false,
@@ -48,7 +63,7 @@ export const useAdminTranslation = () => {
 /**
  * admin에서 지원하는 언어 목록 가져오기
  */
-export const getAdminSupportedLanguages = (): string[] => {
+export const getAdminSupportedLanguages = () => {
   return Object.keys(resources);
 };
 

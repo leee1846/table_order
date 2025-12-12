@@ -7,14 +7,16 @@ import koTranslation from '@/locales/ko/translation.json';
 import enTranslation from '@/locales/en/translation.json';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { storage } from '@repo/util/function';
+import type { ILanguageData } from '@/stores/useLanguageStore';
+import type { TShopLanguage } from '@repo/api/types';
 
-const getInitialLanguage = (): string => {
+const getInitialLanguage = (): TShopLanguage => {
   try {
-    const stored = storage.session.load<string>(
+    const stored = storage.session.load<ILanguageData>(
       STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE
     );
-    if (stored) {
-      return stored;
+    if (stored && stored.currentLanguage) {
+      return stored.currentLanguage;
     }
   } catch (_error) {
     return 'KO';
@@ -23,12 +25,24 @@ const getInitialLanguage = (): string => {
   return 'KO';
 };
 
-const resources = {
+const resources: Record<TShopLanguage, { customer: Record<string, string> }> = {
   KO: {
     customer: koTranslation,
   },
   EN: {
     customer: enTranslation,
+  },
+  JP: {
+    // TODO: 일본어 번역 추가
+    customer: koTranslation,
+  },
+  CH: {
+    // TODO: 중국어 번역 추가
+    customer: koTranslation,
+  },
+  RU: {
+    // TODO: 러시아어 번역 추가
+    customer: koTranslation,
   },
 };
 

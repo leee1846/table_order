@@ -162,20 +162,26 @@ export const MainPage = () => {
 
     setMode('light');
   }, [shopDetailData?.shopSetting, setMode]);
-  /** ======== 다크모드 사용 여부 확인 END =========================================== */
+  /** ======== 다크모드 사용 여부 확인 END ========================================== */
 
-  /**========= 고객 메뉴판 언어 선택 START ========================================== */
-  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
-  const { data: currentLanguage, setData: setCurrentLanguage } =
-    useLanguageStore();
-
+  /**========= 고객 메뉴판 기본 언어 설정 START ===================================== */
+  const { data: languageData, setData: setLanguageData } = useLanguageStore();
   useEffect(() => {
     if (!shopDetailData) {
       return;
     }
 
-    if (shopDetailData.shopSetting.shopLanguage) {
-      setCurrentLanguage(shopDetailData.shopSetting.shopLanguage);
+    setLanguageData({
+      currentLanguage: shopDetailData.shopSetting.shopLanguage,
+    });
+  }, [shopDetailData, setLanguageData]);
+  /** ======== 고객 메뉴판 기본 언어 설정 END ===================================== */
+
+  /**========= 고객 메뉴판 언어 선택 화면 노출 여부 START ============================ */
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  useEffect(() => {
+    if (!shopDetailData) {
+      return;
     }
 
     if (!shopDetailData.useLocale) {
@@ -183,14 +189,14 @@ export const MainPage = () => {
       return;
     }
 
-    if (currentLanguage) {
+    if (languageData.isSelected) {
       setShowLanguageSelector(false);
       return;
     }
 
     setShowLanguageSelector(true);
-  }, [shopDetailData, currentLanguage]);
-  /** ======== 고객 메뉴판 언어 선택 END ========================================== */
+  }, [shopDetailData, languageData, setShowLanguageSelector, setLanguageData]);
+  /** ======== 고객 메뉴판 언어 선택 화면 노출 여부 END ============================== */
 
   /**========= 객수 선택 START ================================================== */
   const [showCustomerCountSelector, setShowCustomerCountSelector] =

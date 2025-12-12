@@ -3,6 +3,7 @@ import { LANGUAGE_CONFIG } from '@/constants/common';
 import { useLanguageStore } from '@/stores/useLanguageStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useEffect, useState } from 'react';
+import type { TShopLanguage } from '@repo/api/types';
 
 interface Props {
   onClose: () => void;
@@ -10,18 +11,14 @@ interface Props {
 
 export const LanguageSelectorModal = ({ onClose }: Props) => {
   const { data: shopDetailData } = useShopDetailData();
-  const { data: selectedLanguage, setData: setSelectedLanguage } =
-    useLanguageStore();
+  const { data: languageData, setData: setLanguageData } = useLanguageStore();
 
-  const [tempSelectedLanguage, setTempSelectedLanguage] = useState<
-    string | null
-  >(null);
+  const [tempSelectedLanguage, setTempSelectedLanguage] =
+    useState<TShopLanguage | null>(null);
 
   useEffect(() => {
-    if (selectedLanguage) {
-      setTempSelectedLanguage(selectedLanguage);
-    }
-  }, [selectedLanguage]);
+    setTempSelectedLanguage(languageData.currentLanguage);
+  }, [languageData]);
 
   const languages =
     shopDetailData?.shopSetting?.shopLocaleMapList.map((locale) => ({
@@ -35,7 +32,10 @@ export const LanguageSelectorModal = ({ onClose }: Props) => {
 
   const handleSubmit = () => {
     if (tempSelectedLanguage) {
-      setSelectedLanguage(tempSelectedLanguage);
+      setLanguageData({
+        currentLanguage: tempSelectedLanguage,
+        isSelected: true,
+      });
       onClose();
     }
   };

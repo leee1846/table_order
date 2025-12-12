@@ -18,7 +18,7 @@ const createShopDetail = (): IGetShop => ({
   shopEmail: 'test@example.com',
   shopPhoneNumber: '02-1234-5678',
   isDeleted: false,
-  useLocale: false,
+  useLocale: true,
   isTestShop: true,
   etcNote: '테스트 매장입니다',
   shopBusinessCategory: '한식',
@@ -88,7 +88,7 @@ const createShopDetail = (): IGetShop => ({
     menuboardTemplateType: 'DEFAULT',
     shopPosCode: 'OKPOS',
     shopCardTerminalCode: 'VIRTUAL',
-    shopLanguage: 'EN',
+    shopLanguage: 'KO',
     useLocaleBeforeOrder: true,
     isMenuThreeColumnLayout: false,
     shopLocaleMapList: [
