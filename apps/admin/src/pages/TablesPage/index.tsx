@@ -1,12 +1,10 @@
-import {
-  TableGridContainer,
-  type TableData,
-  useTranslation,
-} from '@repo/feature/components';
+import { type TableData, useTranslation } from '@repo/feature/components';
 import { useEffect, useMemo, useState } from 'react';
 import { Sidebar } from './Sidebar';
+import { DraggableTableCard, type TableWithStatus } from './DraggableTableCard';
 import * as S from './tablesPage.style.ts';
 import { useNavigate } from 'react-router-dom';
+import { DndContext, useLongPress } from '@repo/feature/hooks';
 import { ROUTES } from '@/constants/routes.ts';
 import { CustomerCountSelector } from '@/pages/TablesPage/CustomerCountSelector';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
@@ -17,6 +15,7 @@ import {
 } from '@repo/api/queries';
 import { useAuth } from '@/hooks/useAuth';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
+import { useTableDrag } from '@/hooks/useTableDrag';
 
 export const TablesPage = () => {
   const { data: shopDetailData } = useShopDetailData();
@@ -34,8 +33,8 @@ export const TablesPage = () => {
 
   const shouldSelectCustomerCount = useMemo(
     () =>
-      !!shopDetailData?.shopSetting?.useCustomerCount ||
-      !!shopDetailData?.shopSetting?.useKidsCustomerCount,
+      shopDetailData?.shopSetting?.useCustomerCount ||
+      shopDetailData?.shopSetting?.useKidsCustomerCount,
     [
       shopDetailData?.shopSetting?.useCustomerCount,
       shopDetailData?.shopSetting?.useKidsCustomerCount,
@@ -61,6 +60,7 @@ export const TablesPage = () => {
     );
 
   const isLoading = isLoadingTableGroups || isLoadingCurrentTables;
+  const { sensors } = useLongPress({ delay: 350, tolerance: 8 });
 
   // 첫 번째 테이블 그룹을 기본 선택
   useEffect(() => {
@@ -77,7 +77,7 @@ export const TablesPage = () => {
   }, [tableGroupListResponse, selectedTableGroupSeq]);
 
   // 3. 선택된 테이블 그룹의 테이블과 주문 현황을 병합
-  const tables: TableData[] = useMemo(() => {
+  const tables: TableWithStatus[] = useMemo(() => {
     if (!tableGroupListResponse?.data || selectedTableGroupSeq === null) {
       return [];
     }
@@ -107,6 +107,10 @@ export const TablesPage = () => {
     // 선택된 그룹의 테이블을 순회하면서 주문 정보가 있으면 병합
     return groupTables.map((table) => {
       const orderInfo = orderMap.get(table.tableNumber);
+      const hasOrder =
+        !!orderInfo &&
+        !!orderInfo.orderDetailMenuList &&
+        orderInfo.orderDetailMenuList.length > 0;
 
       // 주문 정보가 있는 경우
       if (orderInfo) {
@@ -137,6 +141,7 @@ export const TablesPage = () => {
           totalAmount: orderInfo.totalAmount ?? null,
           orderTime,
           menuItems,
+          hasOrder,
         };
       }
 
@@ -148,9 +153,29 @@ export const TablesPage = () => {
         totalAmount: null,
         orderTime: null,
         menuItems: null,
+        hasOrder: false,
       };
     });
   }, [tableGroupListResponse, currentTableListResponse, selectedTableGroupSeq]);
+
+  //드래그 이벤트에서 active.id를 tableNumber이기 때문에 빠르게 조회하려고 Map으로 변환
+  const tableMap = useMemo(
+    () =>
+      new Map(
+        tables.map((table) => [String(table.tableNumber), table] as const)
+      ),
+    [tables]
+  );
+
+  const {
+    activeTableNumber,
+    handleDragStart,
+    handleDragCancel,
+    handleDragEnd,
+  } = useTableDrag({
+    tableMap,
+    shopCode,
+  });
 
   const handleTableClick = (table: TableData) => {
     const savedCount = customerCountData?.[table.tableNumber];
@@ -164,36 +189,32 @@ export const TablesPage = () => {
     setShowCustomerCountSelector(true);
   };
 
-  useEffect(() => {
-    if (
-      !showCustomerCountSelector ||
-      !selectedTableNumber ||
-      !customerCountData?.[selectedTableNumber]
-    ) {
-      return;
-    }
-
-    setShowCustomerCountSelector(false);
-    navigate(ROUTES.TABLE_DETAIL.generate(selectedTableNumber));
-    setSelectedTableNumber(null);
-  }, [
-    customerCountData,
-    navigate,
-    selectedTableNumber,
-    showCustomerCountSelector,
-  ]);
-
   if (isLoading) {
     return <FullscreenLoadingSpinner />;
   }
 
   return (
     <S.Container>
-      <TableGridContainer
-        tables={tables}
-        onTableClick={handleTableClick}
-        useTranslation={useTranslation}
-      />
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+      >
+        <S.TableArea>
+          <S.GridContainer>
+            {tables.map((table) => (
+              <DraggableTableCard
+                key={table.id}
+                table={table}
+                activeTableNumber={activeTableNumber}
+                onClick={handleTableClick}
+                useTranslation={useTranslation}
+              />
+            ))}
+          </S.GridContainer>
+        </S.TableArea>
+      </DndContext>
       <Sidebar
         currentTableList={currentTableListResponse?.data}
         tableGroups={tableGroupListResponse?.data ?? []}

@@ -6,14 +6,14 @@ import { theme } from '@repo/ui';
 import * as S from '@/pages/settings/CategoriesPage/categoryPage.style';
 import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryManageModal';
 import { useGetCategoryList } from '@repo/api/queries';
+import { useAuth } from '@/hooks/useAuth';
 
 export const CategoriesPage = () => {
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
 
-  // TODO: shopSeq를 실제 설정이나 컨텍스트에서 가져오도록 수정 필요
-  const shopSeq = 1;
+  const { shopSeq } = useAuth();
   const { data: categoryListResponse, isLoading } = useGetCategoryList({
-    shopSeq,
+    shopSeq: shopSeq!,
   });
 
   const openAddCategoryModal = () => {
@@ -30,7 +30,7 @@ export const CategoriesPage = () => {
       <Categories
         categories={categoryListResponse?.data}
         isLoading={isLoading}
-        shopSeq={shopSeq}
+        shopSeq={shopSeq!}
       />
 
       <S.AddButton onClick={openAddCategoryModal}>
@@ -42,7 +42,7 @@ export const CategoriesPage = () => {
       {isAddCategoryModalOpen && (
         <CategoryManageModal
           onClose={closeAddCategoryModal}
-          shopSeq={shopSeq}
+          shopSeq={shopSeq!}
         />
       )}
     </S.Container>

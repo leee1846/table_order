@@ -167,16 +167,25 @@ export const Sidebar = ({
 
       <OrderListDialog
         isOpen={isOrderListDialogOpen}
-        onClose={() => setIsOrderListDialogOpen(false)}
+        onClose={() => {
+          setIsOrderListDialogOpen(false);
+          setSelectedMenu('');
+        }}
         orders={orders}
       />
       <SalesListDialog
         isOpen={isSalesDialogOpen}
-        onClose={() => setIsSalesDialogOpen(false)}
+        onClose={() => {
+          setIsSalesDialogOpen(false);
+          setSelectedMenu('');
+        }}
       />
       <DeviceListDialog
         isOpen={isDeviceDialogOpen}
-        onClose={() => setIsDeviceDialogOpen(false)}
+        onClose={() => {
+          setIsDeviceDialogOpen(false);
+          setSelectedMenu('');
+        }}
       />
     </SidebarContainer>
   );

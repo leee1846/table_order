@@ -12,7 +12,6 @@ export const SortableListContainer = styled.ul`
 export const SortableItem = styled.li`
   position: relative;
   list-style: none;
-  touch-action: none;
+  touch-action: pan-y;
   user-select: none;
 `;
-

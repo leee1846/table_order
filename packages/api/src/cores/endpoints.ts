@@ -14,6 +14,8 @@ export const ENDPOINTS = {
     TABLE_ORDER_HISTORY: (shopCode: string, tableNumber: number) =>
       `/order/${shopCode}/${tableNumber}`,
     CURRENT_TABLE_LIST: (shopCode: string) => `/order/${shopCode}`,
+    MOVE_ORDER_GROUP: (shopCode: string) => `/order/move/${shopCode}`,
+    SHARE_ORDER_GROUP: (shopCode: string) => `/order/share/${shopCode}`,
   },
 
   CATEGORY: {

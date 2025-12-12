@@ -132,3 +132,17 @@ export type TGetCurrentTableListResponse = IApiResponse<ICurrentTable[]>;
 export interface IGetCurrentTableListParams {
   shopCode: string;
 }
+
+/**
+ * 주문 테이블 이동/합석 요청 파라미터
+ */
+export interface IUpdateOrderTableRequest {
+  shopCode: string;
+  originalTableNumber: string;
+  targetTableNumber: string;
+}
+
+/**
+ * 주문 테이블 이동/합석 응답 타입
+ */
+export type TUpdateOrderTableResponse = IApiResponse<unknown>;

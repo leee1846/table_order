@@ -43,23 +43,32 @@ export function SortableList<T>({
   renderItem,
   getId,
 }: SortableListProps<T>) {
+  const isCoarsePointer =
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' && //오래된 브라우저나 특정 환경에서  window.matchMedia 함수가 없을 수 있음
+    window.matchMedia('(pointer: coarse)').matches; // 태블릿 여부 확인
+
   /**
    * 드래그 이벤트를 감지하는 센서 설정
    * - PointerSensor: 마우스 및 터치 이벤트 지원 (웹뷰)
    * - TouchSensor: 터치 전용 이벤트 지원, delay 옵션으로 길게 누르기 지원 (태블릿)
    */
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: {
+      delay: 500,
+      tolerance: 8,
+    },
+  });
+
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: {
+      delay: 500,
+      tolerance: 8,
+    },
+  });
+
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8, // 8px 이동해야 드래그 시작 (실수 클릭 방지)
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 200, // 200ms 길게 누르기 (태블릿에서 실수 드래그 방지)
-        tolerance: 5, // 5px 움직임 허용 (손 떨림 보정)
-      },
-    })
+    ...(isCoarsePointer ? [touchSensor] : [pointerSensor, touchSensor]) // 태블릿이면 pointerSensor 사용하지 않음
   );
 
   /**
@@ -147,7 +156,7 @@ function SortableItem({ id, children }: SortableItemProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    // opacity: isDragging ? 0.5 : 1,
     cursor: isDragging ? 'grabbing' : 'grab',
   };
 

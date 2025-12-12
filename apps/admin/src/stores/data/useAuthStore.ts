@@ -23,7 +23,7 @@ export interface IAuthStore {
  * - 토큰 디코딩 결과를 캐싱
  * - shopSeq로 shopCode 매칭
  */
-export const useAuthStore = create<IAuthStore>((set, get) => {
+export const useAuthStore = create<IAuthStore>((set, _) => {
   // 초기화: localStorage에서 토큰 읽기 및 디코딩
   const initializeAuth = (): {
     tokenPayload: ITokenPayload | null;

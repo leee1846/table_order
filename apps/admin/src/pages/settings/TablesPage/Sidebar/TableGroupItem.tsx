@@ -32,7 +32,7 @@ export const TableGroupItem = ({
 }: TableGroupItemProps) => {
   const editDeleteButtonsRef = useRef<HTMLDivElement>(null);
 
-  const longPressHandlers = useLongPress({
+  const { handlers: longPressHandlers } = useLongPress({
     delay: 500,
     onLongPress: () => {
       onEditingChange(group.tableGroupSeq);

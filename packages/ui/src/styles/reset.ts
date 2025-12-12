@@ -97,6 +97,7 @@ export const resetStyles = css`
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+ */
     user-select: none;
+    box-sizing: border-box;
   }
   /* HTML5 display-role reset for older browsers */
   article,
