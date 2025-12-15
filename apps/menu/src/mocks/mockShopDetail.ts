@@ -45,13 +45,14 @@ const createShopDetail = (): IGetShop => ({
     breakTimeMessage: '브레이크 타임입니다',
     breakTimeLastOrderTimeBefore: 20,
     breakTimeLastOrderAlertTimeBefore: 20,
-    breakTimeLastOrderMessage: '브레이크 타임 1분 전입니다',
+    breakTimeLastOrderMessage:
+      '브레이크 타임 1분 전입니다   브레이크 타임 2분 전입니다 브레이크 타임 3분 전입니다 브레이크 타임 4분 전입니다',
     breakTimeList: [
       {
         shopSeq: 1,
         dayOfWeek: 0, // 월요일
-        breakStartTime: '1626',
-        breakEndTime: '1630',
+        breakStartTime: '1700',
+        breakEndTime: '1701',
         isActive: true,
       },
       {

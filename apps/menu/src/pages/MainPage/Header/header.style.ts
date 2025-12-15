@@ -45,12 +45,44 @@ export const ShopName = styled.p`
   color: ${({ theme }) => theme.mode.grey[900]};
 `;
 
-export const Description = styled.p`
+export const DescriptionContainer = styled.div`
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+`;
+
+export const DescriptionWrapper = styled.div<{ $isOverflowing?: boolean }>`
+  display: inline-flex;
+  white-space: nowrap;
+  ${({ $isOverflowing }) =>
+    $isOverflowing
+      ? `
+    animation: scroll-text 20s linear infinite;
+    will-change: transform;
+  `
+      : ''}
+
+  @keyframes scroll-text {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-50% - 1rem));
+    }
+  }
+`;
+
+export const Description = styled.span`
   ${TYPOGRAPHY.ST_2}
   color: ${({ theme }) => theme.mode.semantic[400]};
-  text-overflow: ellipsis;
-  overflow: hidden;
   white-space: nowrap;
+  display: inline-block;
+`;
+
+export const DescriptionSpacer = styled.span`
+  display: inline-block;
+  width: 2rem;
 `;
 
 export const RightContent = styled.div`
