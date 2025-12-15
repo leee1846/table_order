@@ -43,7 +43,7 @@ export type TGetShopsResponse = IApiResponse<IGetShopItem[]>;
 
 export interface IShopTimeBreakTime {
   shopSeq: number;
-  /** 0: 월, 1: 화 ..., 6: 일 */
+  /** 0: 일요일, 1: 월요일, ..., 6: 토요일 */
   dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   /**
    * 브레이크타임 시작 시간(HHMM)

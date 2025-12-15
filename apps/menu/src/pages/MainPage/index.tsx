@@ -29,6 +29,7 @@ import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { AdminAccessPasswordModal } from '@/pages/MainPage/AdminAccessPasswordModal';
 import { useBreakTime } from '@/hooks/useBreakTime';
+import { ClosedPage } from '@/pages/MainPage/ClosedPage';
 
 export const MainPage = () => {
   /** ======== 초기 data 로드 START ================================================ */
@@ -281,6 +282,8 @@ export const MainPage = () => {
   /** ======== 장바구니 메뉴 주문 리마인더 노출 여부 ============================== */
   const { data: cartReminderData } = useCartReminderStore();
 
+  const isClosed = true;
+
   /** 관리자 접근 비밀번호 모달 노출 */
   if (showAdminAccessPasswordModal) {
     return (
@@ -288,6 +291,10 @@ export const MainPage = () => {
         onClose={() => setShowAdminAccessPasswordModal(false)}
       />
     );
+  }
+
+  if (isClosed) {
+    return <ClosedPage />;
   }
 
   /** 브레이크타임 화면 노출 */

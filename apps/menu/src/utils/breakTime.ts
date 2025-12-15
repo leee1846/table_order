@@ -61,16 +61,6 @@ interface ITimePoint {
 }
 
 /**
- * dayjs의 day()를 브레이크타임 API의 dayOfWeek로 변환합니다.
- * dayjs: 0=일요일, 1=월요일, ..., 6=토요일
- * API: 0=월요일, 1=화요일, ..., 6=일요일
- */
-const convertDayjsDayToApiDay = (dayjsDay: number): number => {
-  // dayjs(0=일)을 API(0=월)로 변환: +6 후 %7로 0~6 범위 유지
-  return (dayjsDay + 6) % 7;
-};
-
-/**
  * 브레이크타임의 실제 날짜를 계산합니다.
  * 오늘 요일이면 오늘 날짜, 아니면 다음 주 해당 요일 날짜를 반환합니다.
  */
@@ -78,11 +68,10 @@ const getBreakTimeDate = (
   breakTime: IShopTimeBreakTime,
   currentTime: Date
 ): Date => {
-  const currentDayjsDay = getCurrentDayOfWeek(currentTime);
-  const currentApiDay = convertDayjsDayToApiDay(currentDayjsDay);
+  const currentDayOfWeek = getCurrentDayOfWeek(currentTime); // dayjs와 API 모두 0=일요일
 
   // 오늘 요일이면 오늘 날짜 사용
-  if (breakTime.dayOfWeek === currentApiDay) {
+  if (breakTime.dayOfWeek === currentDayOfWeek) {
     return currentTime;
   }
 
@@ -90,9 +79,8 @@ const getBreakTimeDate = (
   for (let daysAhead = 1; daysAhead <= 7; daysAhead++) {
     const futureDate = new Date(currentTime);
     futureDate.setDate(futureDate.getDate() + daysAhead);
-    const futureDayjsDay = getCurrentDayOfWeek(futureDate);
-    const futureApiDay = convertDayjsDayToApiDay(futureDayjsDay);
-    if (futureApiDay === breakTime.dayOfWeek) {
+    const futureDayOfWeek = getCurrentDayOfWeek(futureDate);
+    if (futureDayOfWeek === breakTime.dayOfWeek) {
       return futureDate; // 요일이 일치하면 해당 날짜 반환
     }
   }
