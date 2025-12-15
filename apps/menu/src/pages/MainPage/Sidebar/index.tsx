@@ -17,6 +17,7 @@ interface Props {
   staffCallCategory?: ICategoryWithMenus;
   selectedCategorySeq: number;
   handleCategoryClick: (category: ICategoryWithMenus) => void;
+  isBreakTimeLastOrder: boolean;
 }
 
 export const Sidebar = ({
@@ -24,6 +25,7 @@ export const Sidebar = ({
   staffCallCategory,
   selectedCategorySeq,
   handleCategoryClick,
+  isBreakTimeLastOrder,
 }: Props) => {
   const { t } = useCustomerTranslation();
 
@@ -67,7 +69,11 @@ export const Sidebar = ({
         <S.FloatingContainer>
           {staffCallCategory && (
             <S.StaffCall>
-              <button type="button" onClick={handleStaffCallClick}>
+              <button
+                type="button"
+                onClick={handleStaffCallClick}
+                disabled={isBreakTimeLastOrder}
+              >
                 <CallBellIcon
                   color={baseTheme.colors.white}
                   width={30}

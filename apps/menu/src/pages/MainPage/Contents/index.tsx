@@ -10,12 +10,14 @@ interface Props {
   categories: ICategoryWithMenus[];
   useSinglePageMenuboard: boolean;
   selectedCategory?: ICategoryWithMenus;
+  isBreakTimeLastOrder: boolean;
 }
 
 export const Contents = ({
   categories,
   useSinglePageMenuboard,
   selectedCategory,
+  isBreakTimeLastOrder,
 }: Props) => {
   const { t } = useCustomerTranslation();
 
@@ -27,11 +29,17 @@ export const Contents = ({
 
   return useSinglePageMenuboard ? (
     <S.Container id={DOM_IDS.CONTENTS_SCROLL_CONTAINER}>
-      <TabContent selectedCategory={selectedCategory} />
+      <TabContent
+        selectedCategory={selectedCategory}
+        isBreakTimeLastOrder={isBreakTimeLastOrder}
+      />
     </S.Container>
   ) : (
     <S.Container>
-      <ScrollContent categories={categories} />
+      <ScrollContent
+        categories={categories}
+        isBreakTimeLastOrder={isBreakTimeLastOrder}
+      />
     </S.Container>
   );
 };

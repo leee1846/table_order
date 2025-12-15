@@ -14,10 +14,14 @@ import { TIMER_KEYS } from '@/constants/keys';
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
   openAdminAccessPasswordModal: () => void;
+  breakTimeLastOrderMessage: string;
+  isBreakTimeLastOrder: boolean;
 }
 export const Header = ({
   orderHistories,
   openAdminAccessPasswordModal,
+  breakTimeLastOrderMessage,
+  isBreakTimeLastOrder,
 }: Props) => {
   const theme = useTheme();
   const { t } = useCustomerTranslation();
@@ -58,6 +62,14 @@ export const Header = ({
     );
   };
 
+  const onClickOrderHistoryButton = () => {
+    if (isBreakTimeLastOrder) {
+      return;
+    }
+
+    setShowOrderHistoryModal(true);
+  };
+
   return (
     <>
       <S.Header>
@@ -70,9 +82,9 @@ export const Header = ({
           </button>
           <S.Divider />
           <S.ShopName>{shopDetailData?.shopName ?? ''}</S.ShopName>
-          <S.Description>
-            브레이크타임 or 영업마감 라스트오더 문구 노출 영역(... 처리)
-          </S.Description>
+          {breakTimeLastOrderMessage && (
+            <S.Description>{breakTimeLastOrderMessage}</S.Description>
+          )}
         </S.LeftContent>
 
         <S.RightContent>
@@ -82,7 +94,7 @@ export const Header = ({
           <S.Divider />
           <S.OrderHistoryButton
             type="button"
-            onClick={() => setShowOrderHistoryModal(true)}
+            onClick={onClickOrderHistoryButton}
           >
             <MenuIcon width={20} height={20} color={theme.mode.primary[500]} />
             {t('주문내역')}

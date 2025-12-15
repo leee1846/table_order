@@ -29,8 +29,9 @@ interface Props {
   layout: 1 | 2 | 3;
   category: ICategoryWithMenus;
   menu: IMenu;
+  disabled: boolean;
 }
-export const MenuItem = ({ layout, category, menu }: Props) => {
+export const MenuItem = ({ layout, category, menu, disabled }: Props) => {
   const { t } = useCustomerTranslation();
   const { data: languageData } = useCustomerLanguageStore();
   const { data: shopDetailData } = useShopDetailData();
@@ -46,6 +47,10 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   const { visibleCategories } = useCategoriesData({});
 
   const onClickMenu = () => {
+    if (disabled) {
+      return;
+    }
+
     // 품절되었을경우
     if (menu.isOutOfStock) {
       toast(t('메뉴가 품절되었습니다.'), {

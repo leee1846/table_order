@@ -5,9 +5,10 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 
 interface Props {
   categories: ICategoryWithMenus[];
+  isBreakTimeLastOrder: boolean;
 }
 
-export const ScrollContent = ({ categories }: Props) => {
+export const ScrollContent = ({ categories, isBreakTimeLastOrder }: Props) => {
   return (
     <S.Container>
       {categories.map((category) => (
@@ -15,7 +16,10 @@ export const ScrollContent = ({ categories }: Props) => {
           key={category.categorySeq}
           id={DOM_IDS.getCategorySectionId(category.categorySeq)}
         >
-          <CategoryItem category={category} />
+          <CategoryItem
+            category={category}
+            isBreakTimeLastOrder={isBreakTimeLastOrder}
+          />
         </div>
       ))}
     </S.Container>

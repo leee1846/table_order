@@ -7,8 +7,9 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   category: ICategoryWithMenus;
+  isBreakTimeLastOrder: boolean;
 }
-export const CategoryItem = ({ category }: Props) => {
+export const CategoryItem = ({ category, isBreakTimeLastOrder }: Props) => {
   const layout: 1 | 2 | 3 = category.useTwoColumnLayout ? 2 : 1;
   const { t } = useCustomerTranslation();
   const { data: languageData } = useCustomerLanguageStore();
@@ -39,6 +40,7 @@ export const CategoryItem = ({ category }: Props) => {
               key={menu.menuSeq}
               category={category}
               menu={menu}
+              disabled={isBreakTimeLastOrder}
             />
           ))}
       </S.Categories>

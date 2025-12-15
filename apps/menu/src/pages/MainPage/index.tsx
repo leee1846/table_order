@@ -28,12 +28,10 @@ import { InitialPage } from '@/pages/MainPage/InitialPage';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { AdminAccessPasswordModal } from '@/pages/MainPage/AdminAccessPasswordModal';
-
-// TODO: breakTime 추후 변경 예정
-const showBreakTime = false;
+import { useBreakTime } from '@/hooks/useBreakTime';
 
 export const MainPage = () => {
-  /** ======== 초기 data 로드 START ================================== */
+  /** ======== 초기 data 로드 START ================================================ */
   /** 상점 데이터 로드 */
   useShopData();
   /** 상점 상세 데이터 로드 */
@@ -48,7 +46,7 @@ export const MainPage = () => {
   const { data: categoriesStoreData, visibleCategories } = useCategoriesData();
   /** 테이블 주문 내역 데이터 로드 */
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
-  /** ======== 초기 data 로드 END ================================== */
+  /** ======== 초기 data 로드 END ================================================== */
 
   const { data: showPickupAlarm } = usePickupAlarmStore();
 
@@ -133,10 +131,10 @@ export const MainPage = () => {
     useSinglePageMenuboard:
       shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false,
   });
-  /** ======== 카테고리 사이드바 이벤트 관리 END ===================================== */
+  /** ======== 카테고리 사이드바 이벤트 관리 END ====================================== */
 
-  /**========= 노출되는 카테고리 중, 첫 주문 필수 항목이 있는지 여부 확인 START =========== */
-  const { setCartOptions } = useCartStore();
+  /**========= 노출되는 카테고리 중, 첫 주문 필수 항목이 있는지 여부 확인 START ========== */
+  const { setCartOptions, clearCart } = useCartStore();
   useEffect(() => {
     const hasFirstOrderRequiredItems = visibleCategories.some(
       (category) => category.isFirstOrderRequired
@@ -145,7 +143,7 @@ export const MainPage = () => {
     // 메뉴 장바구니에 담을 때 사용하는 옵션 업데이트
     setCartOptions({ hasFirstOrderRequiredItems });
   }, [visibleCategories, setCartOptions]);
-  /**========= 노출되는 카테고리 중, 첫 주문 필수 항목이 있는지 여부 확인 END ============= */
+  /**========= 노출되는 카테고리 중, 첫 주문 필수 항목이 있는지 여부 확인 END ============ */
 
   /**========= 다크모드 사용 여부 확인 START ======================================== */
   const { setMode } = useThemeMode();
@@ -181,7 +179,7 @@ export const MainPage = () => {
       currentLanguage: shopDetailData.shopSetting.shopLanguage,
     });
   }, [shopDetailData, setLanguageData, languageData.isSelected]);
-  /** ======== 고객 메뉴판 기본 언어 설정 END ===================================== */
+  /** ======== 고객 메뉴판 기본 언어 설정 END ======================================= */
 
   /**========= 고객 메뉴판 언어 선택 화면 노출 여부 START ============================ */
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
@@ -204,7 +202,7 @@ export const MainPage = () => {
   }, [shopDetailData, languageData, setShowLanguageSelector, setLanguageData]);
   /** ======== 고객 메뉴판 언어 선택 화면 노출 여부 END ============================== */
 
-  /**========= 객수 선택 START ================================================== */
+  /**========= 객수 선택 START =================================================== */
   const [showCustomerCountSelector, setShowCustomerCountSelector] =
     useState(false);
   const { data: customerCountData } = useCustomerCountStore();
@@ -225,9 +223,9 @@ export const MainPage = () => {
 
     setShowCustomerCountSelector(true);
   }, [shopDetailData?.shopSetting, customerCountData]);
-  /** ======== 객수 선택 END ================================================== */
+  /** ======== 객수 선택 END =================================================== */
 
-  /**========= 관리자 접근 비밀번호 모달 노출 여부 ================================ */
+  /**========= 관리자 접근 비밀번호 모달 노출 여부 START =========================== */
   const [showAdminAccessPasswordModal, setShowAdminAccessPasswordModal] =
     useState(false);
   useEffect(() => {
@@ -249,7 +247,33 @@ export const MainPage = () => {
 
     setShowAdminAccessPasswordModal(false);
   }, [deviceData, deviceDataError, clearDeviceData]);
-  /** ======== 관리자 접근 비밀번호 모달 노출 여부 ================================ */
+  /** ======== 관리자 접근 비밀번호 모달 노출 여부 END ============================ */
+
+  /** ======== 브레이크타임 상태 관리 START ====================================== */
+  const {
+    showBreakTime,
+    isBreakTimeLastOrder,
+    isBreakTimeLastOrderAlert,
+    breakTimeMessage,
+    breakTimeStartTime,
+    breakTimeEndTime,
+    breakTimeLastOrderMessage,
+  } = useBreakTime();
+
+  useEffect(() => {
+    if (!showBreakTime && !isBreakTimeLastOrder) {
+      return;
+    }
+
+    clearCart();
+  }, [showBreakTime, isBreakTimeLastOrder, clearCart]);
+
+  const BTLastOrderMessage =
+    (isBreakTimeLastOrder || isBreakTimeLastOrderAlert) &&
+    breakTimeLastOrderMessage
+      ? breakTimeLastOrderMessage
+      : '';
+  /** ======== 브레이크타임 상태 관리 END ======================================== */
 
   /** ======== 초기 화면 페이지 노출 여부 ======================================= */
   const { data: initialPageData } = useInitialPageStore();
@@ -262,6 +286,17 @@ export const MainPage = () => {
     return (
       <AdminAccessPasswordModal
         onClose={() => setShowAdminAccessPasswordModal(false)}
+      />
+    );
+  }
+
+  /** 브레이크타임 화면 노출 */
+  if (showBreakTime) {
+    return (
+      <BreakTime
+        message={breakTimeMessage ?? ''}
+        startTime={breakTimeStartTime ?? ''}
+        endTime={breakTimeEndTime ?? ''}
       />
     );
   }
@@ -292,10 +327,6 @@ export const MainPage = () => {
     return <CartReminder />;
   }
 
-  if (showBreakTime) {
-    return <BreakTime />;
-  }
-
   return (
     <S.Container>
       <Header
@@ -303,6 +334,8 @@ export const MainPage = () => {
         openAdminAccessPasswordModal={() =>
           setShowAdminAccessPasswordModal(true)
         }
+        breakTimeLastOrderMessage={BTLastOrderMessage}
+        isBreakTimeLastOrder={isBreakTimeLastOrder}
       />
 
       <S.MainContent>
@@ -311,6 +344,7 @@ export const MainPage = () => {
           staffCallCategory={staffCallCategory}
           selectedCategorySeq={categoryNavigation.selectedCategorySeq}
           handleCategoryClick={categoryNavigation.handleCategoryClick}
+          isBreakTimeLastOrder={isBreakTimeLastOrder}
         />
 
         <Contents
@@ -319,9 +353,13 @@ export const MainPage = () => {
             shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false
           }
           selectedCategory={categoryNavigation.selectedCategory}
+          isBreakTimeLastOrder={isBreakTimeLastOrder}
         />
 
-        <CartButton categories={visibleCategories} />
+        <CartButton
+          categories={visibleCategories}
+          isBreakTimeLastOrder={isBreakTimeLastOrder}
+        />
       </S.MainContent>
     </S.Container>
   );

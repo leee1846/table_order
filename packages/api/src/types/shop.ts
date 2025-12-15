@@ -41,16 +41,33 @@ export interface IGetShopItem {
 
 export type TGetShopsResponse = IApiResponse<IGetShopItem[]>;
 
+export interface IShopTimeBreakTime {
+  shopSeq: number;
+  /** 0: 월, 1: 화 ..., 6: 일 */
+  dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  /**
+   * 브레이크타임 시작 시간(HHMM)
+   * ex) 1200
+   **/
+  breakStartTime: string;
+  /** 브레이크타임 종료 시간(HHMM) */
+  breakEndTime: string;
+  isActive: boolean;
+}
+
 export interface IShopTime {
   shopSeq: number;
   shopBusinessStartTime: string;
   shopBusinessEndTime: string;
-  breakStartTime: string;
-  breakEndTime: string;
+  useBreakTime: boolean;
   breakTimeMessage: string;
-  breakTimeLastOrderTime: string;
+  /** 브레이크타임 라스트오더 시간(라스트오더 시간 몇분 전) */
+  breakTimeLastOrderTimeBefore: number;
+  /** 브레이크타임 라스트오더 알림(라스트오더 알림 몇분 전) */
   breakTimeLastOrderAlertTimeBefore: number;
+  /** 브레이크타임 라스트오더 알림 메시지 */
   breakTimeLastOrderMessage: string;
+  breakTimeList: IShopTimeBreakTime[];
   shopClosureStartTime: string;
   shopClosureEndTime: string;
   closureMessage: string;

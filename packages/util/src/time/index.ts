@@ -264,3 +264,67 @@ export const getTimeUntilNextSaleStateChange = (
     return startTotalMs - currentTotalMs;
   }
 };
+
+/**
+ * HHMM 형식의 시간 문자열을 특정 날짜의 Date 객체로 변환합니다.
+ *
+ * @param timeString - HHMM 형식의 시간 문자열 (예: "1400")
+ * @param date - 기준 날짜 (기본값: 오늘)
+ * @returns 해당 날짜와 시간의 Date 객체
+ *
+ * @example
+ * ```ts
+ * // 오늘 14:00
+ * getDateFromTimeString('1400'); // Date 객체
+ * // 특정 날짜의 14:00
+ * getDateFromTimeString('1400', new Date('2025-01-15')); // Date 객체
+ * ```
+ */
+export const getDateFromTimeString = (
+  timeString: string,
+  date: Date = new Date()
+): Date => {
+  const { hour, minute } = parseTimeString(timeString);
+  if (!hour || !minute) {
+    return date;
+  }
+
+  const result = new Date(date);
+  result.setHours(parseInt(hour, 10), parseInt(minute, 10), 0, 0);
+  return result;
+};
+
+/**
+ * 특정 날짜의 HHMM 시간까지 남은 밀리초를 계산합니다.
+ *
+ * @param timeString - HHMM 형식의 시간 문자열 (예: "1400")
+ * @param date - 기준 날짜 (기본값: 오늘)
+ * @param currentTime - 현재 시간 (기본값: 현재 시각)
+ * @returns 해당 시간까지 남은 밀리초 (이미 지났으면 다음날까지의 시간)
+ *
+ * @example
+ * ```ts
+ * // 현재 시간이 13:00이고, 목표 시간이 14:00인 경우
+ * getTimeUntilTimeString('1400'); // 3600000 (1시간)
+ * // 현재 시간이 15:00이고, 목표 시간이 14:00인 경우 (다음날 14:00까지)
+ * getTimeUntilTimeString('1400'); // 82800000 (23시간)
+ * ```
+ */
+export const getTimeUntilTimeString = (
+  timeString: string,
+  date: Date = new Date(),
+  currentTime: Date = new Date()
+): number => {
+  const targetDate = getDateFromTimeString(timeString, date);
+  const diff = targetDate.getTime() - currentTime.getTime();
+
+  // 이미 지난 시간이면 다음날까지의 시간 반환
+  if (diff < 0) {
+    const nextDate = new Date(date);
+    nextDate.setDate(nextDate.getDate() + 1);
+    const nextTargetDate = getDateFromTimeString(timeString, nextDate);
+    return nextTargetDate.getTime() - currentTime.getTime();
+  }
+
+  return diff;
+};

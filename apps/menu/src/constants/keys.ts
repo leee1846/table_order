@@ -38,6 +38,8 @@ export const TIMER_KEYS = {
   CART_ORDER_REMINDER: 'cart-order-reminder',
   /** 로고 클릭 리셋 타이머 키 */
   LOGO_CLICK_COUNTDOWN_RESET: 'logo-click-countdown-reset',
+  /** 브레이크타임 상태 업데이트 타이머 키 */
+  BREAK_TIME_UPDATE: 'break-time-update',
 };
 
 export const DOM_IDS = {
