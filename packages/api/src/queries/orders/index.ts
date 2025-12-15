@@ -4,3 +4,4 @@ export * from './useGetTableOrderHistories';
 export * from './useGetCurrentTableList';
 export * from './usePutMoveOrderTable';
 export * from './usePutShareOrderTable';
+export * from './usePostOrderGroup';

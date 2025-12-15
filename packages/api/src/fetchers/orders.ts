@@ -10,6 +10,8 @@ import type {
   IGetCurrentTableListParams,
   IUpdateOrderTableRequest,
   TUpdateOrderTableResponse,
+  ICreateOrderGroupRequest,
+  TCreateOrderGroupResponse,
 } from '../types/orders';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -24,6 +26,26 @@ export const sendPickupNotification = async (
     method: 'POST',
     url: ENDPOINTS.ORDER.SEND_PICKUP_NOTIFICATION,
     data,
+  });
+
+  return response.data;
+};
+
+/**
+ * 주문 그룹을 생성합니다.
+ * POST /order-group/{shopCode}/{tableNumber}
+ */
+export const createOrderGroup = async ({
+  shopCode,
+  tableNumber,
+  customerCount,
+  kidsCustomerCount,
+}: ICreateOrderGroupRequest) => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TCreateOrderGroupResponse>({
+    method: 'POST',
+    url: ENDPOINTS.ORDER.CREATE_ORDER_GROUP(shopCode, tableNumber),
+    params: { customerCount, kidsCustomerCount },
   });
 
   return response.data;

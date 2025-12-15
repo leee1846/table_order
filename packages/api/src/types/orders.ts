@@ -50,6 +50,123 @@ export interface ICreateTableOrderRequest {
   orders: IOrder[];
 }
 
+export interface ICreateOrderGroupRequest {
+  shopCode: string;
+  tableNumber: number;
+  customerCount: number;
+  kidsCustomerCount: number;
+}
+
+/**
+ * 주문 그룹 상태 정보
+ */
+export interface IOrderGroupStatus {
+  orderGroupUuid: string;
+  orderGroupCode: string;
+  orderGroupStatus: TOrderGroupStatus;
+  isCleared: boolean;
+  discountRate: number;
+  updateDate: string;
+}
+
+/**
+ * 주문 그룹 상태 코드
+ */
+export type TOrderGroupStatus =
+  | 'OCCUPIED'
+  | 'CLEARED'
+  | 'MOVED'
+  | 'SHARED'
+  | 'CANCELED_ALL';
+
+/**
+ * 주문 그룹 상태 타입 (별칭)
+ */
+export type TOrderStatus = IOrderGroupStatus;
+
+/**
+ * 주문 상태 코드
+ */
+export type TOrderStatusCode =
+  | 'RECEIVED'
+  | 'COMPLETE'
+  | 'CANCEL'
+  | 'POS_CANCEL';
+
+/**
+ * 주문 상태 정보
+ */
+export interface IOrderStatus {
+  orderUuid: string;
+  shopSeq: number;
+  status: TOrderStatusCode;
+  orderCode: string;
+  createDate: string;
+  updateDate: string;
+}
+
+/**
+ * 주문 상세 옵션 정보
+ */
+export interface IOrderDetailOption {
+  orderDetailOptionSeq: number;
+  orderDetailMenuSeq: number;
+  optionSeq: number;
+  optionName: string;
+  optionPrice: number;
+  optionGroupName: string;
+  optionQuantity: number;
+  isMenuQuantityDependant: boolean;
+  createDate: string;
+}
+
+/**
+ * 주문 상세 메뉴 정보
+ */
+export interface IOrderDetailMenu {
+  orderDetailMenuSeq: number;
+  orderUuid: string;
+  menuSeq: number;
+  menuName: string;
+  menuPrice: number;
+  menuQuantity: number;
+  finalPrice: number;
+  canceledQuantity: number;
+  createDate: string;
+  orderDetailOptionList: IOrderDetailOption[];
+}
+
+/**
+ * 주문 정보
+ */
+export interface IOrderInfo {
+  orderUuid: string;
+  orderGroupUuid: string;
+  shopSeq: number;
+  tableSeq: number;
+  tableNumber: string;
+  orderType: TOrderType;
+  totalAmount: number;
+  createDate: string;
+  status: IOrderStatus;
+  orderDetailMenuList: IOrderDetailMenu[];
+}
+
+export interface ICreateOrderGroupData {
+  orderGroupUuid: string;
+  customerCount: number;
+  kidsCustomerCount: number;
+  shopSeq: number;
+  tableNumber: string;
+  tableName: string;
+  tableSeq: number;
+  createDate: string;
+  status: TOrderStatus;
+  orderInfoList: IOrderInfo[];
+}
+
+export type TCreateOrderGroupResponse = IApiResponse<ICreateOrderGroupData>;
+
 export interface IOrderHistoryOption {
   orderDetailOptionSeq: number;
   optionName: string;
@@ -145,4 +262,4 @@ export interface IUpdateOrderTableRequest {
 /**
  * 주문 테이블 이동/합석 응답 타입
  */
-export type TUpdateOrderTableResponse = IApiResponse<unknown>;
+export type TUpdateOrderTableResponse = IApiResponse<ICreateOrderGroupData>;

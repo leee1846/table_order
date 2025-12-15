@@ -13,6 +13,7 @@ export const CardContainer = styled.div<{ onClick?: () => void }>`
   width: 100%;
   height: 100%;
   cursor: pointer;
+  // 탭 하이라이트 색상 제거
   -webkit-tap-highlight-color: transparent;
 
   ${({ onClick }) =>

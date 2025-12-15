@@ -47,7 +47,7 @@ export const TableCard = ({
   return (
     <S.CardContainer onClick={onClick}>
       <S.CardHeader>
-        <S.TableNumber isEmpty={menuItems?.length === 0}>
+        <S.TableNumber isEmpty={menuItems === null}>
           {tableNumber}
         </S.TableNumber>
         <S.OrderTime>{orderTime}</S.OrderTime>

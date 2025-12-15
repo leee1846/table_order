@@ -19,7 +19,7 @@ export type TableWithStatus = TableData & {
 interface DraggableTableCardProps {
   table: TableWithStatus;
   activeTableNumber: string | null;
-  onClick: (table: TableData) => void;
+  onClick: (table: TableWithStatus) => void;
   useTranslation: typeof useTranslation;
 }
 

@@ -1,4 +1,4 @@
-import { type TableData, useTranslation } from '@repo/feature/components';
+import { useTranslation } from '@repo/feature/components';
 import { useEffect, useMemo, useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { DraggableTableCard, type TableWithStatus } from './DraggableTableCard';
@@ -12,19 +12,24 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import {
   useGetCurrentTableList,
   useGetTableGroupList,
+  usePostOrderGroup,
+  queryKeys,
 } from '@repo/api/queries';
 import { useAuth } from '@/hooks/useAuth';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useTableDrag } from '@/hooks/useTableDrag';
+import { useQueryClient } from '@repo/api/tanstack-query';
 
 export const TablesPage = () => {
   const { data: shopDetailData } = useShopDetailData();
   const { data: customerCountData } = useCustomerCountStore();
   const { shopCode } = useAuth();
+  const queryClient = useQueryClient();
+  const postOrderGroupMutation = usePostOrderGroup();
 
   const [showCustomerCountSelector, setShowCustomerCountSelector] =
     useState(false);
-  const [selectedTableNumber, setSelectedTableNumber] = useState<number | null>(
+  const [selectedTable, setSelectedTable] = useState<TableWithStatus | null>(
     null
   );
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
@@ -107,15 +112,13 @@ export const TablesPage = () => {
     // 선택된 그룹의 테이블을 순회하면서 주문 정보가 있으면 병합
     return groupTables.map((table) => {
       const orderInfo = orderMap.get(table.tableNumber);
-      const hasOrder =
-        !!orderInfo &&
-        !!orderInfo.orderDetailMenuList &&
-        orderInfo.orderDetailMenuList.length > 0;
+
+      const hasOrder = !!orderInfo && !!orderInfo.orderDetailMenuList;
 
       // 주문 정보가 있는 경우
-      if (orderInfo) {
+      if (hasOrder) {
         // updateDate에서 시간만 추출 (HH:mm 형식)
-        const orderTime = new Date(orderInfo.updateDate).toLocaleTimeString(
+        const orderTime = new Date(orderInfo.createDate).toLocaleTimeString(
           'ko-KR',
           {
             hour: '2-digit',
@@ -125,14 +128,12 @@ export const TablesPage = () => {
         );
 
         // orderDetailMenuList를 menuItems로 변환
-        const menuItems =
-          orderInfo.orderDetailMenuList &&
-          orderInfo.orderDetailMenuList.length > 0
-            ? orderInfo.orderDetailMenuList.map((menu) => ({
-                name: menu.menuName,
-                quantity: menu.menuQuantity,
-              }))
-            : null;
+        const menuItems = orderInfo.orderDetailMenuList
+          ? orderInfo.orderDetailMenuList.map((menu) => ({
+              name: menu.menuName,
+              quantity: menu.menuQuantity,
+            }))
+          : null;
 
         return {
           id: table.tableSeq, // tableSeq를 id로 사용
@@ -177,16 +178,50 @@ export const TablesPage = () => {
     shopCode,
   });
 
-  const handleTableClick = (table: TableData) => {
+  const handleTableClick = (table: TableWithStatus) => {
     const savedCount = customerCountData?.[table.tableNumber];
 
     if (!shouldSelectCustomerCount || savedCount) {
+      void handleNavigateWithOrderCheck(table);
+      return;
+    }
+
+    setSelectedTable(table);
+    setShowCustomerCountSelector(true);
+  };
+
+  const handleNavigateWithOrderCheck = async (table: TableWithStatus) => {
+    if (!shopCode) {
       navigate(ROUTES.TABLE_DETAIL.generate(table.tableNumber));
       return;
     }
 
-    setSelectedTableNumber(table.tableNumber);
-    setShowCustomerCountSelector(true);
+    const savedCount = customerCountData?.[table.tableNumber];
+    const customerCount = savedCount?.adultCount ?? 0;
+    const kidsCustomerCount =
+      shopDetailData?.shopSetting?.useKidsCustomerCount && savedCount
+        ? (savedCount.childCount ?? 0)
+        : 0;
+
+    try {
+      if (!table.hasOrder) {
+        await postOrderGroupMutation.mutateAsync({
+          shopCode,
+          tableNumber: table.tableNumber,
+          customerCount,
+          kidsCustomerCount,
+        });
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.orders.currentTableList(shopCode),
+        });
+      }
+      navigate(ROUTES.TABLE_DETAIL.generate(table.tableNumber));
+    } catch (error) {
+      // 주문 그룹이 생성되지 않으면 디테일 페이지로 이동하지 않도록 방어
+
+      console.error('Failed to create order group', error);
+      window.alert('주문 접수에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   if (isLoading) {
@@ -221,12 +256,12 @@ export const TablesPage = () => {
         selectedTableGroupSeq={selectedTableGroupSeq}
         onTableGroupSelect={setSelectedTableGroupSeq}
       />
-      {showCustomerCountSelector && selectedTableNumber !== null && (
+      {showCustomerCountSelector && selectedTable !== null && (
         <CustomerCountSelector
-          tableNumber={selectedTableNumber}
-          onComplete={() => {
+          tableNumber={selectedTable.tableNumber}
+          onComplete={async () => {
+            await handleNavigateWithOrderCheck(selectedTable);
             setShowCustomerCountSelector(false);
-            navigate(ROUTES.TABLE_DETAIL.generate(selectedTableNumber));
           }}
         />
       )}
