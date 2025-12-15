@@ -21,8 +21,8 @@ export const TableArea = styled.div`
 
 export const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  grid-auto-rows: minmax(154px, 1fr);
+  grid-template-columns: repeat(auto-fit, 190px);
+  grid-auto-rows: 154px;
   gap: 12px;
   justify-content: start;
   align-content: start;

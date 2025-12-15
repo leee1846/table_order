@@ -26,7 +26,7 @@ export const NoContent = styled.p`
 export const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(5, 190px);
-  grid-auto-rows: minmax(154px, auto);
+  grid-auto-rows: 154px;
   gap: 12px;
   padding: 16px;
   justify-content: start;

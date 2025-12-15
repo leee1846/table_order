@@ -12,7 +12,6 @@ export const BottomActions = ({ onAddTable }: Props) => {
   const navigate = useNavigate();
 
   const handleExit = () => {
-    // TODO: 나가기 처리 로직 구현
     navigate(ROUTES.SETTINGS.NOTICES.generate());
   };
 

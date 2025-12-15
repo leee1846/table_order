@@ -63,9 +63,9 @@ export const TableCard = ({
       </S.CardContent>
 
       <S.CardFooter>
+        {/* TODO : 메뉴가 켜진 테블릿의 경우만 보이게 추후 수정 */}
         {batteryIcon}
-
-        {menuItems?.length === 0 ? (
+        {!menuItems ? (
           <S.StatusText>{t('빈 테이블')}</S.StatusText>
         ) : (
           <S.TotalAmount>{formatCurrency(totalAmount ?? 0)}</S.TotalAmount>

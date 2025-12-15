@@ -27,12 +27,14 @@ export interface TableDetailContainerProps {
   shopCode: string;
   tableNumber: number;
   numberOfPeople?: number;
+  useCustomerCount?: boolean;
 }
 
 export const TableDetailContainer = ({
   shopCode,
   tableNumber,
   numberOfPeople = 0,
+  useCustomerCount = false,
 }: TableDetailContainerProps) => {
   //메뉴 추가 모달
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
@@ -223,6 +225,7 @@ export const TableDetailContainer = ({
             onPayCash={() => setIsCashPaymentDialogOpen(true)}
             onSplitPay={() => setIsSplitPaymentDialogOpen(true)}
             onItemClick={handleItemClick}
+            useCustomerCount={useCustomerCount}
           />
         </S.Left>
         <S.Right>

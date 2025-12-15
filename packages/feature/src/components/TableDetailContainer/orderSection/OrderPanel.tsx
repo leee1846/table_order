@@ -12,6 +12,7 @@ export type OrderPanelProps = {
   onPayCash?: () => void;
   onSplitPay?: () => void;
   onItemClick?: (item: OrderItem) => void;
+  useCustomerCount?: boolean;
 };
 
 export function OrderPanel({
@@ -21,6 +22,7 @@ export function OrderPanel({
   onPayCash,
   onSplitPay,
   onItemClick,
+  useCustomerCount,
 }: OrderPanelProps) {
   return (
     <Wrap>
@@ -28,6 +30,7 @@ export function OrderPanel({
         title={order.tableName}
         numberOfPeople={order.numberOfPeople}
         orderTime={order.orderTime}
+        useCustomerCount={useCustomerCount}
       />
       <OrderItemsTable
         items={order.items}

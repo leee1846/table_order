@@ -33,7 +33,8 @@ export const DraggableCard = styled.div<{
     !isDragging &&
     css`
       border: 2px solid ${colors.white};
-      & > div {
+      & > div,
+      & > div:active {
         background: ${colors.secondary[400]};
       }
     `}
@@ -47,7 +48,8 @@ export const DraggableCard = styled.div<{
   ${({ isActive }) =>
     isActive &&
     css`
-      & > div {
+      & > div,
+      & > div:active {
         background: ${colors.secondary[400]};
       }
     `}

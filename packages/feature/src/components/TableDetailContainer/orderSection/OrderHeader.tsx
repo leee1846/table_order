@@ -11,12 +11,14 @@ export type OrderHeaderProps = {
   title: string;
   numberOfPeople: number;
   orderTime: string;
+  useCustomerCount?: boolean;
 };
 
 export function OrderHeader({
   title,
   numberOfPeople,
   orderTime,
+  useCustomerCount = false,
 }: OrderHeaderProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -33,13 +35,15 @@ export function OrderHeader({
       <Header>
         <RightBox>
           <Title>{title}</Title>
-          <GuestCount>
-            <div>
-              <PersonIcon width={20} height={20} color={colors.grey[700]} />
-            </div>
+          {useCustomerCount && (
+            <GuestCount>
+              <div>
+                <PersonIcon width={20} height={20} color={colors.grey[700]} />
+              </div>
 
-            <NumberOfPeople>{numberOfPeople}</NumberOfPeople>
-          </GuestCount>
+              <NumberOfPeople>{numberOfPeople}</NumberOfPeople>
+            </GuestCount>
+          )}
         </RightBox>
         <LeftBox>
           <BasicButton

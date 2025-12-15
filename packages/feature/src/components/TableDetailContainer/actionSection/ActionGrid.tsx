@@ -9,6 +9,7 @@ import {
 } from '@repo/ui/icons';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
+import { useNavigate } from 'react-router-dom';
 
 const { colors } = theme;
 
@@ -20,6 +21,7 @@ export type ActionGridProps = {
 };
 
 export function ActionGrid({ onPress }: ActionGridProps) {
+  const navigate = useNavigate();
   return (
     <Wrap>
       <Grid>
@@ -58,7 +60,7 @@ export function ActionGrid({ onPress }: ActionGridProps) {
           icon={
             <ExitToAppIcon width={24} height={24} color={colors.grey[700]} />
           }
-          onClick={() => console.log('나가기')}
+          onClick={() => navigate(-1)}
         >
           <label>나가기</label>
         </BasicButton>
