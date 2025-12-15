@@ -51,6 +51,14 @@ export const MenuCard = styled.div<{ isSelected: boolean }>`
   height: 154px;
 `;
 
+export const MenuGridPlaceholder = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${colors.grey[500]};
+  ${TYPOGRAPHY.MT_7}
+`;
+
 export const MenuTitle = styled.div`
   ${TYPOGRAPHY.MT_7}
   color: ${colors.grey[800]};

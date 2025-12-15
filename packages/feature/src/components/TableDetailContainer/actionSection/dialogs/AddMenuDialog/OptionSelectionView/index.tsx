@@ -1,17 +1,17 @@
 import { BasicButton, ModalBackground, NumberInput } from '@repo/ui/components';
 import { theme } from '@repo/ui';
 import { CloseIcon, OptionSettingIcon } from '@repo/ui/icons';
-import type { MenuVo } from '../../../../mock';
+import type { IMenu } from '@repo/api/types';
 import * as S from './optionSelectionView.style';
 import * as A from '../addMenuDialog.styles';
 
 const { colors } = theme;
 
 interface OptionSelectionViewProps {
-  selectedMenu: MenuVo;
-  selectedOptions: Map<string, number>;
+  selectedMenu: IMenu;
+  selectedOptions: Map<number, number>;
   menuQuantity: number;
-  onOptionQuantityChange: (optionSeq: string, quantity: number) => void;
+  onOptionQuantityChange: (optionSeq: number, quantity: number) => void;
   onMenuQuantityChange: (quantity: number) => void;
   onAdd: () => void;
   onBack: () => void;
@@ -30,9 +30,11 @@ export const OptionSelectionView = ({
     (qty) => qty > 0
   );
 
-  const getOptionQuantity = (optionSeq: string): number => {
+  const getOptionQuantity = (optionSeq: number): number => {
     return selectedOptions.get(optionSeq) || 0;
   };
+
+  const optionGroups = selectedMenu.optionGroupList || [];
 
   return (
     <ModalBackground position="center" onClick={onBack}>
@@ -45,29 +47,31 @@ export const OptionSelectionView = ({
           {/* 왼쪽 패널 - 옵션 그룹 및 옵션 리스트 */}
           <S.OptionLeftPanel>
             <S.OptionHeader>
-              <S.OptionMenuName>
-                {selectedMenu.localeMenuNameStr || selectedMenu.menuName}
-              </S.OptionMenuName>
+              <S.OptionMenuName>{selectedMenu.menuName}</S.OptionMenuName>
             </S.OptionHeader>
             <S.OptionListContainer>
-              {selectedMenu.optionGroupList?.map((group) => (
+              {optionGroups.map((group) => (
                 <S.OptionGroup key={group.optionGroupSeq}>
                   <S.OptionGroupHeader>
                     <S.OptionGroupName>
-                      {group.localeOptionGroupNameStr || group.optionGroupName}
+                      {group.optionGroupName}
                     </S.OptionGroupName>
                     <S.OptionGroupInfo>
-                      {group.optionQuantitySelectable && '수량선택, '}
-                      {group.requiredQuantity > 0 &&
-                        `${group.requiredQuantity}개`}{' '}
-                      필수
-                      {group.multipleSelectable && '/수량제한'}
+                      {group.isOptionQuantitySelectable && '수량선택, '}
+                      {group.minQuantity > 0
+                        ? `${group.minQuantity}개 필수`
+                        : '선택'}
+                      {group.isMultipleSelectable && group.maxQuantity > 0
+                        ? ` / 최대 ${group.maxQuantity}개`
+                        : group.isMultipleSelectable
+                          ? ' / 복수 선택'
+                          : ''}
                     </S.OptionGroupInfo>
                   </S.OptionGroupHeader>
                   {group.optionList.map((option) => {
                     const quantity = getOptionQuantity(option.optionSeq);
                     const isSelected = quantity > 0;
-                    const isDisabled = option.outOfStock || option.deleted;
+                    const isDisabled = option.isOutOfStock || option.isDeleted;
 
                     return (
                       <S.OptionRow key={option.optionSeq}>
@@ -75,7 +79,7 @@ export const OptionSelectionView = ({
                           isSelected={isSelected}
                           isDisabled={isDisabled}
                         >
-                          {option.localeOptionNameStr || option.optionName}
+                          {option.optionName}
                         </S.OptionName>
                         <NumberInput
                           variant="rounded"
@@ -112,8 +116,8 @@ export const OptionSelectionView = ({
                       if (quantity === 0) {
                         return null;
                       }
-                      const option = selectedMenu.optionGroupList
-                        ?.flatMap((group) => group.optionList)
+                      const option = optionGroups
+                        .flatMap((group) => group.optionList)
                         .find((opt) => opt.optionSeq === optionSeq);
 
                       if (!option) {
@@ -123,7 +127,7 @@ export const OptionSelectionView = ({
                       return (
                         <S.SelectedOptionItem key={optionSeq}>
                           <S.OptionItemName>
-                            {option.localeOptionNameStr || option.optionName}
+                            {option.optionName}
                           </S.OptionItemName>
                           <S.OptionItemQuantity>
                             x{quantity}

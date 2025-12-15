@@ -4,7 +4,10 @@ import { useState, useMemo } from 'react';
 import * as S from './tableDetailContainer.styles';
 import { OrderPanel } from './orderSection/OrderPanel';
 import { ActionGrid } from './actionSection/ActionGrid';
-import { AddMenuDialog } from './actionSection/dialogs/AddMenuDialog';
+import {
+  AddMenuDialog,
+  type SelectedMenuWithOptions,
+} from './actionSection/dialogs/AddMenuDialog';
 import { SelectCancelDialog } from './actionSection/dialogs/SelectCancelDialog';
 import { AmountChangeDialog } from './actionSection/dialogs/AmountChangeDialog';
 import { AllDiscountDialog } from './actionSection/dialogs/AllDiscountDialog';
@@ -23,11 +26,13 @@ import { useGetTableOrderHistories } from '@repo/api/queries';
 import type { IGetTableOrderHistories } from '@repo/api/types';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 
+export type { SelectedMenuWithOptions };
 export interface TableDetailContainerProps {
   shopCode: string;
   tableNumber: number;
   numberOfPeople?: number;
   useCustomerCount?: boolean;
+  onAddMenu?: (selectedItems: SelectedMenuWithOptions[]) => void;
 }
 
 export const TableDetailContainer = ({
@@ -35,6 +40,7 @@ export const TableDetailContainer = ({
   tableNumber,
   numberOfPeople = 0,
   useCustomerCount = false,
+  onAddMenu,
 }: TableDetailContainerProps) => {
   //메뉴 추가 모달
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
@@ -176,9 +182,12 @@ export const TableDetailContainer = ({
     actionHandlers[id]?.();
   };
 
-  const handleAddMenu = (selectedItems: unknown) => {
-    console.log('추가된 메뉴:', selectedItems);
-    // TODO: 실제 메뉴 추가 로직 구현
+  const handleAddMenu = (selectedItems: SelectedMenuWithOptions[]) => {
+    if (!onAddMenu) {
+      return;
+    }
+
+    onAddMenu(selectedItems);
   };
 
   const handleSelectCancel = (
@@ -241,6 +250,8 @@ export const TableDetailContainer = ({
         onClose={() => setIsAddMenuDialogOpen(false)}
         tableName={order.tableName}
         onAdd={handleAddMenu}
+        shopCode={shopCode}
+        tableNumber={tableNumber}
       />
       {/* 선택 취소 모달 */}
       <SelectCancelDialog

@@ -8,8 +8,8 @@ import {
   RemoveIcon,
   AddIcon,
 } from '@repo/ui/icons';
-import { mockCategories, type MenuVo } from '../../../../mock';
-import type { SelectedMenuWithOptions } from '../types';
+import type { ICategoryWithMenus, IMenu } from '@repo/api/types';
+import type { SelectedMenuWithOptions } from '../index';
 import * as S from './menuSelectionView.style';
 import * as A from '../addMenuDialog.styles';
 import { formatCurrency } from '@repo/util/string';
@@ -18,11 +18,13 @@ import { css } from '@emotion/react';
 const { colors } = theme;
 
 interface MenuSelectionViewProps {
-  selectedCategory: string;
+  categories: ICategoryWithMenus[];
+  isLoading: boolean;
+  selectedCategory: number | null;
   selectedMenus: SelectedMenuWithOptions[];
   tableName: string;
-  onCategoryChange: (categorySeq: string) => void;
-  onMenuClick: (menu: MenuVo) => void;
+  onCategoryChange: (categorySeq: number) => void;
+  onMenuClick: (menu: IMenu) => void;
   onAdd: () => void;
   onClose: () => void;
   onRemoveItem: (index: number) => void;
@@ -30,6 +32,8 @@ interface MenuSelectionViewProps {
 }
 
 export const MenuSelectionView = ({
+  categories,
+  isLoading,
   selectedCategory,
   selectedMenus,
   tableName,
@@ -41,14 +45,19 @@ export const MenuSelectionView = ({
   onItemQuantityChange,
 }: MenuSelectionViewProps) => {
   const currentMenuList = useMemo(() => {
-    const category = mockCategories.find(
+    if (selectedCategory === null) {
+      return [];
+    }
+    const category = categories.find(
       (cat) => cat.categorySeq === selectedCategory
     );
     return category?.menuInfoList || [];
-  }, [selectedCategory]);
+  }, [categories, selectedCategory]);
 
   const totalAmount = useMemo(() => {
-    return calculateTotalAmount(selectedMenus);
+    return calculateTotalAmount(
+      selectedMenus as Parameters<typeof calculateTotalAmount>[0]
+    );
   }, [selectedMenus]);
 
   return (
@@ -61,31 +70,39 @@ export const MenuSelectionView = ({
         <S.ContentWrapper>
           {/* 왼쪽 사이드바 - 카테고리 */}
           <S.Sidebar>
-            {mockCategories.map((category) => (
+            {categories.map((category) => (
               <S.CategoryItem
                 key={category.categorySeq}
                 onClick={() => onCategoryChange(category.categorySeq)}
                 isActive={selectedCategory === category.categorySeq}
               >
-                {category.localeCategoryNameStr || category.categoryName}
+                {category.categoryName}
               </S.CategoryItem>
             ))}
           </S.Sidebar>
 
           {/* 중앙 영역 - 메뉴 그리드 */}
           <S.MenuGrid>
-            {currentMenuList.map((menu) => (
-              <S.MenuCard
-                key={menu.menuSeq}
-                onClick={() => onMenuClick(menu)}
-                isSelected={false}
-              >
-                <S.MenuTitle>
-                  {menu.localeMenuNameStr || menu.menuName}
-                </S.MenuTitle>
-                <S.MenuPrice>{formatCurrency(menu.menuPrice)}</S.MenuPrice>
-              </S.MenuCard>
-            ))}
+            {isLoading ? (
+              <S.MenuGridPlaceholder>
+                메뉴를 불러오는 중입니다.
+              </S.MenuGridPlaceholder>
+            ) : currentMenuList.length === 0 ? (
+              <S.MenuGridPlaceholder></S.MenuGridPlaceholder>
+            ) : (
+              currentMenuList.map((menu) => (
+                <S.MenuCard
+                  key={menu.menuSeq}
+                  onClick={() => onMenuClick(menu)}
+                  isSelected={false}
+                >
+                  <S.MenuTitle>
+                    {menu.localeMenuNameStr || menu.menuName}
+                  </S.MenuTitle>
+                  <S.MenuPrice>{formatCurrency(menu.menuPrice)}</S.MenuPrice>
+                </S.MenuCard>
+              ))
+            )}
           </S.MenuGrid>
 
           {/* 오른쪽 패널 - 선택된 메뉴 */}
@@ -110,9 +127,7 @@ export const MenuSelectionView = ({
                       key={`${item.menu.menuSeq}-${item.menu.menuName}-${index}`}
                     >
                       <S.ItemHeader>
-                        <S.ItemName>
-                          {item.menu.localeMenuNameStr || item.menu.menuName}
-                        </S.ItemName>
+                        <S.ItemName>{item.menu.menuName}</S.ItemName>
                         <S.ItemPrice>
                           {formatCurrency(item.menu.menuPrice)}
                         </S.ItemPrice>
@@ -122,9 +137,7 @@ export const MenuSelectionView = ({
                           {item.selectedOptions.map((option) => (
                             <S.SelectedOptionItem key={option.optionSeq}>
                               <S.OptionItemName>
-                                ㄴ
-                                {option.localeOptionNameStr ||
-                                  option.optionName}
+                                ㄴ{option.optionName}
                               </S.OptionItemName>
                               <S.OptionItemPrice>
                                 {formatCurrency(option.optionPrice)}

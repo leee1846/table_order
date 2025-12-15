@@ -1,7 +1,11 @@
 export { useTranslation } from 'react-i18next';
 export { TableGridContainer, type TableData } from './TableGridContainer';
 export { TableCard } from './TableGridContainer/TableCard';
-export { TableDetailContainer } from './TableDetailContainer';
+export {
+  TableDetailContainer,
+  type TableDetailContainerProps,
+  type SelectedMenuWithOptions,
+} from './TableDetailContainer';
 export { GlobalDialogContainer } from './GlobalDialog/GlobalDialogContainer';
 export {
   OrderListDialog,

@@ -1,34 +1,73 @@
-import { useState } from 'react';
-import { mockCategories, type MenuVo } from '../../../mock';
-import type {
-  AddMenuDialogProps,
-  SelectedMenuWithOptions,
-  SelectedOption,
-} from './types';
+import { useEffect, useMemo, useState } from 'react';
+import { useGetCategoriesWithMenus } from '@repo/api/queries';
+import type { ICategoryWithMenus, IMenu, IOption } from '@repo/api/types';
 import { MenuSelectionView } from './MenuSelectionView';
 import { OptionSelectionView } from './OptionSelectionView';
+
+export interface SelectedOption extends IOption {
+  selectedQuantity: number;
+}
+
+export interface SelectedMenuWithOptions {
+  menu: IMenu;
+  selectedOptions: SelectedOption[];
+  quantity: number;
+}
+
+interface AddMenuDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  tableName?: string;
+  onAdd?: (selectedItems: SelectedMenuWithOptions[]) => void;
+  shopCode: string;
+  tableNumber: number;
+}
 
 export const AddMenuDialog = ({
   isOpen,
   onClose,
   tableName = '테이블 이름',
   onAdd,
+  shopCode,
+  tableNumber,
 }: AddMenuDialogProps) => {
   const [viewMode, setViewMode] = useState<'menu' | 'option'>('menu');
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    mockCategories[0]?.categorySeq || ''
-  );
-  const [selectedMenu, setSelectedMenu] = useState<MenuVo | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedMenu, setSelectedMenu] = useState<IMenu | null>(null);
   const [selectedMenus, setSelectedMenus] = useState<SelectedMenuWithOptions[]>(
     []
   );
-  const [selectedOptions, setSelectedOptions] = useState<Map<string, number>>(
+  const [selectedOptions, setSelectedOptions] = useState<Map<number, number>>(
     new Map()
   );
   const [menuQuantity, setMenuQuantity] = useState<number>(1);
 
+  const { data: menuboardResponse, isLoading } = useGetCategoriesWithMenus(
+    {
+      shopCode,
+      tableNumber,
+    },
+    {
+      enabled: isOpen && !!shopCode && !!tableNumber,
+    }
+  );
+
+  const categories: ICategoryWithMenus[] = useMemo(() => {
+    return menuboardResponse?.data ?? [];
+  }, [menuboardResponse]);
+
+  const defaultCategorySeq = useMemo(() => {
+    return categories[0]?.categorySeq ?? null;
+  }, [categories]);
+
+  useEffect(() => {
+    if (isOpen && defaultCategorySeq !== null) {
+      setSelectedCategory(defaultCategorySeq);
+    }
+  }, [defaultCategorySeq, isOpen]);
+
   // 옵션 수량 변경 핸들러
-  const handleOptionQuantityChange = (optionSeq: string, quantity: number) => {
+  const handleOptionQuantityChange = (optionSeq: number, quantity: number) => {
     setSelectedOptions((prev) => {
       const newMap = new Map(prev);
       if (quantity > 0) {
@@ -41,10 +80,9 @@ export const AddMenuDialog = ({
   };
 
   // 메뉴 클릭 핸들러 - 옵션이 없으면 바로 추가, 있으면 옵션 화면으로 전환
-  const handleMenuClick = (menu: MenuVo) => {
+  const handleMenuClick = (menu: IMenu) => {
     // 옵션이 없는 메뉴인지 확인
     const hasOptions =
-      menu.optionGroupList &&
       menu.optionGroupList.length > 0 &&
       menu.optionGroupList.some(
         (group) => group.optionList && group.optionList.length > 0
@@ -136,7 +174,7 @@ export const AddMenuDialog = ({
 
   const handleClose = () => {
     setSelectedMenus([]);
-    setSelectedCategory(mockCategories[0]?.categorySeq || '');
+    setSelectedCategory(defaultCategorySeq);
     setSelectedMenu(null);
     setSelectedOptions(new Map());
     setMenuQuantity(1);
@@ -152,6 +190,8 @@ export const AddMenuDialog = ({
   if (viewMode === 'menu') {
     return (
       <MenuSelectionView
+        categories={categories}
+        isLoading={isLoading}
         selectedCategory={selectedCategory}
         selectedMenus={selectedMenus}
         tableName={tableName}

@@ -127,7 +127,7 @@ export interface IDeleteCategoryParams {
 }
 
 // ============================================================================
-// 공통 Mutation Response (POST, PUT, DELETE 모두 동일한 응답 구조)
+// GET /menuboard/{shopCode}
 // ============================================================================
 
 export interface IGetShopCategoriesWithMenusParams {
@@ -136,7 +136,15 @@ export interface IGetShopCategoriesWithMenusParams {
 }
 
 export interface ICategoryWithMenus extends ICategoryBase {
+  isDeleted: boolean;
+  mappedCategoryName: string;
+  mappedUptDt: string;
+  createMemberUuid: string;
+  updateMemberUuid: string;
   menuInfoList: IMenu[];
+  localeCategoryStr: string;
+  localeCategoryDescriptionStr: string;
+  selectedLanguageCode: TLanguageCode;
 }
 
 export type TGetShopCategoriesWithMenusResponse = IApiResponse<
