@@ -3,7 +3,7 @@ import { useThemeMode } from '@repo/ui';
 import type { IGetShop } from '@repo/api/types';
 
 /**
- * 상점 설정에 따라 앱 테마(다크/라이트 모드)를 적용합니다.
+ * 상점 설정에 따라 앱 테마(다크/라이트 모드)를 적용함
  *
  * @param shopDetailData - 매장 상세 데이터
  */

@@ -4,7 +4,7 @@ import { useCategoriesData } from '@/hooks/useCategoriesData';
 
 /**
  * 노출되는 카테고리 중 첫 주문 필수 항목이 있는지 확인하고
- * 장바구니 옵션을 업데이트합니다.
+ * 장바구니 옵션을 업데이트함
  */
 export const useFirstOrderRequiredCheck = (): void => {
   const { visibleCategories } = useCategoriesData();

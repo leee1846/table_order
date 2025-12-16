@@ -27,7 +27,7 @@ export interface ICategorySaleCondition {
 }
 
 /**
- * 카테고리가 현재 판매 가능한지 확인합니다.
+ * 카테고리가 현재 판매 가능한지 확인함
  *
  * @param condition - 카테고리 판매 조건
  * @param currentTime - 현재 시간 (테스트를 위해 주입 가능)
@@ -111,7 +111,7 @@ export const checkCategorySaleStatus = (
 };
 
 /**
- * 요일 조건을 확인합니다.
+ * 요일 조건을 확인함
  *
  * @param useSaleDay - 요일 제한 사용 여부
  * @param saleDayOfWeek - 판매 요일 배열 (0: 일요일, 1: 월요일, ..., 6: 토요일)
@@ -158,7 +158,7 @@ const checkSaleDay = (
 };
 
 /**
- * 다음 자정까지 남은 밀리초를 계산합니다.
+ * 다음 자정까지 남은 밀리초를 계산함
  *
  * @param currentTime - 현재 시간
  * @returns 자정까지 남은 밀리초

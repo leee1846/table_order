@@ -7,7 +7,7 @@ interface UseCustomerCountSettingsReturn {
 }
 
 /**
- * 고객 객수 선택 설정을 관리합니다.
+ * 고객 객수 선택 설정을 관리함
  * - 객수 선택 화면 노출 여부
  *
  * @param shopDetailData - 상점 상세 데이터

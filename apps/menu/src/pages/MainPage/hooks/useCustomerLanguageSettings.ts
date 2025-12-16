@@ -7,7 +7,7 @@ interface UseCustomerLanguageSettingsReturn {
 }
 
 /**
- * 고객 메뉴판 언어 설정을 관리합니다.
+ * 고객 메뉴판 언어 설정을 관리함
  * - 기본 언어 설정
  * - 언어 선택 화면 노출 여부
  *

@@ -11,7 +11,7 @@ export interface MenuPriceOption {
 }
 
 /**
- * 메뉴와 옵션의 총 가격을 계산합니다.
+ * 메뉴와 옵션의 총 가격을 계산함
  *
  * @param menuPrice - 메뉴 기본 가격
  * @param menuQuantity - 메뉴 수량

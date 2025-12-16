@@ -64,8 +64,8 @@ interface ITimePoint {
 }
 
 /**
- * 브레이크타임의 실제 날짜를 계산합니다.
- * 오늘 요일이면 오늘 날짜, 아니면 다음 주 해당 요일 날짜를 반환합니다.
+ * 브레이크타임의 실제 날짜를 계산함
+ * 오늘 요일이면 오늘 날짜, 아니면 다음 주 해당 요일 날짜를 반환함
  */
 const getBreakTimeDate = (
   breakTime: IShopTimeBreakTime,
@@ -121,8 +121,8 @@ const getBreakTimeDate = (
 };
 
 /**
- * 브레이크타임의 시작/종료 날짜를 계산합니다.
- * breakEndTime이 breakStartTime보다 작으면 자정을 넘어가는 것으로 판단하여 다음 날로 설정합니다.
+ * 브레이크타임의 시작/종료 날짜를 계산함
+ * breakEndTime이 breakStartTime보다 작으면 자정을 넘어가는 것으로 판단하여 다음 날로 설정함
  */
 const getBreakTimeDates = (
   breakTime: IShopTimeBreakTime,
@@ -147,7 +147,7 @@ const getBreakTimeDates = (
 };
 
 /**
- * 브레이크타임의 라스트오더 및 알림 시간을 계산합니다.
+ * 브레이크타임의 라스트오더 및 알림 시간을 계산함
  * - lastOrderDate: 라스트오더 시간 (해당시간까지 주문 가능)
  * - lastOrderStateChangeDate: 상태 변경용 시간 (표시 시간 + 1분)
  * - lastOrderAlertDate: 라스트오더 알림 시간
@@ -181,7 +181,7 @@ const getBreakTimeOrderDates = (
 };
 
 /**
- * Date 객체를 hh:mm 형식으로 변환합니다.
+ * Date 객체를 hh:mm 형식으로 변환함
  */
 const formatDateToTime = (date: Date): string => {
   const hours = date.getHours().toString().padStart(2, '0');
@@ -190,7 +190,7 @@ const formatDateToTime = (date: Date): string => {
 };
 
 /**
- * WAITING 상태를 반환합니다.
+ * WAITING 상태를 반환함
  */
 const getWaitingStatus = (): IBreakTimeStatus => ({
   state: 'WAITING',
@@ -207,7 +207,7 @@ const getWaitingStatus = (): IBreakTimeStatus => ({
 });
 
 /**
- * 현재 시간이 브레이크타임 범위 안에 있는지 확인하고 해당 브레이크타임을 반환합니다.
+ * 현재 시간이 브레이크타임 범위 안에 있는지 확인하고 해당 브레이크타임을 반환함
  */
 const findActiveBreakTime = (
   shopTime: IShopTime,
@@ -239,7 +239,7 @@ const findActiveBreakTime = (
 };
 
 /**
- * 브레이크타임 상태를 확인합니다.
+ * 브레이크타임 상태를 확인함
  *
  * @param shopTime - 상점 시간 설정
  * @param currentTime - 현재 시간 (테스트를 위해 주입 가능)

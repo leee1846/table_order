@@ -13,7 +13,7 @@ interface BreakTimeState {
 }
 
 /**
- * 브레이크타임 시작 시 장바구니를 클리어합니다.
+ * 브레이크타임 시작 시 장바구니를 클리어함
  *
  * @param breakTimeState - 브레이크타임 상태
  */

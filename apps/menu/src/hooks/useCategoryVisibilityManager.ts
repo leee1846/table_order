@@ -6,7 +6,7 @@ import { TIMER_KEYS } from '@/constants/keys';
 import type { ICategoryWithMenus } from '@repo/api/types';
 
 /**
- * 카테고리 판매 시간/요일에 따른 노출/비노출 상태를 자동으로 관리합니다.
+ * 카테고리 판매 시간/요일에 따른 노출/비노출 상태를 자동으로 관리함
  * - 타이머 기반 자동 업데이트
  * - 다음 상태 변경 시간 추적
  *

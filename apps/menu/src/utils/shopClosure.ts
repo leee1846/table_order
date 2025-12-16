@@ -39,7 +39,7 @@ export interface IShopClosureStatus {
 }
 
 /**
- * Date 객체를 hh:mm 형식으로 변환합니다.
+ * Date 객체를 hh:mm 형식으로 변환함
  */
 const formatDateToTime = (date: Date): string => {
   const hours = date.getHours().toString().padStart(2, '0');
@@ -48,7 +48,7 @@ const formatDateToTime = (date: Date): string => {
 };
 
 /**
- * OPEN 상태를 반환합니다.
+ * OPEN 상태를 반환함
  */
 const getOpenStatus = (): IShopClosureStatus => ({
   state: 'OPEN',
@@ -65,8 +65,8 @@ const getOpenStatus = (): IShopClosureStatus => ({
 });
 
 /**
- * 영업마감 시작/종료 날짜를 계산합니다.
- * closureEndTime이 closureStartTime보다 작으면 자정을 넘어가는 것으로 판단하여 다음 날로 설정합니다.
+ * 영업마감 시작/종료 날짜를 계산함
+ * closureEndTime이 closureStartTime보다 작으면 자정을 넘어가는 것으로 판단하여 다음 날로 설정함
  */
 const getClosureDates = (
   shopTime: IShopTime,
@@ -98,7 +98,7 @@ const getClosureDates = (
 };
 
 /**
- * 영업마감의 라스트오더 및 알림 시간을 계산합니다.
+ * 영업마감의 라스트오더 및 알림 시간을 계산함
  * - lastOrderDate: 라스트오더 시간 (해당시간까지 주문 가능)
  * - lastOrderStateChangeDate: 상태 변경용 시간 (표시 시간 + 1분)
  * - lastOrderAlertDate: 라스트오더 알림 시간
@@ -137,8 +137,8 @@ const getClosureOrderDates = (
 };
 
 /**
- * 영업마감 시간이 현재 유효한지 확인하고 날짜를 조정합니다.
- * 자정을 넘어가는 경우를 처리합니다.
+ * 영업마감 시간이 현재 유효한지 확인하고 날짜를 조정함
+ * 자정을 넘어가는 경우를 처리함
  */
 const adjustClosureDatesForMidnightCrossing = (
   closureStartDate: Date,
@@ -240,7 +240,7 @@ const adjustClosureDatesForMidnightCrossing = (
 };
 
 /**
- * 영업마감 상태를 확인합니다.
+ * 영업마감 상태를 확인함
  *
  * @param shopTime - 상점 시간 설정
  * @param currentTime - 현재 시간 (테스트를 위해 주입 가능)

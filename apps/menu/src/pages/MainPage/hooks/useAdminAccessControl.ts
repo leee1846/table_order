@@ -16,7 +16,7 @@ interface UseAdminAccessControlReturn {
 }
 
 /**
- * 관리자 접근 제어를 관리합니다.
+ * 관리자 접근 제어를 관리함
  * - 테이블이 없거나 유효하지 않을 경우 관리자 비밀번호 모달 표시
  *
  * @param deviceDataResult - 디바이스 데이터 결과

@@ -56,8 +56,8 @@ interface PageRendererProps {
 }
 
 /**
- * 우선순위에 따라 적절한 페이지/모달을 렌더링합니다.
- * 각 조건을 순서대로 체크하여 가장 높은 우선순위 페이지를 렌더링합니다.
+ * 우선순위에 따라 적절한 페이지/모달을 렌더링함
+ * 각 조건을 순서대로 체크하여 가장 높은 우선순위 페이지를 렌더링함
  */
 export const PageRenderer = ({ states, mainContent }: PageRendererProps) => {
   /** 관리자 접근 비밀번호 모달 노출 */
