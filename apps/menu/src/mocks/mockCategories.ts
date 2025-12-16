@@ -183,8 +183,18 @@ const createCategory = (
   localeCategoryDescription: options.localeCategoryDescription ?? null,
   createDate: '2024-01-01T00:00:00Z',
   updateDate: '2024-01-01T00:00:00Z',
-  selectedLanguageCode: (options.selectedLanguageCode ??
-    null) as TLanguageCode | null,
+  selectedLanguageCode: options.selectedLanguageCode ?? 'KO',
+  isDeleted: false,
+  mappedCategoryName: '',
+  mappedUptDt: '',
+  createMemberUuid: 'mock-uuid',
+  updateMemberUuid: 'mock-uuid',
+  localeCategoryStr: options.localeCategoryName
+    ? JSON.stringify(options.localeCategoryName)
+    : '',
+  localeCategoryDescriptionStr: options.localeCategoryDescription
+    ? JSON.stringify(options.localeCategoryDescription)
+    : '',
   menuInfoList,
 });
 
@@ -1340,7 +1350,7 @@ export const mockCategories: ICategoryWithMenus[] = [
       CH: '各种汉堡和套餐',
     },
   }),
-  createCategory(2, '치킨ㄴㄴ', chickenMenus, {
+  createCategory(2, '치킨', chickenMenus, {
     isHidden: false,
     isQuantitySelectable: true,
     isFirstOrderRequired: false,
@@ -1349,7 +1359,12 @@ export const mockCategories: ICategoryWithMenus[] = [
     useSaleTime: true,
     saleStartTime: '0900',
     saleEndTime: '2200',
-    localeCategoryName: { KO: '치킨', EN: 'Chicken', JP: 'チキン', CH: '鸡肉' },
+    localeCategoryName: {
+      KO: '치킨',
+      EN: 'Chicken',
+      JP: 'チキン',
+      CH: '鸡肉',
+    },
     localeCategoryDescription: {
       KO: '바삭하고 맛있는 치킨 메뉴',
       EN: 'Crispy and delicious chicken menu',

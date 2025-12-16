@@ -4,6 +4,7 @@ import * as S from '@/pages/MainPage/Contents/CategoryItem/categoryItem.style';
 import { NoContent } from '@/feature/NoContent';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useCategoriesData } from '@/hooks/useCategoriesData';
 
 interface Props {
   category: ICategoryWithMenus;
@@ -13,6 +14,7 @@ export const CategoryItem = ({ category, isBreakTimeLastOrder }: Props) => {
   const layout: 1 | 2 | 3 = category.useTwoColumnLayout ? 2 : 1;
   const { t } = useCustomerTranslation();
   const { data: languageData } = useCustomerLanguageStore();
+  const { getVisibleMenus } = useCategoriesData();
 
   return (
     <S.Container>
@@ -32,17 +34,15 @@ export const CategoryItem = ({ category, isBreakTimeLastOrder }: Props) => {
       )}
 
       <S.Categories layout={layout}>
-        {category.menuInfoList
-          .filter((menu) => !menu.isHidden)
-          .map((menu) => (
-            <MenuItem
-              layout={layout}
-              key={menu.menuSeq}
-              category={category}
-              menu={menu}
-              disabled={isBreakTimeLastOrder}
-            />
-          ))}
+        {getVisibleMenus(category).map((menu) => (
+          <MenuItem
+            layout={layout}
+            key={menu.menuSeq}
+            category={category}
+            menu={menu}
+            disabled={isBreakTimeLastOrder}
+          />
+        ))}
       </S.Categories>
     </S.Container>
   );

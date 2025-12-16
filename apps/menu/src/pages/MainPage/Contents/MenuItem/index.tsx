@@ -44,7 +44,7 @@ export const MenuItem = ({ layout, category, menu, disabled }: Props) => {
   const [isMenuDetailOpen, setIsMenuDetailOpen] = useState(false);
 
   const { addToCart, updateCartItemQuantity, data: cartData } = useCartStore();
-  const { visibleCategories } = useCategoriesData({});
+  const { firstOrderRequiredCategories } = useCategoriesData();
 
   const onClickMenu = () => {
     if (disabled) {
@@ -62,9 +62,6 @@ export const MenuItem = ({ layout, category, menu, disabled }: Props) => {
 
     // 첫 주문 필수 항목이 있는 경우
     if (cartData.hasFirstOrderRequiredItems) {
-      const firstOrderRequiredCategories = visibleCategories.filter(
-        (c) => c.isFirstOrderRequired
-      );
       const menusInCart = cartData.menus;
       const hasFirstOrderRequiredMenu = firstOrderRequiredCategories.some((c) =>
         menusInCart.some((m) => m.categorySeq === c.categorySeq)

@@ -43,58 +43,58 @@ const createShopDetail = (): IGetShop => ({
     shopBusinessEndTime: '2200',
     useBreakTime: true,
     breakTimeMessage: '브레이크 타임입니다',
-    breakTimeLastOrderTimeBefore: 20,
-    breakTimeLastOrderAlertTimeBefore: 20,
+    breakTimeLastOrderTimeBefore: 1,
+    breakTimeLastOrderAlertTimeBefore: 1,
     breakTimeLastOrderMessage:
-      '브레이크 타임 1분 전입니다   브레이크 타임 2분 전입니다 브레이크 타임 3분 전입니다 브레이크 타임 4분 전입니다',
+      '브레이크 타임 00분 전입니다   브레이크 타임 2분 전입니다 브레이크 타임 3분 전입니다 브레이크 타임 4분 전입니다',
     breakTimeList: [
       {
         shopSeq: 1,
-        dayOfWeek: 0, // 월요일
+        dayOfWeek: 0, // 일요일
         breakStartTime: '1700',
         breakEndTime: '1701',
         isActive: true,
       },
       {
         shopSeq: 1,
-        dayOfWeek: 0, // 월요일
-        breakStartTime: '1522',
-        breakEndTime: '1523',
+        dayOfWeek: 1, // 월요일
+        breakStartTime: '1100',
+        breakEndTime: '1101',
         isActive: true,
       },
       {
         shopSeq: 1,
-        dayOfWeek: 2, // 수요일
-        breakStartTime: '1400',
-        breakEndTime: '1500',
+        dayOfWeek: 2, // 화요일
+        breakStartTime: '1041',
+        breakEndTime: '1042',
         isActive: true,
       },
       {
         shopSeq: 1,
-        dayOfWeek: 3, // 목요일
-        breakStartTime: '1400',
-        breakEndTime: '1500',
+        dayOfWeek: 3, // 수요일
+        breakStartTime: '1500',
+        breakEndTime: '1600',
         isActive: false,
       },
       {
         shopSeq: 1,
-        dayOfWeek: 4, // 금요일
-        breakStartTime: '1400',
-        breakEndTime: '1500',
+        dayOfWeek: 4, // 목요일
+        breakStartTime: '1700',
+        breakEndTime: '1800',
         isActive: true,
       },
       {
         shopSeq: 1,
-        dayOfWeek: 5, // 토요일
-        breakStartTime: '1400',
-        breakEndTime: '1500',
+        dayOfWeek: 5, // 금요일
+        breakStartTime: '1900',
+        breakEndTime: '2000',
         isActive: true,
       },
       {
         shopSeq: 1,
-        dayOfWeek: 6, // 일요일
-        breakStartTime: '1400',
-        breakEndTime: '1500',
+        dayOfWeek: 6, // 토요일
+        breakStartTime: '2100',
+        breakEndTime: '2200',
         isActive: true,
       },
     ],
