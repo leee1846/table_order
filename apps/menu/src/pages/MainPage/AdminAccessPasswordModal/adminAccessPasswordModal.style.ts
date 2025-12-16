@@ -20,12 +20,16 @@ export const Container = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: ${({ theme }) => theme.zIndex.notification};
   background-color: ${({ theme }) => theme.mode.grey[700]};
   padding: 90px 0;
+  box-sizing: border-box;
+  overflow: auto;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 `;
 
@@ -40,6 +44,11 @@ export const Content = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: max-content;
+  padding: 20px;
+  box-sizing: border-box;
+  margin: auto 0;
+  min-height: calc(100vh - 180px);
 `;
 
 export const Title = styled.p`

@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.div`
   position: fixed;
@@ -9,7 +8,7 @@ export const Container = styled.div`
   bottom: 0;
   width: 100vw;
   height: 100vh;
-  background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
+  background-color: ${({ theme }) => theme.mode.undefined_palette[900]};
   overflow: auto;
   padding: 20px;
   box-sizing: border-box;
@@ -26,10 +25,11 @@ export const ContentWrapper = styled.div`
   padding: 20px;
   box-sizing: border-box;
   margin: 0 auto;
-`;
-export const Icon = styled.img`
-  width: 14rem;
-  height: 14rem;
+
+  & > img {
+    width: 10rem;
+    height: 10rem;
+  }
 `;
 
 export const Title = styled.h1`
@@ -43,19 +43,23 @@ export const Title = styled.h1`
 `;
 
 export const Time = styled.p`
-  padding: 20px 60px;
-  background-color: ${({ theme }) => theme.mode.grey[200]};
-  border-radius: 62.4rem;
   font-size: 5rem;
   font-style: normal;
   font-weight: 600;
-  line-height: normal;
+  line-height: 6rem; /* 120% */
   color: ${({ theme }) => theme.mode.grey[900]};
-  margin-bottom: 60px;
+  border-radius: 62.4rem;
+  padding: 20px 60px;
+  background-color: ${({ theme }) => theme.mode.grey[200]};
+  margin-bottom: 92px;
 `;
 
 export const Description = styled.p`
-  ${TYPOGRAPHY.MT_7}
-  text-align: center;
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.875rem; /* 150% */
+  letter-spacing: -0.03125rem;
   color: ${({ theme }) => theme.mode.grey[600]};
+  text-align: center;
 `;

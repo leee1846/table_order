@@ -66,3 +66,4 @@ export { default as usFlagIcon } from './us_flag.svg';
 export { default as chFlagIcon } from './ch_flag.svg';
 export { default as jpFlagIcon } from './jp_flag.svg';
 export { default as ruFlagIcon } from './ru_flag.svg';
+export { default as closedIcon } from './closed.svg';

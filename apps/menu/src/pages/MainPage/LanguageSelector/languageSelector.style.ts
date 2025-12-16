@@ -10,11 +10,22 @@ export const Container = styled.div`
   width: 100vw;
   height: 100vh;
   background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
+  overflow: auto;
+  padding: 20px;
+  box-sizing: border-box;
+`;
+
+export const ContentWrapper = styled.div`
+  min-height: 100%;
+  width: max-content;
+  min-width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow-y: auto;
 
   & > h1 {
     font-size: 3rem;

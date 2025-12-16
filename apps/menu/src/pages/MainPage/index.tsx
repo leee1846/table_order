@@ -104,7 +104,7 @@ export const MainPage = () => {
   // ========================================
   // 휴무 상태 (TODO: 실제 로직 구현 필요)
   // ========================================
-  const isClosed = false;
+  const isClosed = true;
 
   return (
     <PageRenderer

@@ -21,33 +21,35 @@ export const LanguageSelector = () => {
 
   return (
     <S.Container>
-      <h1>언어 선택</h1>
-      <p>주문에 사용하실 언어를 선택해 주세요.</p>
-      <S.Buttons>
-        {shopDetailData.shopSetting.shopLocaleMapList.map((lang) => {
-          const config = LANGUAGE_CONFIG[lang.localeCode as TShopLanguage];
-          if (!config) {
-            return null;
-          }
+      <S.ContentWrapper>
+        <h1>언어 선택</h1>
+        <p>주문에 사용하실 언어를 선택해 주세요.</p>
+        <S.Buttons>
+          {shopDetailData.shopSetting.shopLocaleMapList.map((lang) => {
+            const config = LANGUAGE_CONFIG[lang.localeCode as TShopLanguage];
+            if (!config) {
+              return null;
+            }
 
-          return (
-            <S.Button key={lang.localeCode}>
-              <button
-                type="button"
-                onClick={() =>
-                  setLanguageData({
-                    currentLanguage: lang.localeCode as TShopLanguage,
-                    isSelected: true,
-                  })
-                }
-              >
-                <img src={config.flag} alt={lang.localeCode} />
-                {config.label}
-              </button>
-            </S.Button>
-          );
-        })}
-      </S.Buttons>
+            return (
+              <S.Button key={lang.localeCode}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setLanguageData({
+                      currentLanguage: lang.localeCode as TShopLanguage,
+                      isSelected: true,
+                    })
+                  }
+                >
+                  <img src={config.flag} alt={lang.localeCode} />
+                  {config.label}
+                </button>
+              </S.Button>
+            );
+          })}
+        </S.Buttons>
+      </S.ContentWrapper>
     </S.Container>
   );
 };
