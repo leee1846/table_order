@@ -3,7 +3,7 @@ import { Sidebar } from '@/pages/MainPage/Sidebar';
 import { Header } from '@/pages/MainPage/Header';
 import { CartButton } from '@/pages/MainPage/CartButton';
 import { Contents } from '@/pages/MainPage/Contents';
-import { PageRenderer } from '@/pages/MainPage/components/PageRenderer';
+import { PageRenderer } from '@/pages/MainPage/PageRenderer';
 import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
@@ -95,25 +95,6 @@ export const MainPage = () => {
   /** 장바구니 메뉴 주문 리마인더 노출 여부 */
   const { data: cartReminderData } = useCartReminderStore();
 
-  // ========================================
-  // 브레이크타임 메시지 계산
-  // ========================================
-  const BTLastOrderMessage =
-    (breakTimeState.isBreakTimeLastOrder ||
-      breakTimeState.isBreakTimeLastOrderAlert) &&
-    breakTimeState.breakTimeLastOrderMessage
-      ? breakTimeState.breakTimeLastOrderMessage
-      : '';
-
-  // ========================================
-  // 영업마감 메시지 계산
-  // ========================================
-  const closureLastOrderMessage =
-    (closureState.isClosureLastOrder || closureState.isClosureLastOrderAlert) &&
-    closureState.closureLastOrderMessage
-      ? closureState.closureLastOrderMessage
-      : '';
-
   return (
     <PageRenderer
       states={{
@@ -159,10 +140,9 @@ export const MainPage = () => {
             openAdminAccessPasswordModal={() =>
               adminAccessControl.setShowAdminAccessPasswordModal(true)
             }
-            breakTimeLastOrderMessage={`${BTLastOrderMessage} ${closureLastOrderMessage}`}
-            isLastOrder={
-              breakTimeState.isBreakTimeLastOrder ||
-              closureState.isClosureLastOrder
+            isLastOrderAlert={
+              breakTimeState.isBreakTimeLastOrderAlert ||
+              closureState.isClosureLastOrderAlert
             }
           />
 
@@ -172,10 +152,6 @@ export const MainPage = () => {
               staffCallCategory={staffCallCategory}
               selectedCategorySeq={categoryNavigation.selectedCategorySeq}
               handleCategoryClick={categoryNavigation.handleCategoryClick}
-              isLastOrder={
-                breakTimeState.isBreakTimeLastOrder ||
-                closureState.isClosureLastOrder
-              }
             />
 
             <Contents
@@ -184,19 +160,9 @@ export const MainPage = () => {
                 shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false
               }
               selectedCategory={categoryNavigation.selectedCategory}
-              isLastOrder={
-                breakTimeState.isBreakTimeLastOrder ||
-                closureState.isClosureLastOrder
-              }
             />
 
-            <CartButton
-              categories={visibleCategories}
-              isLastOrder={
-                breakTimeState.isBreakTimeLastOrder ||
-                closureState.isClosureLastOrder
-              }
-            />
+            <CartButton categories={visibleCategories} />
           </S.MainContent>
         </S.Container>
       }

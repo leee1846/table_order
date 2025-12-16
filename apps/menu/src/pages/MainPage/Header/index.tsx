@@ -14,14 +14,12 @@ import { TIMER_KEYS } from '@/constants/keys';
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
   openAdminAccessPasswordModal: () => void;
-  breakTimeLastOrderMessage: string;
-  isLastOrder: boolean;
+  isLastOrderAlert: boolean;
 }
 export const Header = ({
   orderHistories,
   openAdminAccessPasswordModal,
-  breakTimeLastOrderMessage,
-  isLastOrder,
+  isLastOrderAlert,
 }: Props) => {
   const theme = useTheme();
   const { t } = useCustomerTranslation();
@@ -40,7 +38,7 @@ export const Header = ({
 
   // 텍스트가 컨테이너 너비를 넘치는지 확인하여 애니메이션 필요 여부 결정
   useEffect(() => {
-    if (!breakTimeLastOrderMessage) {
+    if (!isLastOrderAlert) {
       setIsTextOverflowing(false);
       return;
     }
@@ -70,7 +68,7 @@ export const Header = ({
       clearTimeout(timeoutId);
       resizeObserver.disconnect();
     };
-  }, [breakTimeLastOrderMessage]);
+  }, [isLastOrderAlert]);
 
   // 컴포넌트 언마운트 시 타이머 정리
   useEffect(() => {
@@ -100,10 +98,6 @@ export const Header = ({
   };
 
   const onClickOrderHistoryButton = () => {
-    if (isLastOrder) {
-      return;
-    }
-
     setShowOrderHistoryModal(true);
   };
 
@@ -119,18 +113,18 @@ export const Header = ({
           </button>
           <S.Divider />
           <S.ShopName>{shopDetailData?.shopName ?? ''}</S.ShopName>
-          {breakTimeLastOrderMessage && (
+          {isLastOrderAlert && (
             <S.DescriptionContainer ref={descriptionContainerRef}>
               <S.DescriptionWrapper
                 ref={descriptionWrapperRef}
                 $isOverflowing={isTextOverflowing}
               >
-                <S.Description>{breakTimeLastOrderMessage}</S.Description>
+                <S.Description>asdasdasdasdasdasdadasd</S.Description>
                 {/* 텍스트가 넘칠 때만 복제하여 무한 스크롤 애니메이션 구현 */}
                 {isTextOverflowing && (
                   <>
                     <S.DescriptionSpacer> </S.DescriptionSpacer>
-                    <S.Description>{breakTimeLastOrderMessage}</S.Description>
+                    <S.Description>asdasdasdasdasdasdadasd</S.Description>
                   </>
                 )}
               </S.DescriptionWrapper>

@@ -43,7 +43,6 @@ export const useBreakTime = (): UseBreakTimeReturn => {
 
   useEffect(() => {
     const shopTime = shopDetailData?.shopTime;
-
     if (!shopTime) {
       setShowBreakTime(false);
       setIsBreakTimeLastOrder(false);

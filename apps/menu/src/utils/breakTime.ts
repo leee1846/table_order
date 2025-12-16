@@ -149,7 +149,6 @@ const getBreakTimeDates = (
 /**
  * 브레이크타임의 라스트오더 및 알림 시간을 계산함
  * - lastOrderDate: 라스트오더 시간 (해당시간까지 주문 가능)
- * - lastOrderStateChangeDate: 상태 변경용 시간 (표시 시간 + 1분)
  * - lastOrderAlertDate: 라스트오더 알림 시간
  */
 const getBreakTimeOrderDates = (
@@ -161,12 +160,6 @@ const getBreakTimeOrderDates = (
   const lastOrderDate = new Date(breakStartDate);
   lastOrderDate.setMinutes(lastOrderDate.getMinutes() - lastOrderTimeBefore);
 
-  // 상태 변경용 라스트오더 시간: 표시 시간 + 1분
-  const lastOrderStateChangeDate = new Date(lastOrderDate);
-  lastOrderStateChangeDate.setMinutes(
-    lastOrderStateChangeDate.getMinutes() + 1
-  );
-
   // 라스트오더 알림 시간: 표시 시간 - lastOrderAlertTimeBefore
   const lastOrderAlertDate = new Date(lastOrderDate);
   lastOrderAlertDate.setMinutes(
@@ -175,7 +168,6 @@ const getBreakTimeOrderDates = (
 
   return {
     lastOrderDate,
-    lastOrderStateChangeDate,
     lastOrderAlertDate,
   };
 };
@@ -275,12 +267,11 @@ export const checkBreakTimeStatus = (
       breakTime,
       breakTimeDate
     );
-    const { lastOrderStateChangeDate, lastOrderAlertDate } =
-      getBreakTimeOrderDates(
-        breakStartDate,
-        lastOrderTimeBefore,
-        lastOrderAlertTimeBefore
-      );
+    const { lastOrderDate, lastOrderAlertDate } = getBreakTimeOrderDates(
+      breakStartDate,
+      lastOrderTimeBefore,
+      lastOrderAlertTimeBefore
+    );
 
     // 모든 시간 포인트 추가
     timePoints.push(
@@ -292,7 +283,7 @@ export const checkBreakTimeStatus = (
       },
       {
         type: 'LAST_ORDER',
-        timeMs: lastOrderStateChangeDate.getTime(),
+        timeMs: lastOrderDate.getTime(),
         breakTime,
         breakTimeDate,
       },
@@ -331,7 +322,7 @@ export const checkBreakTimeStatus = (
     breakEndDate: closestBreakEndDate,
   } = getBreakTimeDates(closestBreakTime, closestBreakTimeDate);
   const {
-    lastOrderStateChangeDate: closestLastOrderStateChangeDate,
+    lastOrderDate: closestLastOrderDate,
     lastOrderAlertDate: closestLastOrderAlertDate,
   } = getBreakTimeOrderDates(
     closestBreakStartDate,
@@ -341,7 +332,7 @@ export const checkBreakTimeStatus = (
 
   const closestBreakStartMs = closestBreakStartDate.getTime();
   const closestBreakEndMs = closestBreakEndDate.getTime();
-  const closestLastOrderMs = closestLastOrderStateChangeDate.getTime();
+  const closestLastOrderMs = closestLastOrderDate.getTime();
   const closestLastOrderAlertMs = closestLastOrderAlertDate.getTime();
 
   // 현재 시간이 어떤 브레이크타임 범위 안에 있는지 확인
@@ -359,7 +350,7 @@ export const checkBreakTimeStatus = (
       activeBreakTime.breakTimeDate
     );
     const {
-      lastOrderStateChangeDate: activeLastOrderStateChangeDate,
+      lastOrderDate: activeLastOrderStateChangeDate,
       lastOrderAlertDate: activeLastOrderAlertDate,
     } = getBreakTimeOrderDates(
       activeBreakStartDate,

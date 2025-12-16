@@ -100,7 +100,6 @@ const getClosureDates = (
 /**
  * 영업마감의 라스트오더 및 알림 시간을 계산함
  * - lastOrderDate: 라스트오더 시간 (해당시간까지 주문 가능)
- * - lastOrderStateChangeDate: 상태 변경용 시간 (표시 시간 + 1분)
  * - lastOrderAlertDate: 라스트오더 알림 시간
  */
 const getClosureOrderDates = (
@@ -108,19 +107,12 @@ const getClosureOrderDates = (
   currentTime: Date
 ): {
   lastOrderDate: Date;
-  lastOrderStateChangeDate: Date;
   lastOrderAlertDate: Date;
 } => {
   // 라스트오더 시간 계산
   const lastOrderDate = getDateFromTimeString(
     shopTime.closureLastOrderTime,
     currentTime
-  );
-
-  // 상태 변경용 라스트오더 시간: 표시 시간 + 1분
-  const lastOrderStateChangeDate = new Date(lastOrderDate);
-  lastOrderStateChangeDate.setMinutes(
-    lastOrderStateChangeDate.getMinutes() + 1
   );
 
   // 라스트오더 알림 시간: 표시 시간 - closureLastOrderAlertTimeBefore
@@ -131,7 +123,6 @@ const getClosureOrderDates = (
 
   return {
     lastOrderDate,
-    lastOrderStateChangeDate,
     lastOrderAlertDate,
   };
 };
@@ -144,7 +135,6 @@ const adjustClosureDatesForMidnightCrossing = (
   closureStartDate: Date,
   closureEndDate: Date,
   lastOrderDate: Date,
-  lastOrderStateChangeDate: Date,
   lastOrderAlertDate: Date,
   lastOrderAlertMs: number,
   currentTime: Date,
@@ -153,7 +143,6 @@ const adjustClosureDatesForMidnightCrossing = (
   closureStartDate: Date;
   closureEndDate: Date;
   lastOrderDate: Date;
-  lastOrderStateChangeDate: Date;
   lastOrderAlertDate: Date;
 } => {
   const currentTimeMs = currentTime.getTime();
@@ -170,7 +159,6 @@ const adjustClosureDatesForMidnightCrossing = (
       closureStartDate,
       closureEndDate,
       lastOrderDate,
-      lastOrderStateChangeDate,
       lastOrderAlertDate,
     };
   }
@@ -184,7 +172,6 @@ const adjustClosureDatesForMidnightCrossing = (
       closureStartDate.setDate(closureStartDate.getDate() - 1);
       closureEndDate.setDate(closureEndDate.getDate() - 1);
       lastOrderDate.setDate(lastOrderDate.getDate() - 1);
-      lastOrderStateChangeDate.setDate(lastOrderStateChangeDate.getDate() - 1);
       lastOrderAlertDate.setDate(lastOrderAlertDate.getDate() - 1);
     }
     // 현재 시간이 종료 시간 이후인 경우 → 다음 영업마감을 대기
@@ -196,7 +183,6 @@ const adjustClosureDatesForMidnightCrossing = (
           closureStartDate,
           closureEndDate,
           lastOrderDate,
-          lastOrderStateChangeDate,
           lastOrderAlertDate,
         };
       }
@@ -204,7 +190,6 @@ const adjustClosureDatesForMidnightCrossing = (
       closureStartDate.setDate(closureStartDate.getDate() + 1);
       closureEndDate.setDate(closureEndDate.getDate() + 1);
       lastOrderDate.setDate(lastOrderDate.getDate() + 1);
-      lastOrderStateChangeDate.setDate(lastOrderStateChangeDate.getDate() + 1);
       lastOrderAlertDate.setDate(lastOrderAlertDate.getDate() + 1);
     }
   } else {
@@ -214,7 +199,6 @@ const adjustClosureDatesForMidnightCrossing = (
       closureStartDate.setDate(closureStartDate.getDate() + 1);
       closureEndDate.setDate(closureEndDate.getDate() + 1);
       lastOrderDate.setDate(lastOrderDate.getDate() + 1);
-      lastOrderStateChangeDate.setDate(lastOrderStateChangeDate.getDate() + 1);
       lastOrderAlertDate.setDate(lastOrderAlertDate.getDate() + 1);
     }
     // 현재 시간이 라스트오더 알림 시간보다 이전인 경우 → 오늘 대기
@@ -224,7 +208,6 @@ const adjustClosureDatesForMidnightCrossing = (
         closureStartDate,
         closureEndDate,
         lastOrderDate,
-        lastOrderStateChangeDate,
         lastOrderAlertDate,
       };
     }
@@ -234,7 +217,6 @@ const adjustClosureDatesForMidnightCrossing = (
     closureStartDate,
     closureEndDate,
     lastOrderDate,
-    lastOrderStateChangeDate,
     lastOrderAlertDate,
   };
 };
@@ -262,19 +244,21 @@ export const checkShopClosureStatus = (
   const currentTimeMs = currentTime.getTime();
 
   // 영업마감 시작/종료 시간 계산
-  let { closureStartDate, closureEndDate, isMidnightCrossing } =
-    getClosureDates(shopTime, currentTime);
+  const closureDatesResult = getClosureDates(shopTime, currentTime);
+  const { isMidnightCrossing } = closureDatesResult;
+  let { closureStartDate, closureEndDate } = closureDatesResult;
 
   // 라스트오더 및 알림 시간 계산
-  let { lastOrderDate, lastOrderStateChangeDate, lastOrderAlertDate } =
-    getClosureOrderDates(shopTime, currentTime);
+  let { lastOrderDate, lastOrderAlertDate } = getClosureOrderDates(
+    shopTime,
+    currentTime
+  );
 
   // 자정 넘어가는 경우 날짜 조정
   const adjustedDates = adjustClosureDatesForMidnightCrossing(
     closureStartDate,
     closureEndDate,
     lastOrderDate,
-    lastOrderStateChangeDate,
     lastOrderAlertDate,
     lastOrderAlertDate.getTime(),
     currentTime,
@@ -284,21 +268,20 @@ export const checkShopClosureStatus = (
   closureStartDate = adjustedDates.closureStartDate;
   closureEndDate = adjustedDates.closureEndDate;
   lastOrderDate = adjustedDates.lastOrderDate;
-  lastOrderStateChangeDate = adjustedDates.lastOrderStateChangeDate;
   lastOrderAlertDate = adjustedDates.lastOrderAlertDate;
 
   const closureStartMs = closureStartDate.getTime();
   const closureEndMs = closureEndDate.getTime();
-  const lastOrderStateChangeMs = lastOrderStateChangeDate.getTime();
+  const lastOrderMs = lastOrderDate.getTime();
   const lastOrderAlertMs = lastOrderAlertDate.getTime();
 
   // 현재 상태 확인
   const isInClosed =
     currentTimeMs >= closureStartMs && currentTimeMs < closureEndMs;
   const isInLastOrder =
-    currentTimeMs >= lastOrderStateChangeMs && currentTimeMs < closureStartMs;
+    currentTimeMs >= lastOrderMs && currentTimeMs < closureStartMs;
   const isInLastOrderAlert =
-    currentTimeMs >= lastOrderAlertMs && currentTimeMs < lastOrderStateChangeMs;
+    currentTimeMs >= lastOrderAlertMs && currentTimeMs < lastOrderMs;
 
   // 시간 정보 포맷팅
   const closureStartTime = formatTimeDisplay(shopTime.shopClosureStartTime);
@@ -318,7 +301,7 @@ export const checkShopClosureStatus = (
     nextChangeMs = closureStartMs - currentTimeMs; // 영업마감 시작까지 남은 시간
   } else if (isInLastOrderAlert) {
     state = 'LAST_ORDER_ALERT';
-    nextChangeMs = lastOrderStateChangeMs - currentTimeMs; // 라스트오더 시작까지 남은 시간
+    nextChangeMs = lastOrderMs - currentTimeMs; // 라스트오더 시작까지 남은 시간
   } else {
     state = 'OPEN';
     // 다음 이벤트까지의 시간 계산
@@ -329,8 +312,8 @@ export const checkShopClosureStatus = (
     // 음수인 경우 (이론적으로 발생하지 않아야 하지만 안전장치)
     if (nextChangeMs <= 0) {
       // 다음 이벤트 순서대로 확인
-      if (lastOrderStateChangeMs > currentTimeMs) {
-        nextChangeMs = lastOrderStateChangeMs - currentTimeMs;
+      if (lastOrderMs > currentTimeMs) {
+        nextChangeMs = lastOrderMs - currentTimeMs;
       } else if (closureStartMs > currentTimeMs) {
         nextChangeMs = closureStartMs - currentTimeMs;
       } else if (closureEndMs > currentTimeMs) {

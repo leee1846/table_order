@@ -17,10 +17,9 @@ import type { ICartMenu } from '@/types/cart';
 
 interface Props {
   categories: ICategoryWithMenus[];
-  isLastOrder: boolean;
 }
 
-export const CartButton = ({ categories, isLastOrder }: Props) => {
+export const CartButton = ({ categories }: Props) => {
   const { t } = useCustomerTranslation();
   const { data: cartData, clearCart } = useCartStore();
 
@@ -131,11 +130,7 @@ export const CartButton = ({ categories, isLastOrder }: Props) => {
 
   return (
     <>
-      <S.Container
-        type="button"
-        onClick={() => setIsCartListOpen(true)}
-        disabled={isLastOrder}
-      >
+      <S.Container type="button" onClick={() => setIsCartListOpen(true)}>
         <p>{t('장바구니')}</p>
         <p>{cartData.menus.reduce((acc, curr) => acc + curr.quantity, 0)}</p>
       </S.Container>
