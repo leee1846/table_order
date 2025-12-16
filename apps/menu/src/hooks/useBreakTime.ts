@@ -13,6 +13,7 @@ interface UseBreakTimeReturn {
   breakTimeStartTime: string | null;
   breakTimeEndTime: string | null;
   lastOrderTime: string | null;
+  lastOrderAlertTime: string | null;
 }
 
 /**
@@ -36,6 +37,9 @@ export const useBreakTime = (): UseBreakTimeReturn => {
   );
   const [breakTimeEndTime, setBreakTimeEndTime] = useState<string | null>(null);
   const [lastOrderTime, setLastOrderTime] = useState<string | null>(null);
+  const [lastOrderAlertTime, setLastOrderAlertTime] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     const shopTime = shopDetailData?.shopTime;
@@ -49,6 +53,7 @@ export const useBreakTime = (): UseBreakTimeReturn => {
       setBreakTimeStartTime(null);
       setBreakTimeEndTime(null);
       setLastOrderTime(null);
+      setLastOrderAlertTime(null);
       return;
     }
 
@@ -66,6 +71,7 @@ export const useBreakTime = (): UseBreakTimeReturn => {
       setBreakTimeStartTime(status.breakTimeStartTime);
       setBreakTimeEndTime(status.breakTimeEndTime);
       setLastOrderTime(status.lastOrderTime);
+      setLastOrderAlertTime(status.lastOrderAlertTime);
 
       // 다음 상태 변경을 위한 타이머 설정 (재귀적으로 상태 업데이트)
       if (status.nextChangeMs !== null && status.nextChangeMs > 0) {
@@ -97,5 +103,6 @@ export const useBreakTime = (): UseBreakTimeReturn => {
     breakTimeStartTime,
     breakTimeEndTime,
     lastOrderTime,
+    lastOrderAlertTime,
   };
 };
