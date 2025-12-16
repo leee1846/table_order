@@ -15,13 +15,13 @@ interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
   openAdminAccessPasswordModal: () => void;
   breakTimeLastOrderMessage: string;
-  isBreakTimeLastOrder: boolean;
+  isLastOrder: boolean;
 }
 export const Header = ({
   orderHistories,
   openAdminAccessPasswordModal,
   breakTimeLastOrderMessage,
-  isBreakTimeLastOrder,
+  isLastOrder,
 }: Props) => {
   const theme = useTheme();
   const { t } = useCustomerTranslation();
@@ -100,7 +100,7 @@ export const Header = ({
   };
 
   const onClickOrderHistoryButton = () => {
-    if (isBreakTimeLastOrder) {
+    if (isLastOrder) {
       return;
     }
 

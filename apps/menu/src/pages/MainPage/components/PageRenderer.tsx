@@ -15,7 +15,12 @@ interface PageRendererState {
     onClose: () => void;
   };
   // 휴무 상태
-  closed: boolean;
+  shopClosure: {
+    show: boolean;
+    message: string;
+    startTime: string;
+    endTime: string;
+  };
   // 브레이크타임
   breakTime: {
     show: boolean;
@@ -61,8 +66,14 @@ export const PageRenderer = ({ states, mainContent }: PageRendererProps) => {
   }
 
   /** 휴무 페이지 */
-  if (states.closed) {
-    return <ClosedPage />;
+  if (states.shopClosure.show) {
+    return (
+      <ClosedPage
+        message={states.shopClosure.message}
+        startTime={states.shopClosure.startTime}
+        endTime={states.shopClosure.endTime}
+      />
+    );
   }
 
   /** 브레이크타임 화면 노출 */

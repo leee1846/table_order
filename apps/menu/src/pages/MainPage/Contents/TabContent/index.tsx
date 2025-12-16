@@ -4,21 +4,15 @@ import { CategoryItem } from '../CategoryItem';
 
 interface Props {
   selectedCategory: ICategoryWithMenus | undefined;
-  isBreakTimeLastOrder: boolean;
+  isLastOrder: boolean;
 }
 
-export const TabContent = ({
-  selectedCategory,
-  isBreakTimeLastOrder,
-}: Props) => {
+export const TabContent = ({ selectedCategory, isLastOrder }: Props) => {
   return (
     <S.Container>
       {selectedCategory && (
         <div>
-          <CategoryItem
-            category={selectedCategory}
-            isBreakTimeLastOrder={isBreakTimeLastOrder}
-          />
+          <CategoryItem category={selectedCategory} isLastOrder={isLastOrder} />
         </div>
       )}
     </S.Container>

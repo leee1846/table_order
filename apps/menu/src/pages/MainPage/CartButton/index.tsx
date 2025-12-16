@@ -17,10 +17,10 @@ import type { ICartMenu } from '@/types/cart';
 
 interface Props {
   categories: ICategoryWithMenus[];
-  isBreakTimeLastOrder: boolean;
+  isLastOrder: boolean;
 }
 
-export const CartButton = ({ categories, isBreakTimeLastOrder }: Props) => {
+export const CartButton = ({ categories, isLastOrder }: Props) => {
   const { t } = useCustomerTranslation();
   const { data: cartData, clearCart } = useCartStore();
 
@@ -134,7 +134,7 @@ export const CartButton = ({ categories, isBreakTimeLastOrder }: Props) => {
       <S.Container
         type="button"
         onClick={() => setIsCartListOpen(true)}
-        disabled={isBreakTimeLastOrder}
+        disabled={isLastOrder}
       >
         <p>{t('장바구니')}</p>
         <p>{cartData.menus.reduce((acc, curr) => acc + curr.quantity, 0)}</p>

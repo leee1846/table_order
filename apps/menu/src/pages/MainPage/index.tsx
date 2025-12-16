@@ -11,6 +11,7 @@ import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useBreakTime } from '@/hooks/useBreakTime';
+import { useShopClosure } from '@/hooks/useShopClosure';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
@@ -58,6 +59,9 @@ export const MainPage = () => {
   /** 브레이크타임 상태 관리 */
   const breakTimeState = useBreakTime();
 
+  /** 영업마감 상태 관리 */
+  const closureState = useShopClosure();
+
   // ========================================
   // 앱 설정 및 초기화
   // ========================================
@@ -102,9 +106,13 @@ export const MainPage = () => {
       : '';
 
   // ========================================
-  // 휴무 상태 (TODO: 실제 로직 구현 필요)
+  // 영업마감 메시지 계산
   // ========================================
-  const isClosed = true;
+  const closureLastOrderMessage =
+    (closureState.isClosureLastOrder || closureState.isClosureLastOrderAlert) &&
+    closureState.closureLastOrderMessage
+      ? closureState.closureLastOrderMessage
+      : '';
 
   return (
     <PageRenderer
@@ -114,7 +122,12 @@ export const MainPage = () => {
           onClose: () =>
             adminAccessControl.setShowAdminAccessPasswordModal(false),
         },
-        closed: isClosed,
+        shopClosure: {
+          show: closureState.showClosed,
+          message: closureState.closureMessage ?? '',
+          startTime: closureState.closureStartTime ?? '',
+          endTime: closureState.closureEndTime ?? '',
+        },
         breakTime: {
           show: breakTimeState.showBreakTime,
           message: breakTimeState.breakTimeMessage ?? '',
@@ -146,8 +159,11 @@ export const MainPage = () => {
             openAdminAccessPasswordModal={() =>
               adminAccessControl.setShowAdminAccessPasswordModal(true)
             }
-            breakTimeLastOrderMessage={BTLastOrderMessage}
-            isBreakTimeLastOrder={breakTimeState.isBreakTimeLastOrder}
+            breakTimeLastOrderMessage={`${BTLastOrderMessage} ${closureLastOrderMessage}`}
+            isLastOrder={
+              breakTimeState.isBreakTimeLastOrder ||
+              closureState.isClosureLastOrder
+            }
           />
 
           <S.MainContent>
@@ -156,7 +172,10 @@ export const MainPage = () => {
               staffCallCategory={staffCallCategory}
               selectedCategorySeq={categoryNavigation.selectedCategorySeq}
               handleCategoryClick={categoryNavigation.handleCategoryClick}
-              isBreakTimeLastOrder={breakTimeState.isBreakTimeLastOrder}
+              isLastOrder={
+                breakTimeState.isBreakTimeLastOrder ||
+                closureState.isClosureLastOrder
+              }
             />
 
             <Contents
@@ -165,12 +184,18 @@ export const MainPage = () => {
                 shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false
               }
               selectedCategory={categoryNavigation.selectedCategory}
-              isBreakTimeLastOrder={breakTimeState.isBreakTimeLastOrder}
+              isLastOrder={
+                breakTimeState.isBreakTimeLastOrder ||
+                closureState.isClosureLastOrder
+              }
             />
 
             <CartButton
               categories={visibleCategories}
-              isBreakTimeLastOrder={breakTimeState.isBreakTimeLastOrder}
+              isLastOrder={
+                breakTimeState.isBreakTimeLastOrder ||
+                closureState.isClosureLastOrder
+              }
             />
           </S.MainContent>
         </S.Container>

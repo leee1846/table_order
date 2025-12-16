@@ -98,12 +98,12 @@ const createShopDetail = (): IGetShop => ({
         isActive: true,
       },
     ],
-    shopClosureStartTime: '',
-    shopClosureEndTime: '',
-    closureMessage: '',
-    closureLastOrderTime: '',
-    closureLastOrderAlertTimeBefore: 0,
-    closureLastOrderMessage: '',
+    shopClosureStartTime: '1414',
+    shopClosureEndTime: '1417',
+    closureMessage: '영업마감 메시지입니다',
+    closureLastOrderTime: '1410',
+    closureLastOrderAlertTimeBefore: 1,
+    closureLastOrderMessage: '영업마감 라스트오더 메시지입니다',
   },
 
   // IShopSetting
