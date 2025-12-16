@@ -43,8 +43,8 @@ const createShopDetail = (): IGetShop => ({
     shopBusinessEndTime: '2200',
     useBreakTime: true,
     breakTimeMessage: '브레이크 타임입니다',
-    breakTimeLastOrderTimeBefore: 1,
-    breakTimeLastOrderAlertTimeBefore: 1,
+    breakTimeLastOrderTimeBefore: 2,
+    breakTimeLastOrderAlertTimeBefore: 2,
     breakTimeLastOrderMessage:
       '브레이크 타임 00분 전입니다   브레이크 타임 2분 전입니다 브레이크 타임 3분 전입니다 브레이크 타임 4분 전입니다',
     breakTimeList: [
@@ -65,15 +65,15 @@ const createShopDetail = (): IGetShop => ({
       {
         shopSeq: 1,
         dayOfWeek: 2, // 화요일
-        breakStartTime: '1547',
-        breakEndTime: '1548',
+        breakStartTime: '1813',
+        breakEndTime: '1814',
         isActive: true,
       },
       {
         shopSeq: 1,
         dayOfWeek: 3, // 수요일
-        breakStartTime: '1500',
-        breakEndTime: '1600',
+        breakStartTime: '0930',
+        breakEndTime: '0931',
         isActive: false,
       },
       {
@@ -98,10 +98,10 @@ const createShopDetail = (): IGetShop => ({
         isActive: true,
       },
     ],
-    shopClosureStartTime: '1414',
-    shopClosureEndTime: '1417',
+    shopClosureStartTime: '1821',
+    shopClosureEndTime: '1822',
     closureMessage: '영업마감 메시지입니다',
-    closureLastOrderTime: '1410',
+    closureLastOrderTimeBefore: 1,
     closureLastOrderAlertTimeBefore: 1,
     closureLastOrderMessage: '영업마감 라스트오더 메시지입니다',
   },

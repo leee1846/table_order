@@ -42,6 +42,10 @@ export const TIMER_KEYS = {
   BREAK_TIME_UPDATE: 'break-time-update',
   /** 영업마감 상태 업데이트 타이머 키 */
   SHOP_CLOSURE_UPDATE: 'shop-closure-update',
+  /** 라스트오더 시간 업데이트 타이머 키 */
+  LAST_ORDER_REMAINING_TIME_UPDATE: 'last-order-remaining-time-update',
+  /** 헤더 알림 문구 업데이트 타이머 키 */
+  HEADER_ALERT_MESSAGE_UPDATE: 'header-alert-message-update',
 };
 
 export const DOM_IDS = {

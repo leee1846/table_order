@@ -4,7 +4,7 @@ import { TIMER_KEYS } from '@/constants/keys';
 import { checkBreakTimeStatus } from '@/utils/breakTime';
 import { useShopDetailData } from './useShopDetailData';
 
-interface UseBreakTimeReturn {
+export interface UseBreakTimeReturn {
   showBreakTime: boolean;
   isBreakTimeLastOrder: boolean;
   isBreakTimeLastOrderAlert: boolean;
@@ -14,6 +14,8 @@ interface UseBreakTimeReturn {
   breakTimeEndTime: string | null;
   lastOrderTime: string | null;
   lastOrderAlertTime: string | null;
+  showLastOrderAlertModal: boolean;
+  closeLastOrderAlertModal: () => void;
 }
 
 /**
@@ -40,6 +42,7 @@ export const useBreakTime = (): UseBreakTimeReturn => {
   const [lastOrderAlertTime, setLastOrderAlertTime] = useState<string | null>(
     null
   );
+  const [showLastOrderAlertModal, setShowLastOrderAlertModal] = useState(false);
 
   useEffect(() => {
     const shopTime = shopDetailData?.shopTime;
@@ -53,6 +56,7 @@ export const useBreakTime = (): UseBreakTimeReturn => {
       setBreakTimeEndTime(null);
       setLastOrderTime(null);
       setLastOrderAlertTime(null);
+      setShowLastOrderAlertModal(false);
       return;
     }
 
@@ -71,6 +75,7 @@ export const useBreakTime = (): UseBreakTimeReturn => {
       setBreakTimeEndTime(status.breakTimeEndTime);
       setLastOrderTime(status.lastOrderTime);
       setLastOrderAlertTime(status.lastOrderAlertTime);
+      setShowLastOrderAlertModal(status.isBreakTimeLastOrderAlert);
 
       // 다음 상태 변경을 위한 타이머 설정 (재귀적으로 상태 업데이트)
       if (status.nextChangeMs !== null && status.nextChangeMs > 0) {
@@ -103,5 +108,7 @@ export const useBreakTime = (): UseBreakTimeReturn => {
     breakTimeEndTime,
     lastOrderTime,
     lastOrderAlertTime,
+    showLastOrderAlertModal,
+    closeLastOrderAlertModal: () => setShowLastOrderAlertModal(false),
   };
 };

@@ -95,6 +95,24 @@ export const MainPage = () => {
   /** 장바구니 메뉴 주문 리마인더 노출 여부 */
   const { data: cartReminderData } = useCartReminderStore();
 
+  const breakTimeLastOrderState = {
+    show:
+      breakTimeState.isBreakTimeLastOrderAlert &&
+      breakTimeState.showLastOrderAlertModal,
+    message: breakTimeState.breakTimeLastOrderMessage ?? '',
+    lastOrderTime: breakTimeState.lastOrderTime ?? '',
+    onClose: breakTimeState.closeLastOrderAlertModal,
+  };
+
+  const closureLastOrderState = {
+    show:
+      closureState.isClosureLastOrderAlert &&
+      closureState.showLastOrderAlertModal,
+    message: closureState.closureLastOrderMessage ?? '',
+    lastOrderTime: closureState.lastOrderTime ?? '',
+    onClose: closureState.closeLastOrderAlertModal,
+  };
+
   return (
     <PageRenderer
       states={{
@@ -115,6 +133,8 @@ export const MainPage = () => {
           startTime: breakTimeState.breakTimeStartTime ?? '',
           endTime: breakTimeState.breakTimeEndTime ?? '',
         },
+        breakTimeLastOrder: breakTimeLastOrderState,
+        closureLastOrder: closureLastOrderState,
         initialPage: {
           show: initialPageData.showInitialPage,
         },
@@ -140,10 +160,8 @@ export const MainPage = () => {
             openAdminAccessPasswordModal={() =>
               adminAccessControl.setShowAdminAccessPasswordModal(true)
             }
-            isLastOrderAlert={
-              breakTimeState.isBreakTimeLastOrderAlert ||
-              closureState.isClosureLastOrderAlert
-            }
+            breakTimeState={breakTimeState}
+            closureState={closureState}
           />
 
           <S.MainContent>

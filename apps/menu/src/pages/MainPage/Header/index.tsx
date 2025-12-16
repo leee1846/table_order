@@ -10,16 +10,20 @@ import { useTouchDetectTimer } from '@/hooks/useTouchDetectTimer';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { globalTimerManager } from '@/utils/timerManager';
 import { TIMER_KEYS } from '@/constants/keys';
+import type { UseBreakTimeReturn } from '@/hooks/useBreakTime';
+import type { UseShopClosureReturn } from '@/hooks/useShopClosure';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
   openAdminAccessPasswordModal: () => void;
-  isLastOrderAlert: boolean;
+  breakTimeState: UseBreakTimeReturn;
+  closureState: UseShopClosureReturn;
 }
 export const Header = ({
   orderHistories,
   openAdminAccessPasswordModal,
-  isLastOrderAlert,
+  breakTimeState,
+  closureState,
 }: Props) => {
   const theme = useTheme();
   const { t } = useCustomerTranslation();
@@ -35,10 +39,141 @@ export const Header = ({
   const descriptionWrapperRef = useRef<HTMLDivElement>(null);
   const descriptionContainerRef = useRef<HTMLDivElement>(null);
   const [isTextOverflowing, setIsTextOverflowing] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string>('');
+
+  // 실시간 카운트다운 문구 생성 및 업데이트
+  useEffect(() => {
+    const isLastOrderAlert =
+      breakTimeState.isBreakTimeLastOrderAlert ||
+      closureState.isClosureLastOrderAlert;
+    const isLastOrder =
+      breakTimeState.isBreakTimeLastOrder || closureState.isClosureLastOrder;
+    if (!isLastOrderAlert && !isLastOrder) {
+      setAlertMessage('');
+      return;
+    }
+
+    /**
+     * 시간 문자열(HH:mm:ss 또는 HH:mm)을 Date 객체로 변환
+     */
+    const parseTimeString = (timeStr: string): Date => {
+      const today = new Date();
+      const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+      const targetDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        hours,
+        minutes || 0,
+        seconds || 0
+      );
+
+      // 만약 목표 시간이 현재 시간보다 이전이면, 다음 날로 간주
+      if (targetDate < today) {
+        targetDate.setDate(targetDate.getDate() + 1);
+      }
+
+      return targetDate;
+    };
+
+    /**
+     * 남은 시간을 계산하여 "MM분SS초" 형식으로 반환
+     */
+    const formatRemainingTime = (targetDate: Date): string => {
+      const now = new Date();
+      const diffMs = targetDate.getTime() - now.getTime();
+
+      if (diffMs <= 0) {
+        return '0초';
+      }
+
+      const totalSeconds = Math.floor(diffMs / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+
+      // 0분일 경우 "초"만 표시
+      if (minutes === 0) {
+        return `${seconds}초`;
+      }
+
+      return `${minutes}분${seconds}초`;
+    };
+
+    /**
+     * 시간을 "HH시MM분" 형식으로 반환
+     */
+    const formatTimeToHHMM = (timeStr: string): string => {
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      return `${String(hours).padStart(2, '0')}시${String(minutes).padStart(2, '0')}분`;
+    };
+
+    /**
+     * 알림 문구 업데이트
+     */
+    const updateMessage = () => {
+      let targetTimeStr = '';
+      let messagePrefix = '';
+
+      // 라스트오더 알림 상태
+      if (
+        breakTimeState.isBreakTimeLastOrderAlert ||
+        closureState.isClosureLastOrderAlert
+      ) {
+        messagePrefix = '라스트오더';
+        targetTimeStr = breakTimeState.isBreakTimeLastOrderAlert
+          ? breakTimeState.lastOrderTime || ''
+          : closureState.lastOrderTime || '';
+      }
+      // 라스트오더 상태
+      else if (
+        breakTimeState.isBreakTimeLastOrder ||
+        closureState.isClosureLastOrder
+      ) {
+        if (breakTimeState.isBreakTimeLastOrder) {
+          messagePrefix = '브레이크타임';
+        } else if (closureState.isClosureLastOrder) {
+          messagePrefix = '영업마감';
+        }
+        targetTimeStr = breakTimeState.isBreakTimeLastOrder
+          ? breakTimeState.breakTimeStartTime || ''
+          : closureState.closureStartTime || '';
+      }
+      if (!targetTimeStr) {
+        setAlertMessage('');
+        return;
+      }
+
+      const targetDate = parseTimeString(targetTimeStr);
+      const remainingTime = formatRemainingTime(targetDate);
+      const formattedTime = formatTimeToHHMM(targetTimeStr);
+
+      const message = `${messagePrefix}까지 ${remainingTime}남았습니다. ${messagePrefix} 시간은 ${formattedTime}입니다.`;
+      setAlertMessage(message);
+    };
+    // 초기 문구 설정
+    updateMessage();
+
+    // 1초마다 업데이트
+    globalTimerManager.setInterval(
+      TIMER_KEYS.HEADER_ALERT_MESSAGE_UPDATE,
+      updateMessage,
+      1000
+    );
+
+    return () => {
+      globalTimerManager.clear(TIMER_KEYS.HEADER_ALERT_MESSAGE_UPDATE);
+    };
+  }, [breakTimeState, closureState]);
 
   // 텍스트가 컨테이너 너비를 넘치는지 확인하여 애니메이션 필요 여부 결정
   useEffect(() => {
-    if (!isLastOrderAlert) {
+    const isLastOrderAlert =
+      breakTimeState.isBreakTimeLastOrderAlert ||
+      closureState.isClosureLastOrderAlert;
+    const isLastOrder =
+      breakTimeState.isBreakTimeLastOrder || closureState.isClosureLastOrder;
+
+    if (!isLastOrderAlert && !isLastOrder) {
       setIsTextOverflowing(false);
       return;
     }
@@ -68,7 +203,7 @@ export const Header = ({
       clearTimeout(timeoutId);
       resizeObserver.disconnect();
     };
-  }, [isLastOrderAlert]);
+  }, [alertMessage, breakTimeState, closureState]);
 
   // 컴포넌트 언마운트 시 타이머 정리
   useEffect(() => {
@@ -113,18 +248,18 @@ export const Header = ({
           </button>
           <S.Divider />
           <S.ShopName>{shopDetailData?.shopName ?? ''}</S.ShopName>
-          {isLastOrderAlert && (
+          {alertMessage && (
             <S.DescriptionContainer ref={descriptionContainerRef}>
               <S.DescriptionWrapper
                 ref={descriptionWrapperRef}
                 $isOverflowing={isTextOverflowing}
               >
-                <S.Description>asdasdasdasdasdasdadasd</S.Description>
+                <S.Description>{alertMessage}</S.Description>
                 {/* 텍스트가 넘칠 때만 복제하여 무한 스크롤 애니메이션 구현 */}
                 {isTextOverflowing && (
                   <>
                     <S.DescriptionSpacer> </S.DescriptionSpacer>
-                    <S.Description>asdasdasdasdasdasdadasd</S.Description>
+                    <S.Description>{alertMessage}</S.Description>
                   </>
                 )}
               </S.DescriptionWrapper>

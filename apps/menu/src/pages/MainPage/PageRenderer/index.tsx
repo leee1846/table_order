@@ -29,6 +29,18 @@ interface PageRendererState {
     startTime: string;
     endTime: string;
   };
+  breakTimeLastOrder: {
+    show: boolean;
+    message: string;
+    lastOrderTime: string;
+    onClose: () => void;
+  };
+  closureLastOrder: {
+    show: boolean;
+    message: string;
+    lastOrderTime: string;
+    onClose: () => void;
+  };
   // 초기 화면
   initialPage: {
     show: boolean;
@@ -88,10 +100,26 @@ export const PageRenderer = ({ states, mainContent }: PageRendererProps) => {
     );
   }
 
-  const lastOrder = true;
   /** 라스트오더 페이지 */
-  if (lastOrder) {
-    return <LastOrder />;
+  if (states.breakTimeLastOrder.show) {
+    return (
+      <LastOrder
+        message={states.breakTimeLastOrder.message}
+        lastOrderTime={states.breakTimeLastOrder.lastOrderTime}
+        onClose={states.breakTimeLastOrder.onClose}
+      />
+    );
+  }
+
+  /** 영업마감 라스트오더 페이지 */
+  if (states.closureLastOrder.show) {
+    return (
+      <LastOrder
+        message={states.closureLastOrder.message}
+        lastOrderTime={states.closureLastOrder.lastOrderTime}
+        onClose={states.closureLastOrder.onClose}
+      />
+    );
   }
 
   /** 초기 화면 노출 */

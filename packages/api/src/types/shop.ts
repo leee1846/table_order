@@ -71,7 +71,7 @@ export interface IShopTime {
   shopClosureStartTime: string;
   shopClosureEndTime: string;
   closureMessage: string;
-  closureLastOrderTime: string;
+  closureLastOrderTimeBefore: number;
   closureLastOrderAlertTimeBefore: number;
   closureLastOrderMessage: string;
 }

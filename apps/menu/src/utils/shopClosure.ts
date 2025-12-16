@@ -103,22 +103,21 @@ const getClosureDates = (
  * - lastOrderAlertDate: 라스트오더 알림 시간
  */
 const getClosureOrderDates = (
-  shopTime: IShopTime,
-  currentTime: Date
+  closureStartDate: Date,
+  lastOrderTimeBefore: number,
+  lastOrderAlertTimeBefore: number
 ): {
   lastOrderDate: Date;
   lastOrderAlertDate: Date;
 } => {
-  // 라스트오더 시간 계산
-  const lastOrderDate = getDateFromTimeString(
-    shopTime.closureLastOrderTime,
-    currentTime
-  );
+  // 라스트오더 시간: closureStartDate - lastOrderTimeBefore
+  const lastOrderDate = new Date(closureStartDate);
+  lastOrderDate.setMinutes(lastOrderDate.getMinutes() - lastOrderTimeBefore);
 
   // 라스트오더 알림 시간: 표시 시간 - closureLastOrderAlertTimeBefore
   const lastOrderAlertDate = new Date(lastOrderDate);
   lastOrderAlertDate.setMinutes(
-    lastOrderAlertDate.getMinutes() - shopTime.closureLastOrderAlertTimeBefore
+    lastOrderAlertDate.getMinutes() - lastOrderAlertTimeBefore
   );
 
   return {
@@ -233,11 +232,7 @@ export const checkShopClosureStatus = (
   currentTime: Date = new Date()
 ): IShopClosureStatus => {
   // 영업마감 시간이 설정되지 않았으면 영업 중
-  if (
-    !shopTime.shopClosureStartTime ||
-    !shopTime.shopClosureEndTime ||
-    !shopTime.closureLastOrderTime
-  ) {
+  if (!shopTime.shopClosureStartTime || !shopTime.shopClosureEndTime) {
     return getOpenStatus();
   }
 
@@ -249,9 +244,12 @@ export const checkShopClosureStatus = (
   let { closureStartDate, closureEndDate } = closureDatesResult;
 
   // 라스트오더 및 알림 시간 계산
+  const lastOrderTimeBefore = shopTime.closureLastOrderTimeBefore;
+  const lastOrderAlertTimeBefore = shopTime.closureLastOrderAlertTimeBefore;
   let { lastOrderDate, lastOrderAlertDate } = getClosureOrderDates(
-    shopTime,
-    currentTime
+    closureStartDate,
+    lastOrderTimeBefore,
+    lastOrderAlertTimeBefore
   );
 
   // 자정 넘어가는 경우 날짜 조정

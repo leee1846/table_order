@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { css } from '@emotion/react';
 import { TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.div`
@@ -29,39 +30,41 @@ export const ContentWrapper = styled.div`
 `;
 
 export const Icon = styled.img`
-  width: 10rem;
-  height: 10rem;
-`;
-
-export const Title = styled.h1`
-  font-size: 8.75rem;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 10.625rem; /* 121.429% */
-  letter-spacing: -0.21875rem;
-  color: ${({ theme }) => theme.mode.undefined_palette[400]};
+  width: 14rem;
+  height: 14rem;
   margin-bottom: 40px;
 `;
 
-export const Time = styled.p`
-  text-align: center;
-  font-size: 5rem;
+export const Title = styled.p`
+  font-size: 4.5rem;
   font-style: normal;
-  font-weight: 600;
-  line-height: normal;
+  font-weight: 700;
+  line-height: 5.625rem; /* 125% */
+  letter-spacing: -0.1125rem;
   color: ${({ theme }) => theme.mode.primary[500]};
-  margin-bottom: 90px;
-`;
+  margin-bottom: 24px;
 
-export const ClosureTime = styled.p`
-  ${TYPOGRAPHY.MT_5}
-  text-align: center;
-  color: ${({ theme }) => theme.mode.primary[400]};
-  margin-bottom: 12px;
+  & > span {
+    margin-left: 16px;
+    font-size: 4.5rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 5.625rem; /* 125% */
+    letter-spacing: -0.1125rem;
+    color: ${({ theme }) => theme.mode.undefined_palette[400]};
+  }
 `;
 
 export const Description = styled.p`
-  ${TYPOGRAPHY.MT_7}
-  text-align: center;
+  ${TYPOGRAPHY.MT_3}
   color: ${({ theme }) => theme.mode.grey[600]};
+`;
+
+export const ButtonCss = css`
+  position: absolute;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 18.125rem;
 `;

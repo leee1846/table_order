@@ -4,7 +4,7 @@ import { TIMER_KEYS } from '@/constants/keys';
 import { checkShopClosureStatus } from '@/utils/shopClosure';
 import { useShopDetailData } from './useShopDetailData';
 
-interface UseShopClosureReturn {
+export interface UseShopClosureReturn {
   showClosed: boolean;
   isClosureLastOrder: boolean;
   isClosureLastOrderAlert: boolean;
@@ -14,6 +14,8 @@ interface UseShopClosureReturn {
   closureEndTime: string | null;
   lastOrderTime: string | null;
   lastOrderAlertTime: string | null;
+  showLastOrderAlertModal: boolean;
+  closeLastOrderAlertModal: () => void;
 }
 
 /**
@@ -37,6 +39,7 @@ export const useShopClosure = (): UseShopClosureReturn => {
   const [lastOrderAlertTime, setLastOrderAlertTime] = useState<string | null>(
     null
   );
+  const [showLastOrderAlertModal, setShowLastOrderAlertModal] = useState(false);
 
   useEffect(() => {
     const shopTime = shopDetailData?.shopTime;
@@ -51,6 +54,7 @@ export const useShopClosure = (): UseShopClosureReturn => {
       setClosureEndTime(null);
       setLastOrderTime(null);
       setLastOrderAlertTime(null);
+      setShowLastOrderAlertModal(false);
       return;
     }
 
@@ -69,6 +73,7 @@ export const useShopClosure = (): UseShopClosureReturn => {
       setClosureEndTime(status.closureEndTime);
       setLastOrderTime(status.lastOrderTime);
       setLastOrderAlertTime(status.lastOrderAlertTime);
+      setShowLastOrderAlertModal(status.isClosureLastOrderAlert);
 
       // 다음 상태 변경을 위한 타이머 설정 (재귀적으로 상태 업데이트)
       if (status.nextChangeMs !== null && status.nextChangeMs > 0) {
@@ -101,5 +106,7 @@ export const useShopClosure = (): UseShopClosureReturn => {
     closureEndTime,
     lastOrderTime,
     lastOrderAlertTime,
+    showLastOrderAlertModal,
+    closeLastOrderAlertModal: () => setShowLastOrderAlertModal(false),
   };
 };
