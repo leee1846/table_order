@@ -7,6 +7,7 @@ import { LanguageSelector } from '@/pages/MainPage/LanguageSelector';
 import { CustomerCountSelector } from '@/pages/MainPage/CustomerCountSelector';
 import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
 import { CartReminder } from '@/pages/MainPage/CartReminder';
+import { LastOrder } from '../LastOrder';
 
 interface PageRendererState {
   // 관리자 접근 제어
@@ -85,6 +86,12 @@ export const PageRenderer = ({ states, mainContent }: PageRendererProps) => {
         endTime={states.breakTime.endTime}
       />
     );
+  }
+
+  const lastOrder = true;
+  /** 라스트오더 페이지 */
+  if (lastOrder) {
+    return <LastOrder />;
   }
 
   /** 초기 화면 노출 */

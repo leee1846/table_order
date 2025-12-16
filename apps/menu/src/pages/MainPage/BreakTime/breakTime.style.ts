@@ -27,6 +27,7 @@ export const ContentWrapper = styled.div`
   box-sizing: border-box;
   margin: 0 auto;
 `;
+
 export const Icon = styled.img`
   width: 14rem;
   height: 14rem;
