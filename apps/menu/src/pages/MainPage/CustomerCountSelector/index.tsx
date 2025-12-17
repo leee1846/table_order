@@ -6,6 +6,9 @@ import { useState } from 'react';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { usePostOrderGroup } from '@repo/api/queries';
+import { useDeviceData } from '@/hooks/useDeviceData';
+import { useShopData } from '@/hooks/useShopData';
 
 // TODO: 테이블 다른 디바이스가 함께 사용하기 기능이라면 화면을 띄우면 안됨
 export const CustomerCountSelector = () => {
@@ -14,6 +17,8 @@ export const CustomerCountSelector = () => {
 
   const { data: shopDetailData } = useShopDetailData();
   const { setData: setCustomerCountData } = useCustomerCountStore();
+  const { data: deviceData } = useDeviceData();
+  const { shopData } = useShopData();
 
   const useOnlyAdult =
     !!shopDetailData?.shopSetting?.useCustomerCount &&
@@ -44,11 +49,22 @@ export const CustomerCountSelector = () => {
     setChildCount(value);
   };
 
+  const { mutateAsync: createOrderGroup } = usePostOrderGroup();
   const handleSubmit = () => {
     setCustomerCountData({
       adultCount,
       childCount,
     });
+
+    /** 테이블 함께사용이 true 일경우 */
+    if (shopDetailData?.shopSetting?.useTableOverlapping) {
+      createOrderGroup({
+        shopCode: shopData?.shopCode ?? '',
+        tableNumber: deviceData?.tableNumber ?? 0,
+        customerCount: adultCount,
+        kidsCustomerCount: childCount,
+      });
+    }
   };
 
   return (
