@@ -132,6 +132,7 @@ export interface IShopSetting {
   usePrepaymentCashPayment: boolean;
   usePrepaymentCashPaymentInducement: boolean;
   shopLocaleMapList: IShopLocaleMap[];
+  useTableOverlapping: boolean;
 }
 
 export type TNetworkType = 'AUTO' | 'LAN' | 'WIFI';

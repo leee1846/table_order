@@ -142,6 +142,7 @@ const createShopDetail = (): IGetShop => ({
     shopLanguage: 'KO',
     useLocaleBeforeOrder: true,
     isMenuThreeColumnLayout: false,
+    useTableOverlapping: true,
     shopLocaleMapList: [
       {
         localeShopMapSeq: 1,

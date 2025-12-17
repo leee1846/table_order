@@ -17,6 +17,7 @@ import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { storage } from '@repo/util/function';
 import { STORAGE_KEYS } from '@/constants/keys';
+import { openConfirmDialog, openDualActionDialog } from '@repo/feature/utils';
 
 export const TablesPage = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export const TablesPage = () => {
   /** 상점 데이터 로드 */
   useShopData();
   /** 상점 상세 데이터 로드 */
-  useShopDetailData();
+  const { data: shopDetailData } = useShopDetailData();
   /** 테이블 그룹 데이터 로드 */
   const { data: tableGroupsData } = useTableGroupData();
 
@@ -81,6 +82,15 @@ export const TablesPage = () => {
     clearLanguageData();
   };
 
+  const selectTable = async (table: TableData) => {
+    await setDeviceDataAsync({
+      tableNumber: table.tableNumber,
+    });
+    await refreshMenuInitialData();
+    storage.session.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
+    navigate(ROUTES.ROOT.generate());
+  };
+
   const handleTableClick = async (table: TableData) => {
     // TODO: 추후 오더포스 여부 체크 예정
     const isOrderpos = false;
@@ -88,12 +98,35 @@ export const TablesPage = () => {
       return;
     }
 
-    await setDeviceDataAsync({
-      tableNumber: table.tableNumber,
-    });
-    await refreshMenuInitialData();
-    storage.session.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
-    navigate(ROUTES.ROOT.generate());
+    // 테이블이 이미 사용중일경우
+    if (table.menuItems) {
+      const useTableOverlapping =
+        shopDetailData?.shopSetting?.useTableOverlapping;
+
+      // 테이블 "함께사용" true 일경우
+      if (useTableOverlapping) {
+        openDualActionDialog({
+          title: '테이블이 이미 사용중입니다.',
+          content: '테이블을 함께 사용하시겠습니까?',
+          primaryText: '예',
+          secondaryText: '아니오',
+          onConfirm: () => {
+            selectTable(table);
+          },
+        });
+        return;
+      }
+
+      // 테이블 "함께사용" false 일경우
+      openConfirmDialog({
+        title: '선택이 불가능합니다.',
+        content: '테이블이 이미 사용중입니다.',
+        confirmText: '확인',
+      });
+      return;
+    }
+
+    selectTable(table);
   };
 
   return (
