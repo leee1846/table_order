@@ -20,8 +20,8 @@ import { STORAGE_KEYS } from '@/constants/keys';
 import { openConfirmDialog, openDualActionDialog } from '@repo/feature/utils';
 
 export const TablesPage = () => {
+  const { t } = useAdminTranslation();
   const navigate = useNavigate();
-
   /** 상점 데이터 로드 */
   useShopData();
   /** 상점 상세 데이터 로드 */
@@ -106,10 +106,10 @@ export const TablesPage = () => {
       // 테이블 "함께사용" true 일경우
       if (useTableOverlapping) {
         openDualActionDialog({
-          title: '테이블이 이미 사용중입니다.',
-          content: '테이블을 함께 사용하시겠습니까?',
-          primaryText: '예',
-          secondaryText: '아니오',
+          title: t('테이블이 이미 사용중입니다.'),
+          content: t('테이블을 함께 사용하시겠습니까?'),
+          primaryText: t('예'),
+          secondaryText: t('아니오'),
           onConfirm: () => {
             selectTable(table);
           },
@@ -119,9 +119,9 @@ export const TablesPage = () => {
 
       // 테이블 "함께사용" false 일경우
       openConfirmDialog({
-        title: '선택이 불가능합니다.',
-        content: '테이블이 이미 사용중입니다.',
-        confirmText: '확인',
+        title: t('선택이 불가능합니다.'),
+        content: t('테이블이 이미 사용중입니다.'),
+        confirmText: t('확인'),
       });
       return;
     }
