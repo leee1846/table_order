@@ -1,18 +1,8 @@
 import type { OrderItem } from '@repo/feature/components';
+import type { OrderItem as MenuItemType } from 'src/components/TableDetailContainer/orderSection/types';
 
 // 메뉴 아이템 타입 (주문 상세에서 사용하는 메뉴 리스트)
-export type MenuItem = {
-  id: string;
-  name: string;
-  qty: number;
-  unitPrice: number;
-  options?: {
-    id: string;
-    name: string;
-    qty: number;
-    unitPrice: number;
-  }[];
-};
+export type MenuItem = MenuItemType;
 
 // 임시 목 데이터 (실제로는 API에서 가져올 데이터)
 export const mockOrders: OrderItem[] = [
@@ -103,24 +93,28 @@ export const mockOrders: OrderItem[] = [
 export const mockMenuItems: MenuItem[] = [
   {
     id: 'menu-1',
+    menuSeq: 1,
     name: '메뉴1',
     qty: 1,
     unitPrice: 10000,
   },
   {
     id: 'menu-2',
+    menuSeq: 2,
     name: '메뉴2',
     qty: 1,
     unitPrice: 10000,
   },
   {
     id: 'menu-3',
+    menuSeq: 3,
     name: '메뉴3',
     qty: 1,
     unitPrice: 10000,
   },
   {
     id: 'menu-4',
+    menuSeq: 4,
     name: '메뉴4',
     qty: 1,
     unitPrice: 10000,

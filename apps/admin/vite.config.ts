@@ -17,6 +17,17 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    target: 'es2015',
+  },
+  esbuild: {
+    target: 'chrome83',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'chrome83',
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

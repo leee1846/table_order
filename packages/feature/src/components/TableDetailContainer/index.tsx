@@ -20,11 +20,18 @@ import {
   SplitPaymentDialog,
   type SplitPayment,
 } from './orderSection/dialogs/SplitPaymentDialog';
-import type { Order, OrderItem } from './orderSection/types';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
-import { useGetTableOrderHistories } from '@repo/api/queries';
-import type { IGetTableOrderHistories } from '@repo/api/types';
+import {
+  useGetTableOrderHistories,
+  usePutCancelOrderMenu,
+} from '@repo/api/queries';
+import { cancelOrderMenu } from '@repo/api/fetchers';
+import type {
+  ICategoryWithMenus,
+  IGetTableOrderHistories,
+} from '@repo/api/types';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
+import type { Order, OrderItem } from './orderSection/types';
 
 export type { SelectedMenuWithOptions };
 export interface TableDetailContainerProps {
@@ -33,6 +40,8 @@ export interface TableDetailContainerProps {
   numberOfPeople?: number;
   useCustomerCount?: boolean;
   onAddMenu?: (selectedItems: SelectedMenuWithOptions[]) => void;
+  menuboardCategories?: ICategoryWithMenus[];
+  isMenuboardLoading?: boolean;
 }
 
 export const TableDetailContainer = ({
@@ -41,6 +50,8 @@ export const TableDetailContainer = ({
   numberOfPeople = 0,
   useCustomerCount = false,
   onAddMenu,
+  menuboardCategories = [],
+  isMenuboardLoading = false,
 }: TableDetailContainerProps) => {
   //메뉴 추가 모달
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
@@ -81,7 +92,11 @@ export const TableDetailContainer = ({
   const [splitPayments, setSplitPayments] = useState<SplitPayment[]>([]);
 
   // API 데이터 가져오기
-  const { data: orderHistoriesResponse, isLoading } = useGetTableOrderHistories(
+  const {
+    data: orderHistoriesResponse,
+    isLoading,
+    refetch,
+  } = useGetTableOrderHistories(
     {
       shopCode,
       tableNumber,
@@ -107,7 +122,7 @@ export const TableDetailContainer = ({
     const data: IGetTableOrderHistories = orderHistoriesResponse.data;
 
     // orderDetailMenuList를 OrderItem[]로 변환
-    const items: OrderItem[] =
+    const items =
       data.orderDetailMenuList?.map((menu) => {
         const options =
           menu.optionList && menu.optionList.length > 0
@@ -121,6 +136,7 @@ export const TableDetailContainer = ({
 
         return {
           id: String(menu.orderDetailMenuSeq),
+          menuSeq: menu.orderDetailMenuSeq,
           name: menu.menuName,
           qty: menu.menuQuantity,
           unitPrice: menu.menuPrice,
@@ -146,6 +162,8 @@ export const TableDetailContainer = ({
       orderTime,
     };
   }, [orderHistoriesResponse, tableNumber, numberOfPeople]);
+
+  const cancelOrderMenuMutation = usePutCancelOrderMenu();
 
   // 로딩 중일 때
   if (isLoading) {
@@ -190,11 +208,38 @@ export const TableDetailContainer = ({
     onAddMenu(selectedItems);
   };
 
-  const handleSelectCancel = (
+  const handleSelectCancel = async (
     selectedItems: { itemId: string; quantity: number }[]
   ) => {
-    console.log('취소할 메뉴:', selectedItems);
-    // TODO: 실제 선택 취소 로직 구현
+    // if (cancelOrderMenuMutation.isPending) {
+    //   return;
+    // }
+    // console.log('selectedItems', selectedItems);
+    // if (selectedItems.length === 0) {
+    //   toast('취소할 메뉴를 선택해주세요.');
+    //   return;
+    // }
+    // const cancellableItems = selectedItems
+    //   .map(({ itemId, quantity }) => ({
+    //     orderDetailMenuSeq: Number(itemId),
+    //     canceledQuantity: quantity,
+    //   }))
+    //   .filter(
+    //     ({ orderDetailMenuSeq, canceledQuantity }) =>
+    //       !Number.isNaN(orderDetailMenuSeq) && canceledQuantity > 0
+    //   );
+    // if (cancellableItems.length === 0) {
+    //   toast('취소할 수 있는 메뉴가 없어요.');
+    //   return;
+    // }
+    // try {
+    //   // 병렬 처리로 모든 취소 요청을 동시에 실행
+    //   await Promise.all(cancellableItems.map((item) => cancelOrderMenu(item)));
+    //   toast('선택한 메뉴를 취소했어요.');
+    //   await refetch();
+    // } catch (error) {
+    //   toast('메뉴 취소 중 오류가 발생했어요. 다시 시도해주세요.');
+    // }
   };
 
   const handleAmountChange = (amount: number) => {
@@ -250,8 +295,8 @@ export const TableDetailContainer = ({
         onClose={() => setIsAddMenuDialogOpen(false)}
         tableName={order.tableName}
         onAdd={handleAddMenu}
-        shopCode={shopCode}
-        tableNumber={tableNumber}
+        categories={menuboardCategories}
+        isCategoriesLoading={isMenuboardLoading}
       />
       {/* 선택 취소 모달 */}
       <SelectCancelDialog

@@ -566,18 +566,18 @@ export const OptionGroupManageModal = ({
                 <span>옵션 수량 선택</span>
               </CheckButton>
               <CheckButton
-                checked={settings.isMultipleSelectable}
+                checked={settings.isMenuQuantityDependant}
                 onChange={(checked) =>
-                  updateSettings({ isMultipleSelectable: checked })
+                  updateSettings({ isMenuQuantityDependant: checked })
                 }
                 customStyle={S.checkButtonCss}
               >
                 <span>추가 옵션</span>
               </CheckButton>
               <CheckButton
-                checked={settings.isMenuQuantityDependant}
+                checked={settings.isMultipleSelectable}
                 onChange={(checked) =>
-                  updateSettings({ isMenuQuantityDependant: checked })
+                  updateSettings({ isMultipleSelectable: checked })
                 }
                 customStyle={S.checkButtonCss}
               >

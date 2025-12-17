@@ -17,7 +17,6 @@ export const Container = styled.div<IProps>`
   -webkit-overflow-scrolling: touch;
   align-items: ${({ position }) =>
     position === 'center' ? 'center' : 'flex-start'};
-  padding: ${({ position }) => (position === 'center' ? '1rem 0' : '0')};
 
   & > div {
     margin: ${({ position }) => {
@@ -31,7 +30,14 @@ export const Container = styled.div<IProps>`
     }};
 
     & > div {
-      max-width: calc(100vw - 2rem);
+      ${({ position }) =>
+        position === 'center' &&
+        `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      `}
     }
   }
 `;

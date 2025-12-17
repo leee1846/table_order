@@ -9,7 +9,11 @@ import * as S from './tableDetailPage.style';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useAuth } from '@/hooks/useAuth';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { queryKeys, usePostTableOrder } from '@repo/api/queries';
+import {
+  queryKeys,
+  useGetCategoriesWithMenus,
+  usePostTableOrder,
+} from '@repo/api/queries';
 import { toast } from '@repo/feature/utils';
 import { calculateTotalAmount } from '@repo/util/calculation';
 
@@ -29,9 +33,21 @@ export const TableDetailPage = () => {
     return Number.isNaN(parsed) ? null : parsed;
   }, [tableNum]);
 
+  const { data: menuboardResponse, isLoading: isMenuboardLoading } =
+    useGetCategoriesWithMenus(
+      {
+        shopCode: shopCode ?? '',
+        tableNumber: parsedTableNumber ?? 0,
+      },
+      {
+        enabled: !!shopCode && !!parsedTableNumber,
+      }
+    );
+
   const customerCount = parsedTableNumber
     ? customerCountData[parsedTableNumber]
     : null;
+
   const adultCount = customerCount?.adultCount ?? 0;
   const childCount = customerCount?.childCount ?? 0;
 
@@ -46,6 +62,10 @@ export const TableDetailPage = () => {
     // undefined 면 false 반환, 옵셔널 체이닝 처리
     return !!shopDetailData?.shopSetting?.useCustomerCount;
   }, [shopDetailData]);
+
+  const menuboardCategories = useMemo(() => {
+    return menuboardResponse?.data ?? [];
+  }, [menuboardResponse]);
 
   const handleAddMenu = async (selectedItems: SelectedMenuWithOptions[]) => {
     if (!shopCode || !parsedTableNumber || selectedItems.length < 1) {
@@ -104,6 +124,8 @@ export const TableDetailPage = () => {
         numberOfPeople={numberOfPeople}
         useCustomerCount={useCustomerCount}
         onAddMenu={handleAddMenu}
+        menuboardCategories={menuboardCategories}
+        isMenuboardLoading={isMenuboardLoading}
       />
     </S.Container>
   );

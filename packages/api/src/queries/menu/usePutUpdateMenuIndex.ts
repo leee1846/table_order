@@ -31,12 +31,3 @@ export const usePutUpdateMenuIndex = () => {
     mutationFn: updateMenuIndex,
   });
 };
-
-
-
-
-
-
-
-
-

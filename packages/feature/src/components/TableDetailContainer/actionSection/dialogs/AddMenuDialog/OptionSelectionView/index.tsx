@@ -1,9 +1,18 @@
-import { BasicButton, ModalBackground, NumberInput } from '@repo/ui/components';
+import { useMemo } from 'react';
+import {
+  BasicButton,
+  ModalBackground,
+  NumberInput,
+  CheckButton,
+  RadioButton,
+} from '@repo/ui/components';
 import { theme } from '@repo/ui';
 import { CloseIcon, OptionSettingIcon } from '@repo/ui/icons';
 import type { IMenu } from '@repo/api/types';
 import * as S from './optionSelectionView.style';
 import * as A from '../addMenuDialog.styles';
+import { validateOptionGroups } from '../optionValidation';
+import { formatCurrency } from '@repo/util/string';
 
 const { colors } = theme;
 
@@ -26,6 +35,8 @@ export const OptionSelectionView = ({
   onAdd,
   onBack,
 }: OptionSelectionViewProps) => {
+  const optionGroups = selectedMenu.optionGroupList || [];
+
   const hasSelectedOptions = Array.from(selectedOptions.values()).some(
     (qty) => qty > 0
   );
@@ -34,7 +45,90 @@ export const OptionSelectionView = ({
     return selectedOptions.get(optionSeq) || 0;
   };
 
-  const optionGroups = selectedMenu.optionGroupList || [];
+  //TODO 여기 isMenuQuantityDependant(추가옵션) 걸려있음
+  const totalPrice = useMemo(() => {
+    // 메뉴 가격 * 메뉴 수량
+    const menuTotalPrice = selectedMenu.menuPrice * menuQuantity;
+
+    // 선택된 옵션들의 총 가격 계산
+    const optionsTotalPrice = Array.from(selectedOptions.entries()).reduce(
+      (sum, [optionSeq, quantity]) => {
+        if (quantity === 0) {
+          return sum;
+        }
+
+        // 옵션 찾기
+        const option = optionGroups
+          .flatMap((group) => group.optionList)
+          .find((opt) => opt.optionSeq === optionSeq);
+
+        if (!option || option.isDeleted || option.isOutOfStock) {
+          return sum;
+        }
+
+        // 옵션 그룹 찾기 (isMenuQuantityDependant 확인용)
+        const optionGroup = optionGroups.find(
+          (group) => group.optionGroupSeq === option.optionGroupSeq
+        );
+
+        if (!optionGroup) {
+          return sum;
+        }
+
+        // isMenuQuantityDependant가 false인 경우, 메뉴 수량을 곱해서 계산
+        // true인 경우, 옵션 수량만 사용 (메뉴 수량과 무관)
+        const isMenuQuantityDependant =
+          optionGroup.isMenuQuantityDependant ?? false;
+
+        const calculatedQuantity = isMenuQuantityDependant
+          ? quantity
+          : menuQuantity * quantity;
+
+        // 옵션 가격 * 계산된 수량
+        return sum + option.optionPrice * calculatedQuantity;
+      },
+      0
+    );
+
+    return menuTotalPrice + optionsTotalPrice;
+  }, [selectedMenu.menuPrice, menuQuantity, selectedOptions, optionGroups]);
+
+  const handleOptionQuantityInputChange = (
+    optionSeq: number,
+    optionGroupSeq: number,
+    newValue: number
+  ) => {
+    const group = optionGroups.find(
+      (optionGroup) => optionGroup.optionGroupSeq === optionGroupSeq
+    );
+    if (!group) {
+      return;
+    }
+    const sanitizedQuantity = newValue;
+    onOptionQuantityChange(optionSeq, sanitizedQuantity);
+  };
+
+  // 체크박스 옵션 토글 처리
+  const handleCheckboxToggle = (optionSeq: number) => {
+    const currentQuantity = getOptionQuantity(optionSeq);
+    const newQuantity = currentQuantity > 0 ? 0 : 1;
+    onOptionQuantityChange(optionSeq, newQuantity);
+  };
+
+  // 라디오 버튼 옵션 선택 처리 (같은 그룹의 다른 옵션들을 모두 해제)
+  const handleRadioSelect = (optionSeq: number, optionGroupSeq: number) => {
+    // 같은 그룹의 모든 옵션을 먼저 해제
+    const group = optionGroups.find((g) => g.optionGroupSeq === optionGroupSeq);
+    if (group) {
+      group.optionList.forEach((opt) => {
+        if (opt.optionSeq !== optionSeq) {
+          onOptionQuantityChange(opt.optionSeq, 0);
+        }
+      });
+    }
+    // 선택한 옵션을 1로 설정
+    onOptionQuantityChange(optionSeq, 1);
+  };
 
   return (
     <ModalBackground position="center" onClick={onBack}>
@@ -55,41 +149,107 @@ export const OptionSelectionView = ({
                   <S.OptionGroupHeader>
                     <S.OptionGroupName>
                       {group.optionGroupName}
+                      {(() => {
+                        const hasMin = group.minQuantity > 0;
+                        const hasMax = group.maxQuantity > 0;
+                        if (hasMin && hasMax) {
+                          return ` (최소 ${group.minQuantity}개 / 최대 ${group.maxQuantity}개)`;
+                        } else if (hasMin) {
+                          return ` (최소 ${group.minQuantity}개)`;
+                        } else if (hasMax) {
+                          return ` (최대 ${group.maxQuantity}개)`;
+                        }
+                      })()}
                     </S.OptionGroupName>
                     <S.OptionGroupInfo>
-                      {group.isOptionQuantitySelectable && '수량선택, '}
-                      {group.minQuantity > 0
-                        ? `${group.minQuantity}개 필수`
-                        : '선택'}
-                      {group.isMultipleSelectable && group.maxQuantity > 0
-                        ? ` / 최대 ${group.maxQuantity}개`
-                        : group.isMultipleSelectable
-                          ? ' / 복수 선택'
-                          : ''}
+                      {(group.minQuantity > 0 || group.maxQuantity > 0) &&
+                        `수량제한`}
                     </S.OptionGroupInfo>
                   </S.OptionGroupHeader>
+
                   {group.optionList.map((option) => {
                     const quantity = getOptionQuantity(option.optionSeq);
-                    const isSelected = quantity > 0;
                     const isDisabled = option.isOutOfStock || option.isDeleted;
+                    const displayQuantity = isDisabled ? 0 : quantity;
 
-                    return (
-                      <S.OptionRow key={option.optionSeq}>
-                        <S.OptionName
-                          isSelected={isSelected}
+                    // 옵션 그룹이 수량 선택 가능한 경우 NumberInput 표시
+                    if (group.isOptionQuantitySelectable) {
+                      return (
+                        <S.OptionRow
+                          key={option.optionSeq}
                           isDisabled={isDisabled}
                         >
-                          {option.optionName}
-                        </S.OptionName>
-                        <NumberInput
-                          variant="rounded"
-                          value={quantity}
-                          min={0}
-                          disabled={isDisabled}
-                          onChange={(newValue) =>
-                            onOptionQuantityChange(option.optionSeq, newValue)
+                          <S.OptionName>{option.optionName}</S.OptionName>
+
+                          <NumberInput
+                            variant="rounded"
+                            value={displayQuantity}
+                            min={0}
+                            disabled={isDisabled}
+                            onChange={(newValue) =>
+                              handleOptionQuantityInputChange(
+                                option.optionSeq,
+                                group.optionGroupSeq,
+                                newValue
+                              )
+                            }
+                            customStyle={S.optionQuantityInput}
+                          />
+                        </S.OptionRow>
+                      );
+                    }
+
+                    // 체크박스 표시 조건: isMultipleSelectable이 true이거나 minQuantity >= 2이거나 maxQuantity >= 2
+                    const shouldShowCheckbox =
+                      group.isMultipleSelectable ||
+                      group.minQuantity >= 2 ||
+                      group.maxQuantity >= 2;
+
+                    const isChecked =
+                      selectedOptions.has(option.optionSeq) && quantity > 0;
+
+                    if (shouldShowCheckbox) {
+                      return (
+                        <S.OptionRow
+                          key={option.optionSeq}
+                          isDisabled={isDisabled}
+                        >
+                          <CheckButton
+                            key={option.optionSeq}
+                            checked={isChecked}
+                            onChange={() =>
+                              handleCheckboxToggle(option.optionSeq)
+                            }
+                            disabled={isDisabled}
+                            customStyle={S.checkboxCss}
+                          >
+                            {option.optionName}
+                          </CheckButton>
+                        </S.OptionRow>
+                      );
+                    }
+
+                    // 그 외의 경우 라디오 버튼 표시
+                    return (
+                      <S.OptionRow
+                        key={option.optionSeq}
+                        isDisabled={isDisabled}
+                      >
+                        <RadioButton
+                          key={option.optionSeq}
+                          value={String(option.optionSeq)}
+                          checked={isChecked}
+                          onChange={() =>
+                            handleRadioSelect(
+                              option.optionSeq,
+                              group.optionGroupSeq
+                            )
                           }
-                        />
+                          customStyle={S.radioCss}
+                          disabled={isDisabled}
+                        >
+                          {option.optionName}
+                        </RadioButton>
                       </S.OptionRow>
                     );
                   })}
@@ -124,6 +284,22 @@ export const OptionSelectionView = ({
                         return null;
                       }
 
+                      const optionGroup = optionGroups.find(
+                        (group) =>
+                          group.optionGroupSeq === option.optionGroupSeq
+                      );
+                      if (
+                        !optionGroup ||
+                        option.isDeleted ||
+                        option.isOutOfStock
+                      ) {
+                        return null;
+                      }
+
+                      if (quantity === 0) {
+                        return null;
+                      }
+
                       return (
                         <S.SelectedOptionItem key={optionSeq}>
                           <S.OptionItemName>
@@ -139,6 +315,7 @@ export const OptionSelectionView = ({
                 </S.SelectedOptionsList>
               )}
             </A.PanelContent>
+
             <S.MenuQuantitySection>
               <NumberInput
                 variant="square"
@@ -148,6 +325,12 @@ export const OptionSelectionView = ({
                 customStyle={S.rightPanelMenuQuantityInput}
               />
             </S.MenuQuantitySection>
+            <S.TotalMountSection>
+              <S.TotalMountLabel>합계</S.TotalMountLabel>
+              <S.TotalMountValue>
+                {formatCurrency(totalPrice)}원
+              </S.TotalMountValue>
+            </S.TotalMountSection>
             <A.PanelFooter>
               <BasicButton variant="Solid_Navy_2XL" onClick={onAdd} fullWidth>
                 추가하기

@@ -9,7 +9,6 @@ export const BaseDialogContainer = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  position: relative;
   padding: 24px;
 `;
 

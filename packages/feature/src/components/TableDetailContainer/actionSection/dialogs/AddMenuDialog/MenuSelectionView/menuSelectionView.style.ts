@@ -5,7 +5,7 @@ const { colors } = theme;
 
 export const ContentWrapper = styled.div`
   display: flex;
-  height: 80vh;
+  height: 100%;
 `;
 
 export const Sidebar = styled.div`

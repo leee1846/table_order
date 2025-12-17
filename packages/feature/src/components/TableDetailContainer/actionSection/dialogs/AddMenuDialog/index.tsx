@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useGetCategoriesWithMenus } from '@repo/api/queries';
-import type { ICategoryWithMenus, IMenu, IOption } from '@repo/api/types';
+import type {
+  ICategoryWithMenus,
+  IMenu,
+  IOption,
+  IOptionGroup,
+} from '@repo/api/types';
+import { toast } from '@repo/feature/utils';
 import { MenuSelectionView } from './MenuSelectionView';
 import { OptionSelectionView } from './OptionSelectionView';
+import { validateOptionGroups } from './optionValidation';
+import { ModalBackground } from '@repo/ui/components';
 
 export interface SelectedOption extends IOption {
   selectedQuantity: number;
@@ -19,8 +26,8 @@ interface AddMenuDialogProps {
   onClose: () => void;
   tableName?: string;
   onAdd?: (selectedItems: SelectedMenuWithOptions[]) => void;
-  shopCode: string;
-  tableNumber: number;
+  categories?: ICategoryWithMenus[];
+  isCategoriesLoading?: boolean;
 }
 
 export const AddMenuDialog = ({
@@ -28,8 +35,8 @@ export const AddMenuDialog = ({
   onClose,
   tableName = '테이블 이름',
   onAdd,
-  shopCode,
-  tableNumber,
+  categories = [],
+  isCategoriesLoading = false,
 }: AddMenuDialogProps) => {
   const [viewMode, setViewMode] = useState<'menu' | 'option'>('menu');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -42,23 +49,13 @@ export const AddMenuDialog = ({
   );
   const [menuQuantity, setMenuQuantity] = useState<number>(1);
 
-  const { data: menuboardResponse, isLoading } = useGetCategoriesWithMenus(
-    {
-      shopCode,
-      tableNumber,
-    },
-    {
-      enabled: isOpen && !!shopCode && !!tableNumber,
-    }
-  );
-
-  const categories: ICategoryWithMenus[] = useMemo(() => {
-    return menuboardResponse?.data ?? [];
-  }, [menuboardResponse]);
+  const menuboardCategories: ICategoryWithMenus[] = useMemo(() => {
+    return categories || [];
+  }, [categories]);
 
   const defaultCategorySeq = useMemo(() => {
-    return categories[0]?.categorySeq ?? null;
-  }, [categories]);
+    return menuboardCategories[0]?.categorySeq ?? null;
+  }, [menuboardCategories]);
 
   useEffect(() => {
     if (isOpen && defaultCategorySeq !== null) {
@@ -119,7 +116,25 @@ export const AddMenuDialog = ({
       return;
     }
 
+    const validation = validateOptionGroups(
+      selectedMenu.optionGroupList || [],
+      selectedOptions
+    );
+
+    if (!validation.isValid) {
+      const invalidResult = validation.results.find(
+        (result) => !result.isValid
+      );
+      if (invalidResult?.message) {
+        toast(invalidResult.message);
+      } else {
+        toast('옵션 선택 조건을 확인해주세요.');
+      }
+      return;
+    }
+
     const selectedOptionsList: SelectedOption[] = [];
+
     selectedOptions.forEach((quantity, optionSeq) => {
       if (quantity > 0) {
         // 옵션 그룹에서 해당 옵션 찾기
@@ -127,7 +142,11 @@ export const AddMenuDialog = ({
           ?.flatMap((group) => group.optionList)
           .find((opt) => opt.optionSeq === optionSeq);
 
-        if (option) {
+        if (option && !option.isOutOfStock && !option.isDeleted) {
+          if (quantity === 0) {
+            return;
+          }
+
           selectedOptionsList.push({
             ...option,
             selectedQuantity: quantity,
@@ -190,8 +209,8 @@ export const AddMenuDialog = ({
   if (viewMode === 'menu') {
     return (
       <MenuSelectionView
-        categories={categories}
-        isLoading={isLoading}
+        categories={menuboardCategories}
+        isLoading={isCategoriesLoading}
         selectedCategory={selectedCategory}
         selectedMenus={selectedMenus}
         tableName={tableName}
@@ -219,6 +238,4 @@ export const AddMenuDialog = ({
       />
     );
   }
-
-  return null;
 };

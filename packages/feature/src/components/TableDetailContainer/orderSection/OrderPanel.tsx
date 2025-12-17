@@ -28,7 +28,7 @@ export function OrderPanel({
     <Wrap>
       <OrderHeader
         title={order.tableName}
-        numberOfPeople={order.numberOfPeople}
+        numberOfPeople={order.numberOfPeople ?? 0}
         orderTime={order.orderTime}
         useCustomerCount={useCustomerCount}
       />

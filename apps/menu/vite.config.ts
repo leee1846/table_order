@@ -17,6 +17,18 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    target: 'chrome83',
+  },
+  esbuild: {
+    target: 'chrome83',
+  },
+  optimizeDeps: {
+    //노드 모듈에서 의존성도 변환 대상에 포함함
+    esbuildOptions: {
+      target: 'chrome83',
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

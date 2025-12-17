@@ -30,22 +30,23 @@ export const OptionMenuName = styled.h2`
 
 export const OptionListContainer = styled.div`
   flex: 1;
-  overflow-y: auto;
+  overflow -y: auto;
   display: flex;
   flex-direction: column;
   gap: 24px;
 `;
 
 export const OptionGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px 50px;
 `;
 
 export const OptionGroupHeader = styled.div`
   display: flex;
   flex-direction: row;
   gap: 8px;
+  grid-column: 1 / -1;
 `;
 
 export const OptionGroupName = styled.div`
@@ -58,32 +59,17 @@ export const OptionGroupInfo = styled.div`
   color: ${colors.semantic[400]};
 `;
 
-export const OptionRow = styled.div`
+export const OptionRow = styled.div<{
+  isDisabled: boolean;
+}>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
 `;
 
-export const OptionName = styled.div<{
-  isSelected: boolean;
-  isDisabled: boolean;
-}>`
-  ${TYPOGRAPHY.ST_4}
-  color: ${({ isSelected, isDisabled }) =>
-    isDisabled
-      ? colors.grey[400]
-      : isSelected
-        ? colors.primary[500]
-        : colors.grey[800]};
-  flex: 1;
-`;
-
-export const EmptyOptionText = styled.div`
-  ${TYPOGRAPHY.ST_4}
-  color: ${colors.grey[500]};
-  text-align: center;
-  padding: 40px 0;
+export const OptionName = styled.div`
+  ${TYPOGRAPHY.MT_5}
+  color: ${colors.grey[800]};
 `;
 
 export const OptionRightPanel = styled(RightPanel)`
@@ -111,14 +97,11 @@ export const OptionItemName = styled.div`
   color: ${colors.grey[800]};
 `;
 
+export const optionQuantityInput = css``;
+
 export const OptionItemQuantity = styled.div`
   ${TYPOGRAPHY.ST_4}
   color: ${colors.grey[700]};
-`;
-
-export const rightPanelQuantityInput = css`
-  width: 100%;
-  border-radius: 12px;
 `;
 
 export const MenuQuantitySection = styled.div`
@@ -128,7 +111,53 @@ export const MenuQuantitySection = styled.div`
   gap: 8px;
 `;
 
+export const TotalMountSection = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid ${colors.grey[200]};
+  padding: 24px 8px;
+`;
+
+export const TotalMountLabel = styled.div`
+  ${TYPOGRAPHY.MT_2}
+  color: ${colors.grey[800]};
+`;
+
+export const TotalMountValue = styled.div`
+  ${TYPOGRAPHY.MT_2}
+  color: ${colors.primary[500]};
+`;
+
 export const rightPanelMenuQuantityInput = css`
   width: 100%;
+  max-width: 100%;
   border-radius: 12px;
+`;
+
+export const checkboxCss = css`
+  ${TYPOGRAPHY.MT_5}
+
+  & > div {
+    width: 30px;
+    height: 30px;
+  }
+
+  > input {
+    margin-left: 16px;
+  }
+`;
+
+export const radioCss = css`
+  ${TYPOGRAPHY.MT_5}
+
+  & > div {
+    width: 30px;
+    height: 30px;
+  }
+
+  > input {
+    margin-left: 16px;
+  }
 `;

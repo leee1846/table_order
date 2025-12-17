@@ -12,6 +12,8 @@ import type {
   TUpdateOrderTableResponse,
   ICreateOrderGroupRequest,
   TCreateOrderGroupResponse,
+  ICancelOrderMenuRequest,
+  TCancelOrderMenuResponse,
 } from '../types/orders';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -141,6 +143,24 @@ export const shareOrderTable = async ({
     method: 'PUT',
     url: ENDPOINTS.ORDER.SHARE_ORDER_GROUP(shopCode),
     params: { originalTableNumber, targetTableNumber },
+  });
+
+  return response.data;
+};
+
+/**
+ * 주문 상세 메뉴를 선택 취소합니다.
+ * PUT /order/cancel/menu/{orderDetailMenuSeq}
+ */
+export const cancelOrderMenu = async ({
+  orderDetailMenuSeq,
+  canceledQuantity,
+}: ICancelOrderMenuRequest): Promise<TCancelOrderMenuResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TCancelOrderMenuResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.ORDER.CANCEL_MENU(orderDetailMenuSeq),
+    params: { canceledQuantity },
   });
 
   return response.data;
