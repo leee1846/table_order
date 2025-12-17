@@ -105,7 +105,6 @@ const toCreateOptionGroup = (group: IOptionGroup): ICreateOptionGroup => ({
   maxQuantity: group.maxQuantity,
   isMultipleSelectable: group.isMultipleSelectable,
   isOptionQuantitySelectable: group.isOptionQuantitySelectable,
-  isMenuQuantityDependant: group.isMenuQuantityDependant,
   optionList: (group.optionList || []).map(toCreateOption),
 });
 

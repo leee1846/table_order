@@ -78,7 +78,6 @@ export interface ICreateOptionGroup {
   maxQuantity: number;
   isMultipleSelectable: boolean;
   isOptionQuantitySelectable: boolean;
-  isMenuQuantityDependant: boolean;
   optionList: ICreateOption[];
 }
 
@@ -95,7 +94,6 @@ export interface IUpdateOptionGroup {
   maxQuantity: number;
   isMultipleSelectable: boolean;
   isOptionQuantitySelectable: boolean;
-  isMenuQuantityDependant: boolean;
   optionList: IUpdateOption[];
 }
 

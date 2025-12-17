@@ -75,14 +75,7 @@ export const OptionSelectionView = ({
           return sum;
         }
 
-        // isMenuQuantityDependant가 false인 경우, 메뉴 수량을 곱해서 계산
-        // true인 경우, 옵션 수량만 사용 (메뉴 수량과 무관)
-        const isMenuQuantityDependant =
-          optionGroup.isMenuQuantityDependant ?? false;
-
-        const calculatedQuantity = isMenuQuantityDependant
-          ? quantity
-          : menuQuantity * quantity;
+        const calculatedQuantity = menuQuantity * quantity;
 
         // 옵션 가격 * 계산된 수량
         return sum + option.optionPrice * calculatedQuantity;

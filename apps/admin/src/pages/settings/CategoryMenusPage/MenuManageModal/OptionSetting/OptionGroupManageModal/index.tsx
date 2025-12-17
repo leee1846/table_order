@@ -25,7 +25,6 @@ interface OptionGroupSettings {
   maxQuantity: number;
   isOptionQuantitySelectable: boolean;
   isMultipleSelectable: boolean;
-  isMenuQuantityDependant: boolean;
 }
 
 interface Props {
@@ -40,7 +39,6 @@ const DEFAULT_SETTINGS: OptionGroupSettings = {
   maxQuantity: 0,
   isOptionQuantitySelectable: false,
   isMultipleSelectable: false,
-  isMenuQuantityDependant: false,
 };
 
 const createEmptyOption = (): ICreateOption => ({
@@ -127,7 +125,6 @@ export const OptionGroupManageModal = ({
         isOptionQuantitySelectable:
           existingOptionGroup.isOptionQuantitySelectable,
         isMultipleSelectable: existingOptionGroup.isMultipleSelectable,
-        isMenuQuantityDependant: existingOptionGroup.isMenuQuantityDependant,
       });
 
       const convertedOptions: IUpdateOption[] =
@@ -210,7 +207,6 @@ export const OptionGroupManageModal = ({
     maxQuantity: settings.maxQuantity,
     isMultipleSelectable: settings.isMultipleSelectable,
     isOptionQuantitySelectable: settings.isOptionQuantitySelectable,
-    isMenuQuantityDependant: settings.isMenuQuantityDependant,
   });
 
   const handleDeleteOption = (optionSeq: number | null, index: number) => {
@@ -565,15 +561,7 @@ export const OptionGroupManageModal = ({
               >
                 <span>옵션 수량 선택</span>
               </CheckButton>
-              <CheckButton
-                checked={settings.isMenuQuantityDependant}
-                onChange={(checked) =>
-                  updateSettings({ isMenuQuantityDependant: checked })
-                }
-                customStyle={S.checkButtonCss}
-              >
-                <span>추가 옵션</span>
-              </CheckButton>
+
               <CheckButton
                 checked={settings.isMultipleSelectable}
                 onChange={(checked) =>
