@@ -116,7 +116,6 @@ export interface IOrderDetailOption {
   optionPrice: number;
   optionGroupName: string;
   optionQuantity: number;
-  isMenuQuantityDependant: boolean;
   createDate: string;
 }
 

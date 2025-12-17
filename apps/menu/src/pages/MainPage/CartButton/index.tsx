@@ -65,7 +65,6 @@ export const CartButton = ({ categories }: Props) => {
         const options = cartMenu.selectedOptions.map((option) => ({
           optionPrice: option.optionPrice,
           quantity: option.quantity,
-          isMenuQuantityDependant: option.isMenuQuantityDependant,
         }));
 
         return calculateMenuTotalPrice(
@@ -91,7 +90,6 @@ export const CartButton = ({ categories }: Props) => {
           optionGroupSeq: selectedOption.optionGroupSeq,
           optionName: selectedOption.optionName,
           optionPrice: selectedOption.optionPrice,
-          isMenuQuantityDependant: selectedOption.isMenuQuantityDependant,
           quantity: selectedOption.quantity,
         })),
       }));
@@ -109,9 +107,7 @@ export const CartButton = ({ categories }: Props) => {
           ...order,
           selectedOptions: order.selectedOptions.map((option) => ({
             ...option,
-            quantity: option.isMenuQuantityDependant
-              ? option.quantity
-              : order.quantity * option.quantity,
+            quantity: order.quantity * option.quantity,
           })),
         })),
       });

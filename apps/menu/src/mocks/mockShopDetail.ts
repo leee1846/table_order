@@ -127,7 +127,7 @@ const createShopDetail = (): IGetShop => ({
     useSinglePageMenuboard: false,
     menuboardAdminPassword: null,
     isAdminLocked: false,
-    usePrepayment: true,
+    usePrepayment: false,
     usePrepaymentDutch: true,
     usePrepaymentDeferredPayment: true,
     usePrepaymentAutoReset: true,

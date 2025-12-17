@@ -35,7 +35,6 @@ export interface IOptionGroup extends ICommonResponseData {
   maxQuantity: number;
   isMultipleSelectable: boolean;
   isOptionQuantitySelectable: boolean;
-  isMenuQuantityDependant: boolean;
   localeOptionGroupName: TLocale;
   localeOptionGroupNameStr: TLocale;
   optionList: IOption[];

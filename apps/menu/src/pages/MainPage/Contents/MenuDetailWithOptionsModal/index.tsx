@@ -340,17 +340,9 @@ export const MenuDetailWithOptionsModal = ({
   // 메뉴 총 가격 계산
   const getMenuTotalPrice = (): number => {
     const options = Array.from(selectedOptions.values()).map((item) => {
-      const optionGroup = menu.optionGroupList.find(
-        (group) => group.optionGroupSeq === item.option.optionGroupSeq
-      );
-
-      const isMenuQuantityDependant =
-        optionGroup?.isMenuQuantityDependant ?? false;
-
       return {
         optionPrice: item.option.optionPrice,
         quantity: item.quantity,
-        isMenuQuantityDependant,
       };
     });
 
@@ -450,13 +442,6 @@ export const MenuDetailWithOptionsModal = ({
     const cartOptions: ICartMenu['selectedOptions'] = [];
 
     selectedOptions.forEach((item) => {
-      const optionGroup = menu.optionGroupList.find(
-        (group) => group.optionGroupSeq === item.option.optionGroupSeq
-      );
-
-      const isMenuQuantityDependant =
-        optionGroup?.isMenuQuantityDependant ?? false;
-
       const cartOption: ICartOption = {
         optionGroupSeq: item.option.optionGroupSeq,
         optionSeq: item.option.optionSeq,
@@ -465,14 +450,12 @@ export const MenuDetailWithOptionsModal = ({
           item.option.optionName,
         optionPrice: item.option.optionPrice,
         quantity: item.quantity,
-        isMenuQuantityDependant,
       };
 
       cartOptions.push(cartOption);
     });
 
     // 항상 1개의 메뉴만 카트에 등록
-    // isMenuQuantityDependant는 가격 계산 시에만 사용됨
     const cartMenu: ICartMenu = {
       categorySeq: menu.categorySeq,
       menuSeq: menu.menuSeq,

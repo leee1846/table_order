@@ -66,7 +66,6 @@ const createOptionGroup = (
     maxQuantity?: number;
     isMultipleSelectable?: boolean;
     isOptionQuantitySelectable?: boolean;
-    isMenuQuantityDependant?: boolean;
   } = {},
   optionList: ReturnType<typeof createOption>[] = [],
   localeOptionGroupName?: Record<string, string> | null
@@ -79,7 +78,6 @@ const createOptionGroup = (
   maxQuantity: options.maxQuantity ?? 0,
   isMultipleSelectable: options.isMultipleSelectable ?? false,
   isOptionQuantitySelectable: options.isOptionQuantitySelectable ?? false,
-  isMenuQuantityDependant: options.isMenuQuantityDependant ?? false,
   localeOptionGroupName: localeOptionGroupName ?? null,
   localeOptionGroupNameStr: localeOptionGroupName ?? null,
   optionList,
@@ -202,7 +200,7 @@ const createCategory = (
 // 옵션 그룹 및 옵션 생성
 // ============================================================================
 
-// 1. 사이즈 선택 (단일 선택, 필수, isMenuQuantityDependant: false)
+// 1. 사이즈 선택 (단일 선택, 필수)
 const sizeOptions = createOptionGroup(
   1,
   1,
@@ -212,7 +210,6 @@ const sizeOptions = createOptionGroup(
     maxQuantity: 1,
     isMultipleSelectable: false,
     isOptionQuantitySelectable: false,
-    isMenuQuantityDependant: true,
   },
   [
     createOption(1, 1, '레귤러', 0, false, {
@@ -237,7 +234,7 @@ const sizeOptions = createOptionGroup(
   { KO: '사이즈 선택', EN: 'Size Selection', JP: 'サイズ選択', CH: '尺寸选择' }
 );
 
-// 2. 음료 추가 (다중 선택, 선택, isMenuQuantityDependant: false)
+// 2. 음료 추가 (다중 선택, 선택)
 const drinkOptions = createOptionGroup(
   2,
   1,
@@ -247,7 +244,6 @@ const drinkOptions = createOptionGroup(
     maxQuantity: 0,
     isMultipleSelectable: true,
     isOptionQuantitySelectable: false,
-    isMenuQuantityDependant: false,
   },
   [
     createOption(4, 2, '콜라', 2000, false, {
@@ -278,7 +274,7 @@ const drinkOptions = createOptionGroup(
   { KO: '음료 추가', EN: 'Add Drink', JP: 'ドリンク追加', CH: '添加饮料' }
 );
 
-// 3. 토핑 추가 (수량 선택 가능, 선택, isMenuQuantityDependant: false)
+// 3. 토핑 추가 (수량 선택 가능, 선택)
 const toppingOptions = createOptionGroup(
   3,
   1,
@@ -288,7 +284,6 @@ const toppingOptions = createOptionGroup(
     maxQuantity: 4,
     isMultipleSelectable: false,
     isOptionQuantitySelectable: true,
-    isMenuQuantityDependant: false,
   },
   [
     createOption(8, 3, '치즈 추가', 1000, false, {
@@ -319,7 +314,7 @@ const toppingOptions = createOptionGroup(
   { KO: '토핑 추가', EN: 'Add Topping', JP: 'トッピング追加', CH: '添加配料' }
 );
 
-// 4. 포장 옵션 (단일 선택, 필수, isMenuQuantityDependant: true)
+// 4. 포장 옵션 (단일 선택, 필수)
 const packagingOptions = createOptionGroup(
   4,
   1,
@@ -329,7 +324,6 @@ const packagingOptions = createOptionGroup(
     maxQuantity: 1,
     isMultipleSelectable: false,
     isOptionQuantitySelectable: false,
-    isMenuQuantityDependant: true,
   },
   [
     createOption(12, 4, '매장 식사', 0, false, {
@@ -359,7 +353,7 @@ const packagingOptions = createOptionGroup(
   }
 );
 
-// 5. 추가 주문 (다중 선택, 선택, isMenuQuantityDependant: true)
+// 5. 추가 주문 (다중 선택, 선택)
 const additionalOrderOptions = createOptionGroup(
   5,
   1,
@@ -369,7 +363,6 @@ const additionalOrderOptions = createOptionGroup(
     maxQuantity: 0,
     isMultipleSelectable: true,
     isOptionQuantitySelectable: false,
-    isMenuQuantityDependant: true,
   },
   [
     createOption(15, 5, '나이프/포크', 0, false, {
@@ -394,7 +387,7 @@ const additionalOrderOptions = createOptionGroup(
   { KO: '추가 주문', EN: 'Additional Order', JP: '追加注文', CH: '追加订单' }
 );
 
-// 6. 맵기 조절 (단일 선택, 선택, isMenuQuantityDependant: false)
+// 6. 맵기 조절 (단일 선택, 선택)
 const spiceOptions = createOptionGroup(
   6,
   2,
@@ -404,7 +397,6 @@ const spiceOptions = createOptionGroup(
     maxQuantity: 1,
     isMultipleSelectable: false,
     isOptionQuantitySelectable: false,
-    isMenuQuantityDependant: false,
   },
   [
     createOption(18, 6, '순한맛', 0, false, {
@@ -435,7 +427,7 @@ const spiceOptions = createOptionGroup(
   { KO: '맵기 조절', EN: 'Spice Level', JP: '辛さ調整', CH: '辣度调节' }
 );
 
-// 7. 수량 제한 옵션 (수량 선택 가능, 최대 3개, isMenuQuantityDependant: false)
+// 7. 수량 제한 옵션 (수량 선택 가능, 최대 3개)
 const limitedQuantityOptions = createOptionGroup(
   7,
   3,
@@ -445,7 +437,6 @@ const limitedQuantityOptions = createOptionGroup(
     maxQuantity: 3, // 최대 수량 제한
     isMultipleSelectable: false,
     isOptionQuantitySelectable: true,
-    isMenuQuantityDependant: false,
   },
   [
     createOption(22, 7, '감자튀김', 3000, false, {
@@ -480,7 +471,6 @@ const outOfStockOptions = createOptionGroup(
     maxQuantity: 0,
     isMultipleSelectable: true,
     isOptionQuantitySelectable: false,
-    isMenuQuantityDependant: false,
   },
   [
     createOption(25, 8, '일반 옵션', 1000, false, {

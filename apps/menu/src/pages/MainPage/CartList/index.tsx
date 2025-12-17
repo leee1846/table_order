@@ -63,7 +63,6 @@ export const CartList = ({
     const options = cartMenu.selectedOptions.map((option) => ({
       optionPrice: option.optionPrice,
       quantity: option.quantity,
-      isMenuQuantityDependant: option.isMenuQuantityDependant,
     }));
 
     return calculateMenuTotalPrice(
