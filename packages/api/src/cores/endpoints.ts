@@ -2,6 +2,10 @@
  * API 엔드포인트 상수들을 정의합니다.
  */
 export const ENDPOINTS = {
+  COMMON: {
+    HOLIDAYS: '/holidays',
+  },
+
   AUTH: {
     LOGIN: '/login',
     TOKEN_REFRESH: '/token/refresh',

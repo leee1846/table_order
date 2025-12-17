@@ -1,4 +1,9 @@
 export const queryKeys = {
+  common: {
+    all: ['common'] as const,
+    holidays: () => [...queryKeys.common.all, 'holidays'] as const,
+  },
+
   shop: {
     all: ['shop'] as const,
     detail: (shopCode: string) =>
