@@ -45,18 +45,6 @@ export function QueryProvider({ children }: Props) {
             refetchOnWindowFocus: true,
             retry: 0,
           },
-          mutations: {
-            // Mutation 에러 핸들링 (각 앱에서 커스터마이징 가능)
-            onError: (error) => {
-              console.error('Mutation error:', error);
-
-              // 500 에러 등 공통 에러 처리
-              // 예: dialog 표시, toast 메시지 등
-              // if (isAxiosError(error) && error.response?.status === 500) {
-              //   alert('서버 오류가 발생했습니다.');
-              // }
-            },
-          },
         },
       })
   );

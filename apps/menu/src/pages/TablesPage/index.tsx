@@ -18,12 +18,13 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { storage } from '@repo/util/function';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { openConfirmDialog, openDualActionDialog } from '@repo/feature/utils';
+import { usePostDeviceDetail } from '@repo/api/queries';
 
 export const TablesPage = () => {
   const { t } = useAdminTranslation();
   const navigate = useNavigate();
   /** 상점 데이터 로드 */
-  useShopData();
+  const { shopData } = useShopData();
   /** 상점 상세 데이터 로드 */
   const { data: shopDetailData } = useShopDetailData();
   /** 테이블 그룹 데이터 로드 */
@@ -82,19 +83,30 @@ export const TablesPage = () => {
     clearLanguageData();
   };
 
+  const { data: deviceData, refresh: refreshDeviceData } = useDeviceData();
+  const { mutateAsync: createDeviceDetail } = usePostDeviceDetail();
   const selectTable = async (table: TableData) => {
-    await setDeviceDataAsync({
+    await createDeviceDetail({
       tableNumber: table.tableNumber,
+      shopCode: shopData?.shopCode ?? '',
+      deviceType: 'MENU',
+      orderPosNumber: null,
+      androidId: deviceData?.androidId ?? '',
+      battery: deviceData?.battery ?? 0,
+      wifiSignal: deviceData?.wifiSignal ?? '',
+      ipAddress: deviceData?.ipAddress ?? '',
+      version: deviceData?.version ?? '',
+      buildNumber: deviceData?.buildNumber ?? '',
     });
+    await refreshDeviceData();
     await refreshMenuInitialData();
     storage.session.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
     navigate(ROUTES.ROOT.generate());
   };
 
   const handleTableClick = async (table: TableData) => {
-    // TODO: 추후 오더포스 여부 체크 예정
-    const isOrderpos = false;
-    if (isOrderpos) {
+    if (deviceData?.deviceType === 'ORDER_POS') {
+      // TODO: 오더포스일경우
       return;
     }
 

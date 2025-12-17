@@ -6,15 +6,15 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 interface Props {
   useOrderposMode: boolean;
   onChangeUseOrderposMode: () => void;
-  orderposNumber: number | null;
-  handleOrderposNumberChange: (value: string) => void;
+  orderPosNumber: number | null;
+  handleOrderPosNumberChange: (value: string) => void;
 }
 
 export const Detail = ({
   useOrderposMode,
   onChangeUseOrderposMode,
-  orderposNumber,
-  handleOrderposNumberChange,
+  orderPosNumber,
+  handleOrderPosNumberChange,
 }: Props) => {
   const { t } = useAdminTranslation();
 
@@ -51,8 +51,8 @@ export const Detail = ({
             <p>{t('오더포스 번호')}</p>
             <input
               type="tel"
-              value={orderposNumber || ''}
-              onChange={(e) => handleOrderposNumberChange(e.target.value)}
+              value={orderPosNumber || ''}
+              onChange={(e) => handleOrderPosNumberChange(e.target.value)}
               style={{ textAlign: 'center' }}
               maxLength={100}
             />

@@ -5,7 +5,7 @@ export type TDeviceType = 'POS_APP' | 'ORDER_POS' | 'MENU';
 export interface IDeviceBase {
   androidId: string;
   deviceType: TDeviceType;
-  orderposNumber: number | null;
+  orderPosNumber: number | null;
   tableNumber: number | null;
   battery: number;
   wifiSignal: string;

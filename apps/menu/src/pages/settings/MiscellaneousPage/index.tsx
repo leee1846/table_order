@@ -18,20 +18,20 @@ export const MiscellaneousPage = () => {
   const { shopData } = useShopData();
 
   const [useOrderposMode, setUseOrderposMode] = useState(false);
-  const [orderposNumber, setOrderposNumber] = useState<number | null>(null);
+  const [orderPosNumber, setOrderPosNumber] = useState<number | null>(null);
 
-  const handleOrderposNumberChange = (value: string) => {
+  const handleOrderPosNumberChange = (value: string) => {
     const parsed = Number(value);
     if (Number.isNaN(parsed) || parsed > 999) {
       return;
     }
 
-    setOrderposNumber(parsed);
+    setOrderPosNumber(parsed);
   };
 
   const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
   const onSave = async () => {
-    if (useOrderposMode && orderposNumber === null) {
+    if (useOrderposMode && orderPosNumber === null) {
       toast(t('오더포스 번호를 입력해주세요.'), {
         position: 'center-center',
         duration: 1500,
@@ -42,7 +42,7 @@ export const MiscellaneousPage = () => {
     await postDeviceDetail({
       deviceType: useOrderposMode ? 'ORDER_POS' : 'MENU',
       tableNumber: useOrderposMode ? null : (deviceData?.tableNumber ?? 0),
-      orderposNumber: useOrderposMode ? orderposNumber : null,
+      orderPosNumber: useOrderposMode ? orderPosNumber : null,
       shopCode: shopData?.shopCode ?? '',
       androidId: deviceData?.androidId ?? '',
       battery: deviceData?.battery ?? 0,
@@ -65,7 +65,7 @@ export const MiscellaneousPage = () => {
     }
 
     setUseOrderposMode(deviceData?.deviceType === 'ORDER_POS');
-    setOrderposNumber(deviceData?.orderposNumber ?? null);
+    setOrderPosNumber(deviceData?.orderPosNumber ?? null);
   }, [deviceData]);
 
   return (
@@ -85,8 +85,8 @@ export const MiscellaneousPage = () => {
         <Detail
           useOrderposMode={useOrderposMode}
           onChangeUseOrderposMode={() => setUseOrderposMode((prev) => !prev)}
-          orderposNumber={orderposNumber}
-          handleOrderposNumberChange={handleOrderposNumberChange}
+          orderPosNumber={orderPosNumber}
+          handleOrderPosNumberChange={handleOrderPosNumberChange}
         />
       </S.Sections>
     </S.Container>

@@ -26,7 +26,6 @@ export const calculateMenuTotalPrice = (
   const menuTotalPrice = menuPrice * menuQuantity;
 
   // 옵션 가격 * 옵션 수량
-  // isMenuQuantityDependant가 false인 경우, 메뉴 수량을 곱해서 계산
   const optionsTotalPrice = options.reduce((sum, option) => {
     const calculatedQuantity = menuQuantity * option.quantity;
     return sum + option.optionPrice * calculatedQuantity;
