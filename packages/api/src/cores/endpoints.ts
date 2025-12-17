@@ -5,6 +5,7 @@ export const ENDPOINTS = {
   AUTH: {
     LOGIN: '/login',
     TOKEN_REFRESH: '/token/refresh',
+    LOGIN_MENUBOARD_ADMIN: '/login/menuboard',
   },
 
   ORDER: {

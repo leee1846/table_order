@@ -16,3 +16,8 @@ export type TLoginResponse = IApiResponse<ILoginData>;
 export type TRefreshAccessTokenResponse = IApiResponse<{
   accessToken: string;
 }>;
+
+export interface ILoginMenuboardAdminRequest {
+  shopCode: string;
+  pw: string;
+}

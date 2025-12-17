@@ -2,12 +2,15 @@ import { CloseIcon, UnlockedIcon, ArrowBackIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/AdminAccessPasswordModal/adminAccessPasswordModal.style';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { storage } from '@repo/util/function';
 import { STORAGE_KEYS } from '@/constants/keys';
+import { usePostLoginMenuboardAdmin } from '@repo/api/queries';
+import { useShopData } from '@/hooks/useShopData';
+import { openConfirmDialog } from '@repo/feature/utils';
 
 interface Props {
   onClose: () => void;
@@ -17,29 +20,49 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
   const { theme } = useThemeMode();
   const navigate = useNavigate();
   const { t } = useAdminTranslation();
+  const { shopData } = useShopData();
 
   const [password, setPassword] = useState<string | null>(null);
 
+  const { mutateAsync: loginMenuboardAdmin } = usePostLoginMenuboardAdmin({
+    ignoreGlobalErrors: [401],
+    options: {
+      onError: (error) => {
+        if (error.response?.status === 401) {
+          openConfirmDialog({
+            title: t('인증 실패'),
+            content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
+          });
+          setPassword(null);
+        }
+      },
+    },
+  });
+
   const handleNumberPress = (number: number) => {
-    setPassword((prev) => {
-      if (prev && prev.length > 3) {
-        return prev;
-      }
-
-      if (prev === null) {
-        return String(number);
-      }
-      return prev + String(number);
-    });
-  };
-
-  useEffect(() => {
-    // TODO: 비밀번호 검증 로직 추후 추가
     if (password && password.length > 3) {
-      storage.session.save(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED, true);
-      navigate(ROUTES.TABLES.generate());
+      return;
     }
-  }, [password, navigate]);
+
+    const nextPassword =
+      password === null ? String(number) : password + String(number);
+    setPassword(nextPassword);
+
+    const shopCode = shopData?.shopCode;
+    if (!shopCode) {
+      return;
+    }
+
+    if (nextPassword.length > 3) {
+      loginMenuboardAdmin({
+        shopCode,
+        pw: nextPassword,
+      }).then(() => {
+        storage.session.save(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED, true);
+        navigate(ROUTES.TABLES.generate());
+      });
+    }
+  };
 
   const deletePassword = () => {
     setPassword((prev) => {

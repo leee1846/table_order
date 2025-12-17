@@ -4,7 +4,9 @@ import type {
   ILoginRequest,
   TLoginResponse,
   TRefreshAccessTokenResponse,
+  ILoginMenuboardAdminRequest,
 } from '../types/auth';
+import type { TVoidApiResponse } from '../types/common';
 
 interface ILoginParams {
   params: ILoginRequest;
@@ -26,6 +28,22 @@ export const refreshAccessToken = async () => {
     method: 'POST',
     url: ENDPOINTS.AUTH.TOKEN_REFRESH,
     ignoreGlobalErrors: [401],
+  });
+
+  return response.data;
+};
+
+export const loginMenuboardAdmin = async ({
+  shopCode,
+  pw,
+  ignoreGlobalErrors,
+}: ILoginMenuboardAdminRequest & { ignoreGlobalErrors: number[] }) => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.AUTH.LOGIN_MENUBOARD_ADMIN,
+    params: { shopCode, pw },
+    ignoreGlobalErrors,
   });
 
   return response.data;

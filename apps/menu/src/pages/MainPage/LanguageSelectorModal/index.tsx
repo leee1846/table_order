@@ -45,7 +45,7 @@ export const LanguageSelectorModal = ({ onClose }: Props) => {
         isSelected: true,
       });
       onClose();
-      toast(customerI18n.t('선택하신 언어로 변경되었습니다.'), {
+      toast(customerI18n.t('언어가 변경되었습니다.'), {
         position: 'center-center',
         duration: 1500,
       });
