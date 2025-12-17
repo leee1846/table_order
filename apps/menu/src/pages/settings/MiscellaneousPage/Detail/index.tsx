@@ -1,11 +1,21 @@
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Detail/detail.style';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
-import { useState } from 'react';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 
-export const Detail = () => {
-  const [isTestOn, setIsTestOn] = useState(false);
+interface Props {
+  useOrderposMode: boolean;
+  onChangeUseOrderposMode: () => void;
+  orderposNumber: number | null;
+  handleOrderposNumberChange: (value: string) => void;
+}
+
+export const Detail = ({
+  useOrderposMode,
+  onChangeUseOrderposMode,
+  orderposNumber,
+  handleOrderposNumberChange,
+}: Props) => {
   const { t } = useAdminTranslation();
 
   return (
@@ -32,20 +42,42 @@ export const Detail = () => {
           <p>{t('오더포스 모드 사용')}</p>
           <ToggleButton
             size="M"
-            isOn={isTestOn}
-            onChange={() => setIsTestOn(!isTestOn)}
+            isOn={useOrderposMode}
+            onChange={onChangeUseOrderposMode}
           />
         </UIStyles.setting.ContentLayout>
+        {useOrderposMode && (
+          <UIStyles.setting.ContentLayout>
+            <p>{t('오더포스 번호')}</p>
+            <input
+              type="tel"
+              value={orderposNumber || ''}
+              onChange={(e) => handleOrderposNumberChange(e.target.value)}
+              style={{ textAlign: 'center' }}
+              maxLength={100}
+            />
+          </UIStyles.setting.ContentLayout>
+        )}
         <UIStyles.setting.ContentLayout>
           <p>{t('카드 단말기')}</p>
-          <Dropdown options={[]} value={''} onChange={() => {}} />
+          <Dropdown
+            options={[]}
+            value={null}
+            onChange={() => {
+              // noop
+            }}
+            disabled={true}
+          />
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
           <p>{t('KDS 모드 사용')}</p>
           <ToggleButton
             size="M"
-            isOn={isTestOn}
-            onChange={() => setIsTestOn(!isTestOn)}
+            isOn={false}
+            onChange={() => {
+              // noop
+            }}
+            disabled={true}
           />
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
