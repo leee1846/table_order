@@ -8,13 +8,17 @@ import {
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './allDiscountDialog.styles';
+import { usePostCustomAmount } from '@repo/api/queries';
+import { toast } from '@repo/feature/utils';
+import type { TCustomAmountType } from '@repo/api/types';
 
 const { colors } = theme;
 
 export type AllDiscountDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  onApply: (discount: number) => void;
+  orderGroupUuid: string;
+  onApplySuccess?: () => void;
 };
 
 const DISCOUNT_OPTIONS = [
@@ -29,10 +33,13 @@ const DISCOUNT_OPTIONS = [
 export const AllDiscountDialog = ({
   isOpen,
   onClose,
-  onApply,
+  orderGroupUuid,
+  onApplySuccess,
 }: AllDiscountDialogProps) => {
   const [selectedDiscount, setSelectedDiscount] = useState<string>('5');
   const [customDiscount, setCustomDiscount] = useState<string>('');
+  const { mutateAsync: postCustomAmount, isPending: isCustomAmountPending } =
+    usePostCustomAmount();
 
   const handleDiscountChange = (value: string) => {
     setSelectedDiscount(value);
@@ -41,15 +48,45 @@ export const AllDiscountDialog = ({
     }
   };
 
-  const handleApply = () => {
-    let discount;
-    if (selectedDiscount === 'custom') {
-      discount = parseFloat(customDiscount) || 0;
-    } else {
-      discount = parseFloat(selectedDiscount) || 0;
+  const handleApply = async () => {
+    if (isCustomAmountPending) {
+      return;
     }
-    onApply(discount);
-    handleClose();
+
+    const rawDiscount =
+      selectedDiscount === 'custom' ? customDiscount : selectedDiscount;
+    const parsedDiscount = Number(rawDiscount);
+
+    if (!parsedDiscount) {
+      toast('할인율을 입력해주세요.');
+      return;
+    }
+
+    if (!Number.isInteger(parsedDiscount)) {
+      toast('할인율은 정수로 입력해주세요.');
+      return;
+    }
+
+    if (parsedDiscount < 0 || parsedDiscount > 100) {
+      toast('할인율은 0%에서 100% 사이여야 해요.');
+      return;
+    }
+
+    if (!orderGroupUuid) {
+      toast('주문 정보를 찾을 수 없어요. 다시 시도해주세요.');
+      return;
+    }
+
+    const type: TCustomAmountType = 'GROUP_DISCOUNT';
+
+    try {
+      await postCustomAmount({ orderGroupUuid, amount: parsedDiscount, type });
+      toast('전체 할인을 적용했어요.');
+      onApplySuccess?.();
+      handleClose();
+    } catch (error) {
+      toast('전체 할인 적용 중 오류가 발생했어요. 다시 시도해주세요.');
+    }
   };
 
   const handleClose = () => {

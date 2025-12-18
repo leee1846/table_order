@@ -222,11 +222,6 @@ export const TableDetailContainer = ({
     onAddMenu(selectedItems);
   };
 
-  const handleAllDiscount = (discount: number) => {
-    console.log('적용된 할인:', discount);
-    // TODO: 실제 할인 적용 로직 구현
-  };
-
   const handleItemClick = (item: OrderItem) => {
     setSelectedItemForService(item);
     setIsServiceAmountDialogOpen(true);
@@ -285,7 +280,8 @@ export const TableDetailContainer = ({
         isOpen={isAmountChangeDialogOpen}
         onClose={() => setIsAmountChangeDialogOpen(false)}
         orderGroupUuid={
-          orderHistoriesResponse?.data?.orderDetailMenuList?.[0]?.orderGroupUuid
+          orderHistoriesResponse?.data?.orderDetailMenuList?.[0]
+            ?.orderGroupUuid as string
         }
         onApplySuccess={() => refetch()}
       />
@@ -293,7 +289,11 @@ export const TableDetailContainer = ({
       <AllDiscountDialog
         isOpen={isAllDiscountDialogOpen}
         onClose={() => setIsAllDiscountDialogOpen(false)}
-        onApply={handleAllDiscount}
+        orderGroupUuid={
+          orderHistoriesResponse?.data?.orderDetailMenuList?.[0]
+            ?.orderGroupUuid as string
+        }
+        onApplySuccess={() => refetch()}
       />
       {/* 서비스 금액 변경 모달 */}
       <ServiceAmountDialog
