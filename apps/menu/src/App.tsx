@@ -8,6 +8,7 @@ import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
 import { useModalStore } from '@/stores/useModalStore';
+import { useCategoriesData } from '@/hooks/useCategoriesData';
 
 const App = () => {
   useEffect(() => {
@@ -18,6 +19,7 @@ const App = () => {
     };
   }, []);
 
+  const { setModalData } = useModalStore();
   const { data: sseData } = useSSE.useSSEData<ISseMessage>(
     SSE_KEYS.MAIN_CONNECTION
   );
@@ -29,7 +31,12 @@ const App = () => {
   } = useTableOrderHistoriesData({
     skipInitialRequest: true,
   });
-  const { setModalData } = useModalStore();
+  const {
+    refresh: refreshCategoriesData,
+    sseUpdatedAt: categoriesSseUpdatedAt,
+  } = useCategoriesData({
+    skipInitialRequest: true,
+  });
 
   useEffect(() => {
     if (
@@ -59,14 +66,20 @@ const App = () => {
             !tableOrderHistoriesData?.sseUpdatedAt ||
             tableOrderHistoriesData?.sseUpdatedAt !== sseUpdatedAt
           ) {
-            setModalData('isOrderHistoryModalOpened', false);
-            setModalData('isPaymentsModalOpened', false);
-            setModalData('isSplitPaymentModalOpened', false);
             refreshTableOrderHistoriesData(sseUpdatedAt);
           }
         })();
         break;
       case 'SHOP':
+        (() => {
+          if (
+            !categoriesSseUpdatedAt ||
+            categoriesSseUpdatedAt !== sseUpdatedAt
+          ) {
+            refreshCategoriesData(sseUpdatedAt);
+            window.location.reload();
+          }
+        })();
         break;
       case 'MENU':
         break;
@@ -83,7 +96,8 @@ const App = () => {
     shopData,
     tableOrderHistoriesData?.sseUpdatedAt,
     refreshTableOrderHistoriesData,
-    setModalData,
+    refreshCategoriesData,
+    categoriesSseUpdatedAt,
   ]);
 
   return (

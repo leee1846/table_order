@@ -10,14 +10,24 @@ import { storage } from '@repo/util/function';
 export type ICategoryVisibilityMap = Record<number, boolean>;
 
 export interface ICategoryStore {
-  categories: ICategoryWithMenus[] | null;
-  /** 카테고리 노출여부 상태 맵  */
-  visibilityMap: ICategoryVisibilityMap;
-  /** 필터링된 보이는 카테고리 목록 (자동 계산) */
-  visibleCategories: ICategoryWithMenus[];
+  data: {
+    sseUpdatedAt: number | null;
+    /** 카테고리 목록 */
+    categories: ICategoryWithMenus[] | null;
+    /** 카테고리 노출여부 상태 맵  */
+    visibilityMap: ICategoryVisibilityMap;
+    /** 필터링된 보이는 카테고리 목록 (자동 계산) */
+    visibleCategories: ICategoryWithMenus[];
+  };
 
   /** 데이터 설정 (세션 스토리지에도 저장) */
-  setCategoriesAsync: (categories: ICategoryWithMenus[]) => void;
+  setCategoriesAsync: ({
+    sseUpdatedAt,
+    categories,
+  }: {
+    sseUpdatedAt?: number;
+    categories: ICategoryWithMenus[];
+  }) => Promise<boolean>;
   /** 데이터 초기화 (세션 스토리지에서도 삭제) */
   clearData: () => void;
 
@@ -49,6 +59,7 @@ const initialCategories =
 const initialVisibilityMap = {};
 
 const initialData = {
+  sseUpdatedAt: null,
   categories: initialCategories,
   visibilityMap: initialVisibilityMap,
   visibleCategories: computeVisibleCategories(
@@ -64,18 +75,28 @@ const initialData = {
  */
 export const useCategoryStore = create<ICategoryStore>((set) => ({
   // 초기 상태
-  ...initialData,
+  data: initialData,
 
   // 데이터 설정 (스토리지에도 저장)
-  setCategoriesAsync: (categories: ICategoryWithMenus[]) => {
+  setCategoriesAsync: ({
+    sseUpdatedAt,
+    categories,
+  }: {
+    sseUpdatedAt?: number;
+    categories: ICategoryWithMenus[];
+  }) => {
     return new Promise((resolve) => {
       storage.session.save(STORAGE_KEYS.CATEGORIES, categories);
       set((state) => ({
-        categories,
-        visibleCategories: computeVisibleCategories(
+        data: {
+          ...state.data,
+          sseUpdatedAt: sseUpdatedAt ?? null,
           categories,
-          state.visibilityMap
-        ),
+          visibleCategories: computeVisibleCategories(
+            categories,
+            state.data.visibilityMap
+          ),
+        },
       }));
       resolve(true);
     });
@@ -84,17 +105,20 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
   // 데이터 초기화 (스토리지에서도 삭제)
   clearData: () => {
     storage.session.remove(STORAGE_KEYS.CATEGORIES);
-    set({ ...initialData });
+    set({ data: initialData });
   },
 
   // 모든 카테고리 visibility 업데이트
   updateAllVisibility: (visibilityMap: ICategoryVisibilityMap) => {
     set((state) => ({
-      visibilityMap: { ...visibilityMap },
-      visibleCategories: computeVisibleCategories(
-        state.categories,
-        visibilityMap
-      ),
+      data: {
+        ...state.data,
+        visibilityMap: { ...visibilityMap },
+        visibleCategories: computeVisibleCategories(
+          state.data.categories,
+          visibilityMap
+        ),
+      },
     }));
   },
 }));

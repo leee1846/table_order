@@ -37,7 +37,7 @@ export const useCategoryVisibilityManager = (
       // 타이머로 실행될 때마다 최신 공휴일 정보 가져오기
       await refetchHoliday();
 
-      const currentCategories = useCategoryStore.getState().categories;
+      const currentCategories = useCategoryStore.getState().data.categories;
       const updateAllVisibility =
         useCategoryStore.getState().updateAllVisibility;
 
