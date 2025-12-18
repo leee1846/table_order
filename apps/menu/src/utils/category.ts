@@ -24,6 +24,8 @@ export interface ICategorySaleCondition {
   saleStartTime: string | null;
   saleEndTime: string | null;
   isSaleOnHoliday: boolean;
+  /** 오늘이 공휴일인지 여부 (null이면 공휴일 체크 안 함) */
+  isHoliday: boolean;
 }
 
 /**
@@ -57,6 +59,7 @@ export const checkCategorySaleStatus = (
     saleStartTime,
     saleEndTime,
     isSaleOnHoliday,
+    isHoliday,
   } = condition;
 
   // Step 1: 먼저 요일 확인
@@ -64,7 +67,8 @@ export const checkCategorySaleStatus = (
     useSaleDay,
     saleDayOfWeek,
     isSaleOnHoliday,
-    currentTime
+    currentTime,
+    isHoliday
   );
 
   if (!isDayAvailable) {
@@ -115,19 +119,27 @@ export const checkCategorySaleStatus = (
  *
  * @param useSaleDay - 요일 제한 사용 여부
  * @param saleDayOfWeek - 판매 요일 배열 (0: 일요일, 1: 월요일, ..., 6: 토요일)
- * @param _isSaleOnHoliday - 공휴일 판매 여부 (TODO: 공휴일 API 연동 후 사용 예정)
+ * @param isSaleOnHoliday - 공휴일 판매 여부
  * @param currentTime - 현재 시간
+ * @param isHoliday - 오늘이 공휴일인지 여부
  * @returns 요일 조건을 만족하면 true
  */
 const checkSaleDay = (
   useSaleDay: boolean,
   saleDayOfWeek: number[] | null,
-  _isSaleOnHoliday: boolean,
-  currentTime: Date
+  isSaleOnHoliday: boolean,
+  currentTime: Date,
+  isHoliday: boolean
 ): boolean => {
   // useSaleDay가 false면 매일 판매
   if (!useSaleDay) {
     return true;
+  }
+
+  // 공휴일 체크를 먼저 수행
+  // useSaleDay가 true이고, 오늘이 공휴일이고, 공휴일에 판매하지 않으면 무조건 판매 불가
+  if (isHoliday === true && !isSaleOnHoliday) {
+    return false;
   }
 
   // saleDayOfWeek가 null이거나 빈 배열이면 매일 판매
@@ -138,22 +150,6 @@ const checkSaleDay = (
   const currentDayOfWeek = getCurrentDayOfWeek(currentTime);
   const isCurrentDayInSaleDays = saleDayOfWeek.includes(currentDayOfWeek);
 
-  // TODO: 한국 공휴일 API 연동 필요
-  // - API에서 공휴일 목록을 받아와야 함 (년/월/일 배열 형태로 제공 예정)
-  // - 현재 날짜가 공휴일 목록에 포함되는지 확인
-  // - isSaleOnHoliday가 false이고 오늘이 공휴일이면 판매 불가
-  // - isSaleOnHoliday가 true이고 오늘이 공휴일이면 saleDayOfWeek 확인
-  //
-  // 예시 로직:
-  // const isTodayHoliday = checkIfTodayIsHoliday(currentTime, holidayList);
-  // if (isTodayHoliday) {
-  //   if (!isSaleOnHoliday) {
-  //     return false;
-  //   }
-  //   return isCurrentDayInSaleDays;
-  // }
-
-  // 현재는 공휴일 체크 없이 요일만 확인
   return isCurrentDayInSaleDays;
 };
 

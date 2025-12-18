@@ -119,7 +119,7 @@ importers:
         specifier: ^19.1.1
         version: 19.2.1(react@19.2.1)
       react-i18next:
-        specifier: ^16.3.5
+        specifier: 16.3.5
         version: 16.3.5(i18next@25.7.1(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
       react-router-dom:
         specifier: ^7.9.4
@@ -171,8 +171,8 @@ importers:
         specifier: workspace:*
         version: link:../util
       '@tanstack/react-query':
-        specifier: ^5.62.8
-        version: 5.90.11(react@19.2.1)
+        specifier: 4.42.0
+        version: 4.42.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       axios:
         specifier: ^1.7.9
         version: 1.13.2
@@ -274,7 +274,7 @@ importers:
         specifier: workspace:*
         version: link:../util
       react-i18next:
-        specifier: ^16.3.5
+        specifier: 16.3.5
         version: 16.3.5(i18next@25.7.1(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
       react-router-dom:
         specifier: ^7.9.4
@@ -924,13 +924,20 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@tanstack/query-core@5.90.11':
-    resolution: {integrity: sha512-f9z/nXhCgWDF4lHqgIE30jxLe4sYv15QodfdPDKYAk7nAEjNcndy4dHz3ezhdUaR23BpWa4I2EH4/DZ0//Uf8A==}
+  '@tanstack/query-core@4.41.0':
+    resolution: {integrity: sha512-193R4Jp9hjvlij6LryxrB5Mpbffd2L9PeWh3KlIy/hJV4SkBOfiQZ+jc5qAZLDCrdbkA5FjGj+UoDYw6TcNnyA==}
 
-  '@tanstack/react-query@5.90.11':
-    resolution: {integrity: sha512-3uyzz01D1fkTLXuxF3JfoJoHQMU2fxsfJwE+6N5hHy0dVNoZOvwKP8Z2k7k1KDeD54N20apcJnG75TBAStIrBA==}
+  '@tanstack/react-query@4.42.0':
+    resolution: {integrity: sha512-j0tiofkzE3CSrYKmVRaKuwGgvCE+P2OOEDlhmfjeZf5ufcuFHwYwwgw3j08n4WYPVZ+OpsHblcFYezhKA3jDwg==}
     peerDependencies:
-      react: ^18 || ^19
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -2753,12 +2760,15 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.53.3':
     optional: true
 
-  '@tanstack/query-core@5.90.11': {}
+  '@tanstack/query-core@4.41.0': {}
 
-  '@tanstack/react-query@5.90.11(react@19.2.1)':
+  '@tanstack/react-query@4.42.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
-      '@tanstack/query-core': 5.90.11
+      '@tanstack/query-core': 4.41.0
       react: 19.2.1
+      use-sync-external-store: 1.6.0(react@19.2.1)
+    optionalDependencies:
+      react-dom: 19.2.1(react@19.2.1)
 
   '@types/babel__core@7.20.5':
     dependencies:
