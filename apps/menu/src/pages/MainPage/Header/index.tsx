@@ -12,6 +12,7 @@ import { globalTimerManager } from '@/utils/timerManager';
 import { TIMER_KEYS } from '@/constants/keys';
 import type { UseBreakTimeReturn } from '@/hooks/useBreakTime';
 import type { UseShopClosureReturn } from '@/hooks/useShopClosure';
+import { useModalStore } from '@/stores/useModalStore';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -34,7 +35,7 @@ export const Header = ({
   const { data: deviceData } = useDeviceData();
   const { data: shopDetailData } = useShopDetailData();
 
-  const [showOrderHistoryModal, setShowOrderHistoryModal] = useState(false);
+  const { data: modalData, setModalData } = useModalStore();
   const clickCountRef = useRef(0);
   const descriptionWrapperRef = useRef<HTMLDivElement>(null);
   const descriptionContainerRef = useRef<HTMLDivElement>(null);
@@ -233,7 +234,7 @@ export const Header = ({
   };
 
   const onClickOrderHistoryButton = () => {
-    setShowOrderHistoryModal(true);
+    setModalData('isOrderHistoryModalOpened', true);
   };
 
   return (
@@ -282,10 +283,10 @@ export const Header = ({
         </S.RightContent>
       </S.Header>
 
-      {showOrderHistoryModal && (
+      {modalData.isOrderHistoryModalOpened && (
         <OrderHistoryModal
           orderHistories={orderHistories}
-          onClose={() => setShowOrderHistoryModal(false)}
+          onClose={() => setModalData('isOrderHistoryModalOpened', false)}
         />
       )}
     </>

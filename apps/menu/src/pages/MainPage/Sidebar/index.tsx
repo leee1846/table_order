@@ -11,6 +11,7 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LANGUAGE_CONFIG } from '@/constants/common';
 import { LanguageSelectorModal } from '@/pages/MainPage/LanguageSelectorModal';
+import { useModalStore } from '@/stores/useModalStore';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -27,8 +28,7 @@ export const Sidebar = ({
 }: Props) => {
   const { t } = useCustomerTranslation();
 
-  const [isStaffCallModalOpen, setIsStaffCallModalOpen] = useState(false);
-  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const { data: modalData, setModalData } = useModalStore();
 
   const { data: languageData } = useCustomerLanguageStore();
   const { data: disableStaffCallData } = useDisableStaffCallStore();
@@ -46,7 +46,7 @@ export const Sidebar = ({
       return;
     }
 
-    setIsStaffCallModalOpen(true);
+    setModalData('isStaffCallModalOpened', true);
   };
 
   return (
@@ -83,7 +83,9 @@ export const Sidebar = ({
             <S.Language>
               <button
                 type="button"
-                onClick={() => setIsLanguageModalOpen(true)}
+                onClick={() =>
+                  setModalData('isLanguageSelectorModalOpened', true)
+                }
               >
                 <img src={currentLanguageIcon} alt="LANGUAGE" />
                 LANGUAGE
@@ -93,15 +95,17 @@ export const Sidebar = ({
         </S.FloatingContainer>
       </S.Container>
 
-      {isStaffCallModalOpen && staffCallCategory && (
+      {modalData.isStaffCallModalOpened && staffCallCategory && (
         <StaffCallModal
-          onClose={() => setIsStaffCallModalOpen(false)}
+          onClose={() => setModalData('isStaffCallModalOpened', false)}
           category={staffCallCategory}
         />
       )}
 
-      {isLanguageModalOpen && (
-        <LanguageSelectorModal onClose={() => setIsLanguageModalOpen(false)} />
+      {modalData.isLanguageSelectorModalOpened && (
+        <LanguageSelectorModal
+          onClose={() => setModalData('isLanguageSelectorModalOpened', false)}
+        />
       )}
     </>
   );

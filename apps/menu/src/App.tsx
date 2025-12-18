@@ -7,6 +7,7 @@ import type { ISseMessage } from '@repo/api/types';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
+import { useModalStore } from '@/stores/useModalStore';
 
 const App = () => {
   useEffect(() => {
@@ -28,6 +29,7 @@ const App = () => {
   } = useTableOrderHistoriesData({
     skipInitialRequest: true,
   });
+  const { setModalData } = useModalStore();
 
   useEffect(() => {
     if (
@@ -57,6 +59,9 @@ const App = () => {
             !tableOrderHistoriesData?.sseUpdatedAt ||
             tableOrderHistoriesData?.sseUpdatedAt !== sseUpdatedAt
           ) {
+            setModalData('isOrderHistoryModalOpened', false);
+            setModalData('isPaymentsModalOpened', false);
+            setModalData('isSplitPaymentModalOpened', false);
             refreshTableOrderHistoriesData(sseUpdatedAt);
           }
         })();
@@ -78,6 +83,7 @@ const App = () => {
     shopData,
     tableOrderHistoriesData?.sseUpdatedAt,
     refreshTableOrderHistoriesData,
+    setModalData,
   ]);
 
   return (

@@ -13,6 +13,7 @@ import { useDeviceData } from '@/hooks/useDeviceData';
 import { usePostTableOrder } from '@repo/api/queries';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import type { ICartMenu } from '@/types/cart';
+import { useModalStore } from '@/stores/useModalStore';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -21,31 +22,28 @@ interface Props {
 export const CartButton = ({ categories }: Props) => {
   const { t } = useCustomerTranslation();
   const { data: cartData, clearCart } = useCartStore();
+  const { data: modalData, setModalData } = useModalStore();
 
-  /** 장바구니 모달 */
-  const [isCartListOpen, setIsCartListOpen] = useState(false);
   /** 주문 완료 모달 */
   const [isOrderCompleteOrderData, setIsOrderCompleteOrderData] = useState<
     IOrder[] | null
   >(null);
   const [orderTotalPrice, setOrderTotalPrice] = useState<number>(0);
   /** 결제 방법 선택 모달 */
-  const [isPaymentsModalOpen, setIsPaymentsModalOpen] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     'card' | 'cash' | 'split' | 'payAfter' | null
   >(null);
   /** 분할 결제 모달 */
-  const [isSplitPaymentModalOpen, setIsSplitPaymentModalOpen] = useState(false);
 
   const openPaymentModal = () => {
     if (selectedPaymentMethod === 'split') {
-      setIsSplitPaymentModalOpen(true);
+      setModalData('isSplitPaymentModalOpened', true);
     }
     // setIsPaymentsModalOpen(false);
   };
 
   const closePaymentsModal = () => {
-    setIsPaymentsModalOpen(false);
+    setModalData('isPaymentsModalOpened', false);
     setSelectedPaymentMethod(null);
   };
 
@@ -114,7 +112,7 @@ export const CartButton = ({ categories }: Props) => {
       setIsOrderCompleteOrderData(orders);
       setOrderTotalPrice(totalPrice);
       clearCart();
-      setIsCartListOpen(false);
+      setModalData('isCartListOpened', false);
       return true;
     } catch (_error) {
       return false;
@@ -123,23 +121,26 @@ export const CartButton = ({ categories }: Props) => {
 
   return (
     <>
-      <S.Container type="button" onClick={() => setIsCartListOpen(true)}>
+      <S.Container
+        type="button"
+        onClick={() => setModalData('isCartListOpened', true)}
+      >
         <p>{t('장바구니')}</p>
         <p>{cartData.menus.reduce((acc, curr) => acc + curr.quantity, 0)}</p>
       </S.Container>
 
       {/* 장바구니 모달 */}
-      {isCartListOpen && (
+      {modalData.isCartListOpened && (
         <CartList
-          onClose={() => setIsCartListOpen(false)}
+          onClose={() => setModalData('isCartListOpened', false)}
           executePostpaidOrder={executePostpaidOrder}
           categories={categories}
-          openPaymentsModal={() => setIsPaymentsModalOpen(true)}
+          openPaymentsModal={() => setModalData('isPaymentsModalOpened', true)}
         />
       )}
 
       {/* 결제 방법 선택 모달 */}
-      {isPaymentsModalOpen && (
+      {modalData.isPaymentsModalOpened && (
         <PaymentsModal
           onClose={closePaymentsModal}
           selectedPaymentMethod={selectedPaymentMethod}
@@ -149,8 +150,10 @@ export const CartButton = ({ categories }: Props) => {
       )}
 
       {/* 분할 결제 모달 */}
-      {isSplitPaymentModalOpen && (
-        <SplitPaymentModal onClose={() => setIsSplitPaymentModalOpen(false)} />
+      {modalData.isSplitPaymentModalOpened && (
+        <SplitPaymentModal
+          onClose={() => setModalData('isSplitPaymentModalOpened', false)}
+        />
       )}
 
       {/* 주문 완료 모달 */}

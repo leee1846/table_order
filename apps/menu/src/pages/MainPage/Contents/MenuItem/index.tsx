@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import * as S from '@/pages/MainPage/Contents/MenuItem/menuItem.style';
 import { MenuDetailModal } from '@/pages/MainPage/Contents/MenuDetailModal';
 import { MenuDetailWithOptionsModal } from '@/pages/MainPage/Contents/MenuDetailWithOptionsModal';
@@ -12,6 +11,7 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useModalStore } from '@/stores/useModalStore';
 
 const IMAGE_SIZE = {
   1: {
@@ -40,7 +40,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
 
   const firstImage = menu.menuImageList?.[0];
 
-  const [isMenuDetailOpen, setIsMenuDetailOpen] = useState(false);
+  const { data: modalData, openMenuDetail, closeMenuDetail } = useModalStore();
 
   const { addToCart, updateCartItemQuantity, data: cartData } = useCartStore();
   const { firstOrderRequiredCategories } = useCategoriesData();
@@ -110,7 +110,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
       return;
     }
 
-    setIsMenuDetailOpen(true);
+    openMenuDetail(menu.menuSeq);
   };
 
   return (
@@ -141,19 +141,15 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
         </S.Content>
       </S.Container>
 
-      {isMenuDetailOpen && menu.optionGroupList.length < 1 && (
-        <MenuDetailModal
-          onClose={() => setIsMenuDetailOpen(false)}
-          menu={menu}
-        />
-      )}
+      {modalData.openedMenuDetailSeq === menu.menuSeq &&
+        menu.optionGroupList.length < 1 && (
+          <MenuDetailModal onClose={closeMenuDetail} menu={menu} />
+        )}
 
-      {isMenuDetailOpen && menu.optionGroupList.length > 0 && (
-        <MenuDetailWithOptionsModal
-          onClose={() => setIsMenuDetailOpen(false)}
-          menu={menu}
-        />
-      )}
+      {modalData.openedMenuDetailSeq === menu.menuSeq &&
+        menu.optionGroupList.length > 0 && (
+          <MenuDetailWithOptionsModal onClose={closeMenuDetail} menu={menu} />
+        )}
     </>
   );
 };

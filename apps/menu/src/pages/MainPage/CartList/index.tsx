@@ -14,6 +14,7 @@ import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useModalStore } from '@/stores/useModalStore';
 
 interface Props {
   onClose: () => void;
@@ -30,11 +31,12 @@ export const CartList = ({
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
 
+  const { data: modalData, setModalData } = useModalStore();
+
   const { data: shopDetailData } = useShopDetailData();
   const currencySymbol =
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
-  const [isMenuDetailModalOpen, setIsMenuDetailModalOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<ICartMenu | null>(null);
   const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
     null
@@ -133,7 +135,7 @@ export const CartList = ({
   const onClickOptionButton = (menu: ICartMenu, index: number) => {
     setSelectedMenu(menu);
     setSelectedMenuIndex(index);
-    setIsMenuDetailModalOpen(true);
+    setModalData('isCartMenuDetailModalOpened', true);
   };
 
   return createPortal(
@@ -212,13 +214,13 @@ export const CartList = ({
         </S.TotalContainer>
       </S.Container>
 
-      {isMenuDetailModalOpen &&
+      {modalData.isCartMenuDetailModalOpened &&
         selectedMenuData &&
         selectedMenu &&
         selectedMenuIndex !== null && (
           <MenuDetailWithOptionsModal
             onClose={() => {
-              setIsMenuDetailModalOpen(false);
+              setModalData('isCartMenuDetailModalOpened', false);
               setSelectedMenuIndex(null);
             }}
             menu={selectedMenuData}
