@@ -52,7 +52,7 @@ export const TablesPage = () => {
     batteryLevel: 100,
   }));
 
-  const { setDataAsync: setDeviceDataAsync } = useDeviceData();
+  useDeviceData();
   const { refresh: refreshCategoriesData } = useCategoriesData({
     skipInitialRequest: true,
   });

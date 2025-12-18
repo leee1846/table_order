@@ -4,6 +4,13 @@ import { useEffect } from 'react';
 import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 
+const initialData = {
+  sseUpdatedAt: null,
+  discountRate: 0,
+  totalAmount: 0,
+  orderDetailMenuList: [],
+};
+
 interface Props {
   /**
    * useEffect 실행을 건너뛸지 여부
@@ -43,6 +50,12 @@ export const useTableOrderHistoriesData = (options?: Props) => {
       return;
     }
 
+    // 이미 데이터가 있으면 초기 로드가 완료된 것이므로 실행하지 않음
+    // refetch는 refresh 함수에서 직접 처리
+    if (tableOrderHistoriesData) {
+      return;
+    }
+
     if (!tableOrderHistoriesDataResponse) {
       return;
     }
@@ -51,15 +64,12 @@ export const useTableOrderHistoriesData = (options?: Props) => {
       !tableOrderHistoriesDataResponse?.data?.orderDetailMenuList ||
       tableOrderHistoriesDataResponse?.data?.orderDetailMenuList?.length < 1
     ) {
-      setTableOrderHistoriesData({
-        discountRate: 0,
-        totalAmount: 0,
-        orderDetailMenuList: [],
-      });
+      setTableOrderHistoriesData(initialData);
       return;
     }
 
     setTableOrderHistoriesData({
+      sseUpdatedAt: null,
       discountRate: tableOrderHistoriesDataResponse?.data?.discountRate ?? 0,
       totalAmount: tableOrderHistoriesDataResponse?.data?.totalAmount ?? 0,
       orderDetailMenuList:
@@ -68,29 +78,22 @@ export const useTableOrderHistoriesData = (options?: Props) => {
   }, [
     tableOrderHistoriesDataResponse,
     setTableOrderHistoriesData,
+    tableOrderHistoriesData,
     skipInitialRequest,
   ]);
 
-  const refresh = async () => {
+  const refresh = async (sseUpdatedAt?: number) => {
     const result = await refetch();
     if (
       !result.data?.data?.orderDetailMenuList ||
       result.data.data.orderDetailMenuList.length < 1
     ) {
-      await setTableOrderHistoriesData({
-        discountRate: 0,
-        totalAmount: 0,
-        orderDetailMenuList: [],
-      });
-
-      return {
-        discountRate: 0,
-        totalAmount: 0,
-        orderDetailMenuList: [],
-      };
+      await setTableOrderHistoriesData(initialData);
+      return initialData;
     }
 
     await setTableOrderHistoriesData({
+      sseUpdatedAt: sseUpdatedAt ?? null,
       discountRate: result.data.data.discountRate ?? 0,
       totalAmount: result.data.data.totalAmount ?? 0,
       orderDetailMenuList: result.data.data.orderDetailMenuList ?? [],

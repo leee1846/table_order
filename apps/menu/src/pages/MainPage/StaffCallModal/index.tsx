@@ -9,7 +9,6 @@ import type { ICartMenu } from '@/types/cart';
 import { usePostTableOrder } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
-import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useDeviceData } from '@/hooks/useDeviceData';
@@ -108,7 +107,6 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
   const { shopData } = useShopData();
 
-  const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData();
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const { data: customerCountData } = useCustomerCountStore();
   const { data: deviceData } = useDeviceData();
@@ -149,8 +147,6 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
             selectedOptions: [],
           })),
         });
-
-        await refreshTableOrderHistories();
 
         disableStaffCall();
         toast(t('요청이 완료되었습니다.'), {

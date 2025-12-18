@@ -9,7 +9,6 @@ import type { ICategoryWithMenus, IOrder } from '@repo/api/types';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopData } from '@/hooks/useShopData';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
-import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { usePostTableOrder } from '@repo/api/queries';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
@@ -54,7 +53,6 @@ export const CartButton = ({ categories }: Props) => {
   const { shopData } = useShopData();
   const { data: deviceData } = useDeviceData();
   const { data: customerCountData } = useCustomerCountStore();
-  const { refresh: refreshTableOrderHistories } = useTableOrderHistoriesData();
 
   /**
    * 주문 실행 로직 (onConfirm 내부 로직만 추출)
@@ -112,7 +110,6 @@ export const CartButton = ({ categories }: Props) => {
         })),
       });
 
-      await refreshTableOrderHistories();
       const totalPrice = calculateTotalPrice();
       setIsOrderCompleteOrderData(orders);
       setOrderTotalPrice(totalPrice);

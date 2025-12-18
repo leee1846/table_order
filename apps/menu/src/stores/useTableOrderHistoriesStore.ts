@@ -4,6 +4,7 @@ import type { IOrderHistory } from '@repo/api/types';
 import { create } from '@repo/feature/zustand';
 
 export interface ITableOrderHistoriesData {
+  sseUpdatedAt?: number | null;
   discountRate: number;
   totalAmount: number;
   orderDetailMenuList: IOrderHistory[];
