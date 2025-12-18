@@ -350,8 +350,14 @@ export const MenuDetailWithOptionsModal = ({
   };
 
   // 옵션 그룹 제목 텍스트 생성 (최소/최대 선택 개수 포함)
-  const buildOptionGroupTitleText = (optionGroup: IOptionGroup): string => {
+  const buildOptionGroupTitle = (
+    optionGroup: IOptionGroup
+  ): React.ReactNode => {
+    const groupName =
+      optionGroup.localeOptionGroupName?.[languageData.currentLanguage] ??
+      optionGroup.optionGroupName;
     let quantityText = '';
+
     if (optionGroup.minQuantity > 0 && optionGroup.maxQuantity > 0) {
       quantityText = `(${t('최소 {{minQuantity}}개', {
         minQuantity: optionGroup.minQuantity,
@@ -367,7 +373,19 @@ export const MenuDetailWithOptionsModal = ({
         maxQuantity: optionGroup.maxQuantity,
       })})`;
     }
-    return `${optionGroup.localeOptionGroupName?.[languageData.currentLanguage] ?? optionGroup.optionGroupName} ${quantityText}`.trim();
+
+    return (
+      <>
+        {groupName}
+        {quantityText && ` ${quantityText}`}
+        {(optionGroup.minQuantity > 0 || optionGroup.maxQuantity > 0) && (
+          <span>
+            {optionGroup.minQuantity > 0 && '필수 / '}
+            {t('수량제한')}
+          </span>
+        )}
+      </>
+    );
   };
 
   // 선택된 옵션 항목의 표시 텍스트 생성
@@ -537,13 +555,7 @@ export const MenuDetailWithOptionsModal = ({
               {menu.optionGroupList.map((optionGroup) => (
                 <li key={optionGroup.optionGroupSeq}>
                   <S.OptionGroupName>
-                    {buildOptionGroupTitleText(optionGroup)}
-                    {optionGroup.minQuantity > 0 ||
-                    optionGroup.maxQuantity > 0 ? (
-                      <span>{t('수량제한')}</span>
-                    ) : (
-                      ''
-                    )}
+                    {buildOptionGroupTitle(optionGroup)}
                   </S.OptionGroupName>
 
                   <S.Options>

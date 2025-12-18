@@ -121,6 +121,9 @@ export const OptionGroupName = styled.p`
   & > span {
     ${TYPOGRAPHY.CT_2}
     color: ${({ theme }) => theme.mode.semantic[400]};
+  }
+
+  & > span {
     margin-left: 8px;
   }
 `;
