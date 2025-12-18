@@ -10,6 +10,7 @@ import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { getAccessToken } from '@repo/api/auth';
 import { storage } from '@repo/util/function';
 import { STORAGE_KEYS } from './constants/keys';
+import App from './App';
 
 const MainPage = lazy(() =>
   import('@/pages/MainPage').then((module) => ({
@@ -64,63 +65,71 @@ const adminVerificationCheckLoader = () => {
 
 export const router = createBrowserRouter([
   {
-    path: ROUTES.LOGIN.path,
-    element: (
-      <Suspense fallback={<FullscreenLoadingSpinner />}>
-        <LoginPage />
-      </Suspense>
-    ),
-  },
-  {
-    /**
-     * 토큰 여부를 확인하기 위한 loader
-     * 로그인 페이지를 제외한 모든 페이지에서 확인
-     * */
-    loader: authCheckerLoader,
-    element: <Outlet />,
+    element: <App />,
     children: [
       {
-        path: ROUTES.ROOT.path,
+        path: ROUTES.LOGIN.path,
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
-            <MainPage />
+            <LoginPage />
           </Suspense>
         ),
       },
       {
         /**
-         * 관리자 페이지 접근을 위한 비밀번호 인증 상태를 확인하기 위한 loader
-         * 메인 페이지를 제외한 모든 페이지에서 확인
+         * 토큰 여부를 확인하기 위한 loader
+         * 로그인 페이지를 제외한 모든 페이지에서 확인
          * */
-        loader: adminVerificationCheckLoader,
+        loader: authCheckerLoader,
         element: <Outlet />,
         children: [
           {
-            path: ROUTES.TABLES.path,
+            path: ROUTES.ROOT.path,
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
-                <TablesPage />
+                <MainPage />
               </Suspense>
             ),
           },
           {
-            path: ROUTES.SETTINGS.path,
-            element: (
-              <Suspense fallback={<FullscreenLoadingSpinner />}>
-                <SidebarLayout />
-              </Suspense>
-            ),
+            /**
+             * 관리자 페이지 접근을 위한 비밀번호 인증 상태를 확인하기 위한 loader
+             * 메인 페이지를 제외한 모든 페이지에서 확인
+             * */
+            loader: adminVerificationCheckLoader,
+            element: <Outlet />,
             children: [
               {
-                // /settings → /settings/misc
-                index: true,
+                path: ROUTES.TABLES.path,
                 element: (
-                  <Navigate to={ROUTES.SETTINGS.MISCELLANEOUS.path} replace />
+                  <Suspense fallback={<FullscreenLoadingSpinner />}>
+                    <TablesPage />
+                  </Suspense>
                 ),
               },
               {
-                path: ROUTES.SETTINGS.MISCELLANEOUS.path,
-                element: <MiscellaneousPage />,
+                path: ROUTES.SETTINGS.path,
+                element: (
+                  <Suspense fallback={<FullscreenLoadingSpinner />}>
+                    <SidebarLayout />
+                  </Suspense>
+                ),
+                children: [
+                  {
+                    // /settings → /settings/misc
+                    index: true,
+                    element: (
+                      <Navigate
+                        to={ROUTES.SETTINGS.MISCELLANEOUS.path}
+                        replace
+                      />
+                    ),
+                  },
+                  {
+                    path: ROUTES.SETTINGS.MISCELLANEOUS.path,
+                    element: <MiscellaneousPage />,
+                  },
+                ],
               },
             ],
           },

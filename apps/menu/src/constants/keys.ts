@@ -48,6 +48,11 @@ export const TIMER_KEYS = {
   HEADER_ALERT_MESSAGE_UPDATE: 'header-alert-message-update',
 };
 
+export const SSE_KEYS = {
+  /** SSE 연결 키 */
+  MAIN_CONNECTION: 'sse-main-connection',
+} as const;
+
 export const DOM_IDS = {
   /** 카테고리 섹션 ID 접두사 */
   CATEGORY_SECTION_PREFIX: 'category-',

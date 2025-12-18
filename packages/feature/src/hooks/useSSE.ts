@@ -44,7 +44,6 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       // no-op
     }) as React.Dispatch<React.SetStateAction<boolean>>,
   };
-
   sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
 
   const eventSource = new EventSource(url);
@@ -87,6 +86,8 @@ export const disconnectSSE = (key: string): void => {
     state.isConnected = false;
     state.setIsConnected(false);
   }
+
+  sseConnectionMap.delete(key);
 };
 
 /**

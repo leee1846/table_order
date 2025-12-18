@@ -9,9 +9,15 @@ import { LANGUAGE_CONFIG } from '@/constants/common';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { storage } from '@repo/util/function';
 import type { TShopLanguage } from '@repo/api/types';
+import { removeAuthTokens } from '@repo/api/auth';
+import { disconnectSse } from '@/utils/sseConnection';
+import { ROUTES } from '@/constants/routes';
+import { useNavigate } from 'react-router-dom';
+import { openDualActionDialog } from '@repo/feature/utils';
 
 export const Account = () => {
   const { i18n, t } = useAdminTranslation();
+  const navigate = useNavigate();
 
   const currentLanguage = i18n.language || 'KO';
   const supportedLanguages = getAdminSupportedLanguages();
@@ -28,12 +34,28 @@ export const Account = () => {
     storage.local.save(STORAGE_KEYS.ADMIN_I18N_LANGUAGE, lang);
   };
 
+  const handleLogout = () => {
+    openDualActionDialog({
+      title: t('로그아웃'),
+      content: t('로그아웃하시겠습니까?'),
+      primaryText: t('로그아웃'),
+      secondaryText: t('취소'),
+      onConfirm: () => {
+        disconnectSse();
+        removeAuthTokens();
+        storage.local.clear();
+        storage.session.clear();
+        navigate(ROUTES.LOGIN.generate());
+      },
+    });
+  };
+
   return (
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
         <S.TitleContainer>
           <UIStyles.setting.Title>유저의 계정???</UIStyles.setting.Title>
-          <BasicButton variant="Outline_Grey_M" onClick={() => {}}>
+          <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
             {t('로그아웃')}
           </BasicButton>
         </S.TitleContainer>

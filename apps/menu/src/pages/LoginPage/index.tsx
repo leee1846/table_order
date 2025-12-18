@@ -9,6 +9,7 @@ import { setAccessToken, setRefreshToken } from '@repo/api/auth';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import { initializeSseConnection } from '@/utils/sseConnection';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -72,6 +73,7 @@ export const LoginPage = () => {
 
     setAccessToken(response.data.accessToken);
     setRefreshToken(response.data.refreshToken);
+    initializeSseConnection();
     navigate(ROUTES.ROOT.generate());
   };
 
