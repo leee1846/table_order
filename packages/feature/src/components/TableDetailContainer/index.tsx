@@ -21,7 +21,10 @@ import {
   type SplitPayment,
 } from './orderSection/dialogs/SplitPaymentDialog';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
-import { useGetTableOrderHistories } from '@repo/api/queries';
+import {
+  useGetTableOrderHistories,
+  usePutCancelOrderAll,
+} from '@repo/api/queries';
 import type {
   ICategoryWithMenus,
   IGetTableOrderHistories,
@@ -101,6 +104,8 @@ export const TableDetailContainer = ({
       enabled: !!shopCode && !!tableNumber,
     }
   );
+  const { mutateAsync: cancelOrderAll, isPending: isCancelAllPending } =
+    usePutCancelOrderAll();
 
   // API 응답을 Order 타입으로 변환
   const order: Order | null = useMemo(() => {
@@ -169,31 +174,46 @@ export const TableDetailContainer = ({
     return null;
   }
 
+  const handleAllCancel = () => {
+    if (order.items.length === 0) {
+      toast('취소할 메뉴가 없어요.');
+      return;
+    }
+
+    openDualActionDialog({
+      title: `전체 메뉴를\n취소하시겠어요?`,
+      primaryText: '네',
+      secondaryText: '아니오',
+      onConfirm: async () => {
+        //중복 요청 방지
+        if (isCancelAllPending) {
+          return;
+        }
+
+        try {
+          await cancelOrderAll({ shopCode, tableNumber });
+          toast('전체 메뉴를 취소했어요.');
+          await refetch();
+        } catch (error) {
+          toast('전체 메뉴 취소 중 오류가 발생했어요. 다시 시도해주세요.');
+        }
+      },
+    });
+  };
+
   const handleActionPress = (id: string) => {
     const actionHandlers: Record<string, () => void> = {
       'add-menu': () => setIsAddMenuDialogOpen(true),
       'select-cancel': () => setIsSelectCancelDialogOpen(true),
       'amount-change': () => setIsAmountChangeDialogOpen(true),
       'all-discount': () => setIsAllDiscountDialogOpen(true),
-      'all-cancel': () => {
-        openDualActionDialog({
-          title: `전체 메뉴를\n취소하시겠어요?`,
-          primaryText: '네',
-          secondaryText: '아니오',
-          onConfirm: () => {
-            console.log('전체 취소');
-            toast('전체 메뉴를 취소했어요.');
-          },
-          onCancel: () => {
-            console.log('전체 취소 취소');
-          },
-        });
-      },
+      'all-cancel': handleAllCancel,
     };
 
     actionHandlers[id]?.();
   };
 
+  //OrderType 때문에 추가 메뉴 함수는 prop으로 받음
   const handleAddMenu = (selectedItems: SelectedMenuWithOptions[]) => {
     if (!onAddMenu) {
       return;

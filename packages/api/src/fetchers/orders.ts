@@ -13,6 +13,7 @@ import type {
   ICreateOrderGroupRequest,
   TCreateOrderGroupResponse,
   ICancelOrderMenuRequest,
+  ICancelOrderAllRequest,
 } from '../types/orders';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -159,6 +160,23 @@ export const cancelOrderMenu = async (
     method: 'PUT',
     url: ENDPOINTS.ORDER.CANCEL_MENU,
     data,
+  });
+
+  return response.data;
+};
+
+/**
+ * 주문 전체 메뉴를 취소합니다.
+ * PUT /order/cancel/{shopCode}/{tableNumber}
+ */
+export const cancelOrderAll = async ({
+  shopCode,
+  tableNumber,
+}: ICancelOrderAllRequest): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.ORDER.CANCEL_ALL(shopCode, tableNumber),
   });
 
   return response.data;

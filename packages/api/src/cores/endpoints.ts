@@ -22,6 +22,8 @@ export const ENDPOINTS = {
       `/order/${shopCode}/${tableNumber}`,
     CURRENT_TABLE_LIST: (shopCode: string) => `/order/${shopCode}`,
     CANCEL_MENU: '/order/cancel/menu',
+    CANCEL_ALL: (shopCode: string, tableNumber: number) =>
+      `/order/cancel/${shopCode}/${tableNumber}`,
     MOVE_ORDER_GROUP: (shopCode: string) => `/order/move/${shopCode}`,
     SHARE_ORDER_GROUP: (shopCode: string) => `/order/share/${shopCode}`,
   },

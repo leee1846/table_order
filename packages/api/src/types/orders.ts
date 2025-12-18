@@ -277,6 +277,9 @@ export interface ICancelOrderMenuItem {
 export type ICancelOrderMenuRequest = ICancelOrderMenuItem[];
 
 /**
- * 메뉴 선택 취소 응답 타입
+ * 전체 메뉴 취소 요청 파라미터
  */
-export type TCancelOrderMenuResponse = IApiResponse<null>;
+export interface ICancelOrderAllRequest {
+  shopCode: string;
+  tableNumber: number;
+}
