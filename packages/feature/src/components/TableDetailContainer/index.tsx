@@ -222,11 +222,6 @@ export const TableDetailContainer = ({
     onAddMenu(selectedItems);
   };
 
-  const handleAmountChange = (amount: number) => {
-    console.log('변경된 금액:', amount);
-    // TODO: 실제 금액 변경 로직 구현
-  };
-
   const handleAllDiscount = (discount: number) => {
     console.log('적용된 할인:', discount);
     // TODO: 실제 할인 적용 로직 구현
@@ -289,7 +284,10 @@ export const TableDetailContainer = ({
       <AmountChangeDialog
         isOpen={isAmountChangeDialogOpen}
         onClose={() => setIsAmountChangeDialogOpen(false)}
-        onApply={handleAmountChange}
+        orderGroupUuid={
+          orderHistoriesResponse?.data?.orderDetailMenuList?.[0]?.orderGroupUuid
+        }
+        onApplySuccess={() => refetch()}
       />
       {/* 전체 할인 모달 */}
       <AllDiscountDialog

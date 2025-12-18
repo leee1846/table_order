@@ -11,7 +11,6 @@ import { CloseIcon, OptionSettingIcon } from '@repo/ui/icons';
 import type { IMenu } from '@repo/api/types';
 import * as S from './optionSelectionView.style';
 import * as A from '../addMenuDialog.styles';
-import { validateOptionGroups } from '../optionValidation';
 import { formatCurrency } from '@repo/util/string';
 
 const { colors } = theme;
@@ -45,7 +44,6 @@ export const OptionSelectionView = ({
     return selectedOptions.get(optionSeq) || 0;
   };
 
-  //TODO 여기 isMenuQuantityDependant(추가옵션) 걸려있음
   const totalPrice = useMemo(() => {
     // 메뉴 가격 * 메뉴 수량
     const menuTotalPrice = selectedMenu.menuPrice * menuQuantity;
@@ -299,7 +297,7 @@ export const OptionSelectionView = ({
                             {option.optionName}
                           </S.OptionItemName>
                           <S.OptionItemQuantity>
-                            x{quantity}
+                            {quantity}개
                           </S.OptionItemQuantity>
                         </S.SelectedOptionItem>
                       );

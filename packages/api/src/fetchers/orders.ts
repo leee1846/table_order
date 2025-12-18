@@ -14,6 +14,7 @@ import type {
   TCreateOrderGroupResponse,
   ICancelOrderMenuRequest,
   ICancelOrderAllRequest,
+  IPostCustomAmountRequest,
 } from '../types/orders';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -177,6 +178,23 @@ export const cancelOrderAll = async ({
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'PUT',
     url: ENDPOINTS.ORDER.CANCEL_ALL(shopCode, tableNumber),
+  });
+
+  return response.data;
+};
+
+/**
+ * 주문 금액을 변경합니다.
+ * POST /order/custom-amount
+ */
+export const postCustomAmount = async (
+  data: IPostCustomAmountRequest
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.ORDER.CUSTOM_AMOUNT,
+    data,
   });
 
   return response.data;

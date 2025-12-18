@@ -4,22 +4,29 @@ import { CloseIcon, ArrowBackIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './amountChangeDialog.styles';
 import { formatCurrency } from '@repo/util/string';
+import { usePostCustomAmount } from '@repo/api/queries';
+import { toast } from '@repo/feature/utils';
+import type { TCustomAmountType } from '@repo/api/types';
 
 const { colors } = theme;
 
 export type AmountChangeDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  onApply: (amount: number) => void;
+  orderGroupUuid: string | undefined;
+  onApplySuccess?: () => void;
 };
 
 export const AmountChangeDialog = ({
   isOpen,
   onClose,
-  onApply,
+  orderGroupUuid,
+  onApplySuccess,
 }: AmountChangeDialogProps) => {
   const [amount, setAmount] = useState<string>('0');
   const [isNegative, setIsNegative] = useState(false);
+  const { mutateAsync: postCustomAmount, isPending: isCustomAmountPending } =
+    usePostCustomAmount();
 
   const handleNumberPress = (number: number) => {
     if (amount === '0') {
@@ -41,11 +48,34 @@ export const AmountChangeDialog = ({
     }
   };
 
-  const handleApply = () => {
+  const handleApply = async () => {
+    if (isCustomAmountPending) {
+      return;
+    }
+
     const numericAmount = parseInt(amount, 10) || 0;
     const finalAmount = isNegative ? -numericAmount : numericAmount;
-    onApply(finalAmount);
-    handleClose();
+
+    if (finalAmount === 0) {
+      toast('변경할 금액을 입력해주세요.');
+      return;
+    }
+
+    if (!orderGroupUuid) {
+      toast('주문 정보를 찾을 수 없어요. 다시 시도해주세요.');
+      return;
+    }
+
+    const type: TCustomAmountType = 'AMOUNT_CHANGE';
+
+    try {
+      await postCustomAmount({ orderGroupUuid, amount: finalAmount, type });
+      toast('금액을 변경했어요.');
+      onApplySuccess?.();
+      handleClose();
+    } catch (error) {
+      toast('금액 변경 중 오류가 발생했어요. 다시 시도해주세요.');
+    }
   };
 
   const handleClose = () => {

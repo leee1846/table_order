@@ -185,6 +185,7 @@ export interface IOrderHistory {
 }
 
 export interface IGetTableOrderHistories {
+  orderGroupUuid: string;
   totalAmount: number;
   tableNumber: number;
   createDate: string;
@@ -283,3 +284,18 @@ export interface ICancelOrderAllRequest {
   shopCode: string;
   tableNumber: number;
 }
+
+/**
+ * 금액 변경 요청 파라미터
+ */
+export interface IPostCustomAmountRequest {
+  orderGroupUuid: string;
+  amount: number;
+  type: TCustomAmountType;
+  orderDetailMenuSeq?: number;
+}
+
+export type TCustomAmountType =
+  | 'AMOUNT_CHANGE'
+  | 'GROUP_DISCOUNT'
+  | 'MENU_SERVICE';

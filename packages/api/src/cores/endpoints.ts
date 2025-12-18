@@ -26,6 +26,7 @@ export const ENDPOINTS = {
       `/order/cancel/${shopCode}/${tableNumber}`,
     MOVE_ORDER_GROUP: (shopCode: string) => `/order/move/${shopCode}`,
     SHARE_ORDER_GROUP: (shopCode: string) => `/order/share/${shopCode}`,
+    CUSTOM_AMOUNT: '/order/custom-amount',
   },
 
   CATEGORY: {

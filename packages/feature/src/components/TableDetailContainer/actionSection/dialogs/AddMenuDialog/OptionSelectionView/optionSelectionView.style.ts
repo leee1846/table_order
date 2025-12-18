@@ -33,14 +33,13 @@ export const OptionListContainer = styled.div`
   overflow -y: auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 40px;
 `;
 
 export const OptionGroup = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px 50px;
-  border: 1px solid red;
+  gap: 20px 50px;
 `;
 
 export const OptionGroupHeader = styled.div`
@@ -48,6 +47,7 @@ export const OptionGroupHeader = styled.div`
   flex-direction: row;
   gap: 8px;
   grid-column: 1 / -1;
+  margin-bottom: 4px;
 `;
 
 export const OptionGroupName = styled.div`
@@ -81,16 +81,12 @@ export const SelectedOptionsList = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
 `;
 
 export const SelectedOptionItem = styled.div`
-  background-color: ${colors.white};
-  border-radius: 8px;
-  padding: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding-bottom: 12px;
+
+  border: 1px solid red;
 `;
 
 export const OptionItemName = styled.div`
