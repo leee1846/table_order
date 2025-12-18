@@ -10,6 +10,8 @@ import { theme, TYPOGRAPHY } from '@repo/ui';
 import type { OrderItem } from '../../../orderSection/types';
 import * as S from './selectCancelDialog.styles';
 import { css } from '@emotion/react';
+import { usePutCancelOrderMenu } from '@repo/api/queries';
+import { toast } from '@repo/feature/utils';
 
 const { colors } = theme;
 
@@ -17,17 +19,18 @@ export type SelectCancelDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   items: OrderItem[];
-  onCancel: (selectedItems: { itemId: string; quantity: number }[]) => void;
+  onCancelSuccess?: () => void;
 };
 
 export const SelectCancelDialog = ({
   isOpen,
   onClose,
   items,
-  onCancel,
+  onCancelSuccess,
 }: SelectCancelDialogProps) => {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [quantities, setQuantities] = useState<Map<string, number>>(new Map());
+  const { mutateAsync: cancelOrderMenu, isPending } = usePutCancelOrderMenu();
 
   const handleCheckboxChange = (itemId: string, checked: boolean) => {
     setSelectedItems((prev) => {
@@ -69,13 +72,40 @@ export const SelectCancelDialog = ({
     });
   };
 
-  const handleCancel = () => {
-    const cancelItems = Array.from(selectedItems).map((itemId) => ({
-      itemId,
-      quantity: quantities.get(itemId) || 1,
-    }));
-    onCancel(cancelItems);
-    handleClose();
+  const handleCancel = async () => {
+    if (isPending) {
+      return;
+    }
+
+    if (selectedItems.size === 0) {
+      toast('취소할 메뉴를 선택해주세요.');
+      return;
+    }
+
+    const cancelItems = Array.from(selectedItems)
+      .map((itemId) => ({
+        orderDetailMenuSeq: Number(itemId),
+        canceledQuantity: quantities.get(itemId) || 1,
+      }))
+      .filter(
+        ({ orderDetailMenuSeq, canceledQuantity }) =>
+          !Number.isNaN(orderDetailMenuSeq) && canceledQuantity > 0
+      );
+
+    if (cancelItems.length === 0) {
+      toast('취소할 수 있는 메뉴가 없어요.');
+      return;
+    }
+
+    try {
+      await cancelOrderMenu(cancelItems);
+      toast('선택한 메뉴를 취소했어요.');
+
+      onCancelSuccess?.();
+      handleClose();
+    } catch (error) {
+      toast('메뉴 취소 중 오류가 발생했어요. 다시 시도해주세요.');
+    }
   };
 
   const handleClose = () => {
@@ -145,6 +175,7 @@ export const SelectCancelDialog = ({
             <BasicButton
               variant="Solid_Navy_2XL"
               onClick={handleCancel}
+              disabled={isPending}
               fullWidth
             >
               선택취소

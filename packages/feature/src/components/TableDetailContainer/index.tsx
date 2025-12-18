@@ -21,11 +21,7 @@ import {
   type SplitPayment,
 } from './orderSection/dialogs/SplitPaymentDialog';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
-import {
-  useGetTableOrderHistories,
-  usePutCancelOrderMenu,
-} from '@repo/api/queries';
-import { cancelOrderMenu } from '@repo/api/fetchers';
+import { useGetTableOrderHistories } from '@repo/api/queries';
 import type {
   ICategoryWithMenus,
   IGetTableOrderHistories,
@@ -163,8 +159,6 @@ export const TableDetailContainer = ({
     };
   }, [orderHistoriesResponse, tableNumber, numberOfPeople]);
 
-  const cancelOrderMenuMutation = usePutCancelOrderMenu();
-
   // 로딩 중일 때
   if (isLoading) {
     return <FullscreenLoadingSpinner />;
@@ -206,40 +200,6 @@ export const TableDetailContainer = ({
     }
 
     onAddMenu(selectedItems);
-  };
-
-  const handleSelectCancel = async (
-    selectedItems: { itemId: string; quantity: number }[]
-  ) => {
-    // if (cancelOrderMenuMutation.isPending) {
-    //   return;
-    // }
-    // console.log('selectedItems', selectedItems);
-    // if (selectedItems.length === 0) {
-    //   toast('취소할 메뉴를 선택해주세요.');
-    //   return;
-    // }
-    // const cancellableItems = selectedItems
-    //   .map(({ itemId, quantity }) => ({
-    //     orderDetailMenuSeq: Number(itemId),
-    //     canceledQuantity: quantity,
-    //   }))
-    //   .filter(
-    //     ({ orderDetailMenuSeq, canceledQuantity }) =>
-    //       !Number.isNaN(orderDetailMenuSeq) && canceledQuantity > 0
-    //   );
-    // if (cancellableItems.length === 0) {
-    //   toast('취소할 수 있는 메뉴가 없어요.');
-    //   return;
-    // }
-    // try {
-    //   // 병렬 처리로 모든 취소 요청을 동시에 실행
-    //   await Promise.all(cancellableItems.map((item) => cancelOrderMenu(item)));
-    //   toast('선택한 메뉴를 취소했어요.');
-    //   await refetch();
-    // } catch (error) {
-    //   toast('메뉴 취소 중 오류가 발생했어요. 다시 시도해주세요.');
-    // }
   };
 
   const handleAmountChange = (amount: number) => {
@@ -303,7 +263,7 @@ export const TableDetailContainer = ({
         isOpen={isSelectCancelDialogOpen}
         onClose={() => setIsSelectCancelDialogOpen(false)}
         items={order.items}
-        onCancel={handleSelectCancel}
+        onCancelSuccess={() => refetch()}
       />
       {/* 금액 변경 모달 */}
       <AmountChangeDialog

@@ -8,6 +8,7 @@ import {
 import { ROUTES } from '@/constants/routes';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { getAccessToken } from '@repo/api/auth';
+import App from '@/App';
 
 const LoginPage = lazy(() =>
   import('@/pages/LoginPage').then((module) => ({
@@ -109,7 +110,7 @@ export const router = createBrowserRouter([
   },
   {
     loader: protectedRouteLoader,
-    element: <Outlet />,
+    element: <App />,
     children: [
       {
         // 루트 경로 → /tables로 리디렉트

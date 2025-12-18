@@ -7,3 +7,7 @@ export const STORAGE_KEYS = {
   CUSTOMER_COUNT: 'customer-count',
 } as const;
 
+export const SSE_KEYS = {
+  /** SSE 연결 키 */
+  MAIN_CONNECTION: 'sse-main-connection',
+} as const;

@@ -266,10 +266,15 @@ export type TUpdateOrderTableResponse = IApiResponse<ICreateOrderGroupData>;
 /**
  * 메뉴 선택 취소 요청 파라미터
  */
-export interface ICancelOrderMenuRequest {
+export interface ICancelOrderMenuItem {
   orderDetailMenuSeq: number;
   canceledQuantity: number;
 }
+
+/**
+ * 메뉴 선택 취소 요청 파라미터
+ */
+export type ICancelOrderMenuRequest = ICancelOrderMenuItem[];
 
 /**
  * 메뉴 선택 취소 응답 타입
