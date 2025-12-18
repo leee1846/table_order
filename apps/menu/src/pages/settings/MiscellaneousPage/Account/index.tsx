@@ -38,8 +38,8 @@ export const Account = () => {
     openDualActionDialog({
       title: t('로그아웃'),
       content: t('로그아웃하시겠습니까?'),
-      primaryText: t('로그아웃'),
-      secondaryText: t('취소'),
+      primaryText: t('예'),
+      secondaryText: t('아니오'),
       onConfirm: () => {
         disconnectSse();
         removeAuthTokens();
