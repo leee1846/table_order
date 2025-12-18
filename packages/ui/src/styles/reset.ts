@@ -140,6 +140,8 @@ export const resetStyles = css`
     border: none;
     cursor: pointer;
     padding: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
     -webkit-user-select: none; /* Safari */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+ */

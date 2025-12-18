@@ -9,11 +9,10 @@ import { LANGUAGE_CONFIG } from '@/constants/common';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { storage } from '@repo/util/function';
 import type { TShopLanguage } from '@repo/api/types';
-import { removeAuthTokens } from '@repo/api/auth';
-import { disconnectSse } from '@/utils/sseConnection';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { openDualActionDialog } from '@repo/feature/utils';
+import { clearAuthData } from '@/utils/auth';
 
 export const Account = () => {
   const { i18n, t } = useAdminTranslation();
@@ -41,10 +40,7 @@ export const Account = () => {
       primaryText: t('예'),
       secondaryText: t('아니오'),
       onConfirm: () => {
-        disconnectSse();
-        removeAuthTokens();
-        storage.local.clear();
-        storage.session.clear();
+        clearAuthData();
         navigate(ROUTES.LOGIN.generate());
       },
     });

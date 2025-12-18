@@ -1,3 +1,4 @@
+import { getRefreshToken } from '../auth/util';
 import { getAxiosInstance } from '../cores/axios';
 import { ENDPOINTS } from '../cores/endpoints';
 import type {
@@ -28,6 +29,10 @@ export const refreshAccessToken = async () => {
     method: 'POST',
     url: ENDPOINTS.AUTH.TOKEN_REFRESH,
     ignoreGlobalErrors: [401],
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${getRefreshToken()}`,
+    },
   });
 
   return response.data;

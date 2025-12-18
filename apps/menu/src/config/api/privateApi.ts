@@ -1,8 +1,4 @@
-import {
-  accessTokenRefreshManager,
-  getAccessToken,
-  removeAuthTokens,
-} from '@repo/api/auth';
+import { accessTokenRefreshManager, getAccessToken } from '@repo/api/auth';
 import { createAxiosInstance } from '@repo/api/cores';
 import {
   axios,
@@ -17,9 +13,11 @@ import { isExpired } from '@repo/util/date';
 import { decodeJwtToken } from '@repo/util/function';
 import { getCurrentUnixTime } from '@repo/util/time';
 import { ROUTES } from '@/constants/routes';
+import { clearAuthData } from '@/utils/auth';
+import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 
 const forceReLogin = () => {
-  removeAuthTokens();
+  clearAuthData();
   openConfirmDialog({
     title: '인증 만료',
     content: '인증이 유효하지 않습니다.\n 로그인 후 다시 시도해주세요.',
@@ -31,6 +29,8 @@ const forceReLogin = () => {
 
 accessTokenRefreshManager.configure({
   onRefreshFailed: forceReLogin,
+  reconnectSse: initializeSseConnection,
+  disconnectSse,
 });
 
 /**
@@ -58,7 +58,7 @@ privateApi.interceptors.request.use(
     }
 
     // 토큰 만료 120초 전에 갱신 요청
-    if (isExpired(payload.exp, 120, getCurrentUnixTime())) {
+    if (isExpired(payload.exp, 170, getCurrentUnixTime())) {
       accessToken = await accessTokenRefreshManager.runRefresh();
     }
 

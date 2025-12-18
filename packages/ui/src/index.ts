@@ -20,7 +20,7 @@ export const createTheme = (mode: 'light' | 'dark') => ({
 
 export const theme = createTheme('light');
 export { ThemeProvider, DynamicThemeProvider } from './provider';
-export { ThemeModeProvider } from './contexts/ThemeModeContext';
+export { ThemeModeProvider, ThemeModeContext } from './contexts/ThemeModeContext';
 export { useThemeMode } from './hooks/useThemeMode';
 export { TYPOGRAPHY };
 

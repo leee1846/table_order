@@ -3,6 +3,8 @@ import { getAccessToken, setAccessToken } from './util';
 
 interface IAccessTokenRefreshManagerConfig {
   onRefreshFailed?: () => void;
+  reconnectSse?: () => void;
+  disconnectSse?: () => void;
 }
 /**
  * Access Token Refresh Manager
@@ -50,6 +52,8 @@ export const accessTokenRefreshManager = (() => {
       .then((res) => {
         const token = res.data.accessToken;
         setAccessToken(token);
+        state.config?.disconnectSse?.();
+        state.config?.reconnectSse?.();
         return token;
       })
       .catch((err) => {
