@@ -76,6 +76,7 @@ const App = () => {
             !categoriesSseUpdatedAt ||
             categoriesSseUpdatedAt !== sseUpdatedAt
           ) {
+            //TODO: 테스트 필요
             refreshCategoriesData(sseUpdatedAt);
             window.location.reload();
           }
