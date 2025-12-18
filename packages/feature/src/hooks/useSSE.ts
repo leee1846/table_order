@@ -23,29 +23,34 @@ const sseConnectionMap = new Map<string, TSSEConnectionState<unknown>>();
  * @template T - SSE로 수신하는 데이터의 타입
  */
 export const connectSSE = <T = unknown>(key: string, url: string): void => {
-  // 이미 연결된 경우 무시
-  if (sseConnectionMap.has(key)) {
+  let state = sseConnectionMap.get(key) as TSSEConnectionState<T> | undefined;
+
+  // 이미 연결이 존재하고 EventSource가 활성화된 경우 무시
+  if (state?.eventSource) {
     return;
   }
 
-  // 초기 상태 생성 (setter는 나중에 useSSEData가 등록)
-  const state: TSSEConnectionState<T> = {
-    eventSource: null,
-    originData: null,
-    setData: (() => {
-      // no-op
-    }) as React.Dispatch<React.SetStateAction<T | null>>,
-    originError: null,
-    setError: (() => {
-      // no-op
-    }) as React.Dispatch<React.SetStateAction<Error | null>>,
-    isConnected: false,
-    setIsConnected: (() => {
-      // no-op
-    }) as React.Dispatch<React.SetStateAction<boolean>>,
-  };
-  sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
+  // 상태가 없으면 새로 생성
+  if (!state) {
+    state = {
+      eventSource: null,
+      originData: null,
+      setData: (() => {
+        // no-op
+      }) as React.Dispatch<React.SetStateAction<T | null>>,
+      originError: null,
+      setError: (() => {
+        // no-op
+      }) as React.Dispatch<React.SetStateAction<Error | null>>,
+      isConnected: false,
+      setIsConnected: (() => {
+        // no-op
+      }) as React.Dispatch<React.SetStateAction<boolean>>,
+    };
+    sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
+  }
 
+  // EventSource 생성 및 연결
   const eventSource = new EventSource(url);
   state.eventSource = eventSource;
 
