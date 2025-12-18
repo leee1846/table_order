@@ -40,6 +40,7 @@ export const OptionGroup = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px 50px;
+  border: 1px solid red;
 `;
 
 export const OptionGroupHeader = styled.div`
@@ -97,7 +98,10 @@ export const OptionItemName = styled.div`
   color: ${colors.grey[800]};
 `;
 
-export const optionQuantityInput = css``;
+export const optionQuantityInput = css`
+  max-width: 50%;
+  min-width: 50%;
+`;
 
 export const OptionItemQuantity = styled.div`
   ${TYPOGRAPHY.ST_4}
@@ -142,10 +146,6 @@ export const checkboxCss = css`
   & > div {
     width: 30px;
     height: 30px;
-  }
-
-  > input {
-    margin-left: 16px;
   }
 `;
 

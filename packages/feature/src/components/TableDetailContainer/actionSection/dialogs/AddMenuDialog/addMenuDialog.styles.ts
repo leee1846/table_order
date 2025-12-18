@@ -8,8 +8,8 @@ import {
 const { colors } = theme;
 
 export const DialogContainer = styled(BaseDialogContainer)`
-  width: 80vw;
-  height: 80vh;
+  width: 85vw;
+  height: 85vh;
   padding: 0;
 `;
 

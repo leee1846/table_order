@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useTableDrag } from '@/hooks/useTableDrag';
 import { useQueryClient } from '@repo/api/tanstack-query';
+import { useSseConnect } from '@/hooks/useSseConnect';
 
 export const TablesPage = () => {
   const { data: shopDetailData } = useShopDetailData();
@@ -26,6 +27,7 @@ export const TablesPage = () => {
   const { shopCode } = useAuth();
   const queryClient = useQueryClient();
   const postOrderGroupMutation = usePostOrderGroup();
+  useSseConnect({ enabled: !!shopCode });
 
   const [showCustomerCountSelector, setShowCustomerCountSelector] =
     useState(false);

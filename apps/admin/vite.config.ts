@@ -18,7 +18,7 @@ export default defineConfig({
     }),
   ],
   build: {
-    target: 'es2015',
+    target: 'chrome83',
   },
   esbuild: {
     target: 'chrome83',

@@ -4,6 +4,7 @@ import { theme, TYPOGRAPHY } from '@repo/ui';
 const { colors } = theme;
 
 export const BaseDialogContainer = styled.div`
+  position: relative;
   background-color: ${colors.white};
   border-radius: 16px;
   overflow: hidden;

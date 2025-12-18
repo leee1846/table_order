@@ -65,4 +65,8 @@ export const ENDPOINTS = {
   DEVICE: {
     SHOP: (shopCode: string) => `/device/${shopCode}`,
   },
+
+  SSE: {
+    CONNECT: '/sse/connect',
+  },
 } as const;
