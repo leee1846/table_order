@@ -9,6 +9,7 @@ import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useTableGroupData } from './hooks/useTableGroupData';
 
 const App = () => {
   useEffect(() => {
@@ -34,6 +35,9 @@ const App = () => {
     skipInitialRequest: true,
   });
   const { refresh: refreshCategoriesData } = useCategoriesData({
+    skipInitialRequest: true,
+  });
+  const { refresh: refreshTableGroupData } = useTableGroupData({
     skipInitialRequest: true,
   });
 
@@ -83,6 +87,9 @@ const App = () => {
         }
         break;
       case 'TABLE':
+        {
+          refreshTableGroupData();
+        }
         break;
       case 'PICKUP':
         break;
@@ -97,6 +104,7 @@ const App = () => {
     refreshTableOrderHistoriesData,
     refreshCategoriesData,
     refreshShopDetailData,
+    refreshTableGroupData,
   ]);
 
   return (

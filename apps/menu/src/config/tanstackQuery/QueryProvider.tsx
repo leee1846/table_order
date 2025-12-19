@@ -42,7 +42,7 @@ export function QueryProvider({ children }: Props) {
         defaultOptions: {
           queries: {
             staleTime: 0,
-            refetchOnWindowFocus: true,
+            refetchOnWindowFocus: false,
             retry: 0,
           },
         },

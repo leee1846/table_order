@@ -132,7 +132,7 @@ export interface IDeleteCategoryParams {
 
 export interface IGetShopCategoriesWithMenusParams {
   shopCode: string;
-  tableNumber: number;
+  tableNumber: string;
 }
 
 export interface ICategoryWithMenus extends ICategoryBase {

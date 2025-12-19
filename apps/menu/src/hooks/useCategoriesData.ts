@@ -47,7 +47,7 @@ export const useCategoriesData = (options?: Props) => {
   const { data: categoriesData, refetch } = useGetCategoriesWithMenus(
     {
       shopCode: shopData?.shopCode ?? '',
-      tableNumber: deviceData?.tableNumber ?? 0,
+      tableNumber: deviceData?.tableNumber ?? '',
     },
     { enabled }
   );

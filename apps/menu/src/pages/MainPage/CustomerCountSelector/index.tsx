@@ -60,7 +60,7 @@ export const CustomerCountSelector = () => {
     if (shopDetailData?.shopSetting?.useTableOverlapping) {
       createOrderGroup({
         shopCode: shopData?.shopCode ?? '',
-        tableNumber: deviceData?.tableNumber ?? 0,
+        tableNumber: deviceData?.tableNumber ?? '',
         customerCount: adultCount,
         kidsCustomerCount: childCount,
       });

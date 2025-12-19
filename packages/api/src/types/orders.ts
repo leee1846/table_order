@@ -42,7 +42,7 @@ export interface IOrder {
 
 export interface ICreateTableOrderRequest {
   shopCode: string;
-  tableNumber: number;
+  tableNumber: string;
   orderType: TOrderType;
   customerCount: number;
   kidsCustomerCount: number;
@@ -52,7 +52,7 @@ export interface ICreateTableOrderRequest {
 
 export interface ICreateOrderGroupRequest {
   shopCode: string;
-  tableNumber: number;
+  tableNumber: string;
   customerCount: number;
   kidsCustomerCount: number;
 }
@@ -187,7 +187,7 @@ export interface IOrderHistory {
 export interface IGetTableOrderHistories {
   orderGroupUuid: string;
   totalAmount: number;
-  tableNumber: number;
+  tableNumber: string;
   createDate: string;
   updateDate: string;
   discountRate: number;
@@ -199,7 +199,7 @@ export type TGetTableOrderHistoriesResponse =
 
 export interface IGetTableOrderHistoriesParams {
   shopCode: string;
-  tableNumber: number;
+  tableNumber: string;
 }
 
 /**
@@ -282,7 +282,7 @@ export type ICancelOrderMenuRequest = ICancelOrderMenuItem[];
  */
 export interface ICancelOrderAllRequest {
   shopCode: string;
-  tableNumber: number;
+  tableNumber: string;
 }
 
 /**

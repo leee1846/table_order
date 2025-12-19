@@ -17,7 +17,7 @@ export const queryKeys = {
     /** 카테고리 리스트 조회 */
     list: () => [...queryKeys.category.all, 'list'] as const,
     /** 메뉴 목록을 포함하는 모든 카테고리 목록 조회 */
-    menuboardList: (shopCode: string, tableNumber: number) =>
+    menuboardList: (shopCode: string, tableNumber: string) =>
       [
         ...queryKeys.category.all,
         'menuboardList',
@@ -38,7 +38,7 @@ export const queryKeys = {
     /** 주문 리스트 조회 */
     list: () => [...queryKeys.orders.all, 'list'] as const,
     /** 테이블 주문 내역 조회 */
-    tableOrderHistories: (shopCode: string, tableNumber: number) =>
+    tableOrderHistories: (shopCode: string, tableNumber: string) =>
       [
         ...queryKeys.orders.all,
         'tableOrderHistories',

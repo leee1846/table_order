@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import type { AxiosError } from '@repo/api/axios';
 import type { IDevice } from '@repo/api/types';
+import { useTableGroupData } from '@/hooks/useTableGroupData';
+import { toast } from '@repo/feature/utils';
 
 interface DeviceDataResult {
   data: Partial<IDevice> | null;
@@ -25,6 +27,8 @@ interface UseAdminAccessControlReturn {
 export const useAdminAccessControl = (
   deviceDataResult: DeviceDataResult
 ): UseAdminAccessControlReturn => {
+  const { data: tableGroupData } = useTableGroupData();
+
   const [showAdminAccessPasswordModal, setShowAdminAccessPasswordModal] =
     useState(false);
 
@@ -32,6 +36,7 @@ export const useAdminAccessControl = (
     data: deviceData,
     error: deviceDataError,
     clearData: clearDeviceData,
+    setDataAsync: setDeviceDataAsync,
   } = deviceDataResult;
 
   useEffect(() => {
@@ -51,8 +56,33 @@ export const useAdminAccessControl = (
       return;
     }
 
+    if (
+      !!tableGroupData &&
+      !tableGroupData
+        .map((tableGroup) => tableGroup.tableList)
+        .flat()
+        .some((table) => table?.tableNumber === deviceData?.tableNumber)
+    ) {
+      toast('테이블이 삭제되었습니다.', {
+        position: 'center-center',
+        duration: 1500,
+      });
+      setDeviceDataAsync({
+        ...deviceData,
+        tableNumber: null,
+      });
+      setShowAdminAccessPasswordModal(true);
+      return;
+    }
+
     setShowAdminAccessPasswordModal(false);
-  }, [deviceData, deviceDataError, clearDeviceData]);
+  }, [
+    deviceData,
+    deviceDataError,
+    clearDeviceData,
+    tableGroupData,
+    setDeviceDataAsync,
+  ]);
 
   return {
     showAdminAccessPasswordModal,

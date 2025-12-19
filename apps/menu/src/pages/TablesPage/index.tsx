@@ -48,7 +48,7 @@ export const TablesPage = () => {
     )?.tableList ?? [];
   const tablesData = currentTables.map((table) => ({
     id: table.tableSeq,
-    tableNumber: Number(table.tableNumber),
+    tableNumber: table.tableNumber,
     batteryLevel: 100,
   }));
 
@@ -85,6 +85,7 @@ export const TablesPage = () => {
 
   const { data: deviceData, refresh: refreshDeviceData } = useDeviceData();
   const { mutateAsync: createDeviceDetail } = usePostDeviceDetail();
+
   const selectTable = async (table: TableData) => {
     await createDeviceDetail({
       tableNumber: table.tableNumber,
@@ -146,7 +147,7 @@ export const TablesPage = () => {
       <TableGridContainer
         tables={tablesData}
         useTranslation={useAdminTranslation}
-        onTableClick={(table) => handleTableClick(table)}
+        onTableClick={handleTableClick}
       />
 
       <Sidebar

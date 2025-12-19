@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 export interface TableData {
   id: number;
-  tableNumber: number;
+  tableNumber: string;
   batteryLevel: number;
   totalAmount?: number | null;
   orderTime?: string | null;

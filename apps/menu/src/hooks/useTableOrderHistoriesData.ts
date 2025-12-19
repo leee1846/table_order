@@ -40,7 +40,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
     useGetTableOrderHistories(
       {
         shopCode: shopData?.shopCode ?? '',
-        tableNumber: deviceData?.tableNumber ?? 0,
+        tableNumber: deviceData?.tableNumber ?? '',
       },
       { enabled }
     );

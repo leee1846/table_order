@@ -14,7 +14,7 @@ const { colors } = theme;
 
 interface Props {
   id: number;
-  tableNumber: number;
+  tableNumber: string;
   orderTime: string | null;
   menuItems: Array<{ name: string; quantity: number }> | null;
   batteryLevel: number;

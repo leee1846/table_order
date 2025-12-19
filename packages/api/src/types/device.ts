@@ -6,7 +6,7 @@ export interface IDeviceBase {
   androidId: string;
   deviceType: TDeviceType;
   orderPosNumber: number | null;
-  tableNumber: number | null;
+  tableNumber: string | null;
   battery: number;
   wifiSignal: string;
   ipAddress: string;

@@ -14,15 +14,15 @@ export const ENDPOINTS = {
 
   ORDER: {
     SEND_PICKUP_NOTIFICATION: '/orders/pickup-notification',
-    CREATE_ORDER_GROUP: (shopCode: string, tableNumber: number) =>
+    CREATE_ORDER_GROUP: (shopCode: string, tableNumber: string) =>
       `/order-group/${shopCode}/${tableNumber}`,
-    CREATE_TABLE_ORDER: (shopCode: string, tableNumber: number) =>
+    CREATE_TABLE_ORDER: (shopCode: string, tableNumber: string) =>
       `/order/${shopCode}/${tableNumber}`,
-    TABLE_ORDER_HISTORY: (shopCode: string, tableNumber: number) =>
+    TABLE_ORDER_HISTORY: (shopCode: string, tableNumber: string) =>
       `/order/${shopCode}/${tableNumber}`,
     CURRENT_TABLE_LIST: (shopCode: string) => `/order/${shopCode}`,
     CANCEL_MENU: '/order/cancel/menu',
-    CANCEL_ALL: (shopCode: string, tableNumber: number) =>
+    CANCEL_ALL: (shopCode: string, tableNumber: string) =>
       `/order/cancel/${shopCode}/${tableNumber}`,
     MOVE_ORDER_GROUP: (shopCode: string) => `/order/move/${shopCode}`,
     SHARE_ORDER_GROUP: (shopCode: string) => `/order/share/${shopCode}`,

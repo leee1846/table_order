@@ -11,6 +11,7 @@ import { STORAGE_KEYS } from '@/constants/keys';
 import { usePostLoginMenuboardAdmin } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
 import { openConfirmDialog } from '@repo/feature/utils';
+import { useDeviceData } from '@/hooks/useDeviceData';
 
 interface Props {
   onClose: () => void;
@@ -21,6 +22,7 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
   const navigate = useNavigate();
   const { t } = useAdminTranslation();
   const { shopData } = useShopData();
+  const { data: deviceData } = useDeviceData();
 
   const [password, setPassword] = useState<string | null>(null);
 
@@ -78,9 +80,11 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
 
   return (
     <S.Container>
-      <S.CloseButton type="button" onClick={onClose}>
-        <CloseIcon width={42} height={42} color={theme.mode.grey[400]} />
-      </S.CloseButton>
+      {deviceData?.tableNumber && (
+        <S.CloseButton type="button" onClick={onClose}>
+          <CloseIcon width={42} height={42} color={theme.mode.grey[400]} />
+        </S.CloseButton>
+      )}
 
       <S.Content>
         <UnlockedIcon width={80} height={80} color={theme.mode.grey[400]} />
