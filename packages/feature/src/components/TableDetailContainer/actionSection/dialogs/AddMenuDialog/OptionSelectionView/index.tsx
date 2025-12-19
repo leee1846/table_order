@@ -264,9 +264,6 @@ export const OptionSelectionView = ({
                 <S.SelectedOptionsList>
                   {Array.from(selectedOptions.entries()).map(
                     ([optionSeq, quantity]) => {
-                      if (quantity === 0) {
-                        return null;
-                      }
                       const option = optionGroups
                         .flatMap((group) => group.optionList)
                         .find((opt) => opt.optionSeq === optionSeq);
@@ -275,30 +272,19 @@ export const OptionSelectionView = ({
                         return null;
                       }
 
-                      const optionGroup = optionGroups.find(
-                        (group) =>
-                          group.optionGroupSeq === option.optionGroupSeq
-                      );
-                      if (
-                        !optionGroup ||
-                        option.isDeleted ||
-                        option.isOutOfStock
-                      ) {
-                        return null;
-                      }
-
-                      if (quantity === 0) {
-                        return null;
-                      }
-
                       return (
                         <S.SelectedOptionItem key={optionSeq}>
                           <S.OptionItemName>
-                            {option.optionName}
+                            ㄴ{option.optionName}
                           </S.OptionItemName>
-                          <S.OptionItemQuantity>
-                            {quantity}개
-                          </S.OptionItemQuantity>
+                          <S.OptionItemPrice>
+                            (+{formatCurrency(option.optionPrice)}원)
+                          </S.OptionItemPrice>
+                          {quantity >= 2 && (
+                            <S.OptionItemQuantity>
+                              {quantity}개
+                            </S.OptionItemQuantity>
+                          )}
                         </S.SelectedOptionItem>
                       );
                     }

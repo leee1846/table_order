@@ -15,8 +15,8 @@ export const OptionLeftPanel = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${colors.grey[50]};
-  padding: 56px 45px 0 45px;
-  overflow: hidden;
+  padding: 56px 45px;
+  overflow-y: auto;
 `;
 
 export const OptionHeader = styled.div`
@@ -81,27 +81,25 @@ export const SelectedOptionsList = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  ${TYPOGRAPHY.ST_4}
+  color: ${colors.grey[500]};
 `;
 
 export const SelectedOptionItem = styled.div`
   padding-bottom: 12px;
-
-  border: 1px solid red;
+  display: flex;
+  gap: 5px;
 `;
 
-export const OptionItemName = styled.div`
-  ${TYPOGRAPHY.ST_4}
-  color: ${colors.grey[800]};
-`;
+export const OptionItemName = styled.div``;
+
+export const OptionItemPrice = styled.div``;
+
+export const OptionItemQuantity = styled.div``;
 
 export const optionQuantityInput = css`
   max-width: 50%;
   min-width: 50%;
-`;
-
-export const OptionItemQuantity = styled.div`
-  ${TYPOGRAPHY.ST_4}
-  color: ${colors.grey[700]};
 `;
 
 export const MenuQuantitySection = styled.div`
