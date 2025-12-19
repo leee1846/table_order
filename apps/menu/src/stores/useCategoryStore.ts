@@ -11,7 +11,6 @@ export type ICategoryVisibilityMap = Record<number, boolean>;
 
 export interface ICategoryStore {
   data: {
-    sseUpdatedAt: number | null;
     /** 카테고리 목록 */
     categories: ICategoryWithMenus[] | null;
     /** 카테고리 노출여부 상태 맵  */
@@ -22,10 +21,8 @@ export interface ICategoryStore {
 
   /** 데이터 설정 (세션 스토리지에도 저장) */
   setCategoriesAsync: ({
-    sseUpdatedAt,
     categories,
   }: {
-    sseUpdatedAt?: number;
     categories: ICategoryWithMenus[];
   }) => Promise<boolean>;
   /** 데이터 초기화 (세션 스토리지에서도 삭제) */
@@ -59,7 +56,6 @@ const initialCategories =
 const initialVisibilityMap = {};
 
 const initialData = {
-  sseUpdatedAt: null,
   categories: initialCategories,
   visibilityMap: initialVisibilityMap,
   visibleCategories: computeVisibleCategories(
@@ -79,10 +75,8 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
 
   // 데이터 설정 (스토리지에도 저장)
   setCategoriesAsync: ({
-    sseUpdatedAt,
     categories,
   }: {
-    sseUpdatedAt?: number;
     categories: ICategoryWithMenus[];
   }) => {
     return new Promise((resolve) => {
@@ -90,7 +84,6 @@ export const useCategoryStore = create<ICategoryStore>((set) => ({
       set((state) => ({
         data: {
           ...state.data,
-          sseUpdatedAt: sseUpdatedAt ?? null,
           categories,
           visibleCategories: computeVisibleCategories(
             categories,

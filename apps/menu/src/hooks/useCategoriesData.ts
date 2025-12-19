@@ -34,12 +34,12 @@ export const useCategoriesData = (options?: Props) => {
   const { data: deviceData } = useDeviceData();
 
   const {
-    data: { sseUpdatedAt, categories, visibleCategories },
+    data: { categories: categoriesStoreData, visibleCategories },
     setCategoriesAsync,
   } = useCategoryStore();
 
   const enabled =
-    !categories &&
+    !categoriesStoreData &&
     !!shopData?.shopCode &&
     !!deviceData?.tableNumber &&
     !skipInitialRequest;
@@ -57,9 +57,7 @@ export const useCategoriesData = (options?: Props) => {
       return;
     }
 
-    // 이미 데이터가 있으면 초기 로드가 완료된 것이므로 실행하지 않음
-    // refetch는 refresh 함수에서 직접 처리
-    if (categoriesData?.data) {
+    if (categoriesStoreData) {
       return;
     }
 
@@ -68,14 +66,19 @@ export const useCategoriesData = (options?: Props) => {
       // setCategoriesAsync(categoriesData.data);
       setCategoriesAsync({ categories: mockCategories });
     }
-  }, [categoriesData, setCategoriesAsync, skipInitialRequest]);
+  }, [
+    categoriesStoreData,
+    categoriesData,
+    setCategoriesAsync,
+    skipInitialRequest,
+  ]);
 
-  const refresh = async (sseUpdatedAt?: number) => {
+  const refresh = async () => {
     const result = await refetch();
     if (result.data?.data) {
       // TODO: mockData 삭제 예정 -> result.data.data를 넣어야함
       // await setCategoriesAsync(result.data.data);
-      await setCategoriesAsync({ categories: mockCategories, sseUpdatedAt });
+      await setCategoriesAsync({ categories: mockCategories });
     }
   };
 
@@ -107,8 +110,7 @@ export const useCategoriesData = (options?: Props) => {
 
   return {
     // 원본 데이터
-    sseUpdatedAt,
-    categories,
+    categories: categoriesStoreData,
     visibleCategories,
 
     // 카테고리 분류

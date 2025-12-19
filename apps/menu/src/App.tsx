@@ -7,8 +7,8 @@ import type { ISseMessage } from '@repo/api/types';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
-import { useModalStore } from '@/stores/useModalStore';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 const App = () => {
   useEffect(() => {
@@ -19,22 +19,21 @@ const App = () => {
     };
   }, []);
 
-  const { setModalData } = useModalStore();
   const { data: sseData } = useSSE.useSSEData<ISseMessage>(
     SSE_KEYS.MAIN_CONNECTION
   );
   const { data: deviceData } = useDeviceData({ skipInitialRequest: true });
   const { shopData } = useShopData({ skipInitialRequest: true });
+  const { refresh: refreshShopDetailData } = useShopDetailData({
+    skipInitialRequest: true,
+  });
   const {
     data: tableOrderHistoriesData,
     refresh: refreshTableOrderHistoriesData,
   } = useTableOrderHistoriesData({
     skipInitialRequest: true,
   });
-  const {
-    refresh: refreshCategoriesData,
-    sseUpdatedAt: categoriesSseUpdatedAt,
-  } = useCategoriesData({
+  const { refresh: refreshCategoriesData } = useCategoriesData({
     skipInitialRequest: true,
   });
 
@@ -53,36 +52,35 @@ const App = () => {
       return;
     }
 
-    if (!(deviceData.tableNumber in sseData.data)) {
-      return;
-    }
-
-    const sseUpdatedAt = sseData.data[deviceData.tableNumber];
-
     switch (sseData.type) {
-      case 'ORDER':
-        (() => {
-          if (
-            !tableOrderHistoriesData?.sseUpdatedAt ||
-            tableOrderHistoriesData?.sseUpdatedAt !== sseUpdatedAt
-          ) {
-            refreshTableOrderHistoriesData(sseUpdatedAt);
-          }
-        })();
+      case 'ORDER': {
+        if (!sseData.data) {
+          return;
+        }
+        if (!(deviceData.tableNumber in sseData.data)) {
+          return;
+        }
+
+        const sseUpdatedAt = sseData.data[deviceData.tableNumber];
+
+        if (
+          !tableOrderHistoriesData?.sseUpdatedAt ||
+          tableOrderHistoriesData?.sseUpdatedAt !== sseUpdatedAt
+        ) {
+          refreshTableOrderHistoriesData(sseUpdatedAt);
+        }
         break;
-      case 'SHOP':
-        (() => {
-          if (
-            !categoriesSseUpdatedAt ||
-            categoriesSseUpdatedAt !== sseUpdatedAt
-          ) {
-            //TODO: 테스트 필요
-            refreshCategoriesData(sseUpdatedAt);
-            window.location.reload();
-          }
-        })();
+      }
+      case 'SHOP': {
+        //TODO: 테스트 필요
+        refreshShopDetailData();
+        window.location.reload();
         break;
+      }
       case 'MENU':
+        {
+          refreshCategoriesData();
+        }
         break;
       case 'TABLE':
         break;
@@ -98,7 +96,7 @@ const App = () => {
     tableOrderHistoriesData?.sseUpdatedAt,
     refreshTableOrderHistoriesData,
     refreshCategoriesData,
-    categoriesSseUpdatedAt,
+    refreshShopDetailData,
   ]);
 
   return (
