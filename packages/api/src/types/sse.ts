@@ -3,5 +3,5 @@ export interface ISseMessage {
   type: 'ORDER' | 'SHOP' | 'MENU' | 'TABLE' | 'PICKUP';
   data: {
     [key: number]: number;
-  };
+  } | null;
 }
