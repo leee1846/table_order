@@ -9,7 +9,6 @@ import { toast } from '@repo/feature/utils';
 import { MenuSelectionView } from './MenuSelectionView';
 import { OptionSelectionView } from './OptionSelectionView';
 import { validateOptionGroups } from './optionValidation';
-import { ModalBackground } from '@repo/ui/components';
 
 export interface SelectedOption extends IOption {
   selectedQuantity: number;
@@ -75,7 +74,6 @@ export const AddMenuDialog = ({
       return newMap;
     });
   };
-
   // 메뉴 클릭 핸들러 - 옵션이 없으면 바로 추가, 있으면 옵션 화면으로 전환
   const handleMenuClick = (menu: IMenu) => {
     // 옵션이 없는 메뉴인지 확인
@@ -86,13 +84,28 @@ export const AddMenuDialog = ({
       );
 
     if (!hasOptions) {
-      // 옵션이 없으면 바로 RightPanel에 추가
-      const menuWithOptions: SelectedMenuWithOptions = {
-        menu,
-        selectedOptions: [],
-        quantity: 1,
-      };
-      setSelectedMenus((prev) => [...prev, menuWithOptions]);
+      // 옵션이 없으면 기존에 같은 메뉴가 있는지 확인
+      setSelectedMenus((prev) => {
+        const existingIndex = prev.findIndex(
+          (item) => item.menu.menuSeq === menu.menuSeq
+        );
+
+        //findIndex -1
+        if (existingIndex !== -1) {
+          return prev.map((item, index) =>
+            index === existingIndex
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        } else {
+          const menuWithOptions: SelectedMenuWithOptions = {
+            menu,
+            selectedOptions: [],
+            quantity: 1,
+          };
+          return [...prev, menuWithOptions];
+        }
+      });
     } else {
       // 옵션이 있으면 옵션 선택 화면으로 전환
       setSelectedMenu(menu);
@@ -108,6 +121,29 @@ export const AddMenuDialog = ({
     setSelectedMenu(null);
     setSelectedOptions(new Map());
     setMenuQuantity(1);
+  };
+
+  // 두 SelectedOption 배열이 동일한지 비교하는 헬퍼 함수
+  const areOptionsEqual = (
+    options1: SelectedOption[],
+    options2: SelectedOption[]
+  ): boolean => {
+    if (options1.length !== options2.length) {
+      return false;
+    }
+
+    // 옵션을 optionSeq로 정렬하여 비교
+    const sorted1 = [...options1].sort((a, b) => a.optionSeq - b.optionSeq);
+    const sorted2 = [...options2].sort((a, b) => a.optionSeq - b.optionSeq);
+
+    return sorted1.every((opt1, index) => {
+      const opt2 = sorted2[index];
+      return (
+        opt2 !== undefined &&
+        opt1.optionSeq === opt2.optionSeq &&
+        opt1.selectedQuantity === opt2.selectedQuantity
+      );
+    });
   };
 
   // 옵션 추가 핸들러
@@ -161,7 +197,46 @@ export const AddMenuDialog = ({
       quantity: menuQuantity,
     };
 
-    setSelectedMenus((prev) => [...prev, menuWithOptions]);
+    // 기존에 동일한 메뉴와 옵션 조합이 있는지 확인
+    setSelectedMenus((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) =>
+          item.menu.menuSeq === selectedMenu.menuSeq &&
+          areOptionsEqual(item.selectedOptions, selectedOptionsList)
+      );
+
+      if (existingIndex !== -1) {
+        // 동일한 조합이 있으면 메뉴 수량과 옵션 수량 모두 증가
+
+        return prev.map((item, index) => {
+          if (index === existingIndex) {
+            // 옵션 수량도 증가
+            const updatedOptions = item.selectedOptions.map((existingOpt) => {
+              const newOpt = selectedOptionsList.find(
+                (opt) => opt.optionSeq === existingOpt.optionSeq
+              );
+              return newOpt
+                ? {
+                    ...existingOpt,
+                    selectedQuantity:
+                      existingOpt.selectedQuantity + newOpt.selectedQuantity,
+                  }
+                : existingOpt;
+            });
+            return {
+              ...item,
+              quantity: item.quantity + menuQuantity,
+              selectedOptions: updatedOptions,
+            };
+          }
+          return item;
+        });
+      } else {
+        // 없으면 새로 추가
+        return [...prev, menuWithOptions];
+      }
+    });
+
     handleBackToMenu();
   };
 

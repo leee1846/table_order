@@ -33,9 +33,10 @@ import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import type { Order, OrderItem } from './orderSection/types';
 
 export type { SelectedMenuWithOptions };
+
 export interface TableDetailContainerProps {
   shopCode: string;
-  tableNumber: number;
+  tableNumber: string;
   numberOfPeople?: number;
   useCustomerCount?: boolean;
   onAddMenu?: (selectedItems: SelectedMenuWithOptions[]) => void;
@@ -234,7 +235,6 @@ export const TableDetailContainer = ({
         itemName: selectedItemForService.name,
         serviceAmount: amount,
       });
-      // TODO: 실제 서비스 금액 적용 로직 구현
     }
   };
 
@@ -244,7 +244,6 @@ export const TableDetailContainer = ({
         <S.Left>
           <OrderPanel
             order={order}
-            selectedItemId=""
             onPayCard={() => setIsCardPaymentDialogOpen(true)}
             onPayCash={() => setIsCashPaymentDialogOpen(true)}
             onSplitPay={() => setIsSplitPaymentDialogOpen(true)}
@@ -253,10 +252,7 @@ export const TableDetailContainer = ({
           />
         </S.Left>
         <S.Right>
-          <ActionGrid
-            onPress={handleActionPress}
-            onProceed={() => console.log('다음단계')}
-          />
+          <ActionGrid onPress={handleActionPress} />
         </S.Right>
       </S.Layout>
       {/* 메뉴 추가 모달 */}

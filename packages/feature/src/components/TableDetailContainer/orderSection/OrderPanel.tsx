@@ -17,7 +17,6 @@ export type OrderPanelProps = {
 
 export function OrderPanel({
   order,
-  selectedItemId,
   onPayCard,
   onPayCash,
   onSplitPay,
@@ -32,11 +31,7 @@ export function OrderPanel({
         orderTime={order.orderTime}
         useCustomerCount={useCustomerCount}
       />
-      <OrderItemsTable
-        items={order.items}
-        selectedItemId={selectedItemId}
-        onItemClick={onItemClick}
-      />
+      <OrderItemsTable items={order.items} onItemClick={onItemClick} />
       <OrderSummary
         totalCount={order.totalCount}
         totalPrice={order.totalPrice}

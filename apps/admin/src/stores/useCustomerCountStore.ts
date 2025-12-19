@@ -3,7 +3,7 @@ import { STORAGE_KEYS } from '@/constants/keys';
 import { create } from '@repo/feature/zustand';
 
 type CustomerCountMap = Record<
-  number,
+  string,
   {
     adultCount: number;
     childCount?: number;
@@ -13,10 +13,10 @@ type CustomerCountMap = Record<
 export interface ICustomerCountStore {
   data: CustomerCountMap;
   setData: (
-    tableNumber: number,
+    tableNumber: string,
     payload: { adultCount: number; childCount: number }
   ) => void;
-  clearData: (tableNumber?: number) => void;
+  clearData: (tableNumber?: string) => void;
 }
 
 /**

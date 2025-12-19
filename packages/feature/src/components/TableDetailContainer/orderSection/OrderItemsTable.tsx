@@ -8,15 +8,10 @@ const { colors } = theme;
 
 export type OrderItemsTableProps = {
   items: OrderItem[];
-  selectedItemId?: string;
   onItemClick?: (item: OrderItem) => void;
 };
 
-export function OrderItemsTable({
-  items,
-  selectedItemId,
-  onItemClick,
-}: OrderItemsTableProps) {
+export function OrderItemsTable({ items, onItemClick }: OrderItemsTableProps) {
   const handleRowClick = (item: OrderItem) => {
     if (onItemClick) {
       onItemClick(item);
@@ -27,16 +22,14 @@ export function OrderItemsTable({
     <TableWrap>
       {items.map((it) => (
         <React.Fragment key={it.id}>
-          <Row
-            className={selectedItemId === it.id ? 'selected' : ''}
-            data-item-id={it.id}
-            onClick={() => handleRowClick(it)}
-          >
+          <Row data-item-id={it.id} onClick={() => handleRowClick(it)}>
             <Cell className="name" title={it.name}>
               {it.name}
             </Cell>
             <Cell className="qty">{it.qty}</Cell>
-            <Cell className="price">{formatCurrency(it.unitPrice)}</Cell>
+            <Cell className="price">
+              {formatCurrency(it.unitPrice * it.qty)}
+            </Cell>
           </Row>
           {it.options?.map((option) => (
             <Row key={option.id} className="option-row">
@@ -44,7 +37,9 @@ export function OrderItemsTable({
                 ㄴ{option.name}
               </Cell>
               <Cell className="qty">{option.qty}</Cell>
-              <Cell className="price">{formatCurrency(option.unitPrice)}</Cell>
+              <Cell className="price">
+                {formatCurrency(option.unitPrice * option.qty)}
+              </Cell>
             </Row>
           ))}
         </React.Fragment>

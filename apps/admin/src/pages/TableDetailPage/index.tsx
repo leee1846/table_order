@@ -25,28 +25,18 @@ export const TableDetailPage = () => {
   const queryClient = useQueryClient();
   const { mutateAsync: createTableOrder } = usePostTableOrder();
 
-  const parsedTableNumber = useMemo(() => {
-    if (!tableNum) {
-      return null;
-    }
-    const parsed = Number(tableNum);
-    return Number.isNaN(parsed) ? null : parsed;
-  }, [tableNum]);
-
   const { data: menuboardResponse, isLoading: isMenuboardLoading } =
     useGetCategoriesWithMenus(
       {
         shopCode: shopCode ?? '',
-        tableNumber: parsedTableNumber ?? 0,
+        tableNumber: tableNum ?? '',
       },
       {
-        enabled: !!shopCode && !!parsedTableNumber,
+        enabled: !!shopCode && !!tableNum,
       }
     );
 
-  const customerCount = parsedTableNumber
-    ? customerCountData[parsedTableNumber]
-    : null;
+  const customerCount = tableNum ? customerCountData[Number(tableNum)] : null;
 
   const adultCount = customerCount?.adultCount ?? 0;
   const childCount = customerCount?.childCount ?? 0;
@@ -68,7 +58,7 @@ export const TableDetailPage = () => {
   }, [menuboardResponse]);
 
   const handleAddMenu = async (selectedItems: SelectedMenuWithOptions[]) => {
-    if (!shopCode || !parsedTableNumber || selectedItems.length < 1) {
+    if (!shopCode || !tableNum || selectedItems.length < 1) {
       return;
     }
 
@@ -82,7 +72,7 @@ export const TableDetailPage = () => {
         optionGroupSeq: option.optionGroupSeq,
         optionName: option.optionName,
         optionPrice: option.optionPrice,
-        quantity: option.selectedQuantity,
+        quantity: option.selectedQuantity * quantity,
       })),
     }));
 
@@ -91,7 +81,7 @@ export const TableDetailPage = () => {
     try {
       await createTableOrder({
         shopCode,
-        tableNumber: parsedTableNumber,
+        tableNumber: tableNum,
         orderType: 'ORDER_POS',
         customerCount: adultCount || numberOfPeople,
         kidsCustomerCount: childCount,
@@ -100,10 +90,7 @@ export const TableDetailPage = () => {
       });
 
       await queryClient.invalidateQueries({
-        queryKey: queryKeys.orders.tableOrderHistories(
-          shopCode,
-          parsedTableNumber
-        ),
+        queryKey: queryKeys.orders.tableOrderHistories(shopCode, tableNum),
       });
       toast('메뉴를 추가했어요.');
     } catch (error) {
@@ -112,7 +99,7 @@ export const TableDetailPage = () => {
     }
   };
 
-  if (!shopCode || !parsedTableNumber) {
+  if (!shopCode || !tableNum) {
     return null;
   }
 
@@ -120,7 +107,7 @@ export const TableDetailPage = () => {
     <S.Container>
       <TableDetailContainer
         shopCode={shopCode}
-        tableNumber={parsedTableNumber}
+        tableNumber={tableNum}
         numberOfPeople={numberOfPeople}
         useCustomerCount={useCustomerCount}
         onAddMenu={handleAddMenu}

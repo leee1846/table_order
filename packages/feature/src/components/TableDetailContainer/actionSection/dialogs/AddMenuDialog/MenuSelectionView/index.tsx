@@ -129,7 +129,7 @@ export const MenuSelectionView = ({
                       <S.ItemHeader>
                         <S.ItemName>{item.menu.menuName}</S.ItemName>
                         <S.ItemPrice>
-                          {formatCurrency(item.menu.menuPrice)}
+                          {formatCurrency(item.menu.menuPrice * item.quantity)}
                         </S.ItemPrice>
                       </S.ItemHeader>
                       {item.selectedOptions.length > 0 && (
@@ -140,7 +140,11 @@ export const MenuSelectionView = ({
                                 ㄴ{option.optionName}
                               </S.OptionItemName>
                               <S.OptionItemPrice>
-                                {formatCurrency(option.optionPrice)}
+                                {formatCurrency(
+                                  option.optionPrice *
+                                    option.selectedQuantity *
+                                    item.quantity
+                                )}
                               </S.OptionItemPrice>
                             </S.SelectedOptionItem>
                           ))}

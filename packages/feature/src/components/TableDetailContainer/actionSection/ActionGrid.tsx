@@ -17,7 +17,6 @@ export type Action = { id: string; label: string };
 
 export type ActionGridProps = {
   onPress?: (id: string) => void;
-  onProceed?: () => void;
 };
 
 export function ActionGrid({ onPress }: ActionGridProps) {

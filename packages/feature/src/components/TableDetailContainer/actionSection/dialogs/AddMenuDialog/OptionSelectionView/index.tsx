@@ -48,7 +48,7 @@ export const OptionSelectionView = ({
     // 메뉴 가격 * 메뉴 수량
     const menuTotalPrice = selectedMenu.menuPrice * menuQuantity;
 
-    // 선택된 옵션들의 총 가격 계산
+    // 선택된 옵션들의 총 가격 계산       //entries key : optionSeq, value : quantity 쌍으로 반환
     const optionsTotalPrice = Array.from(selectedOptions.entries()).reduce(
       (sum, [optionSeq, quantity]) => {
         if (quantity === 0) {
@@ -64,7 +64,7 @@ export const OptionSelectionView = ({
           return sum;
         }
 
-        // 옵션 그룹 찾기 (isMenuQuantityDependant 확인용)
+        // 옵션 그룹 찾기
         const optionGroup = optionGroups.find(
           (group) => group.optionGroupSeq === option.optionGroupSeq
         );
