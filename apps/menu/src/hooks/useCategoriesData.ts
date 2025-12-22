@@ -30,8 +30,8 @@ interface Props {
 export const useCategoriesData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
-  const { shopData } = useShopData();
-  const { data: deviceData } = useDeviceData();
+  const { shopData } = useShopData({ skipInitialRequest: true });
+  const { data: deviceData } = useDeviceData({ skipInitialRequest: true });
 
   const {
     data: { categories: categoriesStoreData, visibleCategories },

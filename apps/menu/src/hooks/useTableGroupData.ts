@@ -9,7 +9,7 @@ interface Props {
 export const useTableGroupData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
-  const { shopData } = useShopData();
+  const { shopData } = useShopData({ skipInitialRequest: true });
   const { data: tableGroupsStoreData, setData: setTableGroupsStoreData } =
     useTableGroupStore();
 

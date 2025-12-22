@@ -40,8 +40,7 @@ export const InitialPage = () => {
     return (
       <S.Container onClick={hideInitialPage}>
         <Swiper spaceBetween={0} slidesPerView={1} loop={hasEnoughSlides}>
-          {pageSettingData.shopPageDetailList.map((item) => (
-            // TODO: 이미지 경로 수정
+          {detailImageList.map((item) => (
             <SwiperSlide key={item.pageSeq}>
               <S.Image
                 src={item.pageDetailImagePath}

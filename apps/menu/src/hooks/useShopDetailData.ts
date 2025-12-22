@@ -10,7 +10,7 @@ interface Props {
 export const useShopDetailData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
-  const { shopData } = useShopData();
+  const { shopData } = useShopData({ skipInitialRequest: true });
   const { data: shopDetailData, setData: setShopDetailData } =
     useShopDetailStore();
 

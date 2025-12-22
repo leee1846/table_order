@@ -17,7 +17,7 @@ interface Props {
 export const useDeviceData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
-  const { shopData } = useShopData();
+  const { shopData } = useShopData({ skipInitialRequest: true });
   const { data: storeData, setDataAsync, clearData } = useDeviceStore();
 
   const enabled =

@@ -18,9 +18,9 @@ interface Props {
  */
 export const useShopData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
-  const { data: shopData, setData: setShopData } = useShopStore();
+  const { data: shopStoreData, setData: setShopData } = useShopStore();
   const { data: shopsData, refetch } = useGetShops({
-    enabled: shopData === null && !skipInitialRequest,
+    enabled: shopStoreData === null && !skipInitialRequest,
   });
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export const useShopData = (options?: Props) => {
   };
 
   return {
-    shopData,
+    shopData: shopStoreData,
     refresh,
   };
 };
