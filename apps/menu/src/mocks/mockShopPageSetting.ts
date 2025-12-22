@@ -3,7 +3,6 @@ import type { IGetShopPageSetting } from '@repo/api/types';
 const createShopPageSetting = (): IGetShopPageSetting => ({
   shopSeq: 1,
   initPageLayout: 'LIGHT',
-  logoImagePath: 'https://picsum.photos/400/200?random=100',
   orderCompletePageLayout: 'DEFAULT',
   shopPageDetailList: [
     {

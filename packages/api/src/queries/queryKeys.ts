@@ -12,6 +12,8 @@ export const queryKeys = {
     list: () => [...queryKeys.shop.all, 'list'] as const,
     pageSetting: (shopCode: string) =>
       [...queryKeys.shop.all, 'pageSetting', shopCode] as const,
+    pageLogo: (shopCode: string) =>
+      [...queryKeys.shop.all, 'pageLogo', shopCode] as const,
   },
 
   category: {

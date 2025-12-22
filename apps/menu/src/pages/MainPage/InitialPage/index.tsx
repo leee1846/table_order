@@ -10,21 +10,22 @@ export const InitialPage = () => {
   const { data: shopDetailData } = useShopDetailData();
   const { hideInitialPage } = useInitialPageStore();
   const { data: shopPageSettingData } = useShopPageSettingData();
+  const { pageSettingData } = shopPageSettingData;
 
-  if (!shopDetailData || !shopPageSettingData) {
+  if (!shopDetailData || !pageSettingData) {
     return null;
   }
 
-  const hasEnoughSlides = shopPageSettingData.shopPageDetailList.length >= 2;
-  const initPageLayout = shopPageSettingData.initPageLayout;
-  const detailImageList = shopPageSettingData.shopPageDetailList.filter(
+  const hasEnoughSlides = pageSettingData.shopPageDetailList.length >= 2;
+  const initPageLayout = pageSettingData.initPageLayout;
+  const detailImageList = pageSettingData.shopPageDetailList.filter(
     (item) => item.pageDetailType === 'INIT_COMMON'
   );
 
   const getShopDetail = (layout: 'LIGHT' | 'DARK') => {
     const pageDetailType = layout === 'LIGHT' ? 'INIT_LIGHT' : 'INIT_DARK';
 
-    return shopPageSettingData.shopPageDetailList.find(
+    return pageSettingData.shopPageDetailList.find(
       (item) => item.pageDetailType === pageDetailType
     );
   };
@@ -39,7 +40,7 @@ export const InitialPage = () => {
     return (
       <S.Container onClick={hideInitialPage}>
         <Swiper spaceBetween={0} slidesPerView={1} loop={hasEnoughSlides}>
-          {shopPageSettingData.shopPageDetailList.map((item) => (
+          {pageSettingData.shopPageDetailList.map((item) => (
             // TODO: 이미지 경로 수정
             <SwiperSlide key={item.pageSeq}>
               <S.Image

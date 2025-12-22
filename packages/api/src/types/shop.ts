@@ -178,8 +178,14 @@ export interface IGetShopPageSetting {
   shopSeq: number;
   initPageLayout: TInitPageLayout;
   orderCompletePageLayout: TOrderCompletePageLayout;
-  logoImagePath: string;
   shopPageDetailList: IShopPageDetail[];
 }
 
 export type TGetShopPageSettingResponse = IApiResponse<IGetShopPageSetting>;
+
+export interface IGetShopPageLogo {
+  shopSeq: number;
+  logoImagePath: string;
+}
+
+export type TGetShopPageLogoResponse = IApiResponse<IGetShopPageLogo>;
