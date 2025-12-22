@@ -114,7 +114,6 @@ export const TimeDisplay = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-
   & > span {
     ${TYPOGRAPHY.BD_2}
     color: ${theme.colors.grey[600]};
@@ -122,10 +121,15 @@ export const TimeDisplay = styled.div`
 `;
 
 export const TimeSelectWrapper = styled.div`
-  min-width: 100px;
+  width: 120px;
 `;
 
-export const TimeDropdownStyle = css``;
+export const TimeDropdownStyle = css`
+  width: 100%;
+  > button {
+    width: 100%;
+  }
+`;
 
 export const DayCheckboxes = styled.div`
   display: flex;
@@ -174,10 +178,33 @@ export const DisabledDayCheckboxStyle = css`
   }
 `;
 
-export const ClickableText = styled.span`
+export const ClickableText = styled.div`
   ${TYPOGRAPHY.ST_2}
   color: ${theme.colors.grey[800]};
-  text-decoration: underline;
   cursor: pointer;
   user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid ${theme.colors.grey[400]};
+    padding: none;
+    margin-right: 4px;
+    transform: translateY(1px);
+
+    > input {
+      width: 20px;
+      text-align: center;
+      ${TYPOGRAPHY.ST_2}
+      color: ${theme.colors.grey[800]};
+    }
+
+    > span {
+      border-bottom: 1px solid transparent;
+    }
+  }
 `;

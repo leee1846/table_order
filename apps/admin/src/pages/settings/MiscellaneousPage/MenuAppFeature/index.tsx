@@ -20,6 +20,7 @@ import { theme } from '@repo/ui';
 import { DeleteIcon, MenuBookIcon } from '@repo/ui/icons';
 import { CategoryModal } from './CategoryModal';
 import { DAYS } from '@/constants/days';
+import { normalizeNumberString } from '@repo/util/string';
 
 interface MenuAppFeatureProps {
   shopSetting?: IShopSetting;
@@ -149,6 +150,8 @@ export const MenuAppFeature = ({
 
   // TODO 컬럼 추가해주시기로 함
   const [useClosureNotice, setUseClosureNotice] = useState(false);
+  const [closureLastOrderTimeBefore, setClosureLastOrderTimeBefore] =
+    useState('');
   const [closureLastOrderMinutes, setClosureLastOrderMinutes] = useState('');
   const [closureLastOrderMessage, setClosureLastOrderMessage] = useState('');
   const [closureMessage, setClosureMessage] = useState('');
@@ -221,7 +224,6 @@ export const MenuAppFeature = ({
         startTime: bt.breakStartTime ?? '',
         endTime: bt.breakEndTime ?? '',
         selectedDays: [bt.dayOfWeek],
-        isActive: bt.isActive ?? false,
       }));
       setBreakTimeRows(rows);
     } else {
@@ -229,6 +231,9 @@ export const MenuAppFeature = ({
     }
 
     setUseClosureNotice(Boolean(shopTime.useClosure));
+    setClosureLastOrderTimeBefore(
+      numberToString(shopTime.closureLastOrderTimeBefore)
+    );
     setClosureLastOrderMinutes(
       numberToString(shopTime.closureLastOrderAlertTimeBefore)
     );
@@ -430,7 +435,7 @@ export const MenuAppFeature = ({
 
               return (
                 <S.BreakTimeRow key={row.id}>
-                  <CheckButton
+                  {/* <CheckButton
                     checked={row.isEveryDay}
                     onChange={(checked) => {
                       updateRow({
@@ -443,7 +448,7 @@ export const MenuAppFeature = ({
                     customStyle={S.CheckButtonCustomStyle}
                   >
                     매일
-                  </CheckButton>
+                  </CheckButton> */}
                   <S.TimeDisplay>
                     <S.TimeSelectWrapper>
                       <Dropdown
@@ -534,34 +539,38 @@ export const MenuAppFeature = ({
             })}
             <S.InnerSectionItem style={{ marginTop: '24px' }}>
               <p>주문 마감 안내 시간</p>
-              <S.ClickableText
-                onClick={() => {
-                  const minutes = prompt(
-                    '분을 입력하세요',
-                    breakTimeLastOrderAlertMinutes
-                  );
-                  if (minutes !== null) {
-                    setBreakTimeLastOrderAlertMinutes(minutes);
-                  }
-                }}
-              >
-                {breakTimeLastOrderAlertMinutes || '5'}분 전 알림
+              <S.ClickableText>
+                <div>
+                  <input
+                    type="number"
+                    onChange={(event) =>
+                      setBreakTimeLastOrderAlertMinutes(
+                        normalizeNumberString(event.target.value)
+                      )
+                    }
+                    value={breakTimeLastOrderAlertMinutes || '0'}
+                  />
+                  분
+                </div>
+                전 알림
               </S.ClickableText>
             </S.InnerSectionItem>
             <S.InnerSectionItem>
               <p>라스트오더 가능 시간</p>
-              <S.ClickableText
-                onClick={() => {
-                  const minutes = prompt(
-                    '분을 입력하세요',
-                    breakTimeLastOrderMinutes
-                  );
-                  if (minutes !== null) {
-                    setBreakTimeLastOrderMinutes(minutes);
-                  }
-                }}
-              >
-                {breakTimeLastOrderMinutes || '1'}분 전 까지
+              <S.ClickableText>
+                <div>
+                  <input
+                    type="number"
+                    onChange={(event) =>
+                      setBreakTimeLastOrderMinutes(
+                        normalizeNumberString(event.target.value)
+                      )
+                    }
+                    value={breakTimeLastOrderMinutes || '0'}
+                  />
+                  분
+                </div>
+                전 까지
               </S.ClickableText>
             </S.InnerSectionItem>
             <S.TextAreasContainer>
@@ -598,7 +607,7 @@ export const MenuAppFeature = ({
         {useClosureNotice && (
           <S.InnerSection>
             <S.InnerSectionItem>
-              <p>영업마감시간</p>
+              <p>시간 설정</p>
               <UIStyles.setting.TimeRangeInput>
                 <input
                   type="text"
@@ -643,40 +652,42 @@ export const MenuAppFeature = ({
               </UIStyles.setting.TimeRangeInput>
             </S.InnerSectionItem>
             <S.InnerSectionItem>
-              <p>영업마감시간 라스트오더 시간</p>
-              <UIStyles.setting.SingleTimeInput>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="00"
-                  value={closureLastOrderTime.hour}
-                  onChange={closureLastOrderTime.handleHourChange}
-                  maxLength={2}
-                />
-                <span>:</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="00"
-                  value={closureLastOrderTime.minute}
-                  onChange={closureLastOrderTime.handleMinuteChange}
-                  onKeyDown={closureLastOrderTime.handleMinuteKeyDown}
-                  maxLength={2}
-                />
-              </UIStyles.setting.SingleTimeInput>
+              <p>주문 마감 안내 시간</p>
+
+              <S.ClickableText>
+                <div>
+                  <input
+                    type="number"
+                    onChange={(event) =>
+                      setClosureLastOrderTimeBefore(
+                        normalizeNumberString(event.target.value)
+                      )
+                    }
+                    value={closureLastOrderTimeBefore || '0'}
+                  />
+                  분
+                </div>
+                전 알림
+              </S.ClickableText>
             </S.InnerSectionItem>
             <S.InnerSectionItem>
               <p>라스트 오더 알림</p>
-              <UIStyles.setting.SingleTimeInput>
-                <input
-                  type="number"
-                  value={closureLastOrderMinutes}
-                  onChange={(event) =>
-                    setClosureLastOrderMinutes(event.target.value)
-                  }
-                />
-                <span>분전</span>
-              </UIStyles.setting.SingleTimeInput>
+
+              <S.ClickableText>
+                <div>
+                  <input
+                    type="number"
+                    onChange={(event) =>
+                      setClosureLastOrderMinutes(
+                        normalizeNumberString(event.target.value)
+                      )
+                    }
+                    value={closureLastOrderMinutes || '0'}
+                  />
+                  분
+                </div>
+                전 까지
+              </S.ClickableText>
             </S.InnerSectionItem>
             <S.TextAreasContainer>
               <div>

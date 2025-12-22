@@ -72,3 +72,30 @@ export const padZero = (num: number): string => {
 export const generateId = (): string => {
   return Date.now().toString();
 };
+
+/**
+ * 숫자 문자열에서 앞의 0을 제거합니다.
+ * 빈 문자열이면 빈 문자열을 반환하고, 숫자로 변환 불가능한 경우 원래 문자열을 반환합니다.
+ *
+ * @param value - 처리할 숫자 문자열
+ * @returns 앞의 0이 제거된 숫자 문자열
+ *
+ * @example
+ * ```ts
+ * normalizeNumberString('05') // "5"
+ * normalizeNumberString('007') // "7"
+ * normalizeNumberString('0') // "0"
+ * normalizeNumberString('') // ""
+ * normalizeNumberString('123') // "123"
+ * ```
+ */
+export const normalizeNumberString = (value: string): string => {
+  if (value === '') {
+    return '';
+  }
+  const numValue = Number(value);
+  if (!isNaN(numValue)) {
+    return numValue.toString();
+  }
+  return value;
+};
