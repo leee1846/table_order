@@ -73,4 +73,11 @@ export const queryKeys = {
     detail: (shopCode: string, androidId: string) =>
       [...queryKeys.device.all, 'detail', shopCode, androidId] as const,
   },
+
+  notice: {
+    all: ['notice'] as const,
+    /** 공지사항 목록 조회 */
+    list: (page?: number, pageSize?: number) =>
+      [...queryKeys.notice.all, 'list', page ?? 1, pageSize ?? 20] as const,
+  },
 } as const;

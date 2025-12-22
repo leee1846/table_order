@@ -60,6 +60,7 @@ export interface IShopTime {
   shopBusinessStartTime: string;
   shopBusinessEndTime: string;
   useBreakTime: boolean;
+  useClosure: boolean;
   breakTimeMessage: string;
   /** 브레이크타임 라스트오더 시간(라스트오더 시간 몇분 전) */
   breakTimeLastOrderTimeBefore: number;
@@ -109,7 +110,7 @@ export interface IShopSetting {
   isOrderSheetTotalVisible: boolean;
   isOrderCompleteTotalVisible: boolean;
   useSinglePageMenuboard: boolean;
-  menuboardAdminPassword: null;
+  menuboardAdminPassword: string | null;
   isAdminLocked: boolean;
   useDutchPay?: boolean;
   usePostpaidAfterPrepay?: boolean;
@@ -118,7 +119,7 @@ export interface IShopSetting {
   useCashPayment?: boolean;
   vanCode: string;
   isSalesTotalVisible: boolean;
-  salesPassword: null;
+  salesPassword: string | null;
   menuboardTemplateType: TMenuboardTemplateType;
   shopPosCode: TShopPosCode;
   shopCardTerminalCode: TShopCardTerminalCode;

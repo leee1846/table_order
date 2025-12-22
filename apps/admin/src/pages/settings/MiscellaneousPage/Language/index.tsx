@@ -49,7 +49,7 @@ export const Language = ({
     );
     setLocale(useLocale ?? false);
     setUseLocaleBeforeOrder(shopSetting.useLocaleBeforeOrder ?? false);
-  }, [shopSetting]);
+  }, [shopSetting, useLocale]);
 
   const handleToggleLocale = () => {
     setLocale(!locale);

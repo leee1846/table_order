@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
@@ -44,6 +45,7 @@ export const TextAreasContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-top: 24px;
 
   & > div {
     display: flex;
@@ -66,4 +68,116 @@ export const TextAreasContainer = styled.div`
       resize: none;
     }
   }
+`;
+
+export const BreakTimeHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  & > p {
+    ${TYPOGRAPHY.ST_4}
+    color: ${theme.colors.grey[600]};
+  }
+`;
+
+export const BreakTimeRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const CheckButtonCustomStyle = css`
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  white-space: nowrap;
+  ${TYPOGRAPHY.BD_3}
+  color: ${theme.colors.grey[600]};
+  > input {
+    display: none;
+  }
+
+  > div {
+    width: 22px;
+    height: 22px;
+  }
+`;
+
+export const TimeDisplay = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  & > span {
+    ${TYPOGRAPHY.BD_2}
+    color: ${theme.colors.grey[600]};
+  }
+`;
+
+export const TimeSelectWrapper = styled.div`
+  min-width: 100px;
+`;
+
+export const TimeDropdownStyle = css``;
+
+export const DayCheckboxes = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: end;
+  gap: 8px;
+  flex: 1;
+
+  > * {
+    white-space: nowrap;
+    ${TYPOGRAPHY.BD_3}
+    color: ${theme.colors.grey[600]};
+    display: flex;
+    flex-directio: row;
+    gap: 5px;
+    ${TYPOGRAPHY.ST_4}
+
+    > input {
+      display: none;
+    }
+
+    > div {
+      width: 22px;
+      height: 22px;
+    }
+  }
+`;
+
+export const DeleteButtonCustomStyle = css`
+  width: 40px;
+  height: 40px;
+  padding: 0;
+`;
+
+export const DayCheckboxStyle = css`
+  > div {
+    border: 2px solid ${theme.colors.grey[400]};
+  }
+`;
+
+export const DisabledDayCheckboxStyle = css`
+  > div {
+    background-color: ${theme.colors.grey[200]};
+    border: 2px solid ${theme.colors.grey[400]};
+  }
+`;
+
+export const ClickableText = styled.span`
+  ${TYPOGRAPHY.ST_2}
+  color: ${theme.colors.grey[800]};
+  text-decoration: underline;
+  cursor: pointer;
+  user-select: none;
 `;

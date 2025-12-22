@@ -8,7 +8,7 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 
 interface Props {
-  tableNumber: number;
+  tableNumber: string;
   onComplete?: () => void;
 }
 

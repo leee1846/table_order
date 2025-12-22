@@ -49,7 +49,10 @@ export const MiscellaneousPage = () => {
         <Payment shopSetting={shopInfo?.shopSetting} />
         <MenuAppView shopSetting={shopInfo?.shopSetting} />
         <Intergration shopSetting={shopInfo?.shopSetting} />
-        <Language shopSetting={shopInfo?.shopSetting} />
+        <Language
+          shopSetting={shopInfo?.shopSetting}
+          useLocale={shopInfo?.useLocale}
+        />
       </S.Sections>
     </S.Container>
   );

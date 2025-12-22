@@ -10,7 +10,7 @@ import { toast } from '@repo/feature/utils';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 
 type TableWithStatus = {
-  tableNumber: number;
+  tableNumber: string;
   hasOrder: boolean;
 };
 

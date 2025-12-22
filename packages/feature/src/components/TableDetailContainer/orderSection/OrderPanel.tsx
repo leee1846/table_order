@@ -31,7 +31,11 @@ export function OrderPanel({
         orderTime={order.orderTime}
         useCustomerCount={useCustomerCount}
       />
-      <OrderItemsTable items={order.items} onItemClick={onItemClick} />
+      <OrderItemsTable
+        items={order.items}
+        onItemClick={onItemClick}
+        discountRate={order.discountRate ?? 0}
+      />
       <OrderSummary
         totalCount={order.totalCount}
         totalPrice={order.totalPrice}

@@ -1,12 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
+import { useGetCategoryList } from '@repo/api/queries';
 import type { IShopSetting, IShopTime } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
-import { BasicButton, ToggleButton } from '@repo/ui/components';
+import {
+  BasicButton,
+  CheckButton,
+  Dropdown,
+  ToggleButton,
+} from '@repo/ui/components';
+
+interface TimeOption {
+  value: string;
+  label: string;
+}
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/MenuAppFeature/menuAppFeature.style';
 import { useTimeInput } from '@/hooks/useTimeInput';
 import { theme } from '@repo/ui';
-import { MenuBookIcon } from '@repo/ui/icons';
+import { DeleteIcon, MenuBookIcon } from '@repo/ui/icons';
+import { CategoryModal } from './CategoryModal';
+import { DAYS } from '@/constants/days';
 
 interface MenuAppFeatureProps {
   shopSetting?: IShopSetting;
@@ -15,6 +28,71 @@ interface MenuAppFeatureProps {
 
 const numberToString = (value?: number | null) =>
   value === undefined || value === null ? '' : String(value);
+
+interface BreakTimeRow {
+  id: string;
+  isEveryDay: boolean;
+  startTime: string;
+  endTime: string;
+  selectedDays: number[];
+}
+
+// 시간 옵션 생성 (00:00 ~ 23:59, 30분 단위)
+const generateTimeOptions = (): TimeOption[] =>
+  Array.from({ length: 24 }, (_, hour) =>
+    [0, 30].map((minute) => {
+      const hourStr = String(hour).padStart(2, '0');
+      const minuteStr = String(minute).padStart(2, '0');
+      return {
+        value: `${hourStr}${minuteStr}`,
+        label: `${hourStr}시 ${minuteStr}분`,
+      };
+    })
+  ).flat();
+
+const TIME_OPTIONS = generateTimeOptions();
+
+const toMinutes = (time?: string | null) => {
+  if (!time) {
+    return null;
+  }
+
+  const digits = time.replace(/\D/g, '');
+  if (digits.length !== 4) {
+    return null;
+  }
+
+  const hour = Number(digits.slice(0, 2));
+  const minute = Number(digits.slice(2));
+  if (Number.isNaN(hour) || Number.isNaN(minute)) {
+    return null;
+  }
+
+  return hour * 60 + minute;
+};
+
+const formatTime = (minutes: number) => {
+  const normalized = ((minutes % 1440) + 1440) % 1440;
+  const hour = Math.floor(normalized / 60);
+  const minute = normalized % 60;
+
+  return `${hour.toString().padStart(2, '0')}${minute
+    .toString()
+    .padStart(2, '0')}`;
+};
+
+const calculateTimeBefore = (
+  baseTime?: string | null,
+  minutes?: number | null
+) => {
+  const baseMinutes = toMinutes(baseTime);
+
+  if (baseMinutes === null || minutes === undefined || minutes === null) {
+    return undefined;
+  }
+
+  return formatTime(baseMinutes - minutes);
+};
 
 export const MenuAppFeature = ({
   shopSetting,
@@ -34,26 +112,28 @@ export const MenuAppFeature = ({
   const [useTheftPrevention, setUseTheftPrevention] = useState(false);
   const [usePickupAlert, setUsePickupAlert] = useState(false);
   const [pickupAlertMessage, setPickupAlertMessage] = useState('');
-
-  const breakTimeEndHourRef = useRef<HTMLInputElement>(null);
-  const breakTimeStartTime = useTimeInput({ nextRef: breakTimeEndHourRef });
-  const breakTimeEndTime = useTimeInput();
-  const breakTimeLastOrderHourRef = useRef<HTMLInputElement>(null);
-  const breakTimeLastOrderTime = useTimeInput({
-    nextRef: breakTimeLastOrderHourRef,
-  });
-
-  const { setTime: setBreakStartTime } = breakTimeStartTime;
-  const { setTime: setBreakEndTime } = breakTimeEndTime;
-  const { setTime: setBreakLastOrderTime } = breakTimeLastOrderTime;
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [selectedCategorySeqs, setSelectedCategorySeqs] = useState<number[]>(
+    []
+  );
+  const shopSeq = shopSetting?.shopSeq;
 
   // TODO 컬럼 추가해주시기로 함
   const [useBreakTime, setUseBreakTime] = useState(false);
+  const [breakTimeRows, setBreakTimeRows] = useState<BreakTimeRow[]>([]);
   const [breakTimeLastOrderMinutes, setBreakTimeLastOrderMinutes] =
+    useState('');
+  const [breakTimeLastOrderAlertMinutes, setBreakTimeLastOrderAlertMinutes] =
     useState('');
   const [breakTimeMessage, setBreakTimeMessage] = useState('');
   const [breakTimeLastOrderMessage, setBreakTimeLastOrderMessage] =
     useState('');
+
+  const {
+    data: categoryListResponse,
+    isFetching: isCategoryListLoading,
+    refetch: refetchCategoryList,
+  } = useGetCategoryList({ shopSeq: shopSeq ?? 0 }, { enabled: false });
 
   const closureEndHourRef = useRef<HTMLInputElement>(null);
   const closureStartTime = useTimeInput({ nextRef: closureEndHourRef });
@@ -99,35 +179,56 @@ export const MenuAppFeature = ({
   }, [shopSetting]);
 
   useEffect(() => {
+    if (!isCategoryModalOpen || !shopSeq) {
+      return;
+    }
+
+    refetchCategoryList();
+  }, [isCategoryModalOpen, shopSeq, refetchCategoryList]);
+
+  useEffect(() => {
+    if (!categoryListResponse?.data) {
+      return;
+    }
+
+    setSelectedCategorySeqs(
+      categoryListResponse.data
+        .filter(({ isFirstOrderRequired }) => isFirstOrderRequired)
+        .map(({ categorySeq }) => categorySeq)
+    );
+  }, [categoryListResponse]);
+
+  useEffect(() => {
     if (!shopTime) {
       return;
     }
 
-    setUseBreakTime(
-      Boolean(
-        shopTime.breakStartTime ||
-        shopTime.breakEndTime ||
-        shopTime.breakTimeMessage ||
-        shopTime.breakTimeLastOrderTime
-      )
-    );
+    setUseBreakTime(Boolean(shopTime.useBreakTime));
     setBreakTimeLastOrderMinutes(
+      numberToString(shopTime.breakTimeLastOrderTimeBefore)
+    );
+    setBreakTimeLastOrderAlertMinutes(
       numberToString(shopTime.breakTimeLastOrderAlertTimeBefore)
     );
     setBreakTimeMessage(shopTime.breakTimeMessage ?? '');
     setBreakTimeLastOrderMessage(shopTime.breakTimeLastOrderMessage ?? '');
-    setBreakStartTime(shopTime.breakStartTime);
-    setBreakEndTime(shopTime.breakEndTime);
-    setBreakLastOrderTime(shopTime.breakTimeLastOrderTime);
 
-    setUseClosureNotice(
-      Boolean(
-        shopTime.shopClosureStartTime ||
-        shopTime.shopClosureEndTime ||
-        shopTime.closureMessage ||
-        shopTime.closureLastOrderTime
-      )
-    );
+    // breakTimeList를 rows로 변환
+    if (shopTime.breakTimeList && shopTime.breakTimeList.length > 0) {
+      const rows: BreakTimeRow[] = shopTime.breakTimeList.map((bt, index) => ({
+        id: `break-time-${index}`,
+        isEveryDay: false,
+        startTime: bt.breakStartTime ?? '',
+        endTime: bt.breakEndTime ?? '',
+        selectedDays: [bt.dayOfWeek],
+        isActive: bt.isActive ?? false,
+      }));
+      setBreakTimeRows(rows);
+    } else {
+      setBreakTimeRows([]);
+    }
+
+    setUseClosureNotice(Boolean(shopTime.useClosure));
     setClosureLastOrderMinutes(
       numberToString(shopTime.closureLastOrderAlertTimeBefore)
     );
@@ -135,16 +236,38 @@ export const MenuAppFeature = ({
     setClosureLastOrderMessage(shopTime.closureLastOrderMessage ?? '');
     setClosureStartTime(shopTime.shopClosureStartTime);
     setClosureEndTime(shopTime.shopClosureEndTime);
-    setClosureLastOrderTime(shopTime.closureLastOrderTime);
+    setClosureLastOrderTime(
+      calculateTimeBefore(
+        shopTime.shopClosureStartTime,
+        shopTime.closureLastOrderTimeBefore
+      )
+    );
   }, [
     shopTime,
-    setBreakEndTime,
-    setBreakLastOrderTime,
-    setBreakStartTime,
     setClosureEndTime,
     setClosureLastOrderTime,
     setClosureStartTime,
   ]);
+
+  const handleToggleCategoryRequired = (categorySeq: number) => {
+    setSelectedCategorySeqs((prev) =>
+      prev.includes(categorySeq)
+        ? prev.filter((seq) => seq !== categorySeq)
+        : [...prev, categorySeq]
+    );
+  };
+
+  const handleOpenCategoryModal = () => {
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleCloseCategoryModal = () => {
+    setIsCategoryModalOpen(false);
+  };
+
+  const handleSaveCategorySelection = () => {
+    setIsCategoryModalOpen(false);
+  };
 
   return (
     <SectionWrapper
@@ -167,7 +290,7 @@ export const MenuAppFeature = ({
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>첫주문 필수 카테고리 설정</p>
-        <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
+        <BasicButton variant="Outline_Navy_M" onClick={handleOpenCategoryModal}>
           카테고리 설정
         </BasicButton>
       </UIStyles.setting.ContentLayout>
@@ -276,90 +399,174 @@ export const MenuAppFeature = ({
         </UIStyles.setting.ContentLayout>
         {useBreakTime && (
           <S.InnerSection>
-            <S.InnerSectionItem>
-              <p>브레이크타임 </p>
-              <UIStyles.setting.TimeRangeInput>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="00"
-                  value={breakTimeStartTime.hour}
-                  onChange={breakTimeStartTime.handleHourChange}
-                  maxLength={2}
-                />
-                <span>:</span>
-                <input
-                  ref={breakTimeStartTime.minuteRef}
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="00"
-                  value={breakTimeStartTime.minute}
-                  onChange={breakTimeStartTime.handleMinuteChange}
-                  onKeyDown={breakTimeStartTime.handleMinuteKeyDown}
-                  maxLength={2}
-                />
-                <span>-</span>
-                <input
-                  ref={breakTimeEndHourRef}
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="00"
-                  value={breakTimeEndTime.hour}
-                  onChange={breakTimeEndTime.handleHourChange}
-                  maxLength={2}
-                />
-                <span>:</span>
-                <input
-                  ref={breakTimeEndTime.minuteRef}
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="00"
-                  value={breakTimeEndTime.minute}
-                  onChange={breakTimeEndTime.handleMinuteChange}
-                  onKeyDown={breakTimeEndTime.handleMinuteKeyDown}
-                  maxLength={2}
-                />
-              </UIStyles.setting.TimeRangeInput>
-            </S.InnerSectionItem>
-            <S.InnerSectionItem>
-              <p>브레이크타임 라스트오더 시간</p>
-              <UIStyles.setting.SingleTimeInput>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="00"
-                  value={breakTimeLastOrderTime.hour}
-                  onChange={breakTimeLastOrderTime.handleHourChange}
-                  maxLength={2}
-                />
-                <span>:</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="00"
-                  value={breakTimeLastOrderTime.minute}
-                  onChange={breakTimeLastOrderTime.handleMinuteChange}
-                  onKeyDown={breakTimeLastOrderTime.handleMinuteKeyDown}
-                  maxLength={2}
-                />
-              </UIStyles.setting.SingleTimeInput>
-            </S.InnerSectionItem>
-            <S.InnerSectionItem>
-              <p>라스트 오더 알림</p>
-              <UIStyles.setting.SingleTimeInput>
-                <input
-                  type="number"
-                  value={breakTimeLastOrderMinutes}
-                  onChange={(event) =>
-                    setBreakTimeLastOrderMinutes(event.target.value)
+            <S.BreakTimeHeader>
+              <p>요일 및 시간 설정</p>
+              <BasicButton
+                variant="Solid_Sky_Blue_M"
+                // TODO isActive 어케 쓸 건지
+                onClick={() => {
+                  const newRow: BreakTimeRow = {
+                    id: `break-time-${Date.now()}`,
+                    isEveryDay: false,
+                    startTime: '',
+                    endTime: '',
+                    selectedDays: [],
+                  };
+                  setBreakTimeRows([...breakTimeRows, newRow]);
+                }}
+              >
+                + 추가
+              </BasicButton>
+            </S.BreakTimeHeader>
+            {breakTimeRows.map((row, index) => {
+              const updateRow = (updates: Partial<BreakTimeRow>) => {
+                const updated = [...breakTimeRows];
+                const currentRow = updated[index];
+                if (currentRow) {
+                  updated[index] = { ...currentRow, ...updates };
+                  setBreakTimeRows(updated);
+                }
+              };
+
+              return (
+                <S.BreakTimeRow key={row.id}>
+                  <CheckButton
+                    checked={row.isEveryDay}
+                    onChange={(checked) => {
+                      updateRow({
+                        isEveryDay: checked,
+                        selectedDays: checked
+                          ? DAYS.map((d) => d.value)
+                          : row.selectedDays,
+                      });
+                    }}
+                    customStyle={S.CheckButtonCustomStyle}
+                  >
+                    매일
+                  </CheckButton>
+                  <S.TimeDisplay>
+                    <S.TimeSelectWrapper>
+                      <Dropdown
+                        options={TIME_OPTIONS}
+                        value={row.startTime || null}
+                        onChange={(value) => {
+                          updateRow({ startTime: String(value) });
+                        }}
+                        customStyle={S.TimeDropdownStyle}
+                      />
+                    </S.TimeSelectWrapper>
+                    <span>-</span>
+                    <S.TimeSelectWrapper>
+                      <Dropdown
+                        options={TIME_OPTIONS}
+                        value={row.endTime || null}
+                        onChange={(value) => {
+                          updateRow({ endTime: String(value) });
+                        }}
+                        customStyle={S.TimeDropdownStyle}
+                      />
+                    </S.TimeSelectWrapper>
+                  </S.TimeDisplay>
+                  <S.DayCheckboxes>
+                    {DAYS.map((day) => {
+                      // 다른 row에서 해당 요일이 선택되어 있는지 확인
+                      const isDaySelectedInOtherRows = breakTimeRows.some(
+                        (otherRow, otherIndex) =>
+                          otherIndex !== index &&
+                          otherRow.selectedDays.includes(day.value)
+                      );
+                      // 현재 row에서 이미 선택된 요일이 아니고, 다른 row에서 선택된 경우 비활성화
+                      const isDisabled =
+                        !row.selectedDays.includes(day.value) &&
+                        isDaySelectedInOtherRows;
+
+                      const isChecked = row.selectedDays.includes(day.value);
+
+                      return (
+                        <CheckButton
+                          key={day.value}
+                          checked={isChecked}
+                          disabled={isDisabled}
+                          customStyle={
+                            isDisabled
+                              ? S.DisabledDayCheckboxStyle
+                              : isChecked
+                                ? undefined
+                                : S.DayCheckboxStyle
+                          }
+                          onChange={(checked) => {
+                            if (checked) {
+                              updateRow({
+                                selectedDays: [...row.selectedDays, day.value],
+                              });
+                            } else {
+                              updateRow({
+                                selectedDays: row.selectedDays.filter(
+                                  (d) => d !== day.value
+                                ),
+                                isEveryDay: false,
+                              });
+                            }
+                          }}
+                        >
+                          {day.label}
+                        </CheckButton>
+                      );
+                    })}
+                  </S.DayCheckboxes>
+                  <BasicButton
+                    variant="Outline_Grey_M"
+                    onClick={() => {
+                      setBreakTimeRows(
+                        breakTimeRows.filter((r) => r.id !== row.id)
+                      );
+                    }}
+                    customStyle={S.DeleteButtonCustomStyle}
+                  >
+                    <DeleteIcon
+                      width={16}
+                      height={16}
+                      color={theme.colors.grey[600]}
+                    />
+                  </BasicButton>
+                </S.BreakTimeRow>
+              );
+            })}
+            <S.InnerSectionItem style={{ marginTop: '24px' }}>
+              <p>주문 마감 안내 시간</p>
+              <S.ClickableText
+                onClick={() => {
+                  const minutes = prompt(
+                    '분을 입력하세요',
+                    breakTimeLastOrderAlertMinutes
+                  );
+                  if (minutes !== null) {
+                    setBreakTimeLastOrderAlertMinutes(minutes);
                   }
-                />
-                <span>분전</span>
-              </UIStyles.setting.SingleTimeInput>
+                }}
+              >
+                {breakTimeLastOrderAlertMinutes || '5'}분 전 알림
+              </S.ClickableText>
+            </S.InnerSectionItem>
+            <S.InnerSectionItem>
+              <p>라스트오더 가능 시간</p>
+              <S.ClickableText
+                onClick={() => {
+                  const minutes = prompt(
+                    '분을 입력하세요',
+                    breakTimeLastOrderMinutes
+                  );
+                  if (minutes !== null) {
+                    setBreakTimeLastOrderMinutes(minutes);
+                  }
+                }}
+              >
+                {breakTimeLastOrderMinutes || '1'}분 전 까지
+              </S.ClickableText>
             </S.InnerSectionItem>
             <S.TextAreasContainer>
               <div>
-                <p>주문 마감 사전 안내 메세지</p>
+                <p>라스트오더 안내 메세지</p>
                 <textarea
                   value={breakTimeLastOrderMessage}
                   onChange={(event) =>
@@ -492,6 +699,15 @@ export const MenuAppFeature = ({
           </S.InnerSection>
         )}
       </div>
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        categories={categoryListResponse?.data ?? []}
+        selectedCategorySeqs={selectedCategorySeqs}
+        isLoading={isCategoryListLoading}
+        onClose={handleCloseCategoryModal}
+        onToggle={handleToggleCategoryRequired}
+        onSave={handleSaveCategorySelection}
+      />
     </SectionWrapper>
   );
 };

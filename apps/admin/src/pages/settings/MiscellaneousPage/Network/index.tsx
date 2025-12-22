@@ -6,34 +6,29 @@ import * as S from '@/pages/settings/MiscellaneousPage/Network/network.style';
 import { NetworkIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 
-type NetworkSettingOption = 'auto' | 'wired' | 'wifi';
-
 const networkSettings = [
-  { value: 'auto' as NetworkSettingOption, label: '자동' },
-  { value: 'wired' as NetworkSettingOption, label: '유선' },
-  { value: 'wifi' as NetworkSettingOption, label: '무선' },
+  { value: 'AUTO' as TNetworkType, label: '자동' },
+  { value: 'LAN' as TNetworkType, label: '유선' },
+  { value: 'WIFI' as TNetworkType, label: '무선' },
 ];
 
 interface NetworkProps {
   shopNetwork?: IShopNetwork;
 }
 
-const toNetworkSettingOption = (
-  networkType?: TNetworkType
-): NetworkSettingOption => {
+const toNetworkSettingOption = (networkType?: TNetworkType): TNetworkType => {
   switch (networkType) {
     case 'LAN':
-      return 'wired';
+      return 'LAN';
     case 'WIFI':
-      return 'wifi';
+      return 'WIFI';
     default:
-      return 'auto';
+      return 'AUTO';
   }
 };
 
 export const Network = ({ shopNetwork }: NetworkProps) => {
-  const [networkSetting, setNetworkSetting] =
-    useState<NetworkSettingOption>('auto');
+  const [networkSetting, setNetworkSetting] = useState<TNetworkType>('AUTO');
   const [ssid, setSsid] = useState('');
   const [ipAddress, setIpAddress] = useState('');
 
@@ -47,7 +42,7 @@ export const Network = ({ shopNetwork }: NetworkProps) => {
     setIpAddress(shopNetwork.ipAddress ?? '');
   }, [shopNetwork]);
 
-  const handleNetworkSettingChange = (value: NetworkSettingOption) => {
+  const handleNetworkSettingChange = (value: TNetworkType) => {
     setNetworkSetting(value);
   };
 
@@ -84,13 +79,13 @@ export const Network = ({ shopNetwork }: NetworkProps) => {
             options={networkSettings}
             value={networkSetting}
             onChange={(value) =>
-              handleNetworkSettingChange(value as NetworkSettingOption)
+              handleNetworkSettingChange(value as TNetworkType)
             }
           />
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
           <p>네트워크 정보</p>
-          {networkSetting === 'auto' && (
+          {networkSetting === 'AUTO' && (
             <BasicButton variant="Solid_Sky_Blue_M" onClick={() => {}}>
               재설정
             </BasicButton>
@@ -105,7 +100,7 @@ export const Network = ({ shopNetwork }: NetworkProps) => {
           <p>{ipAddress || '-'}</p>
         </UIStyles.setting.ContentLayout>
 
-        {networkSetting === 'wifi' && (
+        {networkSetting === 'WIFI' && (
           <>
             <UIStyles.setting.ContentLayout>
               <p>SSID</p>
@@ -122,7 +117,7 @@ export const Network = ({ shopNetwork }: NetworkProps) => {
           </>
         )}
 
-        {networkSetting !== 'auto' && (
+        {networkSetting !== 'AUTO' && (
           <UIStyles.setting.ContentLayout>
             <p>IP Address</p>
             <input

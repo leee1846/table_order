@@ -8,15 +8,33 @@ const { colors } = theme;
 
 export type OrderItemsTableProps = {
   items: OrderItem[];
+  discountRate: number;
   onItemClick?: (item: OrderItem) => void;
 };
-
-export function OrderItemsTable({ items, onItemClick }: OrderItemsTableProps) {
+export function OrderItemsTable({
+  items,
+  discountRate,
+  onItemClick,
+}: OrderItemsTableProps) {
   const handleRowClick = (item: OrderItem) => {
     if (onItemClick) {
       onItemClick(item);
     }
   };
+
+  // 총 금액 계산 (모든 아이템과 옵션 포함)
+  const totalPrice = items.reduce((sum, item) => {
+    const itemTotal = item.unitPrice * item.qty;
+    const optionsTotal =
+      item.options?.reduce((optSum, option) => {
+        return optSum + option.unitPrice * option.qty;
+      }, 0) || 0;
+    return sum + itemTotal + optionsTotal;
+  }, 0);
+
+  // 할인 금액 계산
+  const discountAmount =
+    discountRate > 0 ? totalPrice * (discountRate / 100) : 0;
 
   return (
     <TableWrap>
@@ -44,6 +62,13 @@ export function OrderItemsTable({ items, onItemClick }: OrderItemsTableProps) {
           ))}
         </React.Fragment>
       ))}
+      {discountRate > 0 && (
+        <Row>
+          <Cell className="name">할인적용</Cell>
+          <Cell className="qty">{discountRate}%</Cell>
+          <Cell className="price">{formatCurrency(discountAmount)}</Cell>
+        </Row>
+      )}
     </TableWrap>
   );
 }
@@ -74,6 +99,20 @@ const Row = styled.div`
     ${TYPOGRAPHY.ST_4}
     color: ${colors.grey[500]};
     line-height: 1;
+  }
+
+  &.discount-row {
+    cursor: default;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid ${colors.grey[300]};
+    ${TYPOGRAPHY.MT_7}
+    color: ${colors.grey[700]};
+    font-weight: 600;
+
+    &:hover {
+      background-color: transparent;
+    }
   }
 `;
 

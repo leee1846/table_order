@@ -105,6 +105,7 @@ export const TableDetailContainer = ({
       enabled: !!shopCode && !!tableNumber,
     }
   );
+
   const { mutateAsync: cancelOrderAll, isPending: isCancelAllPending } =
     usePutCancelOrderAll();
 
@@ -113,6 +114,7 @@ export const TableDetailContainer = ({
     if (!orderHistoriesResponse?.data) {
       return {
         tableName: `${tableNumber}번 테이블`,
+        discountRate: 0,
         numberOfPeople,
         items: [],
         totalCount: 0,
@@ -157,9 +159,10 @@ export const TableDetailContainer = ({
 
     return {
       tableName: `${tableNumber}번 테이블`,
+      discountRate: data.discountRate || 0,
       numberOfPeople,
       items,
-      totalCount: items.length,
+      totalCount: items.reduce((sum, item) => sum + item.qty, 0),
       totalPrice: data.totalAmount || 0,
       orderTime,
     };
@@ -320,7 +323,6 @@ export const TableDetailContainer = ({
           setIsArbitraryPaymentConfirmDialogOpen(true);
         }}
         onConfirmPayment={() => {
-          console.log('결제하기 클릭');
           if (isPaymentFromSplit) {
             // 분할 결제 내역 추가
             setSplitPayments((prev) => [

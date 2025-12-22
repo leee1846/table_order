@@ -26,6 +26,7 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
             <S.ShopName>{shopName}</S.ShopName>
             <S.UserId>{userId}</S.UserId>
             <S.SID>
+              {/* SID =  shopCode*/}
               <span>SID</span>
               <span>{shopCode}</span>
             </S.SID>

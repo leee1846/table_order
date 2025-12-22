@@ -73,4 +73,8 @@ export const ENDPOINTS = {
   SSE: {
     CONNECT: '/sse/connect',
   },
+
+  NOTICE: {
+    LIST: '/notice/list',
+  },
 } as const;

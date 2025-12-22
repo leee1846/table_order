@@ -45,9 +45,11 @@ export const checkButtonCss = css`
 export const Container = styled.div`
   position: relative;
   width: 71.25rem;
+  height: 50rem;
   background-color: ${theme.colors.white};
   padding: 24px 24px 0;
   border-radius: 1rem;
+  overflow-y: auto;
 
   & > h1 {
     text-align: center;
@@ -95,7 +97,7 @@ export const OptionList = styled.ul`
   flex-direction: column;
   gap: 12px;
   margin-bottom: 12px;
-
+  max-height: 30%;
   & > li {
     display: flex;
     align-items: center;
@@ -134,6 +136,7 @@ export const AdditionalsContainer = styled.div`
   justify-content: space-between;
   color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.ST_2}
+
   & > div > input[type='string'] {
     width: 2.5rem;
     border-bottom: 1.25px solid ${theme.colors.grey[500]};
@@ -150,14 +153,9 @@ export const CodeContainer = styled.div`
 `;
 
 export const FloatingButtonContainer = styled.div`
-  position: sticky;
-  bottom: -24px;
-  left: 0;
-  right: 0;
   width: 100%;
   padding: 40px 0 50px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 39.67%);
-
   & > button {
     width: 100%;
   }

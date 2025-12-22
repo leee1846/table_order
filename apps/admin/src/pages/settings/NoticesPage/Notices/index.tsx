@@ -1,92 +1,112 @@
-import * as S from '@/pages/settings/NoticesPage/Notices/notices.style';
+import { useEffect, useState } from 'react';
 import { KeyboardArrowDownIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { useState } from 'react';
+import type { INotice } from '@repo/api/types';
+import * as S from '@/pages/settings/NoticesPage/Notices/notices.style';
 
-const MOCK = [
-  {
-    id: 1,
-    title:
-      '공지사항 1ㅁㄴㅇㄴㅁㅇㅁㄴㅇㄴㅁㅁㄴㅁㄴㄴㅁㅇㅁㄴㄴㅇㅇㅁㅇㅁㄴㅇㅁㄴㅇㅇㅁㅇㅁㄴㅇㅁㄴㅁㄴㅇ',
-    status: '일반',
-    content: '공지사항 1 내용',
-    createdAt: '2025-01-01 12:00:00',
-  },
-  {
-    id: 2,
-    title: '공지사항 2',
-    status: '긴급',
-    content:
-      '공지사항 2 내용  공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용공지사항 2 내용',
-    createdAt: '2025-01-02 12:00:00',
-  },
-  {
-    id: 3,
-    status: '일반',
-    title: '공지사항 3',
-    content: '공지사항 3 내용',
-    createdAt: '2025-01-03 12:00:00',
-  },
-  {
-    id: 4,
-    status: '일반',
-    title: '공지사항 4',
-    content: '공지사항 4 내용',
-    createdAt: '2025-01-04 12:00:00',
-  },
-  {
-    id: 5,
-    status: '일반',
-    title: '공지사항 5',
-    content: '공지사항 5 내용',
-    createdAt: '2025-01-05 12:00:00',
-  },
-];
+interface NoticesProps {
+  notices: INotice[];
+  isLoading?: boolean;
+}
 
-export const Notices = () => {
+const formatDateTime = (value?: string | number | null) => {
+  if (value === undefined || value === null) {
+    return '-';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return '-';
+  }
+
+  return date.toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
+export const Notices = ({ notices, isLoading = false }: NoticesProps) => {
   const [openNoticeId, setOpenNoticeId] = useState<number | null>(null);
 
-  const handleOpenNotice = (id: number) => {
-    if (openNoticeId === id) {
+  useEffect(() => {
+    if (openNoticeId === null) {
+      return;
+    }
+
+    const hasTarget = notices.some(
+      (notice) => notice.noticeSeq === openNoticeId
+    );
+
+    if (!hasTarget) {
+      setOpenNoticeId(null);
+    }
+  }, [notices, openNoticeId]);
+
+  const handleOpenNotice = (noticeSeq: number) => {
+    if (openNoticeId === noticeSeq) {
       setOpenNoticeId(null);
       return;
     }
 
-    setOpenNoticeId(id);
+    setOpenNoticeId(noticeSeq);
   };
+
+  if (isLoading) {
+    return (
+      <S.Container>
+        <S.Message>공지사항을 불러오는 중입니다...</S.Message>
+      </S.Container>
+    );
+  }
+
+  if (!notices.length) {
+    return (
+      <S.Container>
+        <S.Message>등록된 공지사항이 없습니다.</S.Message>
+      </S.Container>
+    );
+  }
 
   return (
     <S.Container>
-      {MOCK.map((notice) => (
-        <S.Notice key={notice.id} isOpen={openNoticeId === notice.id}>
-          <S.Header
-            type="button"
-            onClick={() => handleOpenNotice(notice.id)}
-            isOpen={openNoticeId === notice.id}
-          >
-            <S.LeftContainer>
-              <S.Num>{notice.id}</S.Num>
-              <S.Status>{notice.status}</S.Status>
-              <S.Title>{notice.title}</S.Title>
-            </S.LeftContainer>
-            <S.RightContainer isOpen={openNoticeId === notice.id}>
-              <S.CreatedAt>{notice.createdAt}</S.CreatedAt>
-              <KeyboardArrowDownIcon
-                width={24}
-                height={24}
-                color={theme.colors.grey[500]}
-              />
-            </S.RightContainer>
-          </S.Header>
+      {notices.map((notice) => {
+        const isOpen = openNoticeId === notice.noticeSeq;
 
-          {/* 공지사항 내용은 추후에 html형식으로 변환하여 표시해야 할 수 있음 */}
-          {openNoticeId === notice.id && (
-            <S.Content>
-              <p>{notice.content}</p>
-            </S.Content>
-          )}
-        </S.Notice>
-      ))}
+        return (
+          <S.Notice key={notice.noticeSeq} isOpen={isOpen}>
+            <S.Header
+              type="button"
+              onClick={() => handleOpenNotice(notice.noticeSeq)}
+              isOpen={isOpen}
+            >
+              <S.LeftContainer>
+                <S.Num>{notice.noticeSeq}</S.Num>
+                <S.Status>{notice.boardType || '일반'}</S.Status>
+                <S.Title>{notice.noticeTitle}</S.Title>
+              </S.LeftContainer>
+              <S.RightContainer isOpen={isOpen}>
+                <S.CreatedAt>{formatDateTime(notice.createDate)}</S.CreatedAt>
+                <KeyboardArrowDownIcon
+                  width={24}
+                  height={24}
+                  color={theme.colors.grey[500]}
+                />
+              </S.RightContainer>
+            </S.Header>
+
+            {/* 공지사항 내용은 추후에 html형식으로 변환하여 표시해야 할 수 있음 */}
+            {isOpen && (
+              <S.Content>
+                <p>{notice.noticeContent ?? ''}</p>
+              </S.Content>
+            )}
+          </S.Notice>
+        );
+      })}
     </S.Container>
   );
 };

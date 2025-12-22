@@ -137,7 +137,7 @@ export const TablesPage = () => {
 
         return {
           id: table.tableSeq, // tableSeq를 id로 사용
-          tableNumber: Number(table.tableNumber),
+          tableNumber: table.tableNumber,
           batteryLevel: 100, // API 응답에 없으므로 기본값 사용
           totalAmount: orderInfo.totalAmount ?? null,
           orderTime,
@@ -149,7 +149,7 @@ export const TablesPage = () => {
       // 주문 정보가 없는 경우 (빈 테이블)
       return {
         id: table.tableSeq,
-        tableNumber: Number(table.tableNumber),
+        tableNumber: table.tableNumber,
         batteryLevel: 100,
         totalAmount: null,
         orderTime: null,

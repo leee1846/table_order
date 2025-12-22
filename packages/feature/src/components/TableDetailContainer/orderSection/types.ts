@@ -16,6 +16,7 @@ export interface OrderItem {
 
 export interface Order {
   tableName: string;
+  discountRate: number;
   numberOfPeople?: number;
   items: OrderItem[];
   totalCount: number;

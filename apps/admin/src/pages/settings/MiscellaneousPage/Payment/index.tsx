@@ -28,6 +28,8 @@ const currencyOptions = [
   { value: 'USD', label: 'USD' },
 ];
 
+const resolveBoolean = (value?: boolean | null) => Boolean(value);
+
 export const Payment = ({ shopSetting }: PaymentProps) => {
   const [paymentType, setPaymentType] =
     useState<PaymentTypeOption>('postpayment');
@@ -60,13 +62,32 @@ export const Payment = ({ shopSetting }: PaymentProps) => {
         ? String(shopSetting.serviceChargeRate)
         : ''
     );
-    setIsSalesTotalVisible(Boolean(shopSetting.isSalesTotalVisible));
+    setIsSalesTotalVisible(resolveBoolean(shopSetting.isSalesTotalVisible));
     setSalesPassword(shopSetting.salesPassword ?? '');
-    setUseDutchPay(Boolean(shopSetting.useDutchPay));
-    setUsePostpaidAfterPrepay(Boolean(shopSetting.usePostpaidAfterPrepay));
-    setUseAutoReset(Boolean(shopSetting.useAutoReset));
-    setUseCashPopup(Boolean(shopSetting.useCashPopup));
-    setUseCashPayment(Boolean(shopSetting.useCashPayment));
+    setUseDutchPay(
+      resolveBoolean(
+        shopSetting.usePrepaymentDutch ?? shopSetting.useDutchPay
+      )
+    );
+    setUsePostpaidAfterPrepay(
+      resolveBoolean(
+        shopSetting.usePrepaymentDeferredPayment ??
+          shopSetting.usePostpaidAfterPrepay
+      )
+    );
+    setUseAutoReset(
+      resolveBoolean(shopSetting.usePrepaymentAutoReset ?? shopSetting.useAutoReset)
+    );
+    setUseCashPopup(
+      resolveBoolean(
+        shopSetting.usePrepaymentCashPaymentInducement ?? shopSetting.useCashPopup
+      )
+    );
+    setUseCashPayment(
+      resolveBoolean(
+        shopSetting.usePrepaymentCashPayment ?? shopSetting.useCashPayment
+      )
+    );
   }, [shopSetting]);
 
   const vanOptions = vanCode

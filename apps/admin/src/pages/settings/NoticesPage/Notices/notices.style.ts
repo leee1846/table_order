@@ -6,6 +6,13 @@ export const Container = styled.ul`
   flex-direction: column;
 `;
 
+export const Message = styled.p`
+  ${TYPOGRAPHY.ST_4}
+  color: ${theme.colors.grey[600]};
+  padding: 32px 16px;
+  text-align: center;
+`;
+
 export const Notice = styled.li<{ isOpen: boolean }>`
   display: flex;
   flex-direction: column;
