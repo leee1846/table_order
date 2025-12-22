@@ -23,6 +23,8 @@ export const STORAGE_KEYS = {
   INITIAL_PAGE_SHOW: 'initial-page-show',
   /** 비밀번호 인증 완료 여부 키 */
   ADMIN_PASSWORD_VERIFIED: 'admin-password-verified',
+  /** 상점 페이지 설정 data 키 */
+  SHOP_PAGE_SETTING: 'shop-page-setting',
 } as const;
 
 export const TIMER_KEYS = {

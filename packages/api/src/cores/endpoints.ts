@@ -52,6 +52,7 @@ export const ENDPOINTS = {
   SHOP: {
     DETAIL: (shopCode: string) => `/shop/${shopCode}`,
     LIST: '/shop/list',
+    PAGE_SETTING: (shopCode: string) => `/shop/page-setting/${shopCode}`,
   },
 
   TABLE: {

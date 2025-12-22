@@ -1,6 +1,10 @@
 import { getAxiosInstance } from '../cores/axios';
 import { ENDPOINTS } from '../cores/endpoints';
-import type { TGetShopsResponse, TGetShopResponse } from '../types/shop';
+import type {
+  TGetShopsResponse,
+  TGetShopResponse,
+  TGetShopPageSettingResponse,
+} from '../types/shop';
 
 export const getShops = async (): Promise<TGetShopsResponse> => {
   const axiosInstance = getAxiosInstance('private');
@@ -19,6 +23,18 @@ export const getShopDetail = async (
   const response = await axiosInstance<TGetShopResponse>({
     method: 'GET',
     url: ENDPOINTS.SHOP.DETAIL(shopCode),
+  });
+
+  return response.data;
+};
+
+export const getShopPageSetting = async (
+  shopCode: string
+): Promise<TGetShopPageSettingResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetShopPageSettingResponse>({
+    method: 'GET',
+    url: ENDPOINTS.SHOP.PAGE_SETTING(shopCode),
   });
 
   return response.data;

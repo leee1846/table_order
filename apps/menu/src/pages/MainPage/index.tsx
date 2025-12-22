@@ -22,6 +22,7 @@ import { useAdminAccessControl } from '@/pages/MainPage/hooks/useAdminAccessCont
 import { useFirstOrderRequiredCheck } from '@/pages/MainPage/hooks/useFirstOrderRequiredCheck';
 import { useBreakTimeCartClear } from '@/pages/MainPage/hooks/useBreakTimeCartClear';
 import { useCategoryVisibilityManager } from '@/hooks/useCategoryVisibilityManager';
+import { useShopPageSettingData } from '@/hooks/useShopPageSettingData';
 
 export const MainPage = () => {
   // ========================================
@@ -42,6 +43,8 @@ export const MainPage = () => {
   } = useCategoriesData();
   /** 테이블 주문 내역 데이터 로드 */
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
+  /** 상점 페이지 설정 데이터 로드 */
+  useShopPageSettingData();
 
   // ========================================
   // 비즈니스 로직 훅

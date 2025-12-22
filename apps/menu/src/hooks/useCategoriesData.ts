@@ -63,8 +63,8 @@ export const useCategoriesData = (options?: Props) => {
 
     if (categoriesData?.data) {
       // TODO: mockData 삭제 예정 -> categoriesData.data를 넣어야함
-      // setCategoriesAsync(categoriesData.data);
-      setCategoriesAsync({ categories: mockCategories });
+      setCategoriesAsync({ categories: categoriesData.data });
+      // setCategoriesAsync({ categories: mockCategories });
     }
   }, [
     categoriesStoreData,
@@ -77,8 +77,8 @@ export const useCategoriesData = (options?: Props) => {
     const result = await refetch();
     if (result.data?.data) {
       // TODO: mockData 삭제 예정 -> result.data.data를 넣어야함
-      // await setCategoriesAsync(result.data.data);
-      await setCategoriesAsync({ categories: mockCategories });
+      await setCategoriesAsync({ categories: result.data.data });
+      // await setCategoriesAsync({ categories: mockCategories });
     }
   };
 

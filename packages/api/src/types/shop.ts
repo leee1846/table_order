@@ -146,30 +146,40 @@ export interface IShopNetwork {
 
 export type TInitPageLayout = 'LIGHT' | 'DARK' | 'IMAGE';
 export type TOrderCompletePageLayout = 'DEFAULT' | 'RECEIPT';
-
-export interface IShopPage {
-  shopSeq: number;
-  initPageLayout: TInitPageLayout;
-  initPageLogoImagePath: string;
-  initPageShopName: string;
-  orderCompletePageLayout: TOrderCompletePageLayout;
-  orderCompletePageImagePath: string;
-  orderCompletePageDescription: string;
-  shopPageDetailList: IShopPageDetail[];
-}
+/*
+ * INIT_COMMON: 공통 이미지 (이미지 + 설명)
+ * INIT_LIGHT: 라이트모드 (로고 이미지 + 매장명)
+ * INIT_DARK: 다크모드 (로고 이미지 + 매장명)
+ * ORDER_COMPLETE: 주문 완료 (이미지 + 설명)
+ */
+export type TPageDetailType =
+  | 'INIT_COMMON'
+  | 'INIT_LIGHT'
+  | 'INIT_DARK'
+  | 'ORDER_COMPLETE';
 
 export interface IShopPageDetail {
-  pageSeq: number;
   shopSeq: number;
-  imagePath: string;
-  pageDescription: string;
+  pageSeq: number;
+  pageDetailType: TPageDetailType;
+  pageDetailImagePath: string;
+  pageDetailDescription: string;
 }
 
 export interface IGetShop extends IGetShopItem {
   shopTime: IShopTime;
   shopSetting: IShopSetting;
   shopNetwork: IShopNetwork;
-  shopPage: IShopPage;
 }
 
 export type TGetShopResponse = IApiResponse<IGetShop>;
+
+export interface IGetShopPageSetting {
+  shopSeq: number;
+  initPageLayout: TInitPageLayout;
+  orderCompletePageLayout: TOrderCompletePageLayout;
+  logoImagePath: string;
+  shopPageDetailList: IShopPageDetail[];
+}
+
+export type TGetShopPageSettingResponse = IApiResponse<IGetShopPageSetting>;

@@ -31,16 +31,16 @@ export const useShopDetailData = (options?: Props) => {
     }
 
     // TODO: Mock 데이터 삭제 예정
-    setShopDetailData(mockShopDetail);
-    // setShopDetailData(shopDetailDataResponse.data);
+    // setShopDetailData(mockShopDetail);
+    setShopDetailData(shopDetailDataResponse.data);
   }, [shopDetailDataResponse, setShopDetailData, skipInitialRequest]);
 
   const refresh = async () => {
     const result = await refetch();
     if (result.data?.data) {
       // TODO: Mock 데이터 삭제 예정
-      setShopDetailData(mockShopDetail);
-      // setShopDetailData(result.data.data);
+      // setShopDetailData(mockShopDetail);
+      setShopDetailData(result.data.data);
     }
   };
 

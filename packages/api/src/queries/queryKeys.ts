@@ -10,6 +10,8 @@ export const queryKeys = {
       [...queryKeys.shop.all, 'detail', shopCode] as const,
     /** 상점 리스트 조회 */
     list: () => [...queryKeys.shop.all, 'list'] as const,
+    pageSetting: (shopCode: string) =>
+      [...queryKeys.shop.all, 'pageSetting', shopCode] as const,
   },
 
   category: {
