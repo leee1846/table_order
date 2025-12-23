@@ -1,39 +1,42 @@
 import { useEffect, useState } from 'react';
-import type { IShopSetting, TShopLanguage } from '@repo/api/types';
+import type {
+  IShopLocaleMap,
+  IShopSetting,
+  TShopLanguage,
+} from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
 import { CheckButton, Dropdown, ToggleButton } from '@repo/ui/components';
 import * as S from '@/pages/settings/MiscellaneousPage/Language/language.style';
 import { LanguageIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import type { MiscellaneousChange } from '../types';
 
 interface LanguageProps {
   shopSetting?: IShopSetting;
   useLocale?: boolean;
+  onChange?: (value: MiscellaneousChange) => void;
 }
 
 const languageOptions = [
   { value: 'KO' as TShopLanguage, label: '한국어' },
   { value: 'EN' as TShopLanguage, label: '영어' },
-  { value: 'CH' as TShopLanguage, label: '중국어' },
   { value: 'JP' as TShopLanguage, label: '일본어' },
+  { value: 'CH' as TShopLanguage, label: '중국어' },
+  { value: 'RU' as TShopLanguage, label: '러시아어' },
 ];
-
-const isValidLanguage = (
-  language?: string | null
-): language is TShopLanguage => {
-  return languageOptions.some(({ value }) => value === language);
-};
 
 export const Language = ({
   shopSetting,
   useLocale: useLocale,
+  onChange,
 }: LanguageProps) => {
   const [mainLanguage, setMainLanguage] = useState<TShopLanguage>('KO');
   const [locale, setLocale] = useState(false);
-  const [selectedLanguages, setSelectedLanguages] = useState<TShopLanguage[]>(
+  const [selectedLanguages, setSelectedLanguages] = useState<IShopLocaleMap[]>(
     []
   );
+
   const [useLocaleBeforeOrder, setUseLocaleBeforeOrder] = useState(false);
 
   useEffect(() => {
@@ -42,29 +45,33 @@ export const Language = ({
     }
 
     setMainLanguage(shopSetting.shopLanguage);
-    setSelectedLanguages(
-      shopSetting.shopLocaleMapList?.map(
-        ({ localeCode }) => localeCode as TShopLanguage
-      ) ?? []
-    );
     setLocale(useLocale ?? false);
     setUseLocaleBeforeOrder(shopSetting.useLocaleBeforeOrder ?? false);
+    setSelectedLanguages(shopSetting.shopLocaleMapList ?? []);
   }, [shopSetting, useLocale]);
 
-  const handleToggleLocale = () => {
-    setLocale(!locale);
-  };
-
-  const handleChangeMainLanguage = (value: string) => {
-    if (!isValidLanguage(value)) {
+  useEffect(() => {
+    if (!onChange) {
       return;
     }
-    setMainLanguage(value);
-    setSelectedLanguages((prev) => {
-      const next = prev.filter((lang) => lang !== value);
-      return [value, ...next];
+
+    onChange({
+      shopSetting: {
+        shopSeq: shopSetting?.shopSeq,
+        shopLanguage: mainLanguage,
+        useLocaleBeforeOrder,
+        shopLocaleMapList: selectedLanguages,
+      },
+      useLocale: locale,
     });
-  };
+  }, [
+    locale,
+    mainLanguage,
+    onChange,
+    selectedLanguages,
+    shopSetting?.shopSeq,
+    useLocaleBeforeOrder,
+  ]);
 
   return (
     <SectionWrapper
@@ -82,23 +89,45 @@ export const Language = ({
         <Dropdown
           options={languageOptions}
           value={mainLanguage}
-          onChange={(value) => handleChangeMainLanguage(String(value))}
+          onChange={(value) => setMainLanguage(value as TShopLanguage)}
         />
       </UIStyles.setting.ContentLayout>
       <div>
         <UIStyles.setting.ContentLayout>
           <p>다국어 사용</p>
-          <ToggleButton size="M" isOn={locale} onChange={handleToggleLocale} />
+          <ToggleButton
+            size="M"
+            isOn={locale}
+            onChange={(value) => setLocale(value)}
+          />
         </UIStyles.setting.ContentLayout>
         <S.CheckboxWrapper>
           <div>
             {languageOptions.map((option) => (
               <CheckButton
                 key={option.value}
-                checked={selectedLanguages.includes(option.value)}
-                onChange={() =>
-                  setSelectedLanguages((prev) => [...prev, option.value])
-                }
+                checked={selectedLanguages.some(
+                  (lang) => lang.localeCode === option.value
+                )}
+                onChange={() => {
+                  const isSelected = selectedLanguages.some(
+                    (lang) => lang.localeCode === option.value
+                  );
+                  if (isSelected) {
+                    setSelectedLanguages((prev) =>
+                      prev.filter((lang) => lang.localeCode !== option.value)
+                    );
+                  } else {
+                    setSelectedLanguages((prev) => [
+                      ...prev,
+                      {
+                        localeShopMapSeq: 0,
+                        shopSeq: shopSetting?.shopSeq ?? 0,
+                        localeCode: option.value,
+                      },
+                    ]);
+                  }
+                }}
                 customStyle={S.checkboxCss}
               >
                 <S.CheckboxText>{option.label}</S.CheckboxText>

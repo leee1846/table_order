@@ -1,4 +1,4 @@
-import type { IApiResponse } from './common';
+import type { IApiResponse, TVoidApiResponse } from './common';
 
 /**
  * 픽업 알림 전송 요청 타입
@@ -176,6 +176,7 @@ export interface IOrderHistoryOption {
 
 export interface IOrderHistory {
   orderGroupUuid: string;
+  menuSeq: number;
   orderDetailMenuSeq: number;
   menuName: string;
   menuPrice: number;
@@ -299,3 +300,18 @@ export type TCustomAmountType =
   | 'AMOUNT_CHANGE'
   | 'GROUP_DISCOUNT'
   | 'MENU_SERVICE';
+
+/**
+ * 픽업 메시지 전송 요청 파라미터
+ * POST /order/pickup/{shopCode}/{tableNumber}
+ */
+export interface IPostPickupMessageRequest {
+  shopCode: string;
+  tableNumber: string;
+  message: string;
+}
+
+/**
+ * 픽업 메시지 전송 응답 타입
+ */
+export type TPostPickupMessageResponse = TVoidApiResponse;

@@ -15,6 +15,8 @@ import type {
   ICancelOrderMenuRequest,
   ICancelOrderAllRequest,
   IPostCustomAmountRequest,
+  IPostPickupMessageRequest,
+  TPostPickupMessageResponse,
 } from '../types/orders';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -195,6 +197,25 @@ export const postCustomAmount = async (
     method: 'POST',
     url: ENDPOINTS.ORDER.CUSTOM_AMOUNT,
     data,
+  });
+
+  return response.data;
+};
+
+/**
+ * 픽업 메시지를 전송합니다.
+ * POST /order/pickup/{shopCode}/{tableNumber}
+ */
+export const postPickupMessage = async ({
+  shopCode,
+  tableNumber,
+  message,
+}: IPostPickupMessageRequest): Promise<TPostPickupMessageResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TPostPickupMessageResponse>({
+    method: 'POST',
+    url: ENDPOINTS.ORDER.PICKUP(shopCode, tableNumber),
+    params: { message },
   });
 
   return response.data;

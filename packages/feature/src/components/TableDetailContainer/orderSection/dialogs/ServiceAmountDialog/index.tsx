@@ -4,21 +4,29 @@ import { CloseIcon, ArrowBackIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './serviceAmountDialog.styles';
 import { formatCurrency } from '@repo/util/string';
+import { usePostCustomAmount } from '@repo/api/queries';
+import { toast } from '@repo/feature/utils';
 
 const { colors } = theme;
 
 export type ServiceAmountDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  onApply: (amount: number) => void;
+  orderGroupUuid: string;
+  orderDetailMenuSeq: number;
+  onApplySuccess?: () => void;
 };
 
 export const ServiceAmountDialog = ({
   isOpen,
   onClose,
-  onApply,
+  orderGroupUuid,
+  orderDetailMenuSeq,
+  onApplySuccess,
 }: ServiceAmountDialogProps) => {
   const [amount, setAmount] = useState<string>('0');
+  const { mutateAsync: postCustomAmount, isPending: isCustomAmountPending } =
+    usePostCustomAmount();
 
   const handleNumberPress = (number: number) => {
     if (amount === '0') {
@@ -44,10 +52,45 @@ export const ServiceAmountDialog = ({
     }
   };
 
-  const handleApply = () => {
+  const handleApply = async () => {
+    if (isCustomAmountPending) {
+      return;
+    }
+
+    if (!orderGroupUuid) {
+      toast('주문 정보를 찾을 수 없어요. 다시 시도해주세요.');
+      return;
+    }
+
+    if (!orderDetailMenuSeq || isNaN(orderDetailMenuSeq)) {
+      toast('메뉴 정보가 올바르지 않아요. 다시 시도해주세요.');
+      return;
+    }
+
     const numericAmount = parseInt(amount, 10) || 0;
-    onApply(numericAmount);
-    handleClose();
+
+    if (numericAmount === 0) {
+      toast('서비스 금액을 입력해주세요.');
+      return;
+    }
+
+    // 메뉴 서비스의 경우 amount는 음수로 요청해야 함
+    const serviceAmount = numericAmount <= 0 ? numericAmount : -numericAmount;
+
+    try {
+      await postCustomAmount({
+        orderGroupUuid,
+        amount: serviceAmount,
+        type: 'MENU_SERVICE',
+        orderDetailMenuSeq,
+      });
+
+      toast('서비스 금액을 적용했어요.');
+      onApplySuccess?.();
+      handleClose();
+    } catch (error) {
+      toast('서비스 금액 적용 중 오류가 발생했어요. 다시 시도해주세요.');
+    }
   };
 
   const handleClose = () => {

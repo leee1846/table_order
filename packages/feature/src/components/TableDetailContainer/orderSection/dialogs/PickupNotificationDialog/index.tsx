@@ -5,7 +5,7 @@ import { BasicButton, ModalBackground } from '@repo/ui/components';
 import { toast } from '@repo/feature/utils';
 import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
-import { usePostPickupNotification } from '@repo/api/queries';
+import { usePostPickupMessage } from '@repo/api/queries';
 import * as S from './pickupNotificationDialog.style';
 
 const { colors } = theme;
@@ -13,26 +13,35 @@ const { colors } = theme;
 interface PickupNotificationDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  shopCode: string;
+  tableNumber: string;
   defaultMessage?: string;
 }
 
 export const PickupNotificationDialog = ({
   isOpen,
   onClose,
+  shopCode,
+  tableNumber,
   defaultMessage = '메뉴가 나왔으니 가지고 가십시오..',
 }: PickupNotificationDialogProps) => {
   const [message, setMessage] = useState(defaultMessage);
   const [isCustomInput, setIsCustomInput] = useState(false);
 
-  const { mutateAsync: pickupNotification } = usePostPickupNotification();
+  const { mutateAsync: postPickupMessage } = usePostPickupMessage();
 
   const handleConfirm = async () => {
-    await pickupNotification({
-      orderId: '1',
-      message: 'test',
-    });
-    toast('픽업 알림이 전송되었습니다.');
-    onClose();
+    try {
+      await postPickupMessage({
+        shopCode,
+        tableNumber,
+        message: message || defaultMessage,
+      });
+      toast('픽업 알림이 전송되었습니다.');
+      onClose();
+    } catch (error) {
+      toast('픽업 알림 전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
   };
 
   const handleCustomInputClick = () => {

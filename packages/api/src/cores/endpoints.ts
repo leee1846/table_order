@@ -14,6 +14,8 @@ export const ENDPOINTS = {
 
   ORDER: {
     SEND_PICKUP_NOTIFICATION: '/orders/pickup-notification',
+    PICKUP: (shopCode: string, tableNumber: string) =>
+      `/order/pickup/${shopCode}/${tableNumber}`,
     CREATE_ORDER_GROUP: (shopCode: string, tableNumber: string) =>
       `/order-group/${shopCode}/${tableNumber}`,
     CREATE_TABLE_ORDER: (shopCode: string, tableNumber: string) =>
@@ -36,6 +38,7 @@ export const ENDPOINTS = {
     DELETE: '/category',
     INDEX_UPDATE: '/category/index',
     HIDDEN: '/category/hidden',
+    FIRST_ORDER: '/category/first-order',
     MENUBOARD_LIST: (shopCode: string) => `/menuboard/${shopCode}`,
   },
 
@@ -52,6 +55,7 @@ export const ENDPOINTS = {
   SHOP: {
     DETAIL: (shopCode: string) => `/shop/${shopCode}`,
     LIST: '/shop/list',
+    SETTING: '/shop/setting',
     PAGE_SETTING: (shopCode: string) => `/shop/page-setting/${shopCode}`,
     PAGE_LOGO: (shopCode: string) => `/shop/page/logo/${shopCode}`,
   },

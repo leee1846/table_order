@@ -131,12 +131,12 @@ export const SelectCancelDialog = ({
           </S.Header>
 
           <S.ItemsList>
-            {items.map((item) => {
+            {items.map((item, index) => {
               const isChecked = selectedItems.has(item.id);
               const quantity = quantities.get(item.id) || item.qty;
 
               return (
-                <S.ItemRow key={item.id}>
+                <S.ItemRow key={`${item.id}-${index}`}>
                   <CheckButton
                     variant="square"
                     checked={isChecked}

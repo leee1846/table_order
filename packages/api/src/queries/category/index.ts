@@ -5,3 +5,4 @@ export * from './usePutUpdateCategoryIndex';
 export * from './usePutUpdateCategoryHidden';
 export * from './useDeleteCategory';
 export * from './useGetCategoriesWithMenus';
+export * from './usePutUpdateCategoryFirstOrder';

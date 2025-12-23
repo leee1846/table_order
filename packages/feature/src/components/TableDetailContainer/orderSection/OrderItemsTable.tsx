@@ -38,8 +38,8 @@ export function OrderItemsTable({
 
   return (
     <TableWrap>
-      {items.map((it) => (
-        <React.Fragment key={it.id}>
+      {items.map((it, index) => (
+        <React.Fragment key={`${it.id}-${index}`}>
           <Row data-item-id={it.id} onClick={() => handleRowClick(it)}>
             <Cell className="name" title={it.name}>
               {it.name}
@@ -66,7 +66,7 @@ export function OrderItemsTable({
         <Row>
           <Cell className="name">할인적용</Cell>
           <Cell className="qty">{discountRate}%</Cell>
-          <Cell className="price">{formatCurrency(discountAmount)}</Cell>
+          <Cell className="price">{`-${formatCurrency(discountAmount)}`}</Cell>
         </Row>
       )}
     </TableWrap>

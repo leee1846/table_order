@@ -1,4 +1,4 @@
-import { BasicButton, CheckButton, ModalBackground } from '@repo/ui/components';
+import { CheckButton, ModalBackground } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { ICategory } from '@repo/api/types';
@@ -10,8 +10,7 @@ interface CategoryModalProps {
   selectedCategorySeqs: number[];
   isLoading: boolean;
   onClose: () => void;
-  onToggle: (categorySeq: number) => void;
-  onSave: () => void;
+  onCheck: (categorySeq: number) => void;
 }
 
 export const CategoryModal = ({
@@ -20,8 +19,7 @@ export const CategoryModal = ({
   selectedCategorySeqs,
   isLoading,
   onClose,
-  onToggle,
-  onSave,
+  onCheck,
 }: CategoryModalProps) => {
   if (!isOpen) {
     return null;
@@ -33,11 +31,7 @@ export const CategoryModal = ({
         <S.Header>
           <h3>첫주문 필수 카테고리</h3>
           <button type="button" aria-label="닫기" onClick={onClose}>
-            <CloseIcon
-              width={20}
-              height={20}
-              color={theme.colors.grey[600]}
-            />
+            <CloseIcon width={28} height={28} color={theme.colors.grey[600]} />
           </button>
         </S.Header>
 
@@ -54,7 +48,8 @@ export const CategoryModal = ({
                 <S.CategoryItem key={category.categorySeq}>
                   <CheckButton
                     checked={isChecked}
-                    onChange={() => onToggle(category.categorySeq)}
+                    onChange={() => onCheck(category.categorySeq)}
+                    customStyle={S.CheckButtonCustomStyle}
                   >
                     {category.categoryName}
                   </CheckButton>
@@ -65,15 +60,6 @@ export const CategoryModal = ({
         ) : (
           <S.EmptyState>등록된 카테고리가 없습니다.</S.EmptyState>
         )}
-
-        <S.Footer>
-          <BasicButton variant="Outline_Grey_L" onClick={onClose}>
-            닫기
-          </BasicButton>
-          <BasicButton variant="Solid_Navy_L" onClick={onSave}>
-            저장
-          </BasicButton>
-        </S.Footer>
       </S.Container>
     </ModalBackground>
   );

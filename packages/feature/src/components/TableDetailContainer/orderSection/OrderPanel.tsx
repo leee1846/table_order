@@ -13,6 +13,8 @@ export type OrderPanelProps = {
   onSplitPay?: () => void;
   onItemClick?: (item: OrderItem) => void;
   useCustomerCount?: boolean;
+  shopCode: string;
+  tableNumber: string;
 };
 
 export function OrderPanel({
@@ -22,6 +24,8 @@ export function OrderPanel({
   onSplitPay,
   onItemClick,
   useCustomerCount,
+  shopCode,
+  tableNumber,
 }: OrderPanelProps) {
   return (
     <Wrap>
@@ -30,6 +34,8 @@ export function OrderPanel({
         numberOfPeople={order.numberOfPeople ?? 0}
         orderTime={order.orderTime}
         useCustomerCount={useCustomerCount}
+        shopCode={shopCode}
+        tableNumber={tableNumber}
       />
       <OrderItemsTable
         items={order.items}
@@ -40,11 +46,13 @@ export function OrderPanel({
         totalCount={order.totalCount}
         totalPrice={order.totalPrice}
       />
-      <PaymentActions
+      {/* TODO slot 뚫어서 받기 */}
+
+      {/* <PaymentActions
         onPayCard={onPayCard}
         onPayCash={onPayCash}
         onSplitPay={onSplitPay}
-      />
+      /> */}
     </Wrap>
   );
 }

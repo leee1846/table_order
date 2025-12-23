@@ -12,6 +12,8 @@ export type OrderHeaderProps = {
   numberOfPeople: number;
   orderTime: string;
   useCustomerCount?: boolean;
+  shopCode: string;
+  tableNumber: string;
 };
 
 export function OrderHeader({
@@ -19,6 +21,8 @@ export function OrderHeader({
   numberOfPeople,
   orderTime,
   useCustomerCount = false,
+  shopCode,
+  tableNumber,
 }: OrderHeaderProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -62,6 +66,8 @@ export function OrderHeader({
       <PickupNotificationDialog
         isOpen={isDialogOpen}
         onClose={handleDialogClose}
+        shopCode={shopCode}
+        tableNumber={tableNumber}
       />
     </>
   );

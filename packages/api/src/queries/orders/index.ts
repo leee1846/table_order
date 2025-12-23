@@ -1,4 +1,5 @@
 export * from './usePostPickupNotification';
+export * from './usePostPickupMessage';
 export * from './usePostTableOrder';
 export * from './useGetTableOrderHistories';
 export * from './useGetCurrentTableList';

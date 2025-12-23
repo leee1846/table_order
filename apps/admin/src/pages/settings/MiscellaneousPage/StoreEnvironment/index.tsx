@@ -6,10 +6,12 @@ import { useTimeInput } from '@/hooks/useTimeInput';
 import { StoreIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './storeEnvironment.style';
+import type { MiscellaneousChange } from '../types';
 
 interface StoreEnvironmentProps {
   shopSetting?: IShopSetting;
   shopTime?: IShopTime;
+  onChange?: (value: MiscellaneousChange) => void;
 }
 
 const menuboardTypeOptions = [
@@ -20,6 +22,7 @@ const menuboardTypeOptions = [
 export const StoreEnvironment = ({
   shopSetting,
   shopTime,
+  onChange,
 }: StoreEnvironmentProps) => {
   const [tableOccupationTime, setTableOccupationTime] = useState(false);
   const [menuboardType, setMenuboardType] = useState<TMenuboardType | ''>('');
@@ -29,6 +32,8 @@ export const StoreEnvironment = ({
   const endTime = useTimeInput();
   const { setTime: setStartTime } = startTime;
   const { setTime: setEndTime } = endTime;
+  const toTimeString = (hour: string, minute: string) =>
+    hour && minute ? `${hour.padStart(2, '0')}${minute.padStart(2, '0')}` : undefined;
 
   useEffect(() => {
     if (!shopSetting) {
@@ -47,6 +52,34 @@ export const StoreEnvironment = ({
     setStartTime(shopTime.shopBusinessStartTime);
     setEndTime(shopTime.shopBusinessEndTime);
   }, [shopTime, setEndTime, setStartTime]);
+
+  useEffect(() => {
+    if (!onChange) {
+      return;
+    }
+
+    const startTimeValue = toTimeString(startTime.hour, startTime.minute);
+    const endTimeValue = toTimeString(endTime.hour, endTime.minute);
+
+    onChange({
+      shopSetting: {
+        useTableOccupancyTime: tableOccupationTime,
+        menuboardType: menuboardType || undefined,
+      },
+      shopTime: {
+        shopBusinessStartTime: startTimeValue,
+        shopBusinessEndTime: endTimeValue,
+      },
+    });
+  }, [
+    endTime.hour,
+    endTime.minute,
+    menuboardType,
+    onChange,
+    startTime.hour,
+    startTime.minute,
+    tableOccupationTime,
+  ]);
 
   return (
     <UIStyles.setting.Container>

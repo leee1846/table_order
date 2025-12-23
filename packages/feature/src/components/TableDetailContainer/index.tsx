@@ -140,7 +140,7 @@ export const TableDetailContainer = ({
 
         return {
           id: String(menu.orderDetailMenuSeq),
-          menuSeq: menu.orderDetailMenuSeq,
+          menuSeq: menu.menuSeq,
           name: menu.menuName,
           qty: menu.menuQuantity,
           unitPrice: menu.menuPrice,
@@ -162,7 +162,9 @@ export const TableDetailContainer = ({
       discountRate: data.discountRate || 0,
       numberOfPeople,
       items,
-      totalCount: items.reduce((sum, item) => sum + item.qty, 0),
+      totalCount: items
+        .filter((item) => item.menuSeq !== 0)
+        .reduce((sum, item) => sum + item.qty, 0),
       totalPrice: data.totalAmount || 0,
       orderTime,
     };
@@ -231,16 +233,6 @@ export const TableDetailContainer = ({
     setIsServiceAmountDialogOpen(true);
   };
 
-  const handleServiceAmountApply = (amount: number) => {
-    if (selectedItemForService) {
-      console.log('서비스 금액 적용:', {
-        itemId: selectedItemForService.id,
-        itemName: selectedItemForService.name,
-        serviceAmount: amount,
-      });
-    }
-  };
-
   return (
     <S.TableDetailContainer>
       <S.Layout>
@@ -252,6 +244,8 @@ export const TableDetailContainer = ({
             onSplitPay={() => setIsSplitPaymentDialogOpen(true)}
             onItemClick={handleItemClick}
             useCustomerCount={useCustomerCount}
+            shopCode={shopCode}
+            tableNumber={tableNumber}
           />
         </S.Left>
         <S.Right>
@@ -301,7 +295,14 @@ export const TableDetailContainer = ({
           setIsServiceAmountDialogOpen(false);
           setSelectedItemForService(null);
         }}
-        onApply={handleServiceAmountApply}
+        orderGroupUuid={
+          orderHistoriesResponse?.data?.orderDetailMenuList?.[0]
+            ?.orderGroupUuid as string
+        }
+        orderDetailMenuSeq={
+          selectedItemForService ? Number(selectedItemForService.id) : 0
+        }
+        onApplySuccess={() => refetch()}
       />
       {/* 카드 결제 모달 */}
       <CardPaymentDialog

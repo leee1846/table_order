@@ -17,7 +17,6 @@ export const DraggableCard = styled.div<{
   will-change: transform;
   width: 190px;
   height: 154px;
-  border-radius: 12px;
   overflow: hidden;
   user-select: none;
 

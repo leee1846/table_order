@@ -1,4 +1,4 @@
-import { IApiResponse } from './common';
+import { IApiResponse, TVoidApiResponse } from './common';
 
 // TODO: 타입이 정의되자않아 정의되면 변경 필요
 type TShopType = string;
@@ -112,11 +112,6 @@ export interface IShopSetting {
   useSinglePageMenuboard: boolean;
   menuboardAdminPassword: string | null;
   isAdminLocked: boolean;
-  useDutchPay?: boolean;
-  usePostpaidAfterPrepay?: boolean;
-  useAutoReset?: boolean;
-  useCashPopup?: boolean;
-  useCashPayment?: boolean;
   vanCode: string;
   isSalesTotalVisible: boolean;
   salesPassword: string | null;
@@ -134,6 +129,7 @@ export interface IShopSetting {
   usePrepaymentCashPaymentInducement: boolean;
   shopLocaleMapList: IShopLocaleMap[];
   useTableOverlapping: boolean;
+  vanId: string;
 }
 
 export type TNetworkType = 'AUTO' | 'LAN' | 'WIFI';
@@ -190,3 +186,11 @@ export interface IGetShopPageLogo {
 }
 
 export type TGetShopPageLogoResponse = IApiResponse<IGetShopPageLogo>;
+
+export interface IUpdateShopSettingRequest extends IGetShop {
+  shopSetting: IShopSetting;
+  shopTime: IShopTime;
+  shopNetwork: IShopNetwork;
+}
+
+export type TUpdateShopSettingResponse = TVoidApiResponse;

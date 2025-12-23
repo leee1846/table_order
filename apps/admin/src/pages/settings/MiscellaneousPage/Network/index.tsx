@@ -5,6 +5,7 @@ import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Network/network.style';
 import { NetworkIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import type { MiscellaneousChange } from '../types';
 
 const networkSettings = [
   { value: 'AUTO' as TNetworkType, label: '자동' },
@@ -14,6 +15,7 @@ const networkSettings = [
 
 interface NetworkProps {
   shopNetwork?: IShopNetwork;
+  onChange?: (value: MiscellaneousChange) => void;
 }
 
 const toNetworkSettingOption = (networkType?: TNetworkType): TNetworkType => {
@@ -27,7 +29,7 @@ const toNetworkSettingOption = (networkType?: TNetworkType): TNetworkType => {
   }
 };
 
-export const Network = ({ shopNetwork }: NetworkProps) => {
+export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
   const [networkSetting, setNetworkSetting] = useState<TNetworkType>('AUTO');
   const [ssid, setSsid] = useState('');
   const [ipAddress, setIpAddress] = useState('');
@@ -41,6 +43,21 @@ export const Network = ({ shopNetwork }: NetworkProps) => {
     setSsid(shopNetwork.ssid ?? '');
     setIpAddress(shopNetwork.ipAddress ?? '');
   }, [shopNetwork]);
+
+  useEffect(() => {
+    if (!onChange) {
+      return;
+    }
+
+    onChange({
+      shopNetwork: {
+        shopSeq: shopNetwork?.shopSeq ?? 0,
+        networkType: networkSetting,
+        ssid,
+        ipAddress,
+      },
+    });
+  }, [ipAddress, networkSetting, onChange, shopNetwork?.shopSeq, ssid]);
 
   const handleNetworkSettingChange = (value: TNetworkType) => {
     setNetworkSetting(value);

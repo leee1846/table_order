@@ -5,14 +5,16 @@ import * as UIStyles from '@repo/ui/styles';
 import { Dropdown } from '@repo/ui/components';
 import { ConnectionIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import type { MiscellaneousChange } from '../types';
 
 interface IntergrationProps {
   shopSetting?: IShopSetting;
+  onChange?: (value: MiscellaneousChange) => void;
 }
 
-const posOptions = [{ value: 'OKPOS', label: 'OKPOS' }];
+const posOptions = [{ value: 'OKPOS', label: '오케이포스' }];
 
-export const Intergration = ({ shopSetting }: IntergrationProps) => {
+export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
   const [shopPosCode, setShopPosCode] = useState('');
 
   useEffect(() => {
@@ -22,6 +24,19 @@ export const Intergration = ({ shopSetting }: IntergrationProps) => {
 
     setShopPosCode(shopSetting.shopPosCode ?? '');
   }, [shopSetting]);
+
+  useEffect(() => {
+    if (!onChange) {
+      return;
+    }
+
+    onChange({
+      shopSetting: {
+        shopSeq: shopSetting?.shopSeq,
+        shopPosCode,
+      },
+    });
+  }, [onChange, shopPosCode, shopSetting?.shopSeq]);
 
   return (
     <SectionWrapper
@@ -40,11 +55,7 @@ export const Intergration = ({ shopSetting }: IntergrationProps) => {
           options={posOptions}
           value={shopPosCode}
           onChange={(value) => {
-            if (typeof value === 'string') {
-              setShopPosCode(value);
-            } else {
-              setShopPosCode(String(value));
-            }
+            setShopPosCode(String(value));
           }}
         />
       </UIStyles.setting.ContentLayout>

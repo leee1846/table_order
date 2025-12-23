@@ -1,4 +1,4 @@
-﻿import type { IApiResponse } from './common';
+﻿import type { IApiResponse, TVoidApiResponse } from './common';
 import { IMenu } from './menu';
 
 // ============================================================================
@@ -175,3 +175,11 @@ export interface IUpdateCategoryHiddenParams {
   categorySeq: number;
   isHidden: boolean;
 }
+
+// ============================================================================
+// PUT /category/first-order
+// ============================================================================
+
+export type TUpdateCategoryFirstOrderRequest = ICategory[];
+
+export type TUpdateCategoryFirstOrderResponse = TVoidApiResponse;

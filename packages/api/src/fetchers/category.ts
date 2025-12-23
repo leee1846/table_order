@@ -10,6 +10,8 @@ import type {
   TGetCategoryListResponse,
   IGetShopCategoriesWithMenusParams,
   TGetShopCategoriesWithMenusResponse,
+  TUpdateCategoryFirstOrderRequest,
+  TUpdateCategoryFirstOrderResponse,
 } from '../types/category';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -128,6 +130,23 @@ export const getCategoriesWithMenus = async (
     params: {
       tableNumber: params.tableNumber,
     },
+  });
+
+  return response.data;
+};
+
+/**
+ * 첫 주문 필수 카테고리를 업데이트합니다.
+ * PUT /category/first-order
+ */
+export const updateCategoryFirstOrder = async (
+  params: TUpdateCategoryFirstOrderRequest
+): Promise<TUpdateCategoryFirstOrderResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TUpdateCategoryFirstOrderResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.CATEGORY.FIRST_ORDER,
+    data: params,
   });
 
   return response.data;

@@ -5,6 +5,8 @@ import type {
   TGetShopResponse,
   TGetShopPageSettingResponse,
   TGetShopPageLogoResponse,
+  IUpdateShopSettingRequest,
+  TUpdateShopSettingResponse,
 } from '../types/shop';
 
 export const getShops = async (): Promise<TGetShopsResponse> => {
@@ -48,6 +50,19 @@ export const getShopPageLogo = async (
   const response = await axiosInstance<TGetShopPageLogoResponse>({
     method: 'GET',
     url: ENDPOINTS.SHOP.PAGE_LOGO(shopCode),
+  });
+
+  return response.data;
+};
+
+export const updateShopSetting = async (
+  params: IUpdateShopSettingRequest
+): Promise<TUpdateShopSettingResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TUpdateShopSettingResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.SHOP.SETTING,
+    data: params,
   });
 
   return response.data;
