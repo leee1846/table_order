@@ -46,6 +46,7 @@ export const TablesPage = () => {
     tableGroupsData?.find(
       (tableGroup) => tableGroup.tableGroupSeq === selectedTableGroupSeq
     )?.tableList ?? [];
+  //TODO: batteryLevel 수정
   const tablesData = currentTables.map((table) => ({
     id: table.tableSeq,
     tableNumber: table.tableNumber,
