@@ -23,6 +23,7 @@ import { useFirstOrderRequiredCheck } from '@/pages/MainPage/hooks/useFirstOrder
 import { useBreakTimeCartClear } from '@/pages/MainPage/hooks/useBreakTimeCartClear';
 import { useCategoryVisibilityManager } from '@/hooks/useCategoryVisibilityManager';
 import { useShopPageSettingData } from '@/hooks/useShopPageSettingData';
+import { useDeviceListData } from '@/hooks/useDeviceListData';
 
 export const MainPage = () => {
   // ========================================
@@ -45,6 +46,8 @@ export const MainPage = () => {
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
   /** 상점 페이지 설정 데이터 로드 */
   useShopPageSettingData();
+  /** 기기정보 리스트 데이터 로드 */
+  useDeviceListData();
 
   // ========================================
   // 비즈니스 로직 훅

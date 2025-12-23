@@ -27,6 +27,8 @@ export const STORAGE_KEYS = {
   SHOP_PAGE_SETTING: 'shop-page-setting',
   /** 상점 페이지 로고 data 키 */
   SHOP_PAGE_LOGO: 'shop-page-logo',
+  /** 디바이스 리스트 data 키 */
+  DEVICE_LIST: 'device-list',
 } as const;
 
 export const TIMER_KEYS = {

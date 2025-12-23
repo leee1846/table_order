@@ -24,3 +24,9 @@ export type TGetDeviceDetailResponse = IApiResponse<IDevice>;
 export interface IPostDeviceDetailRequest extends IDeviceBase {
   shopCode: string;
 }
+
+export interface IGetDeviceListItem extends IDevice {
+  updateDate: string;
+}
+
+export type TGetDeviceListResponse = IApiResponse<IGetDeviceListItem[]>;

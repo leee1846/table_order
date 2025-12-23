@@ -9,6 +9,7 @@ import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
+import { useDeviceListData } from '@/hooks/useDeviceListData';
 
 /**
  * SSE 연결 및 메시지 처리를 담당하는 훅
@@ -44,6 +45,9 @@ export const useSSEHandler = () => {
     skipInitialRequest: true,
   });
   const { refresh: refreshTableGroupData } = useTableGroupData({
+    skipInitialRequest: true,
+  });
+  const { refresh: refreshDeviceListData } = useDeviceListData({
     skipInitialRequest: true,
   });
 
@@ -98,6 +102,12 @@ export const useSSEHandler = () => {
           refreshTableGroupData();
         }
         break;
+      case 'DEVICE':
+        {
+          // TODO: 테스트 필요
+          refreshDeviceListData();
+        }
+        break;
       case 'PICKUP':
         break;
       default:
@@ -112,5 +122,6 @@ export const useSSEHandler = () => {
     refreshCategoriesData,
     refreshShopDetailData,
     refreshTableGroupData,
+    refreshDeviceListData,
   ]);
 };

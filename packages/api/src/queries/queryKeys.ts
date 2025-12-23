@@ -72,6 +72,9 @@ export const queryKeys = {
     /** 디바이스 상세 조회 */
     detail: (shopCode: string, androidId: string) =>
       [...queryKeys.device.all, 'detail', shopCode, androidId] as const,
+    /** 디바이스 리스트 조회 */
+    list: (shopCode: string) =>
+      [...queryKeys.device.all, 'list', shopCode] as const,
   },
 
   notice: {

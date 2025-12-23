@@ -3,6 +3,7 @@ import { ENDPOINTS } from '../cores/endpoints';
 import {
   TGetDeviceDetailResponse,
   IPostDeviceDetailRequest,
+  TGetDeviceListResponse,
 } from '../types/device';
 import { TVoidApiResponse } from '../types/common';
 
@@ -34,6 +35,20 @@ export const postDeviceDetail = async (
     method: 'POST',
     url: ENDPOINTS.DEVICE.SHOP(shopCode),
     data: rest,
+  });
+
+  return response.data;
+};
+
+export const getDeviceList = async (
+  shopCode: string,
+  ignoreGlobalErrors?: number[]
+): Promise<TGetDeviceListResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetDeviceListResponse>({
+    method: 'GET',
+    url: ENDPOINTS.DEVICE.LIST(shopCode),
+    ignoreGlobalErrors,
   });
 
   return response.data;

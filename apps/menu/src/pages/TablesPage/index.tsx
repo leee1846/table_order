@@ -19,6 +19,7 @@ import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { openConfirmDialog, openDualActionDialog } from '@repo/feature/utils';
 import { usePostDeviceDetail } from '@repo/api/queries';
+import { useDeviceListData } from '@/hooks/useDeviceListData';
 
 export const TablesPage = () => {
   const { t } = useAdminTranslation();
@@ -29,6 +30,8 @@ export const TablesPage = () => {
   const { data: shopDetailData } = useShopDetailData();
   /** 테이블 그룹 데이터 로드 */
   const { data: tableGroupsData } = useTableGroupData();
+  /** 기기정보 리스트 데이터 로드 */
+  const { data: deviceListData } = useDeviceListData();
 
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
     number | null
@@ -46,12 +49,26 @@ export const TablesPage = () => {
     tableGroupsData?.find(
       (tableGroup) => tableGroup.tableGroupSeq === selectedTableGroupSeq
     )?.tableList ?? [];
-  //TODO: batteryLevel 수정
-  const tablesData = currentTables.map((table) => ({
-    id: table.tableSeq,
-    tableNumber: table.tableNumber,
-    batteryLevel: 100,
-  }));
+
+  const tablesData = currentTables.map((table) => {
+    const device = deviceListData?.find(
+      (device) => device.tableNumber === table.tableNumber
+    );
+
+    if (!device) {
+      return {
+        id: table.tableSeq,
+        tableNumber: table.tableNumber,
+      };
+    }
+
+    return {
+      ...device,
+      id: table.tableSeq,
+      tableNumber: table.tableNumber,
+      batteryLevel: device?.battery ?? 100,
+    };
+  });
 
   useDeviceData();
   const { refresh: refreshCategoriesData } = useCategoriesData({
@@ -146,7 +163,7 @@ export const TablesPage = () => {
   return (
     <S.Container>
       <TableGridContainer
-        tables={tablesData}
+        tables={tablesData as TableData[]}
         useTranslation={useAdminTranslation}
         onTableClick={handleTableClick}
       />
