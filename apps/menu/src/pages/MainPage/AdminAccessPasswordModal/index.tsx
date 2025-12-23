@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import { storage } from '@repo/util/function';
+import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { usePostLoginMenuboardAdmin } from '@repo/api/queries';
 import { useShopData } from '@/hooks/useShopData';
@@ -60,7 +60,7 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
         shopCode,
         pw: nextPassword,
       }).then(() => {
-        storage.session.save(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED, true);
+        AppStorage.saveData(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED, true);
         navigate(ROUTES.TABLES.generate());
       });
     }

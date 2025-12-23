@@ -1,4 +1,4 @@
-import { storage } from '@repo/util/function';
+import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { create } from '@repo/feature/zustand';
 
@@ -22,25 +22,30 @@ export interface ICustomerCountStore {
 /**
  * 객수 상태 저장 스토어
  */
-export const useCustomerCountStore = create<ICustomerCountStore>((set) => ({
-  data:
-    storage.session.load<{
-      adultCount: number;
-      childCount: number;
-    }>(STORAGE_KEYS.CUSTOMER_COUNT) ?? null,
+export const useCustomerCountStore = create<ICustomerCountStore>((set) => {
+  // 초기 데이터 로드 (비동기)
+  AppStorage.loadData<{ adultCount: number; childCount: number }>(
+    STORAGE_KEYS.CUSTOMER_COUNT
+  ).then((data) => {
+    if (data) {
+      set({ data });
+    }
+  });
 
-  setData: ({ adultCount, childCount }) => {
-    const resultData = {
-      adultCount,
-      childCount,
-    };
+  return {
+    data: null,
+    setData: ({ adultCount, childCount }) => {
+      const resultData = {
+        adultCount,
+        childCount,
+      };
 
-    storage.session.save(STORAGE_KEYS.CUSTOMER_COUNT, resultData);
-    set({ data: resultData });
-  },
-
-  clearData: () => {
-    storage.session.remove(STORAGE_KEYS.CUSTOMER_COUNT);
-    set({ data: null });
-  },
-}));
+      AppStorage.saveData(STORAGE_KEYS.CUSTOMER_COUNT, resultData);
+      set({ data: resultData });
+    },
+    clearData: () => {
+      AppStorage.removeData(STORAGE_KEYS.CUSTOMER_COUNT);
+      set({ data: null });
+    },
+  };
+});

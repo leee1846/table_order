@@ -15,7 +15,7 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import { storage } from '@repo/util/function';
+import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { openConfirmDialog, openDualActionDialog } from '@repo/feature/utils';
 import { usePostDeviceDetail } from '@repo/api/queries';
@@ -101,7 +101,7 @@ export const TablesPage = () => {
     });
     await refreshDeviceData();
     await refreshMenuInitialData();
-    storage.session.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
+    AppStorage.removeData(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
     navigate(ROUTES.ROOT.generate());
   };
 

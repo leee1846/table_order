@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { bestOnIcon } from '@repo/ui/icons';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import { storage } from '@repo/util/function';
+import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
 
 export const SidebarLayout = () => {
@@ -19,7 +19,7 @@ export const SidebarLayout = () => {
   const { data: deviceData } = useDeviceData({ skipInitialRequest: true });
   const onClickHomeButton = () => {
     if (deviceData?.tableNumber) {
-      storage.session.remove(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
+      AppStorage.removeData(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
       navigate(ROUTES.ROOT.generate());
       return;
     }

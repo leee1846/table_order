@@ -1,7 +1,7 @@
 import { create } from '@repo/feature/zustand';
 import type { ICategoryWithMenus } from '@repo/api/types';
 import { STORAGE_KEYS } from '@/constants/keys';
-import { storage } from '@repo/util/function';
+import { AppStorage } from '@repo/util/app';
 
 /**
  * 카테고리 요일/시간 기반의 노출여부 상태 관리
@@ -51,17 +51,12 @@ const computeVisibleCategories = (
   });
 };
 
-const initialCategories =
-  storage.session.load<ICategoryWithMenus[]>(STORAGE_KEYS.CATEGORIES) ?? null;
 const initialVisibilityMap = {};
 
 const initialData = {
-  categories: initialCategories,
+  categories: null as ICategoryWithMenus[] | null,
   visibilityMap: initialVisibilityMap,
-  visibleCategories: computeVisibleCategories(
-    initialCategories,
-    initialVisibilityMap
-  ),
+  visibleCategories: [] as ICategoryWithMenus[],
 };
 
 /**
@@ -69,49 +64,70 @@ const initialData = {
  * - API 응답을 받아 스토리지에 저장
  * - 판매 가능 여부에 따른 visibility 관리
  */
-export const useCategoryStore = create<ICategoryStore>((set) => ({
-  // 초기 상태
-  data: initialData,
+export const useCategoryStore = create<ICategoryStore>((set) => {
+  // 초기 데이터 로드 (비동기)
+  AppStorage.loadData<ICategoryWithMenus[]>(STORAGE_KEYS.CATEGORIES).then(
+    (data) => {
+      if (data) {
+        const categories = data;
+        set({
+          data: {
+            categories,
+            visibilityMap: initialVisibilityMap,
+            visibleCategories: computeVisibleCategories(
+              categories,
+              initialVisibilityMap
+            ),
+          },
+        });
+      }
+    }
+  );
 
-  // 데이터 설정 (스토리지에도 저장)
-  setCategoriesAsync: ({
-    categories,
-  }: {
-    categories: ICategoryWithMenus[];
-  }) => {
-    return new Promise((resolve) => {
-      storage.session.save(STORAGE_KEYS.CATEGORIES, categories);
+  return {
+    // 초기 상태
+    data: initialData,
+
+    // 데이터 설정 (스토리지에도 저장)
+    setCategoriesAsync: ({
+      categories,
+    }: {
+      categories: ICategoryWithMenus[];
+    }) => {
+      return new Promise((resolve) => {
+        AppStorage.saveData(STORAGE_KEYS.CATEGORIES, categories);
+        set((state) => ({
+          data: {
+            ...state.data,
+            categories,
+            visibleCategories: computeVisibleCategories(
+              categories,
+              state.data.visibilityMap
+            ),
+          },
+        }));
+        resolve(true);
+      });
+    },
+
+    // 데이터 초기화 (스토리지에서도 삭제)
+    clearData: () => {
+      AppStorage.removeData(STORAGE_KEYS.CATEGORIES);
+      set({ data: initialData });
+    },
+
+    // 모든 카테고리 visibility 업데이트
+    updateAllVisibility: (visibilityMap: ICategoryVisibilityMap) => {
       set((state) => ({
         data: {
           ...state.data,
-          categories,
+          visibilityMap: { ...visibilityMap },
           visibleCategories: computeVisibleCategories(
-            categories,
-            state.data.visibilityMap
+            state.data.categories,
+            visibilityMap
           ),
         },
       }));
-      resolve(true);
-    });
-  },
-
-  // 데이터 초기화 (스토리지에서도 삭제)
-  clearData: () => {
-    storage.session.remove(STORAGE_KEYS.CATEGORIES);
-    set({ data: initialData });
-  },
-
-  // 모든 카테고리 visibility 업데이트
-  updateAllVisibility: (visibilityMap: ICategoryVisibilityMap) => {
-    set((state) => ({
-      data: {
-        ...state.data,
-        visibilityMap: { ...visibilityMap },
-        visibleCategories: computeVisibleCategories(
-          state.data.categories,
-          visibilityMap
-        ),
-      },
-    }));
-  },
-}));
+    },
+  };
+});

@@ -5,6 +5,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
+    "./app": "./src/app/index.ts",
     "./array": "./src/array/index.ts",
     "./calculation": "./src/calculation/index.ts",
     "./date": "./src/date/index.ts",
@@ -30,6 +31,7 @@
   },
   "prettier": "@repo/prettier-config",
   "dependencies": {
+    "@capacitor/core": "^8.0.0",
     "dayjs": "^1.11.19",
     "jwt-decode": "^4.0.0"
   }

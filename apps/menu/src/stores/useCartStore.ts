@@ -1,6 +1,6 @@
 import { create } from '@repo/feature/zustand';
 import { STORAGE_KEYS } from '@/constants/keys';
-import { storage } from '@repo/util/function';
+import { AppStorage } from '@repo/util/app';
 import type { ICartMenu } from '@/types/cart';
 
 export interface ICartOptions {
@@ -43,126 +43,135 @@ const initialData: ICart = {
 /**
  * 장바구니 상태 저장 스토어
  */
-export const useCartStore = create<ICartStore>((set, get) => ({
-  data: storage.session.load<ICart>(STORAGE_KEYS.CART) ?? initialData,
-
-  setCartOptions: (options: ICartOptions) => {
-    const newData = {
-      ...get().data,
-      ...options,
-    };
-    storage.session.save(STORAGE_KEYS.CART, newData);
-    set({ data: newData });
-  },
-
-  areOptionsEqual: (
-    options1: ICartMenu['selectedOptions'],
-    options2: ICartMenu['selectedOptions']
-  ): boolean => {
-    if (options1.length !== options2.length) {
-      return false;
+export const useCartStore = create<ICartStore>((set, get) => {
+  // 초기 데이터 로드 (비동기)
+  AppStorage.loadData<ICart>(STORAGE_KEYS.CART).then((data) => {
+    if (data) {
+      set({ data });
     }
+  });
 
-    // 옵션을 정렬하여 비교 (optionSeq 기준)
-    const sorted1 = [...options1].sort((a, b) => a.optionSeq - b.optionSeq);
-    const sorted2 = [...options2].sort((a, b) => a.optionSeq - b.optionSeq);
+  return {
+    data: initialData,
 
-    return sorted1.every((opt1, index) => {
-      const opt2 = sorted2[index];
-      return (
-        opt2 !== undefined &&
-        opt1.optionSeq === opt2.optionSeq &&
-        opt1.quantity === opt2.quantity
+    setCartOptions: (options: ICartOptions) => {
+      const newData = {
+        ...get().data,
+        ...options,
+      };
+      AppStorage.saveData(STORAGE_KEYS.CART, newData);
+      set({ data: newData });
+    },
+
+    areOptionsEqual: (
+      options1: ICartMenu['selectedOptions'],
+      options2: ICartMenu['selectedOptions']
+    ): boolean => {
+      if (options1.length !== options2.length) {
+        return false;
+      }
+
+      // 옵션을 정렬하여 비교 (optionSeq 기준)
+      const sorted1 = [...options1].sort((a, b) => a.optionSeq - b.optionSeq);
+      const sorted2 = [...options2].sort((a, b) => a.optionSeq - b.optionSeq);
+
+      return sorted1.every((opt1, index) => {
+        const opt2 = sorted2[index];
+        return (
+          opt2 !== undefined &&
+          opt1.optionSeq === opt2.optionSeq &&
+          opt1.quantity === opt2.quantity
+        );
+      });
+    },
+
+    // 장바구니에 아이템 추가
+    addToCart: (item: ICartMenu) => {
+      const currentMenus = get().data.menus;
+
+      // 동일한 menuSeq와 동일한 옵션 목록을 가진 항목 찾기
+      const existingItemIndex = currentMenus.findIndex(
+        (menu) =>
+          menu.menuSeq === item.menuSeq &&
+          get().areOptionsEqual(menu.selectedOptions, item.selectedOptions)
       );
-    });
-  },
 
-  // 장바구니에 아이템 추가
-  addToCart: (item: ICartMenu) => {
-    const currentMenus = get().data.menus;
+      let newMenus: ICartMenu[];
 
-    // 동일한 menuSeq와 동일한 옵션 목록을 가진 항목 찾기
-    const existingItemIndex = currentMenus.findIndex(
-      (menu) =>
-        menu.menuSeq === item.menuSeq &&
-        get().areOptionsEqual(menu.selectedOptions, item.selectedOptions)
-    );
+      if (existingItemIndex !== -1) {
+        // 동일한 메뉴가 있는 경우: 수량만 증가
+        newMenus = currentMenus.map((menu, index) =>
+          index === existingItemIndex
+            ? { ...menu, quantity: menu.quantity + item.quantity }
+            : menu
+        );
+      } else {
+        // 동일한 메뉴가 없는 경우: 새로운 항목 추가
+        newMenus = [...currentMenus, item];
+      }
 
-    let newMenus: ICartMenu[];
+      const newItems = {
+        ...get().data,
+        menus: newMenus,
+      };
+      AppStorage.saveData(STORAGE_KEYS.CART, newItems);
+      set({ data: newItems });
+    },
 
-    if (existingItemIndex !== -1) {
-      // 동일한 메뉴가 있는 경우: 수량만 증가
-      newMenus = currentMenus.map((menu, index) =>
-        index === existingItemIndex
-          ? { ...menu, quantity: menu.quantity + item.quantity }
-          : menu
+    // 장바구니 아이템 수량 업데이트
+    updateCartItemQuantity: (index: number, newQuantity: number) => {
+      const menus = get().data.menus;
+      if (index < 0 || index >= menus.length) {
+        return;
+      }
+      const newMenus = menus.map((item, i) =>
+        i === index ? { ...item, quantity: newQuantity } : item
       );
-    } else {
-      // 동일한 메뉴가 없는 경우: 새로운 항목 추가
-      newMenus = [...currentMenus, item];
-    }
+      const newData = {
+        ...get().data,
+        menus: newMenus,
+      };
+      AppStorage.saveData(STORAGE_KEYS.CART, newData);
+      set({ data: newData });
+    },
 
-    const newItems = {
-      ...get().data,
-      menus: newMenus,
-    };
-    storage.session.save(STORAGE_KEYS.CART, newItems);
-    set({ data: newItems });
-  },
+    // 장바구니 아이템 전체 업데이트 (옵션과 수량 포함)
+    updateCartItem: (index: number, item: ICartMenu) => {
+      const menus = get().data.menus;
+      if (index < 0 || index >= menus.length) {
+        return;
+      }
+      const newMenus = menus.map((menu, i) => (i === index ? item : menu));
+      const newData = {
+        ...get().data,
+        menus: newMenus,
+      };
+      AppStorage.saveData(STORAGE_KEYS.CART, newData);
+      set({ data: newData });
+    },
 
-  // 장바구니 아이템 수량 업데이트
-  updateCartItemQuantity: (index: number, newQuantity: number) => {
-    const menus = get().data.menus;
-    if (index < 0 || index >= menus.length) {
-      return;
-    }
-    const newMenus = menus.map((item, i) =>
-      i === index ? { ...item, quantity: newQuantity } : item
-    );
-    const newData = {
-      ...get().data,
-      menus: newMenus,
-    };
-    storage.session.save(STORAGE_KEYS.CART, newData);
-    set({ data: newData });
-  },
+    // 장바구니에서 아이템 제거
+    removeFromCart: (index: number) => {
+      const menus = get().data.menus;
+      if (index < 0 || index >= menus.length) {
+        return;
+      }
 
-  // 장바구니 아이템 전체 업데이트 (옵션과 수량 포함)
-  updateCartItem: (index: number, item: ICartMenu) => {
-    const menus = get().data.menus;
-    if (index < 0 || index >= menus.length) {
-      return;
-    }
-    const newMenus = menus.map((menu, i) => (i === index ? item : menu));
-    const newData = {
-      ...get().data,
-      menus: newMenus,
-    };
-    storage.session.save(STORAGE_KEYS.CART, newData);
-    set({ data: newData });
-  },
+      // 해당 인덱스의 메뉴만 삭제
+      const newMenus = menus.filter((_, i) => i !== index);
 
-  // 장바구니에서 아이템 제거
-  removeFromCart: (index: number) => {
-    const menus = get().data.menus;
-    if (index < 0 || index >= menus.length) {
-      return;
-    }
+      const newData = {
+        ...get().data,
+        menus: newMenus,
+      };
+      AppStorage.saveData(STORAGE_KEYS.CART, newData);
+      set({ data: newData });
+    },
 
-    // 해당 인덱스의 메뉴만 삭제
-    const newMenus = menus.filter((_, i) => i !== index);
-
-    const newData = {
-      ...get().data,
-      menus: newMenus,
-    };
-    storage.session.save(STORAGE_KEYS.CART, newData);
-    set({ data: newData });
-  },
-
-  // 장바구니 비우기
-  clearCart: () => {
-    storage.session.save(STORAGE_KEYS.CART, { ...initialData, menus: [] });
-    set({ data: { ...initialData, menus: [] } });
-  },
-}));
+    // 장바구니 비우기
+    clearCart: () => {
+      AppStorage.saveData(STORAGE_KEYS.CART, { ...initialData, menus: [] });
+      set({ data: { ...initialData, menus: [] } });
+    },
+  };
+});

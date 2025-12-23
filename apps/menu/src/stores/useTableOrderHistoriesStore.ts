@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '@/constants/keys';
-import { storage } from '@repo/util/function';
+import { AppStorage } from '@repo/util/app';
 import type { IOrderHistory } from '@repo/api/types';
 import { create } from '@repo/feature/zustand';
 
@@ -27,21 +27,29 @@ export interface ITableOrderHistoriesStore {
  * - API 응답을 받아 스토리지에 저장
  */
 export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
-  (set) => ({
-    data:
-      storage.session.load<ITableOrderHistoriesData>(
-        STORAGE_KEYS.TABLE_ORDER_HISTORIES
-      ) ?? null,
-    setDataAsync: (data: ITableOrderHistoriesData) => {
-      return new Promise((resolve) => {
-        storage.session.save(STORAGE_KEYS.TABLE_ORDER_HISTORIES, data);
+  (set) => {
+    // 초기 데이터 로드 (비동기)
+    AppStorage.loadData<ITableOrderHistoriesData>(
+      STORAGE_KEYS.TABLE_ORDER_HISTORIES
+    ).then((data) => {
+      if (data) {
         set({ data });
-        resolve(true);
-      });
-    },
-    clearData: () => {
-      storage.session.remove(STORAGE_KEYS.TABLE_ORDER_HISTORIES);
-      set({ data: null });
-    },
-  })
+      }
+    });
+
+    return {
+      data: null,
+      setDataAsync: (data: ITableOrderHistoriesData) => {
+        return new Promise((resolve) => {
+          AppStorage.saveData(STORAGE_KEYS.TABLE_ORDER_HISTORIES, data);
+          set({ data });
+          resolve(true);
+        });
+      },
+      clearData: () => {
+        AppStorage.removeData(STORAGE_KEYS.TABLE_ORDER_HISTORIES);
+        set({ data: null });
+      },
+    };
+  }
 );

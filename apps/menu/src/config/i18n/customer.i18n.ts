@@ -6,13 +6,13 @@ import {
 import koTranslation from '@/locales/ko/translation.json';
 import enTranslation from '@/locales/en/translation.json';
 import { STORAGE_KEYS } from '@/constants/keys';
-import { storage } from '@repo/util/function';
+import { AppStorage } from '@repo/util/app';
 import type { ILanguageData } from '@/stores/useCustomerLanguageStore';
 import type { TShopLanguage } from '@repo/api/types';
 
-const getInitialLanguage = (): TShopLanguage => {
+const getInitialLanguage = async (): Promise<TShopLanguage> => {
   try {
-    const stored = storage.session.load<ILanguageData>(
+    const stored = await AppStorage.loadData<ILanguageData>(
       STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE
     );
     if (stored && stored.currentLanguage) {
@@ -49,14 +49,17 @@ const resources: Record<TShopLanguage, { customer: Record<string, string> }> = {
 // 별도 인스턴스 생성 (admin과 동일한 방식으로 분리)
 const customerI18n = i18n.createInstance();
 
-customerI18n.use(initReactI18next).init({
-  resources,
-  lng: getInitialLanguage(),
-  fallbackLng: 'KO',
-  defaultNS: 'customer',
-  interpolation: {
-    escapeValue: false,
-  },
+// 비동기로 언어를 로드한 후 i18n 초기화
+getInitialLanguage().then((lng) => {
+  customerI18n.use(initReactI18next).init({
+    resources,
+    lng,
+    fallbackLng: 'KO',
+    defaultNS: 'customer',
+    interpolation: {
+      escapeValue: false,
+    },
+  });
 });
 
 export const useCustomerTranslation = () => {

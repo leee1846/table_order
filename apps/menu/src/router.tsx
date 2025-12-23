@@ -8,7 +8,7 @@ import {
 import { ROUTES } from '@/constants/routes';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { getAccessToken } from '@repo/api/auth';
-import { storage } from '@repo/util/function';
+import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from './constants/keys';
 import App from './App';
 
@@ -52,10 +52,11 @@ const authCheckerLoader = () => {
 /**
  * 관리자 페이지 접근을 위한 비밀번호 인증 상태 확인 loader
  */
-const adminVerificationCheckLoader = () => {
-  const isVerified =
-    storage.session.load<boolean>(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED) ??
-    false;
+const adminVerificationCheckLoader = async () => {
+  const data = await AppStorage.loadData<boolean>(
+    STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED
+  );
+  const isVerified = data ?? false;
   if (!isVerified) {
     window.location.replace(ROUTES.ROOT.generate());
     return null;

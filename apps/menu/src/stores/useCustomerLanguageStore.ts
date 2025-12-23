@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '@/constants/keys';
-import { storage } from '@repo/util/function';
+import { AppStorage } from '@repo/util/app';
 import { create } from '@repo/feature/zustand';
 import customerI18n from '@/config/i18n/customer.i18n';
 import type { TShopLanguage } from '@repo/api/types';
@@ -19,33 +19,41 @@ export interface ICustomerLanguageStore {
  * 선택한 언어 상태 저장 스토어
  */
 export const useCustomerLanguageStore = create<ICustomerLanguageStore>(
-  (set, get) => ({
-    data: storage.session.load<ILanguageData>(
-      STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE
-    ) ?? {
+  (set, get) => {
+    const defaultData = {
       isSelected: false,
-      currentLanguage: 'KO',
-    },
-    setData: (data: ILanguageData) => {
-      const prevData = get().data;
-      const newData = {
-        isSelected: data.isSelected ?? prevData.isSelected,
-        currentLanguage: data.currentLanguage,
-      };
+      currentLanguage: 'KO' as TShopLanguage,
+    };
 
-      storage.session.save(STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE, newData);
-      set({ data: newData });
-      customerI18n.changeLanguage(newData.currentLanguage);
-    },
-    clearData: () => {
-      storage.session.remove(STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE);
-      set({
-        data: {
-          isSelected: false,
-          currentLanguage: 'KO',
-        },
-      });
-      customerI18n.changeLanguage('KO');
-    },
-  })
+    // 초기 데이터 로드 (비동기)
+    AppStorage.loadData<ILanguageData>(
+      STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE
+    ).then((data) => {
+      if (data) {
+        set({ data });
+      }
+    });
+
+    return {
+      data: defaultData,
+      setData: (data: ILanguageData) => {
+        const prevData = get().data;
+        const newData = {
+          isSelected: data.isSelected ?? prevData.isSelected,
+          currentLanguage: data.currentLanguage,
+        };
+
+        AppStorage.saveData(STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE, newData);
+        set({ data: newData });
+        customerI18n.changeLanguage(newData.currentLanguage);
+      },
+      clearData: () => {
+        AppStorage.removeData(STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE);
+        set({
+          data: defaultData,
+        });
+        customerI18n.changeLanguage('KO');
+      },
+    };
+  }
 );
