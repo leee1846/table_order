@@ -52,7 +52,6 @@ export interface IShopTimeBreakTime {
   breakStartTime: string;
   /** 브레이크타임 종료 시간(HHMM) */
   breakEndTime: string;
-  isActive: boolean;
 }
 
 export interface IShopTime {

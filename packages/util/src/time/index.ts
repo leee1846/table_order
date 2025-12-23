@@ -328,3 +328,115 @@ export const getTimeUntilTimeString = (
 
   return diff;
 };
+
+/**
+ * 시간 옵션을 생성합니다 (00:00 ~ 23:59, 30분 단위)
+ *
+ * @returns 시간 옵션 배열 (value: "HHMM", label: "HH시 MM분")
+ *
+ * @example
+ * ```ts
+ * generateTimeOptions() // [{ value: "0000", label: "00시 00분" }, { value: "0030", label: "00시 30분" }, ...]
+ * ```
+ */
+export interface TimeOption {
+  value: string;
+  label: string;
+}
+
+export const generateTimeOptions = (): TimeOption[] =>
+  Array.from({ length: 24 }, (_, hour) =>
+    [0, 30].map((minute) => {
+      const hourStr = String(hour).padStart(2, '0');
+      const minuteStr = String(minute).padStart(2, '0');
+      return {
+        value: `${hourStr}${minuteStr}`,
+        label: `${hourStr}시 ${minuteStr}분`,
+      };
+    })
+  ).flat();
+
+/**
+ * 시간 문자열(HHMM 형식)을 분 단위로 변환합니다.
+ *
+ * @param time - 시간 문자열 (예: "1230")
+ * @returns 분 단위 숫자 (예: 750), 유효하지 않으면 null
+ *
+ * @example
+ * ```ts
+ * toMinutes('1230') // 750 (12시간 30분 = 750분)
+ * toMinutes('0900') // 540 (9시간 = 540분)
+ * toMinutes('123') // null
+ * toMinutes(null) // null
+ * ```
+ */
+export const toMinutes = (time?: string | null): number | null => {
+  if (!time) {
+    return null;
+  }
+
+  const digits = time.replace(/\D/g, '');
+  if (digits.length !== 4) {
+    return null;
+  }
+
+  const hour = Number(digits.slice(0, 2));
+  const minute = Number(digits.slice(2));
+  if (Number.isNaN(hour) || Number.isNaN(minute)) {
+    return null;
+  }
+
+  return hour * 60 + minute;
+};
+
+/**
+ * 분 단위 숫자를 시간 문자열(HHMM 형식)로 변환합니다.
+ * 음수나 24시간을 초과하는 경우 정규화합니다.
+ *
+ * @param minutes - 분 단위 숫자
+ * @returns 시간 문자열 (예: "1230")
+ *
+ * @example
+ * ```ts
+ * formatTime(750) // "1230" (12시간 30분)
+ * formatTime(540) // "0900" (9시간)
+ * formatTime(-30) // "2330" (정규화됨)
+ * formatTime(1500) // "0100" (정규화됨)
+ * ```
+ */
+export const formatTime = (minutes: number): string => {
+  const normalized = ((minutes % 1440) + 1440) % 1440;
+  const hour = Math.floor(normalized / 60);
+  const minute = normalized % 60;
+
+  return `${hour.toString().padStart(2, '0')}${minute
+    .toString()
+    .padStart(2, '0')}`;
+};
+
+/**
+ * 기준 시간에서 지정된 분을 뺀 시간을 계산합니다.
+ *
+ * @param baseTime - 기준 시간 문자열 (HHMM 형식)
+ * @param minutes - 뺄 분 수
+ * @returns 계산된 시간 문자열 (HHMM 형식), 유효하지 않으면 undefined
+ *
+ * @example
+ * ```ts
+ * calculateTimeBefore('1200', 30) // "1130" (12:00에서 30분 전)
+ * calculateTimeBefore('0100', 60) // "0000" (1:00에서 60분 전)
+ * calculateTimeBefore(null, 30) // undefined
+ * ```
+ */
+export const calculateTimeBefore = (
+  baseTime?: string | null,
+  minutes?: number | null
+): string | undefined => {
+  const baseMinutes = toMinutes(baseTime);
+
+  if (baseMinutes === null || minutes === undefined || minutes === null) {
+    return undefined;
+  }
+
+  return formatTime(baseMinutes - minutes);
+};

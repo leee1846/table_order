@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ICategory, IShopSetting, IShopTime } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import {
@@ -7,11 +7,6 @@ import {
   Dropdown,
   ToggleButton,
 } from '@repo/ui/components';
-
-interface TimeOption {
-  value: string;
-  label: string;
-}
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/MenuAppFeature/menuAppFeature.style';
 import { useTimeInput } from '@/hooks/useTimeInput';
@@ -20,6 +15,7 @@ import { DeleteIcon, MenuBookIcon } from '@repo/ui/icons';
 import { CategoryModal } from './CategoryModal';
 import { DAYS } from '@/constants/days';
 import { normalizeNumberString } from '@repo/util/string';
+import { generateTimeOptions, calculateTimeBefore } from '@repo/util/time';
 import type { MiscellaneousChange } from '../types';
 
 interface MenuAppFeatureProps {
@@ -31,9 +27,6 @@ interface MenuAppFeatureProps {
   onChange?: (value: MiscellaneousChange) => void;
 }
 
-const numberToString = (value?: number | null) =>
-  value === undefined || value === null ? '' : String(value);
-
 interface BreakTimeRow {
   id: string;
   isEveryDay: boolean;
@@ -42,62 +35,7 @@ interface BreakTimeRow {
   selectedDays: number[];
 }
 
-// 시간 옵션 생성 (00:00 ~ 23:59, 30분 단위)
-const generateTimeOptions = (): TimeOption[] =>
-  Array.from({ length: 24 }, (_, hour) =>
-    [0, 30].map((minute) => {
-      const hourStr = String(hour).padStart(2, '0');
-      const minuteStr = String(minute).padStart(2, '0');
-      return {
-        value: `${hourStr}${minuteStr}`,
-        label: `${hourStr}시 ${minuteStr}분`,
-      };
-    })
-  ).flat();
-
 const TIME_OPTIONS = generateTimeOptions();
-
-const toMinutes = (time?: string | null) => {
-  if (!time) {
-    return null;
-  }
-
-  const digits = time.replace(/\D/g, '');
-  if (digits.length !== 4) {
-    return null;
-  }
-
-  const hour = Number(digits.slice(0, 2));
-  const minute = Number(digits.slice(2));
-  if (Number.isNaN(hour) || Number.isNaN(minute)) {
-    return null;
-  }
-
-  return hour * 60 + minute;
-};
-
-const formatTime = (minutes: number) => {
-  const normalized = ((minutes % 1440) + 1440) % 1440;
-  const hour = Math.floor(normalized / 60);
-  const minute = normalized % 60;
-
-  return `${hour.toString().padStart(2, '0')}${minute
-    .toString()
-    .padStart(2, '0')}`;
-};
-
-const calculateTimeBefore = (
-  baseTime?: string | null,
-  minutes?: number | null
-) => {
-  const baseMinutes = toMinutes(baseTime);
-
-  if (baseMinutes === null || minutes === undefined || minutes === null) {
-    return undefined;
-  }
-
-  return formatTime(baseMinutes - minutes);
-};
 
 export const MenuAppFeature = ({
   shopSetting,
@@ -149,7 +87,6 @@ export const MenuAppFeature = ({
   const { setTime: setClosureEndTime } = closureEndTime;
   const { setTime: setClosureLastOrderTime } = closureLastOrderTime;
 
-  // TODO 컬럼 추가해주시기로 함
   const [useClosureNotice, setUseClosureNotice] = useState(false);
   const [closureLastOrderTimeBefore, setClosureLastOrderTimeBefore] =
     useState('');
@@ -187,7 +124,6 @@ export const MenuAppFeature = ({
       Boolean(shopSetting.isOrderCompleteTotalVisible)
     );
     setUseSinglePageMenuboard(Boolean(shopSetting.useSinglePageMenuboard));
-    console.log('??', shopSetting.menuboardAdminPassword);
     setMenuboardAdminPassword(shopSetting.menuboardAdminPassword ?? '');
     setIsAdminLocked(Boolean(shopSetting.isAdminLocked));
     setUseTheftPrevention(Boolean(shopSetting.useTheftPrevention));
@@ -218,56 +154,39 @@ export const MenuAppFeature = ({
 
     setUseBreakTime(Boolean(shopTime.useBreakTime));
     setBreakTimeLastOrderMinutes(
-      numberToString(shopTime.breakTimeLastOrderTimeBefore)
+      String(shopTime.breakTimeLastOrderTimeBefore ?? '')
     );
     setBreakTimeLastOrderAlertMinutes(
-      numberToString(shopTime.breakTimeLastOrderAlertTimeBefore)
+      String(shopTime.breakTimeLastOrderAlertTimeBefore ?? '')
     );
     setBreakTimeMessage(shopTime.breakTimeMessage ?? '');
     setBreakTimeLastOrderMessage(shopTime.breakTimeLastOrderMessage ?? '');
 
     // breakTimeList를 rows로 변환 (같은 시간대는 합쳐서 처리)
     if (shopTime.breakTimeList && shopTime.breakTimeList.length > 0) {
-      const groupedByTime = new Map<
-        string,
-        { startTime: string; endTime: string; selectedDays: number[] }
-      >();
+      // 시간대별로 그룹화 (startTime-endTime을 키로 사용)
+      const timeGroupMap = new Map<string, number[]>();
 
       shopTime.breakTimeList.forEach((bt) => {
-        const startTime = bt.breakStartTime ?? '';
-        const endTime = bt.breakEndTime ?? '';
-        const timeKey = `${startTime}-${endTime}`;
-
-        if (startTime && endTime) {
-          const existing = groupedByTime.get(timeKey);
-          if (existing) {
-            // 같은 시간대가 이미 있으면 요일 합치기
-            const mergedDays = [
-              ...new Set([...existing.selectedDays, bt.dayOfWeek]),
-            ].sort((a, b) => a - b);
-            groupedByTime.set(timeKey, {
-              ...existing,
-              selectedDays: mergedDays,
-            });
-          } else {
-            // 새로운 시간대 그룹 생성
-            groupedByTime.set(timeKey, {
-              startTime,
-              endTime,
-              selectedDays: [bt.dayOfWeek],
-            });
-          }
+        const timeKey = `${bt.breakStartTime ?? ''}-${bt.breakEndTime ?? ''}`;
+        if (!timeGroupMap.has(timeKey)) {
+          timeGroupMap.set(timeKey, []);
         }
+        timeGroupMap.get(timeKey)?.push(bt.dayOfWeek);
       });
 
-      const rows: BreakTimeRow[] = Array.from(groupedByTime.values()).map(
-        (group, index) => ({
-          id: `break-time-${index}`,
-          isEveryDay: false,
-          startTime: group.startTime,
-          endTime: group.endTime,
-          selectedDays: group.selectedDays,
-        })
+      // 그룹화된 데이터를 rows로 변환
+      const rows: BreakTimeRow[] = Array.from(timeGroupMap.entries()).map(
+        ([timeKey, days], index) => {
+          const [startTime, endTime] = timeKey.split('-');
+          return {
+            id: `break-time-${index}`,
+            isEveryDay: false,
+            startTime: startTime ?? '',
+            endTime: endTime ?? '',
+            selectedDays: days,
+          };
+        }
       );
       setBreakTimeRows(rows);
     } else {
@@ -276,10 +195,10 @@ export const MenuAppFeature = ({
 
     setUseClosureNotice(Boolean(shopTime.useClosure));
     setClosureLastOrderTimeBefore(
-      numberToString(shopTime.closureLastOrderTimeBefore)
+      String(shopTime.closureLastOrderTimeBefore ?? '')
     );
     setClosureLastOrderMinutes(
-      numberToString(shopTime.closureLastOrderAlertTimeBefore)
+      String(shopTime.closureLastOrderAlertTimeBefore ?? '')
     );
     setClosureMessage(shopTime.closureMessage ?? '');
     setClosureLastOrderMessage(shopTime.closureLastOrderMessage ?? '');
@@ -303,22 +222,17 @@ export const MenuAppFeature = ({
       return;
     }
 
-    const breakTimeList = !useBreakTime
-      ? []
-      : breakTimeRows
-          .filter((row) => row.startTime && row.endTime)
-          .flatMap((row) =>
-            row.selectedDays.map((day) => ({
-              shopSeq: shopSeq ?? shopTime?.shopSeq ?? 0,
-              dayOfWeek: day as 0 | 1 | 2 | 3 | 4 | 5 | 6,
-              breakStartTime: row.startTime,
-              breakEndTime: row.endTime,
-              isActive: true,
-            }))
-          );
+    const breakTimeList = breakTimeRows
+      .filter((row) => row.startTime && row.endTime)
+      .flatMap((row) =>
+        row.selectedDays.map((day) => ({
+          shopSeq: shopSeq ?? shopTime?.shopSeq ?? 0,
+          dayOfWeek: day as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+          breakStartTime: row.startTime,
+          breakEndTime: row.endTime,
+        }))
+      );
 
-    const firstOrderMinAmountValue =
-      firstOrderMinAmount === '' ? undefined : Number(firstOrderMinAmount);
     const shopSettingChanges: Partial<IShopSetting> = {
       shopSeq,
       isMenuboardOrderable: isOrderable,
@@ -333,10 +247,8 @@ export const MenuAppFeature = ({
       pickupAlertMessage,
     };
 
-    if (
-      firstOrderMinAmountValue !== undefined &&
-      !Number.isNaN(firstOrderMinAmountValue)
-    ) {
+    const firstOrderMinAmountValue = toNumberOrUndefined(firstOrderMinAmount);
+    if (firstOrderMinAmountValue !== undefined) {
       shopSettingChanges.firstOrderMinAmount = firstOrderMinAmountValue;
     }
     if (menuboardAdminPassword !== '') {
@@ -348,8 +260,9 @@ export const MenuAppFeature = ({
       closureStartTime.minute
     );
     const closureEnd = toTimeString(closureEndTime.hour, closureEndTime.minute);
+
     const shopTimeChanges: Partial<IShopTime> = {
-      shopSeq: shopSeq ?? shopTime?.shopSeq ?? 0,
+      shopSeq: shopSeq,
       useBreakTime,
       breakTimeList,
       breakTimeLastOrderTimeBefore: toNumberOrUndefined(
@@ -432,58 +345,6 @@ export const MenuAppFeature = ({
   const handleCloseCategoryModal = () => {
     setIsCategoryModalOpen(false);
   };
-
-  // 렌더링할 때만 같은 시간대를 가진 row들을 그룹화
-  const groupedBreakTimeRows = useMemo(() => {
-    const groupedRows = new Map<
-      string,
-      {
-        startTime: string;
-        endTime: string;
-        selectedDays: number[];
-        rowIds: string[];
-      }
-    >();
-
-    breakTimeRows.forEach((row) => {
-      if (!row.startTime || !row.endTime) {
-        // 시간이 설정되지 않은 row는 별도로 처리
-        const key = `empty-${row.id}`;
-        groupedRows.set(key, {
-          startTime: row.startTime,
-          endTime: row.endTime,
-          selectedDays: [...row.selectedDays],
-          rowIds: [row.id],
-        });
-        return;
-      }
-
-      const timeKey = `${row.startTime}-${row.endTime}`;
-      const existing = groupedRows.get(timeKey);
-
-      if (existing) {
-        // 같은 시간대가 이미 있으면 요일 합치기
-        const mergedDays = [
-          ...new Set([...existing.selectedDays, ...row.selectedDays]),
-        ].sort((a, b) => a - b);
-        groupedRows.set(timeKey, {
-          ...existing,
-          selectedDays: mergedDays,
-          rowIds: [...existing.rowIds, row.id],
-        });
-      } else {
-        // 새로운 시간대 그룹 생성
-        groupedRows.set(timeKey, {
-          startTime: row.startTime,
-          endTime: row.endTime,
-          selectedDays: [...row.selectedDays],
-          rowIds: [row.id],
-        });
-      }
-    });
-
-    return Array.from(groupedRows.values());
-  }, [breakTimeRows]);
 
   return (
     <SectionWrapper
@@ -638,59 +499,39 @@ export const MenuAppFeature = ({
                 + 추가
               </BasicButton>
             </S.BreakTimeHeader>
-            {groupedBreakTimeRows.map((group, groupIndex) => {
-              const updateGroup = (updates: {
-                startTime?: string;
-                endTime?: string;
-                selectedDays?: number[];
-              }) => {
+            {breakTimeRows.map((row, index) => {
+              const updateRow = (updates: Partial<BreakTimeRow>) => {
                 const updated = [...breakTimeRows];
-                const rowsToUpdate = updated.filter((r) =>
-                  group.rowIds.includes(r.id)
-                );
-
-                if (
-                  updates.startTime !== undefined ||
-                  updates.endTime !== undefined
-                ) {
-                  // 시간이 변경되면 같은 시간대의 모든 row 업데이트
-                  rowsToUpdate.forEach((row) => {
-                    const index = updated.findIndex((r) => r.id === row.id);
-                    if (index !== -1) {
-                      updated[index] = {
-                        ...row,
-                        startTime: updates.startTime ?? row.startTime,
-                        endTime: updates.endTime ?? row.endTime,
-                      };
-                    }
-                  });
+                const currentRow = updated[index];
+                if (currentRow) {
+                  updated[index] = { ...currentRow, ...updates };
+                  setBreakTimeRows(updated);
                 }
-
-                if (updates.selectedDays !== undefined) {
-                  // 요일이 변경되면 같은 시간대의 모든 row에 동일하게 적용
-                  rowsToUpdate.forEach((row) => {
-                    const index = updated.findIndex((r) => r.id === row.id);
-                    if (index !== -1) {
-                      updated[index] = {
-                        ...row,
-                        selectedDays: updates.selectedDays ?? row.selectedDays,
-                      };
-                    }
-                  });
-                }
-
-                setBreakTimeRows(updated);
               };
 
               return (
-                <S.BreakTimeRow key={`group-${groupIndex}`}>
+                <S.BreakTimeRow key={row.id}>
+                  {/* <CheckButton
+                    checked={row.isEveryDay}
+                    onChange={(checked) => {
+                      updateRow({
+                        isEveryDay: checked,
+                        selectedDays: checked
+                          ? DAYS.map((d) => d.value)
+                          : row.selectedDays,
+                      });
+                    }}
+                    customStyle={S.CheckButtonCustomStyle}
+                  >
+                    매일
+                  </CheckButton> */}
                   <S.TimeDisplay>
                     <S.TimeSelectWrapper>
                       <Dropdown
                         options={TIME_OPTIONS}
-                        value={group.startTime || null}
+                        value={row.startTime || null}
                         onChange={(value) => {
-                          updateGroup({ startTime: String(value) });
+                          updateRow({ startTime: String(value) });
                         }}
                         customStyle={S.TimeDropdownStyle}
                       />
@@ -699,9 +540,9 @@ export const MenuAppFeature = ({
                     <S.TimeSelectWrapper>
                       <Dropdown
                         options={TIME_OPTIONS}
-                        value={group.endTime || null}
+                        value={row.endTime || null}
                         onChange={(value) => {
-                          updateGroup({ endTime: String(value) });
+                          updateRow({ endTime: String(value) });
                         }}
                         customStyle={S.TimeDropdownStyle}
                       />
@@ -709,18 +550,18 @@ export const MenuAppFeature = ({
                   </S.TimeDisplay>
                   <S.DayCheckboxes>
                     {DAYS.map((day) => {
-                      // 다른 그룹에서 해당 요일이 선택되어 있는지 확인
-                      const isDaySelectedInOtherGroups = breakTimeRows.some(
-                        (otherRow) =>
-                          !group.rowIds.includes(otherRow.id) &&
+                      // 다른 row에서 해당 요일이 선택되어 있는지 확인
+                      const isDaySelectedInOtherRows = breakTimeRows.some(
+                        (otherRow, otherIndex) =>
+                          otherIndex !== index &&
                           otherRow.selectedDays.includes(day.value)
                       );
-                      // 현재 그룹에서 이미 선택된 요일이 아니고, 다른 그룹에서 선택된 경우 비활성화
+                      // 현재 row에서 이미 선택된 요일이 아니고, 다른 row에서 선택된 경우 비활성화
                       const isDisabled =
-                        !group.selectedDays.includes(day.value) &&
-                        isDaySelectedInOtherGroups;
+                        !row.selectedDays.includes(day.value) &&
+                        isDaySelectedInOtherRows;
 
-                      const isChecked = group.selectedDays.includes(day.value);
+                      const isChecked = row.selectedDays.includes(day.value);
 
                       return (
                         <CheckButton
@@ -736,15 +577,15 @@ export const MenuAppFeature = ({
                           }
                           onChange={(checked) => {
                             if (checked) {
-                              const newDays = [
-                                ...new Set([...group.selectedDays, day.value]),
-                              ].sort((a, b) => a - b);
-                              updateGroup({ selectedDays: newDays });
+                              updateRow({
+                                selectedDays: [...row.selectedDays, day.value],
+                              });
                             } else {
-                              updateGroup({
-                                selectedDays: group.selectedDays.filter(
+                              updateRow({
+                                selectedDays: row.selectedDays.filter(
                                   (d) => d !== day.value
                                 ),
+                                isEveryDay: false,
                               });
                             }
                           }}
@@ -758,9 +599,7 @@ export const MenuAppFeature = ({
                     variant="Outline_Grey_M"
                     onClick={() => {
                       setBreakTimeRows(
-                        breakTimeRows.filter(
-                          (r) => !group.rowIds.includes(r.id)
-                        )
+                        breakTimeRows.filter((r) => r.id !== row.id)
                       );
                     }}
                     customStyle={S.DeleteButtonCustomStyle}
