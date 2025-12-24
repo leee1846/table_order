@@ -15,6 +15,7 @@ import {
 import type { ITableInfo } from '@repo/api/types';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { toast } from '@repo/feature/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 export const TablesPage = () => {
   const queryClient = useQueryClient();
@@ -24,7 +25,7 @@ export const TablesPage = () => {
   const [isCreateTableDialogOpen, setIsCreateTableDialogOpen] = useState(false);
 
   // shopCode 가져오기
-  const shopCode = 'NEXA000001';
+  const { shopCode } = useAuth();
 
   // 테이블 그룹 리스트 조회
   const {
@@ -32,7 +33,7 @@ export const TablesPage = () => {
     isLoading,
     error,
   } = useGetTableGroupList(
-    { shopCode: shopCode },
+    { shopCode: shopCode ?? '' },
     { enabled: !!shopCode } // shopCode가 있을 때만 쿼리 실행
   );
 
@@ -93,7 +94,7 @@ export const TablesPage = () => {
 
       toast('테이블이 추가되었습니다.');
       queryClient.invalidateQueries({
-        queryKey: queryKeys.table.groupList(shopCode),
+        queryKey: queryKeys.table.groupList(shopCode ?? ''),
       });
     } catch (error) {
       toast('테이블 추가 중 오류가 발생했습니다.');
