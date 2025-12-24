@@ -7,19 +7,24 @@ import {
 } from '@/config/i18n/admin.i18n';
 import { LANGUAGE_CONFIG } from '@/constants/common';
 import { STORAGE_KEYS } from '@/constants/keys';
-import { storage } from '@repo/util/function';
-import type { TShopLanguage } from '@repo/api/types';
+import { decodeJwtToken, storage } from '@repo/util/function';
+import type { ITokenPayload, TShopLanguage } from '@repo/api/types';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { clearAuthData } from '@/utils/auth';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { getAccessToken } from '@repo/api/auth';
 
 export const Account = () => {
+  const accessToken = getAccessToken();
+  const payload = decodeJwtToken<ITokenPayload>(accessToken ?? '');
   const { i18n, t } = useAdminTranslation();
   const navigate = useNavigate();
 
   const currentLanguage = i18n.language || 'KO';
   const supportedLanguages = getAdminSupportedLanguages();
+  const { data: shopDetailData } = useShopDetailData();
 
   const languageList = supportedLanguages
     .filter((lang) => lang in LANGUAGE_CONFIG)
@@ -50,19 +55,19 @@ export const Account = () => {
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
         <S.TitleContainer>
-          <UIStyles.setting.Title>유저의 계정???</UIStyles.setting.Title>
+          <UIStyles.setting.Title>{payload?.sub}</UIStyles.setting.Title>
           <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
             {t('로그아웃')}
           </BasicButton>
         </S.TitleContainer>
         <S.SID>
-          SID <span>?????</span>
+          SID <span>{shopDetailData?.shopCode}</span>
         </S.SID>
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
-          <p>매장 이름???</p>
+          <p>{shopDetailData?.shopName}</p>
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
           <p>{t('언어 선택')}</p>

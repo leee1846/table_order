@@ -2,6 +2,7 @@ import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Detail/detail.style';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import { useDeviceData } from '@/hooks/useDeviceData';
 
 interface Props {
   useOrderposMode: boolean;
@@ -17,6 +18,7 @@ export const Detail = ({
   handleOrderPosNumberChange,
 }: Props) => {
   const { t } = useAdminTranslation();
+  const { data: deviceData } = useDeviceData();
 
   return (
     <UIStyles.setting.Container>
@@ -28,7 +30,7 @@ export const Detail = ({
           </p>
           <div />
           <p>
-            {t('현재 버전')} <span>2.??.??</span>
+            {t('최신 버전')} <span>2.??.??</span>
           </p>
           <div />
           <p>
