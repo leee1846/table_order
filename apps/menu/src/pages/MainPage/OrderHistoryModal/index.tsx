@@ -64,13 +64,15 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
         </S.OrderList>
 
         <S.TotalContainer>
-          <div>
-            <p>{t('합계')}</p>
-            <p>
-              {currencySymbol}
-              {formatCurrency(orderHistories?.totalAmount ?? 0)}
-            </p>
-          </div>
+          {shopDetailData?.shopSetting?.isOrderSheetTotalVisible && (
+            <div>
+              <p>{t('합계')}</p>
+              <p>
+                {currencySymbol}
+                {formatCurrency(orderHistories?.totalAmount ?? 0)}
+              </p>
+            </div>
+          )}
           <BasicButton variant="Solid_Blue_2XL">{t('닫기')}</BasicButton>
         </S.TotalContainer>
       </S.Container>

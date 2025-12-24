@@ -201,13 +201,16 @@ export const CartList = ({
         </S.OrderList>
 
         <S.TotalContainer>
-          <S.TotalInfo>
-            <p>{t('합계')}</p>
-            <p>
-              {currencySymbol}
-              {formatCurrency(calculateTotalPrice())}
-            </p>
-          </S.TotalInfo>
+          {shopDetailData?.shopSetting?.isOrderSheetTotalVisible && (
+            <S.TotalInfo>
+              <p>{t('합계')}</p>
+              <p>
+                {currencySymbol}
+                {formatCurrency(calculateTotalPrice())}
+              </p>
+            </S.TotalInfo>
+          )}
+
           <BasicButton variant="Solid_Blue_2XL" onClick={order}>
             {t('주문하기')}
           </BasicButton>

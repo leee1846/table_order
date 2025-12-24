@@ -130,13 +130,13 @@ export const TotalContainer = styled.div`
   gap: 24px;
   width: 100%;
   padding-top: 24px;
-  border-top: 1px solid ${({ theme }) => theme.mode.grey[200]};
 
   & > div {
+    border-top: 1px solid ${({ theme }) => theme.mode.grey[200]};
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 8px;
+    padding: 28px 8px 4px;
 
     & > p:first-of-type {
       ${TYPOGRAPHY.MT_7}
