@@ -4,13 +4,6 @@ import { useEffect } from 'react';
 import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 
-const initialData = {
-  sseUpdatedAt: null,
-  discountRate: 0,
-  totalAmount: 0,
-  orderDetailMenuList: [],
-};
-
 interface Props {
   /**
    * useEffect 실행을 건너뛸지 여부
@@ -25,16 +18,13 @@ export const useTableOrderHistoriesData = (options?: Props) => {
   const { shopData } = useShopData({ skipInitialRequest: true });
   const { data: deviceData } = useDeviceData({ skipInitialRequest: true });
 
-  const {
-    data: tableOrderHistoriesData,
-    setDataAsync: setTableOrderHistoriesData,
-    clearData: clearTableOrderHistoriesData,
-  } = useTableOrderHistoriesStore();
+  const { data: storeData, setDataAsync: setTableOrderHistoriesData } =
+    useTableOrderHistoriesStore();
 
   const enabled =
     !!shopData?.shopCode &&
     !!deviceData?.tableNumber &&
-    !tableOrderHistoriesData &&
+    storeData === null &&
     !skipInitialRequest;
   const { data: tableOrderHistoriesDataResponse, refetch } =
     useGetTableOrderHistories(
@@ -52,7 +42,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
 
     // 이미 데이터가 있으면 초기 로드가 완료된 것이므로 실행하지 않음
     // refetch는 refresh 함수에서 직접 처리
-    if (tableOrderHistoriesData) {
+    if (storeData) {
       return;
     }
 
@@ -60,11 +50,12 @@ export const useTableOrderHistoriesData = (options?: Props) => {
       return;
     }
 
+    // 테이블을 점유하고 주문은 하지 않았을경우우
     if (
-      !tableOrderHistoriesDataResponse?.data?.orderDetailMenuList ||
-      tableOrderHistoriesDataResponse?.data?.orderDetailMenuList?.length < 1
+      tableOrderHistoriesDataResponse &&
+      tableOrderHistoriesDataResponse.data === null
     ) {
-      setTableOrderHistoriesData(initialData);
+      setTableOrderHistoriesData('isEmpty');
       return;
     }
 
@@ -78,34 +69,32 @@ export const useTableOrderHistoriesData = (options?: Props) => {
   }, [
     tableOrderHistoriesDataResponse,
     setTableOrderHistoriesData,
-    tableOrderHistoriesData,
+    storeData,
     skipInitialRequest,
   ]);
 
   const refresh = async (sseUpdatedAt?: number) => {
     const result = await refetch();
-    if (
-      !result.data?.data?.orderDetailMenuList ||
-      result.data.data.orderDetailMenuList.length < 1
-    ) {
-      await setTableOrderHistoriesData(initialData);
-      return initialData;
+
+    // 테이블을 점유하고 주문을 했을경우
+    if (result.data?.data === null) {
+      setTableOrderHistoriesData('isEmpty');
+    } else {
+      // 테이블을 점유하고 주문을 했을경우
+      await setTableOrderHistoriesData({
+        sseUpdatedAt: sseUpdatedAt ?? null,
+        discountRate: result.data?.data?.discountRate ?? 0,
+        totalAmount: result.data?.data?.totalAmount ?? 0,
+        orderDetailMenuList: result.data?.data?.orderDetailMenuList ?? [],
+      });
     }
 
-    await setTableOrderHistoriesData({
-      sseUpdatedAt: sseUpdatedAt ?? null,
-      discountRate: result.data.data.discountRate ?? 0,
-      totalAmount: result.data.data.totalAmount ?? 0,
-      orderDetailMenuList: result.data.data.orderDetailMenuList ?? [],
-    });
-
-    return result.data.data;
+    return result.data?.data;
   };
 
   return {
-    data: tableOrderHistoriesData,
+    data: storeData,
     setData: setTableOrderHistoriesData,
-    clearData: clearTableOrderHistoriesData,
     refresh,
   };
 };

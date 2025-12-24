@@ -14,7 +14,6 @@ interface Props {
 }
 export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
   const { t } = useCustomerTranslation();
-  const histories = orderHistories?.orderDetailMenuList;
 
   const { data: shopDetailData } = useShopDetailData();
   const currencySymbol =
@@ -28,15 +27,15 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
           <p>{getTodayDateString()}</p>
         </S.Header>
 
-        {!orderHistories ||
-          (histories && histories?.length < 1 && (
-            <NoContent paddingTop="0">
-              <p>{t('주문내역이 없습니다.')}</p>
-            </NoContent>
-          ))}
+        {(!orderHistories ||
+          orderHistories?.orderDetailMenuList?.length < 1) && (
+          <NoContent paddingTop="0">
+            <p>{t('주문내역이 없습니다.')}</p>
+          </NoContent>
+        )}
 
         <S.OrderList>
-          {histories?.map((orderHistory) => (
+          {orderHistories?.orderDetailMenuList?.map((orderHistory) => (
             <li key={orderHistory.orderGroupUuid}>
               <S.MenuInfo>
                 <p>{orderHistory.menuName}</p>

@@ -1,13 +1,11 @@
 import { ROUTES } from '@/constants/routes';
 import { useShopData } from '@/hooks/useShopData';
-import { TableGridContainer, type TableData } from '@repo/feature/components';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { Sidebar } from '@/pages/TablesPage/Sidebar';
-import * as S from '@/pages/TablesPage/tablePage.style';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCartStore } from '@/stores/useCartStore';
@@ -18,8 +16,18 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { openConfirmDialog, openDualActionDialog } from '@repo/feature/utils';
-import { useGetCurrentTableList, usePostDeviceDetail } from '@repo/api/queries';
-import { useDeviceListData } from '@/hooks/useDeviceListData';
+import {
+  useGetCurrentTableList,
+  usePostDeviceDetail,
+  useGetDeviceList,
+} from '@repo/api/queries';
+import {
+  TablesPageContainer,
+  TableCardsArea,
+  TableCardsGrid,
+  LongPressTableCard,
+  type TableWithStatus,
+} from '@repo/feature/components';
 
 export const TablesPage = () => {
   const { t } = useAdminTranslation();
@@ -30,11 +38,14 @@ export const TablesPage = () => {
   const { data: shopDetailData } = useShopDetailData();
   /** 테이블 그룹 데이터 로드 */
   const { data: tableGroupsData } = useTableGroupData();
-  /** 기기정보 리스트 데이터 로드 */
-  const { data: deviceListData } = useDeviceListData();
   /** 현재 테이블 목록 데이터 로드 */
   const { data: currentTableListData } = useGetCurrentTableList({
     shopCode: shopData?.shopCode ?? '',
+  });
+  /** 기기정보 리스트 데이터 로드 */
+  const { data: deviceListData } = useGetDeviceList({
+    shopCode: shopData?.shopCode ?? '',
+    options: { enabled: !!shopData?.shopCode },
   });
 
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
@@ -55,7 +66,7 @@ export const TablesPage = () => {
     )?.tableList ?? [];
 
   const tablesData = currentTables.map((table) => {
-    const device = deviceListData?.find(
+    const device = deviceListData?.data?.find(
       (device) => device.tableNumber === table.tableNumber
     );
 
@@ -86,7 +97,8 @@ export const TablesPage = () => {
     return {
       id: table.tableSeq,
       tableNumber: table.tableNumber,
-      batteryLevel: device?.battery ?? null,
+      tableName: table.tableName ?? '',
+      batteryLevel: device?.battery ?? 0,
       totalAmount: currentTable?.totalAmount ?? null,
       orderTime,
       menuItems,
@@ -113,7 +125,8 @@ export const TablesPage = () => {
     await refreshCategoriesData();
     // 주문 내역 api 요청
     const response = await refreshTableOrderHistoriesData();
-    if (response && response.orderDetailMenuList.length < 1) {
+
+    if (response === null) {
       // 객수 선택 초기화
       clearCustomerCountData();
     }
@@ -128,7 +141,7 @@ export const TablesPage = () => {
   const { data: deviceData, refresh: refreshDeviceData } = useDeviceData();
   const { mutateAsync: createDeviceDetail } = usePostDeviceDetail();
 
-  const selectTable = async (table: TableData) => {
+  const selectTable = async (table: TableWithStatus) => {
     await createDeviceDetail({
       tableNumber: table.tableNumber,
       shopCode: shopData?.shopCode ?? '',
@@ -147,16 +160,14 @@ export const TablesPage = () => {
     navigate(ROUTES.ROOT.generate());
   };
 
-  const handleTableClick = async (table: TableData) => {
+  const handleTableClick = async (table: TableWithStatus) => {
     if (deviceData?.deviceType === 'ORDER_POS') {
       // TODO: 테이블 상세 페이지 이동 및 객수설정
       return;
     }
 
-    // TODO: 꾹 눌렀을때테이블 상세 페이지 이동 및 객수설정
-
     // 테이블이 이미 사용중일경우
-    if (table.menuItems) {
+    if (table.menuItems && deviceData?.tableNumber !== table.tableNumber) {
       const useTableOverlapping =
         shopDetailData?.shopSetting?.useTableOverlapping;
 
@@ -183,22 +194,45 @@ export const TablesPage = () => {
       return;
     }
 
+    if (deviceData?.tableNumber === table.tableNumber) {
+      refreshMenuInitialData();
+      AppStorage.removeData(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
+      navigate(ROUTES.ROOT.generate());
+      return;
+    }
+
     selectTable(table);
   };
 
-  return (
-    <S.Container>
-      <TableGridContainer
-        tables={tablesData as TableData[]}
-        useTranslation={useAdminTranslation}
-        onTableClick={handleTableClick}
-      />
+  const handleLongPress = (table: TableWithStatus) => {
+    if (deviceData?.deviceType === 'ORDER_POS') {
+      return;
+    }
 
+    // 상세 페이지 이동
+  };
+
+  return (
+    <TablesPageContainer>
+      <TableCardsArea>
+        <TableCardsGrid>
+          {tablesData.map((table) => (
+            <LongPressTableCard
+              key={table.id}
+              table={table}
+              onClick={handleTableClick}
+              onLongPress={handleLongPress}
+              useTranslation={useAdminTranslation}
+              longPressDelay={500}
+            />
+          ))}
+        </TableCardsGrid>
+      </TableCardsArea>
       <Sidebar
         tableGroups={tableGroupsData ?? []}
         selectedTableGroupSeq={selectedTableGroupSeq ?? 0}
         onTableGroupClick={setSelectedTableGroupSeq}
       />
-    </S.Container>
+    </TablesPageContainer>
   );
 };

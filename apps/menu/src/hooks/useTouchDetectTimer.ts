@@ -10,12 +10,15 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
+import { useDeviceData } from '@/hooks/useDeviceData';
 
 export const useTouchDetectTimer = () => {
   const { refresh: refreshShopDetailData } = useShopDetailData();
   const { refresh: refreshCategoriesData } = useCategoriesData();
+  const { refresh: refreshDeviceData } = useDeviceData();
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData();
+
   const { refresh: refreshTableGroupData } = useTableGroupData();
   const { data: cartData, clearCart } = useCartStore();
   const { clearData: clearLanguageData } = useCustomerLanguageStore();
@@ -33,15 +36,15 @@ export const useTouchDetectTimer = () => {
       await refreshCategoriesData();
       // 테이블 그룹 데이터 api 요청
       await refreshTableGroupData();
+      // 디바이스 데이터 api 요청
+      await refreshDeviceData();
+
       // 장바구니 비우기
       clearCart();
       const newTableOrderHistoriesData = await refreshTableOrderHistoriesData();
 
-      // 주문 내역이 없을경우
-      if (
-        newTableOrderHistoriesData &&
-        newTableOrderHistoriesData.orderDetailMenuList.length < 1
-      ) {
+      // 테이블이 점유되지 않았을경우
+      if (newTableOrderHistoriesData === null) {
         // 객수 선택 초기화
         clearCustomerCountData();
         // 언어 선택 초기화
@@ -50,8 +53,7 @@ export const useTouchDetectTimer = () => {
         showInitialPage();
       }
 
-      //TODO: 추후 주석 제거 예정
-      // window.location.reload();
+      window.location.reload();
     };
 
     const startResetTimer = () => {
@@ -110,5 +112,6 @@ export const useTouchDetectTimer = () => {
     refreshCategoriesData,
     refreshTableOrderHistoriesData,
     refreshTableGroupData,
+    refreshDeviceData,
   ]);
 };

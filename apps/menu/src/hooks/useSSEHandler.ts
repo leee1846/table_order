@@ -9,7 +9,6 @@ import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
-import { useDeviceListData } from '@/hooks/useDeviceListData';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
@@ -52,14 +51,13 @@ export const useSSEHandler = () => {
   const { refresh: refreshTableGroupData } = useTableGroupData({
     skipInitialRequest: true,
   });
-  const { refresh: refreshDeviceListData } = useDeviceListData({
-    skipInitialRequest: true,
-  });
+
   const { setData: setPickupAlarm } = usePickupAlarmStore();
 
   // SSE 메시지 처리
   useEffect(() => {
     const shopCode = shopData?.shopCode;
+
     if (!sseData || !deviceData || !shopData || !shopCode) {
       return;
     }
@@ -71,7 +69,6 @@ export const useSSEHandler = () => {
     switch (sseData.type) {
       case 'ORDER': {
         // TODO: 테스트 필요
-
         queryClient.refetchQueries({
           queryKey: queryKeys.orders.currentTableList(shopCode),
         });
@@ -81,18 +78,30 @@ export const useSSEHandler = () => {
         }
 
         if (!(deviceData.tableNumber in sseData.data)) {
+          if (
+            tableOrderHistoriesData &&
+            tableOrderHistoriesData !== 'isEmpty' &&
+            tableOrderHistoriesData?.orderDetailMenuList?.length > 0
+          ) {
+            refreshTableOrderHistoriesData();
+            break;
+          }
           return;
         }
 
         const sseUpdatedAt = sseData.data[deviceData.tableNumber];
 
         if (
-          !tableOrderHistoriesData?.sseUpdatedAt ||
-          tableOrderHistoriesData?.sseUpdatedAt !== sseUpdatedAt
+          // api 요청 했을경우
+          tableOrderHistoriesData &&
+          // 테이블을 점유 했을경우
+          tableOrderHistoriesData !== 'isEmpty' &&
+          // sse 업데이트 시간이 동일 (해당 테이블의 업데이트가 아닐경우)
+          tableOrderHistoriesData?.sseUpdatedAt === sseUpdatedAt
         ) {
-          refreshTableOrderHistoriesData(sseUpdatedAt as number);
+          return;
         }
-
+        refreshTableOrderHistoriesData(sseUpdatedAt as number);
         break;
       }
 
@@ -117,8 +126,10 @@ export const useSSEHandler = () => {
 
       case 'DEVICE':
         {
-          // TODO: 테스트 필요
-          refreshDeviceListData();
+          // api요청
+          queryClient.refetchQueries({
+            queryKey: queryKeys.device.list(shopCode),
+          });
         }
         break;
 
@@ -146,12 +157,11 @@ export const useSSEHandler = () => {
     sseData,
     deviceData,
     shopData,
-    tableOrderHistoriesData?.sseUpdatedAt,
+    tableOrderHistoriesData,
     refreshTableOrderHistoriesData,
     refreshCategoriesData,
     refreshShopDetailData,
     refreshTableGroupData,
-    refreshDeviceListData,
     setPickupAlarm,
     queryClient,
   ]);

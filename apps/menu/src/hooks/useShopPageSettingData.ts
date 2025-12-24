@@ -38,8 +38,6 @@ export const useShopPageSettingData = (options?: Props) => {
       return;
     }
 
-    // TODO: Mock 데이터 삭제 예정
-    // setStoreData(pageSettingDataResponse.data);
     setStoreData(mockShopPageSetting);
   }, [pageSettingDataResponse, setStoreData, skipInitialRequest]);
 

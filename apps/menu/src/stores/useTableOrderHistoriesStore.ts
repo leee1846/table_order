@@ -14,12 +14,11 @@ export interface ITableOrderHistoriesStore {
   /**
    * 테이블 주문 내역 데이터
    * api요청 전, 초기값 null
-   * api요청 후, 데이터가 없을경우 empty array
-   * empty array일 경우, api새로 요청하지 않음.
+   * api요청 후, 주문내역이 없을경우 'isEmpty'
+   * api요청 후, 주문내역이 있을경우 ITableOrderHistoriesData
    * */
-  data: ITableOrderHistoriesData | null;
-  setDataAsync: (data: ITableOrderHistoriesData) => void;
-  clearData: () => void;
+  data: ITableOrderHistoriesData | null | 'isEmpty';
+  setDataAsync: (data: ITableOrderHistoriesData | 'isEmpty') => void;
 }
 
 /**
@@ -39,16 +38,12 @@ export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
 
     return {
       data: null,
-      setDataAsync: (data: ITableOrderHistoriesData) => {
+      setDataAsync: (data) => {
         return new Promise((resolve) => {
           AppStorage.saveData(STORAGE_KEYS.TABLE_ORDER_HISTORIES, data);
           set({ data });
           resolve(true);
         });
-      },
-      clearData: () => {
-        AppStorage.removeData(STORAGE_KEYS.TABLE_ORDER_HISTORIES);
-        set({ data: null });
       },
     };
   }

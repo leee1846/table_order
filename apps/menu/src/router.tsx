@@ -57,6 +57,7 @@ const adminVerificationCheckLoader = async () => {
     STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED
   );
   const isVerified = data ?? false;
+
   if (!isVerified) {
     window.location.replace(ROUTES.ROOT.generate());
     return null;

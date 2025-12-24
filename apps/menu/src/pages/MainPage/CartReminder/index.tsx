@@ -55,8 +55,8 @@ export const CartReminder = () => {
         await refreshShopDetailData();
         // 주문 내역 api 요청
         const response = await refreshTableOrderHistoriesData();
-        // 주문내역이 없을경우
-        if (response && response.orderDetailMenuList.length < 1) {
+        // 테이블을 점유X, 주문X 일경우
+        if (response === null) {
           // 객수 선택 초기화
           clearCustomerCountData();
         }

@@ -23,7 +23,6 @@ import { useFirstOrderRequiredCheck } from '@/pages/MainPage/hooks/useFirstOrder
 import { useBreakTimeCartClear } from '@/pages/MainPage/hooks/useBreakTimeCartClear';
 import { useCategoryVisibilityManager } from '@/hooks/useCategoryVisibilityManager';
 import { useShopPageSettingData } from '@/hooks/useShopPageSettingData';
-import { useDeviceListData } from '@/hooks/useDeviceListData';
 
 export const MainPage = () => {
   // ========================================
@@ -44,10 +43,12 @@ export const MainPage = () => {
   } = useCategoriesData();
   /** 테이블 주문 내역 데이터 로드 */
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
+  const orderHistories =
+    tableOrderHistoriesData && tableOrderHistoriesData !== 'isEmpty'
+      ? tableOrderHistoriesData
+      : null;
   /** 상점 페이지 설정 데이터 로드 */
   useShopPageSettingData();
-  /** 기기정보 리스트 데이터 로드 */
-  useDeviceListData();
 
   // ========================================
   // 비즈니스 로직 훅
@@ -78,7 +79,10 @@ export const MainPage = () => {
   const languageSettings = useCustomerLanguageSettings(shopDetailData);
 
   /** 객수 선택 설정 */
-  const customerCountSettings = useCustomerCountSettings(shopDetailData);
+  const customerCountSettings = useCustomerCountSettings(
+    shopDetailData,
+    tableOrderHistoriesData
+  );
 
   /** 관리자 접근 제어 */
   const adminAccessControl = useAdminAccessControl(deviceDataResult);
@@ -162,7 +166,7 @@ export const MainPage = () => {
       mainContent={
         <S.Container>
           <Header
-            orderHistories={tableOrderHistoriesData}
+            orderHistories={orderHistories}
             openAdminAccessPasswordModal={() =>
               adminAccessControl.setShowAdminAccessPasswordModal(true)
             }

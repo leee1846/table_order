@@ -192,11 +192,12 @@ export interface IGetTableOrderHistories {
   createDate: string;
   updateDate: string;
   discountRate: number;
+  // empty array일 경우, 고객 착석 & 주문내역이 없음.
   orderDetailMenuList: IOrderHistory[];
 }
 
 export type TGetTableOrderHistoriesResponse =
-  IApiResponse<IGetTableOrderHistories>;
+  IApiResponse<IGetTableOrderHistories | null>;
 
 export interface IGetTableOrderHistoriesParams {
   shopCode: string;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import type { IGetShop } from '@repo/api/types';
+import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
 
 interface UseCustomerCountSettingsReturn {
   showCustomerCountSelector: boolean;
@@ -14,7 +15,8 @@ interface UseCustomerCountSettingsReturn {
  * @returns 객수 선택 화면 노출 여부
  */
 export const useCustomerCountSettings = (
-  shopDetailData: IGetShop | null
+  shopDetailData: IGetShop | null,
+  tableOrderHistoriesData: ITableOrderHistoriesData | 'isEmpty' | null
 ): UseCustomerCountSettingsReturn => {
   const [showCustomerCountSelector, setShowCustomerCountSelector] =
     useState(false);
@@ -29,13 +31,23 @@ export const useCustomerCountSettings = (
       return;
     }
 
+    if (
+      // api요청 전일경우
+      tableOrderHistoriesData === null ||
+      // 테이블을 점유하고 주문을 했을경우
+      tableOrderHistoriesData !== 'isEmpty'
+    ) {
+      setShowCustomerCountSelector(false);
+      return;
+    }
+
     if (customerCountData) {
       setShowCustomerCountSelector(false);
       return;
     }
 
     setShowCustomerCountSelector(true);
-  }, [shopDetailData?.shopSetting, customerCountData]);
+  }, [shopDetailData?.shopSetting, customerCountData, tableOrderHistoriesData]);
 
   return {
     showCustomerCountSelector,

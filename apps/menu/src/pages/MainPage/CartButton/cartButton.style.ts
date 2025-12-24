@@ -23,8 +23,6 @@ export const Container = styled.button`
   }
 
   & > p:last-of-type {
-    // TODO
-    // 100단위 커버가 되지 않음...
     min-width: 2.5625rem;
     width: fit-content;
     padding: 0 4px;
