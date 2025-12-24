@@ -96,7 +96,7 @@ export const MainPage = () => {
   const { data: initialPageData } = useInitialPageStore();
 
   /** 픽업 알림 노출 여부 */
-  const { data: showPickupAlarm } = usePickupAlarmStore();
+  const { data: pickUpAlarmData } = usePickupAlarmStore();
 
   /** 장바구니 메뉴 주문 리마인더 노출 여부 */
   const { data: cartReminderData } = useCartReminderStore();
@@ -153,7 +153,7 @@ export const MainPage = () => {
         pickupAlarm: {
           show:
             (shopDetailData?.shopSetting?.usePickupAlert ?? false) &&
-            showPickupAlarm,
+            pickUpAlarmData.showPickupAlarm,
         },
         cartReminder: {
           show: cartReminderData.showCartReminder,

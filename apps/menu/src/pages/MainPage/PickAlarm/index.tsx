@@ -1,16 +1,19 @@
+import { useEffect } from 'react';
 import { waiterHandIcon } from '@repo/ui/icons';
 import * as S from '@/pages/MainPage/PickAlarm/pickupAlarm.style';
 import { BasicButton } from '@repo/ui/components';
 import { css } from '@emotion/react';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 export const PickupAlarm = () => {
   const { t } = useCustomerTranslation();
+  const { data: piupAlarmData, setData: setShowPickupAlarm } =
+    usePickupAlarmStore();
 
-  const { data: shopDetailData } = useShopDetailData();
-  const { setData: setShowPickupAlarm } = usePickupAlarmStore();
+  useEffect(() => {
+    // TODO: 띵동! 알림 플러그인 추가
+  }, []);
 
   return (
     <S.Container>
@@ -19,14 +22,16 @@ export const PickupAlarm = () => {
       <S.Description>
         {t('주문번호를 확인하고 메뉴를 수령해 주세요.')}
         <br />
-        {shopDetailData?.shopSetting?.pickupAlertMessage
-          ? `(${shopDetailData?.shopSetting?.pickupAlertMessage})`
+        {piupAlarmData.pickupAlertMessage
+          ? `(${piupAlarmData.pickupAlertMessage})`
           : ''}
       </S.Description>
 
       <BasicButton
         variant="Solid_Blue_2XL"
-        onClick={() => setShowPickupAlarm(false)}
+        onClick={() =>
+          setShowPickupAlarm({ showPickupAlarm: false, pickupAlertMessage: '' })
+        }
         customStyle={css`
           width: 18.125rem;
           position: fixed;

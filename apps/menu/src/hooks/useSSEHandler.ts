@@ -12,6 +12,7 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useDeviceListData } from '@/hooks/useDeviceListData';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
+import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 
 /**
  * SSE 연결 및 메시지 처리를 담당하는 훅
@@ -25,6 +26,8 @@ export const useSSEHandler = () => {
       disconnectSse();
     };
   }, []);
+
+  const queryClient = useQueryClient();
 
   // SSE 데이터 구독
   const { data: sseData } = useSSE.useSSEData<ISseMessage>(
@@ -52,7 +55,7 @@ export const useSSEHandler = () => {
   const { refresh: refreshDeviceListData } = useDeviceListData({
     skipInitialRequest: true,
   });
-  const queryClient = useQueryClient();
+  const { setData: setPickupAlarm } = usePickupAlarmStore();
 
   // SSE 메시지 처리
   useEffect(() => {
@@ -87,7 +90,7 @@ export const useSSEHandler = () => {
           !tableOrderHistoriesData?.sseUpdatedAt ||
           tableOrderHistoriesData?.sseUpdatedAt !== sseUpdatedAt
         ) {
-          refreshTableOrderHistoriesData(sseUpdatedAt);
+          refreshTableOrderHistoriesData(sseUpdatedAt as number);
         }
 
         break;
@@ -120,6 +123,21 @@ export const useSSEHandler = () => {
         break;
 
       case 'PICKUP':
+        {
+          if (!deviceData?.tableNumber || !sseData?.data) {
+            return;
+          }
+
+          if (!(deviceData.tableNumber in sseData.data)) {
+            return;
+          }
+
+          const message = sseData.data[deviceData.tableNumber] as string;
+          setPickupAlarm({
+            showPickupAlarm: true,
+            pickupAlertMessage: message,
+          });
+        }
         break;
       default:
         break;
@@ -134,6 +152,7 @@ export const useSSEHandler = () => {
     refreshShopDetailData,
     refreshTableGroupData,
     refreshDeviceListData,
+    setPickupAlarm,
     queryClient,
   ]);
 };

@@ -9,6 +9,6 @@ export interface ISseMessage {
     | 'DEVICE_THEFT'
     | 'DEVICE';
   data: {
-    [key: string]: number;
+    [key: string]: number | string;
   } | null;
 }
