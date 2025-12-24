@@ -210,7 +210,6 @@ export const CartList = ({
               </p>
             </S.TotalInfo>
           )}
-
           <BasicButton variant="Solid_Blue_2XL" onClick={order}>
             {t('주문하기')}
           </BasicButton>

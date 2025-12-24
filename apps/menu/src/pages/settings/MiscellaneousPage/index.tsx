@@ -41,7 +41,7 @@ export const MiscellaneousPage = () => {
 
     await postDeviceDetail({
       deviceType: useOrderposMode ? 'ORDER_POS' : 'MENU',
-      tableNumber: useOrderposMode ? null : (deviceData?.tableNumber ?? 0),
+      tableNumber: useOrderposMode ? null : (deviceData?.tableNumber ?? ''),
       orderPosNumber: useOrderposMode ? orderPosNumber : null,
       shopCode: shopData?.shopCode ?? '',
       androidId: deviceData?.androidId ?? '',
