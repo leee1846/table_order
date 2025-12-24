@@ -9,53 +9,48 @@ import * as S from './tableCard.styles';
 import { theme } from '@repo/ui';
 import { formatCurrency } from '@repo/util/string';
 import { useTranslation } from 'react-i18next';
+import { TableWithStatus } from '../TablesPageContainer';
 
 const { colors } = theme;
 
 interface Props {
   id: number;
-  tableNumber: string;
+  table: TableWithStatus;
   orderTime: string | null;
-  menuItems: Array<{ name: string; quantity: number }> | null;
-  batteryLevel: number;
-  totalAmount: number | null;
   onClick?: () => void;
   useTranslation: typeof useTranslation;
 }
 
 export const TableCard = ({
-  tableNumber,
   onClick,
   id,
   orderTime,
-  menuItems = [],
-  batteryLevel,
-  totalAmount,
   useTranslation,
+  table,
 }: Props) => {
   const { t } = useTranslation();
 
   const batteryIcon =
-    batteryLevel > 51 ? (
+    table.batteryLevel > 51 ? (
       <FullBatteryIcon color={colors.grey[800]} />
-    ) : batteryLevel <= 50 && batteryLevel > 20 ? (
+    ) : table.batteryLevel <= 50 && table.batteryLevel > 20 ? (
       <HalfBatteryIcon color={colors.grey[800]} />
-    ) : batteryLevel <= 20 && batteryLevel > 0 ? (
+    ) : table.batteryLevel <= 20 && table.batteryLevel > 0 ? (
       <LowBatteryIcon color={colors.semantic[400]} />
     ) : null;
 
   return (
     <S.CardContainer onClick={onClick}>
       <S.CardHeader>
-        <S.TableNumber isEmpty={menuItems === null}>
-          {tableNumber}
+        <S.TableNumber isEmpty={table.menuItems === null}>
+          {table.tableName}
         </S.TableNumber>
         <S.OrderTime>{orderTime}</S.OrderTime>
       </S.CardHeader>
 
       <S.CardContent>
-        {menuItems?.slice(0, 3).map((item, idx) => (
-          <S.MenuItem key={`item-${tableNumber}-${id}-${idx + 1}`}>
+        {table.menuItems?.slice(0, 3).map((item, idx) => (
+          <S.MenuItem key={`item-${table.tableName}-${id}-${idx + 1}`}>
             <S.MenuItemName>{item.name}</S.MenuItemName>
             <S.MenuItemQuantity>{item.quantity}</S.MenuItemQuantity>
           </S.MenuItem>
@@ -65,10 +60,12 @@ export const TableCard = ({
       <S.CardFooter>
         {/* TODO : 메뉴가 켜진 테블릿의 경우만 보이게 추후 수정 */}
         {batteryIcon}
-        {!menuItems ? (
+        {!table.menuItems ? (
           <S.StatusText>{t('빈 테이블')}</S.StatusText>
         ) : (
-          <S.TotalAmount>{formatCurrency(totalAmount ?? 0)}</S.TotalAmount>
+          <S.TotalAmount>
+            {formatCurrency(table.totalAmount ?? 0)}
+          </S.TotalAmount>
         )}
       </S.CardFooter>
     </S.CardContainer>

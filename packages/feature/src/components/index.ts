@@ -1,6 +1,5 @@
 export { useTranslation } from 'react-i18next';
-export { TableGridContainer, type TableData } from './TableGridContainer';
-export { TableCard } from './TableGridContainer/TableCard';
+export { TableCard } from './TableCard';
 export {
   TableDetailContainer,
   type TableDetailContainerProps,
@@ -38,3 +37,21 @@ export {
 } from './shared/dialogStyles';
 export { ToastMessage } from './ToastMessage';
 export { SortableList, type SortableListProps } from './SortableList';
+export {
+  TablesPageContainer,
+  TableCardsArea,
+  TableCardsGrid,
+  type TablesPageContainerProps,
+  type TableWithStatus,
+  useTablesData,
+} from './TablesPageContainer';
+export {
+  DndContextWrapper,
+  type DndContextWrapperProps,
+} from './DndContextWrapper';
+export { DraggableTableCard } from './DraggableTableCard';
+export { LongPressTableCard } from './LongPressTableCard';
+export {
+  GuestCountDialog,
+  type GuestCountDialogProps,
+} from './GuestCountDialog';

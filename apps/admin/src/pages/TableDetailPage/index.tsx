@@ -94,6 +94,7 @@ export const TableDetailPage = () => {
       });
       toast('메뉴를 추가했어요.');
     } catch (error) {
+      //TODO 토스트를 지우던지 ignore 하던지
       console.error(error);
       toast('메뉴 추가에 실패했어요. 다시 시도해주세요.');
     }

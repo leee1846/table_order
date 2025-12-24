@@ -88,12 +88,12 @@ export const useTableDrag = ({
             const sourceCount = customerCounts[Number(sourceId)];
             if (sourceCount) {
               // 이동한 테이블에 기존 고객 수 저장
-              setData(Number(targetId), {
+              setData(targetId, {
                 adultCount: sourceCount.adultCount,
                 childCount: sourceCount.childCount ?? 0,
               });
             }
-            clearData(Number(sourceId)); // 이동한 테이블 고객 수 초기화
+            clearData(sourceId); // 이동한 테이블 고객 수 초기화
             queryClient.invalidateQueries({
               queryKey: queryKeys.orders.currentTableList(shopCode),
             });
@@ -108,19 +108,19 @@ export const useTableDrag = ({
 
       shareOrderMutation.mutate(payload, {
         onSuccess: () => {
-          const sourceCount = customerCounts[Number(sourceId)]; // active 테이블 고객 수
-          const targetCount = customerCounts[Number(targetId)]; // over 테이블 고객 수
+          const sourceCount = customerCounts[sourceId]; // active 테이블 고객 수
+          const targetCount = customerCounts[targetId]; // over 테이블 고객 수
           const adultCount =
             (targetCount?.adultCount ?? 0) + (sourceCount?.adultCount ?? 0);
           const childCount =
             (targetCount?.childCount ?? 0) + (sourceCount?.childCount ?? 0);
 
           // 합석 시 두 테이블의 객수를 합산해 저장하고, 원본 테이블은 초기화한다.
-          setData(Number(targetId), {
+          setData(targetId, {
             adultCount,
             childCount,
           });
-          clearData(Number(sourceId));
+          clearData(sourceId);
           queryClient.invalidateQueries({
             queryKey: queryKeys.orders.currentTableList(shopCode),
           });

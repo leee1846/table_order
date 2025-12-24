@@ -1,30 +1,24 @@
 import { useRef, useCallback } from 'react';
-import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 export interface UseLongPressOptions {
   /**
    * 길게 누르기로 인식할 시간(ms)
-   * @default 500 (handlers 모드) 또는 350 (sensors 모드)
+   * @default 500
    */
   delay?: number;
   /**
-   * 길게 누르기 발생 시 실행할 콜백 (handlers 모드에서 사용)
+   * 길게 누르기 발생 시 실행할 콜백
    */
   onLongPress?: (event: React.MouseEvent | React.TouchEvent) => void;
   /**
-   * 일반 클릭 시 실행할 콜백 (handlers 모드에서 사용)
+   * 일반 클릭 시 실행할 콜백
    */
   onClick?: (event: React.MouseEvent | React.TouchEvent) => void;
   /**
-   * 기본 동작 방지 여부 (handlers 모드에서 사용)
+   * 기본 동작 방지 여부
    * @default false
    */
   preventDefault?: boolean;
-  /**
-   * 길게 누르는 동안 허용할 커서 이동 범위(px) (sensors 모드에서 사용)
-   * @default 8
-   */
-  tolerance?: number;
 }
 
 export interface UseLongPressHandlers {
@@ -38,54 +32,34 @@ export interface UseLongPressHandlers {
 
 export interface UseLongPressReturn {
   /**
-   * React 이벤트 핸들러 객체 (handlers 모드)
+   * React 이벤트 핸들러 객체
    * 컴포넌트에 spread operator로 전달하여 사용
    */
   handlers: UseLongPressHandlers;
-  /**
-   * dnd-kit sensors (sensors 모드)
-   * DndContext의 sensors prop에 전달하여 사용
-   */
-  sensors: ReturnType<typeof useSensors>;
 }
 
 /**
- * 길게 누르기 이벤트를 처리하는 통합 훅
+ * 길게 누르기 이벤트를 처리하는 훅
  *
- * 두 가지 모드를 지원합니다:
- * 1. handlers 모드: React 이벤트 핸들러를 반환 (일반 컴포넌트에 사용)
- * 2. sensors 모드: dnd-kit sensors를 반환 (DndContext에 사용)
+ * React 이벤트 핸들러를 반환하여 컴포넌트에 spread operator로 전달하여 사용합니다.
  *
  * @example
  * ```tsx
- * // handlers 모드 사용
  * const { handlers } = useLongPress({
  *   delay: 500,
  *   onLongPress: () => console.log('길게 누름'),
  *   onClick: () => console.log('일반 클릭'),
  * });
  * <button {...handlers}>버튼</button>
- *
- * // sensors 모드 사용
- * const { sensors } = useLongPress({ delay: 350, tolerance: 8 });
- * <DndContext sensors={sensors}>...</DndContext>
  * ```
  */
 export const useLongPress = (
   options: UseLongPressOptions = {}
 ): UseLongPressReturn => {
-  const {
-    delay,
-    onLongPress,
-    onClick,
-    preventDefault = false,
-    tolerance = 8,
-  } = options;
+  const { delay, onLongPress, onClick, preventDefault = false } = options;
 
-  // handlers 모드를 위한 delay (기본값 500)
+  // delay 기본값 500
   const handlersDelay = delay ?? (onLongPress ? 500 : undefined);
-  // sensors 모드를 위한 delay (기본값 350)
-  const sensorsDelay = delay ?? 350;
 
   // 타이머 ref
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -156,15 +130,5 @@ export const useLongPress = (
     },
   };
 
-  // sensors 모드: dnd-kit의 드래그 앤 드롭에 사용 (길게 누른 후 드래그 가능)
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        delay: sensorsDelay, // 이 시간 이상 누르고 있어야 드래그 시작
-        tolerance, // 드래그 시작 전 허용되는 커서 이동 범위
-      },
-    })
-  );
-
-  return { handlers, sensors };
+  return { handlers };
 };

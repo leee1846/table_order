@@ -6,6 +6,7 @@ import * as S from './addTableGroupDialog.styles';
 import { toast } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostCreateTableGroup } from '@repo/api/queries';
+import { useAuth } from '@/hooks/useAuth';
 const { colors } = theme;
 
 interface AddTableGroupDialogProps {
@@ -21,18 +22,17 @@ export const AddTableGroupDialog = ({
   const [groupName, setGroupName] = useState('');
   const { mutateAsync: createTableGroup } = usePostCreateTableGroup();
 
+  const { shopCode, shopSeq } = useAuth();
   const handleSubmit = async () => {
     if (groupName.trim() !== '') {
       try {
         await createTableGroup({
-          // TODO: 추후에 shopSeq 추가
-          shopSeq: 1,
+          shopSeq: shopSeq ?? 0,
           tableGroupName: groupName,
         });
 
         await queryClient.invalidateQueries({
-          // TODO: 추후에 shopCode 추가
-          queryKey: queryKeys.table.groupList('NEXA000001'),
+          queryKey: queryKeys.table.groupList(shopCode ?? ''),
         });
 
         toast('테이블 그룹이 추가되었습니다.');

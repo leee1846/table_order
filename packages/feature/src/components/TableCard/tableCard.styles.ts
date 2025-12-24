@@ -4,7 +4,7 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 
 const { colors } = theme;
 
-export const CardContainer = styled.div<{ onClick?: () => void }>`
+export const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -17,20 +17,17 @@ export const CardContainer = styled.div<{ onClick?: () => void }>`
   -webkit-tap-highlight-color: transparent;
 
   border-radius: 12px;
-  ${({ onClick }) =>
-    onClick &&
-    css`
-      &:active {
-        color: ${colors.white};
-        background: ${colors.primary[500]};
 
-        & h1,
-        & span,
-        & div {
-          color: ${colors.white} !important;
-        }
-      }
-    `}
+  &:active {
+    color: ${colors.white};
+    background: ${colors.primary[500]};
+
+    & h1,
+    & span,
+    & div {
+      color: ${colors.white} !important;
+    }
+  }
 `;
 
 export const CardHeader = styled.div`

@@ -5,10 +5,9 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 40px;
-  padding: 40px 24px 40px 30px;
+  padding: 40px 24px 0 30px;
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
 `;
 
 export const Header = styled.header`

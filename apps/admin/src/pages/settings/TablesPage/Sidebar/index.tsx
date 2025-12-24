@@ -13,6 +13,7 @@ const { colors } = theme;
 import { ROUTES } from '@/constants/routes';
 import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import type { ITableGroup } from '@repo/api/types';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SidebarProps {
   tableGroups: ITableGroup[];
@@ -28,6 +29,8 @@ export const Sidebar = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { mutateAsync: deleteTableGroup } = useDeleteTableGroup();
+
+  const { shopCode, shopSeq } = useAuth();
 
   const [isAddTableGroupDialogOpen, setIsAddTableGroupDialogOpen] =
     useState(false);
@@ -59,15 +62,13 @@ export const Sidebar = ({
       onConfirm: () => {
         deleteTableGroup(
           {
-            // TODO: 추후에 shopSeq 추가
-            shopSeq: 1,
+            shopSeq: shopSeq ?? 0,
             tableGroupSeq: group.tableGroupSeq,
           },
           {
             onSuccess: async () => {
               await queryClient.invalidateQueries({
-                // TODO: 추후에 shopCode 추가
-                queryKey: queryKeys.table.groupList('NEXA000001'),
+                queryKey: queryKeys.table.groupList(shopCode ?? ''),
               });
               toast('테이블 그룹이 삭제되었습니다.');
               setEditingGroupId(null);

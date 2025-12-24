@@ -93,10 +93,13 @@ export const MenuAppFeature = ({
   const [closureLastOrderMinutes, setClosureLastOrderMinutes] = useState('');
   const [closureLastOrderMessage, setClosureLastOrderMessage] = useState('');
   const [closureMessage, setClosureMessage] = useState('');
+  // 시간과 분을 HHMM 형식의 문자열로 변환
   const toTimeString = (hour: string, minute: string) =>
     hour && minute
       ? `${hour.padStart(2, '0')}${minute.padStart(2, '0')}`
       : undefined;
+
+  // 문자열을 숫자로 변환, 빈 문자열이거나 숫자가 아니면 undefined 반환
   const toNumberOrUndefined = (value: string) => {
     if (value === '') {
       return undefined;
@@ -330,6 +333,7 @@ export const MenuAppFeature = ({
     useTheftPrevention,
   ]);
 
+  // 카테고리의 첫주문 필수 여부를 토글
   const handleToggleCategoryRequired = (categorySeq: number) => {
     setSelectedCategorySeqs((prev) =>
       prev.includes(categorySeq)
@@ -338,10 +342,12 @@ export const MenuAppFeature = ({
     );
   };
 
+  // 카테고리 설정 모달 열기
   const handleOpenCategoryModal = () => {
     setIsCategoryModalOpen(true);
   };
 
+  // 카테고리 설정 모달 닫기
   const handleCloseCategoryModal = () => {
     setIsCategoryModalOpen(false);
   };
@@ -500,6 +506,7 @@ export const MenuAppFeature = ({
               </BasicButton>
             </S.BreakTimeHeader>
             {breakTimeRows.map((row, index) => {
+              // 브레이크타임 row의 특정 필드 업데이트
               const updateRow = (updates: Partial<BreakTimeRow>) => {
                 const updated = [...breakTimeRows];
                 const currentRow = updated[index];

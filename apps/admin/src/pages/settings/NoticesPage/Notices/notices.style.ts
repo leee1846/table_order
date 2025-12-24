@@ -4,6 +4,8 @@ import { theme, TYPOGRAPHY } from '@repo/ui';
 export const Container = styled.ul`
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
 `;
 
 export const Message = styled.p`
@@ -18,8 +20,8 @@ export const Notice = styled.li<{ isOpen: boolean }>`
   flex-direction: column;
   background-color: ${({ isOpen }) =>
     isOpen ? theme.colors.grey[50] : theme.colors.white};
-  border-radius: 0.75rem;
-  overflow: hidden;
+  flex: 1;
+  border-bottom: 1px solid ${theme.colors.grey[200]};
 `;
 
 export const Header = styled.button<{ isOpen: boolean }>`
@@ -27,8 +29,7 @@ export const Header = styled.button<{ isOpen: boolean }>`
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px 14px 0;
-  border-bottom: 1px solid
-    ${({ isOpen }) => (isOpen ? 'transparent' : theme.colors.grey[200])};
+  border: 1px solid red;
   cursor: pointer;
 `;
 
