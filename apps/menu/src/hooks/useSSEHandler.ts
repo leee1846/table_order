@@ -10,6 +10,8 @@ import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useDeviceListData } from '@/hooks/useDeviceListData';
+import { useQueryClient } from '@repo/api/tanstack-query';
+import { queryKeys } from '@repo/api/queries';
 
 /**
  * SSE 연결 및 메시지 처리를 담당하는 훅
@@ -50,16 +52,12 @@ export const useSSEHandler = () => {
   const { refresh: refreshDeviceListData } = useDeviceListData({
     skipInitialRequest: true,
   });
+  const queryClient = useQueryClient();
 
   // SSE 메시지 처리
   useEffect(() => {
-    if (
-      !sseData ||
-      !deviceData ||
-      !deviceData?.tableNumber ||
-      !shopData ||
-      !shopData?.shopCode
-    ) {
+    const shopCode = shopData?.shopCode;
+    if (!sseData || !deviceData || !shopData || !shopCode) {
       return;
     }
 
@@ -69,9 +67,16 @@ export const useSSEHandler = () => {
 
     switch (sseData.type) {
       case 'ORDER': {
-        if (!sseData.data) {
+        // TODO: 테스트 필요
+
+        queryClient.refetchQueries({
+          queryKey: queryKeys.orders.currentTableList(shopCode),
+        });
+
+        if (!sseData.data || !deviceData?.tableNumber) {
           return;
         }
+
         if (!(deviceData.tableNumber in sseData.data)) {
           return;
         }
@@ -84,30 +89,36 @@ export const useSSEHandler = () => {
         ) {
           refreshTableOrderHistoriesData(sseUpdatedAt);
         }
+
         break;
       }
+
       case 'SHOP': {
         //TODO: 테스트 필요
         refreshShopDetailData();
         window.location.reload();
         break;
       }
+
       case 'MENU':
         {
           refreshCategoriesData();
         }
         break;
+
       case 'TABLE':
         {
           refreshTableGroupData();
         }
         break;
+
       case 'DEVICE':
         {
           // TODO: 테스트 필요
           refreshDeviceListData();
         }
         break;
+
       case 'PICKUP':
         break;
       default:
@@ -123,5 +134,6 @@ export const useSSEHandler = () => {
     refreshShopDetailData,
     refreshTableGroupData,
     refreshDeviceListData,
+    queryClient,
   ]);
 };

@@ -24,8 +24,6 @@ export const TableGridContainer = ({
   tables,
   onTableClick,
 }: Props) => {
-  const { t } = useTranslation();
-
   const handleTableClick = (table: TableData) => {
     onTableClick?.(table);
   };

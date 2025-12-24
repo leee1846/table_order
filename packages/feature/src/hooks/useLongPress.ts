@@ -1,10 +1,5 @@
 import { useRef, useCallback } from 'react';
-import {
-  PointerSensor,
-  type PointerSensorOptions,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
+import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 export interface UseLongPressOptions {
   /**

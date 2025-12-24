@@ -18,7 +18,7 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { openConfirmDialog, openDualActionDialog } from '@repo/feature/utils';
-import { usePostDeviceDetail } from '@repo/api/queries';
+import { useGetCurrentTableList, usePostDeviceDetail } from '@repo/api/queries';
 import { useDeviceListData } from '@/hooks/useDeviceListData';
 
 export const TablesPage = () => {
@@ -32,6 +32,10 @@ export const TablesPage = () => {
   const { data: tableGroupsData } = useTableGroupData();
   /** 기기정보 리스트 데이터 로드 */
   const { data: deviceListData } = useDeviceListData();
+  /** 현재 테이블 목록 데이터 로드 */
+  const { data: currentTableListData } = useGetCurrentTableList({
+    shopCode: shopData?.shopCode ?? '',
+  });
 
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
     number | null
@@ -55,18 +59,38 @@ export const TablesPage = () => {
       (device) => device.tableNumber === table.tableNumber
     );
 
-    if (!device) {
-      return {
-        id: table.tableSeq,
-        tableNumber: table.tableNumber,
-      };
-    }
+    const currentTable = currentTableListData?.data?.find(
+      (currentTable) => currentTable.tableNumber === table.tableNumber
+    );
+
+    // hasOrder: 주문 정보가 있고 orderDetailMenuList가 있는 경우
+    const hasOrder = !!currentTable && !!currentTable.orderDetailMenuList;
+
+    // orderDetailMenuList를 menuItems로 변환
+    const menuItems = currentTable?.orderDetailMenuList
+      ? currentTable.orderDetailMenuList.map((menu) => ({
+          name: menu.menuName,
+          quantity: menu.menuQuantity,
+        }))
+      : null;
+
+    // orderTime을 HH:MM 형식으로 변환
+    const orderTime = currentTable?.createDate
+      ? new Date(currentTable.createDate).toLocaleTimeString('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        })
+      : null;
 
     return {
-      ...device,
       id: table.tableSeq,
       tableNumber: table.tableNumber,
-      batteryLevel: device?.battery ?? 100,
+      batteryLevel: device?.battery ?? null,
+      totalAmount: currentTable?.totalAmount ?? null,
+      orderTime,
+      menuItems,
+      hasOrder,
     };
   });
 
@@ -125,9 +149,11 @@ export const TablesPage = () => {
 
   const handleTableClick = async (table: TableData) => {
     if (deviceData?.deviceType === 'ORDER_POS') {
-      // TODO: 오더포스일경우
+      // TODO: 테이블 상세 페이지 이동 및 객수설정
       return;
     }
+
+    // TODO: 꾹 눌렀을때테이블 상세 페이지 이동 및 객수설정
 
     // 테이블이 이미 사용중일경우
     if (table.menuItems) {
