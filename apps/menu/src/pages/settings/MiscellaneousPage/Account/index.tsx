@@ -1,41 +1,45 @@
+import { useNavigate } from 'react-router-dom';
 import { BasicButton, RadioButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
-import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
+import { openDualActionDialog } from '@repo/feature/utils';
+import { getAccessToken } from '@repo/api/auth';
+import type { ITokenPayload, TShopLanguage } from '@repo/api/types';
+import { decodeJwtToken, storage } from '@repo/util/function';
 import {
   useAdminTranslation,
   getAdminSupportedLanguages,
 } from '@/config/i18n/admin.i18n';
 import { LANGUAGE_CONFIG } from '@/constants/common';
-import { STORAGE_KEYS } from '@/constants/keys';
-import { decodeJwtToken, storage } from '@repo/util/function';
-import type { ITokenPayload, TShopLanguage } from '@repo/api/types';
 import { ROUTES } from '@/constants/routes';
-import { useNavigate } from 'react-router-dom';
-import { openDualActionDialog } from '@repo/feature/utils';
-import { clearAuthData } from '@/utils/auth';
+import { STORAGE_KEYS } from '@/constants/keys';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { getAccessToken } from '@repo/api/auth';
+import { clearAuthData } from '@/utils/auth';
+import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
 
 export const Account = () => {
-  const accessToken = getAccessToken();
-  const payload = decodeJwtToken<ITokenPayload>(accessToken ?? '');
-  const { i18n, t } = useAdminTranslation();
   const navigate = useNavigate();
+  const { i18n, t } = useAdminTranslation();
 
-  const currentLanguage = i18n.language || 'KO';
-  const supportedLanguages = getAdminSupportedLanguages();
-  const { data: shopDetailData } = useShopDetailData();
+  const currentAccessToken = getAccessToken();
+  const tokenPayload = decodeJwtToken<ITokenPayload>(currentAccessToken ?? '');
+  const username = tokenPayload?.sub;
 
-  const languageList = supportedLanguages
-    .filter((lang) => lang in LANGUAGE_CONFIG)
-    .map((lang) => ({
-      value: lang as TShopLanguage,
-      label: LANGUAGE_CONFIG[lang as TShopLanguage].label,
+  const { data: currentShopDetail } = useShopDetailData();
+  const shopCode = currentShopDetail?.shopCode;
+  const shopName = currentShopDetail?.shopName;
+
+  const selectedLanguageCode = i18n.language || 'KO';
+  const supportedLanguageCodes = getAdminSupportedLanguages();
+  const availableLanguageOptions = supportedLanguageCodes
+    .filter((languageCode) => languageCode in LANGUAGE_CONFIG)
+    .map((languageCode) => ({
+      value: languageCode as TShopLanguage,
+      label: LANGUAGE_CONFIG[languageCode as TShopLanguage].label,
     }));
 
-  const handleLanguageChange = (lang: string) => {
-    i18n.changeLanguage(lang);
-    storage.local.save(STORAGE_KEYS.ADMIN_I18N_LANGUAGE, lang);
+  const handleLanguageChange = (selectedLanguage: string) => {
+    i18n.changeLanguage(selectedLanguage);
+    storage.local.save(STORAGE_KEYS.ADMIN_I18N_LANGUAGE, selectedLanguage);
   };
 
   const handleLogout = () => {
@@ -55,31 +59,31 @@ export const Account = () => {
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
         <S.TitleContainer>
-          <UIStyles.setting.Title>{payload?.sub}</UIStyles.setting.Title>
+          <UIStyles.setting.Title>{username}</UIStyles.setting.Title>
           <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
             {t('로그아웃')}
           </BasicButton>
         </S.TitleContainer>
         <S.SID>
-          SID <span>{shopDetailData?.shopCode}</span>
+          SID <span>{shopCode}</span>
         </S.SID>
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
-          <p>{shopDetailData?.shopName}</p>
+          <p>{shopName}</p>
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
           <p>{t('언어 선택')}</p>
           <S.LanguageList>
-            {languageList.map((lang) => (
+            {availableLanguageOptions.map((languageOption) => (
               <RadioButton
-                key={lang.value}
-                checked={currentLanguage === lang.value}
-                value={lang.value}
-                onChange={() => handleLanguageChange(lang.value)}
+                key={languageOption.value}
+                checked={selectedLanguageCode === languageOption.value}
+                value={languageOption.value}
+                onChange={() => handleLanguageChange(languageOption.value)}
               >
-                <span>{lang.label}</span>
+                <span>{languageOption.label}</span>
               </RadioButton>
             ))}
           </S.LanguageList>

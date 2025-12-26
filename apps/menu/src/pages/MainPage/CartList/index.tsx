@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import * as S from '@/pages/MainPage/CartList/cartList.style';
 import { BasicButton, NumberInput } from '@repo/ui/components';
 import { DeleteIcon, EmptedCartIcon } from '@repo/ui/icons';
@@ -6,7 +7,6 @@ import { useThemeMode } from '@repo/ui';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import { formatCurrency } from '@repo/util/string';
-import { useState } from 'react';
 import { MenuDetailWithOptionsModal } from '../Contents/MenuDetailWithOptionsModal';
 import type { ICategoryWithMenus } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
@@ -16,12 +16,18 @@ import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 
+const TOAST_OPTIONS = {
+  position: 'center-center' as const,
+  duration: 2000,
+};
+
 interface Props {
   onClose: () => void;
   categories: ICategoryWithMenus[];
   executePostpaidOrder: () => Promise<boolean>;
   openPaymentsModal: () => void;
 }
+
 export const CartList = ({
   onClose,
   categories,
@@ -30,21 +36,8 @@ export const CartList = ({
 }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
-
   const { data: modalData, setModalData } = useModalStore();
-
   const { data: shopDetailData } = useShopDetailData();
-  const currencySymbol =
-    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
-
-  const [selectedMenu, setSelectedMenu] = useState<ICartMenu | null>(null);
-  const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
-    null
-  );
-  const selectedMenuData = categories
-    .find((category) => category.categorySeq === selectedMenu?.categorySeq)
-    ?.menuInfoList.find((menu) => menu.menuSeq === selectedMenu?.menuSeq);
-
   const {
     data: cartData,
     removeFromCart,
@@ -52,13 +45,17 @@ export const CartList = ({
     // clearCart,
   } = useCartStore();
 
-  const removeMenu = (index: number) => {
-    removeFromCart(index);
-    toast(t('메뉴가 삭제되었습니다.'), {
-      position: 'center-center',
-      duration: 2000,
-    });
-  };
+  const [selectedMenu, setSelectedMenu] = useState<ICartMenu | null>(null);
+  const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
+    null
+  );
+
+  const currencySymbol =
+    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
+
+  const selectedMenuDetail = categories
+    .find((category) => category.categorySeq === selectedMenu?.categorySeq)
+    ?.menuInfoList.find((menu) => menu.menuSeq === selectedMenu?.menuSeq);
 
   // 카트 메뉴의 총 가격 계산
   const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
@@ -81,32 +78,48 @@ export const CartList = ({
     }, 0);
   };
 
-  const order = () => {
+  const calculateTotalMenuQuantity = (): number => {
+    return cartData.menus.reduce((total, menu) => {
+      return total + menu.quantity;
+    }, 0);
+  };
+
+  const handleRemoveMenu = (index: number) => {
+    removeFromCart(index);
+    toast(t('메뉴가 삭제되었습니다.'), TOAST_OPTIONS);
+  };
+
+  const handleOpenMenuDetailModal = (menu: ICartMenu, index: number) => {
+    setSelectedMenu(menu);
+    setSelectedMenuIndex(index);
+    setModalData('isCartMenuDetailModalOpened', true);
+  };
+
+  const handleCloseMenuDetailModal = () => {
+    setModalData('isCartMenuDetailModalOpened', false);
+    setSelectedMenuIndex(null);
+  };
+
+  const handleOrderSubmit = () => {
     if (cartData.menus.length < 1) {
-      toast(t('현재 담긴 메뉴가 없어요.'), {
-        position: 'center-center',
-        duration: 2000,
-      });
+      toast(t('현재 담긴 메뉴가 없어요.'), TOAST_OPTIONS);
       return;
     }
 
-    const totalMenuQuantity = cartData.menus.reduce((total, menu) => {
-      return total + menu.quantity;
-    }, 0);
+    const totalMenuQuantity = calculateTotalMenuQuantity();
+    const firstOrderMinAmount =
+      shopDetailData?.shopSetting?.firstOrderMinAmount;
 
     if (
-      shopDetailData?.shopSetting?.firstOrderMinAmount &&
-      shopDetailData?.shopSetting?.firstOrderMinAmount > 0 &&
-      totalMenuQuantity < shopDetailData?.shopSetting?.firstOrderMinAmount
+      firstOrderMinAmount &&
+      firstOrderMinAmount > 0 &&
+      totalMenuQuantity < firstOrderMinAmount
     ) {
       toast(
         t('최소 주문 수량은 {{minQuantity}}개 입니다.', {
-          minQuantity: shopDetailData?.shopSetting?.firstOrderMinAmount,
+          minQuantity: firstOrderMinAmount,
         }),
-        {
-          position: 'center-center',
-          duration: 2000,
-        }
+        TOAST_OPTIONS
       );
       return;
     }
@@ -132,11 +145,14 @@ export const CartList = ({
     });
   };
 
-  const onClickOptionButton = (menu: ICartMenu, index: number) => {
-    setSelectedMenu(menu);
-    setSelectedMenuIndex(index);
-    setModalData('isCartMenuDetailModalOpened', true);
-  };
+  const hasMenusInCart = cartData.menus.length > 0;
+  const isOrderSheetTotalVisible =
+    shopDetailData?.shopSetting?.isOrderSheetTotalVisible;
+  const isMenuDetailModalOpen =
+    modalData.isCartMenuDetailModalOpened &&
+    selectedMenuDetail &&
+    selectedMenu &&
+    selectedMenuIndex !== null;
 
   return createPortal(
     <S.Background onClick={onClose}>
@@ -144,64 +160,67 @@ export const CartList = ({
         <S.Title>{t('장바구니')}</S.Title>
 
         <S.OrderList>
-          {cartData.menus.length < 1 && (
+          {!hasMenusInCart && (
             <S.NoContent>
               <EmptedCartIcon theme={theme} width={52} height={52} />
               <p>{t('현재 담긴 메뉴가 없어요.')}</p>
             </S.NoContent>
           )}
 
-          {cartData.menus.map((menu, index) => (
-            <S.OrderItem key={`order-${index + 1}`}>
-              <S.OrderMenu>
-                <p>{menu.menuName}</p>
-                <p>{formatCurrency(menu.menuPrice)}</p>
-              </S.OrderMenu>
-              {menu.selectedOptions.length > 0 && (
-                <S.Options>
-                  {menu.selectedOptions.map((option) => (
-                    <S.OptionItem key={option.optionSeq}>
-                      <p>
-                        <span />
-                        {option.optionName}
-                      </p>
-                      <div>
-                        <p>{formatCurrency(option.quantity)}</p>
-                        <p>{formatCurrency(option.optionPrice)}</p>
-                      </div>
-                    </S.OptionItem>
-                  ))}
-                  {menu.selectedOptions.length > 0 && (
+          {cartData.menus.map((menu, index) => {
+            const hasOptions = menu.selectedOptions.length > 0;
+
+            return (
+              <S.OrderItem key={`order-${index + 1}`}>
+                <S.OrderMenu>
+                  <p>{menu.menuName}</p>
+                  <p>{formatCurrency(menu.menuPrice)}</p>
+                </S.OrderMenu>
+
+                {hasOptions && (
+                  <S.Options>
+                    {menu.selectedOptions.map((option) => (
+                      <S.OptionItem key={option.optionSeq}>
+                        <p>
+                          <span />
+                          {option.optionName}
+                        </p>
+                        <div>
+                          <p>{formatCurrency(option.quantity)}</p>
+                          <p>{formatCurrency(option.optionPrice)}</p>
+                        </div>
+                      </S.OptionItem>
+                    ))}
                     <S.OptionButtonContainer>
                       <button
                         type="button"
-                        onClick={() => onClickOptionButton(menu, index)}
+                        onClick={() => handleOpenMenuDetailModal(menu, index)}
                       >
                         {t('옵션')}
                       </button>
                     </S.OptionButtonContainer>
-                  )}
-                </S.Options>
-              )}
+                  </S.Options>
+                )}
 
-              <S.ButtonContainer>
-                <S.DeleteButton onClick={() => removeMenu(index)}>
-                  <DeleteIcon color={theme.mode.grey[600]} />
-                </S.DeleteButton>
-                <NumberInput
-                  variant="square"
-                  size="L"
-                  min={1}
-                  value={menu.quantity}
-                  onChange={(value) => updateCartItemQuantity(index, value)}
-                />
-              </S.ButtonContainer>
-            </S.OrderItem>
-          ))}
+                <S.ButtonContainer>
+                  <S.DeleteButton onClick={() => handleRemoveMenu(index)}>
+                    <DeleteIcon color={theme.mode.grey[600]} />
+                  </S.DeleteButton>
+                  <NumberInput
+                    variant="square"
+                    size="L"
+                    min={1}
+                    value={menu.quantity}
+                    onChange={(value) => updateCartItemQuantity(index, value)}
+                  />
+                </S.ButtonContainer>
+              </S.OrderItem>
+            );
+          })}
         </S.OrderList>
 
         <S.TotalContainer>
-          {shopDetailData?.shopSetting?.isOrderSheetTotalVisible && (
+          {isOrderSheetTotalVisible && (
             <S.TotalInfo>
               <p>{t('합계')}</p>
               <p>
@@ -210,27 +229,21 @@ export const CartList = ({
               </p>
             </S.TotalInfo>
           )}
-          <BasicButton variant="Solid_Blue_2XL" onClick={order}>
+          <BasicButton variant="Solid_Blue_2XL" onClick={handleOrderSubmit}>
             {t('주문하기')}
           </BasicButton>
         </S.TotalContainer>
       </S.Container>
 
-      {modalData.isCartMenuDetailModalOpened &&
-        selectedMenuData &&
-        selectedMenu &&
-        selectedMenuIndex !== null && (
-          <MenuDetailWithOptionsModal
-            onClose={() => {
-              setModalData('isCartMenuDetailModalOpened', false);
-              setSelectedMenuIndex(null);
-            }}
-            menu={selectedMenuData}
-            initialQuantity={selectedMenu.quantity}
-            initialSelectedOptions={selectedMenu.selectedOptions}
-            cartItemIndex={selectedMenuIndex}
-          />
-        )}
+      {isMenuDetailModalOpen && (
+        <MenuDetailWithOptionsModal
+          onClose={handleCloseMenuDetailModal}
+          menu={selectedMenuDetail}
+          initialQuantity={selectedMenu.quantity}
+          initialSelectedOptions={selectedMenu.selectedOptions}
+          cartItemIndex={selectedMenuIndex}
+        />
+      )}
     </S.Background>,
     document.body
   );

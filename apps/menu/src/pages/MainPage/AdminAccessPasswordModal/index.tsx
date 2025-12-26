@@ -1,30 +1,32 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CloseIcon, UnlockedIcon, ArrowBackIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
-import * as S from '@/pages/MainPage/AdminAccessPasswordModal/adminAccessPasswordModal.style';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes';
-import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { AppStorage } from '@repo/util/app';
-import { STORAGE_KEYS } from '@/constants/keys';
 import { usePostLoginMenuboardAdmin } from '@repo/api/queries';
-import { useShopData } from '@/hooks/useShopData';
 import { openConfirmDialog } from '@repo/feature/utils';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
+import { ROUTES } from '@/constants/routes';
+import { STORAGE_KEYS } from '@/constants/keys';
+import * as S from '@/pages/MainPage/AdminAccessPasswordModal/adminAccessPasswordModal.style';
+
+const PASSWORD_MAX_LENGTH = 4;
 
 interface Props {
   onClose: () => void;
 }
 
 export const AdminAccessPasswordModal = ({ onClose }: Props) => {
+  const [password, setPassword] = useState<string | null>(null);
+
   const { theme } = useThemeMode();
   const navigate = useNavigate();
   const { t } = useAdminTranslation();
   const { shopData } = useShopData();
   const { data: deviceData } = useDeviceData();
-
-  const [password, setPassword] = useState<string | null>(null);
 
   const { mutateAsync: loginMenuboardAdmin } = usePostLoginMenuboardAdmin({
     ignoreGlobalErrors: [401],
@@ -41,8 +43,31 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
     },
   });
 
+  const handleLoginSuccess = () => {
+    AppStorage.saveData({
+      key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
+      value: true,
+      isTemporary: true,
+    });
+    navigate(ROUTES.TABLES.generate());
+  };
+
+  const handlePasswordComplete = async (completedPassword: string) => {
+    const shopCode = shopData?.shopCode;
+    if (!shopCode) {
+      return;
+    }
+
+    await loginMenuboardAdmin({
+      shopCode,
+      pw: completedPassword,
+    }).then(handleLoginSuccess);
+  };
+
   const handleNumberPress = (number: number) => {
-    if (password && password.length > 3) {
+    const currentPasswordLength = password?.length ?? 0;
+
+    if (currentPasswordLength >= PASSWORD_MAX_LENGTH) {
       return;
     }
 
@@ -50,37 +75,23 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
       password === null ? String(number) : password + String(number);
     setPassword(nextPassword);
 
-    const shopCode = shopData?.shopCode;
-    if (!shopCode) {
-      return;
-    }
-
-    if (nextPassword.length > 3) {
-      loginMenuboardAdmin({
-        shopCode,
-        pw: nextPassword,
-      }).then(() => {
-        AppStorage.saveData({
-          key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
-          value: true,
-          isTemporary: true,
-        });
-        navigate(ROUTES.TABLES.generate());
-      });
+    if (nextPassword.length === PASSWORD_MAX_LENGTH) {
+      handlePasswordComplete(nextPassword);
     }
   };
 
-  const deletePassword = () => {
-    setPassword((prev) => {
-      if (prev === null || prev.length === 0) {
+  const handleDeletePassword = () => {
+    setPassword((currentPassword) => {
+      if (!currentPassword || currentPassword.length <= 1) {
         return null;
       }
-      if (prev.length === 1) {
-        return null;
-      }
-      return prev.slice(0, -1);
+      return currentPassword.slice(0, -1);
     });
   };
+
+  const currentPasswordLength = password?.length ?? 0;
+  const isPasswordDigitFilled = (digitIndex: number) =>
+    currentPasswordLength > digitIndex;
 
   return (
     <S.Container>
@@ -94,14 +105,14 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
         <UnlockedIcon width={80} height={80} color={theme.mode.grey[400]} />
         <S.Title>{t('비밀번호를 입력해 주세요')}</S.Title>
         <S.PasswordContainer>
-          <li>{password && password.length > 0 && <span />}</li>
-          <li>{password && password.length > 1 && <span />}</li>
-          <li>{password && password.length > 2 && <span />}</li>
-          <li>{password && password.length > 3 && <span />}</li>
+          <li>{isPasswordDigitFilled(0) && <span />}</li>
+          <li>{isPasswordDigitFilled(1) && <span />}</li>
+          <li>{isPasswordDigitFilled(2) && <span />}</li>
+          <li>{isPasswordDigitFilled(3) && <span />}</li>
         </S.PasswordContainer>
         <Keypad
           onNumberPress={handleNumberPress}
-          bottomRightAction={deletePassword}
+          bottomRightAction={handleDeletePassword}
           bottomRightIcon={
             <ArrowBackIcon width={28} height={28} color={theme.mode.grey[50]} />
           }

@@ -1,27 +1,30 @@
 import { useState, useEffect } from 'react';
+import { css } from '@emotion/react';
+import { Trans } from 'react-i18next';
 import { BasicButton } from '@repo/ui/components';
 import { speechBubbleIcon } from '@repo/ui/icons';
-import * as S from './cartReminder.style';
-import { Trans } from 'react-i18next';
-import { css } from '@emotion/react';
-import { globalTimerManager } from '@/utils/timerManager';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { TIMER_KEYS } from '@/constants/keys';
+import { useCategoriesData } from '@/hooks/useCategoriesData';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useCartStore } from '@/stores/useCartStore';
+import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
-import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
-import { useCategoriesData } from '@/hooks/useCategoriesData';
-import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { globalTimerManager } from '@/utils/timerManager';
+import * as S from './cartReminder.style';
+
+const COUNTDOWN_INITIAL_SECONDS = 28;
+const COUNTDOWN_INTERVAL_MS = 1000;
 
 export const CartReminder = () => {
   const { t, i18n } = useCustomerTranslation();
 
   const { hideCartReminder } = useCartReminderStore();
   const { clearCart } = useCartStore();
-  const { clearData: clearLanguageData } = useCustomerLanguageStore();
+  const { clearData: clearCustomerLanguageData } = useCustomerLanguageStore();
   const { showInitialPage } = useInitialPageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { refresh: refreshCategoriesData } = useCategoriesData();
@@ -29,15 +32,19 @@ export const CartReminder = () => {
     useTableOrderHistoriesData();
   const { refresh: refreshShopDetailData } = useShopDetailData();
 
-  const [time, setTime] = useState(28);
+  const [remainingSeconds, setRemainingSeconds] = useState(
+    COUNTDOWN_INITIAL_SECONDS
+  );
 
   useEffect(() => {
+    const decrementRemainingSeconds = () => {
+      setRemainingSeconds((prevSeconds) => prevSeconds - 1);
+    };
+
     globalTimerManager.setInterval(
       TIMER_KEYS.CART_REMINDER,
-      () => {
-        setTime((prev) => prev - 1);
-      },
-      1000
+      decrementRemainingSeconds,
+      COUNTDOWN_INTERVAL_MS
     );
 
     return () => {
@@ -46,42 +53,45 @@ export const CartReminder = () => {
   }, []);
 
   useEffect(() => {
-    const timerCallback = async () => {
-      if (time === 0) {
-        globalTimerManager.clear(TIMER_KEYS.CART_REMINDER);
-        // 메뉴 카테고리 api 요청
-        await refreshCategoriesData();
-        // 상점 상세 데이터 api 요청
-        await refreshShopDetailData();
-        // 주문 내역 api 요청
-        const response = await refreshTableOrderHistoriesData();
-        // 테이블을 점유X, 주문X 일경우
-        if (response === null) {
-          // 객수 선택 초기화
-          clearCustomerCountData();
-        }
-        // 장바구니 주문 유도 화면 숨기기
-        hideCartReminder();
-        // 장바구니 비우기
-        clearCart();
-        // 언어 선택 초기화
-        clearLanguageData();
-        // 초기 화면 노출
-        showInitialPage();
+    const resetToInitialState = async () => {
+      globalTimerManager.clear(TIMER_KEYS.CART_REMINDER);
+
+      await refreshCategoriesData();
+      await refreshShopDetailData();
+
+      const tableOrderHistoriesResponse =
+        await refreshTableOrderHistoriesData();
+
+      const isTableNotOccupiedAndNoOrders =
+        tableOrderHistoriesResponse === null;
+      if (isTableNotOccupiedAndNoOrders) {
+        clearCustomerCountData();
+      }
+
+      hideCartReminder();
+      clearCart();
+      clearCustomerLanguageData();
+      showInitialPage();
+    };
+
+    const handleCountdownComplete = async () => {
+      const isCountdownComplete = remainingSeconds === 0;
+      if (isCountdownComplete) {
+        await resetToInitialState();
       }
     };
 
-    timerCallback();
+    handleCountdownComplete();
   }, [
+    remainingSeconds,
     refreshCategoriesData,
+    refreshShopDetailData,
+    refreshTableOrderHistoriesData,
+    clearCustomerCountData,
     hideCartReminder,
     clearCart,
-    clearLanguageData,
+    clearCustomerLanguageData,
     showInitialPage,
-    clearCustomerCountData,
-    time,
-    refreshTableOrderHistoriesData,
-    refreshShopDetailData,
   ]);
 
   return (
@@ -91,7 +101,7 @@ export const CartReminder = () => {
       <S.Description>
         <Trans
           i18nKey="화면 조작이 없어 <span>{{time}}</span>초 후 화면이 초기화 됩니다."
-          values={{ time }}
+          values={{ time: remainingSeconds }}
           components={{ span: <span /> }}
           i18n={i18n}
         />
