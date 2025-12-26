@@ -10,7 +10,6 @@ import { usePostOrderGroup } from '@repo/api/queries';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
 
-// TODO: 테이블 다른 디바이스가 함께 사용하기 기능이라면 화면을 띄우면 안됨
 export const CustomerCountSelector = () => {
   const { theme } = useThemeMode();
   const { t } = useCustomerTranslation();

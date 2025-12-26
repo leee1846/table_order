@@ -104,8 +104,8 @@ export const useSystemStatusMonitor = () => {
                   : (currentDeviceData?.wifiSignal ?? null),
               tableNumber,
               battery: newBattery ?? currentDeviceData.battery ?? 0,
-              // TODO: 아래 3개의 data도 app에서 값을 가져와야함.
               orderPosNumber: currentDeviceData.orderPosNumber ?? null,
+              // TODO: 아래 2개의 data도 app에서 값을 가져와야함.
               version: currentDeviceData.version ?? '',
               buildNumber: currentDeviceData.buildNumber ?? '',
             });

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { waiterHandIcon } from '@repo/ui/icons';
 import * as S from '@/pages/MainPage/PickAlarm/pickupAlarm.style';
 import { BasicButton } from '@repo/ui/components';
@@ -10,10 +9,6 @@ export const PickupAlarm = () => {
   const { t } = useCustomerTranslation();
   const { data: piupAlarmData, setData: setShowPickupAlarm } =
     usePickupAlarmStore();
-
-  useEffect(() => {
-    // TODO: 띵동! 알림 플러그인 추가
-  }, []);
 
   return (
     <S.Container>
