@@ -31,6 +31,7 @@ export const useSystemStatusMonitor = () => {
   // 리스너는 앱 시작 시 즉시 등록
   useEffect(() => {
     const handleStatusUpdate = async (status: SystemStatus) => {
+      // TODO 브릿지가 계속 pending상태임 체크 필요.
       const currentDeviceData = deviceDataRef.current;
       const currentShopData = shopDataRef.current;
 
@@ -79,26 +80,32 @@ export const useSystemStatusMonitor = () => {
           ...(newWifi !== undefined && { wifiSignal: String(newWifi) }),
         };
 
-        // TODO: 디바이스 정보 조회하는 브릿지가 생긴다면, 그건 테이블 선택할때 가져와서 device Api를
-        // 요청해서 data 업데이트하고 여기는 업데이트되는 정보만 변경하는 방법으로 진행해야함
-        // 그러면 useDeviceData에서 api요청 조건을 다시 확인해야함.
         // setDataAsync는 항상 실행
         setDataAsync(updatedDeviceData);
 
         // postDeviceDetail은 조건부로 실행 (deviceData가 있어야 함)
         if (currentDeviceData) {
           const tableNumber = currentDeviceData.tableNumber ?? null;
-          if (tableNumber && currentShopData?.shopCode) {
-            // TODO: 베터리, 와이파이 외 다른 값들도 업데이트 필요
+          if (
+            tableNumber &&
+            currentShopData?.shopCode &&
+            currentDeviceData?.androidId &&
+            currentDeviceData?.ipAddress &&
+            currentDeviceData?.wifiSignal
+          ) {
             await postDeviceDetail({
-              tableNumber,
               shopCode: currentShopData.shopCode,
+              androidId: currentDeviceData.androidId,
+              ipAddress: currentDeviceData.ipAddress,
               deviceType: currentDeviceData.deviceType ?? 'MENU',
-              orderPosNumber: currentDeviceData.orderPosNumber ?? null,
-              androidId: currentDeviceData.androidId ?? '',
+              wifiSignal:
+                newWifi !== null && newWifi !== undefined
+                  ? String(newWifi)
+                  : (currentDeviceData?.wifiSignal ?? null),
+              tableNumber,
               battery: newBattery ?? currentDeviceData.battery ?? 0,
-              wifiSignal: String(newWifi ?? currentDeviceData.wifiSignal ?? ''),
-              ipAddress: currentDeviceData.ipAddress ?? '',
+              // TODO: 아래 3개의 data도 app에서 값을 가져와야함.
+              orderPosNumber: currentDeviceData.orderPosNumber ?? null,
               version: currentDeviceData.version ?? '',
               buildNumber: currentDeviceData.buildNumber ?? '',
             });
@@ -107,7 +114,10 @@ export const useSystemStatusMonitor = () => {
       }
     };
 
-    // 리스너 등록 (앱 시작 시 즉시 등록)
-    SystemControl.initListeners(handleStatusUpdate);
+    SystemControl.addListener('statusUpdate', handleStatusUpdate);
+
+    return () => {
+      SystemControl.removeAllListeners();
+    };
   }, [setDataAsync, postDeviceDetail]);
 };

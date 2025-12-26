@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
 import { SSE_KEYS } from '@/constants/keys';
@@ -17,6 +17,8 @@ import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
  * SSE 연결 및 메시지 처리를 담당하는 훅
  */
 export const useSSEHandler = () => {
+  const queryClient = useQueryClient();
+
   // SSE 연결 초기화/해제
   useEffect(() => {
     initializeSseConnection();
@@ -25,8 +27,6 @@ export const useSSEHandler = () => {
       disconnectSse();
     };
   }, []);
-
-  const queryClient = useQueryClient();
 
   // SSE 데이터 구독
   const { data: sseData } = useSSE.useSSEData<ISseMessage>(
@@ -54,6 +54,23 @@ export const useSSEHandler = () => {
 
   const { setData: setPickupAlarm } = usePickupAlarmStore();
 
+  const refetchCurrentTableList = useCallback(
+    (shopCode: string) => {
+      queryClient.refetchQueries({
+        queryKey: queryKeys.orders.currentTableList(shopCode),
+      });
+    },
+    [queryClient]
+  );
+  const refetchDeviceList = useCallback(
+    (shopCode: string) => {
+      queryClient.refetchQueries({
+        queryKey: queryKeys.device.list(shopCode),
+      });
+    },
+    [queryClient]
+  );
+
   // SSE 메시지 처리
   useEffect(() => {
     const shopCode = shopData?.shopCode;
@@ -77,10 +94,11 @@ export const useSSEHandler = () => {
           return;
         }
 
+        // 주문이 관리자앱에 의해 모두 삭제 되었을경우
         if (!(deviceData.tableNumber in sseData.data)) {
           if (
             tableOrderHistoriesData &&
-            tableOrderHistoriesData !== 'isEmpty' &&
+            tableOrderHistoriesData !== 'isEmptyTable' &&
             tableOrderHistoriesData?.orderDetailMenuList?.length > 0
           ) {
             refreshTableOrderHistoriesData();
@@ -91,12 +109,10 @@ export const useSSEHandler = () => {
 
         const sseUpdatedAt = sseData.data[deviceData.tableNumber];
 
+        // 주문이 변경되었을경우
         if (
-          // api 요청 했을경우
           tableOrderHistoriesData &&
-          // 테이블을 점유 했을경우
-          tableOrderHistoriesData !== 'isEmpty' &&
-          // sse 업데이트 시간이 동일 (해당 테이블의 업데이트가 아닐경우)
+          tableOrderHistoriesData !== 'isEmptyTable' &&
           tableOrderHistoriesData?.sseUpdatedAt === sseUpdatedAt
         ) {
           return;
@@ -121,15 +137,15 @@ export const useSSEHandler = () => {
       case 'TABLE':
         {
           refreshTableGroupData();
+          refetchCurrentTableList(shopCode);
+          refetchDeviceList(shopCode);
         }
         break;
 
       case 'DEVICE':
         {
           // api요청
-          queryClient.refetchQueries({
-            queryKey: queryKeys.device.list(shopCode),
-          });
+          refetchDeviceList(shopCode);
         }
         break;
 
@@ -164,5 +180,7 @@ export const useSSEHandler = () => {
     refreshTableGroupData,
     setPickupAlarm,
     queryClient,
+    refetchCurrentTableList,
+    refetchDeviceList,
   ]);
 };

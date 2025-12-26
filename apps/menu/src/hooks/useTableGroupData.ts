@@ -10,14 +10,13 @@ export const useTableGroupData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
   const { shopData } = useShopData({ skipInitialRequest: true });
-  const { data: tableGroupsStoreData, setData: setTableGroupsStoreData } =
+  const { data: storeData, setData: setTableGroupsStoreData } =
     useTableGroupStore();
 
-  const { data: tableGroupsData, refetch } = useGetTableGroupList(
+  const { data: apiData, refetch } = useGetTableGroupList(
     { shopCode: shopData?.shopCode ?? '' },
     {
-      enabled:
-        !!shopData?.shopCode && !skipInitialRequest && !tableGroupsStoreData,
+      enabled: !!shopData?.shopCode && !skipInitialRequest && !storeData,
     }
   );
 
@@ -26,12 +25,12 @@ export const useTableGroupData = (options?: Props) => {
       return;
     }
 
-    if (!tableGroupsData) {
+    if (!apiData) {
       return;
     }
 
-    setTableGroupsStoreData(tableGroupsData.data);
-  }, [tableGroupsData, setTableGroupsStoreData, skipInitialRequest]);
+    setTableGroupsStoreData(apiData.data);
+  }, [apiData, setTableGroupsStoreData, skipInitialRequest]);
 
   const refresh = async () => {
     const result = await refetch();
@@ -40,5 +39,5 @@ export const useTableGroupData = (options?: Props) => {
     }
   };
 
-  return { data: tableGroupsStoreData, refresh };
+  return { data: storeData, refresh };
 };

@@ -1,135 +1,153 @@
 import { registerPlugin, type Plugin } from '@capacitor/core';
 
-interface AppStoragePlugin extends Plugin {
-  saveData(options: { key: string; data: string }): Promise<void>;
-  loadData(options: { key: string }): Promise<{ data: string | null }>;
-  removeData(options: { key: string }): Promise<void>;
-  saveMedia(options: {
-    fileName: string;
-    base64Data: string;
-    type: 'image' | 'video';
-  }): Promise<void>;
-  downloadFromUrl(options: {
-    url: string;
-    fileName: string;
-    type: 'image' | 'video';
-  }): Promise<void>;
-  getLocalUrl(options: {
-    fileName: string;
-    type: 'image' | 'video';
-  }): Promise<{ url: string }>;
-  exists(options: {
-    fileName: string;
-    type: 'image' | 'video';
-  }): Promise<{ exists: boolean }>;
-}
-
-/**
- * 저장 타입 상수
- */
-export const StorageType = {
-  /** 영구 저장 */
-  IMAGE: 'image' as const,
-  /** 영구 저장 */
-  VIDEO: 'video' as const,
-  /** 임시 저장 (앱 종료 시 삭제) */
-  DATA: 'data' as const,
-} as const;
-
-export type StorageTypeValue =
-  | typeof StorageType.IMAGE
-  | typeof StorageType.VIDEO
-  | typeof StorageType.DATA;
-
-const NativeStorage = registerPlugin<AppStoragePlugin>('AppStorage');
-
-export const AppStorage = {
+export interface IAppStorage {
   /**
    * 데이터 저장
-   * @param key - 파일명
-   * @param data - 저장할 데이터 (string, number, boolean, null, object, array 등)
+   * @param options.key - 고유 키
+   * @param options.value - 저장할 값 (문자열, 숫자, JSON 객체 모두 가능)
+   * @param options.isTemporary - true면 앱 종료 시 삭제(RAM), false면 영구 저장(Disk)
    */
-  saveData: async (key: string, data: unknown): Promise<void> => {
-    const stringData = typeof data === 'string' ? data : JSON.stringify(data);
-    return NativeStorage.saveData({ key, data: stringData });
-  },
-
-  removeData: async (key: string): Promise<void> => {
-    // TODO: 데이터 삭제 로직 추가 요청해야함
-    return NativeStorage.removeData({ key });
-  },
+  saveData(options: {
+    key: string;
+    value: unknown;
+    isTemporary?: boolean;
+  }): Promise<void>;
 
   /**
    * 데이터 로드
-   * @param key - 파일명
-   * @returns Promise<T | null>
+   * @param options.key - 고유 키
+   * @returns 저장된 값 (없으면 null)
    */
-  loadData: async <T = Record<string, unknown>>(
-    key: string
-  ): Promise<T | null> => {
-    const { data } = await NativeStorage.loadData({ key });
-    return data ? (JSON.parse(data) as T) : null;
-  },
+  loadData<T = unknown>(options: { key: string }): Promise<{ value: T | null }>;
 
   /**
-   * 미디어 파일 저장
-   * @param fileName - 파일명
-   * @param base64Data - Base64 데이터 문자열
-   * @param type - 'image' or 'video'
+   * 특정 키 데이터 삭제 (영구/임시 모두)
+   * @param options.key - 고유 키
    */
-  saveMedia: async (
-    fileName: string,
-    base64Data: string,
-    type:
-      | typeof StorageType.IMAGE
-      | typeof StorageType.VIDEO = StorageType.IMAGE
-  ): Promise<void> => {
-    return NativeStorage.saveMedia({ fileName, base64Data, type });
-  },
+  removeData(options: { key: string }): Promise<void>;
+
+  /**
+   * 모든 데이터 초기화 (영구/임시 모두 삭제)
+   */
+  removeAllData(): Promise<void>;
+
+  /**
+   * 모든 데이터 로드
+   * @returns 영구 저장 데이터와 임시 저장 데이터
+   */
+  getAllData(): Promise<{
+    permanent: Record<string, unknown>;
+    temporary: Record<string, unknown>;
+  }>;
+
+  /**
+   * 파일 존재 확인
+   * @param options.key - 데이터 키 (type이 'data'일 때)
+   * @param options.fileName - 파일명 (type이 'image'/'video'일 때)
+   * @param options.type - 확인 타입
+   * @returns 존재 여부
+   */
+  exists(options: {
+    key?: string;
+    fileName?: string;
+    type?: 'data' | 'image' | 'video';
+  }): Promise<{ exists: boolean }>;
+
+  /**
+   * 20MB 이하 Base64 문자열로 저장
+   * @param options.fileName - 저장할 파일명 (예: 'sign.png')
+   * @param options.base64Data - Base64 데이터 스트링
+   * @param options.type - 'image' or 'video'
+   */
+  saveMedia(options: {
+    fileName: string;
+    base64Data: string;
+    type?: 'image' | 'video';
+  }): Promise<void>;
 
   /**
    * 20MB 이상 대용량 파일 다운로드
-   * @param url - 다운로드 원본 url
-   * @param fileName - 파일명
-   * @param type - 'video' or 'image'
+   * @param options.url - 다운로드할 URL
+   * @param options.fileName - 저장할 파일명
+   * @param options.type - 'image' or 'video'
    */
-  downloadFromUrl: async (
-    url: string,
-    fileName: string,
-    type:
-      | typeof StorageType.VIDEO
-      | typeof StorageType.IMAGE = StorageType.VIDEO
-  ): Promise<void> => {
-    return NativeStorage.downloadFromUrl({ url, fileName, type });
-  },
+  downloadFromUrl(options: {
+    url: string;
+    fileName: string;
+    type?: 'image' | 'video';
+  }): Promise<void>;
 
   /**
-   * 로컬 미디어 URL 가져오기
-   * @param fileName - 파일명
-   * @param type - 'image' or 'video'
+   * 로컬 접근 URL 로드
+   * @param options.fileName - 파일명
+   * @param options.type - 'image' or 'video'
+   * @returns 로컬 URL (예: http://localhost/_capacitor_file_/...)
    */
-  getLocalUrl: async (
-    fileName: string,
-    type:
-      | typeof StorageType.IMAGE
-      | typeof StorageType.VIDEO = StorageType.IMAGE
-  ): Promise<string> => {
-    const { url } = await NativeStorage.getLocalUrl({ fileName, type });
-    return url;
+  getLocalUrl(options: {
+    fileName: string;
+    type?: 'image' | 'video';
+  }): Promise<{ url: string }>;
+}
+
+const AppStorageNative = registerPlugin<IAppStorage & Plugin>('AppStorage');
+
+/**
+ * AppStorage
+ * NativeStorage와 동일한 인터페이스를 구현합니다.
+ */
+export const AppStorage: IAppStorage = {
+  saveData: async (options) => {
+    const stringValue =
+      typeof options.value === 'string'
+        ? options.value
+        : JSON.stringify(options.value);
+
+    AppStorageNative.saveData({
+      ...options,
+      value: stringValue,
+    });
   },
 
-  /**
-   * 파일 존재 여부 확인
-   * @param fileName - 파일명
-   * @param type - 'image' or 'video'
-   */
-  exists: async (
-    fileName: string,
-    type:
-      | typeof StorageType.IMAGE
-      | typeof StorageType.VIDEO = StorageType.IMAGE
-  ): Promise<boolean> => {
-    const { exists } = await NativeStorage.exists({ fileName, type });
-    return exists;
+  loadData: async (options) => {
+    const result = await AppStorageNative.loadData(options);
+    const value = result.value as string | null;
+    if (!value) {
+      return { value: null };
+    }
+
+    try {
+      return { value: JSON.parse(value) };
+    } catch {
+      // JSON 파싱 실패 시 원본 값 반환
+      return { value };
+    }
+  },
+
+  removeData: async (options) => {
+    AppStorageNative.removeData(options);
+  },
+
+  removeAllData: async () => {
+    AppStorageNative.removeAllData();
+  },
+
+  getAllData: async () => {
+    return AppStorageNative.getAllData();
+  },
+
+  exists: async (options) => {
+    return AppStorageNative.exists(options);
+  },
+
+  saveMedia: async (options) => {
+    return AppStorageNative.saveMedia(options);
+  },
+
+  downloadFromUrl: async (options) => {
+    return AppStorageNative.downloadFromUrl(options);
+  },
+
+  getLocalUrl: async (options) => {
+    return AppStorageNative.getLocalUrl(options);
   },
 };

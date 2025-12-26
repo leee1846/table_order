@@ -53,10 +53,10 @@ const authCheckerLoader = () => {
  * 관리자 페이지 접근을 위한 비밀번호 인증 상태 확인 loader
  */
 const adminVerificationCheckLoader = async () => {
-  const data = await AppStorage.loadData<boolean>(
-    STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED
-  );
-  const isVerified = data ?? false;
+  const data = await AppStorage.loadData<boolean>({
+    key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
+  });
+  const isVerified = data?.value ?? false;
 
   if (!isVerified) {
     window.location.replace(ROUTES.ROOT.generate());

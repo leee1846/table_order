@@ -15,20 +15,28 @@ export interface ITableGroupStore {
  */
 export const useTableGroupStore = create<ITableGroupStore>((set) => {
   // 초기 데이터 로드 (비동기)
-  AppStorage.loadData<ITableGroup[]>(STORAGE_KEYS.TABLE_GROUP).then((data) => {
-    if (data) {
-      set({ data });
+  AppStorage.loadData<ITableGroup[]>({ key: STORAGE_KEYS.TABLE_GROUP }).then(
+    (data) => {
+      if (data?.value) {
+        set({ data: data.value });
+      }
     }
-  });
+  );
 
   return {
     data: null,
     setData: (data: ITableGroup[]) => {
-      AppStorage.saveData(STORAGE_KEYS.TABLE_GROUP, data);
+      AppStorage.saveData({
+        key: STORAGE_KEYS.TABLE_GROUP,
+        value: data,
+        isTemporary: true,
+      });
       set({ data });
     },
     clearData: () => {
-      AppStorage.removeData(STORAGE_KEYS.TABLE_GROUP);
+      AppStorage.removeData({
+        key: STORAGE_KEYS.TABLE_GROUP,
+      });
       set({ data: null });
     },
   };

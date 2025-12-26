@@ -1,15 +1,18 @@
-import { BasicButton, Input } from '@repo/ui/components';
 import { useState } from 'react';
-import * as S from '@/pages/LoginPage/loginPage.style';
+import { useNavigate } from 'react-router-dom';
+import { BasicButton, Input } from '@repo/ui/components';
 import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { usePostLogin } from '@repo/api/queries';
+import { usePostDeviceDetail, usePostLogin } from '@repo/api/queries';
 import { openConfirmDialog } from '@repo/feature/utils';
 import { setAccessToken, setRefreshToken } from '@repo/api/auth';
-import { ROUTES } from '@/constants/routes';
-import { useNavigate } from 'react-router-dom';
+import type { TDeviceType } from '@repo/api/types';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import { ROUTES } from '@/constants/routes';
+import { useDeviceData } from '@/hooks/useDeviceData';
+import { useShopData } from '@/hooks/useShopData';
 import { initializeSseConnection } from '@/utils/sseConnection';
+import * as S from '@/pages/LoginPage/loginPage.style';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -19,32 +22,40 @@ export const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [idErrorMessage, setIdErrorMessage] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const [passwordInputType, setPasswordInputType] = useState<
-    'password' | 'text'
-  >('password');
+  // API hooks
+  const { mutateAsync: login } = usePostLogin();
+  const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
+  const { refresh: refreshShopData } = useShopData({
+    skipInitialRequest: true,
+  });
+  const {
+    data: deviceStoreData,
+    setDataAsync: setDeviceData,
+    refresh: refreshDeviceData,
+  } = useDeviceData({
+    skipInitialRequest: true,
+  });
 
+  // Input handlers
   const handleIdChange = (value: string) => {
     setId(value);
-
-    if (value.length > 0) {
-      setIdErrorMessage('');
-    } else {
-      setIdErrorMessage(t('아이디를 입력해주세요.'));
-    }
+    setIdErrorMessage(value.length > 0 ? '' : t('아이디를 입력해주세요.'));
   };
 
   const handlePasswordChange = (value: string) => {
     setPassword(value);
-
-    if (value.length > 0) {
-      setPasswordErrorMessage('');
-    } else {
-      setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
-    }
+    setPasswordErrorMessage(
+      value.length > 0 ? '' : t('비밀번호를 입력해주세요.')
+    );
   };
 
-  const { mutateAsync: login } = usePostLogin();
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible((prev) => !prev);
+  };
+
+  // Login handler
   const handleLogin = async () => {
     if (!id) {
       setIdErrorMessage(t('아이디를 입력해주세요.'));
@@ -57,27 +68,55 @@ export const LoginPage = () => {
 
     setIdErrorMessage('');
     setPasswordErrorMessage('');
-    const response = await login({
+
+    const loginResponse = await login({
       id,
       pw: password,
     });
 
     // api는 성공 처리됨.
-    if (!response.data.loginResult) {
+    if (!loginResponse.data.loginResult) {
       openConfirmDialog({
         title: t('로그인 실패'),
-        content: response.status.userMessage,
+        content: loginResponse.status.userMessage,
       });
       return;
     }
 
-    setAccessToken(response.data.accessToken);
-    setRefreshToken(response.data.refreshToken);
+    setAccessToken(loginResponse.data.accessToken);
+    setRefreshToken(loginResponse.data.refreshToken);
     initializeSseConnection();
+
+    const shopDataResponse = await refreshShopData();
+    const deviceDataResponse = await refreshDeviceData();
+
+    if (!shopDataResponse || !deviceDataResponse) {
+      return;
+    }
+
+    const deviceData = {
+      ...deviceDataResponse,
+      wifiSignal: deviceStoreData?.wifiSignal ?? '',
+      battery: deviceStoreData?.battery ?? 0,
+      deviceType: 'MENU' as TDeviceType,
+      version: deviceStoreData?.version ?? '',
+      buildNumber: deviceStoreData?.buildNumber ?? '',
+      ipAddress: deviceStoreData?.ipAddress ?? '',
+      androidId: deviceStoreData?.androidId ?? '',
+    };
+
+    await setDeviceData(deviceData);
+
+    await postDeviceDetail({
+      ...deviceData,
+      shopCode: shopDataResponse.shopCode,
+    });
+
     navigate(ROUTES.ROOT.generate());
   };
 
-  const passwordInputTextVisibilityComponent = () => {
+  // Render helpers
+  const renderPasswordVisibilityToggle = () => {
     const iconProps = {
       color: theme.colors.grey[500],
       width: 20,
@@ -85,18 +124,11 @@ export const LoginPage = () => {
     };
 
     return (
-      <button
-        type="button"
-        onClick={() =>
-          setPasswordInputType(
-            passwordInputType === 'password' ? 'text' : 'password'
-          )
-        }
-      >
-        {passwordInputType === 'password' ? (
-          <VisibilityIcon {...iconProps} />
-        ) : (
+      <button type="button" onClick={togglePasswordVisibility}>
+        {isPasswordVisible ? (
           <VisibilityOffIcon {...iconProps} />
+        ) : (
+          <VisibilityIcon {...iconProps} />
         )}
       </button>
     );
@@ -119,11 +151,11 @@ export const LoginPage = () => {
         <div>
           <S.InputTitle>{t('비밀번호')}</S.InputTitle>
           <Input
-            type={passwordInputType}
+            type={isPasswordVisible ? 'text' : 'password'}
             placeholder={t('비밀번호를 입력해주세요.')}
             onChange={handlePasswordChange}
             value={password}
-            rightComponent={passwordInputTextVisibilityComponent()}
+            rightComponent={renderPasswordVisibilityToggle()}
             errorMessage={passwordErrorMessage}
           />
         </div>

@@ -131,7 +131,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
       onConfirm: async () => {
         await createTableOrder({
           shopCode: shopData.shopCode,
-          tableNumber: deviceData?.tableNumber ?? 0,
+          tableNumber: deviceData?.tableNumber ?? '',
           orderType: 'MENU',
           // 객수 미사용시 1명으로 처리
           customerCount: customerCountData?.adultCount ?? 1,

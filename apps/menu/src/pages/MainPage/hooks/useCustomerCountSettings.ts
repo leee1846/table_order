@@ -16,7 +16,7 @@ interface UseCustomerCountSettingsReturn {
  */
 export const useCustomerCountSettings = (
   shopDetailData: IGetShop | null,
-  tableOrderHistoriesData: ITableOrderHistoriesData | 'isEmpty' | null
+  tableOrderHistoriesData: ITableOrderHistoriesData | 'isEmptyTable' | null
 ): UseCustomerCountSettingsReturn => {
   const [showCustomerCountSelector, setShowCustomerCountSelector] =
     useState(false);
@@ -31,11 +31,12 @@ export const useCustomerCountSettings = (
       return;
     }
 
+    // table이 점유 되었을경우
     if (
-      // api요청 전일경우
       tableOrderHistoriesData === null ||
-      // 테이블을 점유하고 주문을 했을경우
-      tableOrderHistoriesData !== 'isEmpty'
+      (tableOrderHistoriesData &&
+        tableOrderHistoriesData !== 'isEmptyTable' &&
+        tableOrderHistoriesData?.orderDetailMenuList)
     ) {
       setShowCustomerCountSelector(false);
       return;

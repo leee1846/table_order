@@ -16,22 +16,32 @@ interface IInitialPageStore {
  */
 export const useInitialPageStore = create<IInitialPageStore>((set) => {
   // 초기 데이터 로드 (비동기)
-  AppStorage.loadData<boolean>(STORAGE_KEYS.INITIAL_PAGE_SHOW).then((data) => {
-    if (data !== null) {
-      set({ data: { showInitialPage: data } });
+  AppStorage.loadData<boolean>({ key: STORAGE_KEYS.INITIAL_PAGE_SHOW }).then(
+    (data) => {
+      if (data?.value !== null && data.value !== undefined) {
+        set({ data: { showInitialPage: data.value } });
+      }
     }
-  });
+  );
 
   return {
     data: {
       showInitialPage: true,
     },
     showInitialPage: () => {
-      AppStorage.saveData(STORAGE_KEYS.INITIAL_PAGE_SHOW, true);
+      AppStorage.saveData({
+        key: STORAGE_KEYS.INITIAL_PAGE_SHOW,
+        value: true,
+        isTemporary: true,
+      });
       set({ data: { showInitialPage: true } });
     },
     hideInitialPage: () => {
-      AppStorage.saveData(STORAGE_KEYS.INITIAL_PAGE_SHOW, false);
+      AppStorage.saveData({
+        key: STORAGE_KEYS.INITIAL_PAGE_SHOW,
+        value: false,
+        isTemporary: true,
+      });
       set({ data: { showInitialPage: false } });
     },
   };

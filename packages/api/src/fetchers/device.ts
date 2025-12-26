@@ -31,6 +31,7 @@ export const postDeviceDetail = async (
   const axiosInstance = getAxiosInstance('private');
 
   const { shopCode, ...rest } = requests;
+  console.log('포스트!!', rest);
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'POST',
     url: ENDPOINTS.DEVICE.SHOP(shopCode),

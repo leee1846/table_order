@@ -26,11 +26,11 @@ export const useCustomerLanguageStore = create<ICustomerLanguageStore>(
     };
 
     // 초기 데이터 로드 (비동기)
-    AppStorage.loadData<ILanguageData>(
-      STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE
-    ).then((data) => {
-      if (data) {
-        set({ data });
+    AppStorage.loadData<ILanguageData>({
+      key: STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE,
+    }).then((data) => {
+      if (data?.value) {
+        set({ data: data.value });
       }
     });
 
@@ -43,12 +43,18 @@ export const useCustomerLanguageStore = create<ICustomerLanguageStore>(
           currentLanguage: data.currentLanguage,
         };
 
-        AppStorage.saveData(STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE, newData);
+        AppStorage.saveData({
+          key: STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE,
+          value: newData,
+          isTemporary: true,
+        });
         set({ data: newData });
         customerI18n.changeLanguage(newData.currentLanguage);
       },
       clearData: () => {
-        AppStorage.removeData(STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE);
+        AppStorage.removeData({
+          key: STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE,
+        });
         set({
           data: defaultData,
         });

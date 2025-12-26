@@ -45,9 +45,9 @@ const initialData: ICart = {
  */
 export const useCartStore = create<ICartStore>((set, get) => {
   // 초기 데이터 로드 (비동기)
-  AppStorage.loadData<ICart>(STORAGE_KEYS.CART).then((data) => {
-    if (data) {
-      set({ data });
+  AppStorage.loadData<ICart>({ key: STORAGE_KEYS.CART }).then((data) => {
+    if (data?.value) {
+      set({ data: data.value });
     }
   });
 
@@ -59,7 +59,11 @@ export const useCartStore = create<ICartStore>((set, get) => {
         ...get().data,
         ...options,
       };
-      AppStorage.saveData(STORAGE_KEYS.CART, newData);
+      AppStorage.saveData({
+        key: STORAGE_KEYS.CART,
+        value: newData,
+        isTemporary: true,
+      });
       set({ data: newData });
     },
 
@@ -114,7 +118,11 @@ export const useCartStore = create<ICartStore>((set, get) => {
         ...get().data,
         menus: newMenus,
       };
-      AppStorage.saveData(STORAGE_KEYS.CART, newItems);
+      AppStorage.saveData({
+        key: STORAGE_KEYS.CART,
+        value: newItems,
+        isTemporary: true,
+      });
       set({ data: newItems });
     },
 
@@ -131,7 +139,11 @@ export const useCartStore = create<ICartStore>((set, get) => {
         ...get().data,
         menus: newMenus,
       };
-      AppStorage.saveData(STORAGE_KEYS.CART, newData);
+      AppStorage.saveData({
+        key: STORAGE_KEYS.CART,
+        value: newData,
+        isTemporary: true,
+      });
       set({ data: newData });
     },
 
@@ -146,7 +158,11 @@ export const useCartStore = create<ICartStore>((set, get) => {
         ...get().data,
         menus: newMenus,
       };
-      AppStorage.saveData(STORAGE_KEYS.CART, newData);
+      AppStorage.saveData({
+        key: STORAGE_KEYS.CART,
+        value: newData,
+        isTemporary: true,
+      });
       set({ data: newData });
     },
 
@@ -164,13 +180,21 @@ export const useCartStore = create<ICartStore>((set, get) => {
         ...get().data,
         menus: newMenus,
       };
-      AppStorage.saveData(STORAGE_KEYS.CART, newData);
+      AppStorage.saveData({
+        key: STORAGE_KEYS.CART,
+        value: newData,
+        isTemporary: true,
+      });
       set({ data: newData });
     },
 
     // 장바구니 비우기
     clearCart: () => {
-      AppStorage.saveData(STORAGE_KEYS.CART, { ...initialData, menus: [] });
+      AppStorage.saveData({
+        key: STORAGE_KEYS.CART,
+        value: { ...initialData, menus: [] },
+        isTemporary: true,
+      });
       set({ data: { ...initialData, menus: [] } });
     },
   };

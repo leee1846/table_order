@@ -9,7 +9,7 @@ interface DeviceDataResult {
   error: AxiosError | null;
   clearData: () => void;
   setDataAsync: (data: Partial<IDevice>) => void;
-  refresh: () => Promise<void>;
+  refresh: () => Promise<IDevice | undefined>;
 }
 
 interface UseAdminAccessControlReturn {

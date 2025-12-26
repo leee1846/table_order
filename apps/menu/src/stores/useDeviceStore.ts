@@ -6,8 +6,10 @@ import type { IDevice } from '@repo/api/types';
 type IDevicePartial = Partial<IDevice>;
 
 interface IDeviceStore {
+  isInitialized: boolean;
   data: IDevicePartial | null;
   setDataAsync: (data: IDevicePartial) => void;
+  setIsInitialized: (isInitialized: boolean) => void;
   clearData: () => void;
 }
 
@@ -17,23 +19,35 @@ interface IDeviceStore {
  */
 export const useDeviceStore = create<IDeviceStore>((set) => {
   // 초기 데이터 로드 (비동기)
-  AppStorage.loadData<IDevicePartial>(STORAGE_KEYS.DEVICE).then((data) => {
-    if (data) {
-      set({ data });
+  AppStorage.loadData<IDevicePartial>({ key: STORAGE_KEYS.DEVICE }).then(
+    (data) => {
+      if (data?.value) {
+        set({ data: data.value });
+      }
     }
-  });
+  );
 
   return {
+    isInitialized: false,
     data: null,
+    setIsInitialized: (isInitialized: boolean) => {
+      set({ isInitialized });
+    },
     setDataAsync: (data: IDevicePartial) => {
       return new Promise((resolve) => {
-        AppStorage.saveData(STORAGE_KEYS.DEVICE, data);
+        AppStorage.saveData({
+          key: STORAGE_KEYS.DEVICE,
+          value: data,
+          isTemporary: true,
+        });
         set({ data });
         resolve(true);
       });
     },
     clearData: () => {
-      AppStorage.removeData(STORAGE_KEYS.DEVICE);
+      AppStorage.removeData({
+        key: STORAGE_KEYS.DEVICE,
+      });
       set({ data: null });
     },
   };

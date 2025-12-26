@@ -7,7 +7,11 @@ export interface ISseMessage {
     | 'TABLE'
     | 'PICKUP'
     | 'DEVICE_THEFT'
-    | 'DEVICE';
+    | 'DEVICE'
+    | 'DEVICE_OFF'
+    | 'DEVICE_RESTART'
+    | 'DEVICE_SCREEN_OFF'
+    | 'DEVICE_SCREEN_ON';
   data: {
     [key: string]: number | string;
   } | null;

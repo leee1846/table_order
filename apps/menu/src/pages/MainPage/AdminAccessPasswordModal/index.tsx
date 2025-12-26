@@ -60,7 +60,11 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
         shopCode,
         pw: nextPassword,
       }).then(() => {
-        AppStorage.saveData(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED, true);
+        AppStorage.saveData({
+          key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
+          value: true,
+          isTemporary: true,
+        });
         navigate(ROUTES.TABLES.generate());
       });
     }

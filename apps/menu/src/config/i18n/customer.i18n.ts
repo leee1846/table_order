@@ -12,17 +12,17 @@ import type { TShopLanguage } from '@repo/api/types';
 
 const getInitialLanguage = async (): Promise<TShopLanguage> => {
   try {
-    const stored = await AppStorage.loadData<ILanguageData>(
-      STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE
-    );
-    if (stored && stored.currentLanguage) {
-      return stored.currentLanguage;
+    const stored = await AppStorage.loadData<ILanguageData>({
+      key: STORAGE_KEYS.CUSTOMER_I18N_LANGUAGE,
+    });
+    const value = stored?.value;
+    if (value && value?.currentLanguage) {
+      return value.currentLanguage;
     }
+    return 'KO';
   } catch (_error) {
     return 'KO';
   }
-
-  return 'KO';
 };
 
 const resources: Record<TShopLanguage, { customer: Record<string, string> }> = {

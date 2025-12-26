@@ -10,12 +10,10 @@ export const useShopDetailData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
   const { shopData } = useShopData({ skipInitialRequest: true });
-  const { data: shopDetailData, setData: setShopDetailData } =
-    useShopDetailStore();
+  const { data: storeData, setData: setShopDetailData } = useShopDetailStore();
 
-  const enabled =
-    !!shopData?.shopCode && !shopDetailData && !skipInitialRequest;
-  const { data: shopDetailDataResponse, refetch } = useGetShopDetail(
+  const enabled = !!shopData?.shopCode && !storeData && !skipInitialRequest;
+  const { data: apiData, refetch } = useGetShopDetail(
     shopData?.shopCode ?? '',
     { enabled }
   );
@@ -25,12 +23,12 @@ export const useShopDetailData = (options?: Props) => {
       return;
     }
 
-    if (!shopDetailDataResponse) {
+    if (!apiData) {
       return;
     }
 
-    setShopDetailData(shopDetailDataResponse.data);
-  }, [shopDetailDataResponse, setShopDetailData, skipInitialRequest]);
+    setShopDetailData(apiData.data);
+  }, [apiData, setShopDetailData, skipInitialRequest]);
 
   const refresh = async () => {
     const result = await refetch();
@@ -40,7 +38,7 @@ export const useShopDetailData = (options?: Props) => {
   };
 
   return {
-    data: shopDetailData,
+    data: storeData,
     refresh,
   };
 };

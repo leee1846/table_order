@@ -1,48 +1,65 @@
+import { useEffect, useState } from 'react';
 import { theme } from '@repo/ui';
-import { SettingsIcon } from '@repo/ui/icons';
 import { BasicButton } from '@repo/ui/components';
+import { SettingsIcon } from '@repo/ui/icons';
+import { toast } from '@repo/feature/utils';
+import { usePostDeviceDetail } from '@repo/api/queries';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import { useDeviceData } from '@/hooks/useDeviceData';
+import { useShopData } from '@/hooks/useShopData';
 import { Account } from '@/pages/settings/MiscellaneousPage/Account';
 import { Detail } from '@/pages/settings/MiscellaneousPage/Detail';
 import * as S from '@/pages/settings/MiscellaneousPage/MiscellaneousPage.style';
-import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import { useEffect, useState } from 'react';
-import { useDeviceData } from '@/hooks/useDeviceData';
-import { usePostDeviceDetail } from '@repo/api/queries';
-import { useShopData } from '@/hooks/useShopData';
-import { toast } from '@repo/feature/utils';
+
+const MAX_ORDER_POS_NUMBER = 999;
+const TOAST_OPTIONS = {
+  position: 'center-center' as const,
+  duration: 1500,
+};
 
 export const MiscellaneousPage = () => {
   const { t } = useAdminTranslation();
 
   const { data: deviceData, refresh: refreshDeviceData } = useDeviceData();
   const { shopData } = useShopData();
+  const { mutateAsync: saveDeviceDetail } = usePostDeviceDetail();
 
-  const [useOrderposMode, setUseOrderposMode] = useState(false);
+  const [isOrderPosMode, setIsOrderPosMode] = useState(false);
   const [orderPosNumber, setOrderPosNumber] = useState<number | null>(null);
 
-  const handleOrderPosNumberChange = (value: string) => {
-    const parsed = Number(value);
-    if (Number.isNaN(parsed) || parsed > 999) {
+  useEffect(() => {
+    if (!deviceData) {
       return;
     }
 
-    setOrderPosNumber(parsed);
+    setIsOrderPosMode(deviceData.deviceType === 'ORDER_POS');
+    setOrderPosNumber(deviceData.orderPosNumber ?? null);
+  }, [deviceData]);
+
+  const showToast = (message: string) => {
+    toast(t(message), TOAST_OPTIONS);
   };
 
-  const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
-  const onSave = async () => {
-    if (useOrderposMode && orderPosNumber === null) {
-      toast(t('오더포스 번호를 입력해주세요.'), {
-        position: 'center-center',
-        duration: 1500,
-      });
+  const handleOrderPosNumberChange = (value: string) => {
+    const parsedNumber = Number(value);
+    if (Number.isNaN(parsedNumber) || parsedNumber > MAX_ORDER_POS_NUMBER) {
       return;
     }
 
-    await postDeviceDetail({
-      deviceType: useOrderposMode ? 'ORDER_POS' : 'MENU',
-      tableNumber: useOrderposMode ? null : (deviceData?.tableNumber ?? ''),
-      orderPosNumber: useOrderposMode ? orderPosNumber : null,
+    setOrderPosNumber(parsedNumber);
+  };
+
+  const handleToggleOrderPosMode = () => {
+    setIsOrderPosMode((prev) => !prev);
+  };
+
+  const handleSave = async () => {
+    if (isOrderPosMode && orderPosNumber === null) {
+      showToast('오더포스 번호를 입력해주세요.');
+      return;
+    }
+
+    const baseDeviceDetail = {
       shopCode: shopData?.shopCode ?? '',
       androidId: deviceData?.androidId ?? '',
       battery: deviceData?.battery ?? 0,
@@ -50,23 +67,18 @@ export const MiscellaneousPage = () => {
       ipAddress: deviceData?.ipAddress ?? '',
       version: deviceData?.version ?? '',
       buildNumber: deviceData?.buildNumber ?? '',
+    };
+
+    await saveDeviceDetail({
+      ...baseDeviceDetail,
+      deviceType: isOrderPosMode ? 'ORDER_POS' : 'MENU',
+      tableNumber: isOrderPosMode ? null : (deviceData?.tableNumber ?? ''),
+      orderPosNumber: isOrderPosMode ? orderPosNumber : null,
     });
 
     await refreshDeviceData();
-    toast(t('설정이 저장되었습니다.'), {
-      position: 'center-center',
-      duration: 1500,
-    });
+    showToast('설정이 저장되었습니다.');
   };
-
-  useEffect(() => {
-    if (!deviceData) {
-      return;
-    }
-
-    setUseOrderposMode(deviceData?.deviceType === 'ORDER_POS');
-    setOrderPosNumber(deviceData?.orderPosNumber ?? null);
-  }, [deviceData]);
 
   return (
     <S.Container>
@@ -75,7 +87,7 @@ export const MiscellaneousPage = () => {
           <h1>{t('설정')}</h1>
           <SettingsIcon color={theme.colors.grey[800]} width={40} height={40} />
         </div>
-        <BasicButton variant="Solid_Navy_XL" onClick={onSave}>
+        <BasicButton variant="Solid_Navy_XL" onClick={handleSave}>
           {t('저장하기')}
         </BasicButton>
       </header>
@@ -83,8 +95,8 @@ export const MiscellaneousPage = () => {
       <S.Sections>
         <Account />
         <Detail
-          useOrderposMode={useOrderposMode}
-          onChangeUseOrderposMode={() => setUseOrderposMode((prev) => !prev)}
+          useOrderposMode={isOrderPosMode}
+          onChangeUseOrderposMode={handleToggleOrderPosMode}
           orderPosNumber={orderPosNumber}
           handleOrderPosNumberChange={handleOrderPosNumberChange}
         />

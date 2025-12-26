@@ -24,11 +24,11 @@ export interface ICustomerCountStore {
  */
 export const useCustomerCountStore = create<ICustomerCountStore>((set) => {
   // 초기 데이터 로드 (비동기)
-  AppStorage.loadData<{ adultCount: number; childCount: number }>(
-    STORAGE_KEYS.CUSTOMER_COUNT
-  ).then((data) => {
-    if (data) {
-      set({ data });
+  AppStorage.loadData<{ adultCount: number; childCount: number }>({
+    key: STORAGE_KEYS.CUSTOMER_COUNT,
+  }).then((data) => {
+    if (data?.value) {
+      set({ data: data.value });
     }
   });
 
@@ -40,11 +40,17 @@ export const useCustomerCountStore = create<ICustomerCountStore>((set) => {
         childCount,
       };
 
-      AppStorage.saveData(STORAGE_KEYS.CUSTOMER_COUNT, resultData);
+      AppStorage.saveData({
+        key: STORAGE_KEYS.CUSTOMER_COUNT,
+        value: resultData,
+        isTemporary: true,
+      });
       set({ data: resultData });
     },
     clearData: () => {
-      AppStorage.removeData(STORAGE_KEYS.CUSTOMER_COUNT);
+      AppStorage.removeData({
+        key: STORAGE_KEYS.CUSTOMER_COUNT,
+      });
       set({ data: null });
     },
   };

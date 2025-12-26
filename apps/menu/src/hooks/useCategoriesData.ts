@@ -33,17 +33,17 @@ export const useCategoriesData = (options?: Props) => {
   const { data: deviceData } = useDeviceData({ skipInitialRequest: true });
 
   const {
-    data: { categories: categoriesStoreData, visibleCategories },
+    data: { categories: storeData, visibleCategories },
     setCategoriesAsync,
   } = useCategoryStore();
 
   const enabled =
-    !categoriesStoreData &&
+    !storeData &&
     !!shopData?.shopCode &&
     !!deviceData?.tableNumber &&
     !skipInitialRequest;
 
-  const { data: categoriesData, refetch } = useGetCategoriesWithMenus(
+  const { data: apiData, refetch } = useGetCategoriesWithMenus(
     {
       shopCode: shopData?.shopCode ?? '',
       tableNumber: deviceData?.tableNumber ?? '',
@@ -56,19 +56,14 @@ export const useCategoriesData = (options?: Props) => {
       return;
     }
 
-    if (categoriesStoreData) {
+    if (storeData) {
       return;
     }
 
-    if (categoriesData?.data) {
-      setCategoriesAsync({ categories: categoriesData.data });
+    if (apiData?.data) {
+      setCategoriesAsync({ categories: apiData.data });
     }
-  }, [
-    categoriesStoreData,
-    categoriesData,
-    setCategoriesAsync,
-    skipInitialRequest,
-  ]);
+  }, [storeData, apiData, setCategoriesAsync, skipInitialRequest]);
 
   const refresh = async () => {
     const result = await refetch();
@@ -105,7 +100,7 @@ export const useCategoriesData = (options?: Props) => {
 
   return {
     // 원본 데이터
-    categories: categoriesStoreData,
+    categories: storeData,
     visibleCategories,
 
     // 카테고리 분류

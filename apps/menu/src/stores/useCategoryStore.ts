@@ -66,23 +66,23 @@ const initialData = {
  */
 export const useCategoryStore = create<ICategoryStore>((set) => {
   // 초기 데이터 로드 (비동기)
-  AppStorage.loadData<ICategoryWithMenus[]>(STORAGE_KEYS.CATEGORIES).then(
-    (data) => {
-      if (data) {
-        const categories = data;
-        set({
-          data: {
+  AppStorage.loadData<ICategoryWithMenus[]>({
+    key: STORAGE_KEYS.CATEGORIES,
+  }).then((data) => {
+    if (data?.value) {
+      const categories = data.value;
+      set({
+        data: {
+          categories,
+          visibilityMap: initialVisibilityMap,
+          visibleCategories: computeVisibleCategories(
             categories,
-            visibilityMap: initialVisibilityMap,
-            visibleCategories: computeVisibleCategories(
-              categories,
-              initialVisibilityMap
-            ),
-          },
-        });
-      }
+            initialVisibilityMap
+          ),
+        },
+      });
     }
-  );
+  });
 
   return {
     // 초기 상태
@@ -95,7 +95,11 @@ export const useCategoryStore = create<ICategoryStore>((set) => {
       categories: ICategoryWithMenus[];
     }) => {
       return new Promise((resolve) => {
-        AppStorage.saveData(STORAGE_KEYS.CATEGORIES, categories);
+        AppStorage.saveData({
+          key: STORAGE_KEYS.CATEGORIES,
+          value: categories,
+          isTemporary: true,
+        });
         set((state) => ({
           data: {
             ...state.data,
@@ -112,7 +116,9 @@ export const useCategoryStore = create<ICategoryStore>((set) => {
 
     // 데이터 초기화 (스토리지에서도 삭제)
     clearData: () => {
-      AppStorage.removeData(STORAGE_KEYS.CATEGORIES);
+      AppStorage.removeData({
+        key: STORAGE_KEYS.CATEGORIES,
+      });
       set({ data: initialData });
     },
 

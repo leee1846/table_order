@@ -26,14 +26,13 @@ export const useTableOrderHistoriesData = (options?: Props) => {
     !!deviceData?.tableNumber &&
     storeData === null &&
     !skipInitialRequest;
-  const { data: tableOrderHistoriesDataResponse, refetch } =
-    useGetTableOrderHistories(
-      {
-        shopCode: shopData?.shopCode ?? '',
-        tableNumber: deviceData?.tableNumber ?? '',
-      },
-      { enabled }
-    );
+  const { data: apiData, refetch } = useGetTableOrderHistories(
+    {
+      shopCode: shopData?.shopCode ?? '',
+      tableNumber: deviceData?.tableNumber ?? '',
+    },
+    { enabled }
+  );
 
   useEffect(() => {
     if (skipInitialRequest) {
@@ -46,39 +45,30 @@ export const useTableOrderHistoriesData = (options?: Props) => {
       return;
     }
 
-    if (!tableOrderHistoriesDataResponse) {
+    if (!apiData) {
       return;
     }
 
-    // 테이블을 점유하고 주문은 하지 않았을경우우
-    if (
-      tableOrderHistoriesDataResponse &&
-      tableOrderHistoriesDataResponse.data === null
-    ) {
-      setTableOrderHistoriesData('isEmpty');
+    // 테이블을 점유하고 주문은 하지 않았을경우
+    if (apiData && apiData.data === null) {
+      setTableOrderHistoriesData('isEmptyTable');
       return;
     }
 
     setTableOrderHistoriesData({
       sseUpdatedAt: null,
-      discountRate: tableOrderHistoriesDataResponse?.data?.discountRate ?? 0,
-      totalAmount: tableOrderHistoriesDataResponse?.data?.totalAmount ?? 0,
-      orderDetailMenuList:
-        tableOrderHistoriesDataResponse?.data?.orderDetailMenuList ?? [],
+      discountRate: apiData?.data?.discountRate ?? 0,
+      totalAmount: apiData?.data?.totalAmount ?? 0,
+      orderDetailMenuList: apiData?.data?.orderDetailMenuList ?? [],
     });
-  }, [
-    tableOrderHistoriesDataResponse,
-    setTableOrderHistoriesData,
-    storeData,
-    skipInitialRequest,
-  ]);
+  }, [apiData, setTableOrderHistoriesData, storeData, skipInitialRequest]);
 
   const refresh = async (sseUpdatedAt?: number) => {
     const result = await refetch();
 
-    // 테이블을 점유하고 주문을 했을경우
+    // 테이블을 점유하지 않은 상태일경우
     if (result.data?.data === null) {
-      setTableOrderHistoriesData('isEmpty');
+      setTableOrderHistoriesData('isEmptyTable');
     } else {
       // 테이블을 점유하고 주문을 했을경우
       await setTableOrderHistoriesData({

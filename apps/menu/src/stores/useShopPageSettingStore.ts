@@ -18,13 +18,17 @@ export const useShopPageSettingStore = create<IShopPageSettingStore>(
   (set, get) => {
     // 초기 데이터 로드 (비동기)
     Promise.all([
-      AppStorage.loadData<IGetShopPageSetting>(STORAGE_KEYS.SHOP_PAGE_SETTING),
-      AppStorage.loadData<IGetShopPageLogo>(STORAGE_KEYS.SHOP_PAGE_LOGO),
+      AppStorage.loadData<IGetShopPageSetting>({
+        key: STORAGE_KEYS.SHOP_PAGE_SETTING,
+      }),
+      AppStorage.loadData<IGetShopPageLogo>({
+        key: STORAGE_KEYS.SHOP_PAGE_LOGO,
+      }),
     ]).then(([pageSettingData, pageLogoData]) => {
       set({
         data: {
-          pageSettingData: pageSettingData ?? null,
-          pageLogoData: pageLogoData ?? null,
+          pageSettingData: pageSettingData?.value ?? null,
+          pageLogoData: pageLogoData?.value ?? null,
         },
       });
     });
@@ -35,19 +39,31 @@ export const useShopPageSettingStore = create<IShopPageSettingStore>(
         pageLogoData: null,
       },
       setPageSettingData: (pageSettingData: IGetShopPageSetting) => {
-        AppStorage.saveData(STORAGE_KEYS.SHOP_PAGE_SETTING, pageSettingData);
+        AppStorage.saveData({
+          key: STORAGE_KEYS.SHOP_PAGE_SETTING,
+          value: pageSettingData,
+          isTemporary: true,
+        });
         set({ data: { ...get().data, pageSettingData } });
       },
       clearPageSettingData: () => {
-        AppStorage.removeData(STORAGE_KEYS.SHOP_PAGE_SETTING);
+        AppStorage.removeData({
+          key: STORAGE_KEYS.SHOP_PAGE_SETTING,
+        });
         set({ data: { ...get().data, pageSettingData: null } });
       },
       setPageLogoData: (pageLogoData: IGetShopPageLogo) => {
-        AppStorage.saveData(STORAGE_KEYS.SHOP_PAGE_LOGO, pageLogoData);
+        AppStorage.saveData({
+          key: STORAGE_KEYS.SHOP_PAGE_LOGO,
+          value: pageLogoData,
+          isTemporary: true,
+        });
         set({ data: { ...get().data, pageLogoData } });
       },
       clearPageLogoData: () => {
-        AppStorage.removeData(STORAGE_KEYS.SHOP_PAGE_LOGO);
+        AppStorage.removeData({
+          key: STORAGE_KEYS.SHOP_PAGE_LOGO,
+        });
         set({ data: { ...get().data, pageLogoData: null } });
       },
     };

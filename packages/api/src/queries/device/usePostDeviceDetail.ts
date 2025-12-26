@@ -17,6 +17,7 @@ interface Props {
 
 export const usePostDeviceDetail = (params?: Props) => {
   const { options } = params ?? {};
+
   return useMutation<
     TVoidApiResponse,
     AxiosError<IApiError>,

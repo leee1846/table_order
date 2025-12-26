@@ -19,7 +19,7 @@ export const useShopPageSettingData = (options?: Props) => {
 
   const enabledPageSetting =
     !!shopData?.shopCode && !storeData?.pageSettingData && !skipInitialRequest;
-  const { data: pageSettingDataResponse, refetch } = useGetShopPageSetting(
+  const { data: apiData, refetch } = useGetShopPageSetting(
     shopData?.shopCode ?? '',
     { enabled: enabledPageSetting }
   );
@@ -34,12 +34,12 @@ export const useShopPageSettingData = (options?: Props) => {
       return;
     }
 
-    if (!pageSettingDataResponse) {
+    if (!apiData) {
       return;
     }
 
     setStoreData(mockShopPageSetting);
-  }, [pageSettingDataResponse, setStoreData, skipInitialRequest]);
+  }, [apiData, setStoreData, skipInitialRequest]);
 
   useEffect(() => {
     if (skipInitialRequest) {

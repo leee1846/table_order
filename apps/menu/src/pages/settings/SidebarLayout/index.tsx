@@ -19,7 +19,9 @@ export const SidebarLayout = () => {
   const { data: deviceData } = useDeviceData({ skipInitialRequest: true });
   const onClickHomeButton = () => {
     if (deviceData?.tableNumber) {
-      AppStorage.removeData(STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED);
+      AppStorage.removeData({
+        key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
+      });
       navigate(ROUTES.ROOT.generate());
       return;
     }

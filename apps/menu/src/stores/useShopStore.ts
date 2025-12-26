@@ -16,20 +16,26 @@ export interface IShopStore {
  */
 export const useShopStore = create<IShopStore>((set) => {
   // 초기 데이터 로드 (비동기)
-  AppStorage.loadData<IGetShopItem>(STORAGE_KEYS.SHOP).then((data) => {
-    if (data) {
-      set({ data });
+  AppStorage.loadData<IGetShopItem>({ key: STORAGE_KEYS.SHOP }).then((data) => {
+    if (data?.value) {
+      set({ data: data.value });
     }
   });
 
   return {
     data: null,
     setData: (data: IGetShopItem) => {
-      AppStorage.saveData(STORAGE_KEYS.SHOP, data);
+      AppStorage.saveData({
+        key: STORAGE_KEYS.SHOP,
+        value: data,
+        isTemporary: true,
+      });
       set({ data });
     },
     clearData: () => {
-      AppStorage.removeData(STORAGE_KEYS.SHOP);
+      AppStorage.removeData({
+        key: STORAGE_KEYS.SHOP,
+      });
       set({ data: null });
     },
   };

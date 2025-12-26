@@ -14,11 +14,11 @@ export interface ITableOrderHistoriesStore {
   /**
    * 테이블 주문 내역 데이터
    * api요청 전, 초기값 null
-   * api요청 후, 주문내역이 없을경우 'isEmpty'
+   * api요청 후, 주문내역이 없을경우 'isEmptyTable'
    * api요청 후, 주문내역이 있을경우 ITableOrderHistoriesData
    * */
-  data: ITableOrderHistoriesData | null | 'isEmpty';
-  setDataAsync: (data: ITableOrderHistoriesData | 'isEmpty') => void;
+  data: ITableOrderHistoriesData | null | 'isEmptyTable';
+  setDataAsync: (data: ITableOrderHistoriesData | 'isEmptyTable') => void;
 }
 
 /**
@@ -28,11 +28,11 @@ export interface ITableOrderHistoriesStore {
 export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
   (set) => {
     // 초기 데이터 로드 (비동기)
-    AppStorage.loadData<ITableOrderHistoriesData>(
-      STORAGE_KEYS.TABLE_ORDER_HISTORIES
-    ).then((data) => {
-      if (data) {
-        set({ data });
+    AppStorage.loadData<ITableOrderHistoriesData>({
+      key: STORAGE_KEYS.TABLE_ORDER_HISTORIES,
+    }).then((data) => {
+      if (data?.value) {
+        set({ data: data.value });
       }
     });
 
@@ -40,7 +40,11 @@ export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
       data: null,
       setDataAsync: (data) => {
         return new Promise((resolve) => {
-          AppStorage.saveData(STORAGE_KEYS.TABLE_ORDER_HISTORIES, data);
+          AppStorage.saveData({
+            key: STORAGE_KEYS.TABLE_ORDER_HISTORIES,
+            value: data,
+            isTemporary: true,
+          });
           set({ data });
           resolve(true);
         });

@@ -25,84 +25,49 @@ import { useCategoryVisibilityManager } from '@/hooks/useCategoryVisibilityManag
 import { useShopPageSettingData } from '@/hooks/useShopPageSettingData';
 
 export const MainPage = () => {
-  // ========================================
-  // 초기 데이터 로드
-  // ========================================
-  /** 상점 데이터 로드 */
   useShopData();
-  /** 상점 상세 데이터 로드 */
   const { data: shopDetailData } = useShopDetailData();
-  /** 테이블 데이터 로드 */
   const deviceDataResult = useDeviceData();
-  /** 카테고리 데이터 로드 및 선택자 */
   const {
     categories,
     visibleCategories,
     staffCallCategory,
     nonStaffCallCategories,
   } = useCategoriesData();
-  /** 테이블 주문 내역 데이터 로드 */
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
-  const orderHistories =
-    tableOrderHistoriesData && tableOrderHistoriesData !== 'isEmpty'
-      ? tableOrderHistoriesData
-      : null;
-  /** 상점 페이지 설정 데이터 로드 */
   useShopPageSettingData();
 
-  // ========================================
-  // 비즈니스 로직 훅
-  // ========================================
-  /** 카테고리 노출/비노출 상태 관리 (판매 시간/요일) */
+  const orderHistories =
+    tableOrderHistoriesData && tableOrderHistoriesData !== 'isEmptyTable'
+      ? tableOrderHistoriesData
+      : null;
+
+  const useSinglePageMenuboard =
+    shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false;
+  const usePickupAlert = shopDetailData?.shopSetting?.usePickupAlert ?? false;
+
   useCategoryVisibilityManager(categories);
 
-  /** 카테고리 네비게이션 (스크롤/탭 모드) */
   const categoryNavigation = useCategoryNavigation({
     categories: nonStaffCallCategories,
-    useSinglePageMenuboard:
-      shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false,
+    useSinglePageMenuboard,
   });
 
-  /** 브레이크타임 상태 관리 */
   const breakTimeState = useBreakTime();
-
-  /** 영업마감 상태 관리 */
   const closureState = useShopClosure();
 
-  // ========================================
-  // 앱 설정 및 초기화
-  // ========================================
-  /** 다크모드 설정 */
   useAppThemeSettings(shopDetailData);
-
-  /** 고객 언어 설정 */
   const languageSettings = useCustomerLanguageSettings(shopDetailData);
-
-  /** 객수 선택 설정 */
   const customerCountSettings = useCustomerCountSettings(
     shopDetailData,
     tableOrderHistoriesData
   );
-
-  /** 관리자 접근 제어 */
   const adminAccessControl = useAdminAccessControl(deviceDataResult);
-
-  /** 첫 주문 필수 항목 체크 */
   useFirstOrderRequiredCheck();
-
-  /** 브레이크타임 시 장바구니 클리어 */
   useBreakTimeCartClear(breakTimeState);
 
-  // ========================================
-  // 화면 노출 상태
-  // ========================================
-  /** 초기 화면 페이지 노출 여부 */
   const { data: initialPageData } = useInitialPageStore();
-
-  /** 픽업 알림 노출 여부 */
   const { data: pickUpAlarmData } = usePickupAlarmStore();
-
-  /** 장바구니 메뉴 주문 리마인더 노출 여부 */
   const { data: cartReminderData } = useCartReminderStore();
 
   const breakTimeLastOrderState = {
@@ -123,77 +88,73 @@ export const MainPage = () => {
     onClose: closureState.closeLastOrderAlertModal,
   };
 
-  return (
-    <PageRenderer
-      states={{
-        adminAccess: {
-          show: adminAccessControl.showAdminAccessPasswordModal,
-          onClose: () =>
-            adminAccessControl.setShowAdminAccessPasswordModal(false),
-        },
-        shopClosure: {
-          show: closureState.showClosed,
-          message: closureState.closureMessage ?? '',
-          startTime: closureState.closureStartTime ?? '',
-          endTime: closureState.closureEndTime ?? '',
-        },
-        breakTime: {
-          show: breakTimeState.showBreakTime,
-          message: breakTimeState.breakTimeMessage ?? '',
-          startTime: breakTimeState.breakTimeStartTime ?? '',
-          endTime: breakTimeState.breakTimeEndTime ?? '',
-        },
-        breakTimeLastOrder: breakTimeLastOrderState,
-        closureLastOrder: closureLastOrderState,
-        initialPage: {
-          show: initialPageData.showInitialPage,
-        },
-        languageSelector: {
-          show: languageSettings.showLanguageSelector,
-        },
-        customerCount: {
-          show: customerCountSettings.showCustomerCountSelector,
-        },
-        pickupAlarm: {
-          show:
-            (shopDetailData?.shopSetting?.usePickupAlert ?? false) &&
-            pickUpAlarmData.showPickupAlarm,
-        },
-        cartReminder: {
-          show: cartReminderData.showCartReminder,
-        },
-      }}
-      mainContent={
-        <S.Container>
-          <Header
-            orderHistories={orderHistories}
-            openAdminAccessPasswordModal={() =>
-              adminAccessControl.setShowAdminAccessPasswordModal(true)
-            }
-            breakTimeState={breakTimeState}
-            closureState={closureState}
-          />
+  const pageStates = {
+    adminAccess: {
+      show: adminAccessControl.showAdminAccessPasswordModal,
+      onClose: () => adminAccessControl.setShowAdminAccessPasswordModal(false),
+    },
+    shopClosure: {
+      show: closureState.showClosed,
+      message: closureState.closureMessage ?? '',
+      startTime: closureState.closureStartTime ?? '',
+      endTime: closureState.closureEndTime ?? '',
+    },
+    breakTime: {
+      show: breakTimeState.showBreakTime,
+      message: breakTimeState.breakTimeMessage ?? '',
+      startTime: breakTimeState.breakTimeStartTime ?? '',
+      endTime: breakTimeState.breakTimeEndTime ?? '',
+    },
+    breakTimeLastOrder: breakTimeLastOrderState,
+    closureLastOrder: closureLastOrderState,
+    initialPage: {
+      show: initialPageData.showInitialPage,
+    },
+    languageSelector: {
+      show: languageSettings.showLanguageSelector,
+    },
+    customerCount: {
+      show: customerCountSettings.showCustomerCountSelector,
+    },
+    pickupAlarm: {
+      show: usePickupAlert && pickUpAlarmData.showPickupAlarm,
+    },
+    cartReminder: {
+      show: cartReminderData.showCartReminder,
+    },
+  };
 
-          <S.MainContent>
-            <Sidebar
-              categories={nonStaffCallCategories}
-              staffCallCategory={staffCallCategory}
-              selectedCategorySeq={categoryNavigation.selectedCategorySeq}
-              handleCategoryClick={categoryNavigation.handleCategoryClick}
-            />
+  const handleOpenAdminAccessPasswordModal = () => {
+    adminAccessControl.setShowAdminAccessPasswordModal(true);
+  };
 
-            <Contents
-              categories={nonStaffCallCategories}
-              useSinglePageMenuboard={
-                shopDetailData?.shopSetting?.useSinglePageMenuboard ?? false
-              }
-              selectedCategory={categoryNavigation.selectedCategory}
-            />
+  const mainContent = (
+    <S.Container>
+      <Header
+        orderHistories={orderHistories}
+        openAdminAccessPasswordModal={handleOpenAdminAccessPasswordModal}
+        breakTimeState={breakTimeState}
+        closureState={closureState}
+      />
 
-            <CartButton categories={visibleCategories} />
-          </S.MainContent>
-        </S.Container>
-      }
-    />
+      <S.MainContent>
+        <Sidebar
+          categories={nonStaffCallCategories}
+          staffCallCategory={staffCallCategory}
+          selectedCategorySeq={categoryNavigation.selectedCategorySeq}
+          handleCategoryClick={categoryNavigation.handleCategoryClick}
+        />
+
+        <Contents
+          categories={nonStaffCallCategories}
+          useSinglePageMenuboard={useSinglePageMenuboard}
+          selectedCategory={categoryNavigation.selectedCategory}
+        />
+
+        <CartButton categories={visibleCategories} />
+      </S.MainContent>
+    </S.Container>
   );
+
+  return <PageRenderer states={pageStates} mainContent={mainContent} />;
 };
