@@ -2,6 +2,113 @@ import dayjs from 'dayjs';
 import { getCurrentUnixTime } from '../time';
 
 /**
+ * Date 또는 문자열을 'YYYYMMDD' 형식으로 변환합니다.
+ * 유효하지 않은 값이면 빈 문자열을 반환합니다.
+ */
+export const formatDateToYYYYMMDD = (date: Date | string): string => {
+  const parsed = dayjs(date);
+  return parsed.isValid() ? parsed.format('YYYYMMDD') : '';
+};
+
+/**
+ * Date 또는 문자열을 'YYYY-MM-DD' 형식으로 변환합니다.
+ * 유효하지 않은 값이면 빈 문자열을 반환합니다.
+ */
+export const formatDateToDash = (date: Date | string): string => {
+  const parsed = dayjs(date);
+  return parsed.isValid() ? parsed.format('YYYY-MM-DD') : '';
+};
+
+/**
+ * 지정한 포맷으로 날짜/시간을 변환합니다.
+ * 기본 포맷은 'YYYY-MM-DD HH:mm:ss' 입니다.
+ */
+export const formatDateTime = (
+  date: Date | string | number,
+  format: string = 'YYYY-MM-DD HH:mm:ss'
+): string => {
+  const parsed = dayjs(date);
+  return parsed.isValid() ? parsed.format(format) : '';
+};
+
+export type TDateRangePreset =
+  | 'today'
+  | 'yesterday'
+  | 'thisWeek'
+  | 'thisMonth'
+  | '3Months';
+
+/**
+ * 사전에 정의된 기간 값으로 시작일/종료일을 반환합니다.
+ * 반환되는 문자열은 'YYYY-MM-DD' 형식입니다.
+ */
+export const getDateRangeByPreset = (
+  preset: TDateRangePreset,
+  baseDate: Date | string = new Date()
+): { startDate: string; endDate: string } => {
+  const base = dayjs(baseDate);
+  const endDate = base.isValid() ? base.endOf('day') : dayjs();
+
+  switch (preset) {
+    case 'today': {
+      const start = endDate.startOf('day');
+      return {
+        startDate: start.format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
+      };
+    }
+    case 'yesterday': {
+      const start = endDate.subtract(1, 'day').startOf('day');
+      const end = start.endOf('day');
+      return {
+        startDate: start.format('YYYY-MM-DD'),
+        endDate: end.format('YYYY-MM-DD'),
+      };
+    }
+    case 'thisWeek': {
+      const start = endDate.startOf('week');
+      return {
+        startDate: start.format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
+      };
+    }
+    case 'thisMonth': {
+      const start = endDate.startOf('month');
+      return {
+        startDate: start.format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
+      };
+    }
+    case '3Months': {
+      const start = endDate.subtract(3, 'month').startOf('day');
+      return {
+        startDate: start.format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
+      };
+    }
+    default:
+      return {
+        startDate: endDate.format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
+      };
+  }
+};
+
+/**
+ * 'YYYY-MM-DD' 형식의 시작/종료일을 API가 요구하는 'YYYYMMDD' 형식으로 변환합니다.
+ */
+export const toYYYYMMDDRange = ({
+  startDate,
+  endDate,
+}: {
+  startDate: string;
+  endDate: string;
+}): { startDate: string; endDate: string } => ({
+  startDate: formatDateToYYYYMMDD(startDate),
+  endDate: formatDateToYYYYMMDD(endDate),
+});
+
+/**
  * 연도, 월, 일을 'YYYY-MM-DD' 형식의 문자열로 변환합니다.
  *
  * @param year - 연도

@@ -52,9 +52,17 @@ export const ROUTES = {
       path: 'tables',
       generate: () => '/settings/tables',
     },
-    STYLE: {
-      path: 'style',
-      generate: () => '/settings/style',
+    THEME: {
+      path: 'theme',
+
+      START_SCREEN: {
+        path: 'start-screen',
+        generate: () => '/settings/theme/start-screen',
+      },
+      MENU_SCREEN: {
+        path: 'menu-screen',
+        generate: () => '/settings/theme/menu-screen',
+      },
     },
     MISCELLANEOUS: {
       path: 'misc',

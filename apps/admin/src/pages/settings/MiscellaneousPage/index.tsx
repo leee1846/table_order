@@ -26,6 +26,7 @@ import { Payment } from '@/pages/settings/MiscellaneousPage/Payment';
 import { Intergration } from '@/pages/settings/MiscellaneousPage/Intergration';
 import { Language } from '@/pages/settings/MiscellaneousPage/Language';
 import type { MiscellaneousChange } from './types';
+import { toast } from '@repo/feature/utils';
 
 const mergeDefined = <T extends object>(base: T, updates: Partial<T>): T => {
   const next = { ...base };
@@ -201,6 +202,8 @@ export const MiscellaneousPage = () => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.category.list(),
       });
+
+      toast('설정이 저장되었습니다.');
     } catch (error) {
       console.error(error);
     }

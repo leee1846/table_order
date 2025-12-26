@@ -7,4 +7,5 @@ export * from './table';
 export * from './device';
 export * from './common';
 export * from './notice';
+export * from './sales';
 export { queryKeys } from './queryKeys';

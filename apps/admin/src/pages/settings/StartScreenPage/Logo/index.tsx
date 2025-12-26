@@ -1,5 +1,5 @@
 import { BasicButton } from '@repo/ui/components';
-import * as S from '@/pages/settings/StylePage/Logo/logo.style';
+import * as S from '@/pages/settings/StartScreenPage/Logo/logo.style';
 
 export const Logo = () => {
   return (
@@ -18,3 +18,4 @@ export const Logo = () => {
     </S.Container>
   );
 };
+

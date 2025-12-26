@@ -1,9 +1,36 @@
 import { BasicButton } from '@repo/ui/components';
-import { formatCurrency } from '@repo/util/string';
+import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
+import { formatDateTime } from '@repo/util/date';
+import type { IOrderHistoryItem, IPaymentHistory } from '@repo/api/types';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from './paymentSection.style';
 
-export const PaymentSection = () => {
+interface Props {
+  order: IOrderHistoryItem;
+}
+
+const getPaymentLabel = (order: IOrderHistoryItem) =>
+  formatPaymentMethodLabel(
+    order.paymentMethod || order.paymentList?.[0]?.paymentType
+  );
+
+const sumAmounts = (payments: IPaymentHistory[], predicate: (p: IPaymentHistory) => boolean) =>
+  payments.reduce(
+    (sum, payment) =>
+      predicate(payment) ? sum + (payment.transactionAmount ?? 0) : sum,
+    0
+  );
+
+export const PaymentSection = ({ order }: Props) => {
+  const payments = order.paymentList ?? [];
+  const cashPayments = payments.filter((p) => p.paymentType === 'CASH');
+  const cardPayments = payments.filter((p) => p.paymentType === 'CARD');
+
+  const totalAmount = sumAmounts(payments, () => true);
+  const canceledAmount = sumAmounts(payments, (p) => !!p.isCanceled);
+  const paidAmount = totalAmount - canceledAmount;
+  const paymentLabel = getPaymentLabel(order);
+
   return (
     <div>
       <S.TitleContainer>
@@ -31,10 +58,10 @@ export const PaymentSection = () => {
 
           <UIStyles.setting.Tbody>
             <tr>
-              <td>{formatCurrency(100000)}</td>
-              <td>{formatCurrency(10000)}</td>
-              <td>{formatCurrency(90000)}</td>
-              <td>카드</td>
+              <td>{formatCurrency(totalAmount)}</td>
+              <td>{formatCurrency(canceledAmount)}</td>
+              <td>{formatCurrency(paidAmount)}</td>
+              <td>{paymentLabel ?? '-'}</td>
             </tr>
           </UIStyles.setting.Tbody>
         </UIStyles.setting.Table>
@@ -53,22 +80,32 @@ export const PaymentSection = () => {
           </UIStyles.setting.Thead>
 
           <UIStyles.setting.Tbody>
-            <tr>
-              <td>111533431</td>
-              <td>2025-01-01 12:00:00</td>
-              <td>{formatCurrency(100000)}</td>
-              <td>-</td>
-              <td>-</td>
-              <td>
-                <BasicButton
-                  variant="Outline_Navy_M"
-                  onClick={() => {}}
-                  customStyle={S.cancelButtonCss}
-                >
-                  취소
-                </BasicButton>
-              </td>
-            </tr>
+            {cashPayments.length === 0 && (
+              <tr>
+                <td colSpan={6}>현금 결제 내역이 없습니다.</td>
+              </tr>
+            )}
+            {cashPayments.map((payment, index) => (
+              <tr key={`${payment.paymentSeq ?? payment.transactionNumber ?? index}-cash`}>
+                <td>{order.orderNumber ?? '-'}</td>
+                <td>
+                  {formatDateTime(payment.transactionDate ?? '', 'YYYY-MM-DD HH:mm:ss') ||
+                    '-'}
+                </td>
+                <td>{formatCurrency(payment.transactionAmount ?? 0)}</td>
+                <td>-</td>
+                <td>-</td>
+                <td>
+                  <BasicButton
+                    variant="Outline_Navy_M"
+                    onClick={() => {}}
+                    customStyle={S.cancelButtonCss}
+                  >
+                    취소
+                  </BasicButton>
+                </td>
+              </tr>
+            ))}
           </UIStyles.setting.Tbody>
         </UIStyles.setting.Table>
 
@@ -103,39 +140,47 @@ export const PaymentSection = () => {
           </UIStyles.setting.Thead>
 
           <UIStyles.setting.Tbody>
-            <tr>
-              <td>승인</td>
-              <td>
-                12345678901
-                <br />
-                [1234567890]
-              </td>
-              <td>{formatCurrency(100000)}</td>
-              <td>
-                2025-01-01 12:00:00
-                <br />
-                [1234567890123456]
-              </td>
-              <td>
-                기타카드
-                <br />
-                [임의결제]
-              </td>
-              <td>
-                {formatCurrency(100000)}원
-                <br />
-                {formatCurrency(10000)}원
-              </td>
-              <td>
-                <BasicButton
-                  variant="Outline_Navy_M"
-                  onClick={() => {}}
-                  customStyle={S.cancelButtonCss}
-                >
-                  취소
-                </BasicButton>
-              </td>
-            </tr>
+            {cardPayments.length === 0 && (
+              <tr>
+                <td colSpan={7}>카드 결제 내역이 없습니다.</td>
+              </tr>
+            )}
+            {cardPayments.map((payment, index) => (
+              <tr key={`${payment.paymentSeq ?? payment.transactionNumber ?? index}-card`}>
+                <td>{payment.isCanceled ? '취소' : '승인'}</td>
+                <td>
+                  {payment.cardNumber ?? '-'}
+                  <br />
+                  [{payment.approvalNumber ?? '-'}]
+                </td>
+                <td>{formatCurrency(payment.transactionAmount ?? 0)}</td>
+                <td>
+                  {formatDateTime(payment.transactionDate ?? '', 'YYYY-MM-DD HH:mm:ss') ||
+                    '-'}
+                  <br />
+                  [{payment.transactionNumber ?? '-'}]
+                </td>
+                <td>
+                  {payment.acquirerCompany ?? '-'}
+                  <br />
+                  [{payment.issuerCompany ?? '-'}]
+                </td>
+                <td>
+                  {formatCurrency(payment.transactionAmount ?? 0)}원
+                  <br />
+                  -
+                </td>
+                <td>
+                  <BasicButton
+                    variant="Outline_Navy_M"
+                    onClick={() => {}}
+                    customStyle={S.cancelButtonCss}
+                  >
+                    취소
+                  </BasicButton>
+                </td>
+              </tr>
+            ))}
           </UIStyles.setting.Tbody>
         </UIStyles.setting.Table>
       </S.Tables>

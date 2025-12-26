@@ -83,4 +83,58 @@ export const queryKeys = {
     list: (page?: number, pageSize?: number) =>
       [...queryKeys.notice.all, 'list', page ?? 1, pageSize ?? 20] as const,
   },
+
+  sales: {
+    all: ['sales'] as const,
+    /** 매출 요약 조회 */
+    summary: (shopCode: string, startDate: string, endDate: string) =>
+      [...queryKeys.sales.all, 'summary', shopCode, startDate, endDate] as const,
+    /** 메뉴 판매 집계 조회 */
+    menuSalesSummary: (
+      shopCode: string,
+      startDate: string,
+      endDate: string
+    ) =>
+      [
+        ...queryKeys.sales.all,
+        'menuSalesSummary',
+        shopCode,
+        startDate,
+        endDate,
+      ] as const,
+    /** 주문 내역 조회 */
+    orderHistory: (
+      shopCode: string,
+      startDate: string,
+      endDate: string,
+      pageNumber: number,
+      pageSize: number
+    ) =>
+      [
+        ...queryKeys.sales.all,
+        'orderHistory',
+        shopCode,
+        startDate,
+        endDate,
+        pageNumber,
+        pageSize,
+      ] as const,
+    /** 카드 승인 내역 조회 */
+    cardApprovalHistory: (
+      shopCode: string,
+      startDate: string,
+      endDate: string,
+      pageNumber: number,
+      pageSize: number
+    ) =>
+      [
+        ...queryKeys.sales.all,
+        'cardApprovalHistory',
+        shopCode,
+        startDate,
+        endDate,
+        pageNumber,
+        pageSize,
+      ] as const,
+  },
 } as const;

@@ -13,7 +13,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes.ts';
-import { CustomerCountSelector } from '@/pages/TablesPage/CustomerCountSelector';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { usePostOrderGroup, queryKeys } from '@repo/api/queries';
@@ -21,7 +20,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useTableDrag } from '@/hooks/useTableDrag';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import type { toMinutes } from '@repo/util/time';
 
 export const TablesPage = () => {
   const { data: shopDetailData } = useShopDetailData();
@@ -111,7 +109,7 @@ export const TablesPage = () => {
     }
 
     const savedCount = customerCountData?.[table.tableNumber];
-    const customerCount = savedCount?.adultCount ?? 0;
+    const customerCount = savedCount?.adultCount ?? 1;
     const kidsCustomerCount =
       shopDetailData?.shopSetting?.useKidsCustomerCount && savedCount
         ? (savedCount.childCount ?? 0)
@@ -129,12 +127,10 @@ export const TablesPage = () => {
           queryKey: queryKeys.orders.currentTableList(shopCode),
         });
       }
-      navigate(ROUTES.TABLE_DETAIL.generate(table.tableNumber));
-    } catch (error) {
-      // 주문 그룹이 생성되지 않으면 디테일 페이지로 이동하지 않도록 방어
 
-      console.error('Failed to create order group', error);
-      window.alert('주문 접수에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      navigate(ROUTES.TABLE_DETAIL.generate(table.tableNumber));
+    } catch (_error) {
+      // 주문 그룹이 생성되지 않으면 디테일 페이지로 이동하지 않도록 방어
     }
   };
 
@@ -179,6 +175,7 @@ export const TablesPage = () => {
           onConfirm={async () => {
             await handleNavigateWithOrderCheck(selectedTable);
             setShowCustomerCountSelector(false);
+            void handleNavigateWithOrderCheck(selectedTable);
           }}
         />
 

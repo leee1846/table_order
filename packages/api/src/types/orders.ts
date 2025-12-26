@@ -303,8 +303,7 @@ export type TCustomAmountType =
   | 'MENU_SERVICE';
 
 /**
- * 픽업 메시지 전송 요청 파라미터
- * POST /order/pickup/{shopCode}/{tableNumber}
+ * 픽업 메시지 전송 요청 타입
  */
 export interface IPostPickupMessageRequest {
   shopCode: string;

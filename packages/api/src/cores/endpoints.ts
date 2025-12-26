@@ -82,4 +82,13 @@ export const ENDPOINTS = {
   NOTICE: {
     LIST: '/notice/list',
   },
+
+  SALES: {
+    SUMMARY: (shopCode: string) => `/sales/summary/${shopCode}`,
+    ORDER_HISTORY: (shopCode: string) => `/sales/order-history/${shopCode}`,
+    CARD_APPROVAL_HISTORY: (shopCode: string) =>
+      `/sales/card-approval/${shopCode}`,
+    MENU_SALES_SUMMARY: (shopCode: string) =>
+      `/sales/menu-sales-summary/${shopCode}`,
+  },
 } as const;

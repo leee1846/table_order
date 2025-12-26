@@ -5,14 +5,15 @@ import { ROUTES } from '@/constants/routes';
 import { useGetCategoryList } from '@repo/api/queries';
 import { useNavigate } from 'react-router-dom';
 import { bestOnIcon } from '@repo/ui/icons';
+import { useAuth } from '@/hooks/useAuth';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
 
-  // TODO: shopSeq는 인증 후 사용자 정보에서 주입되도록 교체 필요
-  const shopSeq = 1;
+  const { shopSeq } = useAuth();
+
   const { data: categoryListResponse } = useGetCategoryList({
-    shopSeq,
+    shopSeq: shopSeq ?? 0,
   });
 
   const categoryMenuSubMenus = useMemo(() => {

@@ -1,39 +1,41 @@
-import React from 'react';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency } from '@repo/util/string';
 import * as S from './table.style';
-const LIST = [
-  {
-    id: 1,
-  },
-  {
-    id: 2,
-    options: [
-      {
-        id: 1,
-      },
-      {
-        id: 2,
-      },
-    ],
-  },
-  {
-    id: 3,
-  },
-  {
-    id: 4,
-    options: [
-      {
-        id: 1,
-      },
-      {
-        id: 2,
-      },
-    ],
-  },
-];
+import type { IMenuSalesSummaryItem } from '@repo/api/types';
 
-export const Table = () => {
+interface Props {
+  items: IMenuSalesSummaryItem[];
+  isLoading?: boolean;
+}
+
+export const Table = ({ items, isLoading }: Props) => {
+  const renderRows = () => {
+    if (isLoading) {
+      return (
+        <tr>
+          <td colSpan={4}>메뉴 판매 내역을 불러오는 중입니다.</td>
+        </tr>
+      );
+    }
+
+    if (!items || items.length === 0) {
+      return (
+        <tr>
+          <td colSpan={4}>메뉴 판매 내역이 없습니다.</td>
+        </tr>
+      );
+    }
+
+    return items.map((item, index) => (
+      <S.MenuRow key={`${item.menuName}-${index}`}>
+        <td>{item.menuName}</td>
+        <td>{formatCurrency(item.unitPrice)}</td>
+        <td>{formatCurrency(item.quantity)}</td>
+        <td>{formatCurrency(item.totalPrice)}</td>
+      </S.MenuRow>
+    ));
+  };
+
   return (
     <UIStyles.setting.Table>
       <UIStyles.setting.Thead>
@@ -45,32 +47,7 @@ export const Table = () => {
         </tr>
       </UIStyles.setting.Thead>
       <UIStyles.setting.Tbody>
-        {LIST.map((item) => {
-          const hasOptions = item.options && item.options.length > 0;
-
-          return (
-            <React.Fragment key={item.id}>
-              <S.MenuRow hasOptions={hasOptions}>
-                <td>메뉴명명명명명명명</td>
-                <td>{formatCurrency(10000)}</td>
-                <td>{formatCurrency(999)}</td>
-                <td>{formatCurrency(9909090999)}</td>
-              </S.MenuRow>
-              {hasOptions &&
-                item.options.map((option, index) => (
-                  <S.OptionRow
-                    key={option.id}
-                    isLast={index === item.options.length - 1}
-                  >
-                    <td>- 옵션명명</td>
-                    <td>{formatCurrency(1000)}</td>
-                    <td>{formatCurrency(999)}</td>
-                    <td>{formatCurrency(9909090999)}</td>
-                  </S.OptionRow>
-                ))}
-            </React.Fragment>
-          );
-        })}
+        {renderRows()}
       </UIStyles.setting.Tbody>
     </UIStyles.setting.Table>
   );

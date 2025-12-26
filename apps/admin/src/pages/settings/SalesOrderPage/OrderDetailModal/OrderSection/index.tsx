@@ -1,55 +1,35 @@
 import { BasicButton } from '@repo/ui/components';
-import { formatCurrency } from '@repo/util/string';
+import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
+import { formatDateTime } from '@repo/util/date';
+import type { IOrderHistoryItem } from '@repo/api/types';
 import * as S from './orderSection.style';
 
-const MENUS = [
-  {
-    id: 1,
-    name: '뉴메뉴메뉴메뉴1',
-    qty: 1,
-    price: 10000,
-  },
-  {
-    id: 2,
-    name: '뉴메뉴메뉴메뉴2',
-    qty: 2,
-    price: 20000,
-    options: [
-      {
-        id: 1,
-        name: '옵션1',
-        qty: 1,
-        price: 1000,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: '뉴메뉴메뉴메뉴3',
-    qty: 3,
-    price: 30000,
-    options: [
-      {
-        id: 1,
-        name: '옵션1',
-        qty: 1,
-        price: 1000,
-      },
-      {
-        id: 2,
-        name: '옵션2',
-        qty: 1,
-        price: 1000,
-      },
-    ],
-  },
-];
+interface Props {
+  order: IOrderHistoryItem;
+}
 
-export const OrderSection = () => {
+export const OrderSection = ({ order }: Props) => {
+  const orderLog = order.orderLog;
+  const menus =
+    orderLog?.orderInfoList?.flatMap((info) => info.orderDetailMenuList) ?? [];
+
+  const totalQuantity = menus.reduce(
+    (sum, menu) => sum + (menu.menuQuantity ?? 0),
+    0
+  );
+  const totalAmount = menus.reduce((sum, menu) => {
+    const unitPrice = menu.finalPrice ?? menu.menuPrice ?? 0;
+    return sum + unitPrice * (menu.menuQuantity ?? 0);
+  }, 0);
+
+  const paymentLabel = formatPaymentMethodLabel(
+    order.paymentMethod || order.paymentList?.[0]?.paymentType
+  );
+
   return (
     <div>
       <S.TitleContainer>
-        <p>테이블 번호:101</p>
+        <p>테이블 번호: {order.tableNumber ?? orderLog?.tableNumber ?? '-'}</p>
         <div>
           <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
             재결제
@@ -66,54 +46,67 @@ export const OrderSection = () => {
             멤버십<span>-</span>
           </p>
           <p>
-            결제 수단<span>일반</span>
+            결제 수단<span>{paymentLabel ?? '-'}</span>
           </p>
           <p />
         </div>
         <div>
           <p>
-            주문번호<span>123213</span>
+            주문번호<span>{order.orderNumber ?? '-'}</span>
           </p>
           <p>
-            주문 일시<span>2025-01-01 12:00:00</span>
+            주문 일시
+            <span>
+              {formatDateTime(
+                order.orderClearedDate ?? orderLog?.createDate ?? ''
+              ) || '-'}
+            </span>
           </p>
           <p>
-            객수<span>2</span>
+            객수<span>{order.customerCount ?? orderLog?.customerCount ?? '-'}</span>
           </p>
         </div>
       </S.OrderInfoContainer>
 
       <S.OrderList>
         <ul>
-          {MENUS.map((menu) => (
-            <li key={menu.id}>
-              <S.MenuItem>
-                <p>{menu.name}</p>
-                <p>{menu.qty}</p>
-                <p>{formatCurrency(menu.price)}</p>
-              </S.MenuItem>
-              {menu.options && menu.options.length > 0 && (
-                <ul>
-                  {menu.options.map((option) => (
-                    <S.OptionItem key={option.id}>
-                      <p>
-                        <span /> {option.name}
-                      </p>
-                      <p>{option.qty}</p>
-                      <p>{formatCurrency(option.price)}</p>
-                    </S.OptionItem>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
+          {menus.length === 0 && <li>주문 내역이 없습니다.</li>}
+          {menus.map((menu) => {
+            const options = menu.orderDetailOptionList ?? [];
+            const menuTotal =
+              (menu.finalPrice ?? menu.menuPrice ?? 0) *
+              (menu.menuQuantity ?? 0);
+
+            return (
+              <li key={menu.orderDetailMenuSeq}>
+                <S.MenuItem>
+                  <p>{menu.menuName}</p>
+                  <p>{menu.menuQuantity ?? 0}</p>
+                  <p>{formatCurrency(menuTotal)}</p>
+                </S.MenuItem>
+                {options.length > 0 && (
+                  <ul>
+                    {options.map((option) => (
+                      <S.OptionItem key={option.orderDetailOptionSeq}>
+                        <p>
+                          <span /> {option.optionName}
+                        </p>
+                        <p>{option.optionQuantity ?? 0}</p>
+                        <p>{formatCurrency(option.optionPrice ?? 0)}</p>
+                      </S.OptionItem>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </S.OrderList>
 
       <S.Total>
         <p>합계 금액</p>
-        <p>6</p>
-        <p>{formatCurrency(100000)}</p>
+        <p>{totalQuantity}</p>
+        <p>{formatCurrency(totalAmount)}</p>
       </S.Total>
     </div>
   );

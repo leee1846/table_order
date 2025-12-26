@@ -99,3 +99,29 @@ export const normalizeNumberString = (value: string): string => {
   }
   return value;
 };
+
+/**
+ * 결제 수단 코드를 사용자 친화적인 라벨로 변환합니다.
+ *
+ * @param method - 결제 수단 코드 (예: 'CARD', 'CASH', 'CANCELED_ALL')
+ * @returns 한글 라벨 또는 원본 값
+ */
+export const formatPaymentMethodLabel = (
+  method?: string | null
+): string => {
+  if (!method) {
+    return '-';
+  }
+
+  const normalized = method.toUpperCase();
+  switch (normalized) {
+    case 'CARD':
+      return '카드';
+    case 'CASH':
+      return '현금';
+    case 'CANCELED_ALL':
+      return '전체 취소';
+    default:
+      return method;
+  }
+};

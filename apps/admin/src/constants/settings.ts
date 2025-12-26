@@ -21,7 +21,7 @@ export const createSidebarMenus = (menuSubMenus?: TSubMenu[]): TMenu[] => [
   {
     id: 'sales',
     label: '매출 관리',
-    matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.SALES.SUMMARY.path}`,
+    matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.SALES.path}`,
     subMenus: [
       {
         id: 'summary',
@@ -38,11 +38,11 @@ export const createSidebarMenus = (menuSubMenus?: TSubMenu[]): TMenu[] => [
         label: '카드승인내역',
         path: ROUTES.SETTINGS.SALES.CARD.generate(),
       },
-      {
-        id: 'cash',
-        label: '단순현금결제내역',
-        path: ROUTES.SETTINGS.SALES.CASH.generate(),
-      },
+      // {
+      //   id: 'cash',
+      //   label: '단순현금결제내역',
+      //   path: ROUTES.SETTINGS.SALES.CASH.generate(),
+      // },
       {
         id: 'menu',
         label: '메뉴판매집계',
@@ -56,9 +56,21 @@ export const createSidebarMenus = (menuSubMenus?: TSubMenu[]): TMenu[] => [
     path: ROUTES.SETTINGS.TABLES.generate(),
   },
   {
-    id: 'style',
-    label: '페이지 설정',
-    path: ROUTES.SETTINGS.STYLE.generate(),
+    id: 'theme',
+    label: '테마 설정',
+    matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.THEME.path}`,
+    subMenus: [
+      {
+        id: 'start-screen',
+        label: '시작 화면',
+        path: ROUTES.SETTINGS.THEME.START_SCREEN.generate(),
+      },
+      {
+        id: 'menu-screen',
+        label: '메뉴 화면',
+        path: ROUTES.SETTINGS.THEME.MENU_SCREEN.generate(),
+      },
+    ],
   },
   {
     id: 'miscellaneous',

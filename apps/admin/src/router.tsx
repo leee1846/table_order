@@ -40,6 +40,7 @@ const TablesPage = lazy(() =>
     default: module.TablesPage,
   }))
 );
+
 const TableDetailPage = lazy(() =>
   import('@/pages/TableDetailPage').then((module) => ({
     default: module.TableDetailPage,
@@ -60,11 +61,11 @@ const SalesCardPage = lazy(() =>
     default: module.SalesCardPage,
   }))
 );
-const SalesCashPage = lazy(() =>
-  import('@/pages/settings/SalesCashPage').then((module) => ({
-    default: module.SalesCashPage,
-  }))
-);
+// const SalesCashPage = lazy(() =>
+//   import('@/pages/settings/SalesCashPage').then((module) => ({
+//     default: module.SalesCashPage,
+//   }))
+// );
 const SalesMenuPage = lazy(() =>
   import('@/pages/settings/SalesMenuPage').then((module) => ({
     default: module.SalesMenuPage,
@@ -77,14 +78,20 @@ const SettingsTablesPage = lazy(() =>
   }))
 );
 
-const StylePage = lazy(() =>
-  import('@/pages/settings/StylePage').then((module) => ({
-    default: module.StylePage,
-  }))
-);
 const MiscellaneousPage = lazy(() =>
   import('@/pages/settings/MiscellaneousPage').then((module) => ({
     default: module.MiscellaneousPage,
+  }))
+);
+
+const StartScreenPage = lazy(() =>
+  import('@/pages/settings/StartScreenPage').then((module) => ({
+    default: module.StartScreenPage,
+  }))
+);
+const MenuScreenPage = lazy(() =>
+  import('@/pages/settings/MenuScreenPage').then((module) => ({
+    default: module.MenuScreenPage,
   }))
 );
 
@@ -188,10 +195,10 @@ export const router = createBrowserRouter([
                 path: ROUTES.SETTINGS.SALES.CARD.path,
                 element: <SalesCardPage />,
               },
-              {
-                path: ROUTES.SETTINGS.SALES.CASH.path,
-                element: <SalesCashPage />,
-              },
+              // {
+              //   path: ROUTES.SETTINGS.SALES.CASH.path,
+              //   element: <SalesCashPage />,
+              // },
               {
                 path: ROUTES.SETTINGS.SALES.MENU.path,
                 element: <SalesMenuPage />,
@@ -199,8 +206,23 @@ export const router = createBrowserRouter([
             ],
           },
           {
-            path: ROUTES.SETTINGS.STYLE.path,
-            element: <StylePage />,
+            path: ROUTES.SETTINGS.THEME.path,
+            element: <Outlet />,
+            children: [
+              {
+                index: true,
+                loader: () =>
+                  redirect(ROUTES.SETTINGS.THEME.START_SCREEN.generate()),
+              },
+              {
+                path: ROUTES.SETTINGS.THEME.START_SCREEN.path,
+                element: <StartScreenPage />,
+              },
+              {
+                path: ROUTES.SETTINGS.THEME.MENU_SCREEN.path,
+                element: <MenuScreenPage />,
+              },
+            ],
           },
           {
             path: ROUTES.SETTINGS.MISCELLANEOUS.path,

@@ -20,4 +20,3 @@ export const usePostPickupMessage = () => {
     mutationFn: postPickupMessage,
   });
 };
-

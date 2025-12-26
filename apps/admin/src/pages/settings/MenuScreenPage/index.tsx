@@ -1,16 +1,17 @@
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import { SettingsIcon } from '@repo/ui/icons';
-import { Theme } from '@/pages/settings/StylePage/Theme';
-import { Logo } from '@/pages/settings/StylePage/Logo';
-import * as S from './stylePage.style';
+import { ScreenMode } from '@/pages/settings/MenuScreenPage/ScreenMode';
+import { Logo } from '@/pages/settings/MenuScreenPage/Logo';
+import { Template } from '@/pages/settings/MenuScreenPage/Template';
+import * as S from './menuScreenPage.style';
 
-export const StylePage = () => {
+export const MenuScreenPage = () => {
   return (
     <S.Container>
       <S.Header>
         <h1>
-          페이지 설정
+          테마 설정 | 메뉴판
           <SettingsIcon color={theme.colors.grey[800]} width={40} height={40} />
         </h1>
 
@@ -19,8 +20,10 @@ export const StylePage = () => {
         </BasicButton>
       </S.Header>
 
-      <Theme />
+      <ScreenMode />
       <Logo />
+      <Template />
     </S.Container>
   );
 };
+

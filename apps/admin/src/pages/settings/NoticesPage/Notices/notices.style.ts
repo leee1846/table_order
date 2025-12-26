@@ -29,7 +29,6 @@ export const Header = styled.button<{ isOpen: boolean }>`
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px 14px 0;
-  border: 1px solid red;
   cursor: pointer;
 `;
 
