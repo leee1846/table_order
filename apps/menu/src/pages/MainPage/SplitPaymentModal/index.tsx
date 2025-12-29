@@ -1,6 +1,6 @@
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/SplitPaymentModal/splitPaymentModal.style';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { MenuSelector } from '@/pages/MainPage/SplitPaymentModal/MenuSelector';
 import { PriceSelector } from '@/pages/MainPage/SplitPaymentModal/PriceSelector';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -19,23 +19,69 @@ interface Props {
   onClose: () => void;
 }
 
-// 헬퍼: 메뉴 가격 계산 (메뉴 + 옵션)
-const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
-  const options = cartMenu.selectedOptions.map((option) => ({
+export interface Person {
+  id: string;
+  isSelected: boolean;
+  customPrice?: number; // 사용자가 직접 설정한 금액
+  paidAmount?: number; // 결제 완료된 금액 (합계 계산용)
+}
+
+const calculateSingleMenuPrice = (menu: ICartMenu): number => {
+  const options = menu.selectedOptions.map((option) => ({
     optionPrice: option.optionPrice,
     quantity: option.quantity,
   }));
 
-  return calculateMenuTotalPrice(
-    cartMenu.menuPrice,
-    cartMenu.quantity,
-    options
+  return calculateMenuTotalPrice(menu.menuPrice, menu.quantity, options);
+};
+
+const calculateTotalMenusPrice = (menus: ICartMenu[]): number => {
+  return menus.reduce(
+    (total, menu) => total + calculateSingleMenuPrice(menu),
+    0
   );
 };
 
-// 헬퍼: 메뉴 배열의 총 가격 계산
-const calculateMenusPrice = (menus: ICartMenu[]): number => {
-  return menus.reduce((total, menu) => total + calculateCartMenuPrice(menu), 0);
+const calculatePersonPrice = (
+  person: Person,
+  allPersons: Person[],
+  remainingTotal: number
+): number => {
+  // 커스텀 금액이 설정된 경우 그대로 반환
+  if (person.customPrice !== undefined) {
+    return person.customPrice;
+  }
+
+  // 커스텀 금액이 없는 사람들만 균등 분배 대상
+  const personsWithoutCustomPrice = allPersons.filter(
+    (p) => p.customPrice === undefined
+  );
+  const countToSplit = personsWithoutCustomPrice.length;
+
+  if (countToSplit === 0) {
+    return 0;
+  }
+
+  // 커스텀 금액 합계 계산
+  const totalCustomAmount = allPersons.reduce(
+    (sum, p) => sum + (p.customPrice ?? 0),
+    0
+  );
+  const amountToSplit = Math.max(remainingTotal - totalCustomAmount, 0);
+
+  if (amountToSplit <= 0) {
+    return 0;
+  }
+
+  // 균등 분배 (첫 번째 사람에게 나머지 할당하여 정확한 금액 맞춤)
+  const baseAmount = Math.floor(amountToSplit / countToSplit);
+  const remainderAmount = amountToSplit - baseAmount * (countToSplit - 1);
+
+  const personIndex = personsWithoutCustomPrice.findIndex(
+    (p) => p.id === person.id
+  );
+
+  return personIndex === 0 ? remainderAmount : baseAmount;
 };
 
 export const SplitPaymentModal = ({ onClose }: Props) => {
@@ -46,58 +92,154 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const { data: cartData, clearCart } = useCartStore();
   const { data: modalData, setModalData, closeAllModals } = useModalStore();
 
+  // 결제 방식 상태
   const [isPaymentByMenu, setIsPaymentByMenu] = useState(true);
-  const [selectedMenus, setSelectedMenus] = useState<ICartMenuWithId[]>([]);
-  const [paidMenuIds, setPaidMenuIds] = useState<Set<string>>(new Set());
 
-  // 전체 메뉴 목록 (quantity만큼 펼쳐진 형태)
+  // 메뉴별 나누기 상태
+  const [menuSplit_selectedMenus, setMenuSplit_selectedMenus] = useState<
+    ICartMenuWithId[]
+  >([]);
+  const [menuSplit_paidMenuIds, setMenuSplit_paidMenuIds] = useState<
+    Set<string>
+  >(new Set());
+
+  // 인원수로 나누기 상태
+  const [personSplit_persons, setPersonSplit_persons] = useState<Person[]>(() =>
+    Array.from({ length: 2 }, (_, index) => ({
+      id: `person-${index}`,
+      isSelected: false,
+    }))
+  );
+  const [personSplit_paidPersonIds, setPersonSplit_paidPersonIds] = useState<
+    Set<string>
+  >(new Set());
+
+  // 전체 메뉴 목록 (quantity만큼 개별 항목으로 펼침)
   const allMenus = useMemo(
     () =>
       cartData.menus.flatMap((menu, menuIndex) =>
-        Array.from({ length: menu.quantity }, (_, index) => ({
+        Array.from({ length: menu.quantity }, (_, quantityIndex) => ({
           ...menu,
           quantity: 1,
-          id: `${menu.menuSeq}-${menuIndex}-${index}`,
+          id: `${menu.menuSeq}-${menuIndex}-${quantityIndex}`,
         }))
       ),
     [cartData.menus]
   );
 
-  // 남아있는 메뉴 목록 (결제되지 않은 메뉴들)
-  const remainingMenus = useMemo(
-    () => allMenus.filter((menu) => !paidMenuIds.has(menu.id)),
-    [allMenus, paidMenuIds]
-  );
-
-  // 총 결제 금액 (원래 전체 금액)
+  // 전체 결제 금액
   const totalPrice = useMemo(
-    () => calculateMenusPrice(cartData.menus),
+    () => calculateTotalMenusPrice(cartData.menus),
     [cartData.menus]
   );
 
-  // 선택된 메뉴의 금액
-  const selectedMenusPrice = useMemo(
-    () => (isPaymentByMenu ? calculateMenusPrice(selectedMenus) : 0),
-    [isPaymentByMenu, selectedMenus]
+  // ----------------------------------------------------------------------------
+  // "메뉴별 나누기"
+  // ----------------------------------------------------------------------------
+
+  const menuSplit_remainingMenus = useMemo(
+    () => allMenus.filter((menu) => !menuSplit_paidMenuIds.has(menu.id)),
+    [allMenus, menuSplit_paidMenuIds]
   );
 
-  // 남은 결제 금액
-  const remainingPrice = useMemo(
-    () => calculateMenusPrice(remainingMenus),
-    [remainingMenus]
+  const menuSplit_selectedPrice = useMemo(
+    () => calculateTotalMenusPrice(menuSplit_selectedMenus),
+    [menuSplit_selectedMenus]
   );
 
-  const onChangeMethod = (byMenu: boolean) => {
-    if (isPaymentByMenu === byMenu) {
+  const menuSplit_remainingPrice = useMemo(
+    () => calculateTotalMenusPrice(menuSplit_remainingMenus),
+    [menuSplit_remainingMenus]
+  );
+
+  // ----------------------------------------------------------------------------
+  // "인원수로 나누기"
+  // ----------------------------------------------------------------------------
+
+  const personSplit_remainingPersons = useMemo(
+    () =>
+      personSplit_persons.filter(
+        (person) => !personSplit_paidPersonIds.has(person.id)
+      ),
+    [personSplit_persons, personSplit_paidPersonIds]
+  );
+
+  const personSplit_paidAmount = useMemo(() => {
+    return personSplit_persons
+      .filter((person) => personSplit_paidPersonIds.has(person.id))
+      .reduce((sum, person) => sum + (person.paidAmount ?? 0), 0);
+  }, [personSplit_persons, personSplit_paidPersonIds]);
+
+  const personSplit_remainingTotal = useMemo(
+    () => totalPrice - personSplit_paidAmount,
+    [totalPrice, personSplit_paidAmount]
+  );
+
+  const personSplit_getPersonPrice = useCallback(
+    (person: Person, allPersons: Person[]): number => {
+      return calculatePersonPrice(
+        person,
+        allPersons,
+        personSplit_remainingTotal
+      );
+    },
+    [personSplit_remainingTotal]
+  );
+
+  const personSplit_selectedPrice = useMemo(() => {
+    return personSplit_remainingPersons
+      .filter((person) => person.isSelected)
+      .reduce((sum, person) => {
+        return (
+          sum + personSplit_getPersonPrice(person, personSplit_remainingPersons)
+        );
+      }, 0);
+  }, [personSplit_remainingPersons, personSplit_getPersonPrice]);
+
+  // ----------------------------------------------------------------------------
+  // UI에서 사용
+  // ----------------------------------------------------------------------------
+
+  const currentSelectedPrice = isPaymentByMenu
+    ? menuSplit_selectedPrice
+    : personSplit_selectedPrice;
+
+  const currentRemainingPrice = isPaymentByMenu
+    ? menuSplit_remainingPrice
+    : personSplit_remainingTotal;
+
+  // ----------------------------------------------------------------------------
+  // Event Handlers
+  // ----------------------------------------------------------------------------
+
+  const handlePaymentMethodChange = (changeToMenuMode: boolean) => {
+    if (isPaymentByMenu === changeToMenuMode) {
       return;
     }
 
-    setIsPaymentByMenu(byMenu);
-    setSelectedMenus([]);
+    setIsPaymentByMenu(changeToMenuMode);
+
+    // 선택 상태 초기화
+    setMenuSplit_selectedMenus([]);
+    setPersonSplit_persons((prev) =>
+      prev.map((person) => ({ ...person, isSelected: false }))
+    );
   };
 
-  const onPayByMenu = () => {
-    if (selectedMenus.length === 0) {
+  const handlePaymentComplete = (isAllPaid: boolean) => {
+    if (isAllPaid) {
+      clearCart();
+      closeAllModals();
+      toast(t('결제가 완료되었습니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
+      // TODO: 주문내역 api를 호출 해야하는가?? 확인 필요.
+    }
+  };
+
+  const handleMenuSplitPayment = () => {
+    if (menuSplit_selectedMenus.length === 0) {
       toast(t('선택된 메뉴가 없습니다.'), {
         position: 'center-center',
         duration: 1500,
@@ -105,49 +247,88 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       return;
     }
 
-    // 선택된 메뉴 ID들을 미리 계산 (클로저로 캡처)
-    const selectedIds = selectedMenus.map((menu) => menu.id);
-    // 남은 메뉴가 모두 선택된 메뉴인지 확인 (남은 메뉴가 없을 때를 체크)
-    const isAllRemainingMenusSelected =
-      remainingMenus.length === selectedMenus.length;
+    const selectedIds = menuSplit_selectedMenus.map((menu) => menu.id);
+    const isAllPaid =
+      menuSplit_remainingMenus.length === menuSplit_selectedMenus.length;
 
     // 카드 결제 진행 모달 열기
     setModalData('isCardPaymentProgressModalOpened', true);
 
-    // TODO:  카드 결제 API 호출 (추후 구현)
+    // TODO: 카드 결제 API 호출 (추후 구현)
     setTimeout(() => {
       setModalData('isCardPaymentProgressModalOpened', false);
 
-      // 선택된 메뉴들을 결제 완료 목록에 추가
-      setPaidMenuIds((prev) => new Set([...prev, ...selectedIds]));
+      // 결제 완료 처리
+      setMenuSplit_paidMenuIds((prev) => new Set([...prev, ...selectedIds]));
+      setMenuSplit_selectedMenus([]);
 
-      // 선택 초기화
-      setSelectedMenus([]);
-
-      // 남은 메뉴가 없으면 (모든 메뉴가 결제되었으면) 장바구니 비우고 모달 닫기
-      if (isAllRemainingMenusSelected) {
-        clearCart();
-        closeAllModals();
-        toast(t('결제가 완료되었습니다.'), {
-          position: 'center-center',
-          duration: 1500,
-        });
-        // TODO: 주문내역 api를 호출 해야하는가?? 확인 필요.
-      }
+      handlePaymentComplete(isAllPaid);
     }, 2000);
   };
 
-  const onPayByPerson = () => {
-    // TODO: 인원수 나누기 결제 (추후 구현)
+  const handlePersonSplitPayment = () => {
+    const selectedPersons = personSplit_remainingPersons.filter(
+      (person) => person.isSelected
+    );
+
+    if (selectedPersons.length === 0) {
+      toast(t('선택된 인원이 없습니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
+      return;
+    }
+
+    const selectedPersonsData = selectedPersons.map((person) => ({
+      id: person.id,
+      price: personSplit_getPersonPrice(person, personSplit_remainingPersons),
+    }));
+    const isAllPaid =
+      personSplit_remainingPersons.length === selectedPersons.length;
+
+    // 카드 결제 진행 모달 열기
+    setModalData('isCardPaymentProgressModalOpened', true);
+
+    // TODO: 카드 결제 API 호출 (추후 구현)
+    setTimeout(() => {
+      setModalData('isCardPaymentProgressModalOpened', false);
+
+      // 결제 완료 처리
+      setPersonSplit_paidPersonIds(
+        (prev) => new Set([...prev, ...selectedPersonsData.map((p) => p.id)])
+      );
+
+      // 결제 금액을 paidAmount에 저장 (이후 합계 계산용)
+      setPersonSplit_persons((prev) =>
+        prev.map((person) => {
+          const paidPerson = selectedPersonsData.find(
+            (p) => p.id === person.id
+          );
+          if (paidPerson) {
+            return {
+              ...person,
+              isSelected: false,
+              paidAmount: paidPerson.price,
+            };
+          }
+          return { ...person, isSelected: false };
+        })
+      );
+
+      handlePaymentComplete(isAllPaid);
+    }, 2000);
   };
 
-  const onPayment = () => {
+  const handlePayment = () => {
     if (isPaymentByMenu) {
-      onPayByMenu();
+      handleMenuSplitPayment();
     } else {
-      onPayByPerson();
+      handlePersonSplitPayment();
     }
   };
+
+  const hasAnyPayment =
+    menuSplit_paidMenuIds.size > 0 || personSplit_paidPersonIds.size > 0;
 
   return (
     <>
@@ -162,13 +343,15 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
             <S.ToggleButtonContainer>
               <S.ToggleButton
                 isActive={isPaymentByMenu}
-                onClick={() => onChangeMethod(true)}
+                onClick={() => handlePaymentMethodChange(true)}
+                disabled={hasAnyPayment}
               >
                 {t('메뉴별로 나누기')}
               </S.ToggleButton>
               <S.ToggleButton
                 isActive={!isPaymentByMenu}
-                onClick={() => onChangeMethod(false)}
+                onClick={() => handlePaymentMethodChange(false)}
+                disabled={hasAnyPayment}
               >
                 {t('인원 수로 나누기')}
               </S.ToggleButton>
@@ -177,13 +360,20 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
             <S.SelectorContainer>
               {isPaymentByMenu && (
                 <MenuSelector
-                  menus={remainingMenus}
-                  selectedMenus={selectedMenus}
-                  setSelectedMenus={setSelectedMenus}
+                  menus={menuSplit_remainingMenus}
+                  selectedMenus={menuSplit_selectedMenus}
+                  setSelectedMenus={setMenuSplit_selectedMenus}
                 />
               )}
 
-              {!isPaymentByMenu && <PriceSelector totalPrice={totalPrice} />}
+              {!isPaymentByMenu && (
+                <PriceSelector
+                  totalPrice={personSplit_remainingTotal}
+                  persons={personSplit_remainingPersons}
+                  setPersons={setPersonSplit_persons}
+                  hasAnyPayment={personSplit_paidPersonIds.size > 0}
+                />
+              )}
 
               <S.SelectorTotalContainer>
                 <S.TotalInfo>
@@ -196,7 +386,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
                   <p>{t('남은 결제 금액')}</p>
                   <p>
                     {t('{{amount}}원', {
-                      amount: formatCurrency(remainingPrice),
+                      amount: formatCurrency(currentRemainingPrice),
                     })}
                   </p>
                 </S.RemainingAmount>
@@ -239,9 +429,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
             </S.OrderList>
 
             <S.TotalContainer>
-              <BasicButton variant="Solid_Blue_2XL" onClick={onPayment}>
+              <BasicButton variant="Solid_Blue_2XL" onClick={handlePayment}>
                 {t('{{amount}}원 카드 결제', {
-                  amount: formatCurrency(selectedMenusPrice),
+                  amount: formatCurrency(currentSelectedPrice),
                 })}
               </BasicButton>
             </S.TotalContainer>

@@ -5,134 +5,120 @@ import { useState } from 'react';
 import { PriceChangeKeypad } from '@/pages/MainPage/SplitPaymentModal/PriceSelector/PriceChangeKeypad';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { formatCurrency } from '@repo/util/string';
+import type { Person } from '@/pages/MainPage/SplitPaymentModal';
 
 interface Props {
   totalPrice: number;
+  persons: Person[];
+  setPersons: (persons: Person[] | ((prev: Person[]) => Person[])) => void;
+  hasAnyPayment: boolean;
 }
 
-interface Person {
-  id: string;
-  isSelected: boolean;
-  customPrice?: number;
-}
-
-export const PriceSelector = ({ totalPrice }: Props) => {
+export const PriceSelector = ({
+  totalPrice,
+  persons,
+  setPersons,
+  hasAnyPayment,
+}: Props) => {
   const { t } = useCustomerTranslation();
 
-  /** 사람 리스트 (id, 선택 여부, 커스텀 금액 포함) */
-  const [prices, setPrices] = useState<Person[]>(() =>
-    Array.from({ length: 2 }, (_, index) => ({
-      id: `person-${index}`,
-      isSelected: false,
-    }))
-  );
-
-  /** 현재 금액 변경 중인 사람 인덱스 */
-  const [editingPriceIndex, setEditingPriceIndex] = useState<number | null>(
+  const [editingPersonIndex, setEditingPersonIndex] = useState<number | null>(
     null
   );
 
-  /**
-   * 각 사람의 금액 계산
-   */
-  const getPersonPrice = (person: Person): number => {
-    // 커스텀 가격이 있으면 그대로 반환
+  const calculatePersonPrice = (person: Person): number => {
     if (person.customPrice !== undefined) {
       return person.customPrice;
     }
 
-    // 커스텀 가격이 없는 사람들만 필터링
-    const personsWithoutCustom = prices.filter(
+    const personsWithoutCustomPrice = persons.filter(
       (p) => p.customPrice === undefined
     );
-    const count = personsWithoutCustom.length;
+    const countToSplit = personsWithoutCustomPrice.length;
 
-    if (count === 0) {
+    if (countToSplit === 0) {
       return 0;
     }
 
-    // 커스텀 가격 합계 계산
-    const totalCustom = prices.reduce(
+    const totalCustomAmount = persons.reduce(
       (sum, p) => sum + (p.customPrice ?? 0),
       0
     );
-    const remain = Math.max(totalPrice - totalCustom, 0);
+    const amountToSplit = Math.max(totalPrice - totalCustomAmount, 0);
 
-    if (remain <= 0) {
+    if (amountToSplit <= 0) {
       return 0;
     }
 
-    // 균등 분배 (첫 번째 사람에게 나머지 할당)
-    const baseShare = Math.floor(remain / count);
-    const remainder = remain - baseShare * (count - 1);
+    const baseAmount = Math.floor(amountToSplit / countToSplit);
+    const remainderAmount = amountToSplit - baseAmount * (countToSplit - 1);
 
-    const indexInRemaining = personsWithoutCustom.findIndex(
+    const personIndex = personsWithoutCustomPrice.findIndex(
       (p) => p.id === person.id
     );
-    return indexInRemaining === 0 ? remainder : baseShare;
+
+    return personIndex === 0 ? remainderAmount : baseAmount;
   };
 
-  /**
-   * 선택 토글
-   */
-  const togglePersonSelection = (personIndex: number) => {
-    setPrices((prev) =>
-      prev.map((price, index) =>
-        index === personIndex
-          ? { ...price, isSelected: !price.isSelected }
-          : price
+  const handlePersonSelectionToggle = (personIndex: number) => {
+    const targetPerson = persons[personIndex];
+    if (!targetPerson) {
+      return;
+    }
+
+    setPersons((prev) =>
+      prev.map((person) =>
+        person.id === targetPerson.id
+          ? { ...person, isSelected: !person.isSelected }
+          : person
       )
     );
   };
 
-  /**
-   * 인원수 변경
-   */
-  const handleChangePersonCount = (nextCount: number) => {
-    setPrices((prev) => {
+  const handlePersonCountChange = (nextCount: number) => {
+    setPersons((prev) => {
       const currentCount = prev.length;
 
       if (nextCount > currentCount) {
-        // 인원 증가: 기존 사람 유지하고 새로 추가
-        const newPrices = Array.from(
+        const maxId = prev.reduce((max, p) => {
+          const num = parseInt(p.id.replace('person-', ''), 10);
+          return Math.max(max, num);
+        }, -1);
+
+        const newPersons = Array.from(
           { length: nextCount - currentCount },
           (_, i) => ({
-            id: `person-${currentCount + i}`,
+            id: `person-${maxId + 1 + i}`,
             isSelected: false,
           })
         );
-        return [...prev, ...newPrices];
+
+        return [...prev, ...newPersons];
       } else {
-        // 인원 감소: 앞에서부터 제거
         return prev.slice(0, nextCount);
       }
     });
   };
 
-  /**
-   * 키패드 열기/닫기
-   */
-  const openPriceKeypad = (priceIndex: number) =>
-    setEditingPriceIndex(priceIndex);
-  const closePriceKeypad = () => setEditingPriceIndex(null);
-
-  /**
-   * 커스텀 금액 적용
-   */
-  const applyCustomPrice = (newPrice: number) => {
-    if (editingPriceIndex === null) {
+  const handleCustomPriceApply = (newPrice: number) => {
+    if (editingPersonIndex === null) {
       return;
     }
 
-    setPrices((prev) =>
-      prev.map((price, index) =>
-        index === editingPriceIndex
-          ? { ...price, customPrice: newPrice }
-          : price
+    const targetPerson = persons[editingPersonIndex];
+    if (!targetPerson) {
+      return;
+    }
+
+    setPersons((prev) =>
+      prev.map((person) =>
+        person.id === targetPerson.id
+          ? { ...person, customPrice: newPrice }
+          : person
       )
     );
 
-    closePriceKeypad();
+    setEditingPersonIndex(null);
   };
 
   return (
@@ -142,22 +128,23 @@ export const PriceSelector = ({ totalPrice }: Props) => {
         <NumberInput
           variant="square"
           size="M"
-          value={prices.length}
-          onChange={handleChangePersonCount}
+          value={persons.length}
+          onChange={handlePersonCountChange}
           min={1}
+          disabled={hasAnyPayment}
         />
       </S.PersonCountContainer>
 
       <S.MenuList>
-        {prices.map((price, index) => {
-          const priceValue = getPersonPrice(price);
+        {persons.map((person, index) => {
+          const personPrice = calculatePersonPrice(person);
 
           return (
-            <S.MenuItem key={price.id} isSelected={price.isSelected}>
+            <S.MenuItem key={person.id} isSelected={person.isSelected}>
               <button type="button">
                 <CheckButton
-                  checked={price.isSelected}
-                  onChange={() => togglePersonSelection(index)}
+                  checked={person.isSelected}
+                  onChange={() => handlePersonSelectionToggle(index)}
                   customStyle={css`
                     & > div {
                       width: 28px;
@@ -167,25 +154,29 @@ export const PriceSelector = ({ totalPrice }: Props) => {
                 >
                   <S.Price>
                     {t('{{amount}}원', {
-                      amount: formatCurrency(priceValue),
+                      amount: formatCurrency(personPrice),
                     })}
                   </S.Price>
                 </CheckButton>
 
-                <S.ChangePriceButton onClick={() => openPriceKeypad(index)}>
-                  {t('금액변경')}
-                </S.ChangePriceButton>
+                {!hasAnyPayment && (
+                  <S.ChangePriceButton
+                    onClick={() => setEditingPersonIndex(index)}
+                  >
+                    {t('금액변경')}
+                  </S.ChangePriceButton>
+                )}
               </button>
             </S.MenuItem>
           );
         })}
       </S.MenuList>
 
-      {editingPriceIndex !== null && prices[editingPriceIndex] && (
+      {editingPersonIndex !== null && persons[editingPersonIndex] && (
         <PriceChangeKeypad
           totalPrice={totalPrice}
-          onApply={applyCustomPrice}
-          onClose={closePriceKeypad}
+          onApply={handleCustomPriceApply}
+          onClose={() => setEditingPersonIndex(null)}
         />
       )}
     </>
