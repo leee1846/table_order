@@ -7,6 +7,7 @@ import type {
   IUpdateShopSettingRequest,
   TUpdateShopSettingResponse,
   TGetShopThemeMenuResponse,
+  TGetShopThemePageResponse,
 } from '../types/shop';
 
 export const getShops = async (): Promise<TGetShopsResponse> => {
@@ -63,6 +64,18 @@ export const getShopThemeMenu = async (
   const response = await axiosInstance<TGetShopThemeMenuResponse>({
     method: 'GET',
     url: ENDPOINTS.SHOP.THEME_MENU(shopCode),
+  });
+
+  return response.data;
+};
+
+export const getShopThemePage = async (
+  shopCode: string
+): Promise<TGetShopThemePageResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetShopThemePageResponse>({
+    method: 'GET',
+    url: ENDPOINTS.SHOP.THEME_PAGE(shopCode),
   });
 
   return response.data;

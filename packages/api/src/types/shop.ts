@@ -196,3 +196,12 @@ export interface IGetShopThemeMenu {
 }
 
 export type TGetShopThemeMenuResponse = IApiResponse<IGetShopThemeMenu>;
+
+export interface IGetShopThemePage {
+  shopSeq: number;
+  initPageLayout: TInitPageLayout;
+  orderCompletePageLayout: TOrderCompletePageLayout;
+  shopPageDetailList: IShopPageDetail[];
+}
+
+export type TGetShopThemePageResponse = IApiResponse<IGetShopThemePage>;

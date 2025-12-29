@@ -25,8 +25,8 @@ export const STORAGE_KEYS = {
   ADMIN_PASSWORD_VERIFIED: 'admin-password-verified',
   /** 상점 페이지 설정 data 키 */
   SHOP_PAGE_SETTING: 'shop-page-setting',
-  /** 상점 페이지 로고 data 키 */
-  SHOP_PAGE_LOGO: 'shop-page-logo',
+  /** 상점 테마 메뉴 data 키 */
+  SHOP_THEME_MENU: 'shop-theme-menu',
   /** 디바이스 리스트 data 키 */
   DEVICE_LIST: 'device-list',
 } as const;

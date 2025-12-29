@@ -14,6 +14,8 @@ export const queryKeys = {
       [...queryKeys.shop.all, 'pageSetting', shopCode] as const,
     themeMenu: (shopCode: string) =>
       [...queryKeys.shop.all, 'themeMenu', shopCode] as const,
+    themePage: (shopCode: string) =>
+      [...queryKeys.shop.all, 'themePage', shopCode] as const,
   },
 
   category: {
