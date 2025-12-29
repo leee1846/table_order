@@ -73,7 +73,7 @@ const formatWifiSignal = (signal: DeviceItem['wifiSignal']) => {
 export const DeviceListDialog = ({
   isOpen,
   onClose,
-  itemsPerPage = 10,
+  itemsPerPage = 8,
   shopCode,
 }: DeviceListDialogProps) => {
   const [currentPage, setCurrentPage] = useState(1);

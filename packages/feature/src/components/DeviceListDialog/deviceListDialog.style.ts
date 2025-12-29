@@ -17,10 +17,10 @@ export const DialogContainer = styled(BaseDialogContainer)`
 `;
 
 export const Container = styled.div`
-  padding: 24px;
+  padding: 24px 24px 0 24px;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
 `;
 
 export const CloseButton = styled(BaseCloseButton)``;
@@ -35,6 +35,13 @@ export const Title = BaseTitle;
 export const TableContainer = styled.div`
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  & > table {
+    height: 100%;
+  }
 
   td:nth-of-type(1),
   td:nth-of-type(2),
@@ -100,8 +107,15 @@ export const VersionColumn = styled.div`
 `;
 
 export const Tbody = styled(UIStyles.setting.Tbody)`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: visible;
+  height: 100%;
+
   & > tr {
     align-items: center;
+    height: calc((100% - 60px) / 7);
   }
 `;
 
@@ -109,5 +123,4 @@ export const Footer = styled.div`
   display: flex;
   justify-content: flex-end;
   padding: 24px 40px;
-  border-top: 1px solid ${theme.colors.grey[200]};
 `;

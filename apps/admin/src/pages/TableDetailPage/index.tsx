@@ -20,7 +20,6 @@ export const TableDetailPage = () => {
   const { tableNum } = useParams();
   const { shopCode } = useAuth();
   const { data: shopDetailData } = useShopDetailData();
-  console.log('shopDetailData', shopDetailData);
   const queryClient = useQueryClient();
   const { mutateAsync: createTableOrder } = usePostTableOrder();
 
