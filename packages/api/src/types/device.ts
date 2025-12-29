@@ -1,4 +1,4 @@
-import { IApiResponse } from './common';
+import { IApiResponse, TVoidApiResponse } from './common';
 
 export type TDeviceType = 'POS_APP' | 'ORDER_POS' | 'MENU';
 
@@ -48,3 +48,22 @@ export interface IDeviceListWithPagination {
 
 export type TGetDeviceListWithPaginationResponse =
   IApiResponse<IDeviceListWithPagination>;
+
+export type TDeviceControlType =
+  | 'DEVICE_OFF'
+  | 'DEVICE_RESTART'
+  | 'DEVICE_APP_UPDATE'
+  | 'DEVICE_SCREEN_OFF'
+  | 'DEVICE_SCREEN_ON';
+
+export interface IDeviceControlItem {
+  androidId: string;
+}
+
+export interface IPostDeviceControlRequest {
+  shopCode: string;
+  deviceControlType: TDeviceControlType;
+  deviceList: IDeviceControlItem[];
+}
+
+export type TPostDeviceControlResponse = TVoidApiResponse;

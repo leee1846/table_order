@@ -9,13 +9,23 @@ import {
 import { CloseIcon, FullBatteryIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
-import { useGetDeviceListWithPagination } from '@repo/api/queries';
-import type { IGetDeviceListItem, TDeviceType } from '@repo/api/types';
+import {
+  useGetDeviceListWithPagination,
+  usePostDeviceControl,
+} from '@repo/api/queries';
+import type {
+  IDeviceControlItem,
+  IGetDeviceListItem,
+  TDeviceControlType,
+  TDeviceType,
+} from '@repo/api/types';
+import { toast } from '@repo/feature/utils';
 import * as S from './deviceListDialog.style';
 
 const { colors } = theme;
 
 export type DeviceItem = {
+  androidId: string | null;
   id: string;
   device: string;
   table: string;
@@ -37,6 +47,14 @@ const DEVICE_TYPE_LABELS: Record<TDeviceType, string> = {
   ORDER_POS: '오더포스',
   POS_APP: '포스앱',
   MENU: '메뉴판',
+};
+
+const DEVICE_CONTROL_MESSAGES: Record<TDeviceControlType, string> = {
+  DEVICE_APP_UPDATE: '기기 업데이트 요청을 보냈어요.',
+  DEVICE_SCREEN_ON: '화면 켜기 요청을 보냈어요.',
+  DEVICE_SCREEN_OFF: '화면 끄기 요청을 보냈어요.',
+  DEVICE_OFF: '기기 종료 요청을 보냈어요.',
+  DEVICE_RESTART: '재부팅 요청을 보냈어요.',
 };
 
 const getDeviceLabel = (device: IGetDeviceListItem) => {
@@ -100,6 +118,8 @@ export const DeviceListDialog = ({
       enabled: false,
     },
   });
+  const { mutateAsync: postDeviceControl, isPending: isDeviceControlLoading } =
+    usePostDeviceControl();
 
   useEffect(() => {
     if (!isOpen || !shopCode) {
@@ -134,6 +154,7 @@ export const DeviceListDialog = ({
     }
 
     return deviceList.map((device, index) => ({
+      androidId: device.androidId ?? null,
       id:
         device.androidId ??
         (device.deviceSeq !== undefined && device.deviceSeq !== null
@@ -175,6 +196,44 @@ export const DeviceListDialog = ({
     });
   };
 
+  // 기기 제어 요청
+  const handleDeviceControl = async (controlType: TDeviceControlType) => {
+    if (isDeviceControlLoading) {
+      return;
+    }
+
+    if (!shopCode) {
+      toast('매장 정보를 불러오지 못했어요. 다시 시도해주세요.');
+      return;
+    }
+
+    const targetDevices: IDeviceControlItem[] = deviceItems
+      .filter((device) => selectedDevices.has(device.id) && device.androidId)
+      .map((device) => ({ androidId: device.androidId! }));
+
+    if (targetDevices.length === 0) {
+      const hasInvalidSelection = deviceItems.some(
+        (device) => selectedDevices.has(device.id) && !device.androidId
+      );
+
+      toast(
+        hasInvalidSelection
+          ? '선택한 기기에 안드로이드 ID가 없어 제어할 수 없어요.'
+          : '제어할 기기를 선택해주세요.'
+      );
+      return;
+    }
+
+    await postDeviceControl({
+      shopCode,
+      deviceControlType: controlType,
+      deviceList: targetDevices,
+    });
+    toast(DEVICE_CONTROL_MESSAGES[controlType]);
+    await refetch();
+    setSelectedDevices(new Set());
+  };
+
   return (
     <ModalBackground position="center" onClick={onClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
@@ -189,21 +248,41 @@ export const DeviceListDialog = ({
 
           <S.ButtonContainer>
             <S.LeftButtons>
-              <BasicButton variant="Solid_Navy_XL" onClick={() => {}}>
+              <BasicButton
+                variant="Solid_Navy_XL"
+                disabled={isDeviceControlLoading}
+                onClick={() => handleDeviceControl('DEVICE_APP_UPDATE')}
+              >
                 업데이트
               </BasicButton>
-              <BasicButton variant="Solid_Sky_Blue_XL" onClick={() => {}}>
+              <BasicButton
+                variant="Solid_Sky_Blue_XL"
+                disabled={isDeviceControlLoading}
+                onClick={() => handleDeviceControl('DEVICE_SCREEN_ON')}
+              >
                 화면 켜기
               </BasicButton>
-              <BasicButton variant="Outline_Navy_XL" onClick={() => {}}>
+              <BasicButton
+                variant="Outline_Navy_XL"
+                disabled={isDeviceControlLoading}
+                onClick={() => handleDeviceControl('DEVICE_SCREEN_OFF')}
+              >
                 화면 끄기
               </BasicButton>
             </S.LeftButtons>
             <S.RightButtons>
-              <BasicButton variant="Outline_Grey_XL" onClick={() => {}}>
+              <BasicButton
+                variant="Outline_Grey_XL"
+                disabled={isDeviceControlLoading}
+                onClick={() => handleDeviceControl('DEVICE_OFF')}
+              >
                 종료
               </BasicButton>
-              <BasicButton variant="Outline_Grey_XL" onClick={() => {}}>
+              <BasicButton
+                variant="Outline_Grey_XL"
+                disabled={isDeviceControlLoading}
+                onClick={() => handleDeviceControl('DEVICE_RESTART')}
+              >
                 재부팅
               </BasicButton>
             </S.RightButtons>

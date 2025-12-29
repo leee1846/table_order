@@ -6,6 +6,8 @@ import {
   TGetDeviceListResponse,
   IGetDeviceListWithPaginationParams,
   TGetDeviceListWithPaginationResponse,
+  IPostDeviceControlRequest,
+  TPostDeviceControlResponse,
 } from '../types/device';
 import { TVoidApiResponse } from '../types/common';
 
@@ -65,6 +67,22 @@ export const getDeviceListWithPagination = async (
       pageNumber: params.pageNumber ?? 0,
       pageSize: params.pageSize ?? 10,
     },
+  });
+
+  return response.data;
+};
+
+export const postDeviceControl = async (
+  params: IPostDeviceControlRequest
+): Promise<TPostDeviceControlResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TPostDeviceControlResponse>({
+    method: 'POST',
+    url: ENDPOINTS.DEVICE.CONTROL(
+      params.shopCode,
+      params.deviceControlType
+    ),
+    data: params.deviceList,
   });
 
   return response.data;

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  useGetCategoryExceptTableList,
-  useGetTableGroupList,
-} from '@repo/api/queries';
-import type { ITableInfo } from '@repo/api/types';
+import { useGetTableGroupList } from '@repo/api/queries';
+import type {
+  ITableInfo,
+  TGetCategoryExceptTableResponse,
+} from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
 import * as S from './categoryTableAssignModal.style';
 import {
@@ -19,28 +19,21 @@ interface Props {
   onClose: () => void;
   initialSelectedTableNumbers?: string[];
   onSave?: (tableNumbers: string[]) => void | Promise<void>;
+  categoryExceptTableResponse: TGetCategoryExceptTableResponse | undefined;
+  isCategoryExceptTableLoading: boolean;
 }
 
 export const CategoryTableAssignModal = ({
-  categorySeq,
   onClose,
   initialSelectedTableNumbers = [],
   onSave,
+  categoryExceptTableResponse,
+  isCategoryExceptTableLoading,
 }: Props) => {
   const { shopCode } = useAuth();
   const { data: tableGroupResponse } = useGetTableGroupList(
     { shopCode: shopCode ?? '' },
     { enabled: !!shopCode }
-  );
-
-  const { data: categoryExceptTableResponse } = useGetCategoryExceptTableList(
-    {
-      shopCode: shopCode ?? '',
-      categorySeq,
-    },
-    {
-      enabled: !!shopCode,
-    }
   );
 
   const tableGroups = tableGroupResponse?.data ?? [];
@@ -52,15 +45,18 @@ export const CategoryTableAssignModal = ({
 
   // 외부에서 선택 값이 바뀌면 동기화
   useEffect(() => {
-    if (categoryExceptTableResponse?.data) {
-      setSelectedTableNumbers(
-        new Set(categoryExceptTableResponse.data.map((item) => item.tableNumber))
-      );
+    // 로딩 중이면 아무것도 하지 않음
+    if (isCategoryExceptTableLoading) {
       return;
     }
 
-    setSelectedTableNumbers(new Set(initialSelectedTableNumbers));
-  }, [categoryExceptTableResponse?.data, initialSelectedTableNumbers]);
+    if (categoryExceptTableResponse?.data) {
+      setSelectedTableNumbers(
+        new Set(categoryExceptTableResponse.data.map((item) => String(item)))
+      );
+      return;
+    }
+  }, [categoryExceptTableResponse?.data]);
 
   // 테이블 그룹 조회 후 기본 선택 설정
   useEffect(() => {
@@ -148,7 +144,7 @@ export const CategoryTableAssignModal = ({
               onClick={() => handleToggleTable(table.tableNumber)}
             >
               <S.TableNumber>{tableName}</S.TableNumber>
-              <S.TableStatus>{isSelected ? '선택됨' : ''}</S.TableStatus>
+              <S.TableStatus>{!isSelected ? '선택됨' : ''}</S.TableStatus>
             </S.TableCard>
           );
         })}
@@ -169,10 +165,10 @@ export const CategoryTableAssignModal = ({
         <S.TableArea>{renderTableGrid()}</S.TableArea>
 
         <S.ActionBar>
-          <button type="button" onClick={handleSelectAll}>
+          <button type="button" onClick={handleClearAll}>
             전체선택
           </button>
-          <button type="button" onClick={handleClearAll}>
+          <button type="button" onClick={handleSelectAll}>
             전체해제
           </button>
           <button type="button" onClick={handleSave}>

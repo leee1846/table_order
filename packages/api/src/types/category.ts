@@ -191,8 +191,9 @@ export interface ICategoryExceptTableItem {
   tableNumber: string;
 }
 
+// API 응답이 실제로는 tableNumber 배열(string | number)로 옵니다
 export type TGetCategoryExceptTableResponse = IApiResponse<
-  ICategoryExceptTableItem[]
+  (string | number)[]
 >;
 
 // ============================================================================

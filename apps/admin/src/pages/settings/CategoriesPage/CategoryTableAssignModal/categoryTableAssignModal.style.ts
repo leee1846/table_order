@@ -75,11 +75,11 @@ export const TableCard = styled.button<{ selected: boolean }>`
   justify-content: space-between;
   padding: 14px 12px;
   background: ${({ selected }) =>
-    selected ? theme.colors.primary[600] : theme.colors.primary[500]};
+    !selected ? theme.colors.primary[600] : theme.colors.primary[500]};
   color: ${theme.colors.white};
   border-radius: 12px;
   border: 2px solid
-    ${({ selected }) => (selected ? theme.colors.white : 'transparent')};
+    ${({ selected }) => (!selected ? theme.colors.white : 'transparent')};
   cursor: pointer;
   text-align: left;
   min-height: 120px;

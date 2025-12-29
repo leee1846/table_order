@@ -11,6 +11,7 @@ import {
   useDeleteCategory,
   usePutUpdateCategoryHidden,
   usePostSaveCategoryExceptTable,
+  useGetCategoryExceptTableList,
 } from '@repo/api/queries';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { DAYS } from '@/constants/days';
@@ -36,6 +37,19 @@ export const Category = ({ category, shopSeq }: Props) => {
   const { mutateAsync: updateCategoryHidden } = usePutUpdateCategoryHidden();
   const { mutateAsync: saveCategoryExceptTable } =
     usePostSaveCategoryExceptTable();
+
+  const {
+    data: categoryExceptTableResponse,
+    isLoading: isCategoryExceptTableLoading,
+  } = useGetCategoryExceptTableList(
+    {
+      shopCode: shopCode ?? '',
+      categorySeq: category.categorySeq,
+    },
+    {
+      enabled: !!shopCode && isTableAssignModalOpen,
+    }
+  );
 
   // 판매 요일 표시 텍스트 생성
   const getSaleDayDisplay = (): string | null => {
@@ -252,6 +266,8 @@ export const Category = ({ category, shopSeq }: Props) => {
           initialSelectedTableNumbers={assignedTableNumbers}
           onClose={() => setIsTableAssignModalOpen(false)}
           onSave={handleSaveTableAssign}
+          categoryExceptTableResponse={categoryExceptTableResponse}
+          isCategoryExceptTableLoading={isCategoryExceptTableLoading}
         />
       )}
     </>
