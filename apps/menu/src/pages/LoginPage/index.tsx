@@ -90,12 +90,17 @@ export const LoginPage = () => {
     const shopDataResponse = await refreshShopData();
     const deviceDataResponse = await refreshDeviceData();
 
-    if (!shopDataResponse || !deviceDataResponse) {
+    if (!shopDataResponse) {
       return;
     }
 
+    const baseDeviceData = deviceDataResponse ?? {
+      orderPosNumber: null,
+      tableNumber: null,
+    };
+
     const deviceData = {
-      ...deviceDataResponse,
+      ...baseDeviceData,
       wifiSignal: deviceStoreData?.wifiSignal ?? '',
       battery: deviceStoreData?.battery ?? 0,
       deviceType: 'MENU' as TDeviceType,
@@ -106,12 +111,10 @@ export const LoginPage = () => {
     };
 
     await setDeviceData(deviceData);
-
     await postDeviceDetail({
       ...deviceData,
       shopCode: shopDataResponse.shopCode,
     });
-
     navigate(ROUTES.ROOT.generate());
   };
 

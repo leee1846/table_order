@@ -99,6 +99,14 @@ export interface ISystemControl {
    * @returns Promise<{mac: string}> 예: "AA:BB:CC:DD:EE:FF"
    */
   getMacAddress(): Promise<{ mac: string }>;
+
+  /**
+   * 알림음 재생
+   * @param options.type - 재생할 사운드 타입
+   * - 'dingdong': 주문 알림
+   * - 'siren': 경고/에러
+   */
+  playSound(options: { type: 'dingdong' | 'siren' }): Promise<void>;
 }
 
 const NativeSystem = registerPlugin<ISystemControl & Plugin>('SystemControl');
@@ -164,5 +172,9 @@ export const SystemControl: ISystemControl = {
 
   getMacAddress: async () => {
     return NativeSystem.getMacAddress();
+  },
+
+  playSound: async (options) => {
+    return NativeSystem.playSound(options);
   },
 };

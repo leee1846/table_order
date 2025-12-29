@@ -177,7 +177,8 @@ export const useSSEHandler = () => {
       showPickupAlarm: true,
       pickupAlertMessage,
     });
-    // TODO: 띵동!! 브릿지 호출 필요
+
+    SystemControl.playSound({ type: 'dingdong' });
   }, [currentDeviceData?.tableNumber, sseMessage?.data, setPickupAlarm]);
 
   // 디바이스 제어 메시지 처리 (공통 로직)
