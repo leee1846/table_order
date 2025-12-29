@@ -59,6 +59,22 @@ export const PaymentsModal = ({
       return;
     }
 
+    if (selectedPaymentMethod === 'payAfter') {
+      openDualActionDialog({
+        title: t('후불 결제'),
+        content: t('후불 결제로 주문하시겠습니까?'),
+        primaryText: t('주문하기'),
+        secondaryText: t('취소'),
+        onConfirm: async () => {
+          const response = await executePostpaidOrder();
+          if (response.result) {
+            onClose();
+          }
+        },
+      });
+      return;
+    }
+
     openNextModal();
   };
 
