@@ -38,7 +38,9 @@ export const CategoryManageModal = ({
 
   // 카테고리 이름 상태 관리
   const [categoryName, setCategoryName] = useState<string>(
-    (categoryData as ICategory)?.categoryName || ''
+    isEdit && categoryData?.localeCategoryName?.['KO']
+      ? categoryData.localeCategoryName['KO']
+      : (categoryData as ICategory)?.categoryName || ''
   );
 
   // 카테고리 설명 상태 관리
@@ -116,8 +118,23 @@ export const CategoryManageModal = ({
       setSelectedDays(dayLabels);
       // 판매 시간 설정 초기화
       setUseSaleTime(category.useSaleTime ?? false);
+      // 초기 언어 코드 설정
+      if (category.selectedLanguageCode) {
+        setSelectedLanguageCode(category.selectedLanguageCode);
+      }
     }
   }, [isEdit, categoryData]);
+
+  // 선택된 언어가 변경될 때 해당 언어의 카테고리 이름으로 업데이트
+  useEffect(() => {
+    if (isEdit && categoryData?.localeCategoryName && selectedLanguageCode) {
+      const categoryNameForLanguage =
+        categoryData.localeCategoryName[selectedLanguageCode] || '';
+      if (categoryNameForLanguage) {
+        setCategoryName(categoryNameForLanguage);
+      }
+    }
+  }, [selectedLanguageCode, isEdit, categoryData]);
 
   const toggleDay = (day: string) => {
     setSelectedDays((prev) =>

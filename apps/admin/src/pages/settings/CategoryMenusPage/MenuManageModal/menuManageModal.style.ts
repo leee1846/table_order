@@ -76,6 +76,35 @@ export const LanguageSelector = styled.div`
   margin-top: 24px;
 `;
 
+export const LanguageTitleButton = styled.button`
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid ${theme.colors.grey[300]};
+  background-color: ${colors.white};
+  color: ${theme.colors.grey[600]};
+  ${TYPOGRAPHY.ST_2}
+  cursor: pointer;
+  gap: 6px;
+
+  &:hover {
+    border-color: ${theme.colors.primary[500]};
+    background-color: ${colors.primary[100]};
+  }
+`;
+
+export const SelectedLanguageText = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: ${theme.colors.grey[600]};
+  ${TYPOGRAPHY.ST_2}
+  border:1px solid ${theme.colors.grey[400]};
+  padding: 8px 16px;
+  border-radius: 8px;
+`;
+
 export const LanguageTabs = styled.div`
   display: flex;
   align-items: center;
@@ -89,6 +118,7 @@ export const LanguageTab = styled.button<{ isSelected: boolean }>`
   gap: 6px;
   padding: 8px 16px;
   border-radius: 8px;
+  border: 1px solid red;
   border: 1px solid
     ${({ isSelected }) =>
       isSelected ? theme.colors.primary[500] : theme.colors.grey[300]};
@@ -105,4 +135,16 @@ export const LanguageTab = styled.button<{ isSelected: boolean }>`
     background-color: ${({ isSelected }) =>
       isSelected ? colors.primary[100] : colors.primary[100]};
   }
+`;
+
+export const ToggleButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid ${theme.colors.grey[400]};
+  background: none;
+  cursor: pointer;
+  align-self: stretch;
 `;

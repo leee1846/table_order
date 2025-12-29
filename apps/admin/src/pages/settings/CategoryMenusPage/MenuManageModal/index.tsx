@@ -1,6 +1,12 @@
+import { useState } from 'react';
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
-import { ChevronForwardIcon, CloseIcon, LanguageIcon } from '@repo/ui/icons';
+import {
+  ChevronForwardIcon,
+  ChevronBackwardIcon,
+  CloseIcon,
+  LanguageIcon,
+} from '@repo/ui/icons';
 import type { IMenu, TShopLanguage } from '@repo/api/types';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/menuManageModal.style';
 import { BasicSetting } from './BasicSetting';
@@ -28,6 +34,7 @@ const languageOptions: { value: TShopLanguage; label: string }[] = [
 const MenuManageModalContent = () => {
   const { mode, menu, onClose, handleSubmit, formValues, updateFormValues } =
     useMenuManageModal();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const modalTitle = mode === 'create' ? '메뉴 추가' : '메뉴 수정';
   const selectedLanguageCode =
@@ -36,6 +43,10 @@ const MenuManageModalContent = () => {
   const handleLanguageChange = (languageCode: TShopLanguage) => {
     updateFormValues({ selectedLanguageCode: languageCode });
   };
+
+  const selectedLanguage: { value: TShopLanguage; label: string } =
+    languageOptions.find((option) => option.value === selectedLanguageCode) ??
+    languageOptions[0]!;
 
   return (
     <S.Container>
@@ -64,24 +75,61 @@ const MenuManageModalContent = () => {
 
       {mode === 'edit' && (
         <S.LanguageSelector>
-          <LanguageIcon width={20} height={20} color={theme.colors.grey[600]} />
-          <S.LanguageTabs>
-            {languageOptions.map((option) => (
-              <S.LanguageTab
-                key={option.value}
-                type="button"
-                isSelected={selectedLanguageCode === option.value}
-                onClick={() => handleLanguageChange(option.value)}
-              >
-                {option.label}
-              </S.LanguageTab>
-            ))}
-          </S.LanguageTabs>
-          <ChevronForwardIcon
-            color={theme.colors.grey[400]}
-            width={20}
-            height={20}
-          />
+          {isExpanded ? (
+            <>
+              <S.SelectedLanguageText>
+                <LanguageIcon
+                  width={20}
+                  height={20}
+                  color={theme.colors.grey[600]}
+                />
+                {selectedLanguage.label}
+              </S.SelectedLanguageText>
+              <S.LanguageTabs>
+                {languageOptions.map((option) => (
+                  <S.LanguageTab
+                    key={option.value}
+                    type="button"
+                    isSelected={selectedLanguageCode === option.value}
+                    onClick={() => handleLanguageChange(option.value)}
+                  >
+                    {option.label}
+                  </S.LanguageTab>
+                ))}
+              </S.LanguageTabs>
+            </>
+          ) : (
+            <S.LanguageTitleButton
+              type="button"
+              onClick={() => setIsExpanded(true)}
+            >
+              <LanguageIcon
+                width={20}
+                height={20}
+                color={theme.colors.grey[600]}
+              />
+
+              {selectedLanguage.label}
+            </S.LanguageTitleButton>
+          )}
+          <S.ToggleButton
+            type="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? (
+              <ChevronBackwardIcon
+                color={theme.colors.grey[400]}
+                width={20}
+                height={20}
+              />
+            ) : (
+              <ChevronForwardIcon
+                color={theme.colors.grey[400]}
+                width={20}
+                height={20}
+              />
+            )}
+          </S.ToggleButton>
         </S.LanguageSelector>
       )}
 

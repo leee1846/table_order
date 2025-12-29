@@ -165,7 +165,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
         <S.InfoContainer>
           <div>
             <S.TitleContainer>
-              <span>{menu.menuName}</span>
+              <span>{menu.localeMenuName?.['KO']}</span>
               <div>
                 <BasicButton
                   variant="Outline_Grey_L"
@@ -192,7 +192,9 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
             </S.TitleContainer>
 
             <S.Price>{formatCurrency(menu.menuPrice)}</S.Price>
-            <S.Description>{menu.menuDescription ?? ''}</S.Description>
+            <S.Description>
+              {menu.localeMenuDescription?.['KO'] ?? ''}
+            </S.Description>
           </div>
 
           <S.ToggleContainer>

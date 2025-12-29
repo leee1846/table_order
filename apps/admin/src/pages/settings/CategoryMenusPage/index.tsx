@@ -36,7 +36,7 @@ export const CategoryMenusPage = () => {
     const category = categoryListResponse.data.find(
       (cat) => cat.categorySeq === categorySeq
     );
-    return category?.categoryName;
+    return category?.localeCategoryName?.['KO'] ?? '';
   }, [categoryListResponse, categorySeq, isValidCategorySeq]);
 
   const onClickAddMenu = () => {

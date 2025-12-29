@@ -23,7 +23,7 @@ export const SidebarLayout = () => {
 
     return categoryListResponse.data.map((category) => ({
       id: category.categorySeq,
-      label: category.categoryName,
+      label: category.localeCategoryName?.['KO'] ?? '',
       path: ROUTES.SETTINGS.CATEGORY_MENUS.generate(category.categorySeq),
     }));
   }, [categoryListResponse]);

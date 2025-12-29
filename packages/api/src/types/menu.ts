@@ -210,7 +210,6 @@ export type ICreateMenuRequest = Omit<
   | 'mappedUptDt'
   | 'isMapped'
   | 'localeMenuName'
-  | 'localeMenuDescription'
   | 'createDate'
   | 'createMemberUuid'
   | 'updateDate'

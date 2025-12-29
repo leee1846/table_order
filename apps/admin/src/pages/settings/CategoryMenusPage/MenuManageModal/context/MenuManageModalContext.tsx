@@ -56,9 +56,36 @@ const useMenuFormState = (menu: IMenu | undefined, categorySeq: number) => {
   }, [menu, categorySeq]);
 
   // 폼 값을 부분 업데이트하는 함수 (병합 방식)
-  const updateFormValues = useCallback((nextValue: FormValues) => {
-    setFormValues((prev) => ({ ...prev, ...nextValue }));
-  }, []);
+  const updateFormValues = useCallback(
+    (nextValue: FormValues) => {
+      setFormValues((prev) => {
+        const updated = { ...prev, ...nextValue };
+
+        // selectedLanguageCode가 변경되면 해당 언어의 메뉴 이름과 설명으로 업데이트
+        if (
+          'selectedLanguageCode' in nextValue &&
+          prev.selectedLanguageCode !== updated.selectedLanguageCode &&
+          updated.selectedLanguageCode
+        ) {
+          if (menu?.localeMenuName) {
+            const menuNameForLanguage =
+              menu.localeMenuName[updated.selectedLanguageCode] || '';
+            if (menuNameForLanguage) {
+              updated.menuName = menuNameForLanguage;
+            }
+          }
+          if (menu?.localeMenuDescription) {
+            const menuDescriptionForLanguage =
+              menu.localeMenuDescription[updated.selectedLanguageCode] || '';
+            updated.menuDescription = menuDescriptionForLanguage;
+          }
+        }
+
+        return updated;
+      });
+    },
+    [menu]
+  );
 
   return { formValues, updateFormValues };
 };
@@ -95,15 +122,7 @@ export const MenuManageModalProvider = ({
   const mode: ModalMode = menu ? 'edit' : 'create';
 
   // 메뉴 생성/수정을 위한 mutation 훅
-  const { mutateAsync: createMenu } = usePostCreateMenu(); //TODO 이거 고치기..
-  // const { data: tableOrderHistoriesDataResponse, refetch } =
-  // useGetTableOrderHistories(
-  //   {
-  //     shopCode: shopData?.shopCode ?? '',
-  //     tableNumber: tableNumber ?? 0,
-  //   },
-  //   { enabled }
-  // );
+  const { mutateAsync: createMenu } = usePostCreateMenu();
 
   const { mutateAsync: updateMenu } = usePutUpdateMenu();
 
@@ -154,8 +173,6 @@ export const MenuManageModalProvider = ({
       categorySeq,
       images.getMenuImageList()
     );
-
-    console.log('생성', { menu: menuData, files });
 
     await runMutation(() => createMenu({ menu: menuData, files }));
   }, [formValues, categorySeq, images, runMutation, createMenu]);

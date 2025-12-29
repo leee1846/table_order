@@ -160,7 +160,7 @@ export const Category = ({ category, shopSeq }: Props) => {
       <S.Container>
         <S.Header>
           <div>
-            <span>{category.categoryName}</span>
+            <span>{category.localeCategoryName?.['KO']}</span>
             <button type="button" onClick={() => {}}>
               <ChevronForwardIcon
                 width={30}
