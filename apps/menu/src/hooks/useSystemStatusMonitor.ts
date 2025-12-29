@@ -114,9 +114,11 @@ export const useSystemStatusMonitor = () => {
       }
     };
 
+    SystemControl.startMonitoring();
     SystemControl.addListener('statusUpdate', handleStatusUpdate);
 
     return () => {
+      SystemControl.stopMonitoring();
       SystemControl.removeAllListeners();
     };
   }, [setDataAsync, postDeviceDetail]);

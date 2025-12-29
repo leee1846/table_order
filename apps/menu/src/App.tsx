@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { useSSEHandler } from '@/hooks/useSSEHandler';
 import { useSystemStatusMonitor } from '@/hooks/useSystemStatusMonitor';
-import { AppStorage, SystemControl } from '@repo/util/app';
+import { AppStorage, CapacitorApp, SystemControl } from '@repo/util/app';
 import { useEffect } from 'react';
 import { useDeviceData } from './hooks/useDeviceData';
 
@@ -17,10 +17,14 @@ const App = () => {
     const getDeviceData = async () => {
       const ipAddress = await SystemControl.getIpAddress();
       const macAddress = await SystemControl.getMacAddress();
+      const appInfo = await CapacitorApp.getInfo();
+
       await setDataAsync({
         ...(deviceStoreData ?? {}),
         ipAddress: ipAddress.ip,
         androidId: macAddress.mac,
+        version: appInfo.version,
+        buildNumber: appInfo.build,
       });
     };
 

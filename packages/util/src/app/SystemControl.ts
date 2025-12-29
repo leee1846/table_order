@@ -109,6 +109,7 @@ const NativeSystem = registerPlugin<ISystemControl & Plugin>('SystemControl');
  */
 export const SystemControl: ISystemControl = {
   startMonitoring: async () => {
+    NativeSystem.stopMonitoring();
     return NativeSystem.startMonitoring();
   },
 
@@ -117,9 +118,8 @@ export const SystemControl: ISystemControl = {
   },
 
   addListener: async (eventName, callback) => {
-    // await NativeSystem.removeAllListeners();
-
-    return NativeSystem.addListener('statusUpdate', callback);
+    await NativeSystem.removeAllListeners();
+    return NativeSystem.addListener(eventName, callback);
   },
 
   removeAllListeners: async () => {
