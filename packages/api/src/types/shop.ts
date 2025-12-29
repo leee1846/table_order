@@ -179,13 +179,6 @@ export interface IGetShopPageSetting {
 
 export type TGetShopPageSettingResponse = IApiResponse<IGetShopPageSetting>;
 
-export interface IGetShopPageLogo {
-  shopSeq: number;
-  logoImagePath: string;
-}
-
-export type TGetShopPageLogoResponse = IApiResponse<IGetShopPageLogo>;
-
 export interface IUpdateShopSettingRequest extends IGetShop {
   shopSetting: IShopSetting;
   shopTime: IShopTime;
@@ -193,3 +186,13 @@ export interface IUpdateShopSettingRequest extends IGetShop {
 }
 
 export type TUpdateShopSettingResponse = TVoidApiResponse;
+
+export interface IGetShopThemeMenu {
+  shopSeq: number;
+  logoImagePath: string;
+  useDarkTheme: boolean;
+  isMenuThreeColumnLayout: boolean;
+  menuboardTemplateType: TMenuboardTemplateType;
+}
+
+export type TGetShopThemeMenuResponse = IApiResponse<IGetShopThemeMenu>;

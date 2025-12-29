@@ -1,17 +1,17 @@
 import { create } from '@repo/feature/zustand';
 import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
-import type { IGetShopPageLogo, IGetShopPageSetting } from '@repo/api/types';
+import type { IGetShopThemeMenu, IGetShopPageSetting } from '@repo/api/types';
 
 interface IShopPageSettingStore {
   data: {
     pageSettingData: IGetShopPageSetting | null;
-    pageLogoData: IGetShopPageLogo | null;
+    ShopThemeData: IGetShopThemeMenu | null;
   };
   setPageSettingData: (pageSettingData: IGetShopPageSetting) => void;
   clearPageSettingData: () => void;
-  setPageLogoData: (pageLogoData: IGetShopPageLogo) => void;
-  clearPageLogoData: () => void;
+  setShopThemeData: (ShopThemeData: IGetShopThemeMenu) => void;
+  clearShopThemeData: () => void;
 }
 
 export const useShopPageSettingStore = create<IShopPageSettingStore>(
@@ -21,14 +21,14 @@ export const useShopPageSettingStore = create<IShopPageSettingStore>(
       AppStorage.loadData<IGetShopPageSetting>({
         key: STORAGE_KEYS.SHOP_PAGE_SETTING,
       }),
-      AppStorage.loadData<IGetShopPageLogo>({
-        key: STORAGE_KEYS.SHOP_PAGE_LOGO,
+      AppStorage.loadData<IGetShopThemeMenu>({
+        key: STORAGE_KEYS.SHOP_THEME_MENU,
       }),
-    ]).then(([pageSettingData, pageLogoData]) => {
+    ]).then(([pageSettingData, ShopThemeData]) => {
       set({
         data: {
           pageSettingData: pageSettingData?.value ?? null,
-          pageLogoData: pageLogoData?.value ?? null,
+          ShopThemeData: ShopThemeData?.value ?? null,
         },
       });
     });
@@ -36,7 +36,7 @@ export const useShopPageSettingStore = create<IShopPageSettingStore>(
     return {
       data: {
         pageSettingData: null,
-        pageLogoData: null,
+        ShopThemeData: null,
       },
       setPageSettingData: (pageSettingData: IGetShopPageSetting) => {
         AppStorage.saveData({
@@ -52,19 +52,19 @@ export const useShopPageSettingStore = create<IShopPageSettingStore>(
         });
         set({ data: { ...get().data, pageSettingData: null } });
       },
-      setPageLogoData: (pageLogoData: IGetShopPageLogo) => {
+      setShopThemeData: (ShopThemeData: IGetShopThemeMenu) => {
         AppStorage.saveData({
-          key: STORAGE_KEYS.SHOP_PAGE_LOGO,
-          value: pageLogoData,
+          key: STORAGE_KEYS.SHOP_THEME_MENU,
+          value: ShopThemeData,
           isTemporary: true,
         });
-        set({ data: { ...get().data, pageLogoData } });
+        set({ data: { ...get().data, ShopThemeData } });
       },
-      clearPageLogoData: () => {
+      clearShopThemeData: () => {
         AppStorage.removeData({
-          key: STORAGE_KEYS.SHOP_PAGE_LOGO,
+          key: STORAGE_KEYS.SHOP_THEME_MENU,
         });
-        set({ data: { ...get().data, pageLogoData: null } });
+        set({ data: { ...get().data, ShopThemeData: null } });
       },
     };
   }

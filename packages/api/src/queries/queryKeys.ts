@@ -12,8 +12,8 @@ export const queryKeys = {
     list: () => [...queryKeys.shop.all, 'list'] as const,
     pageSetting: (shopCode: string) =>
       [...queryKeys.shop.all, 'pageSetting', shopCode] as const,
-    pageLogo: (shopCode: string) =>
-      [...queryKeys.shop.all, 'pageLogo', shopCode] as const,
+    themeMenu: (shopCode: string) =>
+      [...queryKeys.shop.all, 'themeMenu', shopCode] as const,
   },
 
   category: {
@@ -88,13 +88,15 @@ export const queryKeys = {
     all: ['sales'] as const,
     /** 매출 요약 조회 */
     summary: (shopCode: string, startDate: string, endDate: string) =>
-      [...queryKeys.sales.all, 'summary', shopCode, startDate, endDate] as const,
+      [
+        ...queryKeys.sales.all,
+        'summary',
+        shopCode,
+        startDate,
+        endDate,
+      ] as const,
     /** 메뉴 판매 집계 조회 */
-    menuSalesSummary: (
-      shopCode: string,
-      startDate: string,
-      endDate: string
-    ) =>
+    menuSalesSummary: (shopCode: string, startDate: string, endDate: string) =>
       [
         ...queryKeys.sales.all,
         'menuSalesSummary',

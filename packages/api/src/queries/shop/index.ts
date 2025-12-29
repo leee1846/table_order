@@ -1,5 +1,5 @@
 export * from './useGetShops';
 export * from './useGetShopDetail';
 export * from './useGetShopPageSetting';
-export * from './useGetShopPageLogo';
 export * from './usePutUpdateShopSetting';
+export * from './useGetShopThemeMenu';

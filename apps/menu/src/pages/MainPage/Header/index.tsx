@@ -36,7 +36,7 @@ export const Header = ({
   const { data: deviceData } = useDeviceData();
   const { data: shopDetailData } = useShopDetailData();
   const { data: shopPageSettingData } = useShopPageSettingData();
-  const { pageLogoData } = shopPageSettingData;
+  const { ShopThemeData } = shopPageSettingData;
 
   const { data: modalData, setModalData } = useModalStore();
   const clickCountRef = useRef(0);
@@ -245,7 +245,7 @@ export const Header = ({
       <S.Header>
         <S.LeftContent>
           <button type="button" onClick={handleLogoClick}>
-            <img src={pageLogoData?.logoImagePath ?? ''} alt="logo" />
+            <img src={ShopThemeData?.logoImagePath ?? ''} alt="logo" />
           </button>
           <S.Divider />
           <S.ShopName>{shopDetailData?.shopName ?? ''}</S.ShopName>

@@ -4,9 +4,9 @@ import type {
   TGetShopsResponse,
   TGetShopResponse,
   TGetShopPageSettingResponse,
-  TGetShopPageLogoResponse,
   IUpdateShopSettingRequest,
   TUpdateShopSettingResponse,
+  TGetShopThemeMenuResponse,
 } from '../types/shop';
 
 export const getShops = async (): Promise<TGetShopsResponse> => {
@@ -43,18 +43,6 @@ export const getShopPageSetting = async (
   return response.data;
 };
 
-export const getShopPageLogo = async (
-  shopCode: string
-): Promise<TGetShopPageLogoResponse> => {
-  const axiosInstance = getAxiosInstance('private');
-  const response = await axiosInstance<TGetShopPageLogoResponse>({
-    method: 'GET',
-    url: ENDPOINTS.SHOP.PAGE_LOGO(shopCode),
-  });
-
-  return response.data;
-};
-
 export const updateShopSetting = async (
   params: IUpdateShopSettingRequest
 ): Promise<TUpdateShopSettingResponse> => {
@@ -63,6 +51,18 @@ export const updateShopSetting = async (
     method: 'PUT',
     url: ENDPOINTS.SHOP.SETTING,
     data: params,
+  });
+
+  return response.data;
+};
+
+export const getShopThemeMenu = async (
+  shopCode: string
+): Promise<TGetShopThemeMenuResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetShopThemeMenuResponse>({
+    method: 'GET',
+    url: ENDPOINTS.SHOP.THEME_MENU(shopCode),
   });
 
   return response.data;

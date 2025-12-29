@@ -1,6 +1,6 @@
 import { useShopPageSettingStore } from '@/stores/useShopPageSettingStore';
 import { useShopData } from '@/hooks/useShopData';
-import { useGetShopPageSetting, useGetShopPageLogo } from '@repo/api/queries';
+import { useGetShopPageSetting, useGetShopThemeMenu } from '@repo/api/queries';
 import { useEffect } from 'react';
 import { mockShopPageSetting } from '@/mocks/mockShopPageSetting';
 
@@ -13,8 +13,8 @@ export const useShopPageSettingData = (options?: Props) => {
   const { shopData } = useShopData();
   const {
     data: storeData,
-    setPageSettingData: setStoreData,
-    setPageLogoData: setPageLogoData,
+    setPageSettingData: setPageSettingData,
+    setShopThemeData: setShopThemeData,
   } = useShopPageSettingStore();
 
   const enabledPageSetting =
@@ -24,10 +24,12 @@ export const useShopPageSettingData = (options?: Props) => {
     { enabled: enabledPageSetting }
   );
 
-  const enabledPageLogo =
-    !!shopData?.shopCode && !storeData?.pageLogoData && !skipInitialRequest;
-  const { data: pageLogoDataResponse, refetch: refetchPageLogoData } =
-    useGetShopPageLogo(shopData?.shopCode ?? '', { enabled: enabledPageLogo });
+  const enabledShopTheme =
+    !!shopData?.shopCode && !storeData?.ShopThemeData && !skipInitialRequest;
+  const { data: ShopThemeDataResponse, refetch: refetchShopThemeData } =
+    useGetShopThemeMenu(shopData?.shopCode ?? '', {
+      enabled: enabledShopTheme,
+    });
 
   useEffect(() => {
     if (skipInitialRequest) {
@@ -38,41 +40,34 @@ export const useShopPageSettingData = (options?: Props) => {
       return;
     }
 
-    setStoreData(mockShopPageSetting);
-  }, [apiData, setStoreData, skipInitialRequest]);
+    setPageSettingData(mockShopPageSetting);
+  }, [apiData, setPageSettingData, skipInitialRequest]);
 
   useEffect(() => {
     if (skipInitialRequest) {
       return;
     }
 
-    if (!pageLogoDataResponse) {
+    if (!ShopThemeDataResponse) {
       return;
     }
 
-    // TODO: Mock 데이터 삭제 예정
-    // setStoreData(pageLogoDataResponse.data);
-    setPageLogoData({
-      shopSeq: 1,
-      logoImagePath: 'https://picsum.photos/400/200?random=100',
-    });
-  }, [pageLogoDataResponse, setPageLogoData, skipInitialRequest]);
+    setShopThemeData(ShopThemeDataResponse.data);
+  }, [ShopThemeDataResponse, setShopThemeData, skipInitialRequest]);
 
   const refresh = async () => {
     const result = await refetch();
-    const logoResult = await refetchPageLogoData();
+    const logoResult = await refetchShopThemeData();
     if (result.data?.data && logoResult.data?.data) {
-      // TODO: Mock 데이터 삭제 예정
-      // setStoreData(result.data.data);
-      setStoreData(mockShopPageSetting);
-      setPageLogoData(logoResult.data.data);
+      setPageSettingData(result.data.data);
+      setShopThemeData(logoResult.data.data);
     }
   };
 
   return {
     data: {
       pageSettingData: storeData?.pageSettingData,
-      pageLogoData: storeData?.pageLogoData,
+      ShopThemeData: storeData?.ShopThemeData,
     },
     refresh,
   };
