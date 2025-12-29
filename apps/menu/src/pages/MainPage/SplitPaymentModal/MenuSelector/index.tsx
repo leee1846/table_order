@@ -6,6 +6,7 @@ import { OptionDetailModal } from '@/pages/MainPage/SplitPaymentModal/MenuSelect
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import type { ICartMenuWithId } from '@/types/cart';
 import { formatCurrency } from '@repo/util/string';
+import { calculateMenuTotalPrice } from '@/utils/calculation';
 
 interface Props {
   menus: ICartMenuWithId[];
@@ -19,16 +20,16 @@ export const MenuSelector = ({
 }: Props) => {
   const { t } = useCustomerTranslation();
 
-  const [selectedOptionMenuSeq, setSelectedOptionMenuSeq] = useState<
-    number | null
+  const [selectedOptionMenuId, setSelectedOptionMenuId] = useState<
+    string | null
   >(null);
 
   const onClickOptionDetail = (
     e: React.MouseEvent<HTMLDivElement>,
-    menuSeq: number
+    menuId: string
   ) => {
     e.stopPropagation();
-    setSelectedOptionMenuSeq(menuSeq);
+    setSelectedOptionMenuId(menuId);
   };
 
   const onCheckButtonChange = (checked: boolean, menu: ICartMenuWithId) => {
@@ -43,6 +44,15 @@ export const MenuSelector = ({
 
   const isMenuSelected = (menu: ICartMenuWithId) => {
     return selectedMenus.some((selectedMenu) => selectedMenu.id === menu.id);
+  };
+
+  const calculateMenuPrice = (menu: ICartMenuWithId): number => {
+    const options = menu.selectedOptions.map((option) => ({
+      optionPrice: option.optionPrice,
+      quantity: option.quantity,
+    }));
+
+    return calculateMenuTotalPrice(menu.menuPrice, menu.quantity, options);
   };
 
   return (
@@ -77,22 +87,24 @@ export const MenuSelector = ({
               <S.ButtonRightContainer>
                 <p>
                   {t('{{amount}}원', {
-                    amount: formatCurrency(menu.menuPrice),
+                    amount: formatCurrency(calculateMenuPrice(menu)),
                   })}
                 </p>
-                <div onClick={(e) => onClickOptionDetail(e, menu.menuSeq)}>
-                  {t('옵션')}
-                </div>
+                {menu.selectedOptions.length > 0 && (
+                  <div onClick={(e) => onClickOptionDetail(e, menu.id)}>
+                    {t('옵션')}
+                  </div>
+                )}
               </S.ButtonRightContainer>
             </button>
           </S.MenuItem>
         ))}
       </S.MenuList>
 
-      {selectedOptionMenuSeq && (
+      {selectedOptionMenuId && (
         <OptionDetailModal
-          menu={menus.find((menu) => menu.menuSeq === selectedOptionMenuSeq)}
-          onClose={() => setSelectedOptionMenuSeq(null)}
+          menu={menus.find((menu) => menu.id === selectedOptionMenuId)}
+          onClose={() => setSelectedOptionMenuId(null)}
         />
       )}
     </>
