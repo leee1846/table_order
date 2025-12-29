@@ -9,3 +9,4 @@ export * from './device';
 export * from './sse';
 export * from './notice';
 export * from './sales';
+export * from './payment';

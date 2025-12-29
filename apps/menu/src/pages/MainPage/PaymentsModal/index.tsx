@@ -9,6 +9,8 @@ import {
 import { css } from '@emotion/react';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { openDualActionDialog } from '@repo/feature/utils';
+import { usePostPayment } from '@repo/api/queries';
 
 interface Props {
   onClose: () => void;
@@ -17,6 +19,11 @@ interface Props {
     method: 'card' | 'cash' | 'split' | 'payAfter'
   ) => void;
   openNextModal: () => void;
+  executePostpaidOrder: () => Promise<{
+    orderGroupUuid: string;
+    result: boolean;
+    totalPrice: number;
+  }>;
 }
 
 export const PaymentsModal = ({
@@ -24,27 +31,33 @@ export const PaymentsModal = ({
   selectedPaymentMethod,
   setSelectedPaymentMethod,
   openNextModal,
+  executePostpaidOrder,
 }: Props) => {
   const { t } = useCustomerTranslation();
   const { data: shopDetailData } = useShopDetailData();
+  const { mutateAsync: postPayment } = usePostPayment();
 
   const onClickNext = () => {
-    // TODO: 선불형 api는 모두 따로 개발될 예정
-    // if (selectedPaymentMethod === 'cash') {
-    //   openDualActionDialog({
-    //     title: t('현금 결제'),
-    //     content: t('현금 결제로 주문하시겠습니까?'),
-    //     primaryText: t('주문하기'),
-    //     secondaryText: t('취소'),
-    //     onConfirm: async () => {
-    //       const result = await executePostpaidOrder();
-    //       if (result) {
-    //         onClose();
-    //       }
-    //     },
-    //   });
-    //   return;
-    // }
+    if (selectedPaymentMethod === 'cash') {
+      openDualActionDialog({
+        title: t('현금 결제'),
+        content: t('현금 결제로 주문하시겠습니까?'),
+        primaryText: t('주문하기'),
+        secondaryText: t('취소'),
+        onConfirm: async () => {
+          const response = await executePostpaidOrder();
+          if (response.result) {
+            postPayment({
+              orderGroupUuid: response.orderGroupUuid,
+              paymentType: 'CASH',
+              transactionAmount: response.totalPrice,
+            });
+            onClose();
+          }
+        },
+      });
+      return;
+    }
 
     // onClose();
     openNextModal();

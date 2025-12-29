@@ -87,12 +87,16 @@ export const CartButton = ({ categories }: Props) => {
   /**
    * 주문 실행 로직 (onConfirm 내부 로직만 추출)
    */
-  const executePostpaidOrder = async (): Promise<boolean> => {
+  const executePostpaidOrder = async (): Promise<{
+    orderGroupUuid: string;
+    result: boolean;
+    totalPrice: number;
+  }> => {
     try {
       const orders = convertCartDataToOrders();
       const totalPrice = calculateTotalPrice();
 
-      await createTableOrder({
+      const response = await createTableOrder({
         shopCode: shopData?.shopCode ?? '',
         tableNumber: deviceData?.tableNumber ?? '',
         orderType: 'MENU',
@@ -108,9 +112,18 @@ export const CartButton = ({ categories }: Props) => {
       setOrderTotalPrice(totalPrice);
       clearCart();
       setModalData('isCartListOpened', false);
-      return true;
+
+      return {
+        result: true,
+        orderGroupUuid: response.data.orderGroupUuid,
+        totalPrice,
+      };
     } catch (_error) {
-      return false;
+      return {
+        result: false,
+        orderGroupUuid: '',
+        totalPrice: 0,
+      };
     }
   };
 
@@ -174,6 +187,7 @@ export const CartButton = ({ categories }: Props) => {
           selectedPaymentMethod={selectedPaymentMethod}
           setSelectedPaymentMethod={setSelectedPaymentMethod}
           openNextModal={handlePaymentMethodConfirm}
+          executePostpaidOrder={executePostpaidOrder}
         />
       )}
 

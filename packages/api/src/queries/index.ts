@@ -8,4 +8,5 @@ export * from './device';
 export * from './common';
 export * from './notice';
 export * from './sales';
+export * from './payment';
 export { queryKeys } from './queryKeys';

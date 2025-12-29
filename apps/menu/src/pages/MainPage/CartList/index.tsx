@@ -24,7 +24,11 @@ const TOAST_OPTIONS = {
 interface Props {
   onClose: () => void;
   categories: ICategoryWithMenus[];
-  executePostpaidOrder: () => Promise<boolean>;
+  executePostpaidOrder: () => Promise<{
+    orderGroupUuid: string;
+    result: boolean;
+    totalPrice: number;
+  }>;
   openPaymentsModal: () => void;
 }
 
@@ -137,8 +141,8 @@ export const CartList = ({
         }
 
         // 후불
-        const result = await executePostpaidOrder();
-        if (result) {
+        const response = await executePostpaidOrder();
+        if (response.result) {
           onClose();
         }
       },

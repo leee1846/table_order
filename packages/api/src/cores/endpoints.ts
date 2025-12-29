@@ -92,4 +92,8 @@ export const ENDPOINTS = {
     MENU_SALES_SUMMARY: (shopCode: string) =>
       `/sales/menu-sales-summary/${shopCode}`,
   },
+
+  PAYMENT: {
+    PAYMENT: '/payment',
+  },
 } as const;

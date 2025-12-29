@@ -50,6 +50,12 @@ export interface ICreateTableOrderRequest {
   orders: IOrder[];
 }
 
+export interface ICreateTableOrderData {
+  orderGroupUuid: string;
+}
+
+export type TCreateTableOrderResponse = IApiResponse<ICreateTableOrderData>;
+
 export interface ICreateOrderGroupRequest {
   shopCode: string;
   tableNumber: string;

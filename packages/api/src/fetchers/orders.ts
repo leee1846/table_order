@@ -17,6 +17,7 @@ import type {
   IPostCustomAmountRequest,
   IPostPickupMessageRequest,
   TPostPickupMessageResponse,
+  TCreateTableOrderResponse,
 } from '../types/orders';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -70,7 +71,7 @@ export const createTableOrder = async ({
   totalAmount,
 }: ICreateTableOrderRequest) => {
   const axiosInstance = getAxiosInstance('private');
-  const response = await axiosInstance<TVoidApiResponse>({
+  const response = await axiosInstance<TCreateTableOrderResponse>({
     method: 'POST',
     url: ENDPOINTS.ORDER.CREATE_TABLE_ORDER(shopCode, tableNumber),
     params: { orderType, customerCount, kidsCustomerCount, totalAmount },
