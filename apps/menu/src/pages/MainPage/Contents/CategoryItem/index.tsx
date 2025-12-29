@@ -5,12 +5,24 @@ import { NoContent } from '@/feature/NoContent';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
+import { useShopThemePage } from '@/hooks/useShopThemePage';
 
 interface Props {
   category: ICategoryWithMenus;
 }
 export const CategoryItem = ({ category }: Props) => {
-  const layout: 1 | 2 | 3 = category.useTwoColumnLayout ? 2 : 1;
+  const { data: shopThemeData } = useShopThemePage();
+
+  const layout: 1 | 2 | 3 = (() => {
+    if (shopThemeData?.shopThemeData?.isMenuThreeColumnLayout) {
+      return 3;
+    }
+    if (category.useTwoColumnLayout) {
+      return 2;
+    }
+    return 1;
+  })();
+
   const { t } = useCustomerTranslation();
   const { data: languageData } = useCustomerLanguageStore();
   const { getVisibleMenus } = useCategoriesData();

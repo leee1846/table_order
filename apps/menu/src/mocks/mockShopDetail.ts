@@ -54,49 +54,42 @@ const createShopDetail = (): IGetShop => ({
         dayOfWeek: 0, // 일요일
         breakStartTime: '1700',
         breakEndTime: '1701',
-        isActive: true,
       },
       {
         shopSeq: 1,
         dayOfWeek: 1, // 월요일
         breakStartTime: '1100',
         breakEndTime: '1101',
-        isActive: true,
       },
       {
         shopSeq: 1,
         dayOfWeek: 2, // 화요일
         breakStartTime: '1813',
         breakEndTime: '1814',
-        isActive: true,
       },
       {
         shopSeq: 1,
         dayOfWeek: 3, // 수요일
         breakStartTime: '0930',
         breakEndTime: '0931',
-        isActive: false,
       },
       {
         shopSeq: 1,
         dayOfWeek: 4, // 목요일
         breakStartTime: '1700',
         breakEndTime: '1800',
-        isActive: true,
       },
       {
         shopSeq: 1,
         dayOfWeek: 5, // 금요일
         breakStartTime: '1900',
         breakEndTime: '2000',
-        isActive: true,
       },
       {
         shopSeq: 1,
         dayOfWeek: 6, // 토요일
         breakStartTime: '2100',
         breakEndTime: '2200',
-        isActive: true,
       },
     ],
     shopClosureStartTime: '1821',
@@ -116,7 +109,6 @@ const createShopDetail = (): IGetShop => ({
     vanId: '',
     usePickupAlert: true,
     pickupAlertMessage: '픽업 준비가 완료되었습니다',
-    useDarkTheme: false,
     useOnlinePosMode: false,
     useTableOccupancyTime: false,
     menuboardType: 'PLUS',
@@ -143,7 +135,6 @@ const createShopDetail = (): IGetShop => ({
     shopCardTerminalCode: 'VIRTUAL',
     shopLanguage: 'KO',
     useLocaleBeforeOrder: true,
-    isMenuThreeColumnLayout: false,
     useTableOverlapping: true,
     shopLocaleMapList: [
       {

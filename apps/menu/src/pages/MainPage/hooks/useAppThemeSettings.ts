@@ -1,13 +1,15 @@
 import { useEffect, useContext } from 'react';
-import type { IGetShop } from '@repo/api/types';
 import { ThemeModeContext, type ThemeModeContextValue } from '@repo/ui';
+import type { IGetShopThemeMenu } from '@repo/api/types';
 
 /**
  * 상점 설정에 따라 앱 테마(다크/라이트 모드)를 적용함
  *
- * @param shopDetailData - 매장 상세 데이터
+ * @param shopThemeData - 매장 상세 데이터
  */
-export const useAppThemeSettings = (shopDetailData: IGetShop | null): void => {
+export const useAppThemeSettings = (
+  shopThemeData: IGetShopThemeMenu | null
+): void => {
   // HMR 중 context 손실을 방지하기 위해 직접 useContext 사용
   const context = useContext<ThemeModeContextValue | undefined>(
     ThemeModeContext
@@ -19,16 +21,11 @@ export const useAppThemeSettings = (shopDetailData: IGetShop | null): void => {
       return;
     }
 
-    if (!shopDetailData?.shopSetting) {
-      context.setMode('light');
-      return;
-    }
-
-    if (shopDetailData.shopSetting.useDarkTheme) {
+    if (shopThemeData?.useDarkTheme) {
       context.setMode('dark');
       return;
     }
 
     context.setMode('light');
-  }, [shopDetailData?.shopSetting, context]);
+  }, [shopThemeData?.useDarkTheme, context]);
 };

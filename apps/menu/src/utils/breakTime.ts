@@ -208,10 +208,6 @@ const findActiveBreakTime = (
   const currentTimeMs = currentTime.getTime();
 
   for (const breakTime of shopTime.breakTimeList) {
-    if (!breakTime.isActive) {
-      continue;
-    }
-
     const breakTimeDate = getBreakTimeDate(breakTime, currentTime);
     const { breakStartDate, breakEndDate } = getBreakTimeDates(
       breakTime,
@@ -258,10 +254,6 @@ export const checkBreakTimeStatus = (
   const timePoints: ITimePoint[] = [];
 
   for (const breakTime of shopTime.breakTimeList) {
-    if (!breakTime.isActive) {
-      continue;
-    }
-
     const breakTimeDate = getBreakTimeDate(breakTime, currentTime);
     const { breakStartDate, breakEndDate } = getBreakTimeDates(
       breakTime,

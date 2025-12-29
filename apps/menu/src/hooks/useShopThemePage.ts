@@ -2,6 +2,7 @@ import { useShopThemeStore } from '@/stores/useShopThemeStore';
 import { useShopData } from '@/hooks/useShopData';
 import { useGetShopThemePage, useGetShopThemeMenu } from '@repo/api/queries';
 import { useEffect } from 'react';
+import { mockShopThemePage } from '@/mocks/mockShopThemePage';
 
 interface Props {
   skipInitialRequest?: boolean;
@@ -39,7 +40,9 @@ export const useShopThemePage = (options?: Props) => {
       return;
     }
 
-    setThemePageData(themePageDataResponse.data);
+    // TODO: 추후 삭제
+    setThemePageData(mockShopThemePage);
+    // setThemePageData(themePageDataResponse.data);
   }, [themePageDataResponse, setThemePageData, skipInitialRequest]);
 
   useEffect(() => {
@@ -58,7 +61,9 @@ export const useShopThemePage = (options?: Props) => {
     const result = await refetch();
     const logoResult = await refetchShopThemeData();
     if (result.data?.data && logoResult.data?.data) {
-      setThemePageData(result.data.data);
+      // TODO: 추후 삭제
+      setThemePageData(mockShopThemePage);
+      // setThemePageData(result.data.data);
       setShopThemeData(logoResult.data.data);
     }
   };

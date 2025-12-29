@@ -98,7 +98,6 @@ export interface IShopSetting {
   currencySetting: 'KRW' | 'USD';
   usePickupAlert: boolean;
   pickupAlertMessage: string;
-  useDarkTheme: boolean;
   useOnlinePosMode: boolean;
   useTableOccupancyTime: boolean;
   menuboardType: TMenuboardType;

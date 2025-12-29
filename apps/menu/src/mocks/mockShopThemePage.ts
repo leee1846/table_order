@@ -1,6 +1,6 @@
-import type { IGetShopPageSetting } from '@repo/api/types';
+import type { IGetShopThemePage } from '@repo/api/types';
 
-const createShopPageSetting = (): IGetShopPageSetting => ({
+const createShopThemePage = (): IGetShopThemePage => ({
   shopSeq: 1,
   initPageLayout: 'LIGHT',
   orderCompletePageLayout: 'DEFAULT',
@@ -36,4 +36,4 @@ const createShopPageSetting = (): IGetShopPageSetting => ({
   ],
 });
 
-export const mockShopPageSetting: IGetShopPageSetting = createShopPageSetting();
+export const mockShopThemePage: IGetShopThemePage = createShopThemePage();

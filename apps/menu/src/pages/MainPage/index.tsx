@@ -35,7 +35,7 @@ export const MainPage = () => {
     nonStaffCallCategories,
   } = useCategoriesData();
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
-  useShopThemePage();
+  const { data: shopThemeData } = useShopThemePage();
 
   const orderHistories =
     tableOrderHistoriesData && tableOrderHistoriesData !== 'isEmptyTable'
@@ -56,7 +56,7 @@ export const MainPage = () => {
   const breakTimeState = useBreakTime();
   const closureState = useShopClosure();
 
-  useAppThemeSettings(shopDetailData);
+  useAppThemeSettings(shopThemeData?.shopThemeData ?? null);
   const languageSettings = useCustomerLanguageSettings(shopDetailData);
   const customerCountSettings = useCustomerCountSettings(
     shopDetailData,
