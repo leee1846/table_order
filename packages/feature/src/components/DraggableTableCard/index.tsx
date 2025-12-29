@@ -67,6 +67,7 @@ export const DraggableTableCard = ({
       <TableCard
         id={table.id}
         table={table}
+        tableNumber={table.tableNumber}
         orderTime={table.orderTime ?? null}
         useTranslation={useTranslation}
         onClick={() => onClick(table)}

@@ -3,6 +3,7 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 
 export const Container = styled.div`
   padding: 40px 24px 40px 30px;
+  background-color: ${theme.colors.grey[50]};
 `;
 
 export const Header = styled.header`

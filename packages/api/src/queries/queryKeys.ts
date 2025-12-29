@@ -124,6 +124,7 @@ export const queryKeys = {
     /** 카드 승인 내역 조회 */
     cardApprovalHistory: (
       shopCode: string,
+      cardCode: string | undefined,
       startDate: string,
       endDate: string,
       pageNumber: number,
@@ -133,6 +134,7 @@ export const queryKeys = {
         ...queryKeys.sales.all,
         'cardApprovalHistory',
         shopCode,
+        cardCode ?? 'all',
         startDate,
         endDate,
         pageNumber,

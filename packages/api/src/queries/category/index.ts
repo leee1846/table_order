@@ -6,3 +6,4 @@ export * from './usePutUpdateCategoryHidden';
 export * from './useDeleteCategory';
 export * from './useGetCategoriesWithMenus';
 export * from './usePutUpdateCategoryFirstOrder';
+export * from './usePostSaveCategoryExceptTable';

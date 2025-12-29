@@ -1,6 +1,12 @@
 import { type ReactNode } from 'react';
-import { DndContext, useSensor, useSensors, PointerSensor } from '../../hooks';
-import type { DragEndEvent, DragStartEvent } from '../../hooks';
+import {
+  DndContext,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  DragStartEvent,
+  DragEndEvent,
+} from '../../hooks';
 
 export interface DndContextWrapperProps {
   children: ReactNode;
@@ -39,4 +45,3 @@ export const DndContextWrapper = ({
     </DndContext>
   );
 };
-

@@ -1,6 +1,4 @@
-import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
-import { SettingsIcon } from '@repo/ui/icons';
 import { ScreenMode } from '@/pages/settings/MenuScreenPage/ScreenMode';
 import { Logo } from '@/pages/settings/MenuScreenPage/Logo';
 import { Template } from '@/pages/settings/MenuScreenPage/Template';
@@ -10,11 +8,11 @@ export const MenuScreenPage = () => {
   return (
     <S.Container>
       <S.Header>
-        <h1>
-          테마 설정 | 메뉴판
-          <SettingsIcon color={theme.colors.grey[800]} width={40} height={40} />
-        </h1>
-
+        <S.Title>
+          <h1>테마설정</h1>
+          <div />
+          <span>메뉴 화면</span>
+        </S.Title>
         <BasicButton variant="Solid_Navy_XL" onClick={() => {}}>
           저장하기
         </BasicButton>
@@ -26,4 +24,3 @@ export const MenuScreenPage = () => {
     </S.Container>
   );
 };
-

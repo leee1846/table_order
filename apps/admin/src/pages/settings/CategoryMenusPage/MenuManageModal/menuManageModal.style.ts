@@ -2,6 +2,8 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
+const { colors } = theme;
+
 export const Container = styled.div`
   position: absolute;
   top: 0;
@@ -65,4 +67,42 @@ export const SubmitButton = css`
   width: 100%;
   margin-top: 40px;
   z-index: ${theme.zIndex.modal};
+`;
+
+export const LanguageSelector = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+`;
+
+export const LanguageTabs = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+`;
+
+export const LanguageTab = styled.button<{ isSelected: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid
+    ${({ isSelected }) =>
+      isSelected ? theme.colors.primary[500] : theme.colors.grey[300]};
+  background-color: ${({ isSelected }) =>
+    isSelected ? colors.primary[100] : colors.white};
+  color: ${({ isSelected }) =>
+    isSelected ? theme.colors.primary[500] : theme.colors.grey[600]};
+  ${TYPOGRAPHY.ST_2}
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${theme.colors.primary[500]};
+    background-color: ${({ isSelected }) =>
+      isSelected ? colors.primary[100] : colors.primary[100]};
+  }
 `;

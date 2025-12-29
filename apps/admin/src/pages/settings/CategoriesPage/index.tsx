@@ -16,9 +16,7 @@ export const CategoriesPage = () => {
     shopSeq: shopSeq!,
   });
 
-  const openAddCategoryModal = () => {
-    setIsAddCategoryModalOpen(true);
-  };
+  const openAddCategoryModal = () => {};
 
   const closeAddCategoryModal = () => {
     setIsAddCategoryModalOpen(false);

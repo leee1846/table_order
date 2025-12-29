@@ -53,6 +53,7 @@ export const getCardApprovalHistory = async (
     method: 'GET',
     url: ENDPOINTS.SALES.CARD_APPROVAL_HISTORY(params.shopCode),
     params: {
+      cardCode: params.cardCode,
       startDate: params.startDate,
       endDate: params.endDate,
       pageNumber: params.pageNumber ?? 0,

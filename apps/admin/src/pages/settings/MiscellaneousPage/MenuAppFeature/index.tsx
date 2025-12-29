@@ -63,6 +63,8 @@ export const MenuAppFeature = ({
   const [selectedCategorySeqs, setSelectedCategorySeqs] = useState<number[]>(
     []
   );
+  const [useTableOverlapping, setUseTableOverlapping] = useState(false);
+
   const shopSeq = shopSetting?.shopSeq;
 
   const [useBreakTime, setUseBreakTime] = useState(false);
@@ -132,6 +134,7 @@ export const MenuAppFeature = ({
     setUseTheftPrevention(Boolean(shopSetting.useTheftPrevention));
     setUsePickupAlert(Boolean(shopSetting.usePickupAlert));
     setPickupAlertMessage(shopSetting.pickupAlertMessage ?? '');
+    setUseTableOverlapping(Boolean(shopSetting.useTableOverlapping));
   }, [shopSetting]);
 
   useEffect(() => {
@@ -248,6 +251,7 @@ export const MenuAppFeature = ({
       useTheftPrevention,
       usePickupAlert,
       pickupAlertMessage,
+      useTableOverlapping,
     };
 
     const firstOrderMinAmountValue = toNumberOrUndefined(firstOrderMinAmount);
@@ -330,6 +334,7 @@ export const MenuAppFeature = ({
     useKidsCustomerCount,
     usePickupAlert,
     useSinglePageMenuboard,
+    useTableOverlapping,
     useTheftPrevention,
   ]);
 
@@ -456,6 +461,14 @@ export const MenuAppFeature = ({
           size="M"
           isOn={useTheftPrevention}
           onChange={() => setUseTheftPrevention(!useTheftPrevention)}
+        />
+      </UIStyles.setting.ContentLayout>
+      <UIStyles.setting.ContentLayout>
+        <p>테이블 중복 사용 허용</p>
+        <ToggleButton
+          size="M"
+          isOn={useTableOverlapping}
+          onChange={() => setUseTableOverlapping(!useTableOverlapping)}
         />
       </UIStyles.setting.ContentLayout>
       <div>

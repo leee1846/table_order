@@ -55,8 +55,7 @@ export interface IGetMenuSalesSummaryParams {
   endDate: string;
 }
 
-export type TGetMenuSalesSummaryResponse =
-  IApiResponse<IMenuSalesSummary>;
+export type TGetMenuSalesSummaryResponse = IApiResponse<IMenuSalesSummary>;
 
 export type TPaymentType = 'CASH' | 'CARD';
 
@@ -137,6 +136,7 @@ export interface ICardApprovalHistoryItem {
 
 export interface IGetCardApprovalHistoryParams {
   shopCode: string;
+  cardCode?: string;
   /**
    * YYYYMMDD
    */
@@ -152,5 +152,6 @@ export interface IGetCardApprovalHistoryParams {
   pageSize?: number;
 }
 
-export type TGetCardApprovalHistoryResponse =
-  IApiResponse<ICardApprovalHistoryItem[]>;
+export type TGetCardApprovalHistoryResponse = IApiResponse<
+  ICardApprovalHistoryItem[]
+>;

@@ -45,6 +45,20 @@ const dateRangeOptions: { value: TDateRangePreset; label: string }[] = [
   { value: '3Months', label: '3개월' },
 ];
 
+const cardCompanyOptions = [
+  { value: 'all', label: '전체 카드사' },
+  { value: 'KM', label: '국민카드' },
+  { value: 'LT', label: '롯데카드' },
+  { value: 'BC', label: '비씨카드' },
+  { value: 'SS', label: '삼성카드' },
+  { value: 'SH', label: '신한카드' },
+  { value: 'HD', label: '현대카드' },
+  { value: 'NH', label: 'NH농협카드' },
+  { value: 'HN', label: '하나카드' },
+  { value: 'WR', label: '우리카드' },
+  { value: 'ETC', label: '기타카드' },
+];
+
 export const SalesCardPage = () => {
   const { shopCode } = useAuth();
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
@@ -58,6 +72,7 @@ export const SalesCardPage = () => {
   );
   const [endDate, setEndDate] = useState<string>(defaultDateRange.endDate);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedCardCode, setSelectedCardCode] = useState<string>('all');
 
   const { startDate: apiStartDate, endDate: apiEndDate } = useMemo(
     () => toYYYYMMDDRange({ startDate, endDate }),
@@ -68,6 +83,7 @@ export const SalesCardPage = () => {
     useGetCardApprovalHistory(
       {
         shopCode: shopCode ?? '',
+        cardCode: selectedCardCode === 'all' ? undefined : selectedCardCode,
         startDate: apiStartDate,
         endDate: apiEndDate,
         pageNumber: currentPage - 1,
@@ -129,6 +145,11 @@ export const SalesCardPage = () => {
     setCurrentPage(page);
   };
 
+  const handleCardCodeChange = (value: string | number) => {
+    setSelectedCardCode(value as string);
+    setCurrentPage(1);
+  };
+
   return (
     <>
       <UIStyles.setting.TablePageContainer>
@@ -141,9 +162,9 @@ export const SalesCardPage = () => {
 
           <S.Filters>
             <Dropdown
-              options={[{ value: 'all', label: '전체 카드사' }]}
-              value="all"
-              onChange={() => {}}
+              options={cardCompanyOptions}
+              value={selectedCardCode}
+              onChange={handleCardCodeChange}
             />
             <S.FiltersRight>
               <S.CalendarButton

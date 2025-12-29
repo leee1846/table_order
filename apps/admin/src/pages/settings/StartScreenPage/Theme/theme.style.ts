@@ -44,8 +44,6 @@ export const ThemeColor = styled.div<{ backgroundColors: string }>`
   height: 12.70833rem;
   border-radius: 0.75rem;
 
-  background-color: ${({ backgroundColors }) => backgroundColors};
-
   ${TYPOGRAPHY.MT_6}
   color: ${theme.colors.grey[500]};
   overflow: hidden;
@@ -57,6 +55,8 @@ export const ThemeColor = styled.div<{ backgroundColors: string }>`
     align-items: center;
     justify-content: center;
     flex: 1;
+
+    background-color: ${({ backgroundColors }) => backgroundColors};
   }
 
   > div:last-of-type {

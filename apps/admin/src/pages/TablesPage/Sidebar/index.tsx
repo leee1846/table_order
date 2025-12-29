@@ -85,6 +85,7 @@ export const Sidebar = ({
           ? orderGroupUuid.substring(0, 8).toUpperCase()
           : String(index + 1).padStart(2, '0');
 
+        //TODO 나중에 수정
         return {
           id: orderGroupUuid!,
           orderNumber,

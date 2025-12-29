@@ -5,7 +5,7 @@ import * as S from '@/pages/settings/NoticesPage/noticePage.style';
 import { Notices } from '@/pages/settings/NoticesPage/Notices';
 import { useGetNoticeList } from '@repo/api/queries';
 
-const PAGE_SIZE = 9; // 스크롤 없이 한 화면에 표시할 수 있는 적절한 개수
+const PAGE_SIZE = 10; // 스크롤 없이 한 화면에 표시할 수 있는 적절한 개수
 
 export const NoticesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);

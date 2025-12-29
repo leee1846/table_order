@@ -5,7 +5,7 @@ import { IMenu } from './menu';
 // 언어 코드 타입
 // ============================================================================
 
-export type TLanguageCode = 'KO' | 'EN' | 'JP' | 'CH';
+export type TLanguageCode = 'KO' | 'EN' | 'JP' | 'CH' | 'RU';
 
 /**
  * 카테고리 베이스 타입 (최소 단위)
@@ -33,7 +33,7 @@ export interface ICategoryBase {
   localeCategoryDescription: Record<string, string> | null; // READ_ONLY (GET 응답에만 포함)
   createDate: string | null; // READ_ONLY (GET 응답에만 포함)
   updateDate: string | null; // READ_ONLY (GET 응답에만 포함)
-  selectedLanguageCode: TLanguageCode | null;
+  selectedLanguageCode: TLanguageCode;
 }
 
 // ============================================================================
@@ -174,6 +174,20 @@ export interface IUpdateCategoryIndexRequest {
 export interface IUpdateCategoryHiddenParams {
   categorySeq: number;
   isHidden: boolean;
+}
+
+// ============================================================================
+// POST /category/except-table/{shopCode}
+// ============================================================================
+
+export interface ICategoryExceptTableRequest {
+  shopCode: string;
+  categorySeq: number;
+  tableNumberList: string[];
+}
+
+export interface ITableBlackListRequest {
+  tableNumberList: string[];
 }
 
 // ============================================================================

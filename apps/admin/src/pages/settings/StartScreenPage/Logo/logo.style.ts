@@ -5,6 +5,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-bottom: 16px;
 
   & > p {
     color: ${theme.colors.grey[800]};
@@ -12,12 +13,37 @@ export const Container = styled.div`
   }
 `;
 
-export const ImageSection = styled.div`
+export const ImageSection = styled.button`
   position: relative;
   width: 100%;
-  height: 16.875rem;
+  height: 190px;
   border-radius: 1rem;
-  background-color: ${theme.colors.grey[100]};
+  background-color: ${theme.colors.primary[100]};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  border: none;
+  overflow: hidden;
+
+  p {
+    color: ${theme.colors.grey[700]};
+    ${TYPOGRAPHY.BD_1}
+  }
+
+  span {
+    ${TYPOGRAPHY.CT_2}
+    color: ${theme.colors.grey[500]};
+  }
+`;
+
+export const ImagePreview = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: ${theme.colors.primary[100]};
 `;
 
 export const ButtonContainer = styled.div`
@@ -27,4 +53,3 @@ export const ButtonContainer = styled.div`
   display: flex;
   gap: 6px;
 `;
-

@@ -16,6 +16,7 @@ const { colors } = theme;
 interface Props {
   id: number;
   table: TableWithStatus;
+  tableNumber: string;
   orderTime: string | null;
   onClick?: () => void;
   useTranslation: typeof useTranslation;

@@ -16,6 +16,9 @@ export const TemplateOptions = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 16px 24px;
+  background-color: ${theme.colors.white};
+  border-radius: 1rem;
 `;
 
 export const OptionRow = styled.div`
@@ -25,7 +28,6 @@ export const OptionRow = styled.div`
 `;
 
 export const OptionLabel = styled.p`
-  color: ${theme.colors.grey[800]};
-  ${TYPOGRAPHY.MT_6}
+  color: ${theme.colors.grey[600]};
+  ${TYPOGRAPHY.ST_2}
 `;
-

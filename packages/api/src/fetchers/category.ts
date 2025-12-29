@@ -10,6 +10,8 @@ import type {
   TGetCategoryListResponse,
   IGetShopCategoriesWithMenusParams,
   TGetShopCategoriesWithMenusResponse,
+  ICategoryExceptTableRequest,
+  ITableBlackListRequest,
   TUpdateCategoryFirstOrderRequest,
   TUpdateCategoryFirstOrderResponse,
 } from '../types/category';
@@ -112,6 +114,32 @@ export const updateCategoryHidden = async (
     method: 'PUT',
     url: ENDPOINTS.CATEGORY.HIDDEN,
     data: params,
+  });
+
+  return response.data;
+};
+
+/**
+ * 카테고리별 테이블 블랙리스트를 저장합니다.
+ * POST /category/except-table/{shopCode}
+ */
+export const saveCategoryExceptTable = async (
+  params: ICategoryExceptTableRequest
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+
+  const tableBlackList: ITableBlackListRequest[] =
+    params.tableNumberList.length > 0
+      ? [{ tableNumberList: params.tableNumberList }]
+      : [];
+
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.CATEGORY.EXCEPT_TABLE(params.shopCode),
+    params: {
+      categorySeq: params.categorySeq,
+    },
+    data: tableBlackList,
   });
 
   return response.data;

@@ -4,16 +4,19 @@ import * as S from '@/pages/settings/CategoriesPage/Categories/Category/category
 import { ChevronForwardIcon, DeleteIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryManageModal';
+import { CategoryTableAssignModal } from '@/pages/settings/CategoriesPage/CategoryTableAssignModal';
 import type { ICategory } from '@repo/api/types';
 import {
   queryKeys,
   useDeleteCategory,
   usePutUpdateCategoryHidden,
+  usePostSaveCategoryExceptTable,
 } from '@repo/api/queries';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { DAYS } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
 import { useQueryClient } from '@repo/api/tanstack-query';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Props {
   category: ICategory;
@@ -22,10 +25,17 @@ interface Props {
 
 export const Category = ({ category, shopSeq }: Props) => {
   const queryClient = useQueryClient();
+  const { shopCode } = useAuth();
   const [isCategoryManageModalOpen, setIsCategoryManageModalOpen] =
     useState(false);
+  const [isTableAssignModalOpen, setIsTableAssignModalOpen] = useState(false);
+  const [assignedTableNumbers, setAssignedTableNumbers] = useState<string[]>(
+    []
+  );
   const deleteCategoryMutation = useDeleteCategory();
   const { mutateAsync: updateCategoryHidden } = usePutUpdateCategoryHidden();
+  const { mutateAsync: saveCategoryExceptTable } =
+    usePostSaveCategoryExceptTable();
 
   // 판매 요일 표시 텍스트 생성
   const getSaleDayDisplay = (): string | null => {
@@ -130,6 +140,21 @@ export const Category = ({ category, shopSeq }: Props) => {
     ? `${formatTimeDisplay(category.saleStartTime as string)} ~ ${formatTimeDisplay(category.saleEndTime as string)}`
     : '상시';
 
+  const handleSaveTableAssign = async (tableNumbers: string[]) => {
+    if (!shopCode) {
+      toast('매장 정보를 불러오는 중입니다.');
+      throw new Error('shopCode is not available');
+    }
+
+    await saveCategoryExceptTable({
+      shopCode,
+      categorySeq: category.categorySeq,
+      tableNumberList: tableNumbers,
+    });
+    setAssignedTableNumbers(tableNumbers);
+    toast('카테고리 테이블 지정이 저장되었습니다.');
+  };
+
   return (
     <>
       <S.Container>
@@ -195,7 +220,7 @@ export const Category = ({ category, shopSeq }: Props) => {
             <BasicButton
               variant="Solid_Navy_L"
               onClick={() => {
-                // noop
+                setIsTableAssignModalOpen(true);
               }}
             >
               테이블 지정
@@ -215,6 +240,14 @@ export const Category = ({ category, shopSeq }: Props) => {
           onClose={() => setIsCategoryManageModalOpen(false)}
           categoryData={category}
           shopSeq={shopSeq}
+        />
+      )}
+      {isTableAssignModalOpen && (
+        <CategoryTableAssignModal
+          categoryName={category.categoryName}
+          initialSelectedTableNumbers={assignedTableNumbers}
+          onClose={() => setIsTableAssignModalOpen(false)}
+          onSave={handleSaveTableAssign}
         />
       )}
     </>

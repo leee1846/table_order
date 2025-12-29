@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { IShopSetting } from '@repo/api/types';
+import type { IShopSetting, TShopPosCode } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
 import { Dropdown } from '@repo/ui/components';
@@ -12,10 +12,13 @@ interface IntergrationProps {
   onChange?: (value: MiscellaneousChange) => void;
 }
 
-const posOptions = [{ value: 'OKPOS', label: '오케이포스' }];
+const posOptions = [
+  { value: 'NONE', label: '선택 안함' },
+  { value: 'OKPOS', label: '오케이포스' },
+];
 
 export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
-  const [shopPosCode, setShopPosCode] = useState('');
+  const [shopPosCode, setShopPosCode] = useState('NONE');
 
   useEffect(() => {
     if (!shopSetting) {
@@ -33,7 +36,7 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
     onChange({
       shopSetting: {
         shopSeq: shopSetting?.shopSeq,
-        shopPosCode,
+        shopPosCode: shopPosCode as TShopPosCode,
       },
     });
   }, [onChange, shopPosCode, shopSetting?.shopSeq]);

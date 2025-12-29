@@ -18,6 +18,7 @@ export const useGetCardApprovalHistory = (
   return useQuery<TGetCardApprovalHistoryResponse, AxiosError<IApiError>>({
     queryKey: queryKeys.sales.cardApprovalHistory(
       params.shopCode,
+      params.cardCode,
       params.startDate,
       params.endDate,
       params.pageNumber ?? 0,

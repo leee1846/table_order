@@ -39,6 +39,7 @@ export const ENDPOINTS = {
     INDEX_UPDATE: '/category/index',
     HIDDEN: '/category/hidden',
     FIRST_ORDER: '/category/first-order',
+    EXCEPT_TABLE: (shopCode: string) => `/category/except-table/${shopCode}`,
     MENUBOARD_LIST: (shopCode: string) => `/menuboard/${shopCode}`,
   },
 

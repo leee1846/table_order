@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { RadioButton } from '@repo/ui/components';
 import * as S from '@/pages/settings/MenuScreenPage/ScreenMode/screenMode.style';
-import { theme } from '@repo/ui';
+import LightModeImage from '@/pages/settings/MenuScreenPage/ScreenMode/assets/light_mode.svg';
+import DarkModeImage from '@/pages/settings/MenuScreenPage/ScreenMode/assets/dark_mode.svg';
 
 export const ScreenMode = () => {
   const [selectedMode, setSelectedMode] = useState<'light' | 'dark'>('light');
@@ -12,11 +13,7 @@ export const ScreenMode = () => {
       <S.Modes>
         <button type="button" onClick={() => setSelectedMode('light')}>
           <S.ModePreview>
-            <S.PreviewContent light>
-              <S.PreviewBlock />
-              <S.PreviewBlock />
-              <S.PreviewScrollBar />
-            </S.PreviewContent>
+            <S.PreviewImage src={LightModeImage} alt="라이트 모드 미리보기" />
           </S.ModePreview>
           <RadioButton
             value="light"
@@ -28,11 +25,7 @@ export const ScreenMode = () => {
         </button>
         <button type="button" onClick={() => setSelectedMode('dark')}>
           <S.ModePreview>
-            <S.PreviewContent dark>
-              <S.PreviewBlock />
-              <S.PreviewBlock />
-              <S.PreviewScrollBar />
-            </S.PreviewContent>
+            <S.PreviewImage src={DarkModeImage} alt="다크 모드 미리보기" />
           </S.ModePreview>
           <RadioButton
             value="dark"
@@ -46,4 +39,3 @@ export const ScreenMode = () => {
     </S.Container>
   );
 };
-

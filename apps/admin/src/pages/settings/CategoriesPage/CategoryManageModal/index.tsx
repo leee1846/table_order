@@ -79,7 +79,7 @@ export const CategoryManageModal = ({
 
   // 언어 선택 상태
   const [selectedLanguageCode, setSelectedLanguageCode] = useState<
-    'KO' | 'JP' | 'CH' | 'EN' | null
+    'KO' | 'JP' | 'CH' | 'EN' | 'RU'
   >('KO');
 
   // 판매 시간 설정
@@ -176,7 +176,7 @@ export const CategoryManageModal = ({
           isStaffCall,
           categoryDescription: categoryDescription || null,
           isFirstOrderRequired: false,
-          selectedLanguageCode: selectedLanguageCode || null,
+          selectedLanguageCode: selectedLanguageCode,
           useSaleDay,
           useSaleTime,
         });
@@ -205,11 +205,12 @@ export const CategoryManageModal = ({
                   { value: 'JP', label: '일본어' },
                   { value: 'CH', label: '중국어' },
                   { value: 'EN', label: '영어' },
+                  { value: 'RU', label: '러시아어' },
                 ]}
                 value={selectedLanguageCode}
                 onChange={(value) =>
                   setSelectedLanguageCode(
-                    value as 'KO' | 'JP' | 'CH' | 'EN' | null
+                    value as 'KO' | 'JP' | 'CH' | 'EN' | 'RU'
                   )
                 }
               />

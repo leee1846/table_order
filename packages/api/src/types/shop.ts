@@ -81,7 +81,7 @@ export type TMenuboardTemplateType =
   | 'DEFAULT'
   | 'VERTICAL_TEXT'
   | 'VERTICAL_IMAGE';
-export type TShopPosCode = 'OKPOS';
+export type TShopPosCode = 'NONE' | 'OKPOS';
 export type TShopCardTerminalCode = 'VIRTUAL' | 'EASY' | 'NO_BUTTON';
 export type TShopLanguage = 'KO' | 'EN' | 'JP' | 'CH' | 'RU';
 

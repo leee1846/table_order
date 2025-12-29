@@ -1,7 +1,7 @@
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
-import { ChevronForwardIcon, CloseIcon } from '@repo/ui/icons';
-import type { IMenu } from '@repo/api/types';
+import { ChevronForwardIcon, CloseIcon, LanguageIcon } from '@repo/ui/icons';
+import type { IMenu, TShopLanguage } from '@repo/api/types';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/menuManageModal.style';
 import { BasicSetting } from './BasicSetting';
 import { OptionSetting } from './OptionSetting';
@@ -17,10 +17,25 @@ interface Props {
   onClose: () => void;
 }
 
+const languageOptions: { value: TShopLanguage; label: string }[] = [
+  { value: 'KO', label: '한국어' },
+  { value: 'EN', label: '영어' },
+  { value: 'JP', label: '일본어' },
+  { value: 'CH', label: '중국어' },
+  { value: 'RU', label: '러시아어' },
+];
+
 const MenuManageModalContent = () => {
-  const { mode, menu, onClose, handleSubmit } = useMenuManageModal();
+  const { mode, menu, onClose, handleSubmit, formValues, updateFormValues } =
+    useMenuManageModal();
 
   const modalTitle = mode === 'create' ? '메뉴 추가' : '메뉴 수정';
+  const selectedLanguageCode =
+    (formValues.selectedLanguageCode as TShopLanguage) || 'KO';
+
+  const handleLanguageChange = (languageCode: TShopLanguage) => {
+    updateFormValues({ selectedLanguageCode: languageCode });
+  };
 
   return (
     <S.Container>
@@ -46,6 +61,29 @@ const MenuManageModalContent = () => {
           <CloseIcon width={42} height={42} color={theme.colors.grey[500]} />
         </button>
       </S.Header>
+
+      {mode === 'edit' && (
+        <S.LanguageSelector>
+          <LanguageIcon width={20} height={20} color={theme.colors.grey[600]} />
+          <S.LanguageTabs>
+            {languageOptions.map((option) => (
+              <S.LanguageTab
+                key={option.value}
+                type="button"
+                isSelected={selectedLanguageCode === option.value}
+                onClick={() => handleLanguageChange(option.value)}
+              >
+                {option.label}
+              </S.LanguageTab>
+            ))}
+          </S.LanguageTabs>
+          <ChevronForwardIcon
+            color={theme.colors.grey[400]}
+            width={20}
+            height={20}
+          />
+        </S.LanguageSelector>
+      )}
 
       <BasicSetting />
       <OptionSetting />
