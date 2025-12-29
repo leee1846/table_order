@@ -59,7 +59,6 @@ export const PaymentsModal = ({
       return;
     }
 
-    // onClose();
     openNextModal();
   };
 
