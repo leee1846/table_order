@@ -118,7 +118,6 @@ export interface IShopSetting {
   shopCardTerminalCode: TShopCardTerminalCode;
   shopLanguage: TShopLanguage;
   useLocaleBeforeOrder: boolean;
-  isMenuThreeColumnLayout: boolean;
   usePrepayment: boolean;
   usePrepaymentDutch: boolean;
   usePrepaymentDeferredPayment: boolean;

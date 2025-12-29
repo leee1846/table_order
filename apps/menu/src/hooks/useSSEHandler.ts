@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
 import { SSE_KEYS } from '@/constants/keys';
@@ -57,7 +57,16 @@ export const useSSEHandler = () => {
     skipInitialRequest: true,
   });
 
-  const { setData: setPickupAlarm } = usePickupAlarmStore();
+  const { data: pickupAlarmData, setData: setPickupAlarm } =
+    usePickupAlarmStore();
+
+  // 픽업 알림 상태를 ref로 관리 (dependency 변경 방지)
+  const pickupAlarmStateRef = useRef(pickupAlarmData.showPickupAlarm);
+
+  // pickupAlarmData 변경 시 ref 업데이트
+  useEffect(() => {
+    pickupAlarmStateRef.current = pickupAlarmData.showPickupAlarm;
+  }, [pickupAlarmData.showPickupAlarm]);
 
   const refetchCurrentTableList = useCallback(
     (shopCode: string) => {
@@ -164,6 +173,11 @@ export const useSSEHandler = () => {
       return;
     }
 
+    // 이미 팝업이 표시 중이면 중복 실행 방지 (ref 사용으로 dependency 변경 없음)
+    if (pickupAlarmStateRef.current) {
+      return;
+    }
+
     const currentTableNumber = currentDeviceData.tableNumber;
     const pickupDataByTable = sseMessage.data as { [key: string]: string };
 
@@ -177,7 +191,6 @@ export const useSSEHandler = () => {
       showPickupAlarm: true,
       pickupAlertMessage,
     });
-
     SystemControl.playSound({ type: 'dingdong' });
   }, [currentDeviceData?.tableNumber, sseMessage?.data, setPickupAlarm]);
 
@@ -218,7 +231,6 @@ export const useSSEHandler = () => {
   const handleDeviceAppUpdateMessage = useCallback(() => {
     handleDeviceControlMessage(() => {
       // TODO: 앱 업데이트 브릿지 호출 필요
-      console.log('업데이트!!!');
     });
   }, [handleDeviceControlMessage]);
 
