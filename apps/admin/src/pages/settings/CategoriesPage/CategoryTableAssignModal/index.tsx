@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useGetTableGroupList } from '@repo/api/queries';
+import {
+  useGetCategoryExceptTableList,
+  useGetTableGroupList,
+} from '@repo/api/queries';
 import type { ITableInfo } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
 import * as S from './categoryTableAssignModal.style';
@@ -12,12 +15,14 @@ import {
 
 interface Props {
   categoryName: string;
+  categorySeq: number;
   onClose: () => void;
   initialSelectedTableNumbers?: string[];
   onSave?: (tableNumbers: string[]) => void | Promise<void>;
 }
 
 export const CategoryTableAssignModal = ({
+  categorySeq,
   onClose,
   initialSelectedTableNumbers = [],
   onSave,
@@ -26,6 +31,16 @@ export const CategoryTableAssignModal = ({
   const { data: tableGroupResponse } = useGetTableGroupList(
     { shopCode: shopCode ?? '' },
     { enabled: !!shopCode }
+  );
+
+  const { data: categoryExceptTableResponse } = useGetCategoryExceptTableList(
+    {
+      shopCode: shopCode ?? '',
+      categorySeq,
+    },
+    {
+      enabled: !!shopCode,
+    }
   );
 
   const tableGroups = tableGroupResponse?.data ?? [];
@@ -37,8 +52,15 @@ export const CategoryTableAssignModal = ({
 
   // 외부에서 선택 값이 바뀌면 동기화
   useEffect(() => {
+    if (categoryExceptTableResponse?.data) {
+      setSelectedTableNumbers(
+        new Set(categoryExceptTableResponse.data.map((item) => item.tableNumber))
+      );
+      return;
+    }
+
     setSelectedTableNumbers(new Set(initialSelectedTableNumbers));
-  }, [initialSelectedTableNumbers]);
+  }, [categoryExceptTableResponse?.data, initialSelectedTableNumbers]);
 
   // 테이블 그룹 조회 후 기본 선택 설정
   useEffect(() => {

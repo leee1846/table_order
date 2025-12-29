@@ -20,6 +20,14 @@ export const queryKeys = {
     all: ['category'] as const,
     /** 카테고리 리스트 조회 */
     list: () => [...queryKeys.category.all, 'list'] as const,
+    /** 카테고리별 테이블 블랙리스트 조회 */
+    exceptTable: (shopCode: string, categorySeq: number | string) =>
+      [
+        ...queryKeys.category.all,
+        'exceptTable',
+        shopCode,
+        categorySeq,
+      ] as const,
     /** 메뉴 목록을 포함하는 모든 카테고리 목록 조회 */
     menuboardList: (shopCode: string, tableNumber: string) =>
       [
@@ -75,6 +83,19 @@ export const queryKeys = {
     /** 디바이스 리스트 조회 */
     list: (shopCode: string) =>
       [...queryKeys.device.all, 'list', shopCode] as const,
+    /** 디바이스 리스트 조회 (페이징) */
+    listWithPagination: (
+      shopCode: string,
+      pageNumber: number,
+      pageSize: number
+    ) =>
+      [
+        ...queryKeys.device.all,
+        'listWithPagination',
+        shopCode,
+        pageNumber,
+        pageSize,
+      ] as const,
   },
 
   notice: {

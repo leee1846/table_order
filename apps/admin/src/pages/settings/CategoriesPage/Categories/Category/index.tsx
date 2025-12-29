@@ -151,6 +151,9 @@ export const Category = ({ category, shopSeq }: Props) => {
       categorySeq: category.categorySeq,
       tableNumberList: tableNumbers,
     });
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.category.exceptTable(shopCode, category.categorySeq),
+    });
     setAssignedTableNumbers(tableNumbers);
     toast('카테고리 테이블 지정이 저장되었습니다.');
   };
@@ -245,6 +248,7 @@ export const Category = ({ category, shopSeq }: Props) => {
       {isTableAssignModalOpen && (
         <CategoryTableAssignModal
           categoryName={category.categoryName}
+          categorySeq={category.categorySeq}
           initialSelectedTableNumbers={assignedTableNumbers}
           onClose={() => setIsTableAssignModalOpen(false)}
           onSave={handleSaveTableAssign}

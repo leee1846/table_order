@@ -30,3 +30,21 @@ export interface IGetDeviceListItem extends IDevice {
 }
 
 export type TGetDeviceListResponse = IApiResponse<IGetDeviceListItem[]>;
+
+export interface IGetDeviceListWithPaginationParams {
+  shopCode: string;
+  /**
+   * 0부터 시작
+   */
+  pageNumber?: number;
+  pageSize?: number;
+}
+
+export interface IDeviceListWithPagination {
+  currentPageNumber: number;
+  totalPageNumber: number;
+  deviceList: IGetDeviceListItem[];
+}
+
+export type TGetDeviceListWithPaginationResponse =
+  IApiResponse<IDeviceListWithPagination>;

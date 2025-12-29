@@ -7,4 +7,6 @@ export interface TableWithStatus {
   orderTime?: string | null;
   menuItems?: Array<{ name: string; quantity: number }> | null;
   hasOrder: boolean;
+  customerCount?: number;
+  kidsCustomerCount?: number;
 }

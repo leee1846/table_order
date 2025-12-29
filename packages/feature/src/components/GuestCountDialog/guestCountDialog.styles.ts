@@ -10,9 +10,7 @@ export const DialogContainer = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  width: 90%;
-  max-width: 480px;
-  min-width: 320px;
+  width: 640px;
 `;
 
 export const CloseButton = styled.button`
@@ -50,37 +48,37 @@ export const Header = styled.div`
 export const Title = styled.h3`
   ${TYPOGRAPHY.MT_1}
   color: ${colors.grey[800]};
-  margin: 0;
 `;
 
 export const CounterSection = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 export const Label = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;
 `;
 
 export const LabelText = styled.span`
-  ${TYPOGRAPHY.ST_1}
+  ${TYPOGRAPHY.MT_1}
   color: ${colors.grey[800]};
-`;
-
-export const LabelSubtext = styled.span`
-  ${TYPOGRAPHY.CT_1}
-  color: ${colors.grey[600]};
 `;
 
 export const NumberInputWrapper = styled.div`
   display: flex;
-  justify-content: center;
   align-items: center;
+  flex: 1.5;
   width: 100%;
+
+  > div {
+    width: 100%;
+    max-width: 100%;
+  }
 `;
 
 export const Footer = styled.div`

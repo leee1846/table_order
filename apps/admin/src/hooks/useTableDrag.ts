@@ -7,7 +7,6 @@ import {
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
-import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 
 type TableWithStatus = {
   tableNumber: string;
@@ -41,7 +40,6 @@ export const useTableDrag = ({
   const [activeTableNumber, setActiveTableNumber] = useState<string | null>(
     null
   );
-  const { data: customerCounts, setData, clearData } = useCustomerCountStore();
   const queryClient = useQueryClient();
   const moveOrderMutation = usePutMoveOrderTable();
   const shareOrderMutation = usePutShareOrderTable();
@@ -85,15 +83,6 @@ export const useTableDrag = ({
       if (!targetTable.hasOrder) {
         moveOrderMutation.mutate(payload, {
           onSuccess: () => {
-            const sourceCount = customerCounts[Number(sourceId)];
-            if (sourceCount) {
-              // 이동한 테이블에 기존 고객 수 저장
-              setData(targetId, {
-                adultCount: sourceCount.adultCount,
-                childCount: sourceCount.childCount ?? 0,
-              });
-            }
-            clearData(sourceId); // 이동한 테이블 고객 수 초기화
             queryClient.invalidateQueries({
               queryKey: queryKeys.orders.currentTableList(shopCode),
             });
@@ -108,19 +97,6 @@ export const useTableDrag = ({
 
       shareOrderMutation.mutate(payload, {
         onSuccess: () => {
-          const sourceCount = customerCounts[sourceId]; // active 테이블 고객 수
-          const targetCount = customerCounts[targetId]; // over 테이블 고객 수
-          const adultCount =
-            (targetCount?.adultCount ?? 0) + (sourceCount?.adultCount ?? 0);
-          const childCount =
-            (targetCount?.childCount ?? 0) + (sourceCount?.childCount ?? 0);
-
-          // 합석 시 두 테이블의 객수를 합산해 저장하고, 원본 테이블은 초기화한다.
-          setData(targetId, {
-            adultCount,
-            childCount,
-          });
-          clearData(sourceId);
           queryClient.invalidateQueries({
             queryKey: queryKeys.orders.currentTableList(shopCode),
           });
@@ -137,9 +113,6 @@ export const useTableDrag = ({
       shareOrderMutation,
       shopCode,
       tableMap,
-      customerCounts,
-      setData,
-      clearData,
     ]
   );
 

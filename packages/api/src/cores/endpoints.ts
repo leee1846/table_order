@@ -74,6 +74,7 @@ export const ENDPOINTS = {
   DEVICE: {
     SHOP: (shopCode: string) => `/device/${shopCode}`,
     LIST: (shopCode: string) => `/device/list/${shopCode}`,
+    LIST_PAGE: (shopCode: string) => `/device/list/page/${shopCode}`,
   },
 
   SSE: {

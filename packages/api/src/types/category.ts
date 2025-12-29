@@ -177,6 +177,25 @@ export interface IUpdateCategoryHiddenParams {
 }
 
 // ============================================================================
+// GET /category/except-table/{shopCode}
+// ============================================================================
+
+export interface IGetCategoryExceptTableParams {
+  shopCode: string;
+  categorySeq: number;
+}
+
+export interface ICategoryExceptTableItem {
+  categorySeq: number;
+  shopSeq: number;
+  tableNumber: string;
+}
+
+export type TGetCategoryExceptTableResponse = IApiResponse<
+  ICategoryExceptTableItem[]
+>;
+
+// ============================================================================
 // POST /category/except-table/{shopCode}
 // ============================================================================
 

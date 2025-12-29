@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ModalBackground,
   Pagination,
@@ -9,6 +9,8 @@ import {
 import { CloseIcon, FullBatteryIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
+import { useGetDeviceListWithPagination } from '@repo/api/queries';
+import type { IGetDeviceListItem, TDeviceType } from '@repo/api/types';
 import * as S from './deviceListDialog.style';
 
 const { colors } = theme;
@@ -17,8 +19,8 @@ export type DeviceItem = {
   id: string;
   device: string;
   table: string;
-  battery: number;
-  wifiSignal: number;
+  battery: number | null;
+  wifiSignal: string | number | null;
   ip: string;
   version: string;
   buildNumber: string;
@@ -27,62 +29,135 @@ export type DeviceItem = {
 export type DeviceListDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  devices?: DeviceItem[];
+  shopCode?: string;
   itemsPerPage?: number;
 };
 
-const mockDevices: DeviceItem[] = [
-  {
-    id: '1',
-    device: '키오스크-01',
-    table: '테이블-01',
-    battery: 85,
-    wifiSignal: 4,
-    ip: '192.168.1.100',
-    version: '1.2.3',
-    buildNumber: '20240115',
-  },
-  {
-    id: '2',
-    device: '키오스크-02',
-    table: '테이블-02',
-    battery: 92,
-    wifiSignal: 5,
-    ip: '192.168.1.101',
-    version: '1.2.3',
-    buildNumber: '20240115',
-  },
-  {
-    id: '3',
-    device: '태블릿-01',
-    table: '테이블-03',
-    battery: 45,
-    wifiSignal: 2,
-    ip: '192.168.1.102',
-    version: '1.2.2',
-    buildNumber: '20240110',
-  },
-];
+const DEVICE_TYPE_LABELS: Record<TDeviceType, string> = {
+  ORDER_POS: '오더포스',
+  POS_APP: '포스앱',
+  MENU: '메뉴판',
+};
+
+const getDeviceLabel = (device: IGetDeviceListItem) => {
+  const baseLabel = DEVICE_TYPE_LABELS[device.deviceType] ?? '기기';
+
+  if (device.deviceType === 'MENU' && device.tableNumber) {
+    return `${baseLabel} ${device.tableNumber}`;
+  }
+
+  if (
+    device.deviceType === 'ORDER_POS' &&
+    device.orderPosNumber !== null &&
+    device.orderPosNumber !== undefined
+  ) {
+    return `${baseLabel} ${device.orderPosNumber}`;
+  }
+
+  return baseLabel;
+};
+
+const formatWifiSignal = (signal: DeviceItem['wifiSignal']) => {
+  if (signal === null || signal === undefined || signal === '') {
+    return '-';
+  }
+
+  const numericSignal = Number(signal);
+  if (!Number.isNaN(numericSignal)) {
+    return `${numericSignal}%`;
+  }
+
+  return String(signal);
+};
 
 export const DeviceListDialog = ({
   isOpen,
   onClose,
-  devices = mockDevices,
   itemsPerPage = 10,
+  shopCode,
 }: DeviceListDialogProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDevices, setSelectedDevices] = useState<Set<string>>(
     new Set()
   );
 
+  useEffect(() => {
+    if (!isOpen) {
+      setCurrentPage(1);
+      setSelectedDevices(new Set());
+    }
+  }, [isOpen, shopCode, itemsPerPage]);
+
+  const {
+    data: deviceListResponse,
+    isFetching,
+    refetch,
+  } = useGetDeviceListWithPagination({
+    shopCode: shopCode ?? '',
+    pageNumber: currentPage - 1,
+    pageSize: itemsPerPage,
+    options: {
+      enabled: false,
+    },
+  });
+
+  useEffect(() => {
+    if (!isOpen || !shopCode) {
+      return;
+    }
+
+    refetch();
+  }, [isOpen, shopCode, currentPage, itemsPerPage, refetch]);
+
+  // API 응답이 배열로 오는 경우 처리
+  const paginationData = useMemo(() => {
+    const data = deviceListResponse?.data;
+    return Array.isArray(data) ? data[0] : data;
+  }, [deviceListResponse]);
+
+  const currentPageFromApi = paginationData?.currentPageNumber;
+
+  useEffect(() => {
+    if (
+      typeof currentPageFromApi === 'number' &&
+      currentPageFromApi + 1 !== currentPage
+    ) {
+      setCurrentPage(currentPageFromApi + 1);
+    }
+  }, [currentPageFromApi, currentPage]);
+
+  const deviceItems = useMemo<DeviceItem[]>(() => {
+    const deviceList = paginationData?.deviceList;
+
+    if (!deviceList || !Array.isArray(deviceList)) {
+      return [];
+    }
+
+    return deviceList.map((device, index) => ({
+      id:
+        device.androidId ??
+        (device.deviceSeq !== undefined && device.deviceSeq !== null
+          ? String(device.deviceSeq)
+          : `device-${index}`),
+      device: getDeviceLabel(device),
+      table: device.tableNumber ?? '-',
+      battery: device.battery ?? null,
+      wifiSignal: device.wifiSignal ?? null,
+      ip: device.ipAddress ?? '-',
+      version: device.version ?? '-',
+      buildNumber: device.buildNumber ?? '-',
+    }));
+  }, [paginationData]);
+
   if (!isOpen) {
     return null;
   }
 
-  const totalPages = Math.ceil(devices.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentDevices = devices.slice(startIndex, endIndex);
+  const totalPages =
+    paginationData?.totalPageNumber && paginationData.totalPageNumber > 0
+      ? paginationData.totalPageNumber
+      : 1;
+  const isInitialLoading = isFetching && !deviceListResponse;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -152,44 +227,78 @@ export const DeviceListDialog = ({
                 </tr>
               </UIStyles.setting.Thead>
               <S.Tbody>
-                {currentDevices.map((device) => (
-                  <tr key={device.id}>
-                    <td>
-                      <S.DeviceCell>
-                        <CheckButton
-                          checked={selectedDevices.has(device.id)}
-                          onChange={() => handleSelectDevice(device.id)}
-                        >
-                          <span>{device.device}</span>
-                        </CheckButton>
-                      </S.DeviceCell>
-                    </td>
-                    <td>{device.table}</td>
-                    <td>
-                      <S.BatteryColumn>
-                        <FullBatteryIcon
-                          width={24}
-                          height={24}
-                          color={colors.grey[800]}
-                        />
-                        <span>{device.battery}%</span>
-                      </S.BatteryColumn>
-                    </td>
-                    <td>양호</td>
-                    <td style={{ color: colors.grey[500] }}>{device.ip}</td>
-                    <td>
-                      <S.VersionColumn>
-                        <span>{device.version}</span>
-                        <ChipButton variant="darkgrey" size="S">
-                          최신
-                        </ChipButton>
-                      </S.VersionColumn>
-                    </td>
-                    <td style={{ color: colors.grey[400] }}>
-                      {device.buildNumber}
+                {isInitialLoading ? (
+                  <tr>
+                    <td
+                      colSpan={7}
+                      style={{
+                        padding: '24px',
+                        textAlign: 'center',
+                        color: colors.grey[600],
+                      }}
+                    >
+                      기기 목록을 불러오는 중입니다.
                     </td>
                   </tr>
-                ))}
+                ) : deviceItems.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={7}
+                      style={{
+                        padding: '24px',
+                        textAlign: 'center',
+                        color: colors.grey[600],
+                      }}
+                    >
+                      표시할 기기가 없어요.
+                    </td>
+                  </tr>
+                ) : (
+                  deviceItems.map((device) => (
+                    <tr key={device.id}>
+                      <td>
+                        <S.DeviceCell>
+                          <CheckButton
+                            checked={selectedDevices.has(device.id)}
+                            onChange={() => handleSelectDevice(device.id)}
+                          >
+                            <span>{device.device}</span>
+                          </CheckButton>
+                        </S.DeviceCell>
+                      </td>
+                      <td>{device.table}</td>
+                      <td>
+                        <S.BatteryColumn>
+                          <FullBatteryIcon
+                            width={24}
+                            height={24}
+                            color={colors.grey[800]}
+                          />
+                          <span>
+                            {device.battery !== null
+                              ? `${device.battery}%`
+                              : '-'}
+                          </span>
+                        </S.BatteryColumn>
+                      </td>
+                      <td>{formatWifiSignal(device.wifiSignal)}</td>
+                      <td style={{ color: colors.grey[500] }}>{device.ip}</td>
+                      <td>
+                        <S.VersionColumn>
+                          <span>{device.version || '-'}</span>
+                          {device.version && (
+                            <ChipButton variant="darkgrey" size="S">
+                              최신
+                            </ChipButton>
+                          )}
+                        </S.VersionColumn>
+                      </td>
+                      <td style={{ color: colors.grey[400] }}>
+                        {device.buildNumber || '-'}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </S.Tbody>
             </UIStyles.setting.Table>
           </S.TableContainer>

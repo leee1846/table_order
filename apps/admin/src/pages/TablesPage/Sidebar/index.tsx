@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { toast } from '@repo/feature/utils';
 import type { ICurrentTable, ITableGroup } from '@repo/api/types';
+import { useAuth } from '@/hooks/useAuth';
 
 type MenuItem = {
   id: string;
@@ -45,6 +46,8 @@ export const Sidebar = ({
   onTableGroupSelect,
 }: SidebarProps) => {
   const navigate = useNavigate();
+
+  const { shopCode } = useAuth();
   const [selectedMenu, setSelectedMenu] = useState<string>('');
   //주문 모달
   const [isOrderListDialogOpen, setIsOrderListDialogOpen] = useState(false);
@@ -182,6 +185,7 @@ export const Sidebar = ({
         }}
       />
       <DeviceListDialog
+        shopCode={shopCode ?? undefined}
         isOpen={isDeviceDialogOpen}
         onClose={() => {
           setIsDeviceDialogOpen(false);

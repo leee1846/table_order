@@ -25,10 +25,7 @@ import {
   useGetTableOrderHistories,
   usePutCancelOrderAll,
 } from '@repo/api/queries';
-import type {
-  ICategoryWithMenus,
-  IGetTableOrderHistories,
-} from '@repo/api/types';
+import type { ICategoryWithMenus, ICurrentTable } from '@repo/api/types';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import type { Order, OrderItem } from './orderSection/types';
 
@@ -123,7 +120,7 @@ export const TableDetailContainer = ({
       };
     }
 
-    const data: IGetTableOrderHistories = orderHistoriesResponse.data;
+    const data: ICurrentTable = orderHistoriesResponse.data;
 
     // orderDetailMenuList를 OrderItem[]로 변환
     const items =

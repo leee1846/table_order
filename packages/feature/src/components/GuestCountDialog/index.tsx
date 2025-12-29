@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ModalBackground, BasicButton, NumberInput } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import type { IShopSetting } from '@repo/api/types';
 import * as S from './guestCountDialog.styles';
 
 const { colors } = theme;
@@ -11,33 +12,67 @@ const { colors } = theme;
 export type GuestCountDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (count: number) => void;
-  initialCount?: number;
-  minCount?: number;
-  maxCount?: number;
+  onConfirm: (data: {
+    customerCount: number;
+    kidsCustomerCount?: number;
+  }) => void;
+  shopSetting?: IShopSetting;
+  initialCustomerCount?: number;
+  initialKidsCustomerCount?: number;
 };
 
+/**
+ * 고객 인원 수 입력 모달 컴포넌트
+ * - shopSetting.useKidsCustomerCount가 true면 성인/아동 입력 필드 모두 표시
+ * - shopSetting.useKidsCustomerCount가 false면 인원 수 입력 필드만 표시
+ */
 export const GuestCountDialog = ({
   isOpen,
   onClose,
   onConfirm,
-  initialCount = 1,
-  minCount = 1,
-  maxCount = 99,
+  shopSetting,
+  initialCustomerCount = 1,
+  initialKidsCustomerCount = 0,
 }: GuestCountDialogProps) => {
-  const [count, setCount] = useState(initialCount);
+  const [customerCount, setCustomerCount] = useState(initialCustomerCount);
+  const [kidsCustomerCount, setKidsCustomerCount] = useState(
+    initialKidsCustomerCount
+  );
+
+  const useKidsCustomerCount = shopSetting?.useKidsCustomerCount ?? false;
+
+  // 모달이 열릴 때마다 초기값으로 리셋
+  useEffect(() => {
+    if (isOpen) {
+      setCustomerCount(initialCustomerCount);
+      setKidsCustomerCount(initialKidsCustomerCount);
+    }
+  }, [isOpen, initialCustomerCount, initialKidsCustomerCount]);
 
   if (!isOpen) {
     return null;
   }
 
+  // 성인/아동 모두 사용: 둘 다 0이면 비활성화
+  // 성인만 사용: 성인이 0이면 비활성화
+  const isButtonDisabled = useKidsCustomerCount
+    ? customerCount === 0 && kidsCustomerCount === 0
+    : customerCount === 0;
+
+  /** 확인 버튼 핸들러 - 입력값 전달 */
   const handleConfirm = () => {
-    onConfirm(count);
+    onConfirm(
+      useKidsCustomerCount
+        ? { customerCount, kidsCustomerCount }
+        : { customerCount }
+    );
     onClose();
   };
 
+  /** 닫기 버튼 핸들러 - 초기값으로 리셋 */
   const handleClose = () => {
-    setCount(initialCount);
+    setCustomerCount(initialCustomerCount);
+    setKidsCustomerCount(initialKidsCustomerCount);
     onClose();
   };
 
@@ -50,31 +85,62 @@ export const GuestCountDialog = ({
 
         <S.ContentWrapper>
           <S.Header>
-            <S.Title>입장하는 인원 수를 입력해주세요</S.Title>
+            <S.Title>입장하는 인원 수를 알려주세요</S.Title>
           </S.Header>
 
-          <S.CounterSection>
-            <S.Label>
-              <S.LabelText>인원 수</S.LabelText>
-              <S.LabelSubtext>함께 입장 하는 인원</S.LabelSubtext>
-            </S.Label>
+          {useKidsCustomerCount && (
+            <>
+              <S.CounterSection>
+                <S.Label>
+                  <S.LabelText>성인</S.LabelText>
+                </S.Label>
+                <S.NumberInputWrapper>
+                  <NumberInput
+                    variant="square"
+                    size="L"
+                    value={customerCount}
+                    onChange={setCustomerCount}
+                  />
+                </S.NumberInputWrapper>
+              </S.CounterSection>
 
-            <S.NumberInputWrapper>
-              <NumberInput
-                variant="square"
-                size="L"
-                value={count}
-                min={minCount}
-                max={maxCount}
-                onChange={setCount}
-              />
-            </S.NumberInputWrapper>
-          </S.CounterSection>
+              <S.CounterSection>
+                <S.Label>
+                  <S.LabelText>아동</S.LabelText>
+                </S.Label>
+                <S.NumberInputWrapper>
+                  <NumberInput
+                    variant="square"
+                    size="L"
+                    value={kidsCustomerCount}
+                    onChange={setKidsCustomerCount}
+                  />
+                </S.NumberInputWrapper>
+              </S.CounterSection>
+            </>
+          )}
+
+          {!useKidsCustomerCount && (
+            <S.CounterSection>
+              <S.Label>
+                <S.LabelText>인원 수</S.LabelText>
+              </S.Label>
+              <S.NumberInputWrapper>
+                <NumberInput
+                  variant="square"
+                  size="L"
+                  value={customerCount}
+                  onChange={setCustomerCount}
+                />
+              </S.NumberInputWrapper>
+            </S.CounterSection>
+          )}
 
           <S.Footer>
             <BasicButton
               variant="Solid_Navy_2XL"
               onClick={handleConfirm}
+              disabled={isButtonDisabled}
               fullWidth
             >
               완료

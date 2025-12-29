@@ -4,6 +4,8 @@ import {
   TGetDeviceDetailResponse,
   IPostDeviceDetailRequest,
   TGetDeviceListResponse,
+  IGetDeviceListWithPaginationParams,
+  TGetDeviceListWithPaginationResponse,
 } from '../types/device';
 import { TVoidApiResponse } from '../types/common';
 
@@ -31,7 +33,6 @@ export const postDeviceDetail = async (
   const axiosInstance = getAxiosInstance('private');
 
   const { shopCode, ...rest } = requests;
-  console.log('포스트!!', rest);
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'POST',
     url: ENDPOINTS.DEVICE.SHOP(shopCode),
@@ -42,14 +43,28 @@ export const postDeviceDetail = async (
 };
 
 export const getDeviceList = async (
-  shopCode: string,
-  ignoreGlobalErrors?: number[]
+  shopCode: string
 ): Promise<TGetDeviceListResponse> => {
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TGetDeviceListResponse>({
     method: 'GET',
     url: ENDPOINTS.DEVICE.LIST(shopCode),
-    ignoreGlobalErrors,
+  });
+
+  return response.data;
+};
+
+export const getDeviceListWithPagination = async (
+  params: IGetDeviceListWithPaginationParams
+): Promise<TGetDeviceListWithPaginationResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetDeviceListWithPaginationResponse>({
+    method: 'GET',
+    url: ENDPOINTS.DEVICE.LIST_PAGE(params.shopCode),
+    params: {
+      pageNumber: params.pageNumber ?? 0,
+      pageSize: params.pageSize ?? 10,
+    },
   });
 
   return response.data;

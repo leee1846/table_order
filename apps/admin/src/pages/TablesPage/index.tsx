@@ -6,40 +6,36 @@ import {
   DndContextWrapper,
   DraggableTableCard,
   useTablesData,
-  type TableWithStatus,
   GuestCountDialog,
+  type TableWithStatus,
 } from '@repo/feature/components';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Sidebar } from './Sidebar';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes.ts';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { usePostOrderGroup, queryKeys } from '@repo/api/queries';
 import { useAuth } from '@/hooks/useAuth';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useTableDrag } from '@/hooks/useTableDrag';
 import { useQueryClient } from '@repo/api/tanstack-query';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 export const TablesPage = () => {
-  const { data: shopDetailData } = useShopDetailData();
-  const { data: customerCountData } = useCustomerCountStore();
   const { shopCode } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const postOrderGroupMutation = usePostOrderGroup();
-
-  const [showCustomerCountSelector, setShowCustomerCountSelector] =
-    useState(false);
-
-  const [selectedTable, setSelectedTable] = useState<TableWithStatus | null>(
-    null
-  );
+  const { data: shopDetailData, refresh: refreshShopDetailData } =
+    useShopDetailData();
+  const { shopSetting } = shopDetailData ?? {};
 
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
     number | null
   >(null);
-
-  const navigate = useNavigate();
+  const [isGuestCountDialogOpen, setIsGuestCountDialogOpen] = useState(false);
+  const [selectedTable, setSelectedTable] = useState<TableWithStatus | null>(
+    null
+  );
 
   // 테이블 데이터 조회 (공통 훅 사용)
   const {
@@ -85,108 +81,137 @@ export const TablesPage = () => {
     shopCode,
   });
 
-  const shouldSelectCustomerCount =
-    shopDetailData?.shopSetting?.useCustomerCount ||
-    shopDetailData?.shopSetting?.useKidsCustomerCount;
+  /**
+   * 주문 그룹 생성 및 테이블 디테일 페이지로 이동
+   * - 주문 그룹 생성 API 호출
+   * - 테이블 목록 쿼리 갱신
+   * - 테이블 디테일 페이지로 네비게이션
+   */
+  const createOrderGroupAndNavigate = useCallback(
+    async (
+      tableNumber: string,
+      customerCount: number,
+      kidsCustomerCount: number
+    ) => {
+      if (!shopCode) return false;
 
-  const handleTableClick = (table: TableWithStatus) => {
-    const savedCount = customerCountData?.[table.tableNumber];
+      await postOrderGroupMutation.mutateAsync({
+        shopCode,
+        tableNumber,
+        customerCount,
+        kidsCustomerCount,
+      });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.currentTableList(shopCode),
+      });
+      navigate(ROUTES.TABLE_DETAIL.generate(tableNumber));
+      return true;
+    },
+    [shopCode, postOrderGroupMutation, queryClient, navigate]
+  );
 
-    if (!shouldSelectCustomerCount || savedCount) {
-      void handleNavigateWithOrderCheck(table);
-      return;
-    }
-    //TODO 고객 수 팝업 이후 깜빡임 현상
-    setShowCustomerCountSelector(true);
-
-    setSelectedTable(table);
-  };
-
-  const handleNavigateWithOrderCheck = async (table: TableWithStatus) => {
-    if (!shopCode) {
-      navigate(ROUTES.TABLE_DETAIL.generate(table.tableNumber));
-      return;
-    }
-
-    const savedCount = customerCountData?.[table.tableNumber];
-    const customerCount = savedCount?.adultCount ?? 1;
-    const kidsCustomerCount =
-      shopDetailData?.shopSetting?.useKidsCustomerCount && savedCount
-        ? (savedCount.childCount ?? 0)
-        : 0;
-
-    try {
-      if (!table.hasOrder) {
-        await postOrderGroupMutation.mutateAsync({
-          shopCode,
-          tableNumber: table.tableNumber,
-          customerCount,
-          kidsCustomerCount,
-        });
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.orders.currentTableList(shopCode),
-        });
+  /**
+   * 테이블 클릭 핸들러
+   * 1. 주문이 있고, 고객 수가 있는 테이블: 바로 디테일 페이지로 이동
+   * 2. 주문이 없는 테이블:
+   *    - useCustomerCount가 true: 인원 수 입력 모달 열기
+   *    - useCustomerCount가 false: 기본값(1, 0)으로 주문 그룹 생성 후 이동
+   */
+  const handleTableClick = useCallback(
+    async (table: TableWithStatus) => {
+      // shopDetailData refetch
+      await refreshShopDetailData();
+      // 주문이 있는 테이블은 바로 디테일 페이지로 이동
+      if (table.hasOrder) {
+        navigate(ROUTES.TABLE_DETAIL.generate(table.tableNumber));
+        return;
       }
 
-      navigate(ROUTES.TABLE_DETAIL.generate(table.tableNumber));
-    } catch (_error) {
-      // 주문 그룹이 생성되지 않으면 디테일 페이지로 이동하지 않도록 방어
-    }
-  };
+      // 고객 수 입력이 필요한 경우 모달 열기
+      if (shopSetting?.useCustomerCount) {
+        setSelectedTable(table);
+        setIsGuestCountDialogOpen(true);
+      } else {
+        // 고객 수 입력이 필요없는 경우 기본값으로 주문 그룹 생성
+        await createOrderGroupAndNavigate(table.tableNumber, 1, 0);
+      }
+    },
+    [
+      shopCode,
+      shopSetting?.useCustomerCount,
+      navigate,
+      createOrderGroupAndNavigate,
+      refreshShopDetailData,
+    ]
+  );
+
+  /**
+   * 인원 수 입력 모달 확인 핸들러
+   * - 입력받은 인원 수로 주문 그룹 생성 후 디테일 페이지로 이동
+   * - 모달 닫기 및 상태 초기화
+   */
+  const handleGuestCountConfirm = useCallback(
+    async (data: { customerCount: number; kidsCustomerCount?: number }) => {
+      if (!selectedTable) return;
+
+      await createOrderGroupAndNavigate(
+        selectedTable.tableNumber,
+        data.customerCount,
+        data.kidsCustomerCount ?? 0
+      );
+
+      setIsGuestCountDialogOpen(false);
+      setSelectedTable(null);
+    },
+    [selectedTable, createOrderGroupAndNavigate]
+  );
+
+  /** 인원 수 입력 모달 닫기 핸들러 */
+  const handleGuestCountClose = useCallback(() => {
+    setIsGuestCountDialogOpen(false);
+    setSelectedTable(null);
+  }, []);
 
   if (isLoadingTables || !shopCode) {
     return <FullscreenLoadingSpinner />;
   }
 
   return (
-    <>
-      <DndContextWrapper
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        onDragCancel={handleDragCancel}
-        longPressDelay={350}
-      >
-        <TablesPageContainer>
-          <TableCardsArea>
-            <TableCardsGrid>
-              {tables.map((table) => (
-                <DraggableTableCard
-                  key={table.id}
-                  table={table}
-                  activeTableNumber={activeTableNumber}
-                  onClick={handleTableClick}
-                  useTranslation={useTranslation}
-                />
-              ))}
-            </TableCardsGrid>
-          </TableCardsArea>
-          <Sidebar
-            currentTableList={currentTableListResponse?.data}
-            tableGroups={tableGroupListResponse?.data ?? []}
-            selectedTableGroupSeq={selectedTableGroupSeq}
-            onTableGroupSelect={setSelectedTableGroupSeq}
-          />
-        </TablesPageContainer>
-      </DndContextWrapper>
-      {showCustomerCountSelector && selectedTable !== null && (
-        <GuestCountDialog
-          isOpen={showCustomerCountSelector}
-          onClose={() => setShowCustomerCountSelector(false)}
-          onConfirm={async () => {
-            await handleNavigateWithOrderCheck(selectedTable);
-            setShowCustomerCountSelector(false);
-            void handleNavigateWithOrderCheck(selectedTable);
-          }}
+    <DndContextWrapper
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+      longPressDelay={350}
+    >
+      <TablesPageContainer>
+        <TableCardsArea>
+          <TableCardsGrid>
+            {tables.map((table) => (
+              <DraggableTableCard
+                key={table.id}
+                table={table}
+                activeTableNumber={activeTableNumber}
+                onClick={handleTableClick}
+                useTranslation={useTranslation}
+              />
+            ))}
+          </TableCardsGrid>
+        </TableCardsArea>
+        <Sidebar
+          currentTableList={currentTableListResponse?.data}
+          tableGroups={tableGroupListResponse?.data ?? []}
+          selectedTableGroupSeq={selectedTableGroupSeq}
+          onTableGroupSelect={setSelectedTableGroupSeq}
         />
-
-        // <GuestCountDialog
-        //   tableNumber={selectedTable.tableNumber}
-        //   onComplete={async () => {
-        //     await handleNavigateWithOrderCheck(selectedTable);
-        //     setShowCustomerCountSelector(false);
-        //   }}
-        // />
-      )}
-    </>
+      </TablesPageContainer>
+      <GuestCountDialog
+        isOpen={isGuestCountDialogOpen}
+        onClose={handleGuestCountClose}
+        onConfirm={handleGuestCountConfirm}
+        shopSetting={shopSetting}
+        initialCustomerCount={1}
+        initialKidsCustomerCount={0}
+      />
+    </DndContextWrapper>
   );
 };

@@ -191,19 +191,7 @@ export interface IOrderHistory {
   optionList: IOrderHistoryOption[];
 }
 
-export interface IGetTableOrderHistories {
-  orderGroupUuid: string;
-  totalAmount: number;
-  tableNumber: string;
-  createDate: string;
-  updateDate: string;
-  discountRate: number;
-  // empty array일 경우, 고객 착석 & 주문내역이 없음.
-  orderDetailMenuList: IOrderHistory[];
-}
-
-export type TGetTableOrderHistoriesResponse =
-  IApiResponse<IGetTableOrderHistories | null>;
+export type TGetTableOrderHistoriesResponse = IApiResponse<ICurrentTable>;
 
 export interface IGetTableOrderHistoriesParams {
   shopCode: string;
@@ -227,6 +215,7 @@ export interface ITableCurrentStatusOption {
 export interface ITableCurrentStatus {
   orderGroupUuid: string;
   orderDetailMenuSeq: number;
+  menuSeq: number;
   menuName: string;
   menuPrice: number;
   menuQuantity: number;
@@ -243,6 +232,8 @@ export interface ICurrentTable {
   updateDate: string;
   discountRate: number | null;
   totalAmount: number | null;
+  customerCount: number | null;
+  kidsCustomerCount: number;
   orderDetailMenuList: ITableCurrentStatus[];
 }
 

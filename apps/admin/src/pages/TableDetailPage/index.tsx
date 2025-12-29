@@ -6,7 +6,6 @@ import {
 } from '@repo/feature/components';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import * as S from './tableDetailPage.style';
-import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useAuth } from '@/hooks/useAuth';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import {
@@ -19,9 +18,9 @@ import { calculateTotalAmount } from '@repo/util/calculation';
 
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
-  const { data: customerCountData } = useCustomerCountStore();
   const { shopCode } = useAuth();
   const { data: shopDetailData } = useShopDetailData();
+  console.log('shopDetailData', shopDetailData);
   const queryClient = useQueryClient();
   const { mutateAsync: createTableOrder } = usePostTableOrder();
 
@@ -36,17 +35,10 @@ export const TableDetailPage = () => {
       }
     );
 
-  const customerCount = tableNum ? customerCountData[Number(tableNum)] : null;
-
-  const adultCount = customerCount?.adultCount ?? 0;
-  const childCount = customerCount?.childCount ?? 0;
-
-  const numberOfPeople = useMemo(() => {
-    if (!customerCount) {
-      return 0;
-    }
-    return (customerCount.adultCount || 0) + (customerCount.childCount || 0);
-  }, [customerCount]);
+  // TODO: 서버에서 오는 데이터로 대체
+  const numberOfPeople = 0;
+  const adultCount = 1;
+  const childCount = 0;
 
   const useCustomerCount = useMemo(() => {
     // undefined 면 false 반환, 옵셔널 체이닝 처리
