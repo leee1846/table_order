@@ -22,7 +22,7 @@ import { useAdminAccessControl } from '@/pages/MainPage/hooks/useAdminAccessCont
 import { useFirstOrderRequiredCheck } from '@/pages/MainPage/hooks/useFirstOrderRequiredCheck';
 import { useBreakTimeCartClear } from '@/pages/MainPage/hooks/useBreakTimeCartClear';
 import { useCategoryVisibilityManager } from '@/hooks/useCategoryVisibilityManager';
-import { useShopPageSettingData } from '@/hooks/useShopPageSettingData';
+import { useShopThemePage } from '@/hooks/useShopThemePage';
 
 export const MainPage = () => {
   useShopData();
@@ -35,7 +35,7 @@ export const MainPage = () => {
     nonStaffCallCategories,
   } = useCategoriesData();
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
-  useShopPageSettingData();
+  useShopThemePage();
 
   const orderHistories =
     tableOrderHistoriesData && tableOrderHistoriesData !== 'isEmptyTable'

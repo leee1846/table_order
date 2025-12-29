@@ -3,36 +3,41 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import * as S from '@/pages/MainPage/InitialPage/initialPage.style';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
-import { useShopPageSettingData } from '@/hooks/useShopPageSettingData';
+import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { NoContent } from '@/feature/NoContent';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 export const InitialPage = () => {
+  const { t } = useCustomerTranslation();
+
   const { data: shopDetailData } = useShopDetailData();
   const { hideInitialPage } = useInitialPageStore();
-  const { data: shopPageSettingData } = useShopPageSettingData();
-  const { pageSettingData } = shopPageSettingData;
+  const { data: shopPageSettingData } = useShopThemePage();
+  const { themePageData } = shopPageSettingData;
 
-  if (!shopDetailData || !pageSettingData) {
+  if (!shopDetailData || !themePageData) {
     return null;
   }
 
-  const hasEnoughSlides = pageSettingData.shopPageDetailList.length >= 2;
-  const initPageLayout = pageSettingData.initPageLayout;
-  const detailImageList = pageSettingData.shopPageDetailList.filter(
+  const hasEnoughSlides = themePageData.shopPageDetailList.length >= 2;
+  const initPageLayout = themePageData.initPageLayout;
+  const detailImageList = themePageData.shopPageDetailList.filter(
     (item) => item.pageDetailType === 'INIT_COMMON'
   );
 
   const getShopDetail = (layout: 'LIGHT' | 'DARK') => {
     const pageDetailType = layout === 'LIGHT' ? 'INIT_LIGHT' : 'INIT_DARK';
 
-    return pageSettingData.shopPageDetailList.find(
+    return themePageData.shopPageDetailList.find(
       (item) => item.pageDetailType === pageDetailType
     );
   };
 
   if (!detailImageList || detailImageList.length === 0) {
     return (
-      <NoContent paddingTop="25%">초기화면 이미지를 등록해주세요.</NoContent>
+      <NoContent paddingTop="25%">
+        {t('초기화면 이미지를 등록해주세요.')}
+      </NoContent>
     );
   }
 
@@ -49,7 +54,7 @@ export const InitialPage = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-        <S.Notice>주문을 시작하려면 화면을 터치해 주세요.</S.Notice>
+        <S.Notice>{t('주문을 시작하려면 화면을 터치해 주세요.')}</S.Notice>
       </S.Container>
     );
   }
@@ -75,7 +80,7 @@ export const InitialPage = () => {
                   {detailImage.pageDetailDescription}
                 </S.Description>
                 <S.SmallNotice initPageLayout={initPageLayout}>
-                  주문을 시작하려면 화면을 터치해 주세요.
+                  {t('주문을 시작하려면 화면을 터치해 주세요.')}
                 </S.SmallNotice>
               </S.LeftContainer>
               {/* 상세 이미지 */}

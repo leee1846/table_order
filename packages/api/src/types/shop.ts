@@ -170,15 +170,6 @@ export interface IGetShop extends IGetShopItem {
 
 export type TGetShopResponse = IApiResponse<IGetShop>;
 
-export interface IGetShopPageSetting {
-  shopSeq: number;
-  initPageLayout: TInitPageLayout;
-  orderCompletePageLayout: TOrderCompletePageLayout;
-  shopPageDetailList: IShopPageDetail[];
-}
-
-export type TGetShopPageSettingResponse = IApiResponse<IGetShopPageSetting>;
-
 export interface IUpdateShopSettingRequest extends IGetShop {
   shopSetting: IShopSetting;
   shopTime: IShopTime;

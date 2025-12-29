@@ -3,7 +3,6 @@ import { ENDPOINTS } from '../cores/endpoints';
 import type {
   TGetShopsResponse,
   TGetShopResponse,
-  TGetShopPageSettingResponse,
   IUpdateShopSettingRequest,
   TUpdateShopSettingResponse,
   TGetShopThemeMenuResponse,
@@ -27,18 +26,6 @@ export const getShopDetail = async (
   const response = await axiosInstance<TGetShopResponse>({
     method: 'GET',
     url: ENDPOINTS.SHOP.DETAIL(shopCode),
-  });
-
-  return response.data;
-};
-
-export const getShopPageSetting = async (
-  shopCode: string
-): Promise<TGetShopPageSettingResponse> => {
-  const axiosInstance = getAxiosInstance('private');
-  const response = await axiosInstance<TGetShopPageSettingResponse>({
-    method: 'GET',
-    url: ENDPOINTS.SHOP.PAGE_SETTING(shopCode),
   });
 
   return response.data;

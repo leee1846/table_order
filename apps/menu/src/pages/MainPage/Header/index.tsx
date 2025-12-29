@@ -13,7 +13,7 @@ import { TIMER_KEYS } from '@/constants/keys';
 import type { UseBreakTimeReturn } from '@/hooks/useBreakTime';
 import type { UseShopClosureReturn } from '@/hooks/useShopClosure';
 import { useModalStore } from '@/stores/useModalStore';
-import { useShopPageSettingData } from '@/hooks/useShopPageSettingData';
+import { useShopThemePage } from '@/hooks/useShopThemePage';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -35,8 +35,8 @@ export const Header = ({
 
   const { data: deviceData } = useDeviceData();
   const { data: shopDetailData } = useShopDetailData();
-  const { data: shopPageSettingData } = useShopPageSettingData();
-  const { ShopThemeData } = shopPageSettingData;
+  const { data: shopPageSettingData } = useShopThemePage();
+  const { shopThemeData } = shopPageSettingData;
 
   const { data: modalData, setModalData } = useModalStore();
   const clickCountRef = useRef(0);
@@ -245,7 +245,7 @@ export const Header = ({
       <S.Header>
         <S.LeftContent>
           <button type="button" onClick={handleLogoClick}>
-            <img src={ShopThemeData?.logoImagePath ?? ''} alt="logo" />
+            <img src={shopThemeData?.logoImagePath ?? ''} alt="logo" />
           </button>
           <S.Divider />
           <S.ShopName>{shopDetailData?.shopName ?? ''}</S.ShopName>
