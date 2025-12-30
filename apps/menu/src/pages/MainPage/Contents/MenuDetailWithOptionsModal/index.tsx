@@ -628,6 +628,8 @@ export const MenuDetailWithOptionsModal = ({
                 spaceBetween={0}
                 slidesPerView={1}
                 loop={menuImages.length >= 2}
+                observer={true}
+                observeParents={true}
               >
                 {menuImages.map((image) => (
                   <SwiperSlide key={image.imageSeq}>

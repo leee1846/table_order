@@ -41,9 +41,10 @@ export const useSSEHandler = () => {
   const { shopData: currentShopData } = useShopData({
     skipInitialRequest: true,
   });
-  const { refresh: refreshShopDetailData } = useShopDetailData({
-    skipInitialRequest: true,
-  });
+  const { data: shopDetailData, refresh: refreshShopDetailData } =
+    useShopDetailData({
+      skipInitialRequest: true,
+    });
   const {
     data: tableOrderHistoriesData,
     refresh: refreshTableOrderHistoriesData,
@@ -137,9 +138,9 @@ export const useSSEHandler = () => {
   );
 
   // 매장 정보 변경 메시지 처리
-  const handleShopMessage = useCallback(() => {
+  const handleShopMessage = useCallback(async () => {
     //TODO: 테스트 필요
-    refreshShopDetailData();
+    await refreshShopDetailData();
     window.location.reload();
   }, [refreshShopDetailData]);
 
@@ -169,6 +170,13 @@ export const useSSEHandler = () => {
 
   // 픽업 알림 메시지 처리
   const handlePickupMessage = useCallback(() => {
+    const usePickupAlert = shopDetailData?.shopSetting?.usePickupAlert ?? false;
+
+    // 픽업 알림이 비활성화되어 있으면 실행하지 않음
+    if (!usePickupAlert) {
+      return;
+    }
+
     if (!currentDeviceData?.tableNumber || !sseMessage?.data) {
       return;
     }
@@ -192,7 +200,12 @@ export const useSSEHandler = () => {
       pickupAlertMessage,
     });
     SystemControl.playSound({ type: 'dingdong' });
-  }, [currentDeviceData?.tableNumber, sseMessage?.data, setPickupAlarm]);
+  }, [
+    shopDetailData?.shopSetting?.usePickupAlert,
+    currentDeviceData?.tableNumber,
+    sseMessage?.data,
+    setPickupAlarm,
+  ]);
 
   // 디바이스 제어 메시지 처리 (공통 로직)
   const handleDeviceControlMessage = useCallback(
