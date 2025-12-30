@@ -13,7 +13,7 @@ export const Container = styled.div`
   gap: 40px;
   align-items: center;
 
-  & > p {
+  & > h2 {
     ${TYPOGRAPHY.MT_1}
     color: ${({ theme }) => theme.mode.grey[900]};
   }

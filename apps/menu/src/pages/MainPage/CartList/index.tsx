@@ -179,10 +179,15 @@ export const CartList = ({
 
   return createPortal(
     <S.Background onClick={onClose}>
-      <S.Container onClick={(e) => e.stopPropagation()}>
-        <S.Title>{t('장바구니')}</S.Title>
+      <S.Container
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-title"
+      >
+        <S.Title id="cart-title">{t('장바구니')}</S.Title>
 
-        <S.OrderList>
+        <S.OrderList role="list" aria-label={t('장바구니')}>
           {!hasMenusInCart && (
             <S.NoContent>
               <EmptedCartIcon theme={theme} width={52} height={52} />
@@ -194,9 +199,9 @@ export const CartList = ({
             const hasOptions = menu.selectedOptions.length > 0;
 
             return (
-              <S.OrderItem key={`order-${index + 1}`}>
+              <S.OrderItem key={`order-${index + 1}`} role="listitem">
                 <S.OrderMenu>
-                  <p>{menu.menuName}</p>
+                  <h3>{menu.menuName}</h3>
                   <p>{formatCurrency(menu.menuPrice)}</p>
                 </S.OrderMenu>
 
@@ -218,6 +223,7 @@ export const CartList = ({
                       <button
                         type="button"
                         onClick={() => handleOpenMenuDetailModal(menu, index)}
+                        aria-label={`${menu.menuName} ${t('옵션')}`}
                       >
                         {t('옵션')}
                       </button>
@@ -226,7 +232,10 @@ export const CartList = ({
                 )}
 
                 <S.ButtonContainer>
-                  <S.DeleteButton onClick={() => handleRemoveMenu(index)}>
+                  <S.DeleteButton
+                    onClick={() => handleRemoveMenu(index)}
+                    aria-label={`${menu.menuName} ${t('메뉴 삭제')}`}
+                  >
                     <DeleteIcon color={theme.mode.grey[600]} />
                   </S.DeleteButton>
                   <NumberInput
@@ -244,15 +253,19 @@ export const CartList = ({
 
         <S.TotalContainer>
           {isOrderSheetTotalVisible && (
-            <S.TotalInfo>
-              <p>{t('합계')}</p>
+            <S.TotalInfo role="status" aria-live="polite">
+              <h3>{t('합계')}</h3>
               <p>
                 {currencySymbol}
                 {formatCurrency(calculateTotalPrice())}
               </p>
             </S.TotalInfo>
           )}
-          <BasicButton variant="Solid_Blue_2XL" onClick={handleOrderSubmit}>
+          <BasicButton
+            variant="Solid_Blue_2XL"
+            onClick={handleOrderSubmit}
+            aria-label={t('주문하기')}
+          >
             {t('주문하기')}
           </BasicButton>
         </S.TotalContainer>

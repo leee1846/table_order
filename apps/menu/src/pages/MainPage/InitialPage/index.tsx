@@ -43,7 +43,12 @@ export const InitialPage = () => {
 
   if (initPageLayout === 'IMAGE') {
     return (
-      <S.Container onClick={hideInitialPage}>
+      <S.Container
+        onClick={hideInitialPage}
+        role="button"
+        aria-label={t('주문 시작하기')}
+        tabIndex={0}
+      >
         <Swiper spaceBetween={0} slidesPerView={1} loop={hasEnoughSlides}>
           {detailImageList.map((item) => (
             <SwiperSlide key={item.pageSeq}>
@@ -54,13 +59,20 @@ export const InitialPage = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-        <S.Notice>{t('주문을 시작하려면 화면을 터치해 주세요.')}</S.Notice>
+        <S.Notice role="status">
+          {t('주문을 시작하려면 화면을 터치해 주세요.')}
+        </S.Notice>
       </S.Container>
     );
   }
 
   return (
-    <S.Container onClick={hideInitialPage}>
+    <S.Container
+      onClick={hideInitialPage}
+      role="button"
+      aria-label={t('주문 시작하기')}
+      tabIndex={0}
+    >
       <Swiper spaceBetween={0} slidesPerView={1} loop={hasEnoughSlides}>
         {detailImageList.map((detailImage) => (
           <SwiperSlide key={detailImage.pageSeq}>
@@ -70,7 +82,10 @@ export const InitialPage = () => {
                 {getShopDetail(initPageLayout)?.pageDetailImagePath && (
                   <img
                     src={getShopDetail(initPageLayout)?.pageDetailImagePath}
-                    alt={getShopDetail(initPageLayout)?.pageDetailDescription}
+                    alt={
+                      getShopDetail(initPageLayout)?.pageDetailDescription ||
+                      t('매장 로고')
+                    }
                   />
                 )}
                 {/* 매장명 */}
@@ -79,7 +94,7 @@ export const InitialPage = () => {
                 <S.Description initPageLayout={initPageLayout}>
                   {detailImage.pageDetailDescription}
                 </S.Description>
-                <S.SmallNotice initPageLayout={initPageLayout}>
+                <S.SmallNotice initPageLayout={initPageLayout} role="status">
                   {t('주문을 시작하려면 화면을 터치해 주세요.')}
                 </S.SmallNotice>
               </S.LeftContainer>
@@ -87,7 +102,7 @@ export const InitialPage = () => {
               <S.RightContainer>
                 <S.Image
                   src={detailImage.pageDetailImagePath}
-                  alt={detailImage.pageDetailDescription}
+                  alt={detailImage.pageDetailDescription || t('메뉴 이미지')}
                 />
               </S.RightContainer>
             </S.DarkLightContainer>

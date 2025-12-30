@@ -160,13 +160,21 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
   return (
     <ModalBackground onClick={onClose}>
-      <S.Container>
-        <S.CloseButton type="button" onClick={onClose}>
+      <S.Container
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="staff-call-title"
+      >
+        <S.CloseButton
+          type="button"
+          onClick={onClose}
+          aria-label={t('모달 닫기')}
+        >
           <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
         </S.CloseButton>
 
         <S.LeftContainer>
-          <p>{t('어떤 도움이 필요하신가요?')} </p>
+          <h2 id="staff-call-title">{t('어떤 도움이 필요하신가요?')} </h2>
           {category.menuInfoList.length < 1 && (
             <S.noContent>
               <p>{t('메뉴가 존재하지 않아요.')}</p>
@@ -174,20 +182,23 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
           )}
 
           {category.menuInfoList.length > 0 && (
-            <S.MenuList>
+            <S.MenuList role="list">
               {category.menuInfoList.map((menu, index) => {
                 const currentQuantity = getMenuQuantity(menu.menuSeq);
+                const menuName =
+                  menu.localeMenuName?.[languageData.currentLanguage] ??
+                  menu.menuName;
+
                 return (
-                  <li key={`menu-${index + 1}`}>
+                  <li key={`menu-${index + 1}`} role="listitem">
                     <S.menuButton
                       type="button"
                       onClick={() => handleSelectMenu(menu)}
                       isSelected={selectedMenu?.menuSeq === menu.menuSeq}
+                      aria-label={menuName}
+                      aria-pressed={selectedMenu?.menuSeq === menu.menuSeq}
                     >
-                      <p>
-                        {menu.localeMenuName?.[languageData.currentLanguage] ??
-                          menu.menuName}
-                      </p>
+                      <p>{menuName}</p>
                       {selectedMenu?.menuSeq === menu.menuSeq && (
                         <div>
                           <S.DeleteButton
@@ -195,6 +206,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
                               e.stopPropagation();
                               handleDeleteMenu(menu.menuSeq);
                             }}
+                            aria-label={t('메뉴 삭제')}
                           >
                             <DeleteIcon
                               width={20}
@@ -230,9 +242,13 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
         </S.LeftContainer>
 
         <S.RightContainer>
-          <p> {t('선택한 요청사항')} </p>
+          <h3> {t('선택한 요청사항')} </h3>
 
-          <S.ChosenMenuList>
+          <S.ChosenMenuList
+            role="list"
+            aria-live="polite"
+            aria-label={t('선택된 항목')}
+          >
             {selectedMenuList.length < 1 && (
               <S.noContent>
                 <p>{t('선택한 요청사항이 없어요.')}</p>
@@ -240,7 +256,10 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
             )}
 
             {selectedMenuList.map((menu, index) => (
-              <S.ChosenMenuItem key={`chosen-menu-${index + 1}`}>
+              <S.ChosenMenuItem
+                key={`chosen-menu-${index + 1}`}
+                role="listitem"
+              >
                 <p>
                   <span />
                   {menu.menuName} (+{menu.quantity})

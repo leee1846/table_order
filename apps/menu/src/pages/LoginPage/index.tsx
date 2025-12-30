@@ -127,7 +127,13 @@ export const LoginPage = () => {
     };
 
     return (
-      <button type="button" onClick={togglePasswordVisibility}>
+      <button
+        type="button"
+        onClick={togglePasswordVisibility}
+        aria-label={
+          isPasswordVisible ? t('비밀번호 숨기기') : t('비밀번호 보기')
+        }
+      >
         {isPasswordVisible ? (
           <VisibilityOffIcon {...iconProps} />
         ) : (
@@ -139,12 +145,25 @@ export const LoginPage = () => {
 
   return (
     <S.Container>
-      <div>로고 이미지 영역</div>
+      <div>쉴더스 로고 이미지 영역</div>
 
-      <S.LoginContainer>
+      <S.LoginContainer role="main">
+        <h1
+          style={{
+            position: 'absolute',
+            width: '1px',
+            height: '1px',
+            overflow: 'hidden',
+          }}
+        >
+          {t('로그인')}
+        </h1>
         <div>
-          <S.InputTitle>{t('아이디')}</S.InputTitle>
+          <label htmlFor="login-id">
+            <S.InputTitle>{t('아이디')}</S.InputTitle>
+          </label>
           <Input
+            name="login-id"
             placeholder={t('아이디를 입력해주세요.')}
             onChange={handleIdChange}
             value={id}
@@ -152,8 +171,11 @@ export const LoginPage = () => {
           />
         </div>
         <div>
-          <S.InputTitle>{t('비밀번호')}</S.InputTitle>
+          <label htmlFor="login-password">
+            <S.InputTitle>{t('비밀번호')}</S.InputTitle>
+          </label>
           <Input
+            name="login-password"
             type={isPasswordVisible ? 'text' : 'password'}
             placeholder={t('비밀번호를 입력해주세요.')}
             onChange={handlePasswordChange}
@@ -166,6 +188,7 @@ export const LoginPage = () => {
           variant="Solid_Navy_XL"
           customStyle={S.buttonCss}
           onClick={handleLogin}
+          aria-label={t('로그인')}
         >
           {t('로그인')}
         </BasicButton>

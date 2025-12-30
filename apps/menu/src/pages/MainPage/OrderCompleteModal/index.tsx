@@ -21,10 +21,14 @@ export const OrderCompleteModal = ({
 
   return (
     <ModalBackground position="center" onClick={onClose}>
-      <S.Container>
+      <S.Container
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="order-complete-title"
+      >
         <S.LeftContainer>
-          <img src={apronIcon} alt="order complete" />
-          <p>{t('주문 완료!')}</p>
+          <img src={apronIcon} alt={t('주문 완료!')} />
+          <h2 id="order-complete-title">{t('주문 완료!')}</h2>
           <p>{t('조리가 완료되면 저희가 알려드릴게요.')}</p>
           <p>{t('조금만 기다려주세요.')}</p>
         </S.LeftContainer>
@@ -32,18 +36,18 @@ export const OrderCompleteModal = ({
         <S.RightContainer>
           <S.Title>{t('주문내역')}</S.Title>
           <S.Date>{getTodayDateString()}</S.Date>
-          <S.OrderList>
+          <S.OrderList role="list" aria-label={t('주문내역')}>
             {orderData.map((order) => (
-              <li key={order.menuSeq}>
+              <li key={order.menuSeq} role="listitem">
                 <S.MenuInfo>
-                  <p>{order.menuName}</p>
+                  <h3>{order.menuName}</h3>
                   <p>{formatCurrency(order.quantity)}</p>
                   <p>{formatCurrency(order.menuPrice)}</p>
                 </S.MenuInfo>
 
-                <S.OptionList>
+                <S.OptionList role="list">
                   {order.selectedOptions.map((option) => (
-                    <li key={option.optionSeq}>
+                    <li key={option.optionSeq} role="listitem">
                       <div>
                         <span />
                         <p>{option.optionName}</p>
@@ -62,10 +66,14 @@ export const OrderCompleteModal = ({
 
           <S.TotalContainer>
             <div>
-              <p>{t('합계')}</p>
+              <h3>{t('합계')}</h3>
               <p>{formatCurrency(totalPrice)}</p>
             </div>
-            <BasicButton variant="Solid_Blue_2XL" onClick={onClose}>
+            <BasicButton
+              variant="Solid_Blue_2XL"
+              onClick={onClose}
+              aria-label={t('메뉴판 보러가기')}
+            >
               {t('메뉴판 보러가기')}
             </BasicButton>
           </S.TotalContainer>

@@ -94,21 +94,42 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
     currentPasswordLength > digitIndex;
 
   return (
-    <S.Container>
+    <S.Container
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="password-title"
+    >
       {deviceData?.tableNumber && (
-        <S.CloseButton type="button" onClick={onClose}>
+        <S.CloseButton type="button" onClick={onClose} aria-label={t('닫기')}>
           <CloseIcon width={42} height={42} color={theme.mode.grey[400]} />
         </S.CloseButton>
       )}
 
       <S.Content>
-        <UnlockedIcon width={80} height={80} color={theme.mode.grey[400]} />
-        <S.Title>{t('비밀번호를 입력해 주세요')}</S.Title>
-        <S.PasswordContainer>
-          <li>{isPasswordDigitFilled(0) && <span />}</li>
-          <li>{isPasswordDigitFilled(1) && <span />}</li>
-          <li>{isPasswordDigitFilled(2) && <span />}</li>
-          <li>{isPasswordDigitFilled(3) && <span />}</li>
+        <UnlockedIcon
+          width={80}
+          height={80}
+          color={theme.mode.grey[400]}
+          aria-hidden="true"
+        />
+        <S.Title id="password-title">{t('비밀번호를 입력해 주세요')}</S.Title>
+        <S.PasswordContainer
+          role="status"
+          aria-live="polite"
+          aria-label={t('비밀번호')}
+        >
+          <li aria-label={isPasswordDigitFilled(0) ? t('입력됨') : t('미입력')}>
+            {isPasswordDigitFilled(0) && <span />}
+          </li>
+          <li aria-label={isPasswordDigitFilled(1) ? t('입력됨') : t('미입력')}>
+            {isPasswordDigitFilled(1) && <span />}
+          </li>
+          <li aria-label={isPasswordDigitFilled(2) ? t('입력됨') : t('미입력')}>
+            {isPasswordDigitFilled(2) && <span />}
+          </li>
+          <li aria-label={isPasswordDigitFilled(3) ? t('입력됨') : t('미입력')}>
+            {isPasswordDigitFilled(3) && <span />}
+          </li>
         </S.PasswordContainer>
         <Keypad
           onNumberPress={handleNumberPress}

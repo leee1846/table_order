@@ -5,6 +5,7 @@ import { getDateFromTimeString } from '@repo/util/time';
 import { globalTimerManager } from '@/utils/timerManager';
 import { TIMER_KEYS } from '@/constants/keys';
 import { BasicButton } from '@repo/ui/components';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   message: string;
@@ -13,6 +14,8 @@ interface Props {
   onClose: () => void;
 }
 export const LastOrder = ({ message, lastOrderTime, onClose }: Props) => {
+  const { t } = useCustomerTranslation();
+
   const [remainingMinutes, setRemainingMinutes] = useState<number>(0);
 
   // lastOrderTime을 "1000" 형식으로 변환 ("10:00" -> "1000")
@@ -44,20 +47,25 @@ export const LastOrder = ({ message, lastOrderTime, onClose }: Props) => {
   }, [timeString]);
 
   return (
-    <S.Container>
+    <S.Container
+      role="alert"
+      aria-live="assertive"
+      aria-labelledby="last-order-title"
+    >
       <S.ContentWrapper>
-        <S.Icon src={dishWashIcon} alt="Last Order" />
-        <S.Title>
+        <S.Icon src={dishWashIcon} alt="" aria-hidden="true" />
+        <S.Title id="last-order-title" role="timer" aria-live="polite">
           {`${remainingMinutes}분 후`}
-          <span>주문이 마감됩니다.</span>
+          <span>{t('주문이 마감됩니다.')}</span>
         </S.Title>
         <S.Description>{message}</S.Description>
         <BasicButton
           variant="Solid_Blue_2XL"
           onClick={onClose}
           customStyle={S.ButtonCss}
+          aria-label={t('닫기')}
         >
-          닫기
+          {t('닫기')}
         </BasicButton>
       </S.ContentWrapper>
     </S.Container>

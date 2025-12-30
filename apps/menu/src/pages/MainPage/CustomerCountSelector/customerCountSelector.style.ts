@@ -65,7 +65,7 @@ export const CountsContainer = styled.div`
     align-items: flex-start;
     gap: 40px;
 
-    & > p {
+    & > h2 {
       ${TYPOGRAPHY.MT_5}
       color: ${({ theme }) => theme.mode.grey[600]};
     }

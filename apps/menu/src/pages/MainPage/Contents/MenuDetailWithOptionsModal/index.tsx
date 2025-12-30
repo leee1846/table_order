@@ -595,17 +595,28 @@ export const MenuDetailWithOptionsModal = ({
   // Render
   // ============================================================================
 
+  const menuName =
+    menu.localeMenuName?.[languageData.currentLanguage] ?? menu.menuName;
+
   return createPortal(
     <ModalBackground onClick={onClose}>
-      <S.Container>
-        <S.CloseButton type="button" onClick={onClose}>
+      <S.Container
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="menu-detail-options-title"
+      >
+        <S.CloseButton
+          type="button"
+          onClick={onClose}
+          aria-label={t('모달 닫기')}
+        >
           <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
         </S.CloseButton>
 
         {/* Menu Information */}
         <S.MenuInfoContainer>
           {hasImages ? (
-            <S.SwiperContainer>
+            <S.SwiperContainer role="region" aria-label={t('메뉴 이미지')}>
               <Swiper
                 spaceBetween={0}
                 slidesPerView={1}
@@ -622,10 +633,7 @@ export const MenuDetailWithOptionsModal = ({
             <Thumbnail menu={menu} image={undefined} width="100%" />
           )}
 
-          <S.MenuName>
-            {menu.localeMenuName?.[languageData.currentLanguage] ??
-              menu.menuName}
-          </S.MenuName>
+          <S.MenuName id="menu-detail-options-title">{menuName}</S.MenuName>
           <S.Price>
             {currencySymbol}
             {formatCurrency(menu.menuPrice)}
@@ -645,29 +653,42 @@ export const MenuDetailWithOptionsModal = ({
           )}
 
           {hasOptionGroups && (
-            <S.OptionsList>
-              {menu.optionGroupList.map((group) => (
-                <li key={group.optionGroupSeq}>
-                  <S.OptionGroupName>
-                    {buildOptionGroupTitle(group)}
-                  </S.OptionGroupName>
-                  <S.Options>
-                    {group.optionList.map((option) =>
-                      renderOption(option, group)
-                    )}
-                  </S.Options>
-                </li>
-              ))}
+            <S.OptionsList role="list" aria-label={t('옵션')}>
+              {menu.optionGroupList.map((group) => {
+                const groupName = getLocalizedGroupName(
+                  group,
+                  languageData.currentLanguage
+                );
+                return (
+                  <li key={group.optionGroupSeq} role="listitem">
+                    <S.OptionGroupName as="h3">
+                      {buildOptionGroupTitle(group)}
+                    </S.OptionGroupName>
+                    <S.Options
+                      role={group.isMultipleSelectable ? 'group' : 'radiogroup'}
+                      aria-label={groupName}
+                    >
+                      {group.optionList.map((option) =>
+                        renderOption(option, group)
+                      )}
+                    </S.Options>
+                  </li>
+                );
+              })}
             </S.OptionsList>
           )}
         </S.OptionsContainer>
 
         {/* Selected Options Summary */}
         <S.SelectedOptionsContainer>
-          <S.Title>{t('선택한 옵션')}</S.Title>
-          <S.SelectedOptionsList>
+          <S.Title as="h3">{t('선택한 옵션')}</S.Title>
+          <S.SelectedOptionsList
+            role="list"
+            aria-live="polite"
+            aria-label={t('선택한 옵션')}
+          >
             {selectedOptionsForDisplay.length === 0 ? (
-              <li>
+              <li role="listitem">
                 <p>{t('선택한 옵션이 없습니다.')}</p>
               </li>
             ) : (
@@ -677,6 +698,7 @@ export const MenuDetailWithOptionsModal = ({
                     display.option.optionGroupSeq,
                     display.option.optionSeq
                   )}
+                  role="listitem"
                 >
                   <span />
                   <p>{buildSelectedOptionText(display)}</p>
@@ -696,9 +718,10 @@ export const MenuDetailWithOptionsModal = ({
               customStyle={css`
                 min-width: 100%;
               `}
+              aria-label={t('수량제한')}
             />
-            <S.TotalInfo>
-              <p>{t('합계')}</p>
+            <S.TotalInfo role="status" aria-live="polite">
+              <h3>{t('합계')}</h3>
               <p>
                 {currencySymbol}
                 {formatCurrency(totalPrice)}
@@ -710,6 +733,7 @@ export const MenuDetailWithOptionsModal = ({
               customStyle={css`
                 width: 100%;
               `}
+              aria-label={t('추가하기')}
             >
               {t('추가하기')}
             </BasicButton>

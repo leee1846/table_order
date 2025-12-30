@@ -67,7 +67,7 @@ export const CustomerCountSelector = () => {
   };
 
   return (
-    <S.Container>
+    <S.Container role="main">
       <S.ContentWrapper>
         <S.TitleContainer>
           <h1>{t('인원 수 입력')}</h1>
@@ -77,10 +77,11 @@ export const CustomerCountSelector = () => {
         {useOnlyAdult && (
           <div>
             <S.CountContainer>
-              <S.Count>
+              <S.Count role="group" aria-label={t('인원수')}>
                 <button
                   type="button"
                   onClick={() => handleAdultCountChange(adultCount - 1)}
+                  aria-label={t('인원 감소')}
                 >
                   <RemoveIcon
                     width={48}
@@ -94,10 +95,12 @@ export const CustomerCountSelector = () => {
                   onChange={(e) =>
                     handleAdultCountChange(Number(e.target.value))
                   }
+                  aria-label={t('인원수')}
                 />
                 <button
                   type="button"
                   onClick={() => handleAdultCountChange(adultCount + 1)}
+                  aria-label={t('인원 추가')}
                 >
                   <AddIcon
                     width={48}
@@ -107,14 +110,26 @@ export const CustomerCountSelector = () => {
                 </button>
               </S.Count>
 
-              <S.ButtonGroup>
-                <button type="button" onClick={() => handleAdultCountChange(4)}>
+              <S.ButtonGroup role="group" aria-label={t('인원수')}>
+                <button
+                  type="button"
+                  onClick={() => handleAdultCountChange(4)}
+                  aria-label={t('{{count}}명 선택', { count: 4 })}
+                >
                   {t('{{count}}명', { count: 4 })}
                 </button>
-                <button type="button" onClick={() => handleAdultCountChange(6)}>
+                <button
+                  type="button"
+                  onClick={() => handleAdultCountChange(6)}
+                  aria-label={t('{{count}}명 선택', { count: 6 })}
+                >
                   {t('{{count}}명', { count: 6 })}
                 </button>
-                <button type="button" onClick={() => handleAdultCountChange(8)}>
+                <button
+                  type="button"
+                  onClick={() => handleAdultCountChange(8)}
+                  aria-label={t('{{count}}명 선택', { count: 8 })}
+                >
                   {t('{{count}}명', { count: 8 })}
                 </button>
               </S.ButtonGroup>
@@ -125,11 +140,12 @@ export const CustomerCountSelector = () => {
         {!useOnlyAdult && (
           <S.CountsContainer>
             <div>
-              <p>{t('성인')}</p>
-              <div>
+              <h2>{t('성인')}</h2>
+              <div role="group" aria-label={t('성인')}>
                 <button
                   type="button"
                   onClick={() => handleAdultCountChange(adultCount - 1)}
+                  aria-label={`${t('성인')} ${t('인원 감소')}`}
                 >
                   <RemoveIcon
                     width={48}
@@ -143,10 +159,12 @@ export const CustomerCountSelector = () => {
                   onChange={(e) =>
                     handleAdultCountChange(Number(e.target.value))
                   }
+                  aria-label={t('성인')}
                 />
                 <button
                   type="button"
                   onClick={() => handleAdultCountChange(adultCount + 1)}
+                  aria-label={`${t('성인')} ${t('인원 추가')}`}
                 >
                   <AddIcon
                     width={48}
@@ -157,11 +175,12 @@ export const CustomerCountSelector = () => {
               </div>
             </div>
             <div>
-              <p>{t('아동')}</p>
-              <div>
+              <h2>{t('아동')}</h2>
+              <div role="group" aria-label={t('아동')}>
                 <button
                   type="button"
                   onClick={() => handleChildCountChange(childCount - 1)}
+                  aria-label={`${t('아동')} ${t('인원 감소')}`}
                 >
                   <RemoveIcon
                     width={48}
@@ -175,10 +194,12 @@ export const CustomerCountSelector = () => {
                   onChange={(e) =>
                     handleChildCountChange(Number(e.target.value))
                   }
+                  aria-label={t('아동')}
                 />
                 <button
                   type="button"
                   onClick={() => handleChildCountChange(childCount + 1)}
+                  aria-label={`${t('아동')} ${t('인원 추가')}`}
                 >
                   <AddIcon
                     width={48}
@@ -196,6 +217,7 @@ export const CustomerCountSelector = () => {
             variant="Solid_Blue_2XL"
             onClick={handleSubmit}
             disabled={buttonDisabled}
+            aria-label={t('주문 시작하기')}
           >
             {t('주문 시작하기')}
           </BasicButton>

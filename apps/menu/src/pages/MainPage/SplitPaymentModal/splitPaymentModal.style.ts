@@ -28,7 +28,7 @@ export const LeftContainer = styled.div`
   background-color: ${({ theme }) => theme.mode.grey[50]};
   padding: 30px;
 
-  & > p {
+  & > h2 {
     ${TYPOGRAPHY.MT_1}
     color: ${({ theme }) => theme.mode.undefined_palette[400]};
   }
@@ -78,22 +78,22 @@ export const SelectorTotalContainer = styled.div`
 `;
 
 export const TotalInfo = styled.div`
-  & > p:first-of-type {
+  & > h3 {
     ${TYPOGRAPHY.ST_2}
     color: ${({ theme }) => theme.mode.grey[600]};
   }
-  & > p:last-of-type {
+  & > p {
     ${TYPOGRAPHY.MT_6}
     color: ${({ theme }) => theme.mode.grey[700]};
   }
 `;
 
 export const RemainingAmount = styled.div`
-  & > p:first-of-type {
+  & > h3 {
     ${TYPOGRAPHY.MT_4}
     color: ${({ theme }) => theme.mode.grey[900]};
   }
-  & > p:last-of-type {
+  & > p {
     ${TYPOGRAPHY.MT_4}
     color: ${({ theme }) => theme.mode.primary[500]};
   }
@@ -107,7 +107,7 @@ export const RightContainer = styled.div`
   background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
   padding: 40px 24px 24px;
 
-  & > p {
+  & > h2 {
     ${TYPOGRAPHY.MT_4}
     color: ${({ theme }) => theme.mode.grey[900]};
     padding-bottom: 16px;
@@ -132,18 +132,21 @@ export const MenuInfo = styled.div`
   gap: 8px;
   margin-bottom: 12px;
 
-  & > p {
+  & > h3 {
     ${TYPOGRAPHY.MT_7}
     color: ${({ theme }) => theme.mode.grey[800]};
-  }
-  & > p:first-of-type {
     width: 50%;
     text-align: left;
     word-wrap: break-word;
     word-break: break-word;
   }
 
-  & > p:nth-of-type(2) {
+  & > p {
+    ${TYPOGRAPHY.MT_7}
+    color: ${({ theme }) => theme.mode.grey[800]};
+  }
+
+  & > p:first-of-type {
     width: 10%;
     text-align: right;
   }

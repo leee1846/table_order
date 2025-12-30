@@ -50,11 +50,11 @@ export const TotalContainer = styled.div`
   padding-top: 16px;
   border-top: 1px solid ${({ theme }) => theme.mode.grey[200]};
 
-  & > p:first-of-type {
+  & > h3 {
     ${TYPOGRAPHY.MT_4}
     color: ${({ theme }) => theme.mode.grey[800]};
   }
-  & > p:last-of-type {
+  & > p {
     ${TYPOGRAPHY.MT_4}
     color: ${({ theme }) => theme.mode.primary[500]};
   }

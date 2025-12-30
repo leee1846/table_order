@@ -165,7 +165,11 @@ export const CartButton = ({ categories }: Props) => {
 
   return (
     <>
-      <S.Container type="button" onClick={handleCartButtonClick}>
+      <S.Container
+        type="button"
+        onClick={handleCartButtonClick}
+        aria-label={`${t('장바구니 열기')}, ${t('{{count}}개 담김', { count: getTotalCartItemCount() })}`}
+      >
         <p>{t('장바구니')}</p>
         <p>{getTotalCartItemCount()}</p>
       </S.Container>

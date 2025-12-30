@@ -27,12 +27,7 @@ export const LeftContainer = styled.div`
     margin-bottom: 12px;
   }
 
-  & > p {
-    ${TYPOGRAPHY.ST_2}
-    color: ${({ theme }) => theme.mode.grey[600]};
-  }
-
-  & > p:first-of-type {
+  & > h2 {
     font-size: 2.25rem;
     font-style: normal;
     font-weight: 700;
@@ -40,6 +35,11 @@ export const LeftContainer = styled.div`
     letter-spacing: -0.05625rem;
     margin-bottom: 16px;
     color: ${({ theme }) => theme.mode.undefined_palette[300]};
+  }
+
+  & > p {
+    ${TYPOGRAPHY.ST_2}
+    color: ${({ theme }) => theme.mode.grey[600]};
   }
 `;
 
@@ -92,7 +92,10 @@ export const MenuInfo = styled.div`
     ${TYPOGRAPHY.MT_7}
     color: ${({ theme }) => theme.mode.grey[800]};
   }
-  & > p:first-of-type {
+
+  & > h3 {
+    ${TYPOGRAPHY.MT_7}
+    color: ${({ theme }) => theme.mode.grey[800]};
     width: 50%;
     text-align: left;
     word-wrap: break-word;
@@ -168,7 +171,7 @@ export const TotalContainer = styled.div`
     border-top: 1px solid ${({ theme }) => theme.mode.grey[200]};
     padding: 28px 8px 0;
 
-    & > p:first-of-type {
+    & > h3 {
       ${TYPOGRAPHY.MT_7}
       color: ${({ theme }) => theme.mode.grey[700]};
     }

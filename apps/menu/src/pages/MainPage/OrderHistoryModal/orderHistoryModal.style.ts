@@ -30,11 +30,11 @@ export const Header = styled.div`
   padding-bottom: 24px;
   border-bottom: 1px solid ${({ theme }) => theme.mode.grey[200]};
 
-  & > p:first-of-type {
+  & > h2 {
     ${TYPOGRAPHY.MT_4}
     color: ${({ theme }) => theme.mode.grey[900]};
   }
-  & > p:last-of-type {
+  & > p {
     ${TYPOGRAPHY.ST_2}
     color: ${({ theme }) => theme.mode.grey[600]};
     text-align: right;
@@ -138,11 +138,11 @@ export const TotalContainer = styled.div`
     justify-content: space-between;
     padding: 28px 8px 4px;
 
-    & > p:first-of-type {
+    & > h3 {
       ${TYPOGRAPHY.MT_7}
       color: ${({ theme }) => theme.mode.grey[700]};
     }
-    & > p:last-of-type {
+    & > p {
       ${TYPOGRAPHY.MT_2}
       color: ${({ theme }) => theme.mode.primary[500]};
     }

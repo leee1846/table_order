@@ -99,10 +99,16 @@ export const CartReminder = () => {
   ]);
 
   return (
-    <S.Container>
-      <S.Icon src={speechBubbleIcon} alt="Cart Reminder" />
-      <S.Title>{t('주문을 계속 진행해 주세요!')}</S.Title>
-      <S.Description>
+    <S.Container
+      role="alert"
+      aria-live="assertive"
+      aria-labelledby="cart-reminder-title"
+    >
+      <S.Icon src={speechBubbleIcon} alt="" aria-hidden="true" />
+      <S.Title id="cart-reminder-title">
+        {t('주문을 계속 진행해 주세요!')}
+      </S.Title>
+      <S.Description role="timer" aria-live="polite">
         <Trans
           i18nKey="화면 조작이 없어 <span>{{time}}</span>초 후 화면이 초기화 됩니다."
           values={{ time: remainingSeconds }}
@@ -120,6 +126,7 @@ export const CartReminder = () => {
           transform: translateX(-50%);
           width: 18.125rem;
         `}
+        aria-label={t('계속 주문하기')}
       >
         {t('계속 주문하기')}
       </BasicButton>

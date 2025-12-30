@@ -83,18 +83,32 @@ export const PaymentsModal = ({
 
   return (
     <ModalBackground position="center" onClick={onClose}>
-      <S.Container>
-        <S.CloseButton type="button" onClick={onClose}>
+      <S.Container
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="payment-title"
+      >
+        <S.CloseButton
+          type="button"
+          onClick={onClose}
+          aria-label={t('모달 닫기')}
+        >
           <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
         </S.CloseButton>
-        <S.Title>{t('결제 방법을 선택해주세요')}</S.Title>
-        <S.PaymentMethodList>
+        <S.Title id="payment-title">{t('결제 방법을 선택해주세요')}</S.Title>
+        <S.PaymentMethodList
+          role="radiogroup"
+          aria-label={t('결제 방법을 선택해주세요')}
+        >
           <S.PaymentMethodItem
             type="button"
             isSelected={selectedPaymentMethod === 'card'}
             onClick={() => setSelectedPaymentMethod('card')}
+            role="radio"
+            aria-checked={selectedPaymentMethod === 'card'}
+            aria-label={t('카드 결제')}
           >
-            <img src={cardIcon} alt="카드 결제" />
+            <img src={cardIcon} alt="" aria-hidden="true" />
             {t('카드 결제')}
           </S.PaymentMethodItem>
           {shopDetailData?.shopSetting?.usePrepaymentCashPayment && (
@@ -102,8 +116,11 @@ export const PaymentsModal = ({
               type="button"
               isSelected={selectedPaymentMethod === 'cash'}
               onClick={() => setSelectedPaymentMethod('cash')}
+              role="radio"
+              aria-checked={selectedPaymentMethod === 'cash'}
+              aria-label={t('현금 결제')}
             >
-              <img src={currencyIcon} alt="현금 결제" />
+              <img src={currencyIcon} alt="" aria-hidden="true" />
               {t('현금 결제')}
             </S.PaymentMethodItem>
           )}
@@ -112,8 +129,11 @@ export const PaymentsModal = ({
               type="button"
               isSelected={selectedPaymentMethod === 'split'}
               onClick={() => setSelectedPaymentMethod('split')}
+              role="radio"
+              aria-checked={selectedPaymentMethod === 'split'}
+              aria-label={t('나눠서 결제')}
             >
-              <img src={splitIcon} alt="나눠서 결제" />
+              <img src={splitIcon} alt="" aria-hidden="true" />
               {t('나눠서 결제')}
             </S.PaymentMethodItem>
           )}
@@ -122,8 +142,11 @@ export const PaymentsModal = ({
               type="button"
               isSelected={selectedPaymentMethod === 'payAfter'}
               onClick={() => setSelectedPaymentMethod('payAfter')}
+              role="radio"
+              aria-checked={selectedPaymentMethod === 'payAfter'}
+              aria-label={t('후불 결제')}
             >
-              <img src={payAfterIcon} alt="후불 결제" />
+              <img src={payAfterIcon} alt="" aria-hidden="true" />
               {t('후불 결제')}
             </S.PaymentMethodItem>
           )}
@@ -134,6 +157,7 @@ export const PaymentsModal = ({
           customStyle={css`
             width: 100%;
           `}
+          aria-label={t('다음')}
         >
           {t('다음')}
         </BasicButton>

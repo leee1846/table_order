@@ -11,9 +11,13 @@ export const PickupAlarm = () => {
     usePickupAlarmStore();
 
   return (
-    <S.Container>
-      <S.Image src={waiterHandIcon} alt="pickup alarm" />
-      <S.Title>{t('주문하신 메뉴가 준비되었어요!')}</S.Title>
+    <S.Container
+      role="alert"
+      aria-live="assertive"
+      aria-labelledby="pickup-title"
+    >
+      <S.Image src={waiterHandIcon} alt="" aria-hidden="true" />
+      <S.Title id="pickup-title">{t('주문하신 메뉴가 준비되었어요!')}</S.Title>
       <S.Description>
         {t('주문번호를 확인하고 메뉴를 수령해 주세요.')}
         <br />
@@ -34,6 +38,7 @@ export const PickupAlarm = () => {
           transform: translateX(-50%);
           bottom: 50px;
         `}
+        aria-label={t('닫기')}
       >
         {t('닫기')}
       </BasicButton>

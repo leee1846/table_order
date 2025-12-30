@@ -87,7 +87,7 @@ export const RightContainer = styled.div`
   height: 100%;
   min-height: 0;
 
-  & > p {
+  & > h3 {
     color: ${({ theme }) => theme.mode.grey[800]};
     ${TYPOGRAPHY.MT_1}
     flex-shrink: 0;

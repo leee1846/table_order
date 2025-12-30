@@ -8,11 +8,11 @@ interface Props {
 }
 export const BreakTime = ({ message, startTime, endTime }: Props) => {
   return (
-    <S.Container>
+    <S.Container role="alert" aria-live="assertive">
       <S.ContentWrapper>
-        <S.Icon src={clockIcon} alt="Break Time" />
-        <S.Title>BREAK TIME</S.Title>
-        <S.Time>
+        <S.Icon src={clockIcon} alt="" aria-hidden="true" />
+        <S.Title as="h1">BREAK TIME</S.Title>
+        <S.Time role="text">
           {startTime} - {endTime}
         </S.Time>
         <S.Description>{message}</S.Description>

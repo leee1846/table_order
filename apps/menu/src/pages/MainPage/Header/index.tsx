@@ -242,15 +242,29 @@ export const Header = ({
 
   return (
     <>
-      <S.Header>
+      <S.Header role="banner">
         <S.LeftContent>
-          <button type="button" onClick={handleLogoClick}>
-            <img src={shopThemeData?.logoImagePath ?? ''} alt="logo" />
+          <button
+            type="button"
+            onClick={handleLogoClick}
+            aria-label={t('설정')}
+          >
+            <img
+              src={shopThemeData?.logoImagePath ?? ''}
+              alt={t('매장 로고')}
+            />
           </button>
           <S.Divider />
-          <S.ShopName>{shopDetailData?.shopName ?? ''}</S.ShopName>
+          <S.ShopName aria-label={shopDetailData?.shopName ?? ''}>
+            {shopDetailData?.shopName ?? ''}
+          </S.ShopName>
           {alertMessage && (
-            <S.DescriptionContainer ref={descriptionContainerRef}>
+            <S.DescriptionContainer
+              ref={descriptionContainerRef}
+              role="status"
+              aria-live="polite"
+              aria-label={t('라스트오더 알림')}
+            >
               <S.DescriptionWrapper
                 ref={descriptionWrapperRef}
                 $isOverflowing={isTextOverflowing}
@@ -260,7 +274,9 @@ export const Header = ({
                 {isTextOverflowing && (
                   <>
                     <S.DescriptionSpacer> </S.DescriptionSpacer>
-                    <S.Description>{alertMessage}</S.Description>
+                    <S.Description aria-hidden="true">
+                      {alertMessage}
+                    </S.Description>
                   </>
                 )}
               </S.DescriptionWrapper>
@@ -269,13 +285,14 @@ export const Header = ({
         </S.LeftContent>
 
         <S.RightContent>
-          <S.TableNumber>
+          <S.TableNumber role="text">
             {t('{{number}}번 테이블', { number: deviceData?.tableNumber ?? 0 })}
           </S.TableNumber>
           <S.Divider />
           <S.OrderHistoryButton
             type="button"
             onClick={onClickOrderHistoryButton}
+            aria-label={t('주문내역 보기')}
           >
             <MenuIcon width={20} height={20} color={theme.mode.primary[500]} />
             {t('주문내역')}

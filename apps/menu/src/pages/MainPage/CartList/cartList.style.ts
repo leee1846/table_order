@@ -51,11 +51,11 @@ export const TotalInfo = styled.div`
   justify-content: space-between;
   padding: 4px 8px;
 
-  & > p:first-of-type {
+  & > h3 {
     color: ${({ theme }) => theme.mode.grey[600]};
     ${TYPOGRAPHY.MT_7}
   }
-  & > p:last-of-type {
+  & > p {
     color: ${({ theme }) => theme.mode.primary[500]};
     ${TYPOGRAPHY.MT_2}
   }
@@ -95,14 +95,14 @@ export const OrderMenu = styled.div`
   justify-content: space-between;
   gap: 4px;
 
-  & > p:first-of-type {
+  & > h3 {
     color: ${({ theme }) => theme.mode.grey[600]};
     ${TYPOGRAPHY.MT_7}
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  & > p:last-of-type {
+  & > p {
     color: ${({ theme }) => theme.mode.grey[800]};
     ${TYPOGRAPHY.MT_6}
   }

@@ -54,18 +54,25 @@ export const LanguageSelectorModal = ({ onClose }: Props) => {
 
   return (
     <ModalBackground onClick={onClose}>
-      <S.Container>
-        <p>{t('언어 선택')}</p>
+      <S.Container
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="language-selector-title"
+      >
+        <h2 id="language-selector-title">{t('언어 선택')}</h2>
 
-        <S.Languages>
+        <S.Languages role="radiogroup" aria-label={t('언어 선택')}>
           {languages.map((language) => (
-            <li key={language.value}>
+            <li key={language.value} role="presentation">
               <S.Language
                 isSelected={tempSelectedLanguage === language.value}
                 type="button"
                 onClick={() => setTempSelectedLanguage(language.value)}
+                role="radio"
+                aria-checked={tempSelectedLanguage === language.value}
+                aria-label={language.label}
               >
-                <img src={language.flag} alt={language.label} />
+                <img src={language.flag} alt="" aria-hidden="true" />
                 <p>{language.label}</p>
               </S.Language>
             </li>
@@ -76,6 +83,7 @@ export const LanguageSelectorModal = ({ onClose }: Props) => {
           variant="Solid_Blue_2XL"
           onClick={handleSubmit}
           customStyle={S.CompleteButton}
+          aria-label={t('선택 완료')}
         >
           {t('선택 완료')}
         </BasicButton>

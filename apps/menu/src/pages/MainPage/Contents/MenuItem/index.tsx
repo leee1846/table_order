@@ -113,31 +113,36 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
     openMenuDetail(menu.menuSeq);
   };
 
+  const menuName =
+    menu.localeMenuName?.[languageData.currentLanguage] ?? menu.menuName;
+  const menuDescription =
+    menu.localeMenuDescription?.[languageData.currentLanguage] ??
+    menu.menuDescription;
+  const priceText = `${currencySymbol}${formatCurrency(menu.menuPrice)}`;
+  const ariaLabel = menu.isOutOfStock
+    ? `${t('품절된 메뉴')}: ${menuName}, ${priceText}`
+    : `${t('메뉴 선택')}: ${menuName}, ${priceText}`;
+
   return (
     <>
-      <S.Container layout={layout} type="button" onClick={onClickMenu}>
+      <S.Container
+        layout={layout}
+        type="button"
+        onClick={onClickMenu}
+        aria-label={ariaLabel}
+        aria-disabled={menu.isOutOfStock}
+      >
         <Thumbnail
           menu={menu}
           image={firstImage}
           width={IMAGE_SIZE[layout].width}
         />
         <S.Content>
-          <S.MenuName>
-            {menu.localeMenuName?.[languageData.currentLanguage] ??
-              menu.menuName}
-          </S.MenuName>
+          <S.MenuName>{menuName}</S.MenuName>
           <S.MenuPrice>
-            <span>
-              {currencySymbol}
-              {formatCurrency(menu.menuPrice)}
-            </span>
+            <span>{priceText}</span>
           </S.MenuPrice>
-          {layout === 1 && (
-            <S.Description>
-              {menu.localeMenuDescription?.[languageData.currentLanguage] ??
-                menu.menuDescription}
-            </S.Description>
-          )}
+          {layout === 1 && <S.Description>{menuDescription}</S.Description>}
         </S.Content>
       </S.Container>
 

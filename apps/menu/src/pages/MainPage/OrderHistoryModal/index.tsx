@@ -21,9 +21,13 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
 
   return (
     <S.Background onClick={onClose}>
-      <S.Container>
+      <S.Container
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="order-history-title"
+      >
         <S.Header>
-          <p>{t('주문내역')}</p>
+          <h2 id="order-history-title">{t('주문내역')}</h2>
           <p>{getTodayDateString()}</p>
         </S.Header>
 
@@ -34,18 +38,18 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
           </NoContent>
         )}
 
-        <S.OrderList>
+        <S.OrderList role="list" aria-label={t('주문내역')}>
           {orderHistories?.orderDetailMenuList?.map((orderHistory) => (
-            <li key={orderHistory.orderGroupUuid}>
+            <li key={orderHistory.orderGroupUuid} role="listitem">
               <S.MenuInfo>
                 <p>{orderHistory.menuName}</p>
                 <p>{formatCurrency(orderHistory.menuQuantity)}</p>
                 <p>{formatCurrency(orderHistory.menuPrice)}</p>
               </S.MenuInfo>
 
-              <S.OptionList>
+              <S.OptionList role="list">
                 {orderHistory.optionList.map((option) => (
-                  <li key={option.orderDetailOptionSeq}>
+                  <li key={option.orderDetailOptionSeq} role="listitem">
                     <div>
                       <span />
                       <p>{option.optionName}</p>
@@ -65,14 +69,16 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
         <S.TotalContainer>
           {shopDetailData?.shopSetting?.isOrderSheetTotalVisible && (
             <div>
-              <p>{t('합계')}</p>
+              <h3>{t('합계')}</h3>
               <p>
                 {currencySymbol}
                 {formatCurrency(orderHistories?.totalAmount ?? 0)}
               </p>
             </div>
           )}
-          <BasicButton variant="Solid_Blue_2XL">{t('닫기')}</BasicButton>
+          <BasicButton variant="Solid_Blue_2XL" aria-label={t('모달 닫기')}>
+            {t('닫기')}
+          </BasicButton>
         </S.TotalContainer>
       </S.Container>
     </S.Background>

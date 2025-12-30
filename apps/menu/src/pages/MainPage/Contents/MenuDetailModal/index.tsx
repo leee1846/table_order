@@ -88,15 +88,26 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
     onClose();
   };
 
+  const menuName =
+    menu.localeMenuName?.[languageData.currentLanguage] ?? menu.menuName;
+
   return createPortal(
     <ModalBackground onClick={onClose}>
-      <S.Container>
-        <S.CloseButton type="button" onClick={onClose}>
+      <S.Container
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="menu-detail-title"
+      >
+        <S.CloseButton
+          type="button"
+          onClick={onClose}
+          aria-label={t('모달 닫기')}
+        >
           <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
         </S.CloseButton>
 
         {images.length > 0 ? (
-          <S.SwiperContainer>
+          <S.SwiperContainer role="region" aria-label={t('메뉴 이미지')}>
             <Swiper
               spaceBetween={0}
               slidesPerView={1}
@@ -112,9 +123,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
         ) : (
           <Thumbnail menu={menu} image={undefined} width="100%" />
         )}
-        <S.Name>
-          {menu.localeMenuName?.[languageData.currentLanguage] ?? menu.menuName}
-        </S.Name>
+        <S.Name id="menu-detail-title">{menuName}</S.Name>
         <S.Price>
           {currencySymbol}
           {formatCurrency(menu.menuPrice)}
@@ -132,9 +141,10 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
           customStyle={css`
             width: 100%;
           `}
+          aria-label={t('수량제한')}
         />
-        <S.TotalContainer>
-          <p>{t('합계')}</p>
+        <S.TotalContainer role="status" aria-live="polite">
+          <h3>{t('합계')}</h3>
           <p>
             {currencySymbol}
             {formatCurrency(menu.menuPrice * currentCount)}
@@ -146,6 +156,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
           customStyle={css`
             width: 100%;
           `}
+          aria-label={t('추가하기')}
         >
           {t('추가하기')}
         </BasicButton>

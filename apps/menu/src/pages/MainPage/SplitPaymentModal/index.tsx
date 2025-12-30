@@ -333,18 +333,32 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   return (
     <>
       <ModalBackground onClick={onClose}>
-        <S.Container>
-          <S.CloseButton type="button" onClick={onClose}>
+        <S.Container
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="split-payment-title"
+        >
+          <S.CloseButton
+            type="button"
+            onClick={onClose}
+            aria-label={t('모달 닫기')}
+          >
             <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
           </S.CloseButton>
 
           <S.LeftContainer>
-            <p>{t('분할 결제 방식을 선택하세요')}</p>
-            <S.ToggleButtonContainer>
+            <h2 id="split-payment-title">{t('분할 결제 방식을 선택하세요')}</h2>
+            <S.ToggleButtonContainer
+              role="radiogroup"
+              aria-label={t('분할 결제 방식을 선택하세요')}
+            >
               <S.ToggleButton
                 isActive={isPaymentByMenu}
                 onClick={() => handlePaymentMethodChange(true)}
                 disabled={hasAnyPayment}
+                role="radio"
+                aria-checked={isPaymentByMenu}
+                aria-label={t('메뉴별로 나누기')}
               >
                 {t('메뉴별로 나누기')}
               </S.ToggleButton>
@@ -352,6 +366,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
                 isActive={!isPaymentByMenu}
                 onClick={() => handlePaymentMethodChange(false)}
                 disabled={hasAnyPayment}
+                role="radio"
+                aria-checked={!isPaymentByMenu}
+                aria-label={t('인원 수로 나누기')}
               >
                 {t('인원 수로 나누기')}
               </S.ToggleButton>
@@ -375,15 +392,15 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
                 />
               )}
 
-              <S.SelectorTotalContainer>
+              <S.SelectorTotalContainer role="region" aria-live="polite">
                 <S.TotalInfo>
-                  <p>{t('총 결제금액')}</p>
+                  <h3>{t('총 결제금액')}</h3>
                   <p>
                     {t('{{amount}}원', { amount: formatCurrency(totalPrice) })}
                   </p>
                 </S.TotalInfo>
                 <S.RemainingAmount>
-                  <p>{t('남은 결제 금액')}</p>
+                  <h3>{t('남은 결제 금액')}</h3>
                   <p>
                     {t('{{amount}}원', {
                       amount: formatCurrency(currentRemainingPrice),
@@ -395,23 +412,26 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
           </S.LeftContainer>
 
           <S.RightContainer>
-            <p>
+            <h2>
               {t('테이블')}
               {deviceData?.tableNumber} {t('총 주문내역')}
-            </p>
+            </h2>
 
-            <S.OrderList>
+            <S.OrderList role="list" aria-label={t('총 주문내역')}>
               {allMenus.map((menu) => (
-                <li key={menu.id}>
+                <li key={menu.id} role="listitem">
                   <S.MenuInfo>
-                    <p>{menu.menuName}</p>
+                    <h3>{menu.menuName}</h3>
                     <p>{formatCurrency(menu.quantity)}</p>
                     <p>{formatCurrency(menu.menuPrice)}</p>
                   </S.MenuInfo>
 
-                  <S.OptionList>
+                  <S.OptionList role="list">
                     {menu.selectedOptions.map((option, index) => (
-                      <li key={`${option.optionSeq}-${index + 1}`}>
+                      <li
+                        key={`${option.optionSeq}-${index + 1}`}
+                        role="listitem"
+                      >
                         <div>
                           <span />
                           <p>{option.optionName}</p>
@@ -429,7 +449,13 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
             </S.OrderList>
 
             <S.TotalContainer>
-              <BasicButton variant="Solid_Blue_2XL" onClick={handlePayment}>
+              <BasicButton
+                variant="Solid_Blue_2XL"
+                onClick={handlePayment}
+                aria-label={t('{{amount}}원 카드 결제', {
+                  amount: formatCurrency(currentSelectedPrice),
+                })}
+              >
                 {t('{{amount}}원 카드 결제', {
                   amount: formatCurrency(currentSelectedPrice),
                 })}

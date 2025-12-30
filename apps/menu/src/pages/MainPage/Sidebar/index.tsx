@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import * as S from '@/pages/MainPage/Sidebar/sidebar.style';
 import { CallBellIcon } from '@repo/ui/icons';
 import { baseTheme } from '@repo/ui';
@@ -51,23 +50,34 @@ export const Sidebar = ({
 
   return (
     <>
-      <S.Container>
-        {categories.map((category) => (
-          <S.CategoryButton
-            isActive={selectedCategorySeq === category.categorySeq}
-            key={category.categorySeq}
-            type="button"
-            onClick={() => handleCategoryClick(category)}
-          >
-            {category.localeCategoryName?.[languageData.currentLanguage] ??
-              category.categoryName}
-          </S.CategoryButton>
-        ))}
+      <S.Container role="navigation" aria-label={t('메뉴 카테고리')}>
+        {categories.map((category) => {
+          const categoryName =
+            category.localeCategoryName?.[languageData.currentLanguage] ??
+            category.categoryName;
+
+          return (
+            <S.CategoryButton
+              isActive={selectedCategorySeq === category.categorySeq}
+              key={category.categorySeq}
+              type="button"
+              onClick={() => handleCategoryClick(category)}
+              aria-label={`${t('카테고리 선택')}: ${categoryName}`}
+              aria-pressed={selectedCategorySeq === category.categorySeq}
+            >
+              {categoryName}
+            </S.CategoryButton>
+          );
+        })}
 
         <S.FloatingContainer>
           {staffCallCategory && (
             <S.StaffCall>
-              <button type="button" onClick={handleStaffCallClick}>
+              <button
+                type="button"
+                onClick={handleStaffCallClick}
+                aria-label={t('직원 호출하기')}
+              >
                 <CallBellIcon
                   color={baseTheme.colors.white}
                   width={30}
@@ -86,8 +96,9 @@ export const Sidebar = ({
                 onClick={() =>
                   setModalData('isLanguageSelectorModalOpened', true)
                 }
+                aria-label={t('언어 선택하기')}
               >
-                <img src={currentLanguageIcon} alt="LANGUAGE" />
+                <img src={currentLanguageIcon} alt={t('국기 아이콘')} />
                 LANGUAGE
               </button>
             </S.Language>
