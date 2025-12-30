@@ -209,7 +209,7 @@ export const TablesPage = () => {
         onClose={handleGuestCountClose}
         onConfirm={handleGuestCountConfirm}
         shopSetting={shopSetting}
-        initialCustomerCount={1}
+        initialCustomerCount={0}
         initialKidsCustomerCount={0}
       />
     </DndContextWrapper>

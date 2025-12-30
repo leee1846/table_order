@@ -82,9 +82,6 @@ export const SalesListDialog = ({
     pageNumber: currentPage - 1,
     pageSize: itemsPerPage,
   });
-  if (orderHistoryResponse) {
-    console.log('orderHistoryResponse', orderHistoryResponse);
-  }
 
   useEffect(() => {
     if (!isOpen || !shopCode) {

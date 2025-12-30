@@ -92,6 +92,14 @@ export const DeviceCell = styled.div`
   gap: 8px;
 `;
 
+export const DeviceTypeCell = styled.div`
+  width: 100%;
+  transform: translateX(25%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+`;
+
 export const BatteryColumn = styled.div`
   display: flex;
   align-items: center;

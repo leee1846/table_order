@@ -20,6 +20,7 @@ import type {
   TDeviceType,
 } from '@repo/api/types';
 import { toast } from '@repo/feature/utils';
+import { getDeviceTypeLabel } from '@repo/util/device';
 import * as S from './deviceListDialog.style';
 
 const { colors } = theme;
@@ -27,13 +28,13 @@ const { colors } = theme;
 export type DeviceItem = {
   androidId: string | null;
   id: string;
-  device: string;
   table: string;
   battery: number | null;
   wifiSignal: string | number | null;
   ip: string;
   version: string;
   buildNumber: string;
+  deviceType: TDeviceType;
 };
 
 export type DeviceListDialogProps = {
@@ -43,36 +44,12 @@ export type DeviceListDialogProps = {
   itemsPerPage?: number;
 };
 
-const DEVICE_TYPE_LABELS: Record<TDeviceType, string> = {
-  ORDER_POS: '오더포스',
-  POS_APP: '포스앱',
-  MENU: '메뉴판',
-};
-
 const DEVICE_CONTROL_MESSAGES: Record<TDeviceControlType, string> = {
   DEVICE_APP_UPDATE: '기기 업데이트 요청을 보냈어요.',
   DEVICE_SCREEN_ON: '화면 켜기 요청을 보냈어요.',
   DEVICE_SCREEN_OFF: '화면 끄기 요청을 보냈어요.',
   DEVICE_OFF: '기기 종료 요청을 보냈어요.',
   DEVICE_RESTART: '재부팅 요청을 보냈어요.',
-};
-
-const getDeviceLabel = (device: IGetDeviceListItem) => {
-  const baseLabel = DEVICE_TYPE_LABELS[device.deviceType] ?? '기기';
-
-  if (device.deviceType === 'MENU' && device.tableNumber) {
-    return `${baseLabel} ${device.tableNumber}`;
-  }
-
-  if (
-    device.deviceType === 'ORDER_POS' &&
-    device.orderPosNumber !== null &&
-    device.orderPosNumber !== undefined
-  ) {
-    return `${baseLabel} ${device.orderPosNumber}`;
-  }
-
-  return baseLabel;
 };
 
 const formatWifiSignal = (signal: DeviceItem['wifiSignal']) => {
@@ -114,10 +91,10 @@ export const DeviceListDialog = ({
     shopCode: shopCode ?? '',
     pageNumber: currentPage - 1,
     pageSize: itemsPerPage,
-    options: {
-      enabled: false,
-    },
   });
+
+  console.log('deviceListResponse', deviceListResponse);
+
   const { mutateAsync: postDeviceControl, isPending: isDeviceControlLoading } =
     usePostDeviceControl();
 
@@ -152,15 +129,14 @@ export const DeviceListDialog = ({
     if (!deviceList || !Array.isArray(deviceList)) {
       return [];
     }
-
     return deviceList.map((device, index) => ({
       androidId: device.androidId ?? null,
+      deviceType: device.deviceType,
       id:
         device.androidId ??
         (device.deviceSeq !== undefined && device.deviceSeq !== null
           ? String(device.deviceSeq)
           : `device-${index}`),
-      device: getDeviceLabel(device),
       table: device.tableNumber ?? '-',
       battery: device.battery ?? null,
       wifiSignal: device.wifiSignal ?? null,
@@ -337,12 +313,16 @@ export const DeviceListDialog = ({
                     <tr key={device.id}>
                       <td>
                         <S.DeviceCell>
-                          <CheckButton
-                            checked={selectedDevices.has(device.id)}
-                            onChange={() => handleSelectDevice(device.id)}
-                          >
-                            <span>{device.device}</span>
-                          </CheckButton>
+                          <S.DeviceTypeCell>
+                            <CheckButton
+                              checked={selectedDevices.has(device.id)}
+                              onChange={() => handleSelectDevice(device.id)}
+                            >
+                              <span>
+                                {getDeviceTypeLabel(device.deviceType)}
+                              </span>
+                            </CheckButton>
+                          </S.DeviceTypeCell>
                         </S.DeviceCell>
                       </td>
                       <td>{device.table}</td>
@@ -365,11 +345,12 @@ export const DeviceListDialog = ({
                       <td>
                         <S.VersionColumn>
                           <span>{device.version || '-'}</span>
-                          {device.version && (
+                          {/* TODO : 최신 버전임을 알 값이 생길 때까지 보ㅓ류 */}
+                          {/* {device.version && (
                             <ChipButton variant="darkgrey" size="S">
                               최신
                             </ChipButton>
-                          )}
+                          )} */}
                         </S.VersionColumn>
                       </td>
                       <td style={{ color: colors.grey[400] }}>

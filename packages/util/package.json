@@ -9,6 +9,7 @@
     "./array": "./src/array/index.ts",
     "./calculation": "./src/calculation/index.ts",
     "./date": "./src/date/index.ts",
+    "./device": "./src/device/index.ts",
     "./function": "./src/function/index.ts",
     "./string": "./src/string/index.ts",
     "./time": "./src/time/index.ts",

@@ -6,6 +6,7 @@ import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { IShopSetting } from '@repo/api/types';
 import * as S from './guestCountDialog.styles';
+import { toast } from '../../utils';
 
 const { colors } = theme;
 
@@ -31,7 +32,7 @@ export const GuestCountDialog = ({
   onClose,
   onConfirm,
   shopSetting,
-  initialCustomerCount = 1,
+  initialCustomerCount = 0,
   initialKidsCustomerCount = 0,
 }: GuestCountDialogProps) => {
   const [customerCount, setCustomerCount] = useState(initialCustomerCount);
@@ -53,14 +54,15 @@ export const GuestCountDialog = ({
     return null;
   }
 
-  // 성인/아동 모두 사용: 둘 다 0이면 비활성화
   // 성인만 사용: 성인이 0이면 비활성화
-  const isButtonDisabled = useKidsCustomerCount
-    ? customerCount === 0 && kidsCustomerCount === 0
-    : customerCount === 0;
+  const isButtonDisabled = useKidsCustomerCount && customerCount === 0;
 
   /** 확인 버튼 핸들러 - 입력값 전달 */
   const handleConfirm = () => {
+    if (isButtonDisabled) {
+      toast('성인 인원 수를 입력해주세요.');
+      return;
+    }
     onConfirm(
       useKidsCustomerCount
         ? { customerCount, kidsCustomerCount }
@@ -140,7 +142,6 @@ export const GuestCountDialog = ({
             <BasicButton
               variant="Solid_Navy_2XL"
               onClick={handleConfirm}
-              disabled={isButtonDisabled}
               fullWidth
             >
               완료

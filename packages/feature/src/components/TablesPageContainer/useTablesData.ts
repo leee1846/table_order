@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import {
   useGetCurrentTableList,
+  useGetDeviceList,
   useGetTableGroupList,
 } from '@repo/api/queries';
+import type { IGetDeviceListItem } from '@repo/api/types';
 import type { TableWithStatus } from './types';
 
 export interface UseTablesDataProps {
@@ -31,7 +33,31 @@ export const useTablesData = ({
   const { data: currentTableListResponse, isLoading: isLoadingCurrentTables } =
     useGetCurrentTableList({ shopCode }, { enabled: !!shopCode });
 
-  const isLoading = isLoadingTableGroups || isLoadingCurrentTables;
+  const { data: deviceListResponse, isLoading: isLoadingDeviceList } =
+    useGetDeviceList({
+      shopCode,
+      options: {
+        enabled: !!shopCode,
+      },
+    });
+
+  const menuDeviceMap = useMemo(() => {
+    const map = new Map<string, IGetDeviceListItem>();
+
+    if (deviceListResponse?.data) {
+      deviceListResponse.data.forEach((device) => {
+        //TODO : 중복 테이블의 경우 어떤 테이블의 배터리량을 보여줘야 하는지
+        if (device.deviceType === 'MENU' && device.tableNumber) {
+          map.set(device.tableNumber, device);
+        }
+      });
+    }
+
+    return map;
+  }, [deviceListResponse]);
+
+  const isLoading =
+    isLoadingTableGroups || isLoadingCurrentTables || isLoadingDeviceList;
 
   // 선택된 테이블 그룹의 테이블과 주문 현황을 병합
   const tables: TableWithStatus[] = useMemo(() => {
@@ -64,6 +90,9 @@ export const useTablesData = ({
     // 선택된 그룹의 테이블을 순회하면서 주문 정보가 있으면 병합
     return groupTables.map((table) => {
       const orderInfo = orderMap.get(table.tableNumber);
+      const deviceInfo = menuDeviceMap.get(table.tableNumber);
+
+      const batteryLevel = deviceInfo?.battery ?? null;
 
       const hasOrder = !!orderInfo && !!orderInfo.orderDetailMenuList;
 
@@ -91,7 +120,7 @@ export const useTablesData = ({
           id: table.tableSeq, // tableSeq를 id로 사용
           tableNumber: table.tableNumber,
           tableName: table.tableName ?? '',
-          batteryLevel: 100, // API 응답에 없으므로 기본값 사용
+          batteryLevel,
           totalAmount: orderInfo.totalAmount ?? null,
           orderTime,
           menuItems,
@@ -104,14 +133,19 @@ export const useTablesData = ({
         id: table.tableSeq,
         tableNumber: table.tableNumber,
         tableName: table.tableName ?? '',
-        batteryLevel: 100,
+        batteryLevel,
         totalAmount: null,
         orderTime: null,
         menuItems: null,
         hasOrder: false,
       };
     });
-  }, [tableGroupListResponse, currentTableListResponse, selectedTableGroupSeq]);
+  }, [
+    tableGroupListResponse,
+    currentTableListResponse,
+    selectedTableGroupSeq,
+    menuDeviceMap,
+  ]);
 
   return {
     tables,

@@ -20,10 +20,7 @@ export const DraggableTableCard = ({
   useTranslation,
 }: DraggableTableCardProps) => {
   const tableNumber = String(table.tableNumber);
-  const hasOrder =
-    table.menuItems !== null &&
-    table.menuItems !== undefined &&
-    table.menuItems.length > 0;
+  const hasOrder = table.menuItems !== null && table.menuItems !== undefined;
   const isActive = activeTableNumber === tableNumber;
 
   const {

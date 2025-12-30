@@ -253,7 +253,8 @@ export const OrderListDialog = ({
                         주문 목록을 불러오는 중입니다.
                       </td>
                     </tr>
-                  ) : orderItems.length > 0 ? (
+                  ) : orderItems.flatMap((order) => order.menuItems).length >
+                    0 ? (
                     orderItems.map((order) => (
                       <tr key={order.id} onClick={() => handleRowClick(order)}>
                         <td>{order.orderNumber}</td>

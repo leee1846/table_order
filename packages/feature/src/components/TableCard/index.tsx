@@ -31,14 +31,19 @@ export const TableCard = ({
 }: Props) => {
   const { t } = useTranslation();
 
-  const batteryIcon =
-    table.batteryLevel > 51 ? (
+  const hasBatteryInfo =
+    table.batteryLevel !== null && table.batteryLevel !== undefined;
+  const batteryLevel = table.batteryLevel ?? 0;
+
+  const batteryIcon = hasBatteryInfo ? (
+    batteryLevel > 51 ? (
       <FullBatteryIcon color={colors.grey[800]} />
-    ) : table.batteryLevel <= 50 && table.batteryLevel > 20 ? (
+    ) : batteryLevel <= 50 && batteryLevel > 20 ? (
       <HalfBatteryIcon color={colors.grey[800]} />
-    ) : table.batteryLevel <= 20 && table.batteryLevel > 0 ? (
+    ) : batteryLevel <= 20 && batteryLevel > 0 ? (
       <LowBatteryIcon color={colors.semantic[400]} />
-    ) : null;
+    ) : null
+  ) : null;
 
   return (
     <S.CardContainer onClick={onClick}>
@@ -59,7 +64,6 @@ export const TableCard = ({
       </S.CardContent>
 
       <S.CardFooter>
-        {/* TODO : 메뉴가 켜진 테블릿의 경우만 보이게 추후 수정 */}
         {batteryIcon}
         {!table.menuItems ? (
           <S.StatusText>{t('빈 테이블')}</S.StatusText>
