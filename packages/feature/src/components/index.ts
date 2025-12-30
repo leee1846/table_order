@@ -19,11 +19,7 @@ export {
   type TSubMenu,
 } from './SettingsSidebar';
 
-export {
-  SalesListDialog,
-  type SalesListDialogProps,
-  type SalesItem,
-} from './SalesListDialog';
+export { SalesListDialog, type SalesListDialogProps } from './SalesListDialog';
 export {
   DeviceListDialog,
   type DeviceListDialogProps,

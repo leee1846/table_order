@@ -100,6 +100,11 @@ export type TOrderStatusCode =
   | 'POS_CANCEL';
 
 /**
+ * 주문 결제 상태 코드
+ */
+export type TOrderPaymentStatus = 'UNPAID' | 'PAID' | 'REFUND';
+
+/**
  * 주문 상태 정보
  */
 export interface IOrderStatus {
@@ -249,6 +254,12 @@ export interface IGetCurrentTableListParams {
   shopCode: string;
 }
 
+export interface IGetOrderLogParams {
+  shopCode: string;
+  pageNumber?: number;
+  pageSize?: number;
+}
+
 /**
  * 주문 테이블 이동/합석 요청 파라미터
  */
@@ -312,3 +323,29 @@ export interface IPostPickupMessageRequest {
  * 픽업 메시지 전송 응답 타입
  */
 export type TPostPickupMessageResponse = TVoidApiResponse;
+
+export interface IOrderLogItem {
+  orderUuid: string;
+  orderGroupUuid: string;
+  shopSeq: number;
+  tableSeq: number;
+  tableNumber: string;
+  orderType: TOrderType;
+  totalAmount: number;
+  orderCode: string;
+  status: TOrderStatusCode;
+  paymentStatus: TOrderPaymentStatus;
+  customerCount: number | null;
+  kidsCustomerCount: number | null;
+  createDate: string | number;
+  updateDate: string | number;
+  orderDetailMenuList: IOrderDetailMenu[];
+}
+
+export interface IOrderLog {
+  currentPageNumber: number;
+  totalPageNumber: number;
+  orderLog: IOrderLogItem[];
+}
+
+export type TGetOrderLogResponse = IApiResponse<IOrderLog>;

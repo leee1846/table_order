@@ -7,6 +7,12 @@ export const Container = styled.div`
   border-radius: 1rem;
   width: 60rem;
   max-height: 95vh;
+
+  > button {
+    cursor: pointer;
+    width: 100%;
+    text-align: right;
+  }
 `;
 
 export const Tab = styled.div`

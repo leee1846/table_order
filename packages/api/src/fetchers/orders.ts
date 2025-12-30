@@ -18,6 +18,8 @@ import type {
   IPostPickupMessageRequest,
   TPostPickupMessageResponse,
   TCreateTableOrderResponse,
+  IGetOrderLogParams,
+  TGetOrderLogResponse,
 } from '../types/orders';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -109,6 +111,28 @@ export const getCurrentTableList = async ({
   const response = await axiosInstance<TGetCurrentTableListResponse>({
     method: 'GET',
     url: ENDPOINTS.ORDER.CURRENT_TABLE_LIST(shopCode),
+  });
+
+  return response.data;
+};
+
+/**
+ * 주문 로그 목록을 조회합니다. (페이징)
+ * GET /order/log/{shopCode}
+ */
+export const getOrderLogList = async ({
+  shopCode,
+  pageNumber,
+  pageSize,
+}: IGetOrderLogParams): Promise<TGetOrderLogResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetOrderLogResponse>({
+    method: 'GET',
+    url: ENDPOINTS.ORDER.ORDER_LOG_LIST(shopCode),
+    params: {
+      pageNumber: pageNumber ?? 0,
+      pageSize: pageSize ?? 10,
+    },
   });
 
   return response.data;

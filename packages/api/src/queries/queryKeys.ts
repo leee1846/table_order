@@ -60,6 +60,15 @@ export const queryKeys = {
     /** 현재 테이블 목록 조회 */
     currentTableList: (shopCode: string) =>
       [...queryKeys.orders.all, 'currentTableList', shopCode] as const,
+    /** 주문 로그 리스트 조회 (페이징) */
+    orderLogList: (shopCode: string, pageNumber: number, pageSize: number) =>
+      [
+        ...queryKeys.orders.all,
+        'orderLogList',
+        shopCode,
+        pageNumber,
+        pageSize,
+      ] as const,
   },
 
   auth: {

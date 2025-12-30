@@ -185,7 +185,6 @@ export const Footer = styled.div`
   position: sticky;
   bottom: 0;
   padding: 16px 40px 24px;
-  border-top: 1px solid ${theme.colors.grey[200]};
   background-color: ${theme.colors.white};
   display: flex;
   align-items: center;

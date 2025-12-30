@@ -1,9 +1,7 @@
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import styled from '@emotion/styled';
 
-export const Container = styled.div`
-  border: 1px solid red;
-`;
+export const Container = styled.div``;
 
 export const TitleContainer = styled.div`
   display: flex;

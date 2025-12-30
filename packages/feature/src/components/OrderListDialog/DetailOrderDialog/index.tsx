@@ -80,7 +80,8 @@ const DetailOrderDialog = ({
             </S.InfoItem>
             <S.InfoItem>
               <S.InfoLabel>결제 수단</S.InfoLabel>
-              <S.InfoValue>{order?.paymentMethod || '-'}</S.InfoValue>
+              {/* TODO paymentStatus 아직 백엔드에서 구현 안됨 현재 null로 오는 중 */}
+              <S.InfoValue>{order?.paymentStatus || '-'}</S.InfoValue>
             </S.InfoItem>
             <S.InfoItem>
               <S.InfoLabel>객수</S.InfoLabel>

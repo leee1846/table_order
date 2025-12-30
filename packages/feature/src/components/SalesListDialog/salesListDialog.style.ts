@@ -53,13 +53,6 @@ export const CalendarText = styled.span`
   color: ${theme.colors.grey[900]};
 `;
 
-export const TableContainer = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 24px;
-  min-height: 0;
-`;
-
 export const PaymentMethod = styled.span<{ color: string }>`
   ${TYPOGRAPHY.ST_4}
   color: ${(props) => props.color};

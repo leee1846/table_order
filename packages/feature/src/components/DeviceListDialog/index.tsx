@@ -307,7 +307,7 @@ export const DeviceListDialog = ({
               </UIStyles.setting.Thead>
               <S.Tbody>
                 {isInitialLoading ? (
-                  <tr>
+                  <tr style={{ height: '100%' }}>
                     <td
                       colSpan={7}
                       style={{
@@ -320,7 +320,7 @@ export const DeviceListDialog = ({
                     </td>
                   </tr>
                 ) : deviceItems.length === 0 ? (
-                  <tr>
+                  <tr style={{ height: '100%' }}>
                     <td
                       colSpan={7}
                       style={{

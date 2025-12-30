@@ -29,6 +29,7 @@ export const ENDPOINTS = {
     MOVE_ORDER_GROUP: (shopCode: string) => `/order/move/${shopCode}`,
     SHARE_ORDER_GROUP: (shopCode: string) => `/order/share/${shopCode}`,
     CUSTOM_AMOUNT: '/order/custom-amount',
+    ORDER_LOG_LIST: (shopCode: string) => `/order/log/${shopCode}`,
   },
 
   CATEGORY: {

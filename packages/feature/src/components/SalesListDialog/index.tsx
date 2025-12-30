@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ModalBackground,
   Pagination,
@@ -7,72 +7,138 @@ import {
 } from '@repo/ui/components';
 import { CloseIcon, CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import { useGetOrderHistory } from '@repo/api/queries';
+import type { IOrderHistoryItem } from '@repo/api/types';
+import { formatCurrency } from '@repo/util/string';
+import {
+  getDateRangeByPreset,
+  toYYYYMMDDRange,
+  type TDateRangePreset,
+} from '@repo/util/date';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from './salesListDialog.style';
 import { Table } from './Table';
+import { OrderDetailModal } from './OrderDetailModal';
 
 const { colors } = theme;
 
-export type SalesItem = {
-  id: string;
-  orderNumber: string;
-  transactionDate: string;
-  tableNumber: string;
-  transactionAmount: number;
-  paymentMethod: string;
-  guestCount: number;
-  isCancelled?: boolean;
-};
+const PAGE_SIZE = 8;
 
 export type SalesListDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  sales?: SalesItem[];
+  shopCode?: string;
   itemsPerPage?: number;
-  onViewDetails?: (sales: SalesItem) => void;
 };
 
-const dateOptions = [
-  { value: 'all', label: '오늘' },
+const dateOptions: { value: TDateRangePreset; label: string }[] = [
+  { value: 'today', label: '오늘' },
   { value: 'yesterday', label: '어제' },
   { value: 'thisWeek', label: '이번주' },
   { value: 'thisMonth', label: '이번달' },
   { value: '3Months', label: '3개월' },
 ];
 
-export const SalesListDialog = ({ isOpen, onClose }: SalesListDialogProps) => {
+export const SalesListDialog = ({
+  isOpen,
+  onClose,
+  shopCode,
+  itemsPerPage = PAGE_SIZE,
+}: SalesListDialogProps) => {
+  const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
+
   const [showCalendar, setShowCalendar] = useState(false);
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
-  const [selectedDateOption, setSelectedDateOption] = useState<
-    string | number | null
-  >('today');
+  const [selectedDateOption, setSelectedDateOption] =
+    useState<TDateRangePreset | null>('today');
+  const [startDate, setStartDate] = useState<string>(
+    defaultDateRange.startDate
+  );
+  const [endDate, setEndDate] = useState<string>(defaultDateRange.endDate);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedOrder, setSelectedOrder] = useState<IOrderHistoryItem | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (!isOpen) {
+      setCurrentPage(1);
+      setSelectedOrder(null);
+    }
+  }, [isOpen, shopCode, itemsPerPage]);
+
+  const { startDate: apiStartDate, endDate: apiEndDate } = useMemo(
+    () => toYYYYMMDDRange({ startDate, endDate }),
+    [startDate, endDate]
+  );
+
+  const {
+    data: orderHistoryResponse,
+    isFetching,
+    refetch,
+  } = useGetOrderHistory({
+    shopCode: shopCode ?? '',
+    startDate: apiStartDate,
+    endDate: apiEndDate,
+    pageNumber: currentPage - 1,
+    pageSize: itemsPerPage,
+  });
+  if (orderHistoryResponse) {
+    console.log('orderHistoryResponse', orderHistoryResponse);
+  }
+
+  useEffect(() => {
+    if (!isOpen || !shopCode) {
+      return;
+    }
+
+    refetch();
+  }, [
+    isOpen,
+    shopCode,
+    currentPage,
+    itemsPerPage,
+    startDate,
+    endDate,
+    refetch,
+  ]);
+
+  const orderHistory = orderHistoryResponse?.data;
+  const orders = orderHistory?.orderHistory ?? [];
+  const totalPages = Math.max(orderHistory?.totalPageNumber ?? 1, 1);
+  const totalSalesAmount = orderHistory?.totalSalesAmount ?? 0;
+  const totalSalesCount = orderHistory?.totalSalesCount ?? 0;
+  const prePaymentAmount = orderHistory?.prePaymentAmount ?? 0;
+  const prePaymentCount = orderHistory?.prePaymentCount ?? 0;
+  const estimatedTotalAmount = orderHistory?.estimatedTotalAmount ?? 0;
+  const estimatedTotalCount = orderHistory?.estimatedTotalCount ?? 0;
+
+  const handlePresetChange = (value: string | number) => {
+    const preset = value as TDateRangePreset;
+    const range = getDateRangeByPreset(preset);
+
+    setSelectedDateOption(preset);
+    setStartDate(range.startDate);
+    setEndDate(range.endDate);
+    setCurrentPage(1);
+  };
+
+  const handleSelectDate = (start: string, end: string) => {
+    setStartDate(start);
+    setEndDate(end);
+    setSelectedDateOption(null);
+    setShowCalendar(false);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   if (!isOpen) {
     return null;
   }
 
-  const handleSelectDate = (start: string, end: string) => {
-    setStartDate(start);
-    setEndDate(end);
-    setShowCalendar(false);
-  };
-
-  const formatDateRange = () => {
-    if (startDate && endDate) {
-      // YYYY-MM-DD 형식을 YY-MM-DD로 변환
-      const formatDate = (date: string) => {
-        const parts = date.split('-');
-        if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) {
-          return date;
-        }
-        const [year, month, day] = parts;
-        return `${year.slice(-2)}-${month}-${day}`;
-      };
-      return `${formatDate(startDate)} ~ ${formatDate(endDate)}`;
-    }
-    return '날짜 선택';
-  };
+  const isInitialLoading = isFetching && !orderHistoryResponse;
 
   return (
     <>
@@ -96,33 +162,45 @@ export const SalesListDialog = ({ isOpen, onClose }: SalesListDialogProps) => {
                   height={32}
                   color={colors.grey[700]}
                 />
-                <S.CalendarText>{formatDateRange()}</S.CalendarText>
+                <S.CalendarText>
+                  {startDate && endDate
+                    ? `${startDate} ~ ${endDate}`
+                    : '날짜 선택'}
+                </S.CalendarText>
               </S.CalendarButton>
               <Dropdown
                 options={dateOptions}
                 value={selectedDateOption}
-                onChange={setSelectedDateOption}
+                onChange={handlePresetChange}
               />
             </S.FilterContainer>
 
-            <Table />
+            <Table
+              orders={orders}
+              isLoading={isInitialLoading}
+              onSelectOrder={(order) => setSelectedOrder(order)}
+            />
           </S.Container>
           <UIStyles.setting.Footer>
             <UIStyles.setting.FooterContents>
               <p>
-                <span>총 매출:</span> 9999999 <span>0건</span>
+                <span>총 매출:</span> {formatCurrency(totalSalesAmount)}{' '}
+                <span>{totalSalesCount}건</span>
               </p>
               <p>
-                <span>결제 전 매출:</span> 9999999 <span>0건</span>
+                <span>결제 전 매출:</span> {formatCurrency(prePaymentAmount)}{' '}
+                <span>{prePaymentCount}건</span>
               </p>
               <p>
-                <span>총 예상 매출:</span> 9999999 <span>0건</span>
+                <span>총 예상 매출:</span>
+                {formatCurrency(estimatedTotalAmount)}{' '}
+                <span>{estimatedTotalCount}건</span>
               </p>
             </UIStyles.setting.FooterContents>
             <Pagination
-              totalPages={10}
-              currentPage={1}
-              onPageChange={() => {}}
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
             />
           </UIStyles.setting.Footer>
         </S.DialogContainer>
@@ -137,6 +215,13 @@ export const SalesListDialog = ({ isOpen, onClose }: SalesListDialogProps) => {
           onSelectDate={handleSelectDate}
           beforeYears={1}
           afterYears={1}
+        />
+      )}
+
+      {selectedOrder && (
+        <OrderDetailModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
         />
       )}
     </>
