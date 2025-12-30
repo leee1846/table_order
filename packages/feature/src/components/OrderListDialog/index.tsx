@@ -255,17 +255,22 @@ export const OrderListDialog = ({
                     </tr>
                   ) : orderItems.flatMap((order) => order.menuItems).length >
                     0 ? (
-                    orderItems.map((order) => (
-                      <tr key={order.id} onClick={() => handleRowClick(order)}>
-                        <td>{order.orderNumber}</td>
-                        <td>{order.orderDateTime}</td>
-                        <td>{order.tableNumber}</td>
-                        <td>{order.orderChannel}</td>
-                        {/* TODO paymentStatus 아직 백엔드에서 구현 안됨 현재 null로 오는 중 */}
-                        <td>{order.paymentStatus}</td>
-                        <td>{order.orderStatus}</td>
-                      </tr>
-                    ))
+                    orderItems
+                      .filter((order) => order.menuItems.length > 0)
+                      .map((order) => (
+                        <tr
+                          key={order.id}
+                          onClick={() => handleRowClick(order)}
+                        >
+                          <td>{order.orderNumber}</td>
+                          <td>{order.orderDateTime}</td>
+                          <td>{order.tableNumber}</td>
+                          <td>{order.orderChannel}</td>
+                          {/* TODO paymentStatus 아직 백엔드에서 구현 안됨 현재 null로 오는 중 */}
+                          <td>{order.paymentStatus}</td>
+                          <td>{order.orderStatus}</td>
+                        </tr>
+                      ))
                   ) : (
                     <tr style={{ height: '100%' }}>
                       <td

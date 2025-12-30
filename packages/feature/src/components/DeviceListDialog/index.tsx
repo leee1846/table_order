@@ -93,8 +93,6 @@ export const DeviceListDialog = ({
     pageSize: itemsPerPage,
   });
 
-  console.log('deviceListResponse', deviceListResponse);
-
   const { mutateAsync: postDeviceControl, isPending: isDeviceControlLoading } =
     usePostDeviceControl();
 

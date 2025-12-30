@@ -22,7 +22,7 @@ import { OrderDetailModal } from './OrderDetailModal';
 
 const { colors } = theme;
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 6;
 
 export type SalesListDialogProps = {
   isOpen: boolean;

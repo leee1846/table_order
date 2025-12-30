@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { theme, TYPOGRAPHY } from '@repo/ui';
 import {
   BaseDialogContainer,
   BaseCloseButton,
@@ -42,7 +41,6 @@ export const TableContainer = styled.div`
 
 export const Table = styled.table`
   width: 100%;
-  border: 1px solid red;
 `;
 
 export const Thead = styled.thead`

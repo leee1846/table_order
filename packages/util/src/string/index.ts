@@ -106,9 +106,7 @@ export const normalizeNumberString = (value: string): string => {
  * @param method - 결제 수단 코드 (예: 'CARD', 'CASH', 'CANCELED_ALL')
  * @returns 한글 라벨 또는 원본 값
  */
-export const formatPaymentMethodLabel = (
-  method?: string | null
-): string => {
+export const formatPaymentMethodLabel = (method?: string | null): string => {
   if (!method) {
     return '-';
   }

@@ -57,11 +57,10 @@ export const Table = ({ orders, isLoading, onSelectOrder }: TableProps) => {
           <th>상세 내역</th>
         </tr>
       </UIStyles.setting.Thead>
-      <UIStyles.setting.Tbody>
+      <S.Tbody>
         {isLoading ? (
           <tr style={{ height: '100%' }}>
             <td
-              colSpan={7}
               style={{
                 padding: '24px',
                 textAlign: 'center',
@@ -74,7 +73,6 @@ export const Table = ({ orders, isLoading, onSelectOrder }: TableProps) => {
         ) : orders.length === 0 ? (
           <tr style={{ height: '100%' }}>
             <td
-              colSpan={7}
               style={{
                 padding: '24px',
                 textAlign: 'center',
@@ -117,7 +115,7 @@ export const Table = ({ orders, isLoading, onSelectOrder }: TableProps) => {
             );
           })
         )}
-      </UIStyles.setting.Tbody>
+      </S.Tbody>
     </UIStyles.setting.Table>
   );
 };
