@@ -2,15 +2,17 @@ import { SettingsSidebar } from '@repo/feature/components';
 import { getSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
-import { bestOnIcon } from '@repo/ui/icons';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
+import { useShopThemePage } from '@/hooks/useShopThemePage';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
   const { t } = useAdminTranslation();
+
+  const { data: shopPageSettingData } = useShopThemePage();
 
   const onClickLogo = () => {
     navigate(ROUTES.TABLES.generate());
@@ -34,7 +36,10 @@ export const SidebarLayout = () => {
       menus={getSidebarMenus(t)}
       logoElement={
         <button type="button" onClick={onClickLogo}>
-          <img src={bestOnIcon} alt="logo" />
+          <img
+            src={shopPageSettingData?.shopThemeData?.logoImagePath ?? ''}
+            alt={t('매장 로고')}
+          />
         </button>
       }
       onClickHomeButton={onClickHomeButton}

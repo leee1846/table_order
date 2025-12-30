@@ -1,9 +1,9 @@
 import * as CommonStyles from '@repo/ui/styles/sidebar.styles';
-import { bestOnIcon } from '@repo/ui/icons';
 import type { ITableGroup } from '@repo/api/types';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import { useShopThemePage } from '@/hooks/useShopThemePage';
 
 interface Props {
   tableGroups?: ITableGroup[];
@@ -18,6 +18,8 @@ export const Sidebar = ({
   const navigate = useNavigate();
   const { t } = useAdminTranslation();
 
+  const { data: shopPageSettingData } = useShopThemePage();
+
   const onClickManagement = () => {
     navigate(ROUTES.SETTINGS.MISCELLANEOUS.generate());
   };
@@ -25,7 +27,10 @@ export const Sidebar = ({
   return (
     <CommonStyles.SidebarContainer>
       <CommonStyles.Logo>
-        <img src={bestOnIcon} />
+        <img
+          src={shopPageSettingData?.shopThemeData?.logoImagePath ?? ''}
+          alt={t('매장 로고')}
+        />
       </CommonStyles.Logo>
 
       <CommonStyles.MenuList>
