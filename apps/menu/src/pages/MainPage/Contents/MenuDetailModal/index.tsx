@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { CURRENCY_SYMBOL } from '@/constants/common';
+import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
@@ -19,6 +19,7 @@ interface Props {
   onClose: () => void;
   menu: IMenu;
 }
+
 export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const { t } = useCustomerTranslation();
   const { data: languageData } = useCustomerLanguageStore();
@@ -32,6 +33,25 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
   const images = menu.menuImageList?.filter((img) => img.imagePath) || [];
+
+  // 메뉴 수량 변경 핸들러
+  const handleCountChange = (newQuantity: number) => {
+    if (newQuantity < 1) {
+      return;
+    }
+
+    if (newQuantity > MENU_MAX_QUANTITY) {
+      toast(
+        t('최대 {{maxQuantity}}개까지 선택 가능합니다.', {
+          maxQuantity: MENU_MAX_QUANTITY,
+        }),
+        { position: 'center-center', duration: 1500 }
+      );
+      return;
+    }
+
+    setCurrentCount(newQuantity);
+  };
 
   const onClickAdd = () => {
     if (menu.minQuantity > currentCount) {
@@ -99,7 +119,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
         <NumberInput
           variant="square"
           value={currentCount}
-          onChange={setCurrentCount}
+          onChange={handleCountChange}
           size="L"
           min={1}
           customStyle={css`

@@ -33,3 +33,5 @@ export const LANGUAGE_CONFIG = {
     flag: ruFlagIcon,
   },
 } as const;
+
+export const MENU_MAX_QUANTITY = 999;

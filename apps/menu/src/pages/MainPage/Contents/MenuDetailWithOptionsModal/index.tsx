@@ -21,7 +21,7 @@ import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import type { ICartMenu, ICartOption } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
-import { CURRENCY_SYMBOL } from '@/constants/common';
+import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -41,8 +41,6 @@ interface SelectedOptionDisplay {
   quantity: number;
   groupName: string;
 }
-
-const MAX_OPTION_QUANTITY = 999;
 
 // 옵션을 고유하게 식별하기 위한 키 생성
 const createOptionKey = (optionGroupSeq: number, optionSeq: number): string => {
@@ -162,6 +160,25 @@ export const MenuDetailWithOptionsModal = ({
       )
   );
   const [menuQuantity, setMenuQuantity] = useState(initialQuantity);
+
+  // 메뉴 수량 변경 핸들러
+  const handleMenuQuantityChange = (newQuantity: number) => {
+    if (newQuantity < 1) {
+      return;
+    }
+
+    if (newQuantity > MENU_MAX_QUANTITY) {
+      toast(
+        t('최대 {{maxQuantity}}개까지 선택 가능합니다.', {
+          maxQuantity: MENU_MAX_QUANTITY,
+        }),
+        { position: 'center-center', duration: 1500 }
+      );
+      return;
+    }
+
+    setMenuQuantity(newQuantity);
+  };
 
   const menuImages = useMemo(
     () => menu.menuImageList?.filter((img) => img.imagePath) || [],
@@ -295,11 +312,10 @@ export const MenuDetailWithOptionsModal = ({
         return prev;
       }
 
-      // 최대 999개 제한
-      if (newQuantity > MAX_OPTION_QUANTITY) {
+      if (newQuantity > MENU_MAX_QUANTITY) {
         toast(
           t('최대 {{maxQuantity}}개까지 선택 가능합니다.', {
-            maxQuantity: MAX_OPTION_QUANTITY,
+            maxQuantity: MENU_MAX_QUANTITY,
           }),
           { position: 'center-center', duration: 1500 }
         );
@@ -674,7 +690,7 @@ export const MenuDetailWithOptionsModal = ({
             <NumberInput
               variant="square"
               value={menuQuantity}
-              onChange={setMenuQuantity}
+              onChange={handleMenuQuantityChange}
               size="L"
               min={1}
               customStyle={css`

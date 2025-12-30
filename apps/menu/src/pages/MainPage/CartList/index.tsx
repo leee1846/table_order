@@ -12,7 +12,7 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { CURRENCY_SYMBOL } from '@/constants/common';
+import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 
@@ -91,6 +91,25 @@ export const CartList = ({
   const handleRemoveMenu = (index: number) => {
     removeFromCart(index);
     toast(t('메뉴가 삭제되었습니다.'), TOAST_OPTIONS);
+  };
+
+  // 카트 메뉴 수량 변경 핸들러
+  const handleCartQuantityChange = (index: number, newQuantity: number) => {
+    if (newQuantity < 1) {
+      return;
+    }
+
+    if (newQuantity > MENU_MAX_QUANTITY) {
+      toast(
+        t('최대 {{maxQuantity}}개까지 선택 가능합니다.', {
+          maxQuantity: MENU_MAX_QUANTITY,
+        }),
+        { position: 'center-center', duration: 1500 }
+      );
+      return;
+    }
+
+    updateCartItemQuantity(index, newQuantity);
   };
 
   const handleOpenMenuDetailModal = (menu: ICartMenu, index: number) => {
@@ -215,7 +234,7 @@ export const CartList = ({
                     size="L"
                     min={1}
                     value={menu.quantity}
-                    onChange={(value) => updateCartItemQuantity(index, value)}
+                    onChange={(value) => handleCartQuantityChange(index, value)}
                   />
                 </S.ButtonContainer>
               </S.OrderItem>
