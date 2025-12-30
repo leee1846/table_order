@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import * as S from './tableDetailContainer.styles';
 import { OrderPanel } from './orderSection/OrderPanel';
 import { ActionGrid } from './actionSection/ActionGrid';
@@ -24,9 +24,16 @@ import { openDualActionDialog, toast } from '@repo/feature/utils';
 import {
   useGetTableOrderHistories,
   usePutCancelOrderAll,
+  useGetCategoriesWithMenus,
+  useGetShopDetail,
 } from '@repo/api/queries';
-import type { ICategoryWithMenus, ICurrentTable } from '@repo/api/types';
+import type {
+  ICategoryWithMenus,
+  ICurrentTable,
+  ISseMessage,
+} from '@repo/api/types';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
+import { useSSE } from '@repo/feature/hooks';
 import type { Order, OrderItem } from './orderSection/types';
 
 export type { SelectedMenuWithOptions };
@@ -34,21 +41,11 @@ export type { SelectedMenuWithOptions };
 export interface TableDetailContainerProps {
   shopCode: string;
   tableNumber: string;
-  numberOfPeople?: number;
-  useCustomerCount?: boolean;
-  onAddMenu?: (selectedItems: SelectedMenuWithOptions[]) => void;
-  menuboardCategories?: ICategoryWithMenus[];
-  isMenuboardLoading?: boolean;
 }
 
 export const TableDetailContainer = ({
   shopCode,
   tableNumber,
-  numberOfPeople = 0,
-  useCustomerCount = false,
-  onAddMenu,
-  menuboardCategories = [],
-  isMenuboardLoading = false,
 }: TableDetailContainerProps) => {
   //메뉴 추가 모달
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
@@ -103,16 +100,74 @@ export const TableDetailContainer = ({
     }
   );
 
+  const {
+    data: menuboardResponse,
+    isLoading: isMenuboardLoading,
+    refetch: refetchMenuboard,
+  } = useGetCategoriesWithMenus(
+    {
+      shopCode,
+      tableNumber,
+    },
+    {
+      enabled: !!shopCode && !!tableNumber,
+    }
+  );
+
+  const menuboardCategories = menuboardResponse?.data ?? [];
+
+  // 매장 상세 정보 조회
+  const { data: shopDetailResponse } = useGetShopDetail(shopCode, {
+    enabled: !!shopCode,
+  });
+
+  // 고객 수 사용 여부 계산
+  const useCustomerCount = useMemo(() => {
+    return !!shopDetailResponse?.data?.shopSetting?.useCustomerCount;
+  }, [shopDetailResponse]);
+
+  // SSE 메시지 구독
+  const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
+    'sse-main-connection'
+  );
+
+  // ORDER SSE 이벤트 처리: 주문 내역 재수신
+  useEffect(() => {
+    if (!sseMessage || !shopCode || !tableNumber) {
+      return;
+    }
+
+    // shopCode가 일치하고 type이 ORDER인 경우
+    if (sseMessage.shopCode === shopCode && sseMessage.type === 'ORDER') {
+      refetch();
+    }
+  }, [sseMessage, shopCode, tableNumber, refetch]);
+
+  // MENU SSE 이벤트 처리: 메뉴판 정보 재수신
+  useEffect(() => {
+    if (!sseMessage || !shopCode) {
+      return;
+    }
+
+    // shopCode가 일치하고 type이 MENU인 경우
+    if (sseMessage.shopCode === shopCode && sseMessage.type === 'MENU') {
+      refetchMenuboard();
+    }
+  }, [sseMessage, shopCode, refetchMenuboard]);
+
   const { mutateAsync: cancelOrderAll, isPending: isCancelAllPending } =
     usePutCancelOrderAll();
 
-  // API 응답을 Order 타입으로 변환
   const order: Order | null = useMemo(() => {
+    const calculatedNumberOfPeople =
+      (orderHistoriesResponse?.data?.customerCount ?? 0) +
+      (orderHistoriesResponse?.data?.kidsCustomerCount ?? 0);
+
     if (!orderHistoriesResponse?.data) {
       return {
         tableName: `${tableNumber}번 테이블`,
         discountRate: 0,
-        numberOfPeople,
+        numberOfPeople: calculatedNumberOfPeople,
         items: [],
         totalCount: 0,
         totalPrice: 0,
@@ -157,7 +212,7 @@ export const TableDetailContainer = ({
     return {
       tableName: `${tableNumber}번 테이블`,
       discountRate: data.discountRate || 0,
-      numberOfPeople,
+      numberOfPeople: calculatedNumberOfPeople,
       items,
       totalCount: items
         .filter((item) => item.menuSeq !== 0)
@@ -165,7 +220,7 @@ export const TableDetailContainer = ({
       totalPrice: data.totalAmount || 0,
       orderTime,
     };
-  }, [orderHistoriesResponse, tableNumber, numberOfPeople]);
+  }, [orderHistoriesResponse, tableNumber]);
 
   // 로딩 중일 때
   if (isLoading) {
@@ -193,13 +248,9 @@ export const TableDetailContainer = ({
           return;
         }
 
-        try {
-          await cancelOrderAll({ shopCode, tableNumber });
-          toast('전체 메뉴를 취소했어요.');
-          await refetch();
-        } catch (error) {
-          toast('전체 메뉴 취소 중 오류가 발생했어요. 다시 시도해주세요.');
-        }
+        await cancelOrderAll({ shopCode, tableNumber });
+        toast('전체 메뉴를 취소했어요.');
+        await refetch();
       },
     });
   };
@@ -214,15 +265,6 @@ export const TableDetailContainer = ({
     };
 
     actionHandlers[id]?.();
-  };
-
-  //OrderType 때문에 추가 메뉴 함수는 prop으로 받음
-  const handleAddMenu = (selectedItems: SelectedMenuWithOptions[]) => {
-    if (!onAddMenu) {
-      return;
-    }
-
-    onAddMenu(selectedItems);
   };
 
   const handleItemClick = (item: OrderItem) => {
@@ -254,9 +296,13 @@ export const TableDetailContainer = ({
         isOpen={isAddMenuDialogOpen}
         onClose={() => setIsAddMenuDialogOpen(false)}
         tableName={order.tableName}
-        onAdd={handleAddMenu}
         categories={menuboardCategories}
         isCategoriesLoading={isMenuboardLoading}
+        shopCode={shopCode}
+        tableNumber={tableNumber}
+        numberOfPeople={order.numberOfPeople}
+        adultCount={orderHistoriesResponse?.data?.customerCount ?? 0}
+        childCount={orderHistoriesResponse?.data?.kidsCustomerCount ?? 0}
       />
       {/* 선택 취소 모달 */}
       <SelectCancelDialog

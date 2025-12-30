@@ -9,6 +9,9 @@ import { toast } from '@repo/feature/utils';
 import { MenuSelectionView } from './MenuSelectionView';
 import { OptionSelectionView } from './OptionSelectionView';
 import { validateOptionGroups } from './optionValidation';
+import { useQueryClient } from '@repo/api/tanstack-query';
+import { queryKeys, usePostTableOrder } from '@repo/api/queries';
+import { calculateTotalAmount } from '@repo/util/calculation';
 
 export interface SelectedOption extends IOption {
   selectedQuantity: number;
@@ -24,19 +27,29 @@ interface AddMenuDialogProps {
   isOpen: boolean;
   onClose: () => void;
   tableName?: string;
-  onAdd?: (selectedItems: SelectedMenuWithOptions[]) => void;
   categories?: ICategoryWithMenus[];
   isCategoriesLoading?: boolean;
+  shopCode?: string;
+  tableNumber?: string;
+  numberOfPeople?: number;
+  adultCount?: number;
+  childCount?: number;
 }
 
 export const AddMenuDialog = ({
   isOpen,
   onClose,
   tableName = '테이블 이름',
-  onAdd,
   categories = [],
   isCategoriesLoading = false,
+  shopCode,
+  tableNumber,
+  numberOfPeople = 0,
+  adultCount = 1,
+  childCount = 0,
 }: AddMenuDialogProps) => {
+  const queryClient = useQueryClient();
+  const { mutateAsync: createTableOrder } = usePostTableOrder();
   const [viewMode, setViewMode] = useState<'menu' | 'option'>('menu');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<IMenu | null>(null);
@@ -259,10 +272,47 @@ export const AddMenuDialog = ({
   };
 
   // 최종 추가 핸들러
-  const handleAdd = () => {
-    if (selectedMenus.length > 0) {
-      onAdd?.(selectedMenus);
+  const handleAdd = async () => {
+    if (selectedMenus.length < 1) {
+      return;
     }
+
+    // shopCode와 tableNumber가 없으면 API 호출 불가
+    if (!shopCode || !tableNumber) {
+      toast('테이블 정보가 없어요. 다시 시도해주세요.');
+      return;
+    }
+
+    const orders = selectedMenus.map(({ menu, quantity, selectedOptions }) => ({
+      menuSeq: menu.menuSeq,
+      menuName: menu.menuName,
+      menuPrice: menu.menuPrice,
+      quantity,
+      selectedOptions: selectedOptions.map((option) => ({
+        optionSeq: option.optionSeq,
+        optionGroupSeq: option.optionGroupSeq,
+        optionName: option.optionName,
+        optionPrice: option.optionPrice,
+        quantity: option.selectedQuantity * quantity,
+      })),
+    }));
+
+    const totalAmount = String(calculateTotalAmount(selectedMenus));
+
+    await createTableOrder({
+      shopCode,
+      tableNumber,
+      orderType: 'ORDER_POS',
+      customerCount: adultCount || numberOfPeople,
+      kidsCustomerCount: childCount,
+      totalAmount,
+      orders,
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.orders.tableOrderHistories(shopCode, tableNumber),
+    });
+    toast('메뉴를 추가했어요.');
     handleClose();
   };
 

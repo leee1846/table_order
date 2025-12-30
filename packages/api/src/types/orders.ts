@@ -238,7 +238,7 @@ export interface ICurrentTable {
   discountRate: number | null;
   totalAmount: number | null;
   customerCount: number | null;
-  kidsCustomerCount: number;
+  kidsCustomerCount: number | null;
   orderDetailMenuList: ITableCurrentStatus[];
 }
 

@@ -25,7 +25,7 @@ const App = () => {
   useEffect(() => {
     console.log('SSE', data);
 
-    // ORDER 타입 SSE를 받으면 매장 전체 주문 정보 재조회
+    // ORDER 타입 SSE를 받으면 매장 전체 주문 정보 재조회 (첫화면)
     if (data?.type === 'ORDER' && shopCode) {
       queryClient.invalidateQueries({
         queryKey: queryKeys.orders.currentTableList(shopCode),
