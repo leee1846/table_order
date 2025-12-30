@@ -33,7 +33,6 @@ const resources: Record<TShopLanguage, { customer: Record<string, string> }> = {
     customer: enTranslation,
   },
   JP: {
-    // TODO: 일본어 번역 추가
     customer: koTranslation,
   },
   CH: {

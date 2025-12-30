@@ -12,7 +12,12 @@ import {
 } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
-import type { IMenu, IOption, IOptionGroup } from '@repo/api/types';
+import type {
+  IMenu,
+  IOption,
+  IOptionGroup,
+  ICategoryWithMenus,
+} from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
 import { Thumbnail } from '@/feature/Thumbnail';
 import { NoContent } from '@/feature/NoContent';
@@ -29,6 +34,7 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 interface Props {
   onClose: () => void;
   menu: IMenu;
+  category?: ICategoryWithMenus;
   initialQuantity?: number;
   initialSelectedOptions?: ICartOption[];
   cartItemIndex?: number;
@@ -137,6 +143,7 @@ const convertSelectedOptionsToCartOptions = (
 export const MenuDetailWithOptionsModal = ({
   onClose,
   menu,
+  category,
   initialQuantity = 1,
   initialSelectedOptions = [],
   cartItemIndex,
@@ -709,17 +716,19 @@ export const MenuDetailWithOptionsModal = ({
 
           {/* Total and Add Button */}
           <S.TotalContainer>
-            <NumberInput
-              variant="square"
-              value={menuQuantity}
-              onChange={handleMenuQuantityChange}
-              size="L"
-              min={1}
-              customStyle={css`
-                min-width: 100%;
-              `}
-              aria-label={t('수량제한')}
-            />
+            {category?.isQuantitySelectable && (
+              <NumberInput
+                variant="square"
+                value={menuQuantity}
+                onChange={handleMenuQuantityChange}
+                size="L"
+                min={1}
+                customStyle={css`
+                  min-width: 100%;
+                `}
+                aria-label={t('수량제한')}
+              />
+            )}
             <S.TotalInfo role="status" aria-live="polite">
               <h3>{t('합계')}</h3>
               <p>

@@ -32,7 +32,6 @@ const resources: Record<TShopLanguage, { admin: Record<string, string> }> = {
     admin: enTranslation,
   },
   JP: {
-    // TODO: 일본어 번역 추가
     admin: koTranslation,
   },
   CH: {

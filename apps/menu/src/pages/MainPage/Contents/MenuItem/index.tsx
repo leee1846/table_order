@@ -78,7 +78,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
     }
 
     // 수량선택이 불가능한경우
-    if (!category.isQuantitySelectable) {
+    if (!category.isQuantitySelectable && menu.optionGroupList.length < 1) {
       // 같은 menuSeq와 같은 옵션 조합을 가진 아이템 찾기
       const cartMenuIndex = cartData.menus.findIndex(
         (item) =>
@@ -153,7 +153,11 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
 
       {modalData.openedMenuDetailSeq === menu.menuSeq &&
         menu.optionGroupList.length > 0 && (
-          <MenuDetailWithOptionsModal onClose={closeMenuDetail} menu={menu} />
+          <MenuDetailWithOptionsModal
+            onClose={closeMenuDetail}
+            menu={menu}
+            category={category}
+          />
         )}
     </>
   );
