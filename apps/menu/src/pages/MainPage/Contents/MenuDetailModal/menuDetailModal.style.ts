@@ -2,12 +2,25 @@ import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.div`
+  position: relative;
   background-color: ${({ theme }) => theme.mode.grey[50]};
   border: 1px solid ${({ theme }) => theme.mode.grey[100]};
   padding: 24px;
   border-radius: 1.25rem;
   width: 27.5rem;
   max-width: calc(100vw - 2rem);
+`;
+
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 `;
 
 export const Name = styled.p`

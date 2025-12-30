@@ -5,12 +5,14 @@ import {
   currencyIcon,
   splitIcon,
   payAfterIcon,
+  CloseIcon,
 } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { usePostPayment } from '@repo/api/queries';
+import { useThemeMode } from '@repo/ui';
 
 interface Props {
   onClose: () => void;
@@ -34,6 +36,7 @@ export const PaymentsModal = ({
   executePostpaidOrder,
 }: Props) => {
   const { t } = useCustomerTranslation();
+  const { theme } = useThemeMode();
   const { data: shopDetailData } = useShopDetailData();
   const { mutateAsync: postPayment } = usePostPayment();
 
@@ -81,6 +84,9 @@ export const PaymentsModal = ({
   return (
     <ModalBackground position="center" onClick={onClose}>
       <S.Container>
+        <S.CloseButton type="button" onClick={onClose}>
+          <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
+        </S.CloseButton>
         <S.Title>{t('결제 방법을 선택해주세요')}</S.Title>
         <S.PaymentMethodList>
           <S.PaymentMethodItem

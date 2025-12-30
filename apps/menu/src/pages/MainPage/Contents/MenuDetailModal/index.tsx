@@ -1,5 +1,7 @@
 import { createPortal } from 'react-dom';
 import { BasicButton, ModalBackground, NumberInput } from '@repo/ui/components';
+import { CloseIcon } from '@repo/ui/icons';
+import { useThemeMode } from '@repo/ui';
 import * as S from '@/pages/MainPage/Contents/MenuDetailModal/menuDetailModal.style';
 import { css } from '@emotion/react';
 import type { IMenu } from '@repo/api/types';
@@ -22,6 +24,7 @@ interface Props {
 
 export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const { t } = useCustomerTranslation();
+  const { theme } = useThemeMode();
   const { data: languageData } = useCustomerLanguageStore();
 
   const [currentCount, setCurrentCount] = useState(1);
@@ -88,6 +91,10 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
   return createPortal(
     <ModalBackground onClick={onClose}>
       <S.Container>
+        <S.CloseButton type="button" onClick={onClose}>
+          <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
+        </S.CloseButton>
+
         {images.length > 0 ? (
           <S.SwiperContainer>
             <Swiper
