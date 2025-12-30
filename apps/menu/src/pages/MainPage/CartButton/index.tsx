@@ -104,7 +104,7 @@ export const CartButton = ({ categories }: Props) => {
         customerCount: customerCountData?.adultCount ?? 1,
         // 객수 미사용시 0명으로 처리
         kidsCustomerCount: customerCountData?.childCount ?? 0,
-        totalAmount: totalPrice,
+        totalAmount: totalPrice.toString(),
         orders: adjustOptionQuantitiesForOrder(orders),
       });
 
