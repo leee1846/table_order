@@ -3,7 +3,7 @@ import type {
   ICategoryWithMenus,
   IMenu,
   IOption,
-  IOptionGroup,
+  TOrderType,
 } from '@repo/api/types';
 import { toast } from '@repo/feature/utils';
 import { MenuSelectionView } from './MenuSelectionView';
@@ -34,6 +34,7 @@ interface AddMenuDialogProps {
   numberOfPeople?: number;
   adultCount?: number;
   childCount?: number;
+  orderType?: TOrderType;
 }
 
 export const AddMenuDialog = ({
@@ -47,6 +48,7 @@ export const AddMenuDialog = ({
   numberOfPeople = 0,
   adultCount = 1,
   childCount = 0,
+  orderType,
 }: AddMenuDialogProps) => {
   const queryClient = useQueryClient();
   const { mutateAsync: createTableOrder } = usePostTableOrder();
@@ -302,7 +304,7 @@ export const AddMenuDialog = ({
     await createTableOrder({
       shopCode,
       tableNumber,
-      orderType: 'ORDER_POS',
+      orderType: orderType as TOrderType,
       customerCount: adultCount || numberOfPeople,
       kidsCustomerCount: childCount,
       totalAmount,

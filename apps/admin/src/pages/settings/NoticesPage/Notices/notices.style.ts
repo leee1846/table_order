@@ -20,7 +20,7 @@ export const Notice = styled.li<{ isOpen: boolean }>`
   flex-direction: column;
   background-color: ${({ isOpen }) =>
     isOpen ? theme.colors.grey[50] : theme.colors.white};
-  flex: 1;
+  flex: 0 0 10%;
   border-bottom: 1px solid ${theme.colors.grey[200]};
 `;
 

@@ -27,11 +27,7 @@ import {
   useGetCategoriesWithMenus,
   useGetShopDetail,
 } from '@repo/api/queries';
-import type {
-  ICategoryWithMenus,
-  ICurrentTable,
-  ISseMessage,
-} from '@repo/api/types';
+import type { ICurrentTable, ISseMessage, TOrderType } from '@repo/api/types';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSE } from '@repo/feature/hooks';
 import type { Order, OrderItem } from './orderSection/types';
@@ -41,11 +37,13 @@ export type { SelectedMenuWithOptions };
 export interface TableDetailContainerProps {
   shopCode: string;
   tableNumber: string;
+  orderType: TOrderType;
 }
 
 export const TableDetailContainer = ({
   shopCode,
   tableNumber,
+  orderType,
 }: TableDetailContainerProps) => {
   //메뉴 추가 모달
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
@@ -303,6 +301,7 @@ export const TableDetailContainer = ({
         numberOfPeople={order.numberOfPeople}
         adultCount={orderHistoriesResponse?.data?.customerCount ?? 0}
         childCount={orderHistoriesResponse?.data?.kidsCustomerCount ?? 0}
+        orderType={orderType}
       />
       {/* 선택 취소 모달 */}
       <SelectCancelDialog

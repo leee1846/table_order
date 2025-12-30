@@ -21,7 +21,6 @@ const ORDER_CHANNEL_LABELS: Record<TOrderType, string> = {
   MENU: '메뉴판',
   ORDER_POS: '오더포스',
   POS_APP: '포스앱',
-  POS: '포스',
 };
 
 const PAYMENT_STATUS_LABELS: Record<TOrderPaymentStatus, string> = {

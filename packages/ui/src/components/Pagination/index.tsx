@@ -9,25 +9,24 @@ import { theme } from '../../index';
 import * as S from './pagination.style';
 
 interface Props {
-  totalPages: number;
   currentPage: number;
+  totalPages: number;
   onPageChange: (page: number) => void;
   customStyle?: SerializedStyles;
 }
 export const Pagination = ({
-  totalPages,
   currentPage,
+  totalPages,
   onPageChange,
   customStyle,
 }: Props) => {
   const isFirstPage = currentPage === 1;
-  const isLastPage = currentPage === totalPages;
+  const isLastPage = currentPage >= totalPages;
 
   const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages || page === currentPage) {
+    if (page < 1 || page > totalPages) {
       return;
     }
-
     onPageChange(page);
   };
 
