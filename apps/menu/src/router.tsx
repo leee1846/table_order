@@ -38,6 +38,11 @@ const MiscellaneousPage = lazy(() =>
   }))
 );
 
+const TableDetailPage = lazy(() =>
+  import('@/pages/TableDetailPage').then((module) => ({
+    default: module.TableDetailPage,
+  }))
+);
 /**
  * 로그인 여부 확인 loader
  */
@@ -110,6 +115,14 @@ export const router = createBrowserRouter([
                 ),
               },
               {
+                path: ROUTES.TABLES.TABLE_DETAIL.path,
+                element: (
+                  <Suspense fallback={<FullscreenLoadingSpinner />}>
+                    <TableDetailPage />
+                  </Suspense>
+                ),
+              },
+              {
                 path: ROUTES.SETTINGS.path,
                 element: (
                   <Suspense fallback={<FullscreenLoadingSpinner />}>
@@ -129,7 +142,11 @@ export const router = createBrowserRouter([
                   },
                   {
                     path: ROUTES.SETTINGS.MISCELLANEOUS.path,
-                    element: <MiscellaneousPage />,
+                    element: (
+                      <Suspense fallback={<FullscreenLoadingSpinner />}>
+                        <MiscellaneousPage />
+                      </Suspense>
+                    ),
                   },
                 ],
               },

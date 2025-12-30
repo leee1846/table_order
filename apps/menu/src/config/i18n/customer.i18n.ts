@@ -5,6 +5,9 @@ import {
 } from 'react-i18next';
 import koTranslation from '@/locales/ko/translation.json';
 import enTranslation from '@/locales/en/translation.json';
+import jpTranslation from '@/locales/jp/translation.json';
+import chTranslation from '@/locales/ch/translation.json';
+import ruTranslation from '@/locales/ru/translation.json';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
 import type { ILanguageData } from '@/stores/useCustomerLanguageStore';
@@ -33,15 +36,13 @@ const resources: Record<TShopLanguage, { customer: Record<string, string> }> = {
     customer: enTranslation,
   },
   JP: {
-    customer: koTranslation,
+    customer: jpTranslation,
   },
   CH: {
-    // TODO: 중국어 번역 추가
-    customer: koTranslation,
+    customer: chTranslation,
   },
   RU: {
-    // TODO: 러시아어 번역 추가
-    customer: koTranslation,
+    customer: ruTranslation,
   },
 };
 

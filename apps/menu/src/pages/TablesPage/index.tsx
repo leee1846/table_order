@@ -205,7 +205,9 @@ export const TablesPage = () => {
 
   const handleTableClick = async (table: TableWithStatus) => {
     if (isOrderPos) {
-      // TODO: 오더포스일경우 클릭 후 상세 페이지 이동 처리
+      navigate(
+        `${ROUTES.TABLES.TABLE_DETAIL.generate(table.tableNumber)}?orderType=ORDER_POS`
+      );
       return;
     }
 
@@ -222,12 +224,14 @@ export const TablesPage = () => {
     selectTable(table);
   };
 
-  const handleLongPress = (_table: TableWithStatus) => {
+  const handleLongPress = (table: TableWithStatus) => {
     if (isOrderPos) {
       return;
     }
 
-    // TODO: 상세 페이지 이동
+    navigate(
+      `${ROUTES.TABLES.TABLE_DETAIL.generate(table.tableNumber)}?orderType=MENU`
+    );
   };
 
   return (

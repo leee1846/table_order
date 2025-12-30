@@ -12,6 +12,11 @@ export const ROUTES = {
   TABLES: {
     path: 'tables',
     generate: () => '/tables',
+
+    TABLE_DETAIL: {
+      path: '/tables/:tableNum',
+      generate: (tableNum: string | number) => `/tables/${tableNum}`,
+    },
   },
 
   SETTINGS: {
