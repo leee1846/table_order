@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { css } from '@emotion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -31,22 +31,110 @@ interface Props {
   menu: IMenu;
   initialQuantity?: number;
   initialSelectedOptions?: ICartOption[];
-  cartItemIndex?: number; // 카트 아이템 인덱스 (있으면 업데이트, 없으면 추가)
+  cartItemIndex?: number;
 }
 
-interface SelectedOptionWithGroup {
+type SelectedOptionsMap = Map<string, { option: IOption; quantity: number }>;
+
+interface SelectedOptionDisplay {
   option: IOption;
-  count: number;
+  quantity: number;
   groupName: string;
 }
 
-// 옵션을 고유하게 식별하는 키 생성
-const getOptionKey = (option: IOption): string => {
-  return `${option.optionGroupSeq}-${option.optionSeq}`;
+const MAX_OPTION_QUANTITY = 999;
+
+// 옵션을 고유하게 식별하기 위한 키 생성
+const createOptionKey = (optionGroupSeq: number, optionSeq: number): string => {
+  return `${optionGroupSeq}-${optionSeq}`;
 };
 
-// Map 기반 선택된 옵션 타입
-type SelectedOptionsMap = Map<string, { option: IOption; quantity: number }>;
+const getLocalizedOptionName = (
+  option: IOption,
+  currentLanguage: string
+): string => {
+  return option.localeOptionName?.[currentLanguage] ?? option.optionName;
+};
+
+const getLocalizedGroupName = (
+  group: IOptionGroup,
+  currentLanguage: string
+): string => {
+  return (
+    group.localeOptionGroupName?.[currentLanguage] ?? group.optionGroupName
+  );
+};
+
+const formatPriceText = (price: number): string => {
+  return price > 0 ? ` (+${formatCurrency(price)})` : '';
+};
+
+const calculateGroupTotalQuantity = (
+  selectedOptions: SelectedOptionsMap,
+  optionGroupSeq: number
+): number => {
+  let total = 0;
+  selectedOptions.forEach((item) => {
+    if (item.option.optionGroupSeq === optionGroupSeq) {
+      total += item.quantity;
+    }
+  });
+  return total;
+};
+
+// 카트에서 전달받은 초기 선택 옵션을 Map 형태로 변환
+const initializeSelectedOptionsMap = (
+  menu: IMenu,
+  initialOptions: ICartOption[],
+  currentLanguage: string
+): SelectedOptionsMap => {
+  const optionsMap = new Map<string, { option: IOption; quantity: number }>();
+
+  if (initialOptions.length === 0) {
+    return optionsMap;
+  }
+
+  const allOptions = menu.optionGroupList.flatMap((group) => group.optionList);
+
+  initialOptions.forEach((cartOption) => {
+    const option = allOptions.find(
+      (opt) => opt.optionSeq === cartOption.optionSeq
+    );
+
+    if (option) {
+      const key = createOptionKey(option.optionGroupSeq, option.optionSeq);
+      optionsMap.set(key, {
+        option: {
+          ...option,
+          optionName: getLocalizedOptionName(option, currentLanguage),
+        },
+        quantity: cartOption.quantity,
+      });
+    }
+  });
+
+  return optionsMap;
+};
+
+// 선택된 옵션 Map을 카트에 저장할 배열 형태로 변환
+const convertSelectedOptionsToCartOptions = (
+  selectedOptions: SelectedOptionsMap,
+  currentLanguage: string
+): ICartOption[] => {
+  const cartOptions: ICartOption[] = [];
+
+  selectedOptions.forEach((item) => {
+    cartOptions.push({
+      optionGroupSeq: item.option.optionGroupSeq,
+      optionSeq: item.option.optionSeq,
+      optionName: getLocalizedOptionName(item.option, currentLanguage),
+      optionPrice: item.option.optionPrice,
+      quantity: item.quantity,
+    });
+  });
+
+  return cartOptions;
+};
 
 export const MenuDetailWithOptionsModal = ({
   onClose,
@@ -57,330 +145,253 @@ export const MenuDetailWithOptionsModal = ({
 }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
+
   const { data: languageData } = useCustomerLanguageStore();
   const { addToCart, updateCartItem } = useCartStore();
   const { data: shopDetailData } = useShopDetailData();
+
   const currencySymbol =
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
-  // 초기 선택된 옵션을 Map으로 변환
-  const initializeSelectedOptions = (): SelectedOptionsMap => {
-    const optionsMap = new Map<string, { option: IOption; quantity: number }>();
-
-    if (initialSelectedOptions.length === 0) {
-      return optionsMap;
-    }
-
-    // ICartOption을 IOption으로 변환 (menu.optionGroupList에서 최신 정보 가져오기)
-    initialSelectedOptions.forEach((cartOption) => {
-      // menu.optionGroupList에서 해당 옵션 찾기
-      const option = menu.optionGroupList
-        .flatMap((group) => group.optionList)
-        .find((opt) => opt.optionSeq === cartOption.optionSeq);
-
-      if (option) {
-        const optionKey = getOptionKey(option);
-        optionsMap.set(optionKey, {
-          option: {
-            ...option,
-            optionName:
-              option.localeOptionName?.[languageData.currentLanguage] ??
-              option.optionName,
-          },
-          quantity: cartOption.quantity,
-        });
-      }
-    });
-
-    return optionsMap;
-  };
-
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptionsMap>(
-    initializeSelectedOptions
+    () =>
+      initializeSelectedOptionsMap(
+        menu,
+        initialSelectedOptions,
+        languageData.currentLanguage
+      )
   );
   const [menuQuantity, setMenuQuantity] = useState(initialQuantity);
 
-  const menuImages = menu.menuImageList?.filter((img) => img.imagePath) || [];
+  const menuImages = useMemo(
+    () => menu.menuImageList?.filter((img) => img.imagePath) || [],
+    [menu.menuImageList]
+  );
+
   const hasImages = menuImages.length > 0;
   const hasOptionGroups = menu.optionGroupList.length > 0;
 
-  // 특정 옵션의 현재 선택된 개수를 계산
-  const countSelectedOption = (
-    targetOptionSeq: number,
-    targetOptionGroupSeq: number
+  const getSelectedOptionQuantity = (
+    optionGroupSeq: number,
+    optionSeq: number
   ): number => {
-    const key = `${targetOptionGroupSeq}-${targetOptionSeq}`;
+    const key = createOptionKey(optionGroupSeq, optionSeq);
     return selectedOptions.get(key)?.quantity ?? 0;
   };
 
-  // 옵션 추가 가격을 표시할 텍스트 생성 (가격이 0보다 클 때만 표시)
-  const formatAdditionalPriceText = (price: number): string => {
-    return price > 0 ? ` (+${formatCurrency(price)})` : '';
-  };
-
-  // 옵션의 전체 표시 텍스트 생성 (이름 + 가격 + 품절 여부)
   const buildOptionDisplayText = (option: IOption): string => {
-    const priceText = formatAdditionalPriceText(option.optionPrice);
-    const outOfStockText = option.isOutOfStock ? ` (${t('품절')})` : '';
-    return `${option.localeOptionName?.[languageData.currentLanguage] ?? option.optionName}${priceText}${outOfStockText}`;
+    const name = getLocalizedOptionName(option, languageData.currentLanguage);
+    const price = formatPriceText(option.optionPrice);
+    const soldOut = option.isOutOfStock ? ` (${t('품절')})` : '';
+    return `${name}${price}${soldOut}`;
   };
 
-  // 다중 선택 가능한 옵션을 토글 (체크박스 방식)
-  const toggleMultipleSelectOption = (option: IOption) => {
-    const optionKey = getOptionKey(option);
-    const optionGroup = menu.optionGroupList.find(
-      (group) => group.optionGroupSeq === option.optionGroupSeq
-    );
+  // 체크박스 형태: 이미 선택되어 있으면 제거, 아니면 추가
+  const handleMultipleOptionToggle = (option: IOption, group: IOptionGroup) => {
+    const key = createOptionKey(option.optionGroupSeq, option.optionSeq);
 
-    setSelectedOptions((prevOptions) => {
-      const newOptions = new Map(prevOptions);
-      const currentItem = newOptions.get(optionKey);
-      const currentCount = currentItem?.quantity ?? 0;
+    setSelectedOptions((prev) => {
+      const updated = new Map(prev);
+      const isCurrentlySelected = updated.has(key);
 
-      // 이미 선택된 경우: 해당 옵션을 제거
-      if (currentCount > 0) {
-        newOptions.delete(optionKey);
-        return newOptions;
+      if (isCurrentlySelected) {
+        updated.delete(key);
+        return updated;
       }
 
-      // 선택되지 않은 경우: 옵션 추가 전 최대 수량 체크
-      if (optionGroup?.maxQuantity && optionGroup.maxQuantity > 0) {
-        // 해당 옵션 그룹에서 현재 선택된 모든 옵션의 총 수량 계산
-        let currentGroupTotalCount = 0;
-        prevOptions.forEach((item) => {
-          if (item.option.optionGroupSeq === option.optionGroupSeq) {
-            currentGroupTotalCount += item.quantity;
-          }
-        });
-
-        // 최대 수량을 초과하는지 확인
-        if (currentGroupTotalCount + 1 > optionGroup.maxQuantity) {
+      // 최대 수량 제한 체크 (옵션 그룹 전체의 합계)
+      if (group.maxQuantity > 0) {
+        const currentTotal = calculateGroupTotalQuantity(
+          prev,
+          group.optionGroupSeq
+        );
+        if (currentTotal + 1 > group.maxQuantity) {
           toast(
             t('최대 수량({{maxQuantity}}개)을 이미 다 선택했습니다.', {
-              maxQuantity: optionGroup.maxQuantity,
+              maxQuantity: group.maxQuantity,
             }),
             { position: 'center-center', duration: 2000 }
           );
-          return prevOptions;
+          return prev;
         }
       }
 
-      // 선택되지 않은 경우: 옵션 추가 (수량 1)
-      newOptions.set(optionKey, {
+      updated.set(key, {
         option: {
           ...option,
-          optionName:
-            option.localeOptionName?.[languageData.currentLanguage] ??
-            option.optionName,
+          optionName: getLocalizedOptionName(
+            option,
+            languageData.currentLanguage
+          ),
         },
         quantity: 1,
       });
-      return newOptions;
+
+      return updated;
     });
   };
 
-  // 단일 선택 가능한 옵션을 선택 (라디오박스 방식)
-  const selectSingleOption = (option: IOption, optionGroup: IOptionGroup) => {
-    setSelectedOptions((prevOptions) => {
-      const newOptions = new Map(prevOptions);
+  // 라디오 형태: 같은 그룹의 다른 옵션을 모두 제거하고 새로운 옵션만 선택
+  const handleSingleOptionSelect = (option: IOption, group: IOptionGroup) => {
+    const key = createOptionKey(option.optionGroupSeq, option.optionSeq);
+
+    setSelectedOptions((prev) => {
+      const updated = new Map(prev);
 
       // 같은 그룹의 기존 선택을 모두 제거
-      prevOptions.forEach((item, key) => {
-        if (item.option.optionGroupSeq === optionGroup.optionGroupSeq) {
-          newOptions.delete(key);
+      prev.forEach((_, existingKey) => {
+        const [groupSeq] = existingKey.split('-').map(Number);
+        if (groupSeq === group.optionGroupSeq) {
+          updated.delete(existingKey);
         }
       });
 
-      // 새 옵션 추가 (수량 1)
-      const optionKey = getOptionKey(option);
-      newOptions.set(optionKey, {
+      // 새로운 옵션 추가
+      updated.set(key, {
         option: {
           ...option,
-          optionName:
-            option.localeOptionName?.[languageData.currentLanguage] ??
-            option.optionName,
+          optionName: getLocalizedOptionName(
+            option,
+            languageData.currentLanguage
+          ),
         },
         quantity: 1,
       });
-      return newOptions;
+
+      return updated;
     });
   };
 
-  // 옵션 선택/해제 처리 (옵션 그룹 타입에 따라 적절한 방식으로 처리)
-  const handleOptionSelection = (
+  const handleCheckboxOrRadioSelection = (
     option: IOption,
-    optionGroup: IOptionGroup
+    group: IOptionGroup
   ) => {
-    // 수량 선택 가능한 옵션은 handleOptionQuantityChange에서 처리
-    if (optionGroup.isOptionQuantitySelectable) {
-      return;
+    if (group.isMultipleSelectable) {
+      handleMultipleOptionToggle(option, group);
+    } else {
+      handleSingleOptionSelect(option, group);
     }
-
-    // 다중 선택 가능한 경우 체크박스로 처리
-    if (optionGroup.isMultipleSelectable) {
-      toggleMultipleSelectOption(option);
-      return;
-    }
-
-    // 단일 선택인 경우 라디오박스로 처리
-    selectSingleOption(option, optionGroup);
   };
 
-  // 옵션 수량 변경 처리 (수량 선택 가능한 옵션용)
-  const handleOptionQuantityChange = (
-    targetOption: IOption,
-    newQuantity: number
-  ) => {
-    const optionKey = getOptionKey(targetOption);
-    const optionGroup = menu.optionGroupList.find(
-      (group) => group.optionGroupSeq === targetOption.optionGroupSeq
+  // NumberInput 형태: 수량을 직접 입력하여 변경
+  const handleOptionQuantityChange = (option: IOption, newQuantity: number) => {
+    const key = createOptionKey(option.optionGroupSeq, option.optionSeq);
+    const group = menu.optionGroupList.find(
+      (g) => g.optionGroupSeq === option.optionGroupSeq
     );
 
-    setSelectedOptions((prevOptions) => {
-      const newOptions = new Map(prevOptions);
-      const currentItem = newOptions.get(optionKey);
-      const currentCount = currentItem?.quantity ?? 0;
+    setSelectedOptions((prev) => {
+      const updated = new Map(prev);
+      const currentQuantity = prev.get(key)?.quantity ?? 0;
 
-      // 수량이 0 이하이면 해당 옵션 제거
+      // 수량이 0 이하면 옵션 제거
       if (newQuantity < 1) {
-        newOptions.delete(optionKey);
-        return newOptions;
+        updated.delete(key);
+        return updated;
       }
 
-      // 수량 증가: 최대 수량 체크
-      if (newQuantity > currentCount) {
-        // isOptionQuantitySelectable이 true이고 maxQuantity가 최대 수량 제한인 경우 체크
-        if (
-          optionGroup?.isOptionQuantitySelectable &&
-          optionGroup.maxQuantity > 0
-        ) {
-          // 해당 옵션 그룹에서 현재 선택된 모든 옵션의 총 수량 계산
-          let currentGroupTotalCount = 0;
-          prevOptions.forEach((item) => {
-            if (item.option.optionGroupSeq === targetOption.optionGroupSeq) {
-              currentGroupTotalCount += item.quantity;
-            }
-          });
-
-          // 추가하려는 수량
-          const additionalCount = newQuantity - currentCount;
-
-          // 최대 수량을 초과하는지 확인
-          if (
-            currentGroupTotalCount + additionalCount >
-            optionGroup.maxQuantity
-          ) {
-            toast(
-              t('최대 수량({{maxQuantity}}개)을 이미 다 선택했습니다.', {
-                maxQuantity: optionGroup.maxQuantity,
-              }),
-              { position: 'center-center', duration: 2000 }
-            );
-            return prevOptions;
-          }
-        }
-
-        // 수량 업데이트
-        newOptions.set(optionKey, {
-          option: {
-            ...targetOption,
-            optionName:
-              targetOption.localeOptionName?.[languageData.currentLanguage] ??
-              targetOption.optionName,
-          },
-          quantity: newQuantity,
-        });
-        return newOptions;
+      // 수량이 같으면 변경 없음
+      if (newQuantity === currentQuantity) {
+        return prev;
       }
 
-      // 수량 감소: 수량만 업데이트
-      if (newQuantity < currentCount) {
-        newOptions.set(optionKey, {
-          option: {
-            ...targetOption,
-            optionName:
-              targetOption.localeOptionName?.[languageData.currentLanguage] ??
-              targetOption.optionName,
-          },
-          quantity: newQuantity,
-        });
-        return newOptions;
-      }
-
-      // 수량이 동일하면 변경 없음
-      return prevOptions;
-    });
-  };
-
-  // 선택된 옵션들을 그룹별, 옵션별로 집계하여 표시용 데이터 생성
-  const groupSelectedOptionsByGroupAndOption =
-    (): SelectedOptionWithGroup[] => {
-      const result: SelectedOptionWithGroup[] = [];
-
-      selectedOptions.forEach((item) => {
-        const optionGroup = menu.optionGroupList.find(
-          (group) => group.optionGroupSeq === item.option.optionGroupSeq
+      // 최대 999개 제한
+      if (newQuantity > MAX_OPTION_QUANTITY) {
+        toast(
+          t('최대 {{maxQuantity}}개까지 선택 가능합니다.', {
+            maxQuantity: MAX_OPTION_QUANTITY,
+          }),
+          { position: 'center-center', duration: 1500 }
         );
+        return prev;
+      }
 
-        result.push({
-          option: item.option,
-          count: item.quantity,
-          groupName:
-            optionGroup?.localeOptionGroupName?.[
-              languageData.currentLanguage
-            ] ??
-            optionGroup?.optionGroupName ??
-            '',
-        });
+      // 수량 증가 시, 옵션 그룹의 최대 수량 제한 체크
+      if (newQuantity > currentQuantity && group && group.maxQuantity > 0) {
+        const currentTotal = calculateGroupTotalQuantity(
+          prev,
+          option.optionGroupSeq
+        );
+        const additionalQuantity = newQuantity - currentQuantity;
+
+        if (currentTotal + additionalQuantity > group.maxQuantity) {
+          toast(
+            t('최대 수량({{maxQuantity}}개)을 이미 다 선택했습니다.', {
+              maxQuantity: group.maxQuantity,
+            }),
+            { position: 'center-center', duration: 1500 }
+          );
+          return prev;
+        }
+      }
+
+      // 수량 업데이트
+      updated.set(key, {
+        option: {
+          ...option,
+          optionName: getLocalizedOptionName(
+            option,
+            languageData.currentLanguage
+          ),
+        },
+        quantity: newQuantity,
       });
 
-      return result;
-    };
-
-  // 메뉴 총 가격 계산
-  const getMenuTotalPrice = (): number => {
-    const options = Array.from(selectedOptions.values()).map((item) => {
-      return {
-        optionPrice: item.option.optionPrice,
-        quantity: item.quantity,
-      };
+      return updated;
     });
-
-    return calculateMenuTotalPrice(menu.menuPrice, menuQuantity, options);
   };
 
-  // 옵션 그룹 제목 텍스트 생성 (최소/최대 선택 개수 포함)
-  const buildOptionGroupTitle = (
-    optionGroup: IOptionGroup
-  ): React.ReactNode => {
-    const groupName =
-      optionGroup.localeOptionGroupName?.[languageData.currentLanguage] ??
-      optionGroup.optionGroupName;
-    let quantityText = '';
+  // 선택된 옵션들을 화면 하단에 표시하기 위한 데이터 (그룹명 포함)
+  const selectedOptionsForDisplay = useMemo((): SelectedOptionDisplay[] => {
+    const displays: SelectedOptionDisplay[] = [];
 
-    if (optionGroup.minQuantity > 0 && optionGroup.maxQuantity > 0) {
-      quantityText = `(${t('최소 {{minQuantity}}개', {
-        minQuantity: optionGroup.minQuantity,
-      })} / ${t('최대 {{maxQuantity}}개', {
-        maxQuantity: optionGroup.maxQuantity,
-      })})`;
-    } else if (optionGroup.minQuantity > 0) {
-      quantityText = `(${t('최소 {{minQuantity}}개', {
-        minQuantity: optionGroup.minQuantity,
-      })})`;
-    } else if (optionGroup.maxQuantity > 0) {
-      quantityText = `(${t('최대 {{maxQuantity}}개', {
-        maxQuantity: optionGroup.maxQuantity,
-      })})`;
+    selectedOptions.forEach((item) => {
+      const group = menu.optionGroupList.find(
+        (g) => g.optionGroupSeq === item.option.optionGroupSeq
+      );
+
+      displays.push({
+        option: item.option,
+        quantity: item.quantity,
+        groupName: group
+          ? getLocalizedGroupName(group, languageData.currentLanguage)
+          : '',
+      });
+    });
+
+    return displays;
+  }, [selectedOptions, menu.optionGroupList, languageData.currentLanguage]);
+
+  const totalPrice = useMemo(() => {
+    const options = Array.from(selectedOptions.values()).map((item) => ({
+      optionPrice: item.option.optionPrice,
+      quantity: item.quantity,
+    }));
+    return calculateMenuTotalPrice(menu.menuPrice, menuQuantity, options);
+  }, [selectedOptions, menu.menuPrice, menuQuantity]);
+
+  const buildOptionGroupTitle = (group: IOptionGroup): React.ReactNode => {
+    const name = getLocalizedGroupName(group, languageData.currentLanguage);
+    const { minQuantity, maxQuantity } = group;
+
+    let quantityInfo = '';
+    if (minQuantity > 0 && maxQuantity > 0) {
+      quantityInfo = `(${t('최소 {{minQuantity}}개', { minQuantity })} / ${t('최대 {{maxQuantity}}개', { maxQuantity })})`;
+    } else if (minQuantity > 0) {
+      quantityInfo = `(${t('최소 {{minQuantity}}개', { minQuantity })})`;
+    } else if (maxQuantity > 0) {
+      quantityInfo = `(${t('최대 {{maxQuantity}}개', { maxQuantity })})`;
     }
+
+    const hasQuantityConstraint = minQuantity > 0 || maxQuantity > 0;
 
     return (
       <>
-        {groupName}
-        {quantityText && ` ${quantityText}`}
-        {(optionGroup.minQuantity > 0 || optionGroup.maxQuantity > 0) && (
+        {name}
+        {quantityInfo && ` ${quantityInfo}`}
+        {hasQuantityConstraint && (
           <span>
-            {optionGroup.minQuantity > 0 && '필수 / '}
+            {minQuantity > 0 && '필수 / '}
             {t('수량제한')}
           </span>
         )}
@@ -388,92 +399,81 @@ export const MenuDetailWithOptionsModal = ({
     );
   };
 
-  // 선택된 옵션 항목의 표시 텍스트 생성
-  const buildSelectedOptionItemText = (
-    item: SelectedOptionWithGroup
-  ): string => {
-    const priceText = formatAdditionalPriceText(item.option.optionPrice);
-    const quantityText = item.count > 1 ? ` x${item.count}` : '';
-    const optionName =
-      item.option.localeOptionName?.[languageData.currentLanguage] ??
-      item.option.optionName;
-    return `${item.groupName} : ${optionName}${priceText}${quantityText}`;
+  const buildSelectedOptionText = (display: SelectedOptionDisplay): string => {
+    const name = getLocalizedOptionName(
+      display.option,
+      languageData.currentLanguage
+    );
+    const price = formatPriceText(display.option.optionPrice);
+    const quantity = display.quantity > 1 ? ` x${display.quantity}` : '';
+    return `${display.groupName} : ${name}${price}${quantity}`;
   };
 
-  // 계산된 값들
-  const groupedSelectedOptions = groupSelectedOptionsByGroupAndOption();
-  const totalPrice = getMenuTotalPrice();
-  const hasSelectedOptions = groupedSelectedOptions.length > 0;
-
-  const onClickAdd = () => {
+  const validateMenuQuantity = (): boolean => {
     if (menu.minQuantity > menuQuantity) {
       toast(
         t('최소 주문 수량은 {{minQuantity}}개 입니다.', {
           minQuantity: menu.minQuantity,
         }),
-        { position: 'center-center', duration: 2000 }
+        { position: 'center-center', duration: 1500 }
       );
+      return false;
+    }
+    return true;
+  };
+
+  // 각 옵션 그룹의 최소/최대 수량 제약 검증
+  const validateOptionGroups = (): boolean => {
+    for (const group of menu.optionGroupList) {
+      const selectedCount = calculateGroupTotalQuantity(
+        selectedOptions,
+        group.optionGroupSeq
+      );
+
+      // 최소 수량 검증
+      if (group.minQuantity > 0 && selectedCount < group.minQuantity) {
+        toast(
+          t('{{groupName}}에서 최소 {{minQuantity}}개를 선택해주세요.', {
+            groupName: getLocalizedGroupName(
+              group,
+              languageData.currentLanguage
+            ),
+            minQuantity: group.minQuantity,
+          }),
+          { position: 'center-center', duration: 1500 }
+        );
+        return false;
+      }
+
+      // 최대 수량 검증
+      if (group.maxQuantity > 0 && selectedCount > group.maxQuantity) {
+        toast(
+          t('{{groupName}}에서 최대 {{maxQuantity}}개까지 선택 가능합니다.', {
+            groupName: getLocalizedGroupName(
+              group,
+              languageData.currentLanguage
+            ),
+            maxQuantity: group.maxQuantity,
+          }),
+          { position: 'center-center', duration: 1500 }
+        );
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // 검증 후 카트에 추가 또는 업데이트
+  const handleAddToCart = () => {
+    if (!validateMenuQuantity() || !validateOptionGroups()) {
       return;
     }
 
-    // 옵션 그룹별 최소/최대 수량 체크
-    for (const optionGroup of menu.optionGroupList) {
-      let selectedCountInGroup = 0;
-      selectedOptions.forEach((item) => {
-        if (item.option.optionGroupSeq === optionGroup.optionGroupSeq) {
-          selectedCountInGroup += item.quantity;
-        }
-      });
+    const cartOptions = convertSelectedOptionsToCartOptions(
+      selectedOptions,
+      languageData.currentLanguage
+    );
 
-      // 최소 수량 체크
-      if (
-        optionGroup.minQuantity > 0 &&
-        selectedCountInGroup < optionGroup.minQuantity
-      ) {
-        toast(
-          t('{{groupName}}에서 최소 {{minQuantity}}개를 선택해주세요.', {
-            groupName: optionGroup.optionGroupName,
-            minQuantity: optionGroup.minQuantity,
-          }),
-          { position: 'center-center', duration: 2000 }
-        );
-        return;
-      }
-
-      // 최대 수량 체크
-      if (
-        optionGroup.maxQuantity > 0 &&
-        selectedCountInGroup > optionGroup.maxQuantity
-      ) {
-        toast(
-          t('{{groupName}}에서 최대 {{maxQuantity}}개까지 선택 가능합니다.', {
-            groupName: optionGroup.optionGroupName,
-            maxQuantity: optionGroup.maxQuantity,
-          }),
-          { position: 'center-center', duration: 2000 }
-        );
-        return;
-      }
-    }
-
-    // 옵션을 카트 형식으로 변환
-    const cartOptions: ICartMenu['selectedOptions'] = [];
-
-    selectedOptions.forEach((item) => {
-      const cartOption: ICartOption = {
-        optionGroupSeq: item.option.optionGroupSeq,
-        optionSeq: item.option.optionSeq,
-        optionName:
-          item.option.localeOptionName?.[languageData.currentLanguage] ??
-          item.option.optionName,
-        optionPrice: item.option.optionPrice,
-        quantity: item.quantity,
-      };
-
-      cartOptions.push(cartOption);
-    });
-
-    // 항상 1개의 메뉴만 카트에 등록
     const cartMenu: ICartMenu = {
       categorySeq: menu.categorySeq,
       menuSeq: menu.menuSeq,
@@ -484,15 +484,14 @@ export const MenuDetailWithOptionsModal = ({
       selectedOptions: cartOptions,
     };
 
+    // cartItemIndex가 있으면 수정 모드, 없으면 추가 모드
     if (cartItemIndex !== undefined) {
-      // 카트 아이템 업데이트 모드
       updateCartItem(cartItemIndex, cartMenu);
       toast(t('메뉴가 수정되었습니다.'), {
         position: 'center-center',
         duration: 1000,
       });
     } else {
-      // 새로 추가 모드
       addToCart(cartMenu);
       toast(t('메뉴가 담겼습니다.'), {
         position: 'center-center',
@@ -503,6 +502,83 @@ export const MenuDetailWithOptionsModal = ({
     onClose();
   };
 
+  // ============================================================================
+  // Render Helpers
+  // ============================================================================
+
+  // 옵션 타입에 따라 다른 UI 컴포넌트 렌더링 (NumberInput/Checkbox/Radio)
+  const renderOption = (option: IOption, group: IOptionGroup) => {
+    const quantity = getSelectedOptionQuantity(
+      group.optionGroupSeq,
+      option.optionSeq
+    );
+    const isSelected = quantity > 0;
+
+    // 수량 선택 가능: NumberInput
+    if (group.isOptionQuantitySelectable) {
+      return (
+        <S.NumberInputContainer key={option.optionSeq}>
+          <S.OptionText soldOut={option.isOutOfStock}>
+            {getLocalizedOptionName(option, languageData.currentLanguage)}
+            {formatPriceText(option.optionPrice)}
+          </S.OptionText>
+          <NumberInput
+            variant="rounded"
+            value={quantity}
+            onChange={(newQuantity) =>
+              handleOptionQuantityChange(option, newQuantity)
+            }
+            size="M"
+            disabled={option.isOutOfStock}
+          />
+        </S.NumberInputContainer>
+      );
+    }
+
+    // 다중 선택 가능: Checkbox
+    if (group.isMultipleSelectable) {
+      return (
+        <li key={option.optionSeq}>
+          <CheckButton
+            checked={isSelected}
+            onChange={() => handleCheckboxOrRadioSelection(option, group)}
+            disabled={option.isOutOfStock}
+            customStyle={css`
+              & > div {
+                width: 24px;
+                height: 24px;
+              }
+            `}
+          >
+            <S.OptionText soldOut={option.isOutOfStock}>
+              {buildOptionDisplayText(option)}
+            </S.OptionText>
+          </CheckButton>
+        </li>
+      );
+    }
+
+    // 단일 선택: Radio
+    return (
+      <li key={option.optionSeq}>
+        <RadioButton
+          value={String(option.optionSeq)}
+          onChange={() => handleCheckboxOrRadioSelection(option, group)}
+          checked={isSelected}
+          disabled={option.isOutOfStock}
+        >
+          <S.OptionText soldOut={option.isOutOfStock}>
+            {buildOptionDisplayText(option)}
+          </S.OptionText>
+        </RadioButton>
+      </li>
+    );
+  };
+
+  // ============================================================================
+  // Render
+  // ============================================================================
+
   return createPortal(
     <ModalBackground onClick={onClose}>
       <S.Container>
@@ -510,6 +586,7 @@ export const MenuDetailWithOptionsModal = ({
           <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
         </S.CloseButton>
 
+        {/* Menu Information */}
         <S.MenuInfoContainer>
           {hasImages ? (
             <S.SwiperContainer>
@@ -543,6 +620,7 @@ export const MenuDetailWithOptionsModal = ({
           </S.Description>
         </S.MenuInfoContainer>
 
+        {/* Options */}
         <S.OptionsContainer>
           {!hasOptionGroups && (
             <NoContent paddingTop="10%">
@@ -552,97 +630,15 @@ export const MenuDetailWithOptionsModal = ({
 
           {hasOptionGroups && (
             <S.OptionsList>
-              {menu.optionGroupList.map((optionGroup) => (
-                <li key={optionGroup.optionGroupSeq}>
+              {menu.optionGroupList.map((group) => (
+                <li key={group.optionGroupSeq}>
                   <S.OptionGroupName>
-                    {buildOptionGroupTitle(optionGroup)}
+                    {buildOptionGroupTitle(group)}
                   </S.OptionGroupName>
-
                   <S.Options>
-                    {optionGroup.optionList.map((option) => {
-                      // 수량 선택 가능한 옵션: NumberInput으로 표시
-                      if (optionGroup.isOptionQuantitySelectable) {
-                        const selectedCount = countSelectedOption(
-                          option.optionSeq,
-                          option.optionGroupSeq
-                        );
-
-                        return (
-                          <S.NumberInputContainer key={option.optionSeq}>
-                            <S.OptionText soldOut={option.isOutOfStock}>
-                              {option.localeOptionName?.[
-                                languageData.currentLanguage
-                              ] ?? option.optionName}
-                              {formatAdditionalPriceText(option.optionPrice)}
-                            </S.OptionText>
-                            <NumberInput
-                              variant="rounded"
-                              value={selectedCount}
-                              onChange={(newQuantity) =>
-                                handleOptionQuantityChange(option, newQuantity)
-                              }
-                              size="M"
-                              disabled={option.isOutOfStock}
-                            />
-                          </S.NumberInputContainer>
-                        );
-                      }
-
-                      // 다중 선택 가능한 옵션: CheckButton으로 표시
-                      if (optionGroup.isMultipleSelectable) {
-                        const selectedCount = countSelectedOption(
-                          option.optionSeq,
-                          option.optionGroupSeq
-                        );
-                        const isChecked = selectedCount > 0;
-
-                        return (
-                          <li key={option.optionSeq}>
-                            <CheckButton
-                              checked={isChecked}
-                              onChange={() =>
-                                handleOptionSelection(option, optionGroup)
-                              }
-                              disabled={option.isOutOfStock}
-                              customStyle={css`
-                                & > div {
-                                  width: 24px;
-                                  height: 24px;
-                                }
-                              `}
-                            >
-                              <S.OptionText soldOut={option.isOutOfStock}>
-                                {buildOptionDisplayText(option)}
-                              </S.OptionText>
-                            </CheckButton>
-                          </li>
-                        );
-                      }
-
-                      // 단일 선택 가능한 옵션: RadioButton으로 표시
-                      const selectedCount = countSelectedOption(
-                        option.optionSeq,
-                        option.optionGroupSeq
-                      );
-                      const isChecked = selectedCount > 0;
-
-                      return (
-                        <li key={option.optionSeq}>
-                          <RadioButton
-                            value={String(option.optionSeq)}
-                            onChange={() =>
-                              handleOptionSelection(option, optionGroup)
-                            }
-                            checked={isChecked}
-                            disabled={option.isOutOfStock}
-                          >
-                            <S.OptionText soldOut={option.isOutOfStock}>
-                              {buildOptionDisplayText(option)}
-                            </S.OptionText>
-                          </RadioButton>
-                        </li>
-                      );
-                    })}
+                    {group.optionList.map((option) =>
+                      renderOption(option, group)
+                    )}
                   </S.Options>
                 </li>
               ))}
@@ -650,25 +646,30 @@ export const MenuDetailWithOptionsModal = ({
           )}
         </S.OptionsContainer>
 
+        {/* Selected Options Summary */}
         <S.SelectedOptionsContainer>
           <S.Title>{t('선택한 옵션')}</S.Title>
           <S.SelectedOptionsList>
-            {!hasSelectedOptions ? (
+            {selectedOptionsForDisplay.length === 0 ? (
               <li>
                 <p>{t('선택한 옵션이 없습니다.')}</p>
               </li>
             ) : (
-              groupedSelectedOptions.map((item) => (
+              selectedOptionsForDisplay.map((display) => (
                 <li
-                  key={`${item.option.optionGroupSeq}-${item.option.optionSeq}`}
+                  key={createOptionKey(
+                    display.option.optionGroupSeq,
+                    display.option.optionSeq
+                  )}
                 >
                   <span />
-                  <p>{buildSelectedOptionItemText(item)}</p>
+                  <p>{buildSelectedOptionText(display)}</p>
                 </li>
               ))
             )}
           </S.SelectedOptionsList>
 
+          {/* Total and Add Button */}
           <S.TotalContainer>
             <NumberInput
               variant="square"
@@ -689,7 +690,7 @@ export const MenuDetailWithOptionsModal = ({
             </S.TotalInfo>
             <BasicButton
               variant="Solid_Blue_2XL"
-              onClick={onClickAdd}
+              onClick={handleAddToCart}
               customStyle={css`
                 width: 100%;
               `}

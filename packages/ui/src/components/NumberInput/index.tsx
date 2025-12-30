@@ -33,13 +33,18 @@ export const NumberInput = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    const newValue = Number(e.target.value);
-    if (min && newValue < min) {
+
+    // 숫자가 아닌 문자 제거 및 leading zero 제거
+    const sanitized =
+      e.target.value.replace(/[^0-9]/g, '').replace(/^0+/, '') || '0';
+    const newValue = Number(sanitized);
+
+    if (min !== undefined && newValue < min) {
       onChange(min);
       return;
     }
 
-    if (max && newValue > max) {
+    if (max !== undefined && newValue > max) {
       onChange(max);
       return;
     }
@@ -101,7 +106,9 @@ export const NumberInput = ({
         <RemoveIcon color={getIconColor('remove')} />
       </button>
       <input
-        type="number"
+        type="tel"
+        inputMode="numeric"
+        pattern="[0-9]*"
         id={id}
         value={value}
         onChange={handleChange}
