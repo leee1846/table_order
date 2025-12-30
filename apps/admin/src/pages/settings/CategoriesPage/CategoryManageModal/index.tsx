@@ -45,7 +45,9 @@ export const CategoryManageModal = ({
 
   // 카테고리 설명 상태 관리
   const [categoryDescription, setCategoryDescription] = useState<string>(
-    (categoryData as ICategory)?.categoryDescription || ''
+    isEdit && categoryData?.localeCategoryDescription?.['KO']
+      ? categoryData.localeCategoryDescription['KO']
+      : (categoryData as ICategory)?.categoryDescription || ''
   );
 
   //판매 시간 설정 모달
@@ -132,6 +134,21 @@ export const CategoryManageModal = ({
         categoryData.localeCategoryName[selectedLanguageCode] || '';
       if (categoryNameForLanguage) {
         setCategoryName(categoryNameForLanguage);
+      }
+    }
+  }, [selectedLanguageCode, isEdit, categoryData]);
+
+  // 선택된 언어가 변경될 때 해당 언어의 카테고리 설명으로 업데이트
+  useEffect(() => {
+    if (
+      isEdit &&
+      categoryData?.localeCategoryDescription &&
+      selectedLanguageCode
+    ) {
+      const categoryDescriptionForLanguage =
+        categoryData.localeCategoryDescription[selectedLanguageCode] || '';
+      if (categoryDescriptionForLanguage) {
+        setCategoryDescription(categoryDescriptionForLanguage);
       }
     }
   }, [selectedLanguageCode, isEdit, categoryData]);
@@ -243,6 +260,7 @@ export const CategoryManageModal = ({
               <S.SubTitle>
                 카테고리 이름 <span>*</span>
               </S.SubTitle>
+
               <Input
                 placeholder="카테고리 이름을 입력해주세요."
                 value={categoryName}
