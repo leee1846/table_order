@@ -26,16 +26,13 @@ export const Detail = ({
         <UIStyles.setting.Title>{t('버전 및 네트워크')}</UIStyles.setting.Title>
         <S.Versions>
           <p>
-            {t('메뉴판 현재 버전')} <span>2.??.??</span>
+            {t('메뉴판 현재 버전')} <span>{deviceData?.version}</span>
           </p>
           <div />
           <p>
             {t('최신 버전')} <span>2.??.??</span>
           </p>
           <div />
-          <p>
-            {t('Add On 버전')} <span>2.??</span>
-          </p>
         </S.Versions>
       </UIStyles.setting.Header>
 

@@ -77,6 +77,7 @@ export const useTouchDetectTimer = () => {
       }
 
       globalTimerManager.clear(TIMER_KEYS.CART_ORDER_REMINDER);
+
       globalTimerManager.setTimeout(
         TIMER_KEYS.CART_ORDER_REMINDER,
         orderReminderTimerCallback,

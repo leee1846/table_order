@@ -14,6 +14,7 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { globalTimerManager } from '@/utils/timerManager';
+import { useModalStore } from '@/stores/useModalStore';
 import * as S from './cartReminder.style';
 
 const COUNTDOWN_INITIAL_SECONDS = 28;
@@ -31,6 +32,7 @@ export const CartReminder = () => {
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData();
   const { refresh: refreshShopDetailData } = useShopDetailData();
+  const { closeAllModals } = useModalStore();
 
   const [remainingSeconds, setRemainingSeconds] = useState(
     COUNTDOWN_INITIAL_SECONDS
@@ -71,6 +73,7 @@ export const CartReminder = () => {
       hideCartReminder();
       clearCart();
       clearCustomerLanguageData();
+      closeAllModals();
       showInitialPage();
     };
 
@@ -92,6 +95,7 @@ export const CartReminder = () => {
     clearCart,
     clearCustomerLanguageData,
     showInitialPage,
+    closeAllModals,
   ]);
 
   return (

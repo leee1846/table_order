@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { AxiosError } from '@repo/api/axios';
 import type { IDevice } from '@repo/api/types';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
@@ -39,11 +39,15 @@ export const useAdminAccessControl = (
     setDataAsync: setDeviceDataAsync,
   } = deviceDataResult;
 
+  // tableNumber 변경을 감지하기 위한 ref
+  const prevTableNumberRef = useRef<string | null | undefined>(undefined);
+
   useEffect(() => {
     // 선택한 테이블이 존재하지 않을 경우 모달 노출
     if (deviceDataError?.response?.status === 404) {
       clearDeviceData();
       setShowAdminAccessPasswordModal(true);
+      prevTableNumberRef.current = null;
       return;
     }
 
@@ -51,17 +55,27 @@ export const useAdminAccessControl = (
       return;
     }
 
-    if (deviceData && !deviceData?.tableNumber) {
+    // tableNumber가 실제로 변경되었을 때만 로직 실행
+    const currentTableNumber = deviceData.tableNumber ?? null;
+    if (prevTableNumberRef.current === currentTableNumber) {
+      return; // tableNumber가 변경되지 않았으면 아무것도 하지 않음
+    }
+
+    prevTableNumberRef.current = currentTableNumber;
+
+    // tableNumber가 없으면 모달 표시
+    if (!currentTableNumber) {
       setShowAdminAccessPasswordModal(true);
       return;
     }
 
+    // 테이블이 삭제되었는지 확인
     if (
       !!tableGroupData &&
       !tableGroupData
         .map((tableGroup) => tableGroup.tableList)
         .flat()
-        .some((table) => table?.tableNumber === deviceData?.tableNumber)
+        .some((table) => table?.tableNumber === currentTableNumber)
     ) {
       toast('테이블이 삭제되었습니다.', {
         position: 'center-center',
@@ -76,8 +90,9 @@ export const useAdminAccessControl = (
     }
 
     setShowAdminAccessPasswordModal(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    deviceData,
+    deviceData?.tableNumber,
     deviceDataError,
     clearDeviceData,
     tableGroupData,
