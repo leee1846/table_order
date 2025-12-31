@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { NoContent } from '@/feature/NoContent';
 import { Category } from '@/pages/settings/CategoriesPage/Categories/Category';
 import type { ICategory } from '@repo/api/types';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
@@ -32,10 +31,6 @@ export const Categories = ({
 
   if (isLoading) {
     return <FullscreenLoadingSpinner />;
-  }
-
-  if (!categories || categories.length === 0) {
-    return <NoContent>카테고리가 없습니다.</NoContent>;
   }
 
   // 드래그 앤 드롭으로 순서 변경
@@ -82,13 +77,13 @@ export const Categories = ({
 
   // 실제 표시할 카테고리 (로컬 상태가 있으면 사용, 없으면 원본 사용)
   const displayCategories =
-    localCategories.length > 0 && localCategories.length === categories.length
+    localCategories.length > 0 && localCategories.length === categories?.length
       ? localCategories
       : categories;
 
   return (
     <SortableList
-      items={displayCategories}
+      items={displayCategories ?? []}
       onReorder={handleReorder}
       getId={(category) => category.categorySeq}
       renderItem={(category) => (

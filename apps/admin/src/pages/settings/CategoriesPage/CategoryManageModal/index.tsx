@@ -166,10 +166,11 @@ export const CategoryManageModal = ({
       return;
     }
 
-    // Convert selectedDays (string labels) to numbers
+    // Convert selectedDays (string labels) to numbers and sort
     const saleDayOfWeekNumbers = selectedDays
       .map((label) => DAYS.find((day) => day.label === label)?.value ?? -1)
-      .filter((value) => value !== -1);
+      .filter((value) => value !== -1)
+      .sort((a, b) => a - b);
 
     // 모든 요일이 선택되어 있고 공휴일 판매가 true면 useSaleDay는 false, 그 외에는 true
     const allDaysSelected = selectedDays.length === DAYS.length;

@@ -74,6 +74,19 @@ export const TaxFreeCss = css`
     ${TYPOGRAPHY.ST_2}
     color: ${theme.colors.grey[800]};
   }
+
+  &:has(input:disabled) {
+    cursor: default;
+
+    & > div {
+      background-color: ${theme.colors.grey[100]};
+      border: 1px solid ${theme.colors.grey[300]};
+    }
+
+    & span {
+      color: ${theme.colors.grey[400]};
+    }
+  }
 `;
 
 export const BadgeContainer = styled.div<{ gap?: number }>`

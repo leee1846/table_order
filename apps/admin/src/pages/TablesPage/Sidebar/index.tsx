@@ -18,6 +18,7 @@ import { ROUTES } from '@/constants/routes';
 import { toast } from '@repo/feature/utils';
 import type { ICurrentTable, ITableGroup } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
+import { TableGroupList } from './sidebar.styles';
 
 type MenuItem = {
   id: string;
@@ -94,7 +95,7 @@ export const Sidebar = ({
         캡스 스마트오더
       </Logo>
 
-      <MenuList>
+      <TableGroupList>
         {tableGroups.map((group) => (
           <MenuItem
             key={group.tableGroupSeq}
@@ -104,7 +105,10 @@ export const Sidebar = ({
             {group.tableGroupName}
           </MenuItem>
         ))}
-        <MenuDivider style={{ margin: '16px 0' }} />
+      </TableGroupList>
+
+      <MenuList style={{ flex: '0 0 auto' }}>
+        <MenuDivider style={{ margin: ' 0' }} />
         {MENU_ITEMS.map((menu) => (
           <MenuItem
             key={menu.id}

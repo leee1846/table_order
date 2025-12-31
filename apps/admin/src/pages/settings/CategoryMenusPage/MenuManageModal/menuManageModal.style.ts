@@ -118,7 +118,6 @@ export const LanguageTab = styled.button<{ isSelected: boolean }>`
   gap: 6px;
   padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid red;
   border: 1px solid
     ${({ isSelected }) =>
       isSelected ? theme.colors.primary[500] : theme.colors.grey[300]};

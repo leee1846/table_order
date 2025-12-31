@@ -15,12 +15,7 @@ interface MenusProps {
   onClickEditMenu: (menu: IMenu) => void;
 }
 
-export const Menus = ({
-  menus,
-  isLoading,
-  hasCategory,
-  onClickEditMenu,
-}: MenusProps) => {
+export const Menus = ({ menus, isLoading, onClickEditMenu }: MenusProps) => {
   const queryClient = useQueryClient();
   const [localMenus, setLocalMenus] = useState<IMenu[]>([]);
   const { mutateAsync: updateMenuIndex } = usePutUpdateMenuIndex();
@@ -32,16 +27,8 @@ export const Menus = ({
     }
   }, [menus]);
 
-  if (!hasCategory) {
-    return <NoContent>카테고리가 선택되지 않았습니다.</NoContent>;
-  }
-
   if (isLoading) {
     return <FullscreenLoadingSpinner />;
-  }
-
-  if (!menus || menus.length === 0) {
-    return <NoContent>메뉴가 없습니다.</NoContent>;
   }
 
   const handleReorder = async (
@@ -86,13 +73,13 @@ export const Menus = ({
 
   // 실제 표시할 메뉴 (로컬 상태가 있으면 사용, 없으면 원본 사용)
   const displayMenus =
-    localMenus.length > 0 && localMenus.length === menus.length
+    localMenus.length > 0 && localMenus.length === menus?.length
       ? localMenus
       : menus;
 
   return (
     <SortableList
-      items={displayMenus}
+      items={displayMenus ?? []}
       onReorder={handleReorder}
       getId={(menu) => menu.menuSeq}
       renderItem={(menu) => <Menu menu={menu} onEditMenu={onClickEditMenu} />}

@@ -95,6 +95,7 @@ export const BasicSetting = () => {
                 checked={formValues.isTaxFree ?? false}
                 onChange={(checked) => updateFormValues({ isTaxFree: checked })}
                 customStyle={S.TaxFreeCss}
+                disabled={true}
               >
                 <span>면세</span>
               </CheckButton>

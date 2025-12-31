@@ -211,7 +211,7 @@ export const OptionGroupManageModal = ({
 
   const handleDeleteOption = (optionSeq: number | null, index: number) => {
     if (options.length <= 1) {
-      alert('최소 1개 이상의 옵션이 필요합니다.');
+      toast('최소 1개 이상의 옵션이 필요합니다.');
       return;
     }
 
@@ -528,6 +528,7 @@ export const OptionGroupManageModal = ({
                 최소 수량
                 <input
                   type="string"
+                  inputMode="numeric"
                   value={settings.minQuantity.toString()}
                   onChange={(e) => {
                     const value = e.target.value;
@@ -542,6 +543,7 @@ export const OptionGroupManageModal = ({
                 최대 수량
                 <input
                   type="string"
+                  inputMode="numeric"
                   value={settings.maxQuantity}
                   onChange={(e) => {
                     const value = e.target.value;

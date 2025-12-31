@@ -5,6 +5,7 @@ import * as S from './SettingsSidebar.style';
 import { ChevronForwardIcon, HomeFilledIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { type SettingsSidebarProps, type TMenu, type TSubMenu } from './types';
+import { toast } from '@repo/feature/utils';
 
 export type { SettingsSidebarProps, TMenu, TSubMenu } from './types';
 
@@ -21,7 +22,13 @@ export const SettingsSidebar = ({
   const isMenuOpened = (menuId: string) => openedMenuIds.has(menuId);
 
   const handleMenuClick = (menu: TMenu) => {
-    if (menu.subMenus?.length) {
+    if (menu.subMenus !== undefined) {
+      // subMenus가 정의되어 있지만 비어있는 경우 (카테고리가 없는 경우)
+      if (menu.subMenus.length === 0) {
+        toast('카테고리를 먼저 등록해주세요.');
+        return;
+      }
+      // subMenus가 있는 경우 토글
       toggleMenuOpen(menu.id);
     } else if (menu.path) {
       navigate(menu.path);

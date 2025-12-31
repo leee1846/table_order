@@ -24,7 +24,6 @@ export const MenuList = styled.ul`
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin-top: 30px;
   padding: 0 12px;
 `;
 
@@ -54,6 +53,7 @@ export const ActionButtons = styled.div`
   flex-direction: column;
   padding: 0 12px;
   margin-bottom: 20px;
+  margin-top: 30px;
 `;
 
 export const ActionButton = styled.button`
