@@ -14,6 +14,7 @@ import type { UseBreakTimeReturn } from '@/hooks/useBreakTime';
 import type { UseShopClosureReturn } from '@/hooks/useShopClosure';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
+import { useTableGroupData } from '@/hooks/useTableGroupData';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -35,10 +36,19 @@ export const Header = ({
 
   const { data: deviceData } = useDeviceData();
   const { data: shopDetailData } = useShopDetailData();
+  const { data: tableGroupsData } = useTableGroupData();
   const { data: shopPageSettingData } = useShopThemePage();
+
   const { shopThemeData } = shopPageSettingData;
+  const tableName = tableGroupsData?.map((tableGroup) => {
+    const table = tableGroup.tableList?.find(
+      (table) => table.tableNumber === deviceData?.tableNumber
+    );
+    return table?.tableName ?? '';
+  });
 
   const { data: modalData, setModalData } = useModalStore();
+
   const clickCountRef = useRef(0);
   const descriptionWrapperRef = useRef<HTMLDivElement>(null);
   const descriptionContainerRef = useRef<HTMLDivElement>(null);
@@ -285,9 +295,7 @@ export const Header = ({
         </S.LeftContent>
 
         <S.RightContent>
-          <S.TableNumber role="text">
-            {t('{{number}}번 테이블', { number: deviceData?.tableNumber ?? 0 })}
-          </S.TableNumber>
+          <S.TableNumber role="text">{tableName}</S.TableNumber>
           <S.Divider />
           <S.OrderHistoryButton
             type="button"

@@ -33,6 +33,7 @@ export const SidebarLayout = () => {
 
   return (
     <SettingsSidebar
+      useTranslation={useAdminTranslation}
       menus={getSidebarMenus(t)}
       logoElement={
         <button type="button" onClick={onClickLogo}>

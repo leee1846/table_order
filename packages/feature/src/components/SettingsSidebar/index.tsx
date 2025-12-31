@@ -13,7 +13,9 @@ export const SettingsSidebar = ({
   menus,
   logoElement,
   onClickHomeButton,
+  useTranslation,
 }: SettingsSidebarProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [openedMenuIds, setOpenedMenuIds] = useState<Set<string>>(new Set());
@@ -25,7 +27,7 @@ export const SettingsSidebar = ({
     if (menu.subMenus !== undefined) {
       // subMenus가 정의되어 있지만 비어있는 경우 (카테고리가 없는 경우)
       if (menu.subMenus.length === 0) {
-        toast('카테고리를 먼저 등록해주세요.');
+        toast(t('카테고리를 먼저 등록해주세요.'));
         return;
       }
       // subMenus가 있는 경우 토글
@@ -137,7 +139,7 @@ export const SettingsSidebar = ({
             height={24}
             color={theme.colors.grey[700]}
           />
-          <span>메인 홈</span>
+          <span>{t('메인 홈')}</span>
         </S.FloatingHomeButton>
       </S.Section>
 

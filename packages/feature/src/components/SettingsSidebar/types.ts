@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type TSubMenu = {
   id: string | number;
@@ -18,4 +19,5 @@ export interface SettingsSidebarProps {
   menus: TMenu[];
   logoElement: React.ReactElement<ButtonHTMLAttributes<HTMLButtonElement>>;
   onClickHomeButton: () => void;
+  useTranslation: typeof useTranslation;
 }

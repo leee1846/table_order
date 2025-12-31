@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { SettingsSidebar } from '@repo/feature/components';
+import { SettingsSidebar, useTranslation } from '@repo/feature/components';
 import { createSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
 import { useGetCategoryList } from '@repo/api/queries';
@@ -35,6 +35,7 @@ export const SidebarLayout = () => {
 
   return (
     <SettingsSidebar
+      useTranslation={useTranslation}
       menus={SIDEBAR_MENUS}
       logoElement={
         <button
