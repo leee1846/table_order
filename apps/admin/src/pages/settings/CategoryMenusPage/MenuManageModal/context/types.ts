@@ -34,6 +34,7 @@ export interface MenuManageModalContextValue {
   addAdditionalImages: (files: FileList | File[]) => void;
   removeAdditionalImage: (id: string) => void;
   handleSubmit: () => Promise<void>;
+  isSaving: boolean;
   onClose: () => void;
 }
 

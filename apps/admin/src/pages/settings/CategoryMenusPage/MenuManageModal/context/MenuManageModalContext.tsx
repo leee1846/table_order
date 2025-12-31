@@ -121,6 +121,9 @@ export const MenuManageModalProvider = ({
   // menu가 있으면 수정 모드, 없으면 생성 모드
   const mode: ModalMode = menu ? 'edit' : 'create';
 
+  // 저장 중 상태
+  const [isSaving, setIsSaving] = useState(false);
+
   // 메뉴 생성/수정을 위한 mutation 훅
   const { mutateAsync: createMenu } = usePostCreateMenu();
 
@@ -210,16 +213,20 @@ export const MenuManageModalProvider = ({
    * 에러 발생 시 콘솔에 로그 출력 (사용자에게는 다른 곳에서 처리될 수 있음)
    */
   const handleSubmit = useCallback(async () => {
-    try {
-      if (mode === 'create') {
-        await handleCreate();
-      } else {
-        await handleUpdate();
-      }
-    } catch (error) {
-      console.error(`메뉴 ${mode === 'create' ? '생성' : '수정'} 실패:`, error);
+    // 저장 중일 때는 중복 호출 방지
+    if (isSaving) {
+      return;
     }
-  }, [mode, handleCreate, handleUpdate]);
+
+    setIsSaving(true);
+
+    if (mode === 'create') {
+      await handleCreate();
+    } else {
+      await handleUpdate();
+    }
+    setIsSaving(false);
+  }, [isSaving, mode, handleCreate, handleUpdate]);
 
   /**
    * Context에 제공할 값들을 메모이제이션
@@ -239,6 +246,7 @@ export const MenuManageModalProvider = ({
       addAdditionalImages: images.addAdditionalImages, // 추가 이미지 추가
       removeAdditionalImage: images.removeAdditionalImage, // 추가 이미지 제거
       handleSubmit, // 메뉴 제출 핸들러 (생성/수정)
+      isSaving, // 저장 중 상태
       onClose, // 모달 닫기 핸들러
     }),
     [
@@ -254,6 +262,7 @@ export const MenuManageModalProvider = ({
       images.addAdditionalImages,
       images.removeAdditionalImage,
       handleSubmit,
+      isSaving,
       onClose,
     ]
   );

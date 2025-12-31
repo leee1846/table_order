@@ -106,6 +106,7 @@ export const OptionGroupManageModal = ({
   const [options, setOptions] = useState<ICreateOption[] | IUpdateOption[]>([]);
   const [settings, setSettings] =
     useState<OptionGroupSettings>(DEFAULT_SETTINGS);
+  const [isSaving, setIsSaving] = useState(false);
 
   const trimmedOptionGroupName = optionGroupName.trim();
 
@@ -317,9 +318,17 @@ export const OptionGroupManageModal = ({
   };
 
   const handleSave = useCallback(() => {
+    // 저장 중일 때는 중복 호출 방지
+    if (isSaving) {
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
+
+    // 저장 시작
+    setIsSaving(true);
 
     const currentOptionGroupList = formValues.optionGroupList ?? [];
     // 메뉴가 생성 모드
@@ -346,6 +355,7 @@ export const OptionGroupManageModal = ({
             : group
         );
         updateFormValues({ optionGroupList: updatedList });
+        setIsSaving(false);
         onClose();
         return;
       }
@@ -365,6 +375,7 @@ export const OptionGroupManageModal = ({
       updateFormValues({
         optionGroupList: [...currentOptionGroupList, newOptionGroup],
       });
+      setIsSaving(false);
       onCreated?.();
       return;
     }
@@ -391,6 +402,7 @@ export const OptionGroupManageModal = ({
           : group
       );
       updateFormValues({ optionGroupList: updatedList });
+      setIsSaving(false);
       onClose();
       return;
     }
@@ -411,8 +423,10 @@ export const OptionGroupManageModal = ({
     updateFormValues({
       optionGroupList: [...currentOptionGroupList, newOptionGroup],
     });
+    setIsSaving(false);
     onCreated?.();
   }, [
+    isSaving,
     validateForm,
     formValues.optionGroupList,
     isOptionGroupEditMode,
@@ -624,7 +638,11 @@ export const OptionGroupManageModal = ({
         </S.Contents>
 
         <S.FloatingButtonContainer>
-          <BasicButton variant="Solid_Navy_2XL" onClick={handleSave}>
+          <BasicButton
+            variant="Solid_Navy_2XL"
+            onClick={handleSave}
+            disabled={isSaving}
+          >
             저장하기
           </BasicButton>
         </S.FloatingButtonContainer>

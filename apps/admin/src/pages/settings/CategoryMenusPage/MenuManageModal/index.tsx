@@ -32,8 +32,15 @@ const languageOptions: { value: TShopLanguage; label: string }[] = [
 ];
 
 const MenuManageModalContent = () => {
-  const { mode, menu, onClose, handleSubmit, formValues, updateFormValues } =
-    useMenuManageModal();
+  const {
+    mode,
+    menu,
+    onClose,
+    handleSubmit,
+    formValues,
+    updateFormValues,
+    isSaving,
+  } = useMenuManageModal();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const modalTitle = mode === 'create' ? '메뉴 추가' : '메뉴 수정';
@@ -141,6 +148,7 @@ const MenuManageModalContent = () => {
         variant="Solid_Navy_2XL"
         customStyle={S.SubmitButton}
         onClick={handleSubmit}
+        disabled={isSaving}
       >
         저장
       </BasicButton>
