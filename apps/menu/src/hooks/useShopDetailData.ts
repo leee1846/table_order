@@ -27,13 +27,17 @@ export const useShopDetailData = (options?: Props) => {
       return;
     }
 
-    setShopDetailData(apiData.data);
+    const updateData = async () => {
+      await setShopDetailData(apiData.data);
+    };
+
+    updateData();
   }, [apiData, setShopDetailData, skipInitialRequest]);
 
   const refresh = async () => {
     const result = await refetch();
     if (result.data?.data) {
-      setShopDetailData(result.data.data);
+      await setShopDetailData(result.data.data);
     }
   };
 

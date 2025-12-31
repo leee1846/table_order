@@ -114,9 +114,9 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   };
 
   const menuName =
-    menu.localeMenuName?.[languageData.currentLanguage] ?? menu.menuName;
+    menu.localeMenuName?.[languageData.currentLanguage] || menu.menuName;
   const menuDescription =
-    menu.localeMenuDescription?.[languageData.currentLanguage] ??
+    menu.localeMenuDescription?.[languageData.currentLanguage] ||
     menu.menuDescription;
   const priceText = `${currencySymbol}${formatCurrency(menu.menuPrice)}`;
   const ariaLabel = menu.isOutOfStock

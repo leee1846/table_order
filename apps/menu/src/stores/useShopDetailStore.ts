@@ -5,7 +5,7 @@ import { AppStorage } from '@repo/util/app';
 
 interface IShopDetailStore {
   data: IGetShop | null;
-  setData: (data: IGetShop) => void;
+  setData: (data: IGetShop) => Promise<void>;
   clearData: () => void;
 }
 
@@ -25,8 +25,8 @@ export const useShopDetailStore = create<IShopDetailStore>((set) => {
 
   return {
     data: null,
-    setData: (data: IGetShop) => {
-      AppStorage.saveData({
+    setData: async (data: IGetShop) => {
+      await AppStorage.saveData({
         key: STORAGE_KEYS.SHOP_DETAIL,
         value: data,
         isTemporary: true,
