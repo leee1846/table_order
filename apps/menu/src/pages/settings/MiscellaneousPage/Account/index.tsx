@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { BasicButton, RadioButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
-import { openDualActionDialog } from '@repo/feature/utils';
+import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { getAccessToken } from '@repo/api/auth';
 import type { ITokenPayload, TShopLanguage } from '@repo/api/types';
 import { decodeJwtToken, storage } from '@repo/util/function';
@@ -50,6 +50,10 @@ export const Account = () => {
       secondaryText: t('아니오'),
       onConfirm: () => {
         clearAuthData();
+        toast(t('로그아웃 되었습니다.'), {
+          duration: 1500,
+          position: 'center-center',
+        });
         navigate(ROUTES.LOGIN.generate());
       },
     });
