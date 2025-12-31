@@ -16,6 +16,7 @@ import { CategoryModal } from './CategoryModal';
 import { DAYS } from '@/constants/days';
 import { normalizeNumberString } from '@repo/util/string';
 import { generateTimeOptions, calculateTimeBefore } from '@repo/util/time';
+import { MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 import type { MiscellaneousChange } from '../types';
 
 interface MenuAppFeatureProps {
@@ -484,7 +485,13 @@ export const MenuAppFeature = ({
           <S.TextAreaContainer>
             <textarea
               value={pickupAlertMessage}
-              onChange={(event) => setPickupAlertMessage(event.target.value)}
+              maxLength={MAX_DESCRIPTION_LENGTH}
+              onChange={(event) => {
+                const value = event.target.value;
+                if (value.length <= MAX_DESCRIPTION_LENGTH) {
+                  setPickupAlertMessage(value);
+                }
+              }}
             />
           </S.TextAreaContainer>
         )}
@@ -674,16 +681,26 @@ export const MenuAppFeature = ({
                 <p>라스트오더 안내 메세지</p>
                 <textarea
                   value={breakTimeLastOrderMessage}
-                  onChange={(event) =>
-                    setBreakTimeLastOrderMessage(event.target.value)
-                  }
+                  maxLength={MAX_DESCRIPTION_LENGTH}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (value.length <= MAX_DESCRIPTION_LENGTH) {
+                      setBreakTimeLastOrderMessage(value);
+                    }
+                  }}
                 />
               </div>
               <div>
                 <p>브레이크타임 안내 메세지</p>
                 <textarea
                   value={breakTimeMessage}
-                  onChange={(event) => setBreakTimeMessage(event.target.value)}
+                  maxLength={MAX_DESCRIPTION_LENGTH}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (value.length <= MAX_DESCRIPTION_LENGTH) {
+                      setBreakTimeMessage(value);
+                    }
+                  }}
                 />
               </div>
             </S.TextAreasContainer>
@@ -790,16 +807,26 @@ export const MenuAppFeature = ({
                 <p>주문 마감 사전 안내 메세지</p>
                 <textarea
                   value={closureLastOrderMessage}
-                  onChange={(event) =>
-                    setClosureLastOrderMessage(event.target.value)
-                  }
+                  maxLength={MAX_DESCRIPTION_LENGTH}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (value.length <= MAX_DESCRIPTION_LENGTH) {
+                      setClosureLastOrderMessage(value);
+                    }
+                  }}
                 />
               </div>
               <div>
                 <p>영업마감 안내 메세지</p>
                 <textarea
                   value={closureMessage}
-                  onChange={(event) => setClosureMessage(event.target.value)}
+                  maxLength={MAX_DESCRIPTION_LENGTH}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (value.length <= MAX_DESCRIPTION_LENGTH) {
+                      setClosureMessage(value);
+                    }
+                  }}
                 />
               </div>
             </S.TextAreasContainer>

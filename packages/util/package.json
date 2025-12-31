@@ -8,6 +8,7 @@
     "./app": "./src/app/index.ts",
     "./array": "./src/array/index.ts",
     "./calculation": "./src/calculation/index.ts",
+    "./constants": "./src/constants/index.ts",
     "./date": "./src/date/index.ts",
     "./device": "./src/device/index.ts",
     "./function": "./src/function/index.ts",

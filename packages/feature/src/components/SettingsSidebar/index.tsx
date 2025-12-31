@@ -112,7 +112,7 @@ export const SettingsSidebar = ({
                   )}
                 </S.CategoryButton>
 
-                <ul>
+                <S.SubMenuList>
                   {hasSubMenus &&
                     isOpened &&
                     menu.subMenus!.map((sub: TSubMenu) => (
@@ -125,7 +125,7 @@ export const SettingsSidebar = ({
                         </S.DetailButton>
                       </li>
                     ))}
-                </ul>
+                </S.SubMenuList>
               </li>
             );
           })}

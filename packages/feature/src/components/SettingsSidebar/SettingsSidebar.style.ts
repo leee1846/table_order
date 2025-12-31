@@ -72,6 +72,10 @@ export const CategoryButton = styled.button<ICategoryButton>`
   }
 `;
 
+export const SubMenuList = styled.ul`
+  padding-left: 10px;
+`;
+
 interface IDetailButton {
   isSelected: boolean;
 }

@@ -16,6 +16,7 @@ import type {
   TLocale,
 } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
+import { MAX_NAME_LENGTH } from '@repo/util/constants';
 import { useMenuManageModal } from '../../context/MenuManageModalContext';
 import * as S from './optionGroupManageModal.style';
 import { toast } from '@repo/feature/utils';
@@ -243,6 +244,31 @@ export const OptionGroupManageModal = ({
     );
   };
 
+  const handleNameChangeWithLimit = useCallback(
+    (value: string, onUpdate: (value: string) => void) => {
+      if (value.length <= MAX_NAME_LENGTH) {
+        onUpdate(value);
+      }
+    },
+    []
+  );
+
+  const handleOptionGroupNameChange = useCallback(
+    (value: string) => {
+      handleNameChangeWithLimit(value, setOptionGroupName);
+    },
+    [handleNameChangeWithLimit]
+  );
+
+  const handleOptionNameChange = useCallback(
+    (index: number, value: string) => {
+      handleNameChangeWithLimit(value, (val) =>
+        handleOptionChange(index, 'optionName', val)
+      );
+    },
+    [handleNameChangeWithLimit, options]
+  );
+
   const validateForm = (): boolean => {
     if (!optionGroupName.trim()) {
       toast('옵션 그룹명을 입력해주세요.');
@@ -436,7 +462,7 @@ export const OptionGroupManageModal = ({
               placeholder="옵션 그룹명을 입력해주세요."
               customStyle={S.inputCss}
               value={optionGroupName}
-              onChange={setOptionGroupName}
+              onChange={handleOptionGroupNameChange}
             />
           </S.TitleContainer>
 
@@ -479,7 +505,7 @@ export const OptionGroupManageModal = ({
                         customStyle={S.inputCss}
                         value={option.optionName}
                         onChange={(value) =>
-                          handleOptionChange(index, 'optionName', value)
+                          handleOptionNameChange(index, value)
                         }
                       />
                       <Input
@@ -532,8 +558,9 @@ export const OptionGroupManageModal = ({
                   value={settings.minQuantity.toString()}
                   onChange={(e) => {
                     const value = e.target.value;
+                    const numValue = Number(value) || 0;
                     updateSettings({
-                      minQuantity: Number(value),
+                      minQuantity: Math.min(Math.max(numValue, 0), 999),
                     });
                   }}
                 />
@@ -547,8 +574,9 @@ export const OptionGroupManageModal = ({
                   value={settings.maxQuantity}
                   onChange={(e) => {
                     const value = e.target.value;
+                    const numValue = Number(value) || 0;
                     updateSettings({
-                      maxQuantity: Number(value) || 0,
+                      maxQuantity: Math.min(Math.max(numValue, 0), 999),
                     });
                   }}
                 />

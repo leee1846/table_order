@@ -5,6 +5,7 @@ export const Container = styled.div`
   background-color: ${theme.colors.grey[50]};
   padding: 40px 24px 40px 30px;
   height: 100%;
+  overflow-y: auto;
 `;
 
 export const AddButton = styled.div`

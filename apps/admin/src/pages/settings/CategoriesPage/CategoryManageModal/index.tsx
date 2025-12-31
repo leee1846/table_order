@@ -20,6 +20,7 @@ import { DAYS } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
+import { MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 
 interface Props {
   onClose: () => void;
@@ -265,14 +266,22 @@ export const CategoryManageModal = ({
               <Input
                 placeholder="카테고리 이름을 입력해주세요."
                 value={categoryName}
-                onChange={(value) => setCategoryName(value)}
+                onChange={(value) => {
+                  if (value.length <= MAX_NAME_LENGTH) {
+                    setCategoryName(value);
+                  }
+                }}
               />
             </div>
 
             <Input
               placeholder="카테고리 설명을 입력해주세요."
               value={categoryDescription}
-              onChange={(value) => setCategoryDescription(value)}
+              onChange={(value) => {
+                if (value.length <= MAX_DESCRIPTION_LENGTH) {
+                  setCategoryDescription(value);
+                }
+              }}
             />
 
             <div>

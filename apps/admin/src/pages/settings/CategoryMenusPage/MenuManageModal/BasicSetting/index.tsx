@@ -11,6 +11,8 @@ import {
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
 import { ImageSection } from './ImageSection';
 import { useMenuForm } from '../context/MenuManageModalContext';
+import { formatCurrency } from '@repo/util/string';
+import { MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 
 const SPICE_LEVELS = [1, 2, 3] as const;
 
@@ -38,6 +40,25 @@ export const BasicSetting = () => {
     [updateFormValues]
   );
 
+  const handleMenuNameChange = useCallback(
+    (value: string) => {
+      if (value.length <= MAX_NAME_LENGTH) {
+        updateFormValues({ menuName: value });
+      }
+    },
+    [updateFormValues]
+  );
+
+  const handleMenuDescriptionChange = useCallback(
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const value = event.target.value;
+      if (value.length <= MAX_DESCRIPTION_LENGTH) {
+        updateFormValues({ menuDescription: value });
+      }
+    },
+    [updateFormValues]
+  );
+
   return (
     <S.Container>
       <ImageSection />
@@ -52,7 +73,7 @@ export const BasicSetting = () => {
               placeholder="메뉴명을 입력해 주세요."
               customStyle={S.inputCss}
               value={formValues.menuName ?? ''}
-              onChange={(value) => updateFormValues({ menuName: value })}
+              onChange={handleMenuNameChange}
             />
           </S.VerticalLayout>
 
@@ -103,7 +124,9 @@ export const BasicSetting = () => {
             <Input
               placeholder="가격을 입력해 주세요."
               customStyle={S.inputCss}
-              value={formValues.menuPrice?.toString() ?? ''}
+              value={
+                formValues.menuPrice ? formatCurrency(formValues.menuPrice) : ''
+              }
               onChange={handlePriceChange}
             />
           </S.VerticalLayout>
@@ -135,9 +158,8 @@ export const BasicSetting = () => {
             id={`menu-description-${descriptionInputId}`}
             value={formValues.menuDescription ?? ''}
             placeholder="메뉴 설명을 입력해 주세요."
-            onChange={(event) =>
-              updateFormValues({ menuDescription: event.target.value })
-            }
+            onChange={handleMenuDescriptionChange}
+            maxLength={MAX_DESCRIPTION_LENGTH}
           />
         </S.VerticalLayout>
       </S.ContentsSection>
