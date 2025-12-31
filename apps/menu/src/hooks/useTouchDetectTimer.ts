@@ -56,7 +56,8 @@ export const useTouchDetectTimer = () => {
       }
 
       // MainPage 리렌더링 트리거
-      triggerRerender();
+      // triggerRerender();
+      window.location.reload();
     };
 
     const startResetTimer = () => {

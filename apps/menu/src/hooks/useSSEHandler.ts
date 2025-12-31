@@ -14,11 +14,15 @@ import { queryKeys } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { SystemControl } from '@repo/util/app';
 import { useMainPageRerenderStore } from '@/stores/useMainPageRerenderStore';
+import { useModalStore } from '@/stores/useModalStore';
+import { toast } from '@repo/feature/utils';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 /**
  * SSE 연결 및 메시지 처리를 담당하는 훅
  */
 export const useSSEHandler = () => {
+  const { t } = useCustomerTranslation();
   const queryClient = useQueryClient();
 
   // SSE 연결 초기화/해제
@@ -141,16 +145,25 @@ export const useSSEHandler = () => {
 
   // 매장 정보 변경 메시지 처리
   const handleShopMessage = useCallback(async () => {
-    //TODO: 테스트 필요
+    // useModalStore.getState().closeAllModals();
     await refreshShopDetailData();
-    // MainPage 리렌더링 트리거
-    triggerRerender();
-  }, [refreshShopDetailData, triggerRerender]);
+    window.location.reload();
+    // triggerRerender();
+    // toast(t('매장정보가 업데이트 되었습니다.'), {
+    //   position: 'center-center',
+    //   duration: 1500,
+    // });
+  }, [refreshShopDetailData]);
 
   // 메뉴 변경 메시지 처리
   const handleMenuMessage = useCallback(() => {
     refreshCategoriesData();
-  }, [refreshCategoriesData]);
+    useModalStore.getState().closeMenuDetail();
+    toast(t('메뉴정보가 업데이트 되었습니다.'), {
+      position: 'center-center',
+      duration: 1500,
+    });
+  }, [refreshCategoriesData, t]);
 
   // 테이블 변경 메시지 처리
   const handleTableMessage = useCallback(
