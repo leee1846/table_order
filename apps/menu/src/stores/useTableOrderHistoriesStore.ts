@@ -19,6 +19,7 @@ export interface ITableOrderHistoriesStore {
    * */
   data: ITableOrderHistoriesData | null | 'isEmptyTable';
   setDataAsync: (data: ITableOrderHistoriesData | 'isEmptyTable') => void;
+  clearData: () => void;
 }
 
 /**
@@ -48,6 +49,12 @@ export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
           set({ data });
           resolve(true);
         });
+      },
+      clearData: () => {
+        AppStorage.removeData({
+          key: STORAGE_KEYS.TABLE_ORDER_HISTORIES,
+        });
+        set({ data: null });
       },
     };
   }

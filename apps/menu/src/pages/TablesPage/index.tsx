@@ -119,7 +119,7 @@ export const TablesPage = () => {
     return {
       id: table.tableSeq,
       tableNumber: table.tableNumber,
-      tableName: table.tableNumber ?? '',
+      tableName: table.tableName ?? '',
       batteryLevel: device?.battery ?? 0,
       totalAmount: currentTable?.totalAmount ?? null,
       orderTime,

@@ -48,7 +48,7 @@ export const useDeviceStore = create<IDeviceStore>((set) => {
       AppStorage.removeData({
         key: STORAGE_KEYS.DEVICE,
       });
-      set({ data: null });
+      set({ data: null, isInitialized: false });
     },
   };
 });

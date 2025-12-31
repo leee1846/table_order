@@ -9,6 +9,7 @@ interface IPickupAlarmStore {
     showPickupAlarm: boolean;
     pickupAlertMessage: string;
   }) => void;
+  clearData: () => void;
 }
 
 /**
@@ -21,5 +22,8 @@ export const usePickupAlarmStore = create<IPickupAlarmStore>((set) => ({
   },
   setData: (data) => {
     set({ data });
+  },
+  clearData: () => {
+    set({ data: { showPickupAlarm: false, pickupAlertMessage: '' } });
   },
 }));

@@ -6,6 +6,7 @@ interface ICartReminderStore {
   };
   showCartReminder: () => void;
   hideCartReminder: () => void;
+  clearData: () => void;
 }
 /**
  * 장바구니 알림 상태 저장 스토어
@@ -18,6 +19,9 @@ export const useCartReminderStore = create<ICartReminderStore>((set) => ({
     set({ data: { showCartReminder: true } });
   },
   hideCartReminder: () => {
+    set({ data: { showCartReminder: false } });
+  },
+  clearData: () => {
     set({ data: { showCartReminder: false } });
   },
 }));

@@ -7,7 +7,7 @@ import * as S from '@/pages/TableDetailPage/tableDetailPage.style';
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
   const [searchParams] = useSearchParams();
-  const { shopData } = useShopData();
+  const { shopData } = useShopData({ skipInitialRequest: true });
   const shopCode = shopData?.shopCode ?? 0;
 
   const orderType: TOrderType =

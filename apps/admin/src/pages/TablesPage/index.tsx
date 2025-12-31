@@ -93,7 +93,9 @@ export const TablesPage = () => {
       customerCount: number,
       kidsCustomerCount: number
     ) => {
-      if (!shopCode) return false;
+      if (!shopCode) {
+        return false;
+      }
 
       await postOrderGroupMutation.mutateAsync({
         shopCode,

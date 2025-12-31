@@ -21,7 +21,7 @@ export const MiscellaneousPage = () => {
   const { t } = useAdminTranslation();
 
   const { data: deviceData, refresh: refreshDeviceData } = useDeviceData();
-  const { shopData } = useShopData();
+  const { shopData } = useShopData({ skipInitialRequest: true });
   const { mutateAsync: saveDeviceDetail } = usePostDeviceDetail();
 
   const [isOrderPosMode, setIsOrderPosMode] = useState(false);

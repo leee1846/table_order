@@ -9,6 +9,7 @@ interface IInitialPageStore {
   };
   showInitialPage: () => void;
   hideInitialPage: () => void;
+  clearData: () => void;
 }
 
 /**
@@ -43,6 +44,12 @@ export const useInitialPageStore = create<IInitialPageStore>((set) => {
         isTemporary: true,
       });
       set({ data: { showInitialPage: false } });
+    },
+    clearData: () => {
+      AppStorage.removeData({
+        key: STORAGE_KEYS.INITIAL_PAGE_SHOW,
+      });
+      set({ data: { showInitialPage: true } });
     },
   };
 });

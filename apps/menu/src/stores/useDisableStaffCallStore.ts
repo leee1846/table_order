@@ -7,6 +7,7 @@ export interface IDisableStaffCallStore {
     disableStaffCall: boolean;
   };
   disableStaffCall: () => void;
+  clearData: () => void;
 }
 
 /**
@@ -27,6 +28,9 @@ export const useDisableStaffCallStore = create<IDisableStaffCallStore>(
         },
         5000
       );
+    },
+    clearData: () => {
+      set({ data: { disableStaffCall: false } });
     },
   })
 );
