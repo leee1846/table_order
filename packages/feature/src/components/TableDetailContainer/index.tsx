@@ -124,6 +124,11 @@ export const TableDetailContainer = ({
     return !!shopDetailResponse?.data?.shopSetting?.useCustomerCount;
   }, [shopDetailResponse]);
 
+  // 픽업 알림 사용 여부 계산
+  const usePickupAlert = useMemo(() => {
+    return !!shopDetailResponse?.data?.shopSetting?.usePickupAlert;
+  }, [shopDetailResponse]);
+
   // SSE 메시지 구독
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
     'sse-main-connection'
@@ -281,6 +286,7 @@ export const TableDetailContainer = ({
             onSplitPay={() => setIsSplitPaymentDialogOpen(true)}
             onItemClick={handleItemClick}
             useCustomerCount={useCustomerCount}
+            usePickupAlert={usePickupAlert}
             shopCode={shopCode}
             tableNumber={tableNumber}
           />

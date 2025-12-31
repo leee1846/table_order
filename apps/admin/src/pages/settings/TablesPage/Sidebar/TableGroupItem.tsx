@@ -45,7 +45,6 @@ export const TableGroupItem = ({
       }
       onSelect(group.tableGroupSeq);
     },
-    preventDefault: true,
   });
 
   return (

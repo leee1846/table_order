@@ -76,30 +76,25 @@ export const TablesPage = () => {
       return;
     }
 
-    try {
-      // 선택된 그룹의 다음 테이블 번호 계산
-      const existingTables = selectedGroup.tableList || [];
-      const maxTableNumber = existingTables.reduce((max, table) => {
-        const tableNum = parseInt(table.tableNumber, 10) || 0;
-        return Math.max(max, tableNum);
-      }, 0);
-      const nextTableNumber = String(maxTableNumber + 1);
+    // 선택된 그룹의 다음 테이블 번호 계산
+    const existingTables = selectedGroup.tableList || [];
+    const maxTableNumber = existingTables.reduce((max, table) => {
+      const tableNum = parseInt(table.tableNumber, 10) || 0;
+      return Math.max(max, tableNum);
+    }, 0);
+    const nextTableNumber = String(maxTableNumber + 1);
 
-      await createTable({
-        shopSeq: selectedGroup.shopSeq,
-        tableNumber: nextTableNumber,
-        tableGroupSeq: selectedTableGroupId,
-        tableName: tableName || undefined,
-      });
+    await createTable({
+      shopSeq: selectedGroup.shopSeq,
+      tableNumber: nextTableNumber,
+      tableGroupSeq: selectedTableGroupId,
+      tableName: tableName || undefined,
+    });
 
-      toast('테이블이 추가되었습니다.');
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.table.groupList(shopCode ?? ''),
-      });
-    } catch (error) {
-      toast('테이블 추가 중 오류가 발생했습니다.');
-      console.error('테이블 생성 오류:', error);
-    }
+    toast('테이블이 추가되었습니다.');
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.table.groupList(shopCode ?? ''),
+    });
   };
 
   // 로딩 중이거나 shopCode가 없을 때

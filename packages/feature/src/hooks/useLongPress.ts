@@ -14,11 +14,6 @@ export interface UseLongPressOptions {
    * 일반 클릭 시 실행할 콜백
    */
   onClick?: (event: React.MouseEvent | React.TouchEvent) => void;
-  /**
-   * 기본 동작 방지 여부
-   * @default false
-   */
-  preventDefault?: boolean;
 }
 
 export interface UseLongPressHandlers {
@@ -56,7 +51,7 @@ export interface UseLongPressReturn {
 export const useLongPress = (
   options: UseLongPressOptions = {}
 ): UseLongPressReturn => {
-  const { delay, onLongPress, onClick, preventDefault = false } = options;
+  const { delay, onLongPress, onClick } = options;
 
   // delay 기본값 500
   const handlersDelay = delay ?? (onLongPress ? 500 : undefined);
@@ -70,10 +65,6 @@ export const useLongPress = (
   // 마우스/터치 시작: 타이머 시작하여 일정 시간 후 길게 누르기로 인식
   const handleLongPressStart = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
-      if (preventDefault) {
-        event.preventDefault();
-      }
-
       isLongPressRef.current = false; // 이전 상태 초기화
 
       if (handlersDelay !== undefined && onLongPress) {
@@ -83,7 +74,7 @@ export const useLongPress = (
         }, handlersDelay);
       }
     },
-    [handlersDelay, onLongPress, preventDefault]
+    [handlersDelay, onLongPress]
   );
 
   // 마우스/터치 종료: 타이머 취소

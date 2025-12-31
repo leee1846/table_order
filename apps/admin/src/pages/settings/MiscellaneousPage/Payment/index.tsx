@@ -249,7 +249,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           onChange={(value) => setCurrencySetting(value as string)}
         />
       </UIStyles.setting.ContentLayout>
-      <UIStyles.setting.ContentLayout>
+      {/* <UIStyles.setting.ContentLayout>
         <p>봉사료율</p>
         <S.ServiceChargeInputWrapper>
           <input
@@ -259,7 +259,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           />
           <span>%</span>
         </S.ServiceChargeInputWrapper>
-      </UIStyles.setting.ContentLayout>
+      </UIStyles.setting.ContentLayout> */}
       <UIStyles.setting.ContentLayout>
         <p>매출 총 금액 노출 여부</p>
         <ToggleButton

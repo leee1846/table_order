@@ -33,9 +33,13 @@ export const BasicSetting = () => {
   const handlePriceChange = useCallback(
     (value: string) => {
       const numericString = value.replace(/[^0-9]/g, '');
-      updateFormValues({
-        menuPrice: numericString.length > 0 ? Number(numericString) : undefined,
-      });
+      // 약 15-16자리 이상의 정수는 정밀도 손실이 발생해서 숫자 이상해짐, 16자리로 제한함
+      if (numericString.length <= 16) {
+        updateFormValues({
+          menuPrice:
+            numericString.length > 0 ? Number(numericString) : undefined,
+        });
+      }
     },
     [updateFormValues]
   );

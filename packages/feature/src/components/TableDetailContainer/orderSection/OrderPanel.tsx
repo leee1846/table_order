@@ -13,6 +13,7 @@ export type OrderPanelProps = {
   onSplitPay?: () => void;
   onItemClick?: (item: OrderItem) => void;
   useCustomerCount?: boolean;
+  usePickupAlert?: boolean;
   shopCode: string;
   tableNumber: string;
 };
@@ -24,6 +25,7 @@ export function OrderPanel({
   onSplitPay,
   onItemClick,
   useCustomerCount,
+  usePickupAlert,
   shopCode,
   tableNumber,
 }: OrderPanelProps) {
@@ -34,6 +36,7 @@ export function OrderPanel({
         numberOfPeople={order.numberOfPeople ?? 0}
         orderTime={order.orderTime}
         useCustomerCount={useCustomerCount}
+        usePickupAlert={usePickupAlert}
         shopCode={shopCode}
         tableNumber={tableNumber}
       />

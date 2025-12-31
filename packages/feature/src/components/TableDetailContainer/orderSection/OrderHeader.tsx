@@ -29,7 +29,7 @@ const parseOrderTimeToDate = (orderTime: string) => {
     Number(hour),
     Number(minute),
     0,
-    0,
+    0
   );
 
   if (parsedToday.getTime() > now.getTime()) {
@@ -44,6 +44,7 @@ export type OrderHeaderProps = {
   numberOfPeople: number;
   orderTime: string;
   useCustomerCount?: boolean;
+  usePickupAlert?: boolean;
   shopCode: string;
   tableNumber: string;
 };
@@ -53,6 +54,7 @@ export function OrderHeader({
   numberOfPeople,
   orderTime,
   useCustomerCount = false,
+  usePickupAlert = false,
   shopCode,
   tableNumber,
 }: OrderHeaderProps) {
@@ -95,7 +97,7 @@ export function OrderHeader({
   }, [orderTime]);
 
   const formattedElapsedTime = `${String(
-    Math.floor(elapsedMinutes / 60),
+    Math.floor(elapsedMinutes / 60)
   ).padStart(2, '0')}:${String(elapsedMinutes % 60).padStart(2, '0')}`;
 
   return (
@@ -114,13 +116,15 @@ export function OrderHeader({
           )}
         </RightBox>
         <LeftBox>
-          <BasicButton
-            variant="Outline_Navy_L"
-            onClick={handlePickupClick}
-            icon={<PickupIcon width={30} height={30} />}
-          >
-            픽업알림
-          </BasicButton>
+          {usePickupAlert && (
+            <BasicButton
+              variant="Outline_Navy_L"
+              onClick={handlePickupClick}
+              icon={<PickupIcon width={30} height={30} />}
+            >
+              픽업알림
+            </BasicButton>
+          )}
           <OrderTime>
             <p>{orderTime}</p>
             <p>{orderTime ? `(${formattedElapsedTime})` : '(-)'}</p>
