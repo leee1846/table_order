@@ -88,30 +88,55 @@ export const Sidebar = ({
     setEditingGroupId(null);
   };
 
+  /**
+   * ul 컨테이너 내에서 li 요소의 실제 위치를 기준으로 버튼 위치를 계산
+   *
+   * 스크롤이 있기 때문에 배열 인덱스가 아닌 viewport 내 실제 위치로 판단
+   * - 버튼이 ul 상단을 벗어나면: 'bottom' (버튼을 아래로)
+   * - 버튼이 ul 하단을 벗어나면: 'top' (버튼을 위로)
+   * - 그 외: 'default' (기본 위치)
+   */
   const calculateButtonPosition = (groupId: number | null) => {
-    //수정하려는 테이블 그룹 인덱스 찾기
-    const currentIndex = tableGroups.findIndex(
-      (g) => g.tableGroupSeq === groupId
-    );
-    const isFirst = currentIndex === 0;
-    const isLast = currentIndex === tableGroups.length - 1;
-
-    if (isFirst) {
-      return 'bottom';
-    } else if (isLast) {
-      return 'top';
-    } else {
+    if (!groupId || !tableGroupListRef.current) {
       return 'default';
+    }
+
+    // 해당 li 요소 찾기 (data-group-id 속성을 이용)
+    const listItem = tableGroupListRef.current.querySelector(
+      `[data-group-id="${groupId}"]`
+    ) as HTMLElement;
+
+    if (!listItem) {
+      return 'default';
+    }
+
+    // ul 컨테이너와 li 요소의 위치 정보 가져오기
+    const containerRect = tableGroupListRef.current.getBoundingClientRect();
+    const itemRect = listItem.getBoundingClientRect();
+
+    // 버튼의 예상 높이 (실제 버튼 컴포넌트에 맞게 조정 필요)
+    const buttonHeight = 100; // 수정/삭제 버튼 영역의 대략적인 높이
+
+    // 버튼이 위로 나가는지 체크 (li의 상단 - 버튼 높이가 컨테이너 상단보다 위인 경우)
+    const wouldOverflowTop = itemRect.top - buttonHeight < containerRect.top;
+
+    // 버튼이 아래로 나가는지 체크 (li의 하단 + 버튼 높이가 컨테이너 하단보다 아래인 경우)
+    const wouldOverflowBottom =
+      itemRect.bottom + buttonHeight > containerRect.bottom;
+
+    if (wouldOverflowTop) {
+      return 'bottom'; // 위로 잘리면 버튼을 아래로
+    } else if (wouldOverflowBottom) {
+      return 'top'; // 아래로 잘리면 버튼을 위로
+    } else {
+      return 'default'; // 충분한 공간이 있으면 기본 위치
     }
   };
 
   /**
-   * 첫 번째 요소랑 마지막 요소 위치 조정함
+   * editingGroupId가 변경될 때마다 버튼 위치를 재계산
    *
-   * useLayoutEffect를 사용하여 DOM 업데이트 전에 위치를 계산함
-   *
-   * handleLongPressStart에서도 위치를 계산하지만,
-   * editingGroupId가 변경될 때마다 다시 계산하여 정확성 높임
+   * useLayoutEffect를 사용하여 DOM 업데이트 직후, 브라우저 페인트 전에 위치 계산
    */
   useLayoutEffect(() => {
     const position = calculateButtonPosition(editingGroupId);

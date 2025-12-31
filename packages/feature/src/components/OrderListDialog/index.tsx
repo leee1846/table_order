@@ -203,7 +203,7 @@ export const OrderListDialog = ({
   return (
     <>
       <ModalBackground position="center" onClick={onClose}>
-        <S.DialogContainer onClick={(e) => e.stopPropagation()}>
+        <S.DialogContainer>
           <S.CloseButton onClick={onClose} aria-label="닫기">
             <CloseIcon width={32} height={32} color={colors.grey[700]} />
           </S.CloseButton>

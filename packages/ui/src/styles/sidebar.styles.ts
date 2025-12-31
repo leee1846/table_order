@@ -10,6 +10,7 @@ export const SidebarContainer = styled.aside`
   background-color: ${colors.grey[800]};
   height: 100vh;
   width: 140px;
+  overflow: auto;
 `;
 
 export const Logo = styled.div`

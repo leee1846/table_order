@@ -45,10 +45,11 @@ export const TableGroupItem = ({
       }
       onSelect(group.tableGroupSeq);
     },
+    preventDefault: true,
   });
 
   return (
-    <S.TableGroupItemWrapper>
+    <S.TableGroupItemWrapper data-group-id={group.tableGroupSeq}>
       <S.TableGroupItem {...longPressHandlers} isSelected={isSelected}>
         {group.tableGroupName}
       </S.TableGroupItem>
@@ -56,7 +57,6 @@ export const TableGroupItem = ({
         <S.EditDeleteButtons
           ref={editDeleteButtonsRef}
           buttonPosition={buttonPosition}
-          onClick={(e) => e.stopPropagation()}
         >
           <S.EditButton onClick={onEdit} type="button">
             <EditIcon width={32} height={32} color={colors.grey[700]} />

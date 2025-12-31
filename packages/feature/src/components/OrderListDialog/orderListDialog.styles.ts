@@ -21,7 +21,11 @@ export const Container = styled.div`
   min-height: 0;
 `;
 
-export const CloseButton = styled(BaseCloseButton)``;
+export const CloseButton = styled.button`
+  cursor: pointer;
+  text-align: right;
+  transform: translate(-24px, 24px);
+`;
 
 export const Header = styled(BaseHeader)`
   justify-content: space-between;

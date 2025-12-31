@@ -122,12 +122,8 @@ export const CategoryTableAssignModal = ({
       return;
     }
 
-    try {
-      await onSave(selectedList);
-      onClose();
-    } catch (error) {
-      // 부모에서 에러 처리를 담당합니다.
-    }
+    await onSave(selectedList);
+    onClose();
   };
 
   const renderTableGrid = () => {

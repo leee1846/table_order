@@ -1,24 +1,29 @@
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
-import { theme } from '@repo/ui';
-import {
-  BaseDialogContainer,
-  BaseHeader,
-  BaseCloseButton,
-  BaseTitle,
-} from '@repo/feature/components';
+import { theme, TYPOGRAPHY } from '@repo/ui';
+import { BaseDialogContainer } from '@repo/feature/components';
 
 export const ModalContainer = styled(BaseDialogContainer)`
   width: ${theme.spacing.dialogWidth.xsmall};
 `;
 
-export const ModalHeader = styled(BaseHeader)`
-  margin-bottom: 40px;
+export const ModalHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 24px;
 `;
 
-export const ModalTitle = BaseTitle;
+export const ModalTitle = styled.h3`
+  ${TYPOGRAPHY.MT_1}
+  color: ${theme.colors.grey[800]};
+`;
 
-export const CloseButton = BaseCloseButton;
+export const CloseButton = styled.button`
+  cursor: pointer;
+  text-align: right;
+`;
 
 export const ModalBody = styled.div`
   display: flex;
