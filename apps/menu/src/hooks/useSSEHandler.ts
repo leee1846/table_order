@@ -13,6 +13,7 @@ import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { SystemControl } from '@repo/util/app';
+import { useMainPageRerenderStore } from '@/stores/useMainPageRerenderStore';
 
 /**
  * SSE 연결 및 메시지 처리를 담당하는 훅
@@ -60,6 +61,7 @@ export const useSSEHandler = () => {
 
   const { data: pickupAlarmData, setData: setPickupAlarm } =
     usePickupAlarmStore();
+  const { triggerRerender } = useMainPageRerenderStore();
 
   // 픽업 알림 상태를 ref로 관리 (dependency 변경 방지)
   const pickupAlarmStateRef = useRef(pickupAlarmData.showPickupAlarm);
@@ -141,8 +143,9 @@ export const useSSEHandler = () => {
   const handleShopMessage = useCallback(async () => {
     //TODO: 테스트 필요
     await refreshShopDetailData();
-    window.location.reload();
-  }, [refreshShopDetailData]);
+    // MainPage 리렌더링 트리거
+    triggerRerender();
+  }, [refreshShopDetailData, triggerRerender]);
 
   // 메뉴 변경 메시지 처리
   const handleMenuMessage = useCallback(() => {

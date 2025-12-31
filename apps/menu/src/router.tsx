@@ -12,9 +12,9 @@ import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from './constants/keys';
 import App from './App';
 
-const MainPage = lazy(() =>
-  import('@/pages/MainPage').then((module) => ({
-    default: module.MainPage,
+const MainPageWrapper = lazy(() =>
+  import('@/pages/MainPage/MainPageWrapper').then((module) => ({
+    default: module.MainPageWrapper,
   }))
 );
 const LoginPage = lazy(() =>
@@ -94,7 +94,7 @@ export const router = createBrowserRouter([
             path: ROUTES.ROOT.path,
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
-                <MainPage />
+                <MainPageWrapper />
               </Suspense>
             ),
           },

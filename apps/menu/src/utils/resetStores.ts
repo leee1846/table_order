@@ -19,25 +19,26 @@ import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStore';
 
-/**
- * 모든 zustand store를 초기 상태로 리셋
- * AppStorage.removeAllData() 호출 후 사용해야 합니다.
- */
-export const resetAllStores = () => {
-  useShopStore.getState().clearData();
-  useShopDetailStore.getState().clearData();
-  useCategoryStore.getState().clearData();
-  useTableGroupStore.getState().clearData();
-  useCustomerCountStore.getState().clearData();
-  useDeviceStore.getState().clearData();
-  useCustomerLanguageStore.getState().clearData();
-  useInitialPageStore.getState().clearData();
-  useTableOrderHistoriesStore.getState().clearData();
-  usePickupAlarmStore.getState().clearData();
-  useCartReminderStore.getState().clearData();
-  useDisableStaffCallStore.getState().clearData();
+const storesWithClearData = [
+  useShopStore,
+  useShopDetailStore,
+  useCategoryStore,
+  useTableGroupStore,
+  useCustomerCountStore,
+  useDeviceStore,
+  useCustomerLanguageStore,
+  useInitialPageStore,
+  useTableOrderHistoriesStore,
+  usePickupAlarmStore,
+  useCartReminderStore,
+  useDisableStaffCallStore,
+] as const;
 
-  // 특별한 clear 메서드가 있는 store들
+export const resetAllStores = () => {
+  storesWithClearData.forEach((store) => {
+    store.getState().clearData();
+  });
+
   useShopThemeStore.getState().clearThemePageData();
   useShopThemeStore.getState().clearShopThemeData();
   useCartStore.getState().clearCart();
