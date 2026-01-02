@@ -16,6 +16,10 @@ import { CapacitorApp, SystemControl } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
 import { toast } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useInitialPageStore } from '@/stores/useInitialPageStore';
+import { useCartStore } from '@/stores/useCartStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
+import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 
 /**
  * SSE 연결 및 메시지 처리를 담당하는 훅
@@ -60,6 +64,11 @@ export const useSSEHandler = () => {
     SSE_KEYS.MAIN_CONNECTION
   );
 
+  const { clearData: clearInitialPage } = useInitialPageStore();
+  const { clearCart } = useCartStore();
+  const { clearData: clearCustomerLanguageData } = useCustomerLanguageStore();
+  const { clearData: clearCustomerCountData } = useCustomerCountStore();
+
   // 필요한 데이터 훅들
   const { data: currentDeviceData } = useDeviceData({
     skipInitialRequest: true,
@@ -95,6 +104,14 @@ export const useSSEHandler = () => {
     pickupAlarmStateRef.current = pickupAlarmData.showPickupAlarm;
   }, [pickupAlarmData.showPickupAlarm]);
 
+  // clearCustomerLanguageData를 ref로 관리 (무한루프 방지)
+  const clearCustomerLanguageDataRef = useRef(clearCustomerLanguageData);
+
+  // clearCustomerLanguageData 변경 시 ref 업데이트
+  useEffect(() => {
+    clearCustomerLanguageDataRef.current = clearCustomerLanguageData;
+  }, [clearCustomerLanguageData]);
+
   const refetchCurrentTableList = useCallback(
     (shopCode: string) => {
       queryClient.refetchQueries({
@@ -116,11 +133,9 @@ export const useSSEHandler = () => {
   // 주문 메시지 처리
   const handleOrderMessage = useCallback(
     (shopCode: string) => {
-      // TODO: 테스트 필요
       queryClient.refetchQueries({
         queryKey: queryKeys.orders.currentTableList(shopCode),
       });
-
       if (!sseMessage?.data || !currentDeviceData?.tableNumber) {
         return;
       }
@@ -136,7 +151,16 @@ export const useSSEHandler = () => {
           tableOrderHistoriesData?.orderDetailMenuList?.length > 0;
 
         if (hasExistingOrders) {
+          // 주문내역 api refresh
           refreshTableOrderHistoriesData();
+          // 초기화면 노출
+          clearInitialPage();
+          // 장바구니 비우기
+          clearCart();
+          // 객수 선택 초기화
+          clearCustomerCountData();
+          // 언어 선택 초기화 (ref를 통해 호출하여 무한루프 방지)
+          clearCustomerLanguageDataRef.current();
         }
         return;
       }
@@ -160,6 +184,9 @@ export const useSSEHandler = () => {
       currentDeviceData?.tableNumber,
       tableOrderHistoriesData,
       refreshTableOrderHistoriesData,
+      clearInitialPage,
+      clearCart,
+      clearCustomerCountData,
     ]
   );
 
