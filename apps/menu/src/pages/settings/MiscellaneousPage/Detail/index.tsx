@@ -3,6 +3,7 @@ import * as S from '@/pages/settings/MiscellaneousPage/Detail/detail.style';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useDeviceData } from '@/hooks/useDeviceData';
+import { useGetAppLatestVersion } from '@repo/api/queries';
 
 interface Props {
   useOrderposMode: boolean;
@@ -19,6 +20,7 @@ export const Detail = ({
 }: Props) => {
   const { t } = useAdminTranslation();
   const { data: deviceData } = useDeviceData();
+  const { data: latestVersionData } = useGetAppLatestVersion('MENU');
 
   return (
     <UIStyles.setting.Container>
@@ -30,7 +32,7 @@ export const Detail = ({
           </p>
           <div />
           <p>
-            {t('최신 버전')} <span>2.??.??</span>
+            {t('최신 버전')} <span>{latestVersionData?.data.version}</span>
           </p>
           <div />
         </S.Versions>

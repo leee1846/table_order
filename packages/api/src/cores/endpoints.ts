@@ -1,9 +1,13 @@
+import type { TAppVersionType } from '../types/common';
+
 /**
  * API 엔드포인트 상수들을 정의합니다.
  */
 export const ENDPOINTS = {
   COMMON: {
     HOLIDAYS: '/holidays',
+    APP_LATEST_VERSION: (type: TAppVersionType) =>
+      `/app/version/latest/${type}`,
   },
 
   AUTH: {

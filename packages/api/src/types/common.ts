@@ -24,3 +24,9 @@ export interface ITokenPayload {
 }
 
 export type TVoidApiResponse = IApiResponse<null>;
+
+export type TAppVersionType = 'MENU' | 'POS_APP';
+
+export interface IAppVersionResponse {
+  version: string;
+}

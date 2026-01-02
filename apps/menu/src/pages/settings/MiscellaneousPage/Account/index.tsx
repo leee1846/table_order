@@ -1,6 +1,6 @@
 import { BasicButton, RadioButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
-import { openDualActionDialog, toast } from '@repo/feature/utils';
+import { openDualActionDialog } from '@repo/feature/utils';
 import { getAccessToken } from '@repo/api/auth';
 import type { ITokenPayload, TShopLanguage } from '@repo/api/types';
 import { decodeJwtToken, storage } from '@repo/util/function';

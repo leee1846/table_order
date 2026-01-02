@@ -1,7 +1,11 @@
+import { TAppVersionType } from '../types/common';
+
 export const queryKeys = {
   common: {
     all: ['common'] as const,
     holidays: () => [...queryKeys.common.all, 'holidays'] as const,
+    latestVersion: (type: TAppVersionType) =>
+      [...queryKeys.common.all, 'latestVersion', type] as const,
   },
 
   shop: {
