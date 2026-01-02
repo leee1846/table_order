@@ -3,6 +3,7 @@ import type { AxiosError } from '@repo/api/axios';
 import type { IDevice } from '@repo/api/types';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { toast } from '@repo/feature/utils';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface DeviceDataResult {
   data: Partial<IDevice> | null;
@@ -27,6 +28,7 @@ interface UseAdminAccessControlReturn {
 export const useAdminAccessControl = (
   deviceDataResult: DeviceDataResult
 ): UseAdminAccessControlReturn => {
+  const { t } = useCustomerTranslation();
   const { data: tableGroupData } = useTableGroupData();
 
   const [showAdminAccessPasswordModal, setShowAdminAccessPasswordModal] =
@@ -77,7 +79,7 @@ export const useAdminAccessControl = (
         .flat()
         .some((table) => table?.tableNumber === currentTableNumber)
     ) {
-      toast('테이블이 삭제되었습니다.', {
+      toast(t('존재하지 않는 테이블입니다.'), {
         position: 'center-center',
         duration: 1500,
       });

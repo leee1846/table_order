@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
 import { SSE_KEYS } from '@/constants/keys';
-import type { ISseMessage } from '@repo/api/types';
+import type { ISseMessage, ITableGroup, ITableInfo } from '@repo/api/types';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
@@ -19,11 +19,16 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes';
+import { useTableGroupStore } from '@/stores/useTableGroupStore';
 
 /**
  * SSE 연결 및 메시지 처리를 담당하는 훅
  */
 export const useSSEHandler = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useCustomerTranslation();
   const queryClient = useQueryClient();
 
@@ -87,9 +92,10 @@ export const useSSEHandler = () => {
   const { refresh: refreshCategoriesData } = useCategoriesData({
     skipInitialRequest: true,
   });
-  const { refresh: refreshTableGroupData } = useTableGroupData({
-    skipInitialRequest: true,
-  });
+  const { refresh: refreshTableGroupData, data: tableGroupData } =
+    useTableGroupData({
+      skipInitialRequest: true,
+    });
 
   const { data: pickupAlarmData, setData: setPickupAlarm } =
     usePickupAlarmStore();
@@ -196,12 +202,53 @@ export const useSSEHandler = () => {
 
   // 테이블 변경 메시지 처리
   const handleTableMessage = useCallback(
-    (shopCode: string) => {
-      refreshTableGroupData();
+    async (shopCode: string) => {
+      // 테이블 그룹 데이터 새로고침
+      await refreshTableGroupData();
       refetchCurrentTableList(shopCode);
       refetchDeviceList(shopCode);
+
+      // 현재 테이블이 삭제되었는지 확인
+      if (!currentDeviceData?.tableNumber) {
+        return;
+      }
+
+      const currentTableNumber = currentDeviceData.tableNumber;
+
+      // 테이블 그룹 데이터가 로드된 후에만 확인
+      // refreshTableGroupData가 완료되면 tableGroupData가 업데이트되므로
+      // 약간의 지연을 두고 확인
+      setTimeout(() => {
+        const updatedTableGroupData =
+          useTableGroupStore.getState()?.data || tableGroupData;
+
+        // 테이블이 삭제되었는지 확인
+        if (
+          !!updatedTableGroupData &&
+          !updatedTableGroupData
+            .map((tableGroup: ITableGroup) => tableGroup.tableList)
+            .flat()
+            .some(
+              (table: ITableInfo | undefined) =>
+                table?.tableNumber === currentTableNumber
+            )
+        ) {
+          // 현재 페이지가 ROOT인 경우 TABLES 페이지로 리다이렉트
+          if (location.pathname === ROUTES.ROOT.path) {
+            navigate(ROUTES.TABLES.generate(), { replace: true });
+          }
+        }
+      }, 100);
     },
-    [refreshTableGroupData, refetchCurrentTableList, refetchDeviceList]
+    [
+      refreshTableGroupData,
+      refetchCurrentTableList,
+      refetchDeviceList,
+      currentDeviceData?.tableNumber,
+      tableGroupData,
+      location.pathname,
+      navigate,
+    ]
   );
 
   // 디바이스 변경 메시지 처리

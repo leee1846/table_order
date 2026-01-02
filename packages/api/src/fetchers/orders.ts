@@ -48,12 +48,14 @@ export const createOrderGroup = async ({
   tableNumber,
   customerCount,
   kidsCustomerCount,
-}: ICreateOrderGroupRequest) => {
+  ignoreGlobalErrors,
+}: ICreateOrderGroupRequest & { ignoreGlobalErrors?: number[] }) => {
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TCreateOrderGroupResponse>({
     method: 'POST',
     url: ENDPOINTS.ORDER.CREATE_ORDER_GROUP(shopCode, tableNumber),
     params: { customerCount, kidsCustomerCount },
+    ignoreGlobalErrors,
   });
 
   return response.data;
@@ -71,13 +73,15 @@ export const createTableOrder = async ({
   customerCount,
   kidsCustomerCount,
   totalAmount,
-}: ICreateTableOrderRequest) => {
+  ignoreGlobalErrors,
+}: ICreateTableOrderRequest & { ignoreGlobalErrors?: number[] }) => {
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TCreateTableOrderResponse>({
     method: 'POST',
     url: ENDPOINTS.ORDER.CREATE_TABLE_ORDER(shopCode, tableNumber),
     params: { orderType, customerCount, kidsCustomerCount, totalAmount },
     data: orders,
+    ignoreGlobalErrors,
   });
 
   return response.data;

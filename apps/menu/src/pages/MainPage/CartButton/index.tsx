@@ -14,16 +14,21 @@ import { OrderCompleteModal } from '@/pages/MainPage/OrderCompleteModal';
 import { PaymentsModal } from '@/pages/MainPage/PaymentsModal';
 import { SplitPaymentModal } from '@/pages/MainPage/SplitPaymentModal';
 import * as S from '@/pages/MainPage/CartButton/cartButton.style';
+import { ROUTES } from '@/constants/routes';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   categories: ICategoryWithMenus[];
 }
 
 export const CartButton = ({ categories }: Props) => {
+  const navigate = useNavigate();
   const { t } = useCustomerTranslation();
   const { data: cartData, clearCart } = useCartStore();
   const { data: modalData, setModalData } = useModalStore();
-  const { mutateAsync: createTableOrder } = usePostTableOrder();
+  const { mutateAsync: createTableOrder } = usePostTableOrder({
+    ignoreGlobalErrors: [400],
+  });
   const { shopData } = useShopData();
   const { data: deviceData } = useDeviceData();
   const { data: customerCountData } = useCustomerCountStore();
@@ -106,6 +111,11 @@ export const CartButton = ({ categories }: Props) => {
         kidsCustomerCount: customerCountData?.childCount ?? 0,
         totalAmount: totalPrice.toString(),
         orders: adjustOptionQuantitiesForOrder(orders),
+      }).catch((error) => {
+        if (error.response?.status === 400) {
+          // 삭제된 테이블일경우
+          navigate(ROUTES.TABLES.generate());
+        }
       });
 
       setOrderCompleteData(orders);
@@ -115,7 +125,7 @@ export const CartButton = ({ categories }: Props) => {
 
       return {
         result: true,
-        orderGroupUuid: response.data.orderGroupUuid,
+        orderGroupUuid: response?.data?.orderGroupUuid ?? '',
         totalPrice,
       };
     } catch (_error) {

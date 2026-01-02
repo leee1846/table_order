@@ -9,8 +9,11 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { usePostOrderGroup } from '@repo/api/queries';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
+import { ROUTES } from '@/constants/routes';
+import { useNavigate } from 'react-router-dom';
 
 export const CustomerCountSelector = () => {
+  const navigate = useNavigate();
   const { theme } = useThemeMode();
   const { t } = useCustomerTranslation();
 
@@ -48,7 +51,9 @@ export const CustomerCountSelector = () => {
     setChildCount(value);
   };
 
-  const { mutateAsync: createOrderGroup } = usePostOrderGroup();
+  const { mutateAsync: createOrderGroup } = usePostOrderGroup({
+    ignoreGlobalErrors: [400],
+  });
   const handleSubmit = () => {
     setCustomerCountData({
       adultCount,
@@ -60,6 +65,12 @@ export const CustomerCountSelector = () => {
       tableNumber: deviceData?.tableNumber ?? '',
       customerCount: adultCount,
       kidsCustomerCount: childCount,
+    }).catch((error) => {
+      if (error.response?.status === 400) {
+        // 삭제된 테이블일경우
+        navigate(ROUTES.TABLES.generate());
+        return;
+      }
     });
   };
 

@@ -7,12 +7,15 @@ import type {
 } from '../../types/orders';
 import { IApiError } from '../../types/common';
 
-export const usePostTableOrder = () => {
+export const usePostTableOrder = (options?: {
+  ignoreGlobalErrors?: number[];
+}) => {
+  const { ignoreGlobalErrors = [] } = options ?? {};
   return useMutation<
     TCreateTableOrderResponse,
     AxiosError<IApiError>,
     ICreateTableOrderRequest
   >({
-    mutationFn: createTableOrder,
+    mutationFn: (params) => createTableOrder({ ...params, ignoreGlobalErrors }),
   });
 };

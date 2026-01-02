@@ -7,12 +7,16 @@ import type {
 } from '../../types/orders';
 import type { IApiError } from '../../types/common';
 
-export const usePostOrderGroup = () => {
+export const usePostOrderGroup = (options?: {
+  ignoreGlobalErrors?: number[];
+}) => {
+  const { ignoreGlobalErrors = [] } = options ?? {};
+
   return useMutation<
     TCreateOrderGroupResponse,
     AxiosError<IApiError>,
     ICreateOrderGroupRequest
   >({
-    mutationFn: createOrderGroup,
+    mutationFn: (params) => createOrderGroup({ ...params, ignoreGlobalErrors }),
   });
 };
