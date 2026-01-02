@@ -18,7 +18,6 @@ import { toast } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartStore } from '@/stores/useCartStore';
-import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 
 /**
@@ -66,7 +65,6 @@ export const useSSEHandler = () => {
 
   const { clearData: clearInitialPage } = useInitialPageStore();
   const { clearCart } = useCartStore();
-  const { clearData: clearCustomerLanguageData } = useCustomerLanguageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
 
   // 필요한 데이터 훅들
@@ -104,14 +102,6 @@ export const useSSEHandler = () => {
     pickupAlarmStateRef.current = pickupAlarmData.showPickupAlarm;
   }, [pickupAlarmData.showPickupAlarm]);
 
-  // clearCustomerLanguageData를 ref로 관리 (무한루프 방지)
-  const clearCustomerLanguageDataRef = useRef(clearCustomerLanguageData);
-
-  // clearCustomerLanguageData 변경 시 ref 업데이트
-  useEffect(() => {
-    clearCustomerLanguageDataRef.current = clearCustomerLanguageData;
-  }, [clearCustomerLanguageData]);
-
   const refetchCurrentTableList = useCallback(
     (shopCode: string) => {
       queryClient.refetchQueries({
@@ -136,13 +126,13 @@ export const useSSEHandler = () => {
       queryClient.refetchQueries({
         queryKey: queryKeys.orders.currentTableList(shopCode),
       });
+
       if (!sseMessage?.data || !currentDeviceData?.tableNumber) {
         return;
       }
 
       const currentTableNumber = currentDeviceData.tableNumber;
       const orderDataByTable = sseMessage.data as { [key: string]: number };
-
       // 주문이 관리자앱에 의해 모두 삭제 되었을경우
       if (!(currentTableNumber in orderDataByTable)) {
         const hasExistingOrders =
@@ -159,8 +149,6 @@ export const useSSEHandler = () => {
           clearCart();
           // 객수 선택 초기화
           clearCustomerCountData();
-          // 언어 선택 초기화 (ref를 통해 호출하여 무한루프 방지)
-          clearCustomerLanguageDataRef.current();
         }
         return;
       }
@@ -336,7 +324,6 @@ export const useSSEHandler = () => {
     if (sseMessage.shopCode !== currentShopData?.shopCode) {
       return;
     }
-
     switch (sseMessage.type) {
       case 'ORDER':
         handleOrderMessage(currentShopCode);

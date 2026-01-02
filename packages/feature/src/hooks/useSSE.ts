@@ -11,6 +11,8 @@ type TSSEConnectionState<T> = {
   setError: React.Dispatch<React.SetStateAction<Error | null>>;
   isConnected: boolean;
   setIsConnected: React.Dispatch<React.SetStateAction<boolean>>;
+  messageQueue: T[];
+  isProcessingQueue: boolean;
 };
 
 /**
@@ -46,6 +48,8 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       setIsConnected: (() => {
         // no-op
       }) as React.Dispatch<React.SetStateAction<boolean>>,
+      messageQueue: [],
+      isProcessingQueue: false,
     };
     sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
   }
@@ -59,11 +63,41 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
     state.setIsConnected(true);
   };
 
+  // 메시지 큐 처리 함수
+  const processMessageQueue = () => {
+    const queue = state.messageQueue as T[];
+    if (state.isProcessingQueue || queue.length === 0) {
+      return;
+    }
+
+    state.isProcessingQueue = true;
+    const message = queue.shift();
+
+    if (message) {
+      state.originData = message;
+      // 상태 업데이트 (함수형 업데이트 사용)
+      state.setData(message);
+
+      // 다음 메시지 처리 (React 상태 업데이트가 완료되도록 충분한 지연)
+      // requestAnimationFrame을 사용하여 브라우저 렌더링 사이클과 동기화
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          state.isProcessingQueue = false;
+          processMessageQueue();
+        }, 50); // 지연 시간을 50ms로 증가
+      });
+    } else {
+      state.isProcessingQueue = false;
+    }
+  };
+
   eventSource.onmessage = (event) => {
     try {
       const parsed = JSON.parse(event.data) as T;
-      state.originData = parsed;
-      state.setData(parsed);
+      // 메시지를 큐에 추가
+      (state.messageQueue as T[]).push(parsed);
+      // 큐 처리 시작
+      processMessageQueue();
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
       state.originError = err;
@@ -116,6 +150,8 @@ export const useSSEData = <T = unknown>(key: string) => {
         setError,
         isConnected: false,
         setIsConnected,
+        messageQueue: [],
+        isProcessingQueue: false,
       };
       sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
     } else {

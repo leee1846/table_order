@@ -55,15 +55,12 @@ export const CustomerCountSelector = () => {
       childCount,
     });
 
-    /** 테이블 함께사용이 true 일경우 */
-    if (shopDetailData?.shopSetting?.useTableOverlapping) {
-      createOrderGroup({
-        shopCode: shopData?.shopCode ?? '',
-        tableNumber: deviceData?.tableNumber ?? '',
-        customerCount: adultCount,
-        kidsCustomerCount: childCount,
-      });
-    }
+    createOrderGroup({
+      shopCode: shopData?.shopCode ?? '',
+      tableNumber: deviceData?.tableNumber ?? '',
+      customerCount: adultCount,
+      kidsCustomerCount: childCount,
+    });
   };
 
   return (
