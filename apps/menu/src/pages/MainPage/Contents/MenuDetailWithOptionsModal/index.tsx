@@ -154,6 +154,7 @@ export const MenuDetailWithOptionsModal = ({
   const { data: languageData } = useCustomerLanguageStore();
   const { addToCart, updateCartItem } = useCartStore();
   const { data: shopDetailData } = useShopDetailData();
+  const disabledOrderable = !shopDetailData?.shopSetting?.isMenuboardOrderable;
 
   const currencySymbol =
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
@@ -552,7 +553,7 @@ export const MenuDetailWithOptionsModal = ({
               handleOptionQuantityChange(option, newQuantity)
             }
             size="M"
-            disabled={option.isOutOfStock}
+            disabled={option.isOutOfStock || disabledOrderable}
           />
         </S.NumberInputContainer>
       );
@@ -565,7 +566,7 @@ export const MenuDetailWithOptionsModal = ({
           <CheckButton
             checked={isSelected}
             onChange={() => handleCheckboxOrRadioSelection(option, group)}
-            disabled={option.isOutOfStock}
+            disabled={option.isOutOfStock || disabledOrderable}
             customStyle={css`
               & > div {
                 width: 24px;
@@ -588,7 +589,7 @@ export const MenuDetailWithOptionsModal = ({
           value={String(option.optionSeq)}
           onChange={() => handleCheckboxOrRadioSelection(option, group)}
           checked={isSelected}
-          disabled={option.isOutOfStock}
+          disabled={option.isOutOfStock || disabledOrderable}
         >
           <S.OptionText soldOut={option.isOutOfStock}>
             {buildOptionDisplayText(option)}
@@ -729,6 +730,7 @@ export const MenuDetailWithOptionsModal = ({
                   min-width: 100%;
                 `}
                 aria-label={t('수량제한')}
+                disabled={disabledOrderable}
               />
             )}
             <S.TotalInfo role="status" aria-live="polite">
@@ -745,6 +747,7 @@ export const MenuDetailWithOptionsModal = ({
                 width: 100%;
               `}
               aria-label={t('추가하기')}
+              disabled={disabledOrderable}
             >
               {t('추가하기')}
             </BasicButton>

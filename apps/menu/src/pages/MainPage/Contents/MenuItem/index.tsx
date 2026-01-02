@@ -79,6 +79,11 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
 
     // 수량선택이 불가능한경우
     if (!category.isQuantitySelectable && menu.optionGroupList.length < 1) {
+      // 주문하기 사용 === false 인 경우
+      if (!shopDetailData?.shopSetting?.isMenuboardOrderable) {
+        return;
+      }
+
       // 같은 menuSeq와 같은 옵션 조합을 가진 아이템 찾기
       const cartMenuIndex = cartData.menus.findIndex(
         (item) =>

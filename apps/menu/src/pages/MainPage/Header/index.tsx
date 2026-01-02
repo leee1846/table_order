@@ -247,6 +247,9 @@ export const Header = ({
   };
 
   const onClickOrderHistoryButton = () => {
+    if (!shopDetailData?.shopSetting?.isMenuboardOrderable) {
+      return;
+    }
     setModalData('isOrderHistoryModalOpened', true);
   };
 

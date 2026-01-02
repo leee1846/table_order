@@ -35,6 +35,8 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const currencySymbol =
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
+  const disabledOrderable = !shopDetailData?.shopSetting?.isMenuboardOrderable;
+
   const images = menu.menuImageList?.filter((img) => img.imagePath) || [];
 
   // 메뉴 수량 변경 핸들러
@@ -142,6 +144,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
             width: 100%;
           `}
           aria-label={t('수량제한')}
+          disabled={disabledOrderable}
         />
         <S.TotalContainer role="status" aria-live="polite">
           <h3>{t('합계')}</h3>
@@ -157,6 +160,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
             width: 100%;
           `}
           aria-label={t('추가하기')}
+          disabled={disabledOrderable}
         >
           {t('추가하기')}
         </BasicButton>

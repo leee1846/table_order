@@ -16,6 +16,7 @@ import { SplitPaymentModal } from '@/pages/MainPage/SplitPaymentModal';
 import * as S from '@/pages/MainPage/CartButton/cartButton.style';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -32,6 +33,7 @@ export const CartButton = ({ categories }: Props) => {
   const { shopData } = useShopData();
   const { data: deviceData } = useDeviceData();
   const { data: customerCountData } = useCustomerCountStore();
+  const { data: shopDetailData } = useShopDetailData();
 
   /** 주문 완료 모달 */
   const [orderCompleteData, setOrderCompleteData] = useState<IOrder[] | null>(
@@ -138,6 +140,9 @@ export const CartButton = ({ categories }: Props) => {
   };
 
   const handleCartButtonClick = () => {
+    if (!shopDetailData?.shopSetting?.isMenuboardOrderable) {
+      return;
+    }
     setModalData('isCartListOpened', true);
   };
 

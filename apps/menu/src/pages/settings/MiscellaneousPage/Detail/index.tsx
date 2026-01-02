@@ -34,7 +34,6 @@ export const Detail = ({
           <p>
             {t('최신 버전')} <span>{latestVersionData?.data.version}</span>
           </p>
-          <div />
         </S.Versions>
       </UIStyles.setting.Header>
 
