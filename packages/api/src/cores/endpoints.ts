@@ -82,6 +82,7 @@ export const ENDPOINTS = {
 
   SSE: {
     CONNECT: '/sse/connect',
+    CONNECT_DEVICE: '/sse/connect/device',
   },
 
   NOTICE: {

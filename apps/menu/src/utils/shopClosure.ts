@@ -231,8 +231,19 @@ export const checkShopClosureStatus = (
   shopTime: IShopTime,
   currentTime: Date = new Date()
 ): IShopClosureStatus => {
-  // 영업마감 시간이 설정되지 않았으면 영업 중
+  // 영업마감설정 사용 안할경우
+  if (!shopTime.useClosure) {
+    return getOpenStatus();
+  }
+
+  // 영업마감 시간이 설정되지 않았을경우
   if (!shopTime.shopClosureStartTime || !shopTime.shopClosureEndTime) {
+    return getOpenStatus();
+  }
+
+  // 영업마감 시작, 종료 시간이 같으면 영업 중
+  const { shopClosureStartTime, shopClosureEndTime } = shopTime;
+  if (shopClosureStartTime === shopClosureEndTime) {
     return getOpenStatus();
   }
 

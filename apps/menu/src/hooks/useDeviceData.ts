@@ -97,5 +97,12 @@ export const useDeviceData = (options?: Props) => {
     return result.data?.data;
   };
 
-  return { data: storeData, setDataAsync, clearData, refresh, error };
+  return {
+    data: storeData,
+    setDataAsync,
+    clearData,
+    refresh,
+    error,
+    refetchDeviceDetail: refetch,
+  };
 };

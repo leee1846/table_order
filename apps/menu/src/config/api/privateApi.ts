@@ -22,7 +22,7 @@ const forceReLogin = () => {
     title: '인증 만료',
     content: '인증이 유효하지 않습니다.\n 로그인 후 다시 시도해주세요.',
     onConfirm: () => {
-      window.location.replace(ROUTES.LOGIN.generate());
+      window.location.href = ROUTES.LOGIN.generate();
     },
   });
 };

@@ -11,7 +11,6 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useDeviceData } from '@/hooks/useDeviceData';
-import { useMainPageRerenderStore } from '@/stores/useMainPageRerenderStore';
 
 export const useTouchDetectTimer = () => {
   const { refresh: refreshShopDetailData } = useShopDetailData();
@@ -26,7 +25,6 @@ export const useTouchDetectTimer = () => {
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { showInitialPage } = useInitialPageStore();
   const { showCartReminder } = useCartReminderStore();
-  const { triggerRerender } = useMainPageRerenderStore();
 
   useEffect(() => {
     const timerCallback = async () => {
@@ -55,8 +53,6 @@ export const useTouchDetectTimer = () => {
         showInitialPage();
       }
 
-      // MainPage 리렌더링 트리거
-      // triggerRerender();
       window.location.reload();
     };
 
@@ -118,6 +114,5 @@ export const useTouchDetectTimer = () => {
     refreshTableOrderHistoriesData,
     refreshTableGroupData,
     refreshDeviceData,
-    triggerRerender,
   ]);
 };

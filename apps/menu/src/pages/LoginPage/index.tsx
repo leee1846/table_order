@@ -6,7 +6,6 @@ import { theme } from '@repo/ui';
 import { usePostDeviceDetail, usePostLogin } from '@repo/api/queries';
 import { openConfirmDialog } from '@repo/feature/utils';
 import { setAccessToken, setRefreshToken } from '@repo/api/auth';
-import type { TDeviceType } from '@repo/api/types';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
 import { useDeviceData } from '@/hooks/useDeviceData';
@@ -33,7 +32,7 @@ export const LoginPage = () => {
   const {
     data: deviceStoreData,
     setDataAsync: setDeviceData,
-    refresh: refreshDeviceData,
+    refetchDeviceDetail,
   } = useDeviceData({
     skipInitialRequest: true,
   });
@@ -85,29 +84,27 @@ export const LoginPage = () => {
 
     setAccessToken(loginResponse.data.accessToken);
     setRefreshToken(loginResponse.data.refreshToken);
-    initializeSseConnection();
 
     const shopDataResponse = await refreshShopData();
-    const deviceDataResponse = await refreshDeviceData();
+    const deviceDataResponse = await refetchDeviceDetail();
 
     if (!shopDataResponse) {
       return;
     }
 
-    const baseDeviceData = deviceDataResponse ?? {
-      orderPosNumber: null,
-      tableNumber: null,
-    };
-
     const deviceData = {
-      ...baseDeviceData,
+      // App.tsx에서 app plugin을 통해 초기화한 디바이스 데이터
       wifiSignal: deviceStoreData?.wifiSignal ?? '',
       battery: deviceStoreData?.battery ?? 0,
-      deviceType: 'MENU' as TDeviceType,
       version: deviceStoreData?.version ?? '',
       buildNumber: deviceStoreData?.buildNumber ?? '',
       ipAddress: deviceStoreData?.ipAddress ?? '',
       androidId: deviceStoreData?.androidId ?? '',
+
+      // 새로 api를 통해 조회한 디바이스 데이터
+      deviceType: deviceDataResponse?.data?.data?.deviceType ?? 'MENU',
+      orderPosNumber: deviceDataResponse?.data?.data?.orderPosNumber ?? null,
+      tableNumber: deviceDataResponse?.data?.data?.tableNumber ?? null,
     };
 
     await setDeviceData(deviceData);
@@ -115,6 +112,7 @@ export const LoginPage = () => {
       ...deviceData,
       shopCode: shopDataResponse.shopCode,
     });
+    initializeSseConnection();
     navigate(ROUTES.ROOT.generate());
   };
 

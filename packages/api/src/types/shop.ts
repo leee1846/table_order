@@ -71,8 +71,11 @@ export interface IShopTime {
   shopClosureStartTime: string;
   shopClosureEndTime: string;
   closureMessage: string;
+  /** 영업마감 라스트오더 시간(라스트오더 시간 몇분 전) */
   closureLastOrderTimeBefore: number;
+  /** 영업마감 라스트오더 알림(라스트오더 알림 몇분 전) */
   closureLastOrderAlertTimeBefore: number;
+  /** 영업마감 라스트오더 메시지 */
   closureLastOrderMessage: string;
 }
 

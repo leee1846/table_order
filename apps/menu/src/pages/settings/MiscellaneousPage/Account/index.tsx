@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { BasicButton, RadioButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
@@ -17,7 +16,6 @@ import { clearAuthData } from '@/utils/auth';
 import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
 
 export const Account = () => {
-  const navigate = useNavigate();
   const { i18n, t } = useAdminTranslation();
 
   const currentAccessToken = getAccessToken();
@@ -50,11 +48,7 @@ export const Account = () => {
       secondaryText: t('아니오'),
       onConfirm: () => {
         clearAuthData();
-        toast(t('로그아웃 되었습니다.'), {
-          duration: 1500,
-          position: 'center-center',
-        });
-        navigate(ROUTES.LOGIN.generate());
+        window.location.href = ROUTES.LOGIN.generate();
       },
     });
   };

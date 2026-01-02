@@ -12,8 +12,7 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
-import { SystemControl } from '@repo/util/app';
-import { useMainPageRerenderStore } from '@/stores/useMainPageRerenderStore';
+import { CapacitorApp, SystemControl } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
 import { toast } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -25,13 +24,35 @@ export const useSSEHandler = () => {
   const { t } = useCustomerTranslation();
   const queryClient = useQueryClient();
 
-  // SSE 연결 초기화/해제
+  const { data: deviceStoreData, setDataAsync } = useDeviceData({
+    skipInitialRequest: true,
+  });
+  // 초기 디바이스 데이터 설정
+  // sse 연결
   useEffect(() => {
-    initializeSseConnection();
+    const getDeviceData = async () => {
+      const ipAddress = await SystemControl.getIpAddress();
+      const androidId = await SystemControl.getMacAddress();
+      const appInfo = await CapacitorApp.getInfo();
+
+      await setDataAsync({
+        ...(deviceStoreData ?? {}),
+        ipAddress: ipAddress.ip,
+        androidId: androidId.mac,
+        version: appInfo.version,
+        buildNumber: appInfo.build,
+      });
+
+      // 로그인이 되어있을경우 연결 시도
+      initializeSseConnection();
+    };
+
+    getDeviceData();
 
     return () => {
       disconnectSse();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // SSE 데이터 구독
@@ -65,7 +86,6 @@ export const useSSEHandler = () => {
 
   const { data: pickupAlarmData, setData: setPickupAlarm } =
     usePickupAlarmStore();
-  const { triggerRerender } = useMainPageRerenderStore();
 
   // 픽업 알림 상태를 ref로 관리 (dependency 변경 방지)
   const pickupAlarmStateRef = useRef(pickupAlarmData.showPickupAlarm);
@@ -145,14 +165,8 @@ export const useSSEHandler = () => {
 
   // 매장 정보 변경 메시지 처리
   const handleShopMessage = useCallback(async () => {
-    // useModalStore.getState().closeAllModals();
     await refreshShopDetailData();
     window.location.reload();
-    // triggerRerender();
-    // toast(t('매장정보가 업데이트 되었습니다.'), {
-    //   position: 'center-center',
-    //   duration: 1500,
-    // });
   }, [refreshShopDetailData]);
 
   // 메뉴 변경 메시지 처리
