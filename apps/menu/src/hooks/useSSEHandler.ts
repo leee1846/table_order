@@ -12,7 +12,7 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
-import { CapacitorApp, SystemControl } from '@repo/util/app';
+import { CapacitorApp, SystemControl, AndroidInfo } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
 import { toast } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -35,18 +35,29 @@ export const useSSEHandler = () => {
   const { data: deviceStoreData, setDataAsync } = useDeviceData({
     skipInitialRequest: true,
   });
+
+  // 최신 deviceStoreData 값을 참조하기 위한 ref
+  const deviceStoreDataRef = useRef(deviceStoreData);
+
+  useEffect(() => {
+    deviceStoreDataRef.current = deviceStoreData;
+  }, [deviceStoreData]);
+
   // 초기 디바이스 데이터 설정
   // sse 연결
   useEffect(() => {
     const getDeviceData = async () => {
-      const ipAddress = await SystemControl.getIpAddress();
-      const androidId = await SystemControl.getMacAddress();
+      const ipAddress = await AndroidInfo.getIp();
+      const androidId = await AndroidInfo.getId();
       const appInfo = await CapacitorApp.getInfo();
 
+      // 최신 deviceStoreData 값을 참조
+      const currentDeviceStoreData = deviceStoreDataRef.current;
+
       await setDataAsync({
-        ...(deviceStoreData ?? {}),
-        ipAddress: ipAddress.ip,
-        androidId: androidId.mac,
+        ...(currentDeviceStoreData ?? {}),
+        ipAddress: ipAddress ?? '',
+        androidId: androidId ?? '',
         version: appInfo.version,
         buildNumber: appInfo.build,
       });

@@ -2,14 +2,14 @@ import { getAccessToken } from '@repo/api/auth';
 import { ENDPOINTS } from '@repo/api/cores';
 import { useSSE } from '@repo/feature/hooks';
 import { SSE_KEYS } from '../constants/keys';
-import { SystemControl } from '@repo/util/app';
+import { AndroidInfo } from '@repo/util/app';
 
 /**
  * SSE 연결을 초기화하거나 재연결
  */
 export const initializeSseConnection = async () => {
-  const androidId = await SystemControl.getMacAddress();
-  if (!androidId.mac) {
+  const androidId = await AndroidInfo.getId();
+  if (!androidId) {
     return;
   }
 
@@ -22,7 +22,7 @@ export const initializeSseConnection = async () => {
   }
 
   // SSE URL 생성
-  const url = `${baseUrl}${ENDPOINTS.SSE.CONNECT_DEVICE}?token=${accessToken}&androidId=${androidId.mac}`;
+  const url = `${baseUrl}${ENDPOINTS.SSE.CONNECT_DEVICE}?token=${accessToken}&androidId=${androidId}`;
   useSSE.connectSSE(SSE_KEYS.MAIN_CONNECTION, url);
 };
 

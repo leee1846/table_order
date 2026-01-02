@@ -17,8 +17,9 @@ export interface ISystemControl {
    * 상태 모니터링을 시작 (앱 시작 시 필수 호출)
    * - 배터리, 와이파이 신호 감지 리스너 등록
    * - 호출 즉시 현재 상태 이벤트를 1회 발송
+   * [이벤트 리스너] 상태 변화 감지 (배터리/와이파이)
    */
-  startMonitoring(): Promise<SystemStatus>;
+  startMonitoring(callback: (status: SystemStatus) => void): Promise<void>;
 
   /**
    * 상태 모니터링을 중지합니다.
@@ -26,28 +27,15 @@ export interface ISystemControl {
   stopMonitoring(): Promise<void>;
 
   /**
-   * [이벤트 리스너] 상태 변화 감지 (배터리/와이파이)
-   * @param callback - 콜백 함수
-   * @returns Promise<PluginListenerHandle>
-   *
-   * 콜백 데이터 예시: { battery: 85, wifi: 3 }
-   * - battery: 0 ~ 100 (%)
-   * - wifi: 0 ~ 4 (신호 세기 레벨)
-   */
-  addListener(
-    eventName: 'statusUpdate',
-    callback: (info: SystemStatus) => void
-  ): Promise<{ remove: () => Promise<void> }>;
-
-  /**
-   * 모든 리스너 제거
-   */
-  removeAllListeners(): Promise<void>;
-
-  /**
    * 재부팅 (Device Owner 권한 필수)
    */
   reboot(): Promise<void>;
+
+  /**
+   * 앱 재시작 (네트워크 오류 복구 시 사용)
+   * - 프로세스를 완전히 종료하고 다시 켭니다.
+   */
+  restartApp(): Promise<void>;
 
   /**
    * 화면 잠금 (화면 끄기)
@@ -89,16 +77,10 @@ export interface ISystemControl {
   clearWebData(): Promise<void>;
 
   /**
-   * IPv4 주소 조회
-   * @returns Promise<{ip: string}> 예: "192.168.0.10"
+   * 안전한 페이지 이동 (플러그인 연결 유지)
+   * @param url
    */
-  getIpAddress(): Promise<{ ip: string }>;
-
-  /**
-   * MAC 주소 조회
-   * @returns Promise<{mac: string}> 예: "AA:BB:CC:DD:EE:FF"
-   */
-  getMacAddress(): Promise<{ mac: string }>;
+  goToUrl(options: { url: string }): Promise<void>;
 
   /**
    * 알림음 재생
@@ -116,22 +98,17 @@ const NativeSystem = registerPlugin<ISystemControl & Plugin>('SystemControl');
  * NativeSystem과 동일한 인터페이스를 구현합니다.
  */
 export const SystemControl: ISystemControl = {
-  startMonitoring: async () => {
+  startMonitoring: async (callback) => {
     NativeSystem.stopMonitoring();
-    return NativeSystem.startMonitoring();
+    return NativeSystem.startMonitoring(callback);
   },
 
   stopMonitoring: async () => {
     return NativeSystem.stopMonitoring();
   },
 
-  addListener: async (eventName, callback) => {
-    await NativeSystem.removeAllListeners();
-    return NativeSystem.addListener(eventName, callback);
-  },
-
-  removeAllListeners: async () => {
-    return NativeSystem.removeAllListeners();
+  restartApp: async () => {
+    return NativeSystem.restartApp();
   },
 
   reboot: async () => {
@@ -166,12 +143,8 @@ export const SystemControl: ISystemControl = {
     return NativeSystem.clearWebData();
   },
 
-  getIpAddress: async () => {
-    return NativeSystem.getIpAddress();
-  },
-
-  getMacAddress: async () => {
-    return NativeSystem.getMacAddress();
+  goToUrl: async (options: { url: string }) => {
+    return NativeSystem.goToUrl(options);
   },
 
   playSound: async (options) => {

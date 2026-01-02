@@ -38,7 +38,6 @@ export const useSystemStatusMonitor = () => {
       let shouldUpdateDeviceData = false;
       let newBattery: number | undefined;
       let newWifi: number | undefined;
-
       // battery가 제공된 경우
       if (status.battery !== undefined && status.battery !== null) {
         if (currentDeviceData) {
@@ -114,12 +113,10 @@ export const useSystemStatusMonitor = () => {
       }
     };
 
-    SystemControl.startMonitoring();
-    SystemControl.addListener('statusUpdate', handleStatusUpdate);
+    SystemControl.startMonitoring(handleStatusUpdate);
 
     return () => {
       SystemControl.stopMonitoring();
-      SystemControl.removeAllListeners();
     };
   }, [setDataAsync, postDeviceDetail]);
 };
