@@ -14,7 +14,6 @@ import type { MiscellaneousChange } from '../types';
 
 interface LanguageProps {
   shopSetting?: IShopSetting;
-  useLocale?: boolean;
   onChange?: (value: MiscellaneousChange) => void;
 }
 
@@ -26,11 +25,7 @@ const languageOptions = [
   { value: 'RU' as TShopLanguage, label: '러시아어' },
 ];
 
-export const Language = ({
-  shopSetting,
-  useLocale: useLocale,
-  onChange,
-}: LanguageProps) => {
+export const Language = ({ shopSetting, onChange }: LanguageProps) => {
   const [mainLanguage, setMainLanguage] = useState<TShopLanguage>('KO');
   const [locale, setLocale] = useState(false);
   const [selectedLanguages, setSelectedLanguages] = useState<IShopLocaleMap[]>(
@@ -45,10 +40,10 @@ export const Language = ({
     }
 
     setMainLanguage(shopSetting.shopLanguage);
-    setLocale(useLocale ?? false);
+    setLocale(shopSetting.useLocale ?? false);
     setUseLocaleBeforeOrder(shopSetting.useLocaleBeforeOrder ?? false);
     setSelectedLanguages(shopSetting.shopLocaleMapList ?? []);
-  }, [shopSetting, useLocale]);
+  }, [shopSetting]);
 
   useEffect(() => {
     if (!onChange) {
@@ -61,8 +56,8 @@ export const Language = ({
         shopLanguage: mainLanguage,
         useLocaleBeforeOrder,
         shopLocaleMapList: selectedLanguages,
-      },
-      useLocale: locale,
+        useLocale: locale,
+      } as Partial<IShopSetting>,
     });
   }, [
     locale,

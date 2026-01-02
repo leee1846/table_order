@@ -130,6 +130,7 @@ export interface IShopSetting {
   shopLocaleMapList: IShopLocaleMap[];
   useTableOverlapping: boolean;
   vanId: string;
+  useLocale: boolean;
 }
 
 export type TNetworkType = 'AUTO' | 'LAN' | 'WIFI';
@@ -188,6 +189,16 @@ export interface IGetShopThemeMenu {
 }
 
 export type TGetShopThemeMenuResponse = IApiResponse<IGetShopThemeMenu>;
+
+export interface IUpdateShopThemeMenuRequest {
+  shopSeq: number;
+  logoImagePath?: string | null;
+  useDarkTheme: boolean;
+  isMenuThreeColumnLayout: boolean;
+  menuboardTemplateType: TMenuboardTemplateType;
+}
+
+export type TUpdateShopThemeMenuResponse = TVoidApiResponse;
 
 export interface IGetShopThemePage {
   shopSeq: number;

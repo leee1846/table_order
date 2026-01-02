@@ -1,8 +1,4 @@
-import type {
-  IShopNetwork,
-  IShopSetting,
-  IShopTime,
-} from '@repo/api/types';
+import type { IShopNetwork, IShopSetting, IShopTime } from '@repo/api/types';
 
 export interface MiscellaneousChange {
   shopSetting?: Partial<IShopSetting>;

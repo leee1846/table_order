@@ -70,10 +70,12 @@ export const MenuAppFeature = ({
 
   const [useBreakTime, setUseBreakTime] = useState(false);
   const [breakTimeRows, setBreakTimeRows] = useState<BreakTimeRow[]>([]);
-  const [breakTimeLastOrderMinutes, setBreakTimeLastOrderMinutes] =
+  const [breakTimeLastOrderTimeBefore, setBreakTimeLastOrderTimeBefore] =
     useState('');
-  const [breakTimeLastOrderAlertMinutes, setBreakTimeLastOrderAlertMinutes] =
-    useState('');
+  const [
+    breakTimeLastOrderAlertTimeBefore,
+    setBreakTimeLastOrderAlertTimeBefore,
+  ] = useState('');
   const [breakTimeMessage, setBreakTimeMessage] = useState('');
   const [breakTimeLastOrderMessage, setBreakTimeLastOrderMessage] =
     useState('');
@@ -160,11 +162,11 @@ export const MenuAppFeature = ({
     }
 
     setUseBreakTime(Boolean(shopTime.useBreakTime));
-    setBreakTimeLastOrderMinutes(
-      String(shopTime.breakTimeLastOrderTimeBefore ?? '')
-    );
-    setBreakTimeLastOrderAlertMinutes(
+    setBreakTimeLastOrderAlertTimeBefore(
       String(shopTime.breakTimeLastOrderAlertTimeBefore ?? '')
+    );
+    setBreakTimeLastOrderTimeBefore(
+      String(shopTime.breakTimeLastOrderTimeBefore ?? '')
     );
     setBreakTimeMessage(shopTime.breakTimeMessage ?? '');
     setBreakTimeLastOrderMessage(shopTime.breakTimeLastOrderMessage ?? '');
@@ -202,10 +204,10 @@ export const MenuAppFeature = ({
 
     setUseClosureNotice(Boolean(shopTime.useClosure));
     setClosureLastOrderTimeBefore(
-      String(shopTime.closureLastOrderTimeBefore ?? '')
+      String(shopTime.closureLastOrderAlertTimeBefore ?? '')
     );
     setClosureLastOrderMinutes(
-      String(shopTime.closureLastOrderAlertTimeBefore ?? '')
+      String(shopTime.closureLastOrderTimeBefore ?? '')
     );
     setClosureMessage(shopTime.closureMessage ?? '');
     setClosureLastOrderMessage(shopTime.closureLastOrderMessage ?? '');
@@ -274,19 +276,17 @@ export const MenuAppFeature = ({
       useBreakTime,
       breakTimeList,
       breakTimeLastOrderTimeBefore: toNumberOrUndefined(
-        breakTimeLastOrderMinutes
+        breakTimeLastOrderTimeBefore
       ),
       breakTimeLastOrderAlertTimeBefore: toNumberOrUndefined(
-        breakTimeLastOrderAlertMinutes
+        breakTimeLastOrderAlertTimeBefore
       ),
       breakTimeMessage,
       breakTimeLastOrderMessage,
       useClosure: useClosureNotice,
-      closureLastOrderTimeBefore: toNumberOrUndefined(
-        closureLastOrderTimeBefore
-      ),
+      closureLastOrderTimeBefore: toNumberOrUndefined(closureLastOrderMinutes),
       closureLastOrderAlertTimeBefore: toNumberOrUndefined(
-        closureLastOrderMinutes
+        closureLastOrderTimeBefore
       ),
       closureMessage,
       closureLastOrderMessage,
@@ -305,9 +305,9 @@ export const MenuAppFeature = ({
       selectedCategorySeqs,
     });
   }, [
-    breakTimeLastOrderAlertMinutes,
+    breakTimeLastOrderAlertTimeBefore,
     breakTimeLastOrderMessage,
-    breakTimeLastOrderMinutes,
+    breakTimeLastOrderTimeBefore,
     breakTimeMessage,
     breakTimeRows,
     closureEndTime.hour,
@@ -538,6 +538,7 @@ export const MenuAppFeature = ({
 
               return (
                 <S.BreakTimeRow key={row.id}>
+                  {/* TODO 매일 로직 살리기 */}
                   {/* <CheckButton
                     checked={row.isEveryDay}
                     onChange={(checked) => {
@@ -647,11 +648,11 @@ export const MenuAppFeature = ({
                   <input
                     type="number"
                     onChange={(event) =>
-                      setBreakTimeLastOrderAlertMinutes(
+                      setBreakTimeLastOrderAlertTimeBefore(
                         normalizeNumberString(event.target.value)
                       )
                     }
-                    value={breakTimeLastOrderAlertMinutes || '0'}
+                    value={breakTimeLastOrderAlertTimeBefore || '0'}
                   />
                   분
                 </div>
@@ -665,11 +666,11 @@ export const MenuAppFeature = ({
                   <input
                     type="number"
                     onChange={(event) =>
-                      setBreakTimeLastOrderMinutes(
+                      setBreakTimeLastOrderTimeBefore(
                         normalizeNumberString(event.target.value)
                       )
                     }
-                    value={breakTimeLastOrderMinutes || '0'}
+                    value={breakTimeLastOrderTimeBefore || '0'}
                   />
                   분
                 </div>

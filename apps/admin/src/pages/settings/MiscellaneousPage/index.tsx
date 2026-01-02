@@ -28,18 +28,6 @@ import { Language } from '@/pages/settings/MiscellaneousPage/Language';
 import type { MiscellaneousChange } from './types';
 import { toast } from '@repo/feature/utils';
 
-const mergeDefined = <T extends object>(base: T, updates: Partial<T>): T => {
-  const next = { ...base };
-
-  Object.entries(updates).forEach(([key, value]) => {
-    if (value !== undefined) {
-      (next as Record<string, unknown>)[key] = value as unknown;
-    }
-  });
-
-  return next;
-};
-
 export const MiscellaneousPage = () => {
   const { shopCode, tokenPayload, shopSeq: authShopSeq } = useAuth();
   const queryClient = useQueryClient();
@@ -67,9 +55,7 @@ export const MiscellaneousPage = () => {
   const [shopNetworkDraft, setShopNetworkDraft] = useState<IShopNetwork | null>(
     null
   );
-  const [useLocaleDraft, setUseLocaleDraft] = useState<boolean | undefined>(
-    undefined
-  );
+
   const [selectedCategorySeqs, setSelectedCategorySeqs] = useState<number[]>(
     []
   );
@@ -85,7 +71,6 @@ export const MiscellaneousPage = () => {
     setShopSettingDraft(shopInfo.shopSetting);
     setShopTimeDraft(shopInfo.shopTime);
     setShopNetworkDraft(shopInfo.shopNetwork);
-    setUseLocaleDraft(shopInfo.useLocale);
   }, [shopInfo]);
 
   const categories: ICategory[] = categoryListResponse?.data ?? [];
@@ -107,34 +92,39 @@ export const MiscellaneousPage = () => {
   const handleChange = useCallback(
     (change: MiscellaneousChange) => {
       if (change.shopSetting) {
-        setShopSettingDraft((prev) =>
-          mergeDefined(prev ?? shopInfo?.shopSetting ?? ({} as IShopSetting), {
+        setShopSettingDraft((prev) => {
+          const base = prev ?? shopInfo?.shopSetting ?? ({} as IShopSetting);
+          return {
+            ...base,
             ...change.shopSetting,
-            shopSeq: shopInfo?.shopSeq ?? change.shopSetting?.shopSeq,
-          })
-        );
+            shopSeq:
+              shopInfo?.shopSeq ?? change.shopSetting?.shopSeq ?? base.shopSeq,
+          };
+        });
       }
 
       if (change.shopTime) {
-        setShopTimeDraft((prev) =>
-          mergeDefined(prev ?? shopInfo?.shopTime ?? ({} as IShopTime), {
+        setShopTimeDraft((prev) => {
+          const base = prev ?? shopInfo?.shopTime ?? ({} as IShopTime);
+          return {
+            ...base,
             ...change.shopTime,
-            shopSeq: shopInfo?.shopSeq ?? change.shopTime?.shopSeq,
-          })
-        );
+            shopSeq:
+              shopInfo?.shopSeq ?? change.shopTime?.shopSeq ?? base.shopSeq,
+          };
+        });
       }
 
       if (change.shopNetwork) {
-        setShopNetworkDraft((prev) =>
-          mergeDefined(prev ?? shopInfo?.shopNetwork ?? ({} as IShopNetwork), {
+        setShopNetworkDraft((prev) => {
+          const base = prev ?? shopInfo?.shopNetwork ?? ({} as IShopNetwork);
+          return {
+            ...base,
             ...change.shopNetwork,
-            shopSeq: shopInfo?.shopSeq ?? change.shopNetwork?.shopSeq,
-          })
-        );
-      }
-
-      if (typeof change.useLocale === 'boolean') {
-        setUseLocaleDraft(change.useLocale);
+            shopSeq:
+              shopInfo?.shopSeq ?? change.shopNetwork?.shopSeq ?? base.shopSeq,
+          };
+        });
       }
 
       if (change.selectedCategorySeqs) {
@@ -149,64 +139,62 @@ export const MiscellaneousPage = () => {
       return;
     }
 
-    try {
-      const shopSeq = shopInfo.shopSeq;
+    const shopSeq = shopInfo.shopSeq;
 
-      const shopSetting = mergeDefined(shopInfo.shopSetting, {
-        ...shopSettingDraft,
-        shopSeq,
-      });
-      const shopTime = mergeDefined(shopInfo.shopTime, {
-        ...shopTimeDraft,
-        shopSeq,
-      });
-      const shopNetwork = mergeDefined(shopInfo.shopNetwork, {
-        ...shopNetworkDraft,
-        shopSeq,
-      });
+    const shopSetting = {
+      ...shopInfo.shopSetting,
+      ...shopSettingDraft,
+      shopSeq,
+    };
+    const shopTime = {
+      ...shopInfo.shopTime,
+      ...shopTimeDraft,
+      shopSeq,
+    };
+    const shopNetwork = {
+      ...shopInfo.shopNetwork,
+      ...shopNetworkDraft,
+      shopSeq,
+    };
 
-      const categoryPayload: TUpdateCategoryFirstOrderRequest =
-        categories.length === 0
-          ? ((await refetchCategoryList()).data?.data?.map((category) => ({
-              ...category,
-              isFirstOrderRequired: selectedCategorySeqs.includes(
-                category.categorySeq
-              ),
-            })) ?? [])
-          : categories.map((category) => ({
-              ...category,
-              isFirstOrderRequired: selectedCategorySeqs.includes(
-                category.categorySeq
-              ),
-            }));
+    const categoryPayload: TUpdateCategoryFirstOrderRequest =
+      categories.length === 0
+        ? ((await refetchCategoryList()).data?.data?.map((category) => ({
+            ...category,
+            isFirstOrderRequired: selectedCategorySeqs.includes(
+              category.categorySeq
+            ),
+          })) ?? [])
+        : categories.map((category) => ({
+            ...category,
+            isFirstOrderRequired: selectedCategorySeqs.includes(
+              category.categorySeq
+            ),
+          }));
 
-      const request: IUpdateShopSettingRequest = {
-        ...shopInfo,
-        useLocale: useLocaleDraft ?? shopInfo.useLocale,
-        shopSetting,
-        shopTime,
-        shopNetwork,
-      };
+    const request: IUpdateShopSettingRequest = {
+      ...shopInfo,
+      shopSetting,
+      shopTime,
+      shopNetwork,
+    };
 
-      await Promise.all([
-        updateShopSettingMutation.mutateAsync(request),
-        updateCategoryFirstOrderMutation.mutateAsync(categoryPayload),
-      ]);
+    await Promise.all([
+      updateShopSettingMutation.mutateAsync(request),
+      updateCategoryFirstOrderMutation.mutateAsync(categoryPayload),
+    ]);
 
-      if (shopCode) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.shop.detail(shopCode),
-        });
-      }
-
+    if (shopCode) {
       await queryClient.invalidateQueries({
-        queryKey: queryKeys.category.list(),
+        queryKey: queryKeys.shop.detail(shopCode),
       });
-
-      toast('설정이 저장되었습니다.');
-    } catch (error) {
-      console.error(error);
     }
+
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.category.list(),
+    });
+
+    toast('설정이 저장되었습니다.');
   }, [
     categories,
     queryClient,
@@ -219,7 +207,6 @@ export const MiscellaneousPage = () => {
     shopTimeDraft,
     updateCategoryFirstOrderMutation,
     updateShopSettingMutation,
-    useLocaleDraft,
   ]);
 
   const isSaving =
@@ -266,11 +253,7 @@ export const MiscellaneousPage = () => {
           shopSetting={shopInfo?.shopSetting}
           onChange={handleChange}
         />
-        <Language
-          shopSetting={shopInfo?.shopSetting}
-          useLocale={shopInfo?.useLocale}
-          onChange={handleChange}
-        />
+        <Language shopSetting={shopInfo?.shopSetting} onChange={handleChange} />
       </S.Sections>
     </S.Container>
   );
