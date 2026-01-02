@@ -39,6 +39,10 @@ export const InnerSectionItem = styled.div`
     ${TYPOGRAPHY.ST_4}
     color: ${theme.colors.grey[600]};
   }
+
+  input::placeholder {
+    color: ${theme.colors.grey[400]};
+  }
 `;
 
 export const TextAreasContainer = styled.div`

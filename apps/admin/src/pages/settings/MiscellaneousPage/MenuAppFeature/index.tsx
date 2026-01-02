@@ -292,12 +292,8 @@ export const MenuAppFeature = ({
       closureLastOrderMessage,
     };
 
-    if (closureStart) {
-      shopTimeChanges.shopClosureStartTime = closureStart;
-    }
-    if (closureEnd) {
-      shopTimeChanges.shopClosureEndTime = closureEnd;
-    }
+    shopTimeChanges.shopClosureStartTime = closureStart;
+    shopTimeChanges.shopClosureEndTime = closureEnd;
 
     onChange({
       shopSetting: shopSettingChanges,
@@ -652,7 +648,8 @@ export const MenuAppFeature = ({
                         normalizeNumberString(event.target.value)
                       )
                     }
-                    value={breakTimeLastOrderAlertTimeBefore || '0'}
+                    value={breakTimeLastOrderAlertTimeBefore}
+                    placeholder="0"
                   />
                   분
                 </div>
@@ -665,12 +662,13 @@ export const MenuAppFeature = ({
                 <div>
                   <input
                     type="number"
+                    placeholder="0"
                     onChange={(event) =>
                       setBreakTimeLastOrderTimeBefore(
                         normalizeNumberString(event.target.value)
                       )
                     }
-                    value={breakTimeLastOrderTimeBefore || '0'}
+                    value={breakTimeLastOrderTimeBefore}
                   />
                   분
                 </div>
@@ -771,13 +769,14 @@ export const MenuAppFeature = ({
               <S.ClickableText>
                 <div>
                   <input
+                    placeholder="0"
                     type="number"
                     onChange={(event) =>
                       setClosureLastOrderTimeBefore(
                         normalizeNumberString(event.target.value)
                       )
                     }
-                    value={closureLastOrderTimeBefore || '0'}
+                    value={closureLastOrderTimeBefore}
                   />
                   분
                 </div>
@@ -790,13 +789,14 @@ export const MenuAppFeature = ({
               <S.ClickableText>
                 <div>
                   <input
+                    placeholder="0"
                     type="number"
                     onChange={(event) =>
                       setClosureLastOrderMinutes(
                         normalizeNumberString(event.target.value)
                       )
                     }
-                    value={closureLastOrderMinutes || '0'}
+                    value={closureLastOrderMinutes}
                   />
                   분
                 </div>

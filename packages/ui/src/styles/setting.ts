@@ -78,7 +78,7 @@ export const TimeRangeInput = styled.div`
 
     &::placeholder {
       ${TYPOGRAPHY.ST_2}
-      color: ${theme.colors.grey[800]};
+      color: ${theme.colors.grey[400]};
     }
   }
 `;

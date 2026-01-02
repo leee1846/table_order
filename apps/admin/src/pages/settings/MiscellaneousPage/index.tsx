@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { BasicButton } from '@repo/ui/components';
 import {
@@ -10,9 +10,6 @@ import {
 } from '@repo/api/queries';
 import type {
   ICategory,
-  IShopNetwork,
-  IShopSetting,
-  IShopTime,
   IUpdateShopSettingRequest,
   TUpdateCategoryFirstOrderRequest,
 } from '@repo/api/types';
@@ -48,13 +45,7 @@ export const MiscellaneousPage = () => {
     { enabled: !!(shopInfo?.shopSeq ?? authShopSeq) }
   );
 
-  const [shopSettingDraft, setShopSettingDraft] = useState<IShopSetting | null>(
-    null
-  );
-  const [shopTimeDraft, setShopTimeDraft] = useState<IShopTime | null>(null);
-  const [shopNetworkDraft, setShopNetworkDraft] = useState<IShopNetwork | null>(
-    null
-  );
+  const changesRef = useRef<MiscellaneousChange>({});
 
   const [selectedCategorySeqs, setSelectedCategorySeqs] = useState<number[]>(
     []
@@ -64,13 +55,9 @@ export const MiscellaneousPage = () => {
   const updateCategoryFirstOrderMutation = usePutUpdateCategoryFirstOrder();
 
   useEffect(() => {
-    if (!shopInfo) {
-      return;
+    if (shopInfo) {
+      changesRef.current = {};
     }
-
-    setShopSettingDraft(shopInfo.shopSetting);
-    setShopTimeDraft(shopInfo.shopTime);
-    setShopNetworkDraft(shopInfo.shopNetwork);
   }, [shopInfo]);
 
   const categories: ICategory[] = categoryListResponse?.data ?? [];
@@ -89,72 +76,93 @@ export const MiscellaneousPage = () => {
     );
   }, [categories]);
 
-  const handleChange = useCallback(
-    (change: MiscellaneousChange) => {
-      if (change.shopSetting) {
-        setShopSettingDraft((prev) => {
-          const base = prev ?? shopInfo?.shopSetting ?? ({} as IShopSetting);
-          return {
-            ...base,
-            ...change.shopSetting,
-            shopSeq:
-              shopInfo?.shopSeq ?? change.shopSetting?.shopSeq ?? base.shopSeq,
-          };
-        });
-      }
+  const handleChange = useCallback((change: MiscellaneousChange) => {
+    if (change.shopSetting) {
+      changesRef.current.shopSetting = {
+        ...changesRef.current.shopSetting,
+        ...change.shopSetting,
+      };
+    }
+    if (change.shopTime) {
+      changesRef.current.shopTime = {
+        ...changesRef.current.shopTime,
+        ...change.shopTime,
+      };
+    }
+    if (change.shopNetwork) {
+      changesRef.current.shopNetwork = {
+        ...changesRef.current.shopNetwork,
+        ...change.shopNetwork,
+      };
+    }
+    if (change.selectedCategorySeqs) {
+      setSelectedCategorySeqs(change.selectedCategorySeqs);
+    }
+  }, []);
 
-      if (change.shopTime) {
-        setShopTimeDraft((prev) => {
-          const base = prev ?? shopInfo?.shopTime ?? ({} as IShopTime);
-          return {
-            ...base,
-            ...change.shopTime,
-            shopSeq:
-              shopInfo?.shopSeq ?? change.shopTime?.shopSeq ?? base.shopSeq,
-          };
-        });
+  /**
+   * 설정 저장 전 유효성 검증 함수
+   * @param change - 검증할 설정 변경사항
+   * @throws 에러 메시지와 함께 throw
+   */
+  const validateShopSettings = (change: MiscellaneousChange) => {
+    if (
+      change.shopTime?.shopBusinessStartTime ||
+      change.shopTime?.shopBusinessEndTime
+    ) {
+      if (!change.shopTime?.shopBusinessEndTime) {
+        toast('정산 시간을 입력해주세요.');
+        throw new Error('정산 시간을 입력해주세요.');
       }
+    }
 
-      if (change.shopNetwork) {
-        setShopNetworkDraft((prev) => {
-          const base = prev ?? shopInfo?.shopNetwork ?? ({} as IShopNetwork);
-          return {
-            ...base,
-            ...change.shopNetwork,
-            shopSeq:
-              shopInfo?.shopSeq ?? change.shopNetwork?.shopSeq ?? base.shopSeq,
-          };
-        });
+    // 영업마감시간 안내가 활성화되어 있는데 시작시간 또는 종료시간이 없는 경우
+    if (change.shopTime?.useClosure) {
+      if (
+        !change.shopTime?.shopClosureStartTime ||
+        !change.shopTime?.shopClosureEndTime
+      ) {
+        toast(
+          '영업마감시간 안내가 활성화되어 있습니다. 시작시간과 종료시간을 입력해주세요.'
+        );
+        throw new Error(
+          '영업마감시간 안내가 활성화되어 있습니다. 시작시간과 종료시간을 입력해주세요.'
+        );
       }
+    }
 
-      if (change.selectedCategorySeqs) {
-        setSelectedCategorySeqs(change.selectedCategorySeqs);
+    // 브레이크타임 기능이 활성화되어 있는데 브레이크타임 목록이 없는 경우
+    if (change.shopTime?.useBreakTime) {
+      if (
+        !change.shopTime?.breakTimeList ||
+        change.shopTime?.breakTimeList.length === 0
+      ) {
+        toast(
+          '브레이크타임 기능이 활성화되어 있습니다. 브레이크타임을 설정해주세요.'
+        );
+        throw new Error(
+          '브레이크타임 기능이 활성화되어 있습니다. 브레이크타임을 설정해주세요.'
+        );
       }
-    },
-    [shopInfo]
-  );
+    }
+  };
 
   const handleSave = useCallback(async () => {
     if (!shopInfo) {
       return;
     }
 
-    const shopSeq = shopInfo.shopSeq;
-
     const shopSetting = {
       ...shopInfo.shopSetting,
-      ...shopSettingDraft,
-      shopSeq,
+      ...changesRef.current.shopSetting,
     };
     const shopTime = {
       ...shopInfo.shopTime,
-      ...shopTimeDraft,
-      shopSeq,
+      ...changesRef.current.shopTime,
     };
     const shopNetwork = {
       ...shopInfo.shopNetwork,
-      ...shopNetworkDraft,
-      shopSeq,
+      ...changesRef.current.shopNetwork,
     };
 
     const categoryPayload: TUpdateCategoryFirstOrderRequest =
@@ -171,6 +179,13 @@ export const MiscellaneousPage = () => {
               category.categorySeq
             ),
           }));
+
+    try {
+      validateShopSettings({ shopTime, shopSetting, shopNetwork });
+    } catch (error) {
+      // 검증 실패 시 저장하지 않음
+      return;
+    }
 
     const request: IUpdateShopSettingRequest = {
       ...shopInfo,
@@ -195,6 +210,7 @@ export const MiscellaneousPage = () => {
     });
 
     toast('설정이 저장되었습니다.');
+    changesRef.current = {};
   }, [
     categories,
     queryClient,
@@ -202,11 +218,9 @@ export const MiscellaneousPage = () => {
     selectedCategorySeqs,
     shopCode,
     shopInfo,
-    shopNetworkDraft,
-    shopSettingDraft,
-    shopTimeDraft,
     updateCategoryFirstOrderMutation,
     updateShopSettingMutation,
+    validateShopSettings,
   ]);
 
   const isSaving =

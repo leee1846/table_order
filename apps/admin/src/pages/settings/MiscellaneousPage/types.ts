@@ -4,6 +4,5 @@ export interface MiscellaneousChange {
   shopSetting?: Partial<IShopSetting>;
   shopTime?: Partial<IShopTime>;
   shopNetwork?: Partial<IShopNetwork>;
-  useLocale?: boolean;
   selectedCategorySeqs?: number[];
 }
