@@ -7,6 +7,8 @@ import type {
   TUpdateShopSettingResponse,
   TGetShopThemeMenuResponse,
   TGetShopThemePageResponse,
+  IUpdateShopThemeMenuRequest,
+  TUpdateShopThemeMenuResponse,
 } from '../types/shop';
 
 export const getShops = async (): Promise<TGetShopsResponse> => {
@@ -63,6 +65,39 @@ export const getShopThemePage = async (
   const response = await axiosInstance<TGetShopThemePageResponse>({
     method: 'GET',
     url: ENDPOINTS.SHOP.THEME_PAGE(shopCode),
+  });
+
+  return response.data;
+};
+
+export interface IUpdateShopThemeMenuParams {
+  shopCode: string;
+  body: IUpdateShopThemeMenuRequest;
+  logoFile?: File | null;
+}
+
+export const updateShopThemeMenu = async ({
+  shopCode,
+  body,
+  logoFile,
+}: IUpdateShopThemeMenuParams): Promise<TUpdateShopThemeMenuResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+
+  const formData = new FormData();
+  formData.append(
+    'shopThemeMenu',
+    new Blob([JSON.stringify(body)], { type: 'application/json' })
+  );
+
+  if (logoFile) {
+    formData.append('logoFile', logoFile);
+  }
+
+  const response = await axiosInstance<TUpdateShopThemeMenuResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.SHOP.THEME_MENU(shopCode),
+    data: formData,
+    headers: { 'Content-Type': 'multipart/form-data' },
   });
 
   return response.data;

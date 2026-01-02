@@ -1,22 +1,26 @@
-import { useState } from 'react';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
+import type { TMenuboardTemplateType } from '@repo/api/types';
 import * as S from '@/pages/settings/MenuScreenPage/Template/template.style';
 
 const templateOptions = [
-  { value: 'horizontal-basic', label: '가로 기본형' },
-  { value: 'horizontal-image', label: '가로 이미지형' },
-  { value: 'vertical-basic', label: '세로 기본형' },
-  { value: 'vertical-image', label: '세로 이미지형' },
+  { value: 'DEFAULT', label: '가로 기본형' },
+  { value: 'VERTICAL_TEXT', label: '세로 텍스트형' },
+  { value: 'VERTICAL_IMAGE', label: '세로 이미지형' },
 ];
 
-export const Template = () => {
-  const [isThreeColumnLayout, setIsThreeColumnLayout] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('horizontal-basic');
+interface TemplateProps {
+  isMenuThreeColumnLayout: boolean;
+  templateType: TMenuboardTemplateType;
+  onChangeThreeColumnLayout: (value: boolean) => void;
+  onChangeTemplateType: (value: TMenuboardTemplateType) => void;
+}
 
-  const handleToggleThreeColumn = () => {
-    setIsThreeColumnLayout(!isThreeColumnLayout);
-  };
-
+export const Template = ({
+  isMenuThreeColumnLayout,
+  templateType,
+  onChangeTemplateType,
+  onChangeThreeColumnLayout,
+}: TemplateProps) => {
   return (
     <S.Container>
       <p>템플릿 설정</p>
@@ -25,20 +29,21 @@ export const Template = () => {
           <S.OptionLabel>3열 배치</S.OptionLabel>
           <ToggleButton
             size="M"
-            isOn={isThreeColumnLayout}
-            onChange={handleToggleThreeColumn}
+            isOn={isMenuThreeColumnLayout}
+            onChange={() => onChangeThreeColumnLayout(!isMenuThreeColumnLayout)}
           />
         </S.OptionRow>
         <S.OptionRow>
           <S.OptionLabel>템플릿 선택</S.OptionLabel>
           <Dropdown
             options={templateOptions}
-            value={selectedTemplate}
-            onChange={(value) => setSelectedTemplate(value as string)}
+            value={templateType}
+            onChange={(value) =>
+              onChangeTemplateType(value as TMenuboardTemplateType)
+            }
           />
         </S.OptionRow>
       </S.TemplateOptions>
     </S.Container>
   );
 };
-

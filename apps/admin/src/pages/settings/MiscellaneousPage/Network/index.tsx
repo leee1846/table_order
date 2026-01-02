@@ -75,11 +75,13 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
           <UIStyles.setting.Title>버전 및 네트워크</UIStyles.setting.Title>
         </S.TitleContentContainer>
         <S.Versions>
+          {/* TODO 앱에서 받아와야 함 */}
           <p>
             현재 버전 <span>2.??.??</span>
           </p>
           <div />
           <p>
+            {/* TODO 서버에서 줘야 하나 앱 버전 기록하는 로직은 제일 마지막에 생길 예쩡 */}
             최신 버전 <span>2.??.??</span>
           </p>
         </S.Versions>
