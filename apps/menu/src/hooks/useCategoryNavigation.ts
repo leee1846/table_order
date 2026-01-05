@@ -20,6 +20,7 @@ interface IReturn {
   selectedCategorySeq: number;
   handleCategoryClick: (category: ICategoryWithMenus) => void;
   selectedCategory: ICategoryWithMenus | undefined;
+  activate: () => void;
 }
 
 /**
@@ -34,6 +35,9 @@ export function useCategoryNavigation({
   const [selectedCategorySeq, setSelectedCategorySeq] = useState(
     categories[0]?.categorySeq || 0
   );
+
+  // 활성화 상태 관리 (useEffect가 변경을 감지하도록 state 사용)
+  const [isActivated, setIsActivated] = useState(false);
 
   // IntersectionObserver 관련 refs
   const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
@@ -155,8 +159,8 @@ export function useCategoryNavigation({
     const visibilityMap = categoryVisibilityMapRef.current;
     const observedSeqs = observedCategorySeqsRef.current;
 
-    // 탭 모드에서는 observer 불필요
-    if (useSinglePageMenuboard) {
+    // activate가 호출되지 않았거나 탭 모드에서는 observer 불필요
+    if (!isActivated || useSinglePageMenuboard) {
       return;
     }
 
@@ -235,7 +239,7 @@ export function useCategoryNavigation({
       lastEmittedCategorySeqRef.current = null;
       observedSeqs.clear();
     };
-  }, [useSinglePageMenuboard]);
+  }, [useSinglePageMenuboard, isActivated]);
 
   // useScrollLayout 변경 시 스크롤 애니메이션 타이머 정리
   useEffect(() => {
@@ -252,8 +256,8 @@ export function useCategoryNavigation({
     const observer = intersectionObserverRef.current;
     const observedSeqs = observedCategorySeqsRef.current;
 
-    // 탭 모드이거나 observer가 없으면 이전 등록 제거 후 종료
-    if (useSinglePageMenuboard || !observer) {
+    // activate가 호출되지 않았거나 탭 모드이거나 observer가 없으면 이전 등록 제거 후 종료
+    if (!isActivated || useSinglePageMenuboard || !observer) {
       if (observer) {
         observedSeqs.forEach((categorySeq) => {
           const element = document.getElementById(
@@ -312,7 +316,7 @@ export function useCategoryNavigation({
     return () => {
       cancelAnimationFrame(rafId);
     };
-  }, [categories, useSinglePageMenuboard]);
+  }, [categories, useSinglePageMenuboard, isActivated]);
 
   // TabContent에서 사용할 선택된 카테고리 객체
   // 로딩 중이거나 유효하지 않은 selectedCategorySeq면 undefined 반환 (스타일 깨짐 방지)
@@ -323,9 +327,19 @@ export function useCategoryNavigation({
         ) || undefined // find가 undefined를 반환할 수 있으므로 명시적으로 처리
       : undefined;
 
+  // 활성화 함수: 마지막 컴포넌트가 렌더링될 때 호출
+  const activate = () => {
+    // 이미 활성화되었으면 중복 호출 방지 (무한 렌더링 방지)
+    if (isActivated) {
+      return;
+    }
+    setIsActivated(true);
+  };
+
   return {
     selectedCategorySeq,
     handleCategoryClick,
     selectedCategory,
+    activate,
   };
 }

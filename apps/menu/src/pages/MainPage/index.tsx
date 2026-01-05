@@ -3,7 +3,6 @@ import { Sidebar } from '@/pages/MainPage/Sidebar';
 import { Header } from '@/pages/MainPage/Header';
 import { CartButton } from '@/pages/MainPage/CartButton';
 import { Contents } from '@/pages/MainPage/Contents';
-import { PageRenderer } from '@/pages/MainPage/PageRenderer';
 import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
@@ -23,6 +22,15 @@ import { useFirstOrderRequiredCheck } from '@/pages/MainPage/hooks/useFirstOrder
 import { useBreakTimeCartClear } from '@/pages/MainPage/hooks/useBreakTimeCartClear';
 import { useCategoryVisibilityManager } from '@/hooks/useCategoryVisibilityManager';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
+import { AdminAccessPasswordModal } from '@/pages/MainPage/AdminAccessPasswordModal';
+import { ClosedPage } from '@/pages/MainPage/ClosedPage';
+import { BreakTime } from '@/pages/MainPage/BreakTime';
+import { InitialPage } from '@/pages/MainPage/InitialPage';
+import { LanguageSelector } from '@/pages/MainPage/LanguageSelector';
+import { CustomerCountSelector } from '@/pages/MainPage/CustomerCountSelector';
+import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
+import { CartReminder } from '@/pages/MainPage/CartReminder';
+import { LastOrder } from '@/pages/MainPage/LastOrder';
 
 export const MainPage = () => {
   useShopData();
@@ -128,7 +136,86 @@ export const MainPage = () => {
     adminAccessControl.setShowAdminAccessPasswordModal(true);
   };
 
-  const mainContent = (
+  /** 관리자 접근 비밀번호 모달 노출 */
+  if (pageStates.adminAccess.show) {
+    return (
+      <AdminAccessPasswordModal onClose={pageStates.adminAccess.onClose} />
+    );
+  }
+
+  /** 휴무 페이지 */
+  if (pageStates.shopClosure.show) {
+    return (
+      <ClosedPage
+        message={pageStates.shopClosure.message}
+        startTime={pageStates.shopClosure.startTime}
+        endTime={pageStates.shopClosure.endTime}
+      />
+    );
+  }
+
+  /** 브레이크타임 화면 노출 */
+  if (pageStates.breakTime.show) {
+    return (
+      <BreakTime
+        message={pageStates.breakTime.message}
+        startTime={pageStates.breakTime.startTime}
+        endTime={pageStates.breakTime.endTime}
+      />
+    );
+  }
+
+  /** 라스트오더 페이지 */
+  if (pageStates.breakTimeLastOrder.show) {
+    return (
+      <LastOrder
+        message={pageStates.breakTimeLastOrder.message}
+        lastOrderTime={pageStates.breakTimeLastOrder.lastOrderTime}
+        onClose={pageStates.breakTimeLastOrder.onClose}
+      />
+    );
+  }
+
+  /** 영업마감 라스트오더 페이지 */
+  if (pageStates.closureLastOrder.show) {
+    return (
+      <LastOrder
+        message={pageStates.closureLastOrder.message}
+        lastOrderTime={pageStates.closureLastOrder.lastOrderTime}
+        onClose={pageStates.closureLastOrder.onClose}
+      />
+    );
+  }
+
+  /** 초기 화면 노출 */
+  if (pageStates.initialPage.show) {
+    return <InitialPage />;
+  }
+
+  /** 고객 메뉴판 언어 선택 */
+  if (pageStates.languageSelector.show) {
+    return <LanguageSelector />;
+  }
+
+  /** 고객 객수 선택 */
+  if (pageStates.customerCount.show) {
+    return <CustomerCountSelector />;
+  }
+
+  /** 픽업 알림 표시 */
+  if (pageStates.pickupAlarm.show) {
+    return <PickupAlarm />;
+  }
+
+  /** 장바구니 메뉴 주문 리마인더 표시 */
+  if (pageStates.cartReminder.show) {
+    return <CartReminder />;
+  }
+
+  // Sidebar, Contents가 렌더링되는 시점에 실행되도록 처리
+  categoryNavigation.activate();
+
+  return (
     <S.Container>
       <Header
         orderHistories={orderHistories}
@@ -155,6 +242,4 @@ export const MainPage = () => {
       </S.MainContent>
     </S.Container>
   );
-
-  return <PageRenderer states={pageStates} mainContent={mainContent} />;
 };
