@@ -17,10 +17,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTableDrag } from '@/hooks/useTableDrag';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { useSSE } from '@repo/feature/hooks';
-import type { ISseMessage } from '@repo/api/types';
-import { SSE_KEYS } from '@/constants/keys';
-import { useDeviceTheftDetector } from '@/hooks/useDeviceTheftDetector';
 import adminI18n from '@/config/i18n';
 
 export const TablesPage = () => {
@@ -46,30 +42,6 @@ export const TablesPage = () => {
       shopCode: shopCode ?? '',
       selectedTableGroupSeq,
     });
-
-  // SSE 데이터 구독
-  const { data } = useSSE.useSSEData<ISseMessage>(SSE_KEYS.MAIN_CONNECTION);
-
-  // 기기 도난 감지 (커스텀 훅)
-  useDeviceTheftDetector();
-
-  // ORDER 타입 SSE를 받으면 매장 전체 주문 정보 재조회 (첫화면)
-  useEffect(() => {
-    if (data?.type === 'ORDER' && shopCode) {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.orders.currentTableList(shopCode),
-      });
-    }
-  }, [data, shopCode, queryClient]);
-
-  // DEVICE 타입 SSE를 받으면 테이블 그룹 리스트 재조회
-  useEffect(() => {
-    if (data?.type === 'DEVICE' && shopCode) {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.table.groupList(shopCode),
-      });
-    }
-  }, [data, shopCode, queryClient]);
 
   // 첫 번째 테이블 그룹을 기본 선택
   useEffect(() => {

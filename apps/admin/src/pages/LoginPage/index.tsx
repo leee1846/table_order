@@ -10,6 +10,7 @@ import { setAccessToken, setRefreshToken } from '@repo/api/auth';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { initializeSseConnection } from '@/utils/sseConnection';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -32,11 +33,7 @@ export const LoginPage = () => {
     if (value.length > 0) {
       setIdErrorMessage('');
     } else {
-      setIdErrorMessage(
-        t(
-          '아이디를 입력해주세요.'
-        )
-      );
+      setIdErrorMessage(t('아이디를 입력해주세요.'));
     }
   };
 
@@ -47,11 +44,7 @@ export const LoginPage = () => {
     if (value.length > 0) {
       setPasswordErrorMessage('');
     } else {
-      setPasswordErrorMessage(
-        t(
-          '비밀번호를 입력해주세요.'
-        )
-      );
+      setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
     }
   };
 
@@ -62,19 +55,11 @@ export const LoginPage = () => {
   const handleLogin = async () => {
     // 1단계: 클라이언트 측 유효성 검사
     if (!id) {
-      setIdErrorMessage(
-        t(
-          '아이디를 입력해주세요.'
-        )
-      );
+      setIdErrorMessage(t('아이디를 입력해주세요.'));
       return;
     }
     if (!password) {
-      setPasswordErrorMessage(
-        t(
-          '비밀번호를 입력해주세요.'
-        )
-      );
+      setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
       return;
     }
 
@@ -104,6 +89,8 @@ export const LoginPage = () => {
     setRefreshToken(response.data.refreshToken);
     // Store 업데이트
     useAuthStore.getState().refreshTokenInfo();
+    // sse 연결
+    initializeSseConnection();
     navigate(ROUTES.ROOT.generate()); // 루트 경로로 이동 (router에서 /tables로 리디렉트됨)
   };
 
@@ -141,9 +128,7 @@ export const LoginPage = () => {
         <div>
           <S.InputTitle>{t('아이디')}</S.InputTitle>
           <Input
-            placeholder={t(
-              '아이디를 입력해주세요.'
-            )}
+            placeholder={t('아이디를 입력해주세요.')}
             onChange={handleIdChange}
             value={id}
             errorMessage={idErrorMessage}
@@ -153,9 +138,7 @@ export const LoginPage = () => {
           <S.InputTitle>{t('비밀번호')}</S.InputTitle>
           <Input
             type={passwordInputType}
-            placeholder={t(
-              '비밀번호를 입력해주세요.'
-            )}
+            placeholder={t('비밀번호를 입력해주세요.')}
             onChange={handlePasswordChange}
             value={password}
             rightComponent={passwordInputTextVisibilityComponent()}

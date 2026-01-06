@@ -67,12 +67,13 @@ export const useAdminTranslation = () => {
 // 직접 번역 함수 사용 (훅 없이)
 export const t = adminI18n.t.bind(adminI18n);
 
-// 언어 변경 함수
 export const setStorageAdminLanguage = (
   lng: TShopLanguage | undefined | null
 ) => {
-  if (!lng) return;
-  // 현재 언어와 다를 때만 변경
+  if (!lng) {
+    return;
+  }
+
   if (adminI18n.language !== lng) {
     adminI18n.changeLanguage(lng);
   }

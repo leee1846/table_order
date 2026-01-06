@@ -19,15 +19,14 @@ import { decodeJwtToken } from '@repo/util/function';
 import { isExpired } from '@repo/util/date';
 import { getCurrentUnixTime } from '@repo/util/time';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { disconnectSse } from '@/utils/sseConnection';
 
 const forceReLogin = () => {
-  // access token과 refresh token 모두 삭제
   removeAuthTokens();
+  disconnectSse();
   openConfirmDialog({
     title: t('인증 만료'),
-    content: t(
-      '인증이 유효하지 않습니다.\n 로그인 후 다시 시도해주세요.'
-    ),
+    content: t('인증이 유효하지 않습니다.\n 로그인 후 다시 시도해주세요.'),
     onConfirm: () => {
       window.location.href = ROUTES.LOGIN.generate();
     },
@@ -115,9 +114,7 @@ privateApi.interceptors.response.use(
       title: 'Server Error',
       content:
         error.response?.data?.status?.userMessage ||
-        t(
-          '알 수 없는 오류가 발생했습니다.'
-        ),
+        t('알 수 없는 오류가 발생했습니다.'),
     });
     return Promise.reject(error);
   }

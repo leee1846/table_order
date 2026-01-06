@@ -42,12 +42,18 @@ importers:
       '@repo/util':
         specifier: workspace:*
         version: link:../../packages/util
+      i18next:
+        specifier: ^25.6.3
+        version: 25.7.1(typescript@5.9.3)
       react:
         specifier: ^19.1.1
         version: 19.2.1
       react-dom:
         specifier: ^19.1.1
         version: 19.2.1(react@19.2.1)
+      react-i18next:
+        specifier: 16.3.5
+        version: 16.3.5(i18next@25.7.1(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
       react-router-dom:
         specifier: ^7.9.4
         version: 7.10.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -273,6 +279,9 @@ importers:
       '@repo/util':
         specifier: workspace:*
         version: link:../util
+      i18next:
+        specifier: ^25.6.3
+        version: 25.7.1(typescript@5.9.3)
       react-i18next:
         specifier: 16.3.5
         version: 16.3.5(i18next@25.7.1(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)

@@ -1,19 +1,12 @@
-import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { TheftAlertDialog } from '@/feature/dialogs/TheftAlertDialog';
 import { useTheftAlertStore } from '@/stores/useTheftAlertStore';
+import { useSSEHandler } from './hooks/useSSEHandler';
 
 const App = () => {
   const { isOpen, tableNumber, closeAlert } = useTheftAlertStore();
 
-  useEffect(() => {
-    initializeSseConnection();
-
-    return () => {
-      disconnectSse();
-    };
-  }, []);
+  useSSEHandler();
 
   return (
     <div>

@@ -7,10 +7,13 @@ type TSSEConnectionState<T> = {
   eventSource: EventSource | null;
   originData: T | null;
   setData: React.Dispatch<React.SetStateAction<T | null>>;
+  setDataCallbacks: Set<React.Dispatch<React.SetStateAction<T | null>>>;
   originError: Error | null;
   setError: React.Dispatch<React.SetStateAction<Error | null>>;
+  setErrorCallbacks: Set<React.Dispatch<React.SetStateAction<Error | null>>>;
   isConnected: boolean;
   setIsConnected: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsConnectedCallbacks: Set<React.Dispatch<React.SetStateAction<boolean>>>;
   messageQueue: T[];
   isProcessingQueue: boolean;
 };
@@ -34,20 +37,21 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 
   // 상태가 없으면 새로 생성
   if (!state) {
+    const noOp = (() => {
+      // no-op
+    }) as React.Dispatch<React.SetStateAction<T | null>>;
+
     state = {
       eventSource: null,
       originData: null,
-      setData: (() => {
-        // no-op
-      }) as React.Dispatch<React.SetStateAction<T | null>>,
+      setData: noOp,
+      setDataCallbacks: new Set(),
       originError: null,
-      setError: (() => {
-        // no-op
-      }) as React.Dispatch<React.SetStateAction<Error | null>>,
+      setError: noOp as React.Dispatch<React.SetStateAction<Error | null>>,
+      setErrorCallbacks: new Set(),
       isConnected: false,
-      setIsConnected: (() => {
-        // no-op
-      }) as React.Dispatch<React.SetStateAction<boolean>>,
+      setIsConnected: noOp as React.Dispatch<React.SetStateAction<boolean>>,
+      setIsConnectedCallbacks: new Set(),
       messageQueue: [],
       isProcessingQueue: false,
     };
@@ -60,7 +64,8 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 
   eventSource.onopen = () => {
     state.isConnected = true;
-    state.setIsConnected(true);
+    // 모든 콜백 호출 (state.setIsConnected는 no-op일 수 있으므로 제거)
+    state.setIsConnectedCallbacks.forEach((callback) => callback(true));
   };
 
   // 메시지 큐 처리 함수
@@ -75,8 +80,10 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 
     if (message) {
       state.originData = message;
-      // 상태 업데이트 (함수형 업데이트 사용)
-      state.setData(message);
+      // 새로운 객체 참조 생성 (React가 변경을 감지하도록)
+      const newMessage = JSON.parse(JSON.stringify(message)) as T;
+      // 모든 콜백 호출 (state.setData는 no-op일 수 있으므로 제거)
+      state.setDataCallbacks.forEach((callback) => callback(newMessage));
 
       // 다음 메시지 처리 (React 상태 업데이트가 완료되도록 충분한 지연)
       // requestAnimationFrame을 사용하여 브라우저 렌더링 사이클과 동기화
@@ -101,16 +108,19 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));
       state.originError = err;
-      state.setError(err);
+      // 모든 콜백 호출 (state.setError는 no-op일 수 있으므로 제거)
+      state.setErrorCallbacks.forEach((callback) => callback(err));
     }
   };
 
   eventSource.onerror = (err) => {
     const error = new Error(JSON.stringify(err));
     state.originError = error;
-    state.setError(error);
+    // 모든 콜백 호출 (state.setError는 no-op일 수 있으므로 제거)
+    state.setErrorCallbacks.forEach((callback) => callback(error));
     state.isConnected = false;
-    state.setIsConnected(false);
+    // 모든 콜백 호출 (state.setIsConnected는 no-op일 수 있으므로 제거)
+    state.setIsConnectedCallbacks.forEach((callback) => callback(false));
   };
 };
 
@@ -123,7 +133,8 @@ export const disconnectSSE = (key: string): void => {
     state.eventSource.close();
     state.eventSource = null;
     state.isConnected = false;
-    state.setIsConnected(false);
+    // 모든 콜백 호출 (state.setIsConnected는 no-op일 수 있으므로 제거)
+    state.setIsConnectedCallbacks.forEach((callback) => callback(false));
   }
 
   sseConnectionMap.delete(key);
@@ -139,55 +150,60 @@ export const useSSEData = <T = unknown>(key: string) => {
 
   useEffect(() => {
     let state = sseConnectionMap.get(key) as TSSEConnectionState<T> | undefined;
-
     // 연결이 존재하지 않으면, 일단 placeholder를 생성
     if (!state) {
       state = {
         eventSource: null,
         originData: null,
-        setData,
+        setData: (() => {
+          // no-op
+        }) as React.Dispatch<React.SetStateAction<T | null>>,
+        setDataCallbacks: new Set(),
         originError: null,
-        setError,
+        setError: (() => {
+          // no-op
+        }) as React.Dispatch<React.SetStateAction<Error | null>>,
+        setErrorCallbacks: new Set(),
         isConnected: false,
-        setIsConnected,
+        setIsConnected: (() => {
+          // no-op
+        }) as React.Dispatch<React.SetStateAction<boolean>>,
+        setIsConnectedCallbacks: new Set(),
         messageQueue: [],
         isProcessingQueue: false,
       };
       sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
-    } else {
-      // 이미 존재하는 상태라면 setter만 교체 (React 상태 반영)
-      state.setData = setData;
-      state.setError = setError;
-      state.setIsConnected = setIsConnected;
-
-      // 기존 상태 반영
-      if (state.originData) {
-        setData(state.originData);
-      }
-      if (state.originError) {
-        setError(state.originError);
-      }
-      if (state.isConnected) {
-        setIsConnected(true);
-      }
     }
 
-    // cleanup: setter 연결 해제
+    // 콜백 등록 (Set이므로 중복 자동 방지)
+    state.setDataCallbacks.add(setData);
+    state.setErrorCallbacks.add(setError);
+    state.setIsConnectedCallbacks.add(setIsConnected);
+
+    // 기존 상태 반영 (새로운 객체 참조 생성)
+    if (state.originData) {
+      const newMessage = JSON.parse(JSON.stringify(state.originData)) as T;
+      setData(newMessage);
+    }
+    if (state.originError) {
+      setError(state.originError);
+    }
+    if (state.isConnected) {
+      setIsConnected(true);
+    }
+
+    // cleanup: 콜백 제거
     return () => {
-      const current = sseConnectionMap.get(key);
+      const current = sseConnectionMap.get(key) as
+        | TSSEConnectionState<T>
+        | undefined;
       if (current) {
-        current.setData = (() => {
-          // no-op
-        }) as React.Dispatch<React.SetStateAction<unknown>>;
-        current.setError = (() => {
-          // no-op
-        }) as React.Dispatch<React.SetStateAction<Error | null>>;
-        current.setIsConnected = (() => {
-          // no-op
-        }) as React.Dispatch<React.SetStateAction<boolean>>;
+        current.setDataCallbacks.delete(setData);
+        current.setErrorCallbacks.delete(setError);
+        current.setIsConnectedCallbacks.delete(setIsConnected);
       }
     };
-  }, [key]);
+  }, [key, setData, setError, setIsConnected]);
 
   return { data, error, isConnected };
 };
