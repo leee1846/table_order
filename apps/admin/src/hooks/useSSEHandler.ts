@@ -2,11 +2,10 @@ import { useEffect } from 'react';
 import { initializeSseConnection, disconnectSse } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
 import { SSE_KEYS } from '@/constants/keys';
-import type { ISseMessage, IDevice } from '@repo/api/types';
+import type { ISseMessage } from '@repo/api/types';
 import { useAuth } from './useAuth';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
-import { SystemControl } from '@repo/util/app';
 import { useTheftAlertStore } from '@/stores/useTheftAlertStore';
 
 export const useSSEHandler = () => {
@@ -41,7 +40,7 @@ export const useSSEHandler = () => {
 
     if (sseMessage?.type === 'DEVICE') {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.table.groupList(shopCode),
+        queryKey: queryKeys.device.list(shopCode),
       });
       return;
     }

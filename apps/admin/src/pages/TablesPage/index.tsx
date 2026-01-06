@@ -201,6 +201,7 @@ export const TablesPage = () => {
           onTableGroupSelect={setSelectedTableGroupSeq}
         />
       </TablesPageContainer>
+
       <GuestCountDialog
         isOpen={isGuestCountDialogOpen}
         onClose={handleGuestCountClose}

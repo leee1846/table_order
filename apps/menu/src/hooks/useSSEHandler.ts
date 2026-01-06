@@ -29,8 +29,8 @@ import { useTableGroupStore } from '@/stores/useTableGroupStore';
 export const useSSEHandler = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useCustomerTranslation();
   const queryClient = useQueryClient();
+  const { t } = useCustomerTranslation();
 
   const { data: deviceStoreData, setDataAsync } = useDeviceData({
     skipInitialRequest: true,
@@ -197,9 +197,13 @@ export const useSSEHandler = () => {
 
   // 매장 정보 변경 메시지 처리
   const handleShopMessage = useCallback(async () => {
+    // root 페이지에 있을 경우에만 실행
+    if (location.pathname !== ROUTES.ROOT.path) {
+      return;
+    }
     await refreshShopDetailData();
     window.location.reload();
-  }, [refreshShopDetailData]);
+  }, [refreshShopDetailData, location.pathname]);
 
   // 메뉴 변경 메시지 처리
   const handleMenuMessage = useCallback(() => {
@@ -382,6 +386,7 @@ export const useSSEHandler = () => {
     if (sseMessage.shopCode !== currentShopData?.shopCode) {
       return;
     }
+
     switch (sseMessage.type) {
       case 'ORDER':
         handleOrderMessage(currentShopCode);
