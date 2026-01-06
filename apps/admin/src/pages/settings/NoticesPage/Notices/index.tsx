@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useEffect, useState } from 'react';
 import { KeyboardArrowDownIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -58,7 +59,11 @@ export const Notices = ({ notices, isLoading = false }: NoticesProps) => {
   if (isLoading) {
     return (
       <S.Container>
-        <S.Message>공지사항을 불러오는 중입니다...</S.Message>
+        <S.Message>
+          {t(
+            '공지사항을 불러오는 중입니다...'
+          )}
+        </S.Message>
       </S.Container>
     );
   }
@@ -66,7 +71,11 @@ export const Notices = ({ notices, isLoading = false }: NoticesProps) => {
   if (!notices.length) {
     return (
       <S.Container>
-        <S.Message>등록된 공지사항이 없습니다.</S.Message>
+        <S.Message>
+          {t(
+            '등록된 공지사항이 없습니다.'
+          )}
+        </S.Message>
       </S.Container>
     );
   }
@@ -85,7 +94,9 @@ export const Notices = ({ notices, isLoading = false }: NoticesProps) => {
             >
               <S.LeftContainer>
                 <S.Num>{notice.noticeSeq}</S.Num>
-                <S.Status>{notice.boardType || '일반'}</S.Status>
+                <S.Status>
+                  {notice.boardType || t('일반')}
+                </S.Status>
                 <S.Title>{notice.noticeTitle}</S.Title>
               </S.LeftContainer>
               <S.RightContainer isOpen={isOpen}>

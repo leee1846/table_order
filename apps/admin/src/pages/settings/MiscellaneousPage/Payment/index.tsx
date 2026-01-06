@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n';
+import { useEffect, useMemo, useState } from 'react';
 import type { IShopSetting, TShopCardTerminalCode } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
@@ -15,23 +16,44 @@ interface PaymentProps {
   onChange?: (value: MiscellaneousChange) => void;
 }
 
-const paymentTypeOptions = [
-  { value: 'prepayment' as PaymentTypeOption, label: '선불' },
-  { value: 'postpayment' as PaymentTypeOption, label: '후불' },
-];
-
-const cardTerminalOptions = [
-  { value: 'VIRTUAL' as TShopCardTerminalCode, label: '가상결제' },
-  { value: 'EASY' as TShopCardTerminalCode, label: '이지카드' },
-  { value: 'NO_BUTTON' as TShopCardTerminalCode, label: '결제버튼 미사용' },
-];
-
 const currencyOptions = [
   { value: 'KRW', label: '₩' },
   { value: 'USD', label: '$' },
 ];
 
 export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
+  const { t } = useAdminTranslation();
+  const paymentTypeOptions = useMemo(
+    () => [
+      {
+        value: 'prepayment' as PaymentTypeOption,
+        label: t('선불'),
+      },
+      {
+        value: 'postpayment' as PaymentTypeOption,
+        label: t('후불'),
+      },
+    ],
+    [t]
+  );
+
+  const cardTerminalOptions = useMemo(
+    () => [
+      {
+        value: 'VIRTUAL' as TShopCardTerminalCode,
+        label: t('가상결제'),
+      },
+      {
+        value: 'EASY' as TShopCardTerminalCode,
+        label: t('이지카드'),
+      },
+      {
+        value: 'NO_BUTTON' as TShopCardTerminalCode,
+        label: t('결제버튼 미사용'),
+      },
+    ],
+    [t]
+  );
   const [paymentType, setPaymentType] =
     useState<PaymentTypeOption>('postpayment');
   const [vanCode, setVanCode] = useState('');
@@ -143,11 +165,11 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
 
   const vanOptions = vanCode
     ? [{ value: vanCode, label: vanCode }]
-    : [{ value: '', label: '미지정' }];
+    : [{ value: '', label: t('미지정') }];
 
   return (
     <SectionWrapper
-      title="결제 및 매출 설정"
+      title={t('결제 및 매출 설정')}
       icon={
         <PaymentsIcon
           width={32}
@@ -157,7 +179,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       }
     >
       <UIStyles.setting.ContentLayout>
-        <p>매장 결제 방식</p>
+        <p>{t('매장 결제 방식')}</p>
         <Dropdown
           options={paymentTypeOptions}
           value={paymentType}
@@ -172,7 +194,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
         <>
           <UIStyles.setting.ContentLayout>
             {/* TODO 선불 van 옵션 뭐뭐 있는 지 아직 모름 */}
-            <p>선불 VAN</p>
+            <p>{t('선불 VAN')}</p>
             <Dropdown
               options={vanOptions}
               value={vanCode}
@@ -181,7 +203,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
             {/* TODO: 선불 VAN ID 추가해주시기로 함  */}
-            <p>선불 VAN ID</p>
+            <p>{t('선불 VAN ID')}</p>
             <input
               type="text"
               value={vanId}
@@ -190,7 +212,11 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           </UIStyles.setting.ContentLayout>
 
           <UIStyles.setting.ContentLayout>
-            <p>선결제 더치페이 사용</p>
+            <p>
+              {t(
+                '선결제 더치페이 사용'
+              )}
+            </p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentDutch}
@@ -198,7 +224,11 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>선불형 후불결제 사용</p>
+            <p>
+              {t(
+                '선불형 후불결제 사용'
+              )}
+            </p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentDeferredPayment}
@@ -206,7 +236,11 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>선불형 자동초기화 사용</p>
+            <p>
+              {t(
+                '선불형 자동초기화 사용'
+              )}
+            </p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentAutoReset}
@@ -214,7 +248,11 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>현금결제 유도 팝업 사용</p>
+            <p>
+              {t(
+                '현금결제 유도 팝업 사용'
+              )}
+            </p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentCashPaymentInducement}
@@ -222,7 +260,11 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>선불형 현금결제 사용</p>
+            <p>
+              {t(
+                '선불형 현금결제 사용'
+              )}
+            </p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentCashPayment}
@@ -232,7 +274,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
         </>
       )}
       <UIStyles.setting.ContentLayout>
-        <p>카드 단말기</p>
+        <p>{t('카드 단말기')}</p>
         <Dropdown
           options={cardTerminalOptions}
           value={shopCardTerminal}
@@ -242,7 +284,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>통화설정</p>
+        <p>{t('통화설정')}</p>
         <Dropdown
           options={currencyOptions}
           value={currencySetting}
@@ -250,18 +292,22 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
         />
       </UIStyles.setting.ContentLayout>
       {/* <UIStyles.setting.ContentLayout>
-        <p>봉사료율</p>
-        <S.ServiceChargeInputWrapper>
-          <input
-            type="number"
-            value={serviceChargeRate || '0.0'}
-            onChange={(event) => setServiceChargeRate(event.target.value)}
-          />
-          <span>%</span>
-        </S.ServiceChargeInputWrapper>
-      </UIStyles.setting.ContentLayout> */}
+         <p>봉사료율</p>
+         <S.ServiceChargeInputWrapper>
+           <input
+             type="number"
+             value={serviceChargeRate || '0.0'}
+             onChange={(event) => setServiceChargeRate(event.target.value)}
+           />
+           <span>%</span>
+         </S.ServiceChargeInputWrapper>
+        </UIStyles.setting.ContentLayout> */}
       <UIStyles.setting.ContentLayout>
-        <p>매출 총 금액 노출 여부</p>
+        <p>
+          {t(
+            '매출 총 금액 노출 여부'
+          )}
+        </p>
         <ToggleButton
           size="M"
           isOn={isSalesTotalVisible}
@@ -269,7 +315,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>매출 비밀번호</p>
+        <p>{t('매출 비밀번호')}</p>
         <input
           type="password"
           maxLength={4}

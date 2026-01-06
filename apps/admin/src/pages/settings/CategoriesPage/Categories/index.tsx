@@ -1,7 +1,7 @@
+import { t } from '@/config/i18n';
 import { useState, useEffect } from 'react';
 import { Category } from '@/pages/settings/CategoriesPage/Categories/Category';
 import type { ICategory } from '@repo/api/types';
-import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { SortableList } from '@repo/feature/components';
 import { usePutUpdateCategoryIndex, queryKeys } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
@@ -9,15 +9,10 @@ import { toast } from '@repo/feature/utils';
 
 interface CategoriesProps {
   categories: ICategory[] | undefined;
-  isLoading: boolean;
   shopSeq: number;
 }
 
-export const Categories = ({
-  categories,
-  isLoading,
-  shopSeq,
-}: CategoriesProps) => {
+export const Categories = ({ categories, shopSeq }: CategoriesProps) => {
   const queryClient = useQueryClient();
   const [localCategories, setLocalCategories] = useState<ICategory[]>([]); //드래그 중 UI 반영
   const { mutateAsync: updateCategoryIndex } = usePutUpdateCategoryIndex();
@@ -28,10 +23,6 @@ export const Categories = ({
       setLocalCategories(categories);
     }
   }, [categories]);
-
-  if (isLoading) {
-    return <FullscreenLoadingSpinner />;
-  }
 
   // 드래그 앤 드롭으로 순서 변경
   const handleReorder = async (
@@ -60,19 +51,11 @@ export const Categories = ({
       index: newIndex,
     };
 
-    try {
-      await updateCategoryIndex(updateData);
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.category.list(),
-      });
-      toast('카테고리 순서가 변경되었습니다.');
-    } catch (error) {
-      // 실패 시 원래 순서로 롤백
-      if (categories) {
-        setLocalCategories(categories);
-      }
-      toast('카테고리 순서 변경에 실패했습니다.');
-    }
+    await updateCategoryIndex(updateData);
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.category.list(),
+    });
+    toast(t('카테고리 순서가 변경되었습니다.'));
   };
 
   // 실제 표시할 카테고리 (로컬 상태가 있으면 사용, 없으면 원본 사용)

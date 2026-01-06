@@ -24,11 +24,10 @@ export const CategoryMenusPage = () => {
       queryKeys.category.list()
     );
 
-  const { data: menuListResponse, isLoading: isMenuListLoading } =
-    useGetMenuList(
-      { categorySeq: isValidCategorySeq ? categorySeq : 0 },
-      { enabled: isValidCategorySeq } // 카테고리 시퀀스가 유효할 때 만 쿼리가 실행되도록 함함
-    );
+  const { data: menuListResponse } = useGetMenuList(
+    { categorySeq: isValidCategorySeq ? categorySeq : 0 },
+    { enabled: isValidCategorySeq } // 카테고리 시퀀스가 유효할 때 만 쿼리가 실행되도록 함함
+  );
 
   // categorySeq와 일치하는 카테고리 이름 찾기
   const categoryName = useMemo(() => {
@@ -64,7 +63,6 @@ export const CategoryMenusPage = () => {
       <Header onClickAddMenu={onClickAddMenu} categoryName={categoryName} />
       <Menus
         menus={menuListResponse?.data}
-        isLoading={isMenuListLoading}
         hasCategory={isValidCategorySeq}
         onClickEditMenu={handleEditMenu}
       />

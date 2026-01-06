@@ -1,8 +1,7 @@
+import { t } from '@/config/i18n';
 import { useState, useEffect } from 'react';
 import { Menu } from '@/pages/settings/CategoryMenusPage/Menus/Menu';
 import type { IMenu } from '@repo/api/types';
-import { NoContent } from '@/feature/NoContent';
-import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { SortableList } from '@repo/feature/components';
 import { usePutUpdateMenuIndex, queryKeys } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
@@ -10,12 +9,11 @@ import { toast } from '@repo/feature/utils';
 
 interface MenusProps {
   menus: IMenu[] | undefined;
-  isLoading: boolean;
   hasCategory: boolean;
   onClickEditMenu: (menu: IMenu) => void;
 }
 
-export const Menus = ({ menus, isLoading, onClickEditMenu }: MenusProps) => {
+export const Menus = ({ menus, onClickEditMenu }: MenusProps) => {
   const queryClient = useQueryClient();
   const [localMenus, setLocalMenus] = useState<IMenu[]>([]);
   const { mutateAsync: updateMenuIndex } = usePutUpdateMenuIndex();
@@ -26,10 +24,6 @@ export const Menus = ({ menus, isLoading, onClickEditMenu }: MenusProps) => {
       setLocalMenus(menus);
     }
   }, [menus]);
-
-  if (isLoading) {
-    return <FullscreenLoadingSpinner />;
-  }
 
   const handleReorder = async (
     newOrder: IMenu[],
@@ -61,13 +55,13 @@ export const Menus = ({ menus, isLoading, onClickEditMenu }: MenusProps) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.menu.list(draggedMenu.categorySeq),
       });
-      toast('메뉴 순서가 변경되었습니다.');
+      toast(t('메뉴 순서가 변경되었습니다.'));
     } catch (error) {
       // 실패 시 원래 순서로 롤백
       if (menus) {
         setLocalMenus(menus);
       }
-      toast('메뉴 순서 변경에 실패했습니다.');
+      toast(t('메뉴 순서 변경에 실패했습니다.'));
     }
   };
 

@@ -232,6 +232,7 @@ export interface ITableCurrentStatus {
  * 현재 테이블 정보 (GET /order/{shopCode} 응답)
  */
 export interface ICurrentTable {
+  tableName: string;
   tableNumber: string;
   createDate: string;
   updateDate: string;

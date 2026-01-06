@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { BasicButton } from '@repo/ui/components';
 import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
 import { formatDateTime } from '@repo/util/date';
@@ -14,7 +15,10 @@ const getPaymentLabel = (order: IOrderHistoryItem) =>
     order.paymentMethod || order.paymentList?.[0]?.paymentType
   );
 
-const sumAmounts = (payments: IPaymentHistory[], predicate: (p: IPaymentHistory) => boolean) =>
+const sumAmounts = (
+  payments: IPaymentHistory[],
+  predicate: (p: IPaymentHistory) => boolean
+) =>
   payments.reduce(
     (sum, payment) =>
       predicate(payment) ? sum + (payment.transactionAmount ?? 0) : sum,
@@ -34,13 +38,13 @@ export const PaymentSection = ({ order }: Props) => {
   return (
     <div>
       <S.TitleContainer>
-        <p>결제 내역</p>
+        <p>{t('결제 내역')}</p>
         <div>
           <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
-            재결제
+            {t('재결제')}
           </BasicButton>
           <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
-            재판매
+            {t('재판매')}
           </BasicButton>
         </div>
       </S.TitleContainer>
@@ -49,10 +53,10 @@ export const PaymentSection = ({ order }: Props) => {
         <UIStyles.setting.Table>
           <UIStyles.setting.Thead>
             <tr>
-              <th>총금액</th>
-              <th>취소금액</th>
-              <th>결제금액</th>
-              <th>결제수단</th>
+              <th>{t('총금액')}</th>
+              <th>{t('취소금액')}</th>
+              <th>{t('결제금액')}</th>
+              <th>{t('결제수단')}</th>
             </tr>
           </UIStyles.setting.Thead>
 
@@ -70,27 +74,37 @@ export const PaymentSection = ({ order }: Props) => {
         <UIStyles.setting.Table>
           <UIStyles.setting.Thead>
             <tr>
-              <th>주문번호</th>
-              <th>거래일자</th>
-              <th>거래금액</th>
-              <th>현금영수증</th>
-              <th>현금영수증 발행</th>
-              <th>거래취소</th>
+              <th>{t('주문번호')}</th>
+              <th>{t('거래일자')}</th>
+              <th>{t('거래금액')}</th>
+              <th>{t('현금영수증')}</th>
+              <th>
+                {t('현금영수증 발행')}
+              </th>
+              <th>{t('거래취소')}</th>
             </tr>
           </UIStyles.setting.Thead>
 
           <UIStyles.setting.Tbody>
             {cashPayments.length === 0 && (
               <tr>
-                <td colSpan={6}>현금 결제 내역이 없습니다.</td>
+                <td colSpan={6}>
+                  {t(
+                    '현금 결제 내역이 없습니다.'
+                  )}
+                </td>
               </tr>
             )}
             {cashPayments.map((payment, index) => (
-              <tr key={`${payment.paymentSeq ?? payment.transactionNumber ?? index}-cash`}>
+              <tr
+                key={`${payment.paymentSeq ?? payment.transactionNumber ?? index}-cash`}
+              >
                 <td>{order.orderNumber ?? '-'}</td>
                 <td>
-                  {formatDateTime(payment.transactionDate ?? '', 'YYYY-MM-DD HH:mm:ss') ||
-                    '-'}
+                  {formatDateTime(
+                    payment.transactionDate ?? '',
+                    'YYYY-MM-DD HH:mm:ss'
+                  ) || '-'}
                 </td>
                 <td>{formatCurrency(payment.transactionAmount ?? 0)}</td>
                 <td>-</td>
@@ -101,7 +115,7 @@ export const PaymentSection = ({ order }: Props) => {
                     onClick={() => {}}
                     customStyle={S.cancelButtonCss}
                   >
-                    취소
+                    {t('취소')}
                   </BasicButton>
                 </td>
               </tr>
@@ -113,62 +127,77 @@ export const PaymentSection = ({ order }: Props) => {
         <UIStyles.setting.Table>
           <UIStyles.setting.Thead>
             <tr>
-              <th>승인구분</th>
+              <th>{t('승인구분')}</th>
               <th>
-                카드번호
+                {t('카드번호')}
+
                 <br />
-                [승인번호]
+                {t('[승인번호]')}
               </th>
-              <th>총거래금액</th>
+              <th>{t('총거래금액')}</th>
               <th>
-                거래승인(취소)일시
+                {t(
+                  '거래승인(취소)일시'
+                )}
+
                 <br />
-                [거래고유번호]
+                {t('[거래고유번호]')}
               </th>
               <th>
-                매입사
+                {t('매입사')}
+
                 <br />
-                [발급사]
+                {t('[발급사]')}
               </th>
               <th>
-                공급가
+                {t('공급가')}
+
                 <br />
-                부가세
+                {t('부가세')}
               </th>
-              <th>거래취소</th>
+              <th>{t('거래취소')}</th>
             </tr>
           </UIStyles.setting.Thead>
 
           <UIStyles.setting.Tbody>
             {cardPayments.length === 0 && (
               <tr>
-                <td colSpan={7}>카드 결제 내역이 없습니다.</td>
+                <td colSpan={7}>
+                  {t(
+                    '카드 결제 내역이 없습니다.'
+                  )}
+                </td>
               </tr>
             )}
             {cardPayments.map((payment, index) => (
-              <tr key={`${payment.paymentSeq ?? payment.transactionNumber ?? index}-card`}>
-                <td>{payment.isCanceled ? '취소' : '승인'}</td>
+              <tr
+                key={`${payment.paymentSeq ?? payment.transactionNumber ?? index}-card`}
+              >
+                <td>
+                  {payment.isCanceled
+                    ? t('취소')
+                    : t('승인')}
+                </td>
                 <td>
                   {payment.cardNumber ?? '-'}
-                  <br />
-                  [{payment.approvalNumber ?? '-'}]
+                  <br />[{payment.approvalNumber ?? '-'}]
                 </td>
                 <td>{formatCurrency(payment.transactionAmount ?? 0)}</td>
                 <td>
-                  {formatDateTime(payment.transactionDate ?? '', 'YYYY-MM-DD HH:mm:ss') ||
-                    '-'}
-                  <br />
-                  [{payment.transactionNumber ?? '-'}]
+                  {formatDateTime(
+                    payment.transactionDate ?? '',
+                    'YYYY-MM-DD HH:mm:ss'
+                  ) || '-'}
+                  <br />[{payment.transactionNumber ?? '-'}]
                 </td>
                 <td>
                   {payment.acquirerCompany ?? '-'}
-                  <br />
-                  [{payment.issuerCompany ?? '-'}]
+                  <br />[{payment.issuerCompany ?? '-'}]
                 </td>
                 <td>
-                  {formatCurrency(payment.transactionAmount ?? 0)}원
-                  <br />
-                  -
+                  {formatCurrency(payment.transactionAmount ?? 0)}
+                  {t('원')}
+                  <br />-
                 </td>
                 <td>
                   <BasicButton
@@ -176,7 +205,7 @@ export const PaymentSection = ({ order }: Props) => {
                     onClick={() => {}}
                     customStyle={S.cancelButtonCss}
                   >
-                    취소
+                    {t('취소')}
                   </BasicButton>
                 </td>
               </tr>

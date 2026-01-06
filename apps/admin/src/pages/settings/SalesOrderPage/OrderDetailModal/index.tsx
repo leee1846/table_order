@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useState } from 'react';
 import { ModalBackground } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
@@ -26,13 +27,13 @@ export const OrderDetailModal = ({ order, onClose }: Props) => {
             isSelected={tab === 'order'}
             onClick={() => setTab('order')}
           >
-            주문 내역
+            {t('주문 내역')}
           </S.TabButton>
           <S.TabButton
             isSelected={tab === 'payment'}
             onClick={() => setTab('payment')}
           >
-            결제 내역
+            {t('결제 내역')}
           </S.TabButton>
         </S.Tab>
 

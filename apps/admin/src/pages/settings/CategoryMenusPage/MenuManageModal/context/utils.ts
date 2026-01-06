@@ -26,7 +26,7 @@ export const getInitialFormValues = (
   if (!menu) return { ...DEFAULT_FORM_VALUES, categorySeq };
 
   return {
-    menuName: menu.localeMenuName?.['KO'] ??  '',
+    menuName: menu.localeMenuName?.['KO'] ?? '',
     menuPrice: menu.menuPrice ?? undefined,
     menuDescription: menu.menuDescription ?? '',
     isBest: menu.isBest ?? false,

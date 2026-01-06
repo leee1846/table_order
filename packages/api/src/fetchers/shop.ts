@@ -9,6 +9,8 @@ import type {
   TGetShopThemePageResponse,
   IUpdateShopThemeMenuRequest,
   TUpdateShopThemeMenuResponse,
+  IUpdateShopThemePageRequest,
+  TUpdateShopThemePageResponse,
 } from '../types/shop';
 
 export const getShops = async (): Promise<TGetShopsResponse> => {
@@ -96,6 +98,57 @@ export const updateShopThemeMenu = async ({
   const response = await axiosInstance<TUpdateShopThemeMenuResponse>({
     method: 'PUT',
     url: ENDPOINTS.SHOP.THEME_MENU(shopCode),
+    data: formData,
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  return response.data;
+};
+
+export interface IUpdateShopThemePageParams {
+  body: IUpdateShopThemePageRequest;
+  initLightFile?: File | null;
+  initDarkFile?: File | null;
+  orderCompleteFile?: File | null;
+  initCommonFiles?: Array<File | null>;
+}
+
+export const updateShopThemePage = async ({
+  body,
+  initLightFile,
+  initDarkFile,
+  orderCompleteFile,
+  initCommonFiles,
+}: IUpdateShopThemePageParams): Promise<TUpdateShopThemePageResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const formData = new FormData();
+
+  formData.append(
+    'shopPage',
+    new Blob([JSON.stringify(body)], { type: 'application/json' })
+  );
+
+  if (initLightFile) {
+    formData.append('initLightFile', initLightFile);
+  }
+
+  if (initDarkFile) {
+    formData.append('initDarkFile', initDarkFile);
+  }
+
+  if (orderCompleteFile) {
+    formData.append('orderCompleteFile', orderCompleteFile);
+  }
+
+  initCommonFiles
+    ?.filter((file): file is File => Boolean(file))
+    .forEach((file) => {
+      formData.append('initCommonFiles', file);
+    });
+
+  const response = await axiosInstance<TUpdateShopThemePageResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.SHOP.THEME_PAGE_UPDATE,
     data: formData,
     headers: { 'Content-Type': 'multipart/form-data' },
   });

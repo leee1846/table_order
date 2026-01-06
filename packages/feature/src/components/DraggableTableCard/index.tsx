@@ -1,7 +1,7 @@
 'use client';
 
 import { useDraggable, useDroppable, CSS } from '../../hooks';
-import { useTranslation } from 'react-i18next';
+import type { i18n as I18nInstance } from 'i18next';
 import { TableWithStatus } from '../TablesPageContainer/types';
 import { TableCard } from '../TableCard';
 import * as S from './draggableTableCard.styles';
@@ -10,14 +10,14 @@ interface DraggableTableCardProps {
   table: TableWithStatus;
   activeTableNumber?: string | null;
   onClick: (table: TableWithStatus) => void;
-  useTranslation: typeof useTranslation;
+  i18nInstance?: I18nInstance;
 }
 
 export const DraggableTableCard = ({
   table,
   activeTableNumber,
   onClick,
-  useTranslation,
+  i18nInstance,
 }: DraggableTableCardProps) => {
   const tableNumber = String(table.tableNumber);
   const hasOrder = table.menuItems !== null && table.menuItems !== undefined;
@@ -66,7 +66,7 @@ export const DraggableTableCard = ({
         table={table}
         tableNumber={table.tableNumber}
         orderTime={table.orderTime ?? null}
-        useTranslation={useTranslation}
+        i18nInstance={i18nInstance}
         onClick={() => onClick(table)}
       />
     </S.DraggableCard>

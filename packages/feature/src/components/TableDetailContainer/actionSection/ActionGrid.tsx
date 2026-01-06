@@ -10,16 +10,18 @@ import {
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import type { i18n as I18nInstance } from 'i18next';
 
 const { colors } = theme;
 
-export type Action = { id: string; label: string };
-
 export type ActionGridProps = {
   onPress?: (id: string) => void;
+  i18nInstance?: I18nInstance;
 };
 
-export function ActionGrid({ onPress }: ActionGridProps) {
+export function ActionGrid({ onPress, i18nInstance }: ActionGridProps) {
+  const { t } = useTranslation('admin', { i18n: i18nInstance });
   const navigate = useNavigate();
   return (
     <Wrap>
@@ -29,15 +31,15 @@ export function ActionGrid({ onPress }: ActionGridProps) {
           style={{ color: colors.white, background: colors.black }}
         >
           <ListAltAddIcon width={24} height={24} color={colors.white} />
-          <label>메뉴 추가</label>
+          <label>{t('메뉴 추가')}</label>
         </ActionBtn>
         <ActionBtn onClick={() => onPress?.('select-cancel')}>
           <CancelIcon width={24} height={24} color={colors.grey[300]} />
-          <label>선택 취소</label>
+          <label>{t('선택 취소')}</label>
         </ActionBtn>
         <ActionBtn onClick={() => onPress?.('all-cancel')}>
           <DeleteIcon width={24} height={24} color={colors.grey[300]} />
-          <label>전체 취소</label>
+          <label>{t('전체 취소')}</label>
         </ActionBtn>
         <ActionBtn onClick={() => onPress?.('amount-change')}>
           <CurrencyExchangeIcon
@@ -45,11 +47,11 @@ export function ActionGrid({ onPress }: ActionGridProps) {
             height={24}
             color={colors.grey[300]}
           />
-          <label>금액 변경</label>
+          <label>{t('금액 변경')}</label>
         </ActionBtn>
         <ActionBtn onClick={() => onPress?.('all-discount')}>
           <DiscountIcon width={24} height={24} color={colors.grey[300]} />
-          <label>전체 할인</label>
+          <label>{t('전체 할인')}</label>
         </ActionBtn>
       </Grid>
       <ExitButtonWrap>
@@ -61,7 +63,7 @@ export function ActionGrid({ onPress }: ActionGridProps) {
           }
           onClick={() => navigate(-1)}
         >
-          <label>나가기</label>
+          <label>{t('나가기')}</label>
         </BasicButton>
       </ExitButtonWrap>
     </Wrap>

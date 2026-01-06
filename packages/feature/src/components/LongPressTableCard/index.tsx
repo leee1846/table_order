@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import type { i18n as I18nInstance } from 'i18next';
 import { useLongPress } from '../../hooks';
 import { TableWithStatus } from '../TablesPageContainer/types';
 import { TableCard } from '../TableCard';
@@ -10,7 +10,7 @@ interface LongPressTableCardProps {
   table: TableWithStatus;
   onClick: (table: TableWithStatus) => void;
   onLongPress?: (table: TableWithStatus) => void;
-  useTranslation: typeof useTranslation;
+  i18nInstance?: I18nInstance;
   longPressDelay?: number;
 }
 
@@ -18,7 +18,7 @@ export const LongPressTableCard = ({
   table,
   onClick,
   onLongPress,
-  useTranslation,
+  i18nInstance,
   longPressDelay = 500,
 }: LongPressTableCardProps) => {
   const { handlers } = useLongPress({
@@ -34,7 +34,7 @@ export const LongPressTableCard = ({
         table={table}
         tableNumber={table.tableNumber}
         orderTime={table.orderTime ?? null}
-        useTranslation={useTranslation}
+        i18nInstance={i18nInstance}
       />
     </S.LongPressCard>
   );

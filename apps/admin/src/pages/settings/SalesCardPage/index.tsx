@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n';
 import { Calender, Dropdown, Pagination } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from './salesCardPage.style';
@@ -37,31 +38,38 @@ function isCardApprovalHistoryWithPagination(
   );
 }
 
-const dateRangeOptions: { value: TDateRangePreset; label: string }[] = [
-  { value: 'today', label: '오늘' },
-  { value: 'yesterday', label: '어제' },
-  { value: 'thisWeek', label: '이번주' },
-  { value: 'thisMonth', label: '이번달' },
-  { value: '3Months', label: '3개월' },
-];
-
-const cardCompanyOptions = [
-  { value: 'all', label: '전체 카드사' },
-  { value: 'KM', label: '국민카드' },
-  { value: 'LT', label: '롯데카드' },
-  { value: 'BC', label: '비씨카드' },
-  { value: 'SS', label: '삼성카드' },
-  { value: 'SH', label: '신한카드' },
-  { value: 'HD', label: '현대카드' },
-  { value: 'NH', label: 'NH농협카드' },
-  { value: 'HN', label: '하나카드' },
-  { value: 'WR', label: '우리카드' },
-  { value: 'ETC', label: '기타카드' },
-];
-
 export const SalesCardPage = () => {
+  const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
+  const dateRangeOptions: { value: TDateRangePreset; label: string }[] =
+    useMemo(
+      () => [
+        { value: 'today', label: t('오늘') },
+        { value: 'yesterday', label: t('어제') },
+        { value: 'thisWeek', label: t('이번주') },
+        { value: 'thisMonth', label: t('이번달') },
+        { value: '3Months', label: t('3개월') },
+      ],
+      [t]
+    );
+
+  const cardCompanyOptions = useMemo(
+    () => [
+      { value: 'all', label: t('전체 카드사') },
+      { value: 'KM', label: t('국민카드') },
+      { value: 'LT', label: t('롯데카드') },
+      { value: 'BC', label: t('비씨카드') },
+      { value: 'SS', label: t('삼성카드') },
+      { value: 'SH', label: t('신한카드') },
+      { value: 'HD', label: t('현대카드') },
+      { value: 'NH', label: t('NH농협카드') },
+      { value: 'HN', label: t('하나카드') },
+      { value: 'WR', label: t('우리카드') },
+      { value: 'ETC', label: t('기타카드') },
+    ],
+    [t]
+  );
 
   const [showCalender, setShowCalender] = useState<boolean>(false);
   const [selectedPreset, setSelectedPreset] = useState<TDateRangePreset | null>(
@@ -155,9 +163,10 @@ export const SalesCardPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
-            매출 관리
+            {t('매출 관리')}
+
             <div />
-            <span>카드승인내역</span>
+            <span>{t('카드승인내역')}</span>
           </S.Title>
 
           <S.Filters>
@@ -166,6 +175,7 @@ export const SalesCardPage = () => {
               value={selectedCardCode}
               onChange={handleCardCodeChange}
             />
+
             <S.FiltersRight>
               <S.CalendarButton
                 type="button"
@@ -176,10 +186,11 @@ export const SalesCardPage = () => {
                   height={32}
                   color={theme.colors.grey[700]}
                 />
+
                 <S.CalendarText>
                   {startDate && endDate
                     ? `${startDate} ~ ${endDate}`
-                    : '날짜 선택'}
+                    : t('날짜 선택')}
                 </S.CalendarText>
               </S.CalendarButton>
               <Dropdown

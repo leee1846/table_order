@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { theme } from '@repo/ui';
 import {
@@ -213,7 +214,11 @@ export const OptionGroupManageModal = ({
 
   const handleDeleteOption = (optionSeq: number | null, index: number) => {
     if (options.length <= 1) {
-      toast('최소 1개 이상의 옵션이 필요합니다.');
+      toast(
+        t(
+          '최소 1개 이상의 옵션이 필요합니다.'
+        )
+      );
       return;
     }
 
@@ -230,7 +235,11 @@ export const OptionGroupManageModal = ({
       setOptions(updatedList);
     }
 
-    toast('옵션이 삭제되었습니다.');
+    toast(
+      t(
+        '옵션이 삭제되었습니다.'
+      )
+    );
   };
 
   const handleOptionChange = (
@@ -272,12 +281,20 @@ export const OptionGroupManageModal = ({
 
   const validateForm = (): boolean => {
     if (!optionGroupName.trim()) {
-      toast('옵션 그룹명을 입력해주세요.');
+      toast(
+        t(
+          '옵션 그룹명을 입력해주세요.'
+        )
+      );
       return false;
     }
 
     if (options.length === 0) {
-      toast('최소 1개 이상의 옵션을 추가해주세요.');
+      toast(
+        t(
+          '최소 1개 이상의 옵션을 추가해주세요.'
+        )
+      );
       return false;
     }
 
@@ -443,8 +460,8 @@ export const OptionGroupManageModal = ({
   ]);
 
   const modalTitle = isOptionGroupEditMode
-    ? '옵션 그룹 수정'
-    : '옵션 그룹 추가';
+    ? t('옵션 그룹 수정')
+    : t('옵션 그룹 추가');
 
   const handlePriceChange = (index: number, value: string) => {
     const numericValue = value.replace(/,/g, '');
@@ -470,10 +487,13 @@ export const OptionGroupManageModal = ({
         <S.Contents>
           <S.TitleContainer>
             <p>
-              옵션 그룹명 <span>*</span>
+              {t('옵션 그룹명')}
+              <span>*</span>
             </p>
             <Input
-              placeholder="옵션 그룹명을 입력해주세요."
+              placeholder={t(
+                '옵션 그룹명을 입력해주세요.'
+              )}
               customStyle={S.inputCss}
               value={optionGroupName}
               onChange={handleOptionGroupNameChange}
@@ -482,7 +502,8 @@ export const OptionGroupManageModal = ({
 
           <S.TitleContainer>
             <p>
-              개별 옵션 <span>*</span>
+              {t('개별 옵션')}
+              <span>*</span>
             </p>
             {options.length > 0 && (
               <S.OptionList>
@@ -512,28 +533,35 @@ export const OptionGroupManageModal = ({
                         }
                         customStyle={S.soldOutCss}
                       >
-                        <span>품절</span>
+                        <span>{t('품절')}</span>
                       </CheckButton>
                       <Input
-                        placeholder="옵션 이름을 입력해주세요."
+                        placeholder={t(
+                          '옵션 이름을 입력해주세요.'
+                        )}
                         customStyle={S.inputCss}
                         value={option.optionName}
                         onChange={(value) =>
                           handleOptionNameChange(index, value)
                         }
                       />
+
                       <Input
-                        placeholder="옵션 가격을 입력해주세요."
+                        placeholder={t(
+                          '옵션 가격을 입력해주세요.'
+                        )}
                         customStyle={S.inputCss}
                         value={formatCurrency(option.optionPrice)}
                         onChange={(value) => handlePriceChange(index, value)}
                       />
+
                       <Input
-                        placeholder="포스 코드"
+                        placeholder={t('포스 코드')}
                         customStyle={S.inputCss}
                         disabled
                         value={existingOptionGroup?.mappedOptionGroupCode ?? ''}
                       />
+
                       <BasicButton
                         variant="Outline_Grey_XL"
                         icon={
@@ -557,15 +585,17 @@ export const OptionGroupManageModal = ({
                 height={16}
                 color={theme.colors.grey[600]}
               />
-              <span>옵션 추가</span>
+
+              <span>{t('옵션 추가')}</span>
             </S.OptionAddButton>
           </S.TitleContainer>
 
           <S.TitleContainer>
-            <p>추가 설정</p>
+            <p>{t('추가 설정')}</p>
             <S.AdditionalsContainer>
               <div>
-                최소 수량
+                {t('최소 수량')}
+
                 <input
                   type="string"
                   inputMode="numeric"
@@ -578,10 +608,11 @@ export const OptionGroupManageModal = ({
                     });
                   }}
                 />
-                개 선택
+                {t('개 선택')}
               </div>
               <div>
-                최대 수량
+                {t('최대 수량')}
+
                 <input
                   type="string"
                   inputMode="numeric"
@@ -594,7 +625,7 @@ export const OptionGroupManageModal = ({
                     });
                   }}
                 />
-                개 선택
+                {t('개 선택')}
               </div>
               <CheckButton
                 checked={settings.isOptionQuantitySelectable}
@@ -603,7 +634,9 @@ export const OptionGroupManageModal = ({
                 }
                 customStyle={S.checkButtonCss}
               >
-                <span>옵션 수량 선택</span>
+                <span>
+                  {t('옵션 수량 선택')}
+                </span>
               </CheckButton>
 
               <CheckButton
@@ -613,22 +646,31 @@ export const OptionGroupManageModal = ({
                 }
                 customStyle={S.checkButtonCss}
               >
-                <span>중복체크 허용 (선택 옵션)</span>
+                <span>
+                  {t(
+                    '중복체크 허용 (선택 옵션)'
+                  )}
+                </span>
               </CheckButton>
             </S.AdditionalsContainer>
           </S.TitleContainer>
 
           <S.TitleContainer>
-            <p>포스 코드 연동</p>
+            <p>{t('포스 코드 연동')}</p>
             <S.CodeContainer>
               <Input
-                placeholder="옵션 그룹 코드"
+                placeholder={t(
+                  '옵션 그룹 코드'
+                )}
                 disabled
                 customStyle={S.inputCss}
                 value={existingOptionGroup?.mappedOptionGroupCode ?? ''}
               />
+
               <Input
-                placeholder="옵션 분류 코드"
+                placeholder={t(
+                  '옵션 분류 코드'
+                )}
                 disabled
                 customStyle={S.inputCss}
                 value={existingOptionGroup?.mappedHeadOptionGroupCode ?? ''}
@@ -643,7 +685,7 @@ export const OptionGroupManageModal = ({
             onClick={handleSave}
             disabled={isSaving}
           >
-            저장하기
+            {t('저장하기')}
           </BasicButton>
         </S.FloatingButtonContainer>
       </S.Container>

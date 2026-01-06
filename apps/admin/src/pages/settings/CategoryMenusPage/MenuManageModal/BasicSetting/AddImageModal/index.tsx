@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { ModalBackground } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -36,11 +37,15 @@ export const AddImageModal = ({
           <CloseIcon width={32} height={32} color={theme.colors.grey[600]} />
         </S.CloseButton>
         <S.ModalHeader>
-          <S.ModalTitle>사진 추가</S.ModalTitle>
+          <S.ModalTitle>
+            {t('사진 추가')}
+          </S.ModalTitle>
         </S.ModalHeader>
         <S.ModalBody>
           <S.OptionButton type="button" onClick={handleSelectFromGallery}>
-            갤러리에서 불러오기
+            {t(
+              '갤러리에서 불러오기'
+            )}
           </S.OptionButton>
           <S.OptionButton
             type="button"
@@ -49,7 +54,7 @@ export const AddImageModal = ({
               onClose();
             }}
           >
-            사진 촬영하기
+            {t('사진 촬영하기')}
           </S.OptionButton>
           <S.OptionButton
             type="button"
@@ -58,7 +63,9 @@ export const AddImageModal = ({
               onClose();
             }}
           >
-            기존 이미지 사용하기
+            {t(
+              '기존 이미지 사용하기'
+            )}
           </S.OptionButton>
           <S.OptionButton
             type="button"
@@ -67,9 +74,15 @@ export const AddImageModal = ({
               onClose();
             }}
           >
-            추천 이미지 사용하기
+            {t(
+              '추천 이미지 사용하기'
+            )}
           </S.OptionButton>
-          <S.DescriptionText>다양한 종류의 추천 이미지 제공</S.DescriptionText>
+          <S.DescriptionText>
+            {t(
+              '다양한 종류의 추천 이미지 제공'
+            )}
+          </S.DescriptionText>
         </S.ModalBody>
       </S.ModalContainer>
     </ModalBackground>

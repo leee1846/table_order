@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { i18n as I18nInstance } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { ModalBackground, BasicButton, NumberInput } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -41,6 +43,7 @@ export const GuestCountDialog = ({
   );
 
   const useKidsCustomerCount = shopSetting?.useKidsCustomerCount ?? false;
+  const { t } = useTranslation();
 
   // 모달이 열릴 때마다 초기값으로 리셋
   useEffect(() => {
@@ -60,7 +63,7 @@ export const GuestCountDialog = ({
   /** 확인 버튼 핸들러 - 입력값 전달 */
   const handleConfirm = () => {
     if (isButtonDisabled) {
-      toast('성인 인원 수를 입력해주세요.');
+      toast(t('성인 인원 수를 입력해주세요.'));
       return;
     }
     onConfirm(
@@ -81,20 +84,20 @@ export const GuestCountDialog = ({
   return (
     <ModalBackground position="center" onClick={handleClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
-        <S.CloseButton onClick={handleClose} aria-label="닫기">
+        <S.CloseButton onClick={handleClose} aria-label={t('닫기')}>
           <CloseIcon width={32} height={32} color={colors.grey[700]} />
         </S.CloseButton>
 
         <S.ContentWrapper>
           <S.Header>
-            <S.Title>입장하는 인원 수를 알려주세요</S.Title>
+            <S.Title>{t('입장하는 인원 수를 알려주세요')}</S.Title>
           </S.Header>
 
           {useKidsCustomerCount && (
             <>
               <S.CounterSection>
                 <S.Label>
-                  <S.LabelText>성인</S.LabelText>
+                  <S.LabelText>{t('성인')}</S.LabelText>
                 </S.Label>
                 <S.NumberInputWrapper>
                   <NumberInput
@@ -108,7 +111,7 @@ export const GuestCountDialog = ({
 
               <S.CounterSection>
                 <S.Label>
-                  <S.LabelText>아동</S.LabelText>
+                  <S.LabelText>{t('아동')}</S.LabelText>
                 </S.Label>
                 <S.NumberInputWrapper>
                   <NumberInput
@@ -125,7 +128,7 @@ export const GuestCountDialog = ({
           {!useKidsCustomerCount && (
             <S.CounterSection>
               <S.Label>
-                <S.LabelText>인원 수</S.LabelText>
+                <S.LabelText>{t('인원 수')}</S.LabelText>
               </S.Label>
               <S.NumberInputWrapper>
                 <NumberInput
@@ -144,7 +147,7 @@ export const GuestCountDialog = ({
               onClick={handleConfirm}
               fullWidth
             >
-              완료
+              {t('완료')}
             </BasicButton>
           </S.Footer>
         </S.ContentWrapper>

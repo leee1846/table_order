@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n';
+import { useMemo, useState } from 'react';
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import {
@@ -23,15 +24,18 @@ interface Props {
   onClose: () => void;
 }
 
-const languageOptions: { value: TShopLanguage; label: string }[] = [
-  { value: 'KO', label: '한국어' },
-  { value: 'EN', label: '영어' },
-  { value: 'JP', label: '일본어' },
-  { value: 'CH', label: '중국어' },
-  { value: 'RU', label: '러시아어' },
-];
-
 const MenuManageModalContent = () => {
+  const { t } = useAdminTranslation();
+  const languageOptions: { value: TShopLanguage; label: string }[] = useMemo(
+    () => [
+      { value: 'KO', label: t('한국어') },
+      { value: 'EN', label: t('영어') },
+      { value: 'JP', label: t('일본어') },
+      { value: 'CH', label: t('중국어') },
+      { value: 'RU', label: t('러시아어') },
+    ],
+    [t]
+  );
   const {
     mode,
     menu,
@@ -43,7 +47,7 @@ const MenuManageModalContent = () => {
   } = useMenuManageModal();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const modalTitle = mode === 'create' ? '메뉴 추가' : '메뉴 수정';
+  const modalTitle = mode === 'create' ? t('메뉴 추가') : t('메뉴 수정');
   const selectedLanguageCode =
     (formValues.selectedLanguageCode as TShopLanguage) || 'KO';
 
@@ -59,7 +63,7 @@ const MenuManageModalContent = () => {
     <S.Container>
       <S.Header>
         <S.Titles>
-          <p>메뉴 관리</p>
+          <p>{t('메뉴 관리')}</p>
           <span />
           <div>
             {mode === 'edit' && (
@@ -90,6 +94,7 @@ const MenuManageModalContent = () => {
                   height={20}
                   color={theme.colors.grey[600]}
                 />
+
                 {selectedLanguage.label}
               </S.SelectedLanguageText>
               <S.LanguageTabs>
@@ -150,7 +155,7 @@ const MenuManageModalContent = () => {
         onClick={handleSubmit}
         disabled={isSaving}
       >
-        저장
+        {t('저장')}
       </BasicButton>
     </S.Container>
   );

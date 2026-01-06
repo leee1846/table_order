@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import { theme } from '@repo/ui';
@@ -39,9 +40,11 @@ export const Table = () => {
 
   const onClickCancel = () => {
     openDualActionDialog({
-      title: '정말 취소하시겠습니까?',
-      primaryText: '확인',
-      secondaryText: '취소',
+      title: t(
+        '정말 취소하시겠습니까?'
+      ),
+      primaryText: t('확인'),
+      secondaryText: t('취소'),
       onConfirm: () => {
         // TODO: 취소 로직 추가
       },
@@ -52,20 +55,22 @@ export const Table = () => {
     <UIStyles.setting.Table>
       <UIStyles.setting.Thead>
         <tr>
-          <th>주문번호</th>
-          <th>거래일자</th>
-          <th>거래금액</th>
+          <th>{t('주문번호')}</th>
+          <th>{t('거래일자')}</th>
+          <th>{t('거래금액')}</th>
           <th>
-            현금영수증
+            {t('현금영수증')}
+
             <br />
-            발행여부
+            {t('발행여부')}
           </th>
           <th>
-            현금영수증
+            {t('현금영수증')}
+
             <br />
-            발행
+            {t('발행')}
           </th>
-          <th>거래 취소</th>
+          <th>{t('거래 취소')}</th>
         </tr>
       </UIStyles.setting.Thead>
       <UIStyles.setting.Tbody>
@@ -86,7 +91,7 @@ export const Table = () => {
                 onClick={onClickCancel}
                 customStyle={S.cancelButtonCss}
               >
-                취소
+                {t('취소')}
               </BasicButton>
             </td>
           </tr>

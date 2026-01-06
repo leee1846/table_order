@@ -4,7 +4,8 @@ export interface OptionGroupValidationResult {
   optionGroupSeq: number;
   optionGroupName: string;
   isValid: boolean;
-  message?: string;
+  messageKey?: string;
+  messageOptions?: Record<string, number>;
   selectedCount: number;
   minRequired: number;
   maxAllowed: number;
@@ -51,7 +52,7 @@ export const validateOptionGroups = (
           optionGroupSeq: optionGroup.optionGroupSeq,
           optionGroupName: optionGroup.optionGroupName,
           isValid: false,
-          message: '선택 가능한 옵션이 없습니다.',
+          messageKey: '선택 가능한 옵션이 없습니다.',
           selectedCount,
           minRequired,
           maxAllowed,
@@ -63,7 +64,8 @@ export const validateOptionGroups = (
           optionGroupSeq: optionGroup.optionGroupSeq,
           optionGroupName: optionGroup.optionGroupName,
           isValid: false,
-          message: `${minRequired}개 이상 선택해주세요.`,
+          messageKey: '최소 {{count}}개 이상 선택해주세요.',
+          messageOptions: { count: minRequired },
           selectedCount,
           minRequired,
           maxAllowed,
@@ -75,7 +77,8 @@ export const validateOptionGroups = (
           optionGroupSeq: optionGroup.optionGroupSeq,
           optionGroupName: optionGroup.optionGroupName,
           isValid: false,
-          message: `최대 ${maxAllowed}개까지 선택 가능합니다.`,
+          messageKey: '최대 {{count}}개까지 선택 가능합니다.',
+          messageOptions: { count: maxAllowed },
           selectedCount,
           minRequired,
           maxAllowed,

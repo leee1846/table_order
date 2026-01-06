@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useState, useEffect } from 'react';
 import { ModalBackground, Input, BasicButton } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
@@ -37,7 +38,11 @@ export const EditTableDialog = ({
 
   const handleSubmit = async () => {
     if (!tableName.trim()) {
-      toast('테이블 이름을 입력해주세요.');
+      toast(
+        t(
+          '테이블 이름을 입력해주세요.'
+        )
+      );
       return;
     }
 
@@ -49,7 +54,11 @@ export const EditTableDialog = ({
         tablePositionY: table.tablePositionY,
       });
 
-      toast('테이블이 수정되었습니다.');
+      toast(
+        t(
+          '테이블이 수정되었습니다.'
+        )
+      );
       queryClient.invalidateQueries({
         queryKey: queryKeys.table.groupList(shopCode),
       });
@@ -60,8 +69,15 @@ export const EditTableDialog = ({
 
       onClose();
     } catch (error) {
-      toast('테이블 수정 중 오류가 발생했습니다.');
-      console.error('테이블 수정 오류:', error);
+      toast(
+        t(
+          '테이블 수정 중 오류가 발생했습니다.'
+        )
+      );
+      console.error(
+        t('테이블 수정 오류:'),
+        error
+      );
     }
   };
 
@@ -81,11 +97,13 @@ export const EditTableDialog = ({
           <CloseIcon width={32} height={32} color={colors.grey[600]} />
         </S.CloseButton>
         <S.ModalHeader>
-          <S.ModalTitle>테이블 수정</S.ModalTitle>
+          <S.ModalTitle>
+            {t('테이블 수정')}
+          </S.ModalTitle>
         </S.ModalHeader>
         <S.ModalBody>
           <S.InputWrapper>
-            <S.Label>테이블 이름</S.Label>
+            <S.Label>{t('테이블 이름')}</S.Label>
             <Input
               value={tableName}
               onChange={setTableName}
@@ -93,14 +111,16 @@ export const EditTableDialog = ({
             />
           </S.InputWrapper>
           <S.InputWrapper>
-            <S.Label>테이블 ID</S.Label>
+            <S.Label>{t('테이블 ID')}</S.Label>
             <Input
               value={table.tableSeq.toString()}
               onChange={() => {
                 // 테이블 ID는 수정 불가
               }}
               disabled
-              errorMessage="테이블 ID는 자동 생성되며. 임의 수정이 불가능해요."
+              errorMessage={t(
+                '테이블 ID는 자동 생성되며. 임의 수정이 불가능해요.'
+              )}
             />
           </S.InputWrapper>
         </S.ModalBody>
@@ -110,7 +130,7 @@ export const EditTableDialog = ({
             onClick={handleSubmit}
             customStyle={S.SubmitButton}
           >
-            저장하기
+            {t('저장하기')}
           </BasicButton>
         </S.ModalFooter>
       </S.ModalContainer>

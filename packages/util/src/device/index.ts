@@ -1,8 +1,8 @@
 /**
- * 기기 타입을 한글 라벨로 변환합니다.
+ * 기기 타입을 i18n 키(한국어)로 변환합니다.
  *
  * @param deviceType - 기기 타입 ('MENU' | 'ORDER_POS' | 'POS_APP')
- * @returns 한글 라벨
+ * @returns 한국어 키 문자열 (번역 파일에서 같은 키를 사용)
  *
  * @example
  * ```ts

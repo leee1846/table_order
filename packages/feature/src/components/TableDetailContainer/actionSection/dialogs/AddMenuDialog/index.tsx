@@ -5,6 +5,7 @@ import type {
   IOption,
   TOrderType,
 } from '@repo/api/types';
+import type { i18n as I18nInstance } from 'i18next';
 import { toast } from '@repo/feature/utils';
 import { MenuSelectionView } from './MenuSelectionView';
 import { OptionSelectionView } from './OptionSelectionView';
@@ -12,6 +13,7 @@ import { validateOptionGroups } from './optionValidation';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostTableOrder } from '@repo/api/queries';
 import { calculateTotalAmount } from '@repo/util/calculation';
+import { useTranslation } from 'react-i18next';
 
 export interface SelectedOption extends IOption {
   selectedQuantity: number;
@@ -35,12 +37,13 @@ interface AddMenuDialogProps {
   adultCount?: number;
   childCount?: number;
   orderType?: TOrderType;
+  i18nInstance?: I18nInstance;
 }
 
 export const AddMenuDialog = ({
   isOpen,
   onClose,
-  tableName = '테이블 이름',
+  tableName,
   categories = [],
   isCategoriesLoading = false,
   shopCode,
@@ -49,7 +52,9 @@ export const AddMenuDialog = ({
   adultCount = 1,
   childCount = 0,
   orderType,
+  i18nInstance,
 }: AddMenuDialogProps) => {
+  const { t } = useTranslation('admin', { i18n: i18nInstance });
   const queryClient = useQueryClient();
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const [viewMode, setViewMode] = useState<'menu' | 'option'>('menu');
@@ -176,10 +181,10 @@ export const AddMenuDialog = ({
       const invalidResult = validation.results.find(
         (result) => !result.isValid
       );
-      if (invalidResult?.message) {
-        toast(invalidResult.message);
+      if (invalidResult?.messageKey) {
+        toast(t(invalidResult.messageKey, invalidResult.messageOptions));
       } else {
-        toast('옵션 선택 조건을 확인해주세요.');
+        toast(t('옵션 선택 조건을 확인해주세요.'));
       }
       return;
     }
@@ -281,7 +286,7 @@ export const AddMenuDialog = ({
 
     // shopCode와 tableNumber가 없으면 API 호출 불가
     if (!shopCode || !tableNumber) {
-      toast('테이블 정보가 없어요. 다시 시도해주세요.');
+      toast(t('테이블 정보가 없어요. 다시 시도해주세요.'));
       return;
     }
 
@@ -314,7 +319,7 @@ export const AddMenuDialog = ({
     await queryClient.invalidateQueries({
       queryKey: queryKeys.orders.tableOrderHistories(shopCode, tableNumber),
     });
-    toast('메뉴를 추가했어요.');
+    toast(t('메뉴를 추가했어요.'));
     handleClose();
   };
 
@@ -336,11 +341,12 @@ export const AddMenuDialog = ({
   if (viewMode === 'menu') {
     return (
       <MenuSelectionView
+        i18nInstance={i18nInstance}
         categories={menuboardCategories}
         isLoading={isCategoriesLoading}
         selectedCategory={selectedCategory}
         selectedMenus={selectedMenus}
-        tableName={tableName}
+        tableName={tableName ?? t('테이블 이름')}
         onCategoryChange={setSelectedCategory}
         onMenuClick={handleMenuClick}
         onAdd={handleAdd}
@@ -355,6 +361,7 @@ export const AddMenuDialog = ({
   if (viewMode === 'option' && selectedMenu) {
     return (
       <OptionSelectionView
+        i18nInstance={i18nInstance}
         selectedMenu={selectedMenu}
         selectedOptions={selectedOptions}
         menuQuantity={menuQuantity}

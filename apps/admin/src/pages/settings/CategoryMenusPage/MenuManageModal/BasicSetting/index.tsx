@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useId, useCallback } from 'react';
 import { CheckButton, Input } from '@repo/ui/components';
 import {
@@ -71,10 +72,11 @@ export const BasicSetting = () => {
         <S.HorizontalLayout>
           <S.VerticalLayout>
             <S.Title>
-              메뉴명 <span>*</span>
+              {t('메뉴명')}
+              <span>*</span>
             </S.Title>
             <Input
-              placeholder="메뉴명을 입력해 주세요."
+              placeholder={t('메뉴명을 입력해 주세요.')}
               customStyle={S.inputCss}
               value={formValues.menuName ?? ''}
               onChange={handleMenuNameChange}
@@ -82,7 +84,7 @@ export const BasicSetting = () => {
           </S.VerticalLayout>
 
           <S.VerticalLayout>
-            <S.Title>뱃지 선택</S.Title>
+            <S.Title>{t('뱃지 선택')}</S.Title>
             <S.BadgeContainer gap={10}>
               <S.BadgeButton
                 type="button"
@@ -92,7 +94,7 @@ export const BasicSetting = () => {
               >
                 <img
                   src={formValues.isBest ? bestOnIcon : bestOffIcon}
-                  alt="베스트"
+                  alt={t('베스트')}
                 />
               </S.BadgeButton>
               <S.BadgeButton
@@ -103,7 +105,7 @@ export const BasicSetting = () => {
               >
                 <img
                   src={formValues.isNew ? newOnIcon : newOffIcon}
-                  alt="신규"
+                  alt={t('신규')}
                 />
               </S.BadgeButton>
             </S.BadgeContainer>
@@ -114,19 +116,20 @@ export const BasicSetting = () => {
           <S.VerticalLayout>
             <S.PriceTitleContainer>
               <S.Title>
-                가격 <span>*</span>
+                {t('가격')}
+                <span>*</span>
               </S.Title>
-              <CheckButton
+              {/* <CheckButton
                 checked={formValues.isTaxFree ?? false}
                 onChange={(checked) => updateFormValues({ isTaxFree: checked })}
                 customStyle={S.TaxFreeCss}
                 disabled={true}
               >
-                <span>면세</span>
-              </CheckButton>
+                <span>{t('면세')}</span>
+              </CheckButton> */}
             </S.PriceTitleContainer>
             <Input
-              placeholder="가격을 입력해 주세요."
+              placeholder={t('가격을 입력해 주세요.')}
               customStyle={S.inputCss}
               value={
                 formValues.menuPrice ? formatCurrency(formValues.menuPrice) : ''
@@ -136,7 +139,7 @@ export const BasicSetting = () => {
           </S.VerticalLayout>
 
           <S.VerticalLayout>
-            <S.Title>매운맛정도</S.Title>
+            <S.Title>{t('매운맛정도')}</S.Title>
             <S.BadgeContainer>
               {SPICE_LEVELS.map((level) => (
                 <S.ChiliLevelButton
@@ -157,11 +160,11 @@ export const BasicSetting = () => {
         </S.HorizontalLayout>
 
         <S.VerticalLayout flex>
-          <S.Title>메뉴 설명</S.Title>
+          <S.Title>{t('메뉴 설명')}</S.Title>
           <S.Textarea
             id={`menu-description-${descriptionInputId}`}
             value={formValues.menuDescription ?? ''}
-            placeholder="메뉴 설명을 입력해 주세요."
+            placeholder={t('메뉴 설명을 입력해 주세요.')}
             onChange={handleMenuDescriptionChange}
             maxLength={MAX_DESCRIPTION_LENGTH}
           />

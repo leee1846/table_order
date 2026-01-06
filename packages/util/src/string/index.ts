@@ -101,10 +101,10 @@ export const normalizeNumberString = (value: string): string => {
 };
 
 /**
- * 결제 수단 코드를 사용자 친화적인 라벨로 변환합니다.
+ * 결제 수단 코드를 i18n 키로 변환합니다. (키는 한국어 문자열)
  *
  * @param method - 결제 수단 코드 (예: 'CARD', 'CASH', 'CANCELED_ALL')
- * @returns 한글 라벨 또는 원본 값
+ * @returns 한국어 키 문자열 (번역 파일에서 같은 키를 사용)
  */
 export const formatPaymentMethodLabel = (method?: string | null): string => {
   if (!method) {
@@ -120,6 +120,6 @@ export const formatPaymentMethodLabel = (method?: string | null): string => {
     case 'CANCELED_ALL':
       return '전체 취소';
     default:
-      return method;
+      return '기타';
   }
 };

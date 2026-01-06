@@ -1,4 +1,5 @@
-﻿import { AddIcon, HomeFilledIcon } from '@repo/ui/icons';
+import { t } from '@/config/i18n';
+import { AddIcon, HomeFilledIcon } from '@repo/ui/icons';
 import * as S from './sidebar.styles';
 import { theme } from '@repo/ui';
 import { useNavigate } from 'react-router-dom';
@@ -54,10 +55,12 @@ export const Sidebar = ({
 
   const handleDelete = async (group: ITableGroup) => {
     openDualActionDialog({
-      title: '정말 그룹을 삭제할까요?',
+      title: t(
+        '정말 그룹을 삭제할까요?'
+      ),
       content: `그룹 명 : ${group.tableGroupName}`,
-      primaryText: '확인',
-      secondaryText: '취소',
+      primaryText: t('확인'),
+      secondaryText: t('취소'),
       size: 'xsmall',
       onConfirm: () => {
         deleteTableGroup(
@@ -70,11 +73,19 @@ export const Sidebar = ({
               await queryClient.invalidateQueries({
                 queryKey: queryKeys.table.groupList(shopCode ?? ''),
               });
-              toast('테이블 그룹이 삭제되었습니다.');
+              toast(
+                t(
+                  '테이블 그룹이 삭제되었습니다.'
+                )
+              );
               setEditingGroupId(null);
             },
             onError: () => {
-              toast('테이블 그룹 삭제에 실패했습니다.');
+              toast(
+                t(
+                  '테이블 그룹 삭제에 실패했습니다.'
+                )
+              );
             },
           }
         );
@@ -200,11 +211,11 @@ export const Sidebar = ({
     <S.Sidebar>
       <S.SidebarLogo>
         {/* <img
-          src={logoImage}
-          alt="캡스 스마트오더 로고"
-          style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
-        /> */}
-        캡스 스마트오더
+           src={logoImage}
+           alt="캡스 스마트오더 로고"
+           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+          /> */}
+        {t('캡스 스마트오더')}
       </S.SidebarLogo>
 
       <S.TableGroupListWrapper>
@@ -234,7 +245,7 @@ export const Sidebar = ({
           }}
         >
           <AddIcon width={20} height={20} color={colors.grey[200]} />
-          <span>그룹 추가</span>
+          <span>{t('그룹 추가')}</span>
         </S.AddGroupButton>
       </S.AddGroupButtonContainer>
 
@@ -243,7 +254,7 @@ export const Sidebar = ({
         onClick={() => navigate(ROUTES.TABLES.generate())}
       >
         <HomeFilledIcon width={24} height={24} color={colors.grey[700]} />
-        <span>메인 홈</span>
+        <span>{t('메인 홈')}</span>
       </S.FloatingHomeButton>
 
       <AddTableGroupDialog

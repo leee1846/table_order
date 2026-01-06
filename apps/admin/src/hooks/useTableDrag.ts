@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useState, useCallback } from 'react';
 import { type DragEndEvent, type DragStartEvent } from '@repo/feature/hooks';
 import {
@@ -86,10 +87,16 @@ export const useTableDrag = ({
             queryClient.invalidateQueries({
               queryKey: queryKeys.orders.currentTableList(shopCode),
             });
-            toast('주문을 이동했어요.');
+            toast(
+              t('주문을 이동했어요.')
+            );
           },
           onError: () => {
-            toast('테이블 이동에 실패했어요. 다시 시도해주세요.');
+            toast(
+              t(
+                '테이블 이동에 실패했어요. 다시 시도해주세요.'
+              )
+            );
           },
         });
         return;
@@ -100,20 +107,20 @@ export const useTableDrag = ({
           queryClient.invalidateQueries({
             queryKey: queryKeys.orders.currentTableList(shopCode),
           });
-          toast('주문을 합석했어요.');
+          toast(
+            t('주문을 합석했어요.')
+          );
         },
         onError: () => {
-          toast('주문 합석에 실패했어요. 다시 시도해주세요.');
+          toast(
+            t(
+              '주문 합석에 실패했어요. 다시 시도해주세요.'
+            )
+          );
         },
       });
     },
-    [
-      moveOrderMutation,
-      queryClient,
-      shareOrderMutation,
-      shopCode,
-      tableMap,
-    ]
+    [moveOrderMutation, queryClient, shareOrderMutation, shopCode, tableMap]
   );
 
   return {

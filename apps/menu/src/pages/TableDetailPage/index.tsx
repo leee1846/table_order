@@ -3,6 +3,7 @@ import { TableDetailContainer } from '@repo/feature/components';
 import type { TOrderType } from '@repo/api/types';
 import { useShopData } from '@/hooks/useShopData';
 import * as S from '@/pages/TableDetailPage/tableDetailPage.style';
+import adminI18n from '@/config/i18n/admin.i18n';
 
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
@@ -23,6 +24,7 @@ export const TableDetailPage = () => {
         shopCode={shopCode}
         tableNumber={tableNum}
         orderType={orderType}
+        i18nInstance={adminI18n}
       />
     </S.Container>
   );

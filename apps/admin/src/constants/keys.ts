@@ -5,6 +5,8 @@ export const STORAGE_KEYS = {
   SHOP_DETAIL: 'shop-detail',
   /** 객수 data 키 */
   CUSTOMER_COUNT: 'customer-count',
+  /** admin 다국어 코드 키 */
+  ADMIN_I18N_LANGUAGE: 'adminI18Lng',
 } as const;
 
 export const SSE_KEYS = {

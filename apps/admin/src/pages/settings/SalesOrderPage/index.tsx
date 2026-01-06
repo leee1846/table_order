@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n';
 import { Calender, Dropdown, Pagination } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -18,17 +19,21 @@ import * as S from './salesOrderPage.style';
 
 const PAGE_SIZE = 10;
 
-const ORDER_STATUS_OPTIONS: { value: TDateRangePreset; label: string }[] = [
-  { value: 'today', label: '오늘' },
-  { value: 'yesterday', label: '어제' },
-  { value: 'thisWeek', label: '이번주' },
-  { value: 'thisMonth', label: '이번달' },
-  { value: '3Months', label: '3개월' },
-];
-
 export const SalesOrderPage = () => {
+  const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
+  const ORDER_STATUS_OPTIONS: { value: TDateRangePreset; label: string }[] =
+    useMemo(
+      () => [
+        { value: 'today', label: t('오늘') },
+        { value: 'yesterday', label: t('어제') },
+        { value: 'thisWeek', label: t('이번주') },
+        { value: 'thisMonth', label: t('이번달') },
+        { value: '3Months', label: t('3개월') },
+      ],
+      [t]
+    );
 
   const [showCalender, setShowCalender] = useState<boolean>(false);
   const [selectedPreset, setSelectedPreset] = useState<TDateRangePreset | null>(
@@ -97,9 +102,10 @@ export const SalesOrderPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
-            매출 관리
+            {t('매출 관리')}
+
             <div />
-            <span>주문내역</span>
+            <span>{t('주문내역')}</span>
           </S.Title>
 
           <S.Filters>
@@ -112,10 +118,11 @@ export const SalesOrderPage = () => {
                 height={32}
                 color={theme.colors.grey[700]}
               />
+
               <S.CalendarText>
                 {startDate && endDate
                   ? `${startDate} ~ ${endDate}`
-                  : '날짜 선택'}
+                  : t('날짜 선택')}
               </S.CalendarText>
             </S.CalendarButton>
             <Dropdown
@@ -135,16 +142,28 @@ export const SalesOrderPage = () => {
         <UIStyles.setting.Footer>
           <UIStyles.setting.FooterContents>
             <p>
-              <span>총 매출:</span> {formatCurrency(totalSalesAmount)}{' '}
-              <span>{totalSalesCount}건</span>
+              <span>{t('총 매출:')}</span>{' '}
+              {formatCurrency(totalSalesAmount)}{' '}
+              <span>
+                {totalSalesCount}
+                {t('건')}
+              </span>
             </p>
             <p>
-              <span>결제 전 매출:</span> {formatCurrency(prePaymentAmount)}{' '}
-              <span>{prePaymentCount}건</span>
+              <span>{t('결제 전 매출:')}</span>{' '}
+              {formatCurrency(prePaymentAmount)}{' '}
+              <span>
+                {prePaymentCount}
+                {t('건')}
+              </span>
             </p>
             <p>
-              <span>총 예상 매출:</span> {formatCurrency(estimatedTotalAmount)}{' '}
-              <span>{estimatedTotalCount}건</span>
+              <span>{t('총 예상 매출:')}</span>{' '}
+              {formatCurrency(estimatedTotalAmount)}{' '}
+              <span>
+                {estimatedTotalCount}
+                {t('건')}
+              </span>
             </p>
           </UIStyles.setting.FooterContents>
           <Pagination

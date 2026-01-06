@@ -1,5 +1,4 @@
 import {
-  useTranslation,
   TablesPageContainer,
   TableCardsArea,
   TableCardsGrid,
@@ -15,13 +14,14 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes.ts';
 import { usePostOrderGroup, queryKeys } from '@repo/api/queries';
 import { useAuth } from '@/hooks/useAuth';
-import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useTableDrag } from '@/hooks/useTableDrag';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useSSE } from '@repo/feature/hooks';
 import type { ISseMessage } from '@repo/api/types';
 import { SSE_KEYS } from '@/constants/keys';
+import { useDeviceTheftDetector } from '@/hooks/useDeviceTheftDetector';
+import adminI18n from '@/config/i18n';
 
 export const TablesPage = () => {
   const { shopCode } = useAuth();
@@ -41,28 +41,32 @@ export const TablesPage = () => {
   );
 
   // 테이블 데이터 조회 (공통 훅 사용)
-  const {
-    tables,
-    tableGroupListResponse,
-    currentTableListResponse,
-    isLoading: isLoadingTables,
-  } = useTablesData({
-    shopCode: shopCode ?? '',
-    selectedTableGroupSeq,
-  });
+  const { tables, tableGroupListResponse, currentTableListResponse } =
+    useTablesData({
+      shopCode: shopCode ?? '',
+      selectedTableGroupSeq,
+    });
 
   // SSE 데이터 구독
   const { data } = useSSE.useSSEData<ISseMessage>(SSE_KEYS.MAIN_CONNECTION);
 
+  // 기기 도난 감지 (커스텀 훅)
+  useDeviceTheftDetector();
+
   // ORDER 타입 SSE를 받으면 매장 전체 주문 정보 재조회 (첫화면)
   useEffect(() => {
-    // console.log('SSE', data);
-
-    // ORDER 타입 SSE를 받으면 매장 전체 주문 정보 재조회 (첫화면)
     if (data?.type === 'ORDER' && shopCode) {
-      console.log('ORDER', data, '안해?');
       queryClient.invalidateQueries({
         queryKey: queryKeys.orders.currentTableList(shopCode),
+      });
+    }
+  }, [data, shopCode, queryClient]);
+
+  // DEVICE 타입 SSE를 받으면 테이블 그룹 리스트 재조회
+  useEffect(() => {
+    if (data?.type === 'DEVICE' && shopCode) {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.table.groupList(shopCode),
       });
     }
   }, [data, shopCode, queryClient]);
@@ -193,8 +197,8 @@ export const TablesPage = () => {
     setSelectedTable(null);
   }, []);
 
-  if (isLoadingTables || !shopCode) {
-    return <FullscreenLoadingSpinner />;
+  if (!shopCode) {
+    return null;
   }
 
   return (
@@ -213,7 +217,7 @@ export const TablesPage = () => {
                 table={table}
                 activeTableNumber={activeTableNumber}
                 onClick={handleTableClick}
-                useTranslation={useTranslation}
+                i18nInstance={adminI18n}
               />
             ))}
           </TableCardsGrid>

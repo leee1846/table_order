@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useEffect, useMemo, useState } from 'react';
 import { useGetTableGroupList } from '@repo/api/queries';
 import type {
@@ -140,7 +141,9 @@ export const CategoryTableAssignModal = ({
               onClick={() => handleToggleTable(table.tableNumber)}
             >
               <S.TableNumber>{tableName}</S.TableNumber>
-              <S.TableStatus>{!isSelected ? '선택됨' : ''}</S.TableStatus>
+              <S.TableStatus>
+                {!isSelected ? t('선택됨') : ''}
+              </S.TableStatus>
             </S.TableCard>
           );
         })}
@@ -151,27 +154,27 @@ export const CategoryTableAssignModal = ({
   return (
     <S.Container>
       {/* <S.Header>
-        <S.Title>[{categoryName}] 테이블 지정</S.Title>
-        <S.CountBadge>
-          {selectedTableNumbers.size}개 선택됨 · 총 {allTables.length}개
-        </S.CountBadge>
-      </S.Header> */}
+         <S.Title>[{categoryName}] 테이블 지정</S.Title>
+         <S.CountBadge>
+           {selectedTableNumbers.size}개 선택됨 · 총 {allTables.length}개
+         </S.CountBadge>
+        </S.Header> */}
 
       <S.Layout>
         <S.TableArea>{renderTableGrid()}</S.TableArea>
 
         <S.ActionBar>
           <button type="button" onClick={handleClearAll}>
-            전체선택
+            {t('전체선택')}
           </button>
           <button type="button" onClick={handleSelectAll}>
-            전체해제
+            {t('전체해제')}
           </button>
           <button type="button" onClick={handleSave}>
-            저장하기
+            {t('저장하기')}
           </button>
           <button type="button" onClick={onClose}>
-            나가기
+            {t('나가기')}
           </button>
         </S.ActionBar>
       </S.Layout>
@@ -179,11 +182,11 @@ export const CategoryTableAssignModal = ({
       <SidebarContainer>
         <Logo>
           {/* <img
-          src={logoImage}
-          alt="캡스 스마트오더 로고"
-          style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
-        /> */}
-          캡스 스마트오더
+            src={logoImage}
+            alt="캡스 스마트오더 로고"
+            style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+            /> */}
+          {t('캡스 스마트오더')}
         </Logo>
 
         <MenuList>

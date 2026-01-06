@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n';
+import { useMemo, useState } from 'react';
 import {
   SidebarContainer,
   Logo,
@@ -8,11 +9,9 @@ import {
   ActionButtons,
   ActionButton,
 } from '@repo/ui/components';
-import {
-  OrderListDialog,
-  SalesListDialog,
-  DeviceListDialog,
-} from '@repo/feature/components';
+import { OrderListDialog } from '@/feature/dialogs/OrderListDialog';
+import { SalesListDialog } from '@/feature/dialogs/SalesListDialog';
+import { DeviceListDialog } from '@/feature/dialogs/DeviceListDialog';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { toast } from '@repo/feature/utils';
@@ -24,13 +23,6 @@ type MenuItem = {
   id: string;
   label: string;
 };
-
-const MENU_ITEMS: MenuItem[] = [
-  { id: 'order', label: '주문' },
-  { id: 'sales', label: '매출' },
-  { id: 'device', label: '기기' },
-  { id: 'management', label: '관리' },
-];
 
 interface SidebarProps {
   currentTableList?: ICurrentTable[];
@@ -44,6 +36,16 @@ export const Sidebar = ({
   selectedTableGroupSeq,
   onTableGroupSelect,
 }: SidebarProps) => {
+  const { t } = useAdminTranslation();
+  const menuItems = useMemo(
+    () => [
+      { id: 'order', label: t('주문') },
+      { id: 'sales', label: t('매출') },
+      { id: 'device', label: t('기기') },
+      { id: 'management', label: t('관리') },
+    ],
+    [t]
+  );
   const navigate = useNavigate();
 
   const { shopCode } = useAuth();
@@ -70,12 +72,8 @@ export const Sidebar = ({
     }
   };
 
-  const handleResend = () => {
-    console.log('재수신 클릭');
-  };
-
   const handleClose = () => {
-    console.log('종료 클릭');
+    console.log(t('종료 클릭'));
   };
 
   return (
@@ -88,11 +86,11 @@ export const Sidebar = ({
         }}
       >
         {/* <img
-          src={logoImage}
-          alt="캡스 스마트오더 로고"
-          style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
-        /> */}
-        캡스 스마트오더
+           src={logoImage}
+           alt="캡스 스마트오더 로고"
+           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+          /> */}
+        {t('캡스 스마트오더')}
       </Logo>
 
       <TableGroupList>
@@ -109,7 +107,7 @@ export const Sidebar = ({
 
       <MenuList style={{ flex: '0 0 auto' }}>
         <MenuDivider style={{ margin: ' 0' }} />
-        {MENU_ITEMS.map((menu) => (
+        {menuItems.map((menu) => (
           <MenuItem
             key={menu.id}
             onClick={() => handleMenuClick(menu.id)}
@@ -121,9 +119,7 @@ export const Sidebar = ({
       </MenuList>
 
       <ActionButtons>
-        <ActionButton onClick={handleResend}>재수신</ActionButton>
-        <MenuDivider style={{ margin: '6px 0' }} />
-        <ActionButton onClick={handleClose}>종료</ActionButton>
+        <ActionButton onClick={handleClose}>{t('종료')}</ActionButton>
       </ActionButtons>
 
       <OrderListDialog
@@ -134,6 +130,7 @@ export const Sidebar = ({
         }}
         shopCode={shopCode ?? undefined}
       />
+
       <SalesListDialog
         shopCode={shopCode ?? undefined}
         isOpen={isSalesDialogOpen}
@@ -142,6 +139,7 @@ export const Sidebar = ({
           setSelectedMenu('');
         }}
       />
+
       <DeviceListDialog
         shopCode={shopCode ?? undefined}
         isOpen={isDeviceDialogOpen}

@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { BasicButton } from '@repo/ui/components';
 import { AddIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -12,7 +13,7 @@ export const Header = ({ onClickAddMenu, categoryName }: Props) => {
   return (
     <S.Header>
       <S.TextContainer>
-        <h1>메뉴 관리</h1>
+        <h1>{t('메뉴 관리')}</h1>
         <div />
         {categoryName && <h2>{categoryName}</h2>}
       </S.TextContainer>
@@ -21,7 +22,7 @@ export const Header = ({ onClickAddMenu, categoryName }: Props) => {
         onClick={onClickAddMenu}
         icon={<AddIcon color={theme.colors.white} />}
       >
-        메뉴 추가하기
+        {t('메뉴 추가하기')}
       </BasicButton>
     </S.Header>
   );

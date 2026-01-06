@@ -1,17 +1,13 @@
+import { useAdminTranslation } from '@/config/i18n';
 import { BasicButton, Dropdown } from '@repo/ui/components';
-import { useEffect, useState } from 'react';
-import type { IShopNetwork, TNetworkType } from '@repo/api/types';
+import { useEffect, useMemo, useState } from 'react';
+import { useGetLatestAppVersion } from '@repo/api/queries';
+import type { IShopNetwork, TAppType, TNetworkType } from '@repo/api/types';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Network/network.style';
 import { NetworkIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { MiscellaneousChange } from '../types';
-
-const networkSettings = [
-  { value: 'AUTO' as TNetworkType, label: '자동' },
-  { value: 'LAN' as TNetworkType, label: '유선' },
-  { value: 'WIFI' as TNetworkType, label: '무선' },
-];
 
 interface NetworkProps {
   shopNetwork?: IShopNetwork;
@@ -30,9 +26,22 @@ const toNetworkSettingOption = (networkType?: TNetworkType): TNetworkType => {
 };
 
 export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
+  const { t } = useAdminTranslation();
+  const appType: TAppType = 'POS_APP';
+  const networkSettings = useMemo(
+    () => [
+      { value: 'AUTO' as TNetworkType, label: t('자동') },
+      { value: 'LAN' as TNetworkType, label: t('유선') },
+      { value: 'WIFI' as TNetworkType, label: t('무선') },
+    ],
+    [t]
+  );
   const [networkSetting, setNetworkSetting] = useState<TNetworkType>('AUTO');
   const [ssid, setSsid] = useState('');
   const [ipAddress, setIpAddress] = useState('');
+  const { data: latestAppVersionResponse } = useGetLatestAppVersion(appType);
+
+  const latestAppVersionText = latestAppVersionResponse?.data?.version;
 
   useEffect(() => {
     if (!shopNetwork) {
@@ -72,17 +81,21 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
             height={32}
             color={theme.colors.primary[500]}
           />
-          <UIStyles.setting.Title>버전 및 네트워크</UIStyles.setting.Title>
+
+          <UIStyles.setting.Title>
+            {t('버전 및 네트워크')}
+          </UIStyles.setting.Title>
         </S.TitleContentContainer>
         <S.Versions>
           {/* TODO 앱에서 받아와야 함 */}
           <p>
-            현재 버전 <span>2.??.??</span>
+            {t('현재 버전')}
+            <span>2.??.??</span>
           </p>
           <div />
           <p>
-            {/* TODO 서버에서 줘야 하나 앱 버전 기록하는 로직은 제일 마지막에 생길 예쩡 */}
-            최신 버전 <span>2.??.??</span>
+            {t('최신 버전')}
+            <span>{latestAppVersionText}</span>
           </p>
         </S.Versions>
       </UIStyles.setting.Header>
@@ -93,7 +106,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
           <p>-</p>
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
-          <p>네트워크 설정</p>
+          <p>{t('네트워크 설정')}</p>
           <Dropdown
             options={networkSettings}
             value={networkSetting}
@@ -103,10 +116,10 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
           />
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
-          <p>네트워크 정보</p>
+          <p>{t('네트워크 정보')}</p>
           {networkSetting === 'AUTO' && (
             <BasicButton variant="Solid_Sky_Blue_M" onClick={() => {}}>
-              재설정
+              {t('재설정')}
             </BasicButton>
           )}
         </UIStyles.setting.ContentLayout>
@@ -130,7 +143,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
               />
             </UIStyles.setting.ContentLayout>
             <UIStyles.setting.ContentLayout>
-              <p>암호</p>
+              <p>{t('암호')}</p>
               <input type="text" />
             </UIStyles.setting.ContentLayout>
           </>

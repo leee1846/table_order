@@ -1,3 +1,4 @@
+import { useAdminTranslation } from '@/config/i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { BasicButton } from '@repo/ui/components';
@@ -26,6 +27,7 @@ import type { MiscellaneousChange } from './types';
 import { toast } from '@repo/feature/utils';
 
 export const MiscellaneousPage = () => {
+  const { t } = useAdminTranslation();
   const { shopCode, tokenPayload, shopSeq: authShopSeq } = useAuth();
   const queryClient = useQueryClient();
 
@@ -111,8 +113,8 @@ export const MiscellaneousPage = () => {
       change.shopTime?.shopBusinessEndTime
     ) {
       if (!change.shopTime?.shopBusinessEndTime) {
-        toast('정산 시간을 입력해주세요.');
-        throw new Error('정산 시간을 입력해주세요.');
+        toast(t('정산 시간을 입력해주세요.'));
+        throw new Error(t('정산 시간을 입력해주세요.'));
       }
     }
 
@@ -123,10 +125,14 @@ export const MiscellaneousPage = () => {
         !change.shopTime?.shopClosureEndTime
       ) {
         toast(
-          '영업마감시간 안내가 활성화되어 있습니다. 시작시간과 종료시간을 입력해주세요.'
+          t(
+            '영업마감시간 안내가 활성화되어 있습니다. 시작시간과 종료시간을 입력해주세요.'
+          )
         );
         throw new Error(
-          '영업마감시간 안내가 활성화되어 있습니다. 시작시간과 종료시간을 입력해주세요.'
+          t(
+            '영업마감시간 안내가 활성화되어 있습니다. 시작시간과 종료시간을 입력해주세요.'
+          )
         );
       }
     }
@@ -138,10 +144,14 @@ export const MiscellaneousPage = () => {
         change.shopTime?.breakTimeList.length === 0
       ) {
         toast(
-          '브레이크타임 기능이 활성화되어 있습니다. 브레이크타임을 설정해주세요.'
+          t(
+            '브레이크타임 기능이 활성화되어 있습니다. 브레이크타임을 설정해주세요.'
+          )
         );
         throw new Error(
-          '브레이크타임 기능이 활성화되어 있습니다. 브레이크타임을 설정해주세요.'
+          t(
+            '브레이크타임 기능이 활성화되어 있습니다. 브레이크타임을 설정해주세요.'
+          )
         );
       }
     }
@@ -209,7 +219,7 @@ export const MiscellaneousPage = () => {
       queryKey: queryKeys.category.list(),
     });
 
-    toast('설정이 저장되었습니다.');
+    toast(t('설정이 저장되었습니다.'));
     changesRef.current = {};
   }, [
     categories,
@@ -231,14 +241,14 @@ export const MiscellaneousPage = () => {
     <S.Container>
       <header>
         <div>
-          <h1>설정</h1>
+          <h1>{t('설정')}</h1>
         </div>
         <BasicButton
           variant="Solid_Navy_XL"
           onClick={handleSave}
           disabled={isSaving}
         >
-          저장하기
+          {t('저장하기')}
         </BasicButton>
       </header>
 
@@ -248,12 +258,14 @@ export const MiscellaneousPage = () => {
           shopCode={shopInfo?.shopCode}
           userId={tokenPayload?.sub}
         />
+
         <Network shopNetwork={shopInfo?.shopNetwork} onChange={handleChange} />
         <StoreEnvironment
           shopSetting={shopInfo?.shopSetting}
           shopTime={shopInfo?.shopTime}
           onChange={handleChange}
         />
+
         <MenuAppFeature
           shopSetting={shopInfo?.shopSetting}
           shopTime={shopInfo?.shopTime}
@@ -262,11 +274,13 @@ export const MiscellaneousPage = () => {
           onRefreshCategories={refetchCategoryList}
           onChange={handleChange}
         />
+
         <Payment shopSetting={shopInfo?.shopSetting} onChange={handleChange} />
         <Intergration
           shopSetting={shopInfo?.shopSetting}
           onChange={handleChange}
         />
+
         <Language shopSetting={shopInfo?.shopSetting} onChange={handleChange} />
       </S.Sections>
     </S.Container>

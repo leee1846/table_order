@@ -31,3 +31,15 @@ export const Title = styled.div`
     color: ${theme.colors.grey[600]};
   }
 `;
+
+export const FieldGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  & > label {
+    color: ${theme.colors.grey[800]};
+    ${TYPOGRAPHY.MT_6}
+  }
+`;

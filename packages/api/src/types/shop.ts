@@ -20,7 +20,6 @@ export interface IGetShopItem {
   shopEmail: string;
   shopPhoneNumber: string;
   isDeleted: boolean;
-  useLocale: boolean;
   isTestShop: boolean;
   etcNote: string;
   shopBusinessCategory: string;
@@ -160,8 +159,9 @@ export interface IShopPageDetail {
   shopSeq: number;
   pageSeq: number;
   pageDetailType: TPageDetailType;
-  pageDetailImagePath: string;
+  pageDetailImagePath: string | null;
   pageDetailDescription: string;
+  pageDetailImageSeq?: number;
 }
 
 export interface IGetShop extends IGetShopItem {
@@ -208,3 +208,12 @@ export interface IGetShopThemePage {
 }
 
 export type TGetShopThemePageResponse = IApiResponse<IGetShopThemePage>;
+
+export interface IUpdateShopThemePageRequest {
+  shopSeq: number;
+  initPageLayout: TInitPageLayout;
+  orderCompletePageLayout: TOrderCompletePageLayout;
+  shopPageDetailList: IShopPageDetail[];
+}
+
+export type TUpdateShopThemePageResponse = TVoidApiResponse;

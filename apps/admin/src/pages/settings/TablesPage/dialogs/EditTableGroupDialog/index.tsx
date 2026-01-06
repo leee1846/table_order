@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useState, useEffect, forwardRef } from 'react';
 import { ModalBackground, Input, BasicButton } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
@@ -47,10 +48,18 @@ export const EditTableGroupDialog = forwardRef<
           queryKey: queryKeys.table.groupList(shopCode!),
         });
 
-        toast('테이블 그룹이 수정되었습니다.');
+        toast(
+          t(
+            '테이블 그룹이 수정되었습니다.'
+          )
+        );
         handleClose();
       } catch (_error) {
-        toast('테이블 그룹 수정에 실패했습니다.');
+        toast(
+          t(
+            '테이블 그룹 수정에 실패했습니다.'
+          )
+        );
       }
     }
   };
@@ -71,13 +80,17 @@ export const EditTableGroupDialog = forwardRef<
           <CloseIcon width={32} height={32} color={colors.grey[600]} />
         </S.CloseButton>
         <S.ModalHeader>
-          <S.ModalTitle>테이블 그룹 수정</S.ModalTitle>
+          <S.ModalTitle>
+            {t('테이블 그룹 수정')}
+          </S.ModalTitle>
         </S.ModalHeader>
         <S.ModalBody>
           <Input
             value={groupName}
             onChange={setGroupName}
-            placeholder="테이블 그룹 이름을 입력하세요"
+            placeholder={t(
+              '테이블 그룹 이름을 입력하세요'
+            )}
           />
         </S.ModalBody>
         <S.ModalFooter>
@@ -86,7 +99,7 @@ export const EditTableGroupDialog = forwardRef<
             onClick={handleSubmit}
             customStyle={S.SubmitButton}
           >
-            수정하기
+            {t('수정하기')}
           </BasicButton>
         </S.ModalFooter>
       </S.ModalContainer>

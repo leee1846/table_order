@@ -9,13 +9,16 @@ import {
 import { theme } from '@repo/ui';
 import { CloseIcon, OptionSettingIcon } from '@repo/ui/icons';
 import type { IMenu } from '@repo/api/types';
+import type { i18n as I18nInstance } from 'i18next';
 import * as S from './optionSelectionView.style';
 import * as A from '../addMenuDialog.styles';
 import { formatCurrency } from '@repo/util/string';
+import { useTranslation } from 'react-i18next';
 
 const { colors } = theme;
 
 interface OptionSelectionViewProps {
+  i18nInstance?: I18nInstance;
   selectedMenu: IMenu;
   selectedOptions: Map<number, number>;
   menuQuantity: number;
@@ -26,6 +29,7 @@ interface OptionSelectionViewProps {
 }
 
 export const OptionSelectionView = ({
+  i18nInstance,
   selectedMenu,
   selectedOptions,
   menuQuantity,
@@ -34,6 +38,7 @@ export const OptionSelectionView = ({
   onAdd,
   onBack,
 }: OptionSelectionViewProps) => {
+  const { t } = useTranslation('admin', { i18n: i18nInstance });
   const optionGroups = selectedMenu.optionGroupList || [];
 
   const hasSelectedOptions = Array.from(selectedOptions.values()).some(
@@ -124,7 +129,7 @@ export const OptionSelectionView = ({
   return (
     <ModalBackground position="center" onClick={onBack}>
       <A.DialogContainer onClick={(e) => e.stopPropagation()}>
-        <A.CloseButton onClick={onBack} aria-label="닫기">
+        <A.CloseButton onClick={onBack} aria-label={t('닫기')}>
           <CloseIcon width={32} height={32} color={colors.grey[700]} />
         </A.CloseButton>
 
@@ -144,17 +149,24 @@ export const OptionSelectionView = ({
                         const hasMin = group.minQuantity > 0;
                         const hasMax = group.maxQuantity > 0;
                         if (hasMin && hasMax) {
-                          return ` (최소 ${group.minQuantity}개 / 최대 ${group.maxQuantity}개)`;
+                          return ` ${t('(최소 {{min}}개 / 최대 {{max}}개)', {
+                            min: group.minQuantity,
+                            max: group.maxQuantity,
+                          })}`;
                         } else if (hasMin) {
-                          return ` (최소 ${group.minQuantity}개)`;
+                          return ` ${t('(최소 {{min}}개)', {
+                            min: group.minQuantity,
+                          })}`;
                         } else if (hasMax) {
-                          return ` (최대 ${group.maxQuantity}개)`;
+                          return ` ${t('(최대 {{max}}개)', {
+                            max: group.maxQuantity,
+                          })}`;
                         }
                       })()}
                     </S.OptionGroupName>
                     <S.OptionGroupInfo>
                       {(group.minQuantity > 0 || group.maxQuantity > 0) &&
-                        `수량제한`}
+                        t('수량제한')}
                     </S.OptionGroupInfo>
                   </S.OptionGroupHeader>
 
@@ -252,13 +264,13 @@ export const OptionSelectionView = ({
           {/* 오른쪽 패널 - 선택된 옵션 */}
           <S.OptionRightPanel>
             <A.PanelHeader>
-              <A.PanelTitle>선택된 옵션</A.PanelTitle>
+              <A.PanelTitle>{t('선택된 옵션')}</A.PanelTitle>
             </A.PanelHeader>
             <A.PanelContent>
               {!hasSelectedOptions ? (
                 <A.EmptyState>
                   <OptionSettingIcon width={52} height={52} />
-                  <A.EmptyText>추가한 옵션이 없어요.</A.EmptyText>
+                  <A.EmptyText>{t('추가한 옵션이 없어요.')}</A.EmptyText>
                 </A.EmptyState>
               ) : (
                 <S.SelectedOptionsList>
@@ -278,11 +290,15 @@ export const OptionSelectionView = ({
                             ㄴ{option.optionName}
                           </S.OptionItemName>
                           <S.OptionItemPrice>
-                            (+{formatCurrency(option.optionPrice)}원)
+                            {t('(+{{price}})', {
+                              price: t('{{price}}원', {
+                                price: formatCurrency(option.optionPrice),
+                              }),
+                            })}
                           </S.OptionItemPrice>
                           {quantity >= 2 && (
                             <S.OptionItemQuantity>
-                              {quantity}개
+                              {t('{{count}}개', { count: quantity })}
                             </S.OptionItemQuantity>
                           )}
                         </S.SelectedOptionItem>
@@ -303,14 +319,14 @@ export const OptionSelectionView = ({
               />
             </S.MenuQuantitySection>
             <S.TotalMountSection>
-              <S.TotalMountLabel>합계</S.TotalMountLabel>
+              <S.TotalMountLabel>{t('합계')}</S.TotalMountLabel>
               <S.TotalMountValue>
-                {formatCurrency(totalPrice)}원
+                {t('{{price}}원', { price: formatCurrency(totalPrice) })}
               </S.TotalMountValue>
             </S.TotalMountSection>
             <A.PanelFooter>
               <BasicButton variant="Solid_Navy_2XL" onClick={onAdd} fullWidth>
-                추가하기
+                {t('추가하기')}
               </BasicButton>
             </A.PanelFooter>
           </S.OptionRightPanel>

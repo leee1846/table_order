@@ -26,6 +26,7 @@
     "@repo/api": "workspace:*",
     "@repo/ui": "workspace:*",
     "@repo/util": "workspace:*",
+    "i18next": "^25.6.3",
     "react-i18next": "16.3.5",
     "react-router-dom": "^7.9.4",
     "zustand": "^5.0.2"

@@ -14,7 +14,7 @@ import {
   LongPressTableCard,
   type TableWithStatus,
 } from '@repo/feature/components';
-import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
@@ -244,7 +244,7 @@ export const TablesPage = () => {
               table={table}
               onClick={handleTableClick}
               onLongPress={handleLongPress}
-              useTranslation={useAdminTranslation}
+              i18nInstance={adminI18n}
               longPressDelay={500}
             />
           ))}

@@ -1,3 +1,4 @@
+import { useAdminTranslation } from '@/config/i18n';
 import {
   ModalBackground,
   Input,
@@ -8,7 +9,7 @@ import {
 import * as S from '@/pages/settings/CategoriesPage/CategoryManageModal/categoryManageModal.style';
 import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { CategoryTimeRangeModal } from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal';
 import type { ICategory, IUpdateCategoryRequest } from '@repo/api/types';
 import {
@@ -16,7 +17,7 @@ import {
   usePostCreateCategory,
   usePutUpdateCategory,
 } from '@repo/api/queries';
-import { DAYS } from '@/constants/days';
+import { getDays } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
@@ -32,6 +33,8 @@ export const CategoryManageModal = ({
   categoryData,
   shopSeq,
 }: Props) => {
+  const { t } = useAdminTranslation();
+  const days = useMemo(() => getDays(t), [t]);
   const isEdit = !!categoryData;
   const queryClient = useQueryClient();
   const createCategoryMutation = usePostCreateCategory();
@@ -55,8 +58,8 @@ export const CategoryManageModal = ({
   const [isTimeRangeModalOpen, setIsTimeRangeModalOpen] = useState(false);
 
   //판매 요일 선택 (일반 요일만 관리) - day.label로 저장
-  const [selectedDays, setSelectedDays] = useState<string[]>(
-    isEdit ? [] : DAYS.map((day) => day.label) // 생성 시 모든 요일 선택
+  const [selectedDays, setSelectedDays] = useState<number[]>(
+    isEdit ? [] : days.map((day) => day.value) // 생성 시 모든 요일 선택
   );
 
   //공휴일 판매 여부
@@ -115,10 +118,7 @@ export const CategoryManageModal = ({
       const category = categoryData as ICategory;
       // 판매 요일 초기화 (null이나 undefined일 경우 빈 배열로 처리)
       const existingDays = category.saleDayOfWeek ?? [];
-      const dayLabels = existingDays
-        .map((dayValue) => DAYS.find((d) => d.value === dayValue)?.label)
-        .filter((label): label is string => label !== undefined);
-      setSelectedDays(dayLabels);
+      setSelectedDays(existingDays);
       // 판매 시간 설정 초기화
       setUseSaleTime(category.useSaleTime ?? false);
       // 초기 언어 코드 설정
@@ -126,7 +126,7 @@ export const CategoryManageModal = ({
         setSelectedLanguageCode(category.selectedLanguageCode);
       }
     }
-  }, [isEdit, categoryData]);
+  }, [categoryData, isEdit]);
 
   // 선택된 언어가 변경될 때 해당 언어의 카테고리 이름으로 업데이트
   useEffect(() => {
@@ -154,27 +154,28 @@ export const CategoryManageModal = ({
     }
   }, [selectedLanguageCode, isEdit, categoryData]);
 
-  const toggleDay = (day: string) => {
+  const toggleDay = (day: number) => {
     setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort()
     );
   };
 
   // 완료 버튼 핸들러
   const handleSubmit = async () => {
     if (categoryName === '') {
-      toast('카테고리 이름을 입력해주세요.');
+      toast(
+        t(
+          '카테고리 이름을 입력해주세요.'
+        )
+      );
       return;
     }
 
     // Convert selectedDays (string labels) to numbers and sort
-    const saleDayOfWeekNumbers = selectedDays
-      .map((label) => DAYS.find((day) => day.label === label)?.value ?? -1)
-      .filter((value) => value !== -1)
-      .sort((a, b) => a - b);
+    const saleDayOfWeekNumbers = [...selectedDays].sort((a, b) => a - b);
 
     // 모든 요일이 선택되어 있고 공휴일 판매가 true면 useSaleDay는 false, 그 외에는 true
-    const allDaysSelected = selectedDays.length === DAYS.length;
+    const allDaysSelected = selectedDays.length === days.length;
     const useSaleDay = !(allDaysSelected && isSaleOnHoliday);
 
     try {
@@ -237,11 +238,14 @@ export const CategoryManageModal = ({
             <S.DropdownContainer>
               <Dropdown
                 options={[
-                  { value: 'KO', label: '한국어' },
-                  { value: 'JP', label: '일본어' },
-                  { value: 'CH', label: '중국어' },
-                  { value: 'EN', label: '영어' },
-                  { value: 'RU', label: '러시아어' },
+                  { value: 'KO', label: t('한국어') },
+                  { value: 'JP', label: t('일본어') },
+                  { value: 'CH', label: t('중국어') },
+                  { value: 'EN', label: t('영어') },
+                  {
+                    value: 'RU',
+                    label: t('러시아어'),
+                  },
                 ]}
                 value={selectedLanguageCode}
                 onChange={(value) =>
@@ -254,17 +258,25 @@ export const CategoryManageModal = ({
           )}
 
           <S.Title>
-            <p>카테고리 {isEdit ? '수정' : '추가'}</p>
+            <p>
+              {t('카테고리')}
+              {isEdit
+                ? t('수정')
+                : t('추가')}
+            </p>
           </S.Title>
 
           <S.Content>
             <div>
               <S.SubTitle>
-                카테고리 이름 <span>*</span>
+                {t('카테고리 이름')}
+                <span>*</span>
               </S.SubTitle>
 
               <Input
-                placeholder="카테고리 이름을 입력해주세요."
+                placeholder={t(
+                  '카테고리 이름을 입력해주세요.'
+                )}
                 value={categoryName}
                 onChange={(value) => {
                   if (value.length <= MAX_NAME_LENGTH) {
@@ -275,7 +287,9 @@ export const CategoryManageModal = ({
             </div>
 
             <Input
-              placeholder="카테고리 설명을 입력해주세요."
+              placeholder={t(
+                '카테고리 설명을 입력해주세요.'
+              )}
               value={categoryDescription}
               onChange={(value) => {
                 if (value.length <= MAX_DESCRIPTION_LENGTH) {
@@ -285,19 +299,20 @@ export const CategoryManageModal = ({
             />
 
             <div>
-              <S.SubTitle>판매 요일</S.SubTitle>
+              <S.SubTitle>
+                {t('판매 요일')}
+              </S.SubTitle>
               <S.DayList>
-                {DAYS.map((day) => (
+                {days.map((day) => (
                   <li key={day.value}>
                     <BasicButton
                       variant={
-                        selectedDays.includes(day.label)
+                        selectedDays.includes(day.value)
                           ? 'Solid_Sky_Blue_L'
                           : 'Outline_Grey_L'
                       }
-                      key={day.value}
                       customStyle={S.dayCss}
-                      onClick={() => toggleDay(day.label)}
+                      onClick={() => toggleDay(day.value)}
                     >
                       {day.label}
                     </BasicButton>
@@ -311,35 +326,41 @@ export const CategoryManageModal = ({
                     customStyle={S.dayCss}
                     onClick={() => setIsSaleOnHoliday((prev) => !prev)}
                   >
-                    공휴일
+                    {t('공휴일')}
                   </BasicButton>
                 </li>
               </S.DayList>
             </div>
 
             <div>
-              <S.SubTitle>추가 설정</S.SubTitle>
+              <S.SubTitle>
+                {t('추가 설정')}
+              </S.SubTitle>
               <S.CheckButtonList>
                 <CheckButton
                   checked={isQuantitySelectable}
                   onChange={(checked) => setIsQuantitySelectable(checked)}
                   customStyle={S.checkButtonCss}
                 >
-                  <p>수량선택 사용</p>
+                  <p>{t('수량선택 사용')}</p>
                 </CheckButton>
                 <CheckButton
                   checked={isStaffCall}
                   onChange={(checked) => setIsStaffCall(checked)}
                   customStyle={S.checkButtonCss}
                 >
-                  <p>직원호출 사용</p>
+                  <p>{t('직원호출 사용')}</p>
                 </CheckButton>
                 <CheckButton
                   checked={useTwoColumnLayout}
                   onChange={(checked) => setUseTwoColumnLayout(checked)}
                   customStyle={S.checkButtonCss}
                 >
-                  <p>2열 배치(가로 기본형)</p>
+                  <p>
+                    {t(
+                      '2열 배치(가로 기본형)'
+                    )}
+                  </p>
                 </CheckButton>
                 <S.TimeRangeWrapper>
                   <CheckButton
@@ -347,7 +368,9 @@ export const CategoryManageModal = ({
                     onChange={(checked) => setUseSaleTime(checked)}
                     customStyle={S.checkButtonCss}
                   >
-                    <p>판매 시간 설정</p>
+                    <p>
+                      {t('판매 시간 설정')}
+                    </p>
                   </CheckButton>
                   <S.TimeRangeContainer>
                     <S.TimeRangeDisplay
@@ -364,8 +387,8 @@ export const CategoryManageModal = ({
             <BasicButton variant="Solid_Navy_2XL" onClick={handleSubmit}>
               {createCategoryMutation.isPending ||
               updateCategoryMutation.isPending
-                ? '처리 중...'
-                : '완료'}
+                ? t('처리 중...')
+                : t('완료')}
             </BasicButton>
           </S.Content>
         </S.Container>

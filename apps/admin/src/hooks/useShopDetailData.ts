@@ -10,7 +10,7 @@ export const useShopDetailData = () => {
   const { data: shopDetailData, setData: setShopDetailData } =
     useShopDetailStore();
 
-  const enabled = !!shopCode && !shopDetailData && shopCode.length > 0;
+  const enabled = !!shopCode && shopCode.length > 0;
 
   const {
     data: shopDetailDataResponse,

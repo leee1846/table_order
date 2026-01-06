@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useMemo } from 'react';
 import { InfoIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -49,36 +50,47 @@ export const SalesSummaryPage = () => {
   return (
     <S.Container>
       <S.Title>
-        매출 관리 <div /> <span>매출 요약</span>
+        {t('매출 관리')}
+        <div /> <span>{t('매출 요약')}</span>
       </S.Title>
       <S.List>
         <S.Item>
-          <S.SubTitle>매출(결제완료)</S.SubTitle>
+          <S.SubTitle>
+            {t('매출(결제완료)')}
+          </S.SubTitle>
           <S.Price>
             {formatCurrency(paidSales)}
-            <span>원</span>
+            <span>{t('원')}</span>
           </S.Price>
           <S.Description>
             <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
-            객단가 {formatCurrency(averagePricePerCustomer)}원
+            {t('객단가')}
+            {formatCurrency(averagePricePerCustomer)}
+            {t('원')}
           </S.Description>
         </S.Item>
         <S.Item>
-          <S.SubTitle>매출(결제 전)</S.SubTitle>
+          <S.SubTitle>
+            {t('매출(결제 전)')}
+          </S.SubTitle>
           <S.Price>
             {formatCurrency(unpaidSales)}
-            <span>원</span>
+            <span>{t('원')}</span>
           </S.Price>
         </S.Item>
         <S.Item>
-          <S.SubTitle>테이블 수(결제완료)</S.SubTitle>
+          <S.SubTitle>
+            {t('테이블 수(결제완료)')}
+          </S.SubTitle>
           <S.Price>
             {formatCurrency(paidTableCount)}
-            <span>개</span>
+            <span>{t('개')}</span>
           </S.Price>
           <S.Description>
             <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
-            결제 완료 객수 {formatCurrency(paidCustomerCount)}명
+            {t('결제 완료 객수')}
+            {formatCurrency(paidCustomerCount)}
+            {t('명')}
           </S.Description>
         </S.Item>
       </S.List>

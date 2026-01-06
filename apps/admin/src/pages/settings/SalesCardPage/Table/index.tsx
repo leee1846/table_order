@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/SalesCardPage/Table/table.style';
 import { theme } from '@repo/ui';
@@ -49,9 +50,11 @@ export const Table = ({ items, isLoading }: Props) => {
 
   const onClickCancel = () => {
     openDualActionDialog({
-      title: '정말 취소하시겠습니까?',
-      primaryText: '확인',
-      secondaryText: '취소',
+      title: t(
+        '정말 취소하시겠습니까?'
+      ),
+      primaryText: t('확인'),
+      secondaryText: t('취소'),
       onConfirm: () => {
         // TODO: 취소 로직 추가
       },
@@ -62,7 +65,11 @@ export const Table = ({ items, isLoading }: Props) => {
     if (isLoading) {
       return (
         <tr>
-          <td colSpan={9}>카드 승인 내역을 불러오는 중입니다.</td>
+          <td colSpan={9}>
+            {t(
+              '카드 승인 내역을 불러오는 중입니다.'
+            )}
+          </td>
         </tr>
       );
     }
@@ -70,7 +77,11 @@ export const Table = ({ items, isLoading }: Props) => {
     if (!items || items.length === 0) {
       return (
         <tr>
-          <td colSpan={9}>카드 승인 내역이 없습니다.</td>
+          <td colSpan={9}>
+            {t(
+              '카드 승인 내역이 없습니다.'
+            )}
+          </td>
         </tr>
       );
     }
@@ -85,7 +96,9 @@ export const Table = ({ items, isLoading }: Props) => {
       return (
         <tr key={`${index}-${item.approvalNumber}`}>
           <S.ColorTd color={getTextColor(isCancel, true)}>
-            {item.approvalType === 'APPROVAL' ? '승인' : '취소'}
+            {item.approvalType === 'APPROVAL'
+              ? t('승인')
+              : t('취소')}
           </S.ColorTd>
           <S.ColorTd color={getTextColor(isCancel)}>
             {item.cardNumber ?? '-'}
@@ -119,7 +132,7 @@ export const Table = ({ items, isLoading }: Props) => {
               customStyle={S.cancelButtonCss}
               disabled={isCancel}
             >
-              취소
+              {t('취소')}
             </BasicButton>
           </td>
         </tr>
@@ -132,34 +145,39 @@ export const Table = ({ items, isLoading }: Props) => {
       <UIStyles.setting.Thead>
         <tr>
           <th>
-            승인
+            {t('승인')}
+
             <br />
-            구분
+            {t('구분')}
           </th>
           <th>
-            카드번호
+            {t('카드번호')}
+
             <br />
-            (승인번호)
+            {t('(승인번호)')}
           </th>
-          <th>총거래금액</th>
-          <th>거래금액</th>
+          <th>{t('총거래금액')}</th>
+          <th>{t('거래금액')}</th>
           <th>
-            거래승인(취소)일시
+            {t('거래승인(취소)일시')}
+
             <br />
-            거래고유번호
-          </th>
-          <th>
-            매입사
-            <br />
-            (발급사)
+            {t('거래고유번호')}
           </th>
           <th>
-            공급가
+            {t('매입사')}
+
             <br />
-            부가세
+            {t('(발급사)')}
           </th>
-          <th>영수증</th>
-          <th>거래취소</th>
+          <th>
+            {t('공급가')}
+
+            <br />
+            {t('부가세')}
+          </th>
+          <th>{t('영수증')}</th>
+          <th>{t('거래취소')}</th>
         </tr>
       </UIStyles.setting.Thead>
       <UIStyles.setting.Tbody>{renderRows()}</UIStyles.setting.Tbody>

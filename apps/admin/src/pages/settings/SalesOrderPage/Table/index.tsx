@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
@@ -43,7 +44,11 @@ export const Table = ({ orders, isLoading, onSelectOrder }: Props) => {
     if (isLoading) {
       return (
         <tr>
-          <td colSpan={7}>주문 내역을 불러오는 중입니다.</td>
+          <td colSpan={7}>
+            {t(
+              '주문 내역을 불러오는 중입니다.'
+            )}
+          </td>
         </tr>
       );
     }
@@ -51,7 +56,11 @@ export const Table = ({ orders, isLoading, onSelectOrder }: Props) => {
     if (!orders || orders.length === 0) {
       return (
         <tr>
-          <td colSpan={7}>주문 내역이 없습니다.</td>
+          <td colSpan={7}>
+            {t(
+              '주문 내역이 없습니다.'
+            )}
+          </td>
         </tr>
       );
     }
@@ -84,7 +93,7 @@ export const Table = ({ orders, isLoading, onSelectOrder }: Props) => {
               variant="Outline_Navy_S"
               onClick={() => onSelectOrder(item)}
             >
-              보기
+              {t('보기')}
             </BasicButton>
           </td>
         </tr>
@@ -97,13 +106,13 @@ export const Table = ({ orders, isLoading, onSelectOrder }: Props) => {
       <UIStyles.setting.Table>
         <UIStyles.setting.Thead>
           <tr>
-            <th>주문번호</th>
-            <th>거래일자</th>
-            <th>테이블 번호</th>
-            <th>거래금액</th>
-            <th>결제수단</th>
-            <th>객수</th>
-            <th>상세 내역</th>
+            <th>{t('주문번호')}</th>
+            <th>{t('거래일자')}</th>
+            <th>{t('테이블 번호')}</th>
+            <th>{t('거래금액')}</th>
+            <th>{t('결제수단')}</th>
+            <th>{t('객수')}</th>
+            <th>{t('상세 내역')}</th>
           </tr>
         </UIStyles.setting.Thead>
         <UIStyles.setting.Tbody>{renderRows()}</UIStyles.setting.Tbody>

@@ -7,6 +7,8 @@ import { formatCurrency } from '@repo/util/string';
 import { usePostCustomAmount } from '@repo/api/queries';
 import { toast } from '@repo/feature/utils';
 import type { TCustomAmountType } from '@repo/api/types';
+import type { i18n as I18nInstance } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 const { colors } = theme;
 
@@ -15,6 +17,7 @@ export type AmountChangeDialogProps = {
   onClose: () => void;
   orderGroupUuid: string | undefined;
   onApplySuccess?: () => void;
+  i18nInstance?: I18nInstance;
 };
 
 export const AmountChangeDialog = ({
@@ -22,7 +25,9 @@ export const AmountChangeDialog = ({
   onClose,
   orderGroupUuid,
   onApplySuccess,
+  i18nInstance,
 }: AmountChangeDialogProps) => {
+  const { t } = useTranslation('admin', { i18n: i18nInstance });
   const [amount, setAmount] = useState<string>('0');
   const [isNegative, setIsNegative] = useState(false);
   const { mutateAsync: postCustomAmount, isPending: isCustomAmountPending } =
@@ -57,12 +62,12 @@ export const AmountChangeDialog = ({
     const finalAmount = isNegative ? -numericAmount : numericAmount;
 
     if (finalAmount === 0) {
-      toast('변경할 금액을 입력해주세요.');
+      toast(t('변경할 금액을 입력해주세요.'));
       return;
     }
 
     if (!orderGroupUuid) {
-      toast('주문 정보를 찾을 수 없어요. 다시 시도해주세요.');
+      toast(t('주문 정보를 찾을 수 없어요. 다시 시도해주세요.'));
       return;
     }
 
@@ -70,11 +75,11 @@ export const AmountChangeDialog = ({
 
     try {
       await postCustomAmount({ orderGroupUuid, amount: finalAmount, type });
-      toast('금액을 변경했어요.');
+      toast(t('금액을 변경했어요.'));
       onApplySuccess?.();
       handleClose();
     } catch (error) {
-      toast('금액 변경 중 오류가 발생했어요. 다시 시도해주세요.');
+      toast(t('금액 변경 중 오류가 발생했어요. 다시 시도해주세요.'));
     }
   };
 
@@ -94,17 +99,19 @@ export const AmountChangeDialog = ({
   return (
     <ModalBackground position="center" onClick={handleClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
-        <S.CloseButton onClick={handleClose} aria-label="닫기">
+        <S.CloseButton onClick={handleClose} aria-label={t('닫기')}>
           <CloseIcon width={32} height={32} color={colors.grey[700]} />
         </S.CloseButton>
 
         <S.ContentWrapper>
           <S.Header>
-            <S.Title>금액 변경</S.Title>
+            <S.Title>{t('금액 변경')}</S.Title>
           </S.Header>
 
           <S.AmountDisplay $isPlaceholder={amount === '0'}>
-            {amount === '0' ? '+/-0' : formatCurrency(finalAmount)}원
+            {amount === '0'
+              ? '+/-0'
+              : t('{{price}}원', { price: formatCurrency(finalAmount) })}
           </S.AmountDisplay>
 
           <S.KeypadWrapper>
@@ -129,7 +136,7 @@ export const AmountChangeDialog = ({
               onClick={handleApply}
               fullWidth
             >
-              적용하기
+              {t('적용하기')}
             </BasicButton>
           </S.Footer>
         </S.ContentWrapper>

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n';
+import { useEffect, useMemo, useState } from 'react';
 import type {
   IShopLocaleMap,
   IShopSetting,
@@ -17,15 +18,8 @@ interface LanguageProps {
   onChange?: (value: MiscellaneousChange) => void;
 }
 
-const languageOptions = [
-  { value: 'KO' as TShopLanguage, label: '한국어' },
-  { value: 'EN' as TShopLanguage, label: '영어' },
-  { value: 'JP' as TShopLanguage, label: '일본어' },
-  { value: 'CH' as TShopLanguage, label: '중국어' },
-  { value: 'RU' as TShopLanguage, label: '러시아어' },
-];
-
 export const Language = ({ shopSetting, onChange }: LanguageProps) => {
+  const { t } = useAdminTranslation();
   const [mainLanguage, setMainLanguage] = useState<TShopLanguage>('KO');
   const [locale, setLocale] = useState(false);
   const [selectedLanguages, setSelectedLanguages] = useState<IShopLocaleMap[]>(
@@ -68,9 +62,23 @@ export const Language = ({ shopSetting, onChange }: LanguageProps) => {
     useLocaleBeforeOrder,
   ]);
 
+  const languageOptions = useMemo(
+    () => [
+      { value: 'KO' as TShopLanguage, label: t('한국어') },
+      { value: 'EN' as TShopLanguage, label: t('영어') },
+      { value: 'JP' as TShopLanguage, label: t('일본어') },
+      { value: 'CH' as TShopLanguage, label: t('중국어') },
+      {
+        value: 'RU' as TShopLanguage,
+        label: t('러시아어'),
+      },
+    ],
+    [t]
+  );
+
   return (
     <SectionWrapper
-      title="언어"
+      title={t('언어')}
       icon={
         <LanguageIcon
           width={32}
@@ -80,7 +88,7 @@ export const Language = ({ shopSetting, onChange }: LanguageProps) => {
       }
     >
       <UIStyles.setting.ContentLayout>
-        <p>메인 언어</p>
+        <p>{t('메인 언어')}</p>
         <Dropdown
           options={languageOptions}
           value={mainLanguage}
@@ -89,7 +97,7 @@ export const Language = ({ shopSetting, onChange }: LanguageProps) => {
       </UIStyles.setting.ContentLayout>
       <div>
         <UIStyles.setting.ContentLayout>
-          <p>다국어 사용</p>
+          <p>{t('다국어 사용')}</p>
           <ToggleButton
             size="M"
             isOn={locale}
@@ -134,7 +142,9 @@ export const Language = ({ shopSetting, onChange }: LanguageProps) => {
             onChange={() => setUseLocaleBeforeOrder(!useLocaleBeforeOrder)}
             customStyle={S.checkboxCss}
           >
-            <S.CheckboxText>주문 전 언어 선택</S.CheckboxText>
+            <S.CheckboxText>
+              {t('주문 전 언어 선택')}
+            </S.CheckboxText>
           </CheckButton>
         </S.CheckboxWrapper>
       </div>

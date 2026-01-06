@@ -6,6 +6,7 @@ import { GlobalDialogContainer, ToastMessage } from '@repo/feature/components';
 import { QueryProvider } from '@/config/QueryProvider';
 import { router } from '@/router';
 import '@/config/api';
+import '@/config/i18n';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

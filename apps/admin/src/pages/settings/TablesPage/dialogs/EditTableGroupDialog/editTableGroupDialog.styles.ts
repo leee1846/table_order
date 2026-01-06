@@ -34,4 +34,3 @@ export const ModalFooter = styled.div`
 export const SubmitButton = css`
   width: 100%;
 `;
-

@@ -1,6 +1,8 @@
 ﻿'use client';
 
+import type { i18n as I18nInstance } from 'i18next';
 import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as S from './tableDetailContainer.styles';
 import { OrderPanel } from './orderSection/OrderPanel';
 import { ActionGrid } from './actionSection/ActionGrid';
@@ -31,6 +33,7 @@ import type { ICurrentTable, ISseMessage, TOrderType } from '@repo/api/types';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSE } from '@repo/feature/hooks';
 import type { Order, OrderItem } from './orderSection/types';
+import { useTranslation } from 'react-i18next';
 
 export type { SelectedMenuWithOptions };
 
@@ -38,13 +41,19 @@ export interface TableDetailContainerProps {
   shopCode: string;
   tableNumber: string;
   orderType: TOrderType;
+  i18nInstance?: I18nInstance;
 }
 
 export const TableDetailContainer = ({
   shopCode,
   tableNumber,
   orderType,
+  i18nInstance,
 }: TableDetailContainerProps) => {
+  // TODO : useTranslation 사용하여 번역 데이터 가져오기 (확장성 없음)
+  const { t } = useTranslation('admin', { i18n: i18nInstance as I18nInstance });
+
+  const navigate = useNavigate();
   //메뉴 추가 모달
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
   //선택 취소 모달
@@ -129,6 +138,11 @@ export const TableDetailContainer = ({
     return !!shopDetailResponse?.data?.shopSetting?.usePickupAlert;
   }, [shopDetailResponse]);
 
+  // 픽업 알림 메시지 가져오기
+  const pickupAlertMessage = useMemo(() => {
+    return shopDetailResponse?.data?.shopSetting?.pickupAlertMessage;
+  }, [shopDetailResponse]);
+
   // SSE 메시지 구독
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
     'sse-main-connection'
@@ -168,7 +182,7 @@ export const TableDetailContainer = ({
 
     if (!orderHistoriesResponse?.data) {
       return {
-        tableName: `${tableNumber}번 테이블`,
+        tableName: orderHistoriesResponse?.data?.tableName ?? '',
         discountRate: 0,
         numberOfPeople: calculatedNumberOfPeople,
         items: [],
@@ -213,7 +227,7 @@ export const TableDetailContainer = ({
       : '';
 
     return {
-      tableName: `${tableNumber}번 테이블`,
+      tableName: data.tableName ?? '',
       discountRate: data.discountRate || 0,
       numberOfPeople: calculatedNumberOfPeople,
       items,
@@ -237,14 +251,14 @@ export const TableDetailContainer = ({
 
   const handleAllCancel = () => {
     if (order.items.length === 0) {
-      toast('취소할 메뉴가 없어요.');
+      toast(t('취소할 메뉴가 없어요.'));
       return;
     }
 
     openDualActionDialog({
-      title: `전체 메뉴를\n취소하시겠어요?`,
-      primaryText: '네',
-      secondaryText: '아니오',
+      title: t('전체 메뉴를\\n취소하시겠어요?'),
+      primaryText: t('네'),
+      secondaryText: t('아니오'),
       onConfirm: async () => {
         //중복 요청 방지
         if (isCancelAllPending) {
@@ -252,8 +266,9 @@ export const TableDetailContainer = ({
         }
 
         await cancelOrderAll({ shopCode, tableNumber });
-        toast('전체 메뉴를 취소했어요.');
+        toast(t('전체 메뉴를 취소했어요.'));
         await refetch();
+        navigate('/tables');
       },
     });
   };
@@ -275,24 +290,39 @@ export const TableDetailContainer = ({
     setIsServiceAmountDialogOpen(true);
   };
 
+  const handleLeaveTable = async () => {
+    if (order.items.length > 0) {
+      navigate('/tables');
+      return;
+    } else if (order.items.length === 0) {
+      // TODO 클리어 통신이 없어서 일단 전체 취소로 로직 구현해 놓음
+      await cancelOrderAll({ shopCode, tableNumber });
+      await refetch();
+      navigate('/tables');
+    }
+  };
+
   return (
     <S.TableDetailContainer>
       <S.Layout>
         <S.Left>
           <OrderPanel
             order={order}
-            onPayCard={() => setIsCardPaymentDialogOpen(true)}
-            onPayCash={() => setIsCashPaymentDialogOpen(true)}
-            onSplitPay={() => setIsSplitPaymentDialogOpen(true)}
+            // onPayCard={() => setIsCardPaymentDialogOpen(true)}
+            // onPayCash={() => setIsCashPaymentDialogOpen(true)}
+            // onSplitPay={() => setIsSplitPaymentDialogOpen(true)}
+            onLeaveTable={handleLeaveTable}
             onItemClick={handleItemClick}
             useCustomerCount={useCustomerCount}
             usePickupAlert={usePickupAlert}
             shopCode={shopCode}
             tableNumber={tableNumber}
+            pickupAlertMessage={pickupAlertMessage}
+            i18nInstance={i18nInstance}
           />
         </S.Left>
         <S.Right>
-          <ActionGrid onPress={handleActionPress} />
+          <ActionGrid onPress={handleActionPress} i18nInstance={i18nInstance} />
         </S.Right>
       </S.Layout>
       {/* 메뉴 추가 모달 */}
@@ -308,6 +338,7 @@ export const TableDetailContainer = ({
         adultCount={orderHistoriesResponse?.data?.customerCount ?? 0}
         childCount={orderHistoriesResponse?.data?.kidsCustomerCount ?? 0}
         orderType={orderType}
+        i18nInstance={i18nInstance}
       />
       {/* 선택 취소 모달 */}
       <SelectCancelDialog
@@ -315,6 +346,7 @@ export const TableDetailContainer = ({
         onClose={() => setIsSelectCancelDialogOpen(false)}
         items={order.items}
         onCancelSuccess={() => refetch()}
+        i18nInstance={i18nInstance}
       />
       {/* 금액 변경 모달 */}
       <AmountChangeDialog
@@ -325,6 +357,7 @@ export const TableDetailContainer = ({
             ?.orderGroupUuid as string
         }
         onApplySuccess={() => refetch()}
+        i18nInstance={i18nInstance}
       />
       {/* 전체 할인 모달 */}
       <AllDiscountDialog
@@ -335,6 +368,7 @@ export const TableDetailContainer = ({
             ?.orderGroupUuid as string
         }
         onApplySuccess={() => refetch()}
+        i18nInstance={i18nInstance}
       />
       {/* 서비스 금액 변경 모달 */}
       <ServiceAmountDialog
@@ -351,6 +385,7 @@ export const TableDetailContainer = ({
           selectedItemForService ? Number(selectedItemForService.id) : 0
         }
         onApplySuccess={() => refetch()}
+        i18nInstance={i18nInstance}
       />
       {/* 카드 결제 모달 */}
       <CardPaymentDialog

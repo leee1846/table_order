@@ -1,9 +1,5 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-} from 'react';
+import { t } from '@/config/i18n';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import * as S from '@/pages/settings/MenuScreenPage/Logo/logo.style';
 import { theme } from '@repo/ui';
 import { PhotoIcon } from '@repo/ui/icons';
@@ -99,7 +95,7 @@ export const Logo = ({ imageUrl, onChange }: LogoProps) => {
 
   return (
     <S.Container>
-      <p>로고 설정</p>
+      <p>{t('로고 설정')}</p>
       {/* 숨겨진 파일 input (이미지 섹션 클릭 시 트리거됨) */}
       <input
         ref={fileInputRef}
@@ -108,6 +104,7 @@ export const Logo = ({ imageUrl, onChange }: LogoProps) => {
         style={{ display: 'none' }}
         onChange={handleFileChange}
       />
+
       <S.ImageSection onClick={handleImageSectionClick}>
         {imagePreview ? (
           // 이미지가 선택된 경우: 미리보기와 변경/삭제 버튼 표시
@@ -115,16 +112,19 @@ export const Logo = ({ imageUrl, onChange }: LogoProps) => {
             {/* 버튼 클릭 시 이벤트 전파 방지 (섹션 클릭 이벤트와 충돌 방지) */}
             <S.ButtonContainer onClick={(e) => e.stopPropagation()}>
               <BasicButton variant="Outline_Grey_L" onClick={handleChangeClick}>
-                변경
+                {t('변경')}
               </BasicButton>
               <BasicButton
                 variant="Solid_Sky_Blue_L"
                 onClick={handleDeleteClick}
               >
-                삭제
+                {t('삭제')}
               </BasicButton>
             </S.ButtonContainer>
-            <S.ImagePreview src={imagePreview} alt="로고 미리보기" />
+            <S.ImagePreview
+              src={imagePreview}
+              alt={t('로고 미리보기')}
+            />
           </>
         ) : (
           // 이미지가 선택되지 않은 경우: 기본 안내 UI 표시
@@ -134,12 +134,20 @@ export const Logo = ({ imageUrl, onChange }: LogoProps) => {
               height={36}
               color={theme.colors.primary[400]}
             />
-            <p>메뉴판 상단에 보이는 로고를 추가할 수 있어요.</p>
-            <span>400*144 px 이상의 가로가 긴 로고 권장</span>
+
+            <p>
+              {t(
+                '메뉴판 상단에 보이는 로고를 추가할 수 있어요.'
+              )}
+            </p>
+            <span>
+              {t(
+                '400*144 px 이상의 가로가 긴 로고 권장'
+              )}
+            </span>
           </>
         )}
       </S.ImageSection>
     </S.Container>
   );
 };
-

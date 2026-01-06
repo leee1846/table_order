@@ -1,4 +1,5 @@
-﻿'use client';
+'use client';
+import { t } from '@/config/i18n';
 
 import { BasicButton } from '@repo/ui/components';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
@@ -26,10 +27,12 @@ export const TableCard = ({ table, shopCode }: Props) => {
   };
   const handleDelete = () => {
     openDualActionDialog({
-      title: '정말 테이블을 삭제하시겠습니까?',
+      title: t(
+        '정말 테이블을 삭제하시겠습니까?'
+      ),
       content: `테이블 명 : ${table.tableName || table.tableNumber}`,
-      primaryText: '확인',
-      secondaryText: '취소',
+      primaryText: t('확인'),
+      secondaryText: t('취소'),
       size: 'xsmall',
       onConfirm: async () => {
         try {
@@ -40,9 +43,17 @@ export const TableCard = ({ table, shopCode }: Props) => {
           await queryClient.invalidateQueries({
             queryKey: queryKeys.table.groupList(shopCode),
           });
-          toast('테이블이 삭제되었습니다.');
+          toast(
+            t(
+              '테이블이 삭제되었습니다.'
+            )
+          );
         } catch (error) {
-          toast('테이블 삭제에 실패했습니다.');
+          toast(
+            t(
+              '테이블 삭제에 실패했습니다.'
+            )
+          );
         }
       },
     });
@@ -65,14 +76,14 @@ export const TableCard = ({ table, shopCode }: Props) => {
               border-right: 1px solid ${colors.grey[300]};
             `}
           >
-            수정
+            {t('수정')}
           </BasicButton>
           <BasicButton
             variant="Solid_Sky_Blue_L"
             customStyle={S.Button}
             onClick={handleDelete}
           >
-            삭제
+            {t('삭제')}
           </BasicButton>
         </S.ButtonWrapper>
       </S.TableCard>

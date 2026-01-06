@@ -14,6 +14,8 @@ import {
   usePutUpdateMenu,
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
+import { toast } from '@repo/feature/utils';
+import { t } from '@/config/i18n';
 import type {
   FormValues,
   MenuManageModalContextValue,
@@ -218,6 +220,12 @@ export const MenuManageModalProvider = ({
       return;
     }
 
+    // 메뉴 이름 검증
+    if (!formValues.menuName || !formValues.menuName.trim()) {
+      toast(t('메뉴명을 입력해주세요.'));
+      return;
+    }
+
     setIsSaving(true);
 
     if (mode === 'create') {
@@ -226,7 +234,7 @@ export const MenuManageModalProvider = ({
       await handleUpdate();
     }
     setIsSaving(false);
-  }, [isSaving, mode, handleCreate, handleUpdate]);
+  }, [isSaving, mode, handleCreate, handleUpdate, formValues.menuName]);
 
   /**
    * Context에 제공할 값들을 메모이제이션

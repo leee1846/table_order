@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useState } from 'react';
 import { ModalBackground, Input, BasicButton } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
@@ -35,10 +36,18 @@ export const AddTableGroupDialog = ({
           queryKey: queryKeys.table.groupList(shopCode ?? ''),
         });
 
-        toast('테이블 그룹이 추가되었습니다.');
+        toast(
+          t(
+            '테이블 그룹이 추가되었습니다.'
+          )
+        );
         handleClose();
       } catch (error) {
-        toast('테이블 그룹 추가에 실패했습니다.');
+        toast(
+          t(
+            '테이블 그룹 추가에 실패했습니다.'
+          )
+        );
       }
     }
   };
@@ -59,13 +68,17 @@ export const AddTableGroupDialog = ({
           <CloseIcon width={32} height={32} color={colors.grey[600]} />
         </S.CloseButton>
         <S.ModalHeader>
-          <S.ModalTitle>테이블 그룹 추가</S.ModalTitle>
+          <S.ModalTitle>
+            {t('테이블 그룹 추가')}
+          </S.ModalTitle>
         </S.ModalHeader>
         <S.ModalBody>
           <Input
             value={groupName}
             onChange={setGroupName}
-            placeholder="테이블 그룹 이름을 입력하세요"
+            placeholder={t(
+              '테이블 그룹 이름을 입력하세요'
+            )}
           />
         </S.ModalBody>
         <S.ModalFooter>
@@ -74,7 +87,7 @@ export const AddTableGroupDialog = ({
             onClick={handleSubmit}
             customStyle={S.SubmitButton}
           >
-            추가하기
+            {t('추가하기')}
           </BasicButton>
         </S.ModalFooter>
       </S.ModalContainer>

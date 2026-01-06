@@ -6,6 +6,8 @@ import * as S from './serviceAmountDialog.styles';
 import { formatCurrency } from '@repo/util/string';
 import { usePostCustomAmount } from '@repo/api/queries';
 import { toast } from '@repo/feature/utils';
+import type { i18n as I18nInstance } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 const { colors } = theme;
 
@@ -15,6 +17,7 @@ export type ServiceAmountDialogProps = {
   orderGroupUuid: string;
   orderDetailMenuSeq: number;
   onApplySuccess?: () => void;
+  i18nInstance?: I18nInstance;
 };
 
 export const ServiceAmountDialog = ({
@@ -23,7 +26,9 @@ export const ServiceAmountDialog = ({
   orderGroupUuid,
   orderDetailMenuSeq,
   onApplySuccess,
+  i18nInstance,
 }: ServiceAmountDialogProps) => {
+  const { t } = useTranslation('admin', { i18n: i18nInstance });
   const [amount, setAmount] = useState<string>('0');
   const { mutateAsync: postCustomAmount, isPending: isCustomAmountPending } =
     usePostCustomAmount();
@@ -58,19 +63,19 @@ export const ServiceAmountDialog = ({
     }
 
     if (!orderGroupUuid) {
-      toast('주문 정보를 찾을 수 없어요. 다시 시도해주세요.');
+      toast(t('주문 정보를 찾을 수 없어요. 다시 시도해주세요.'));
       return;
     }
 
     if (!orderDetailMenuSeq || isNaN(orderDetailMenuSeq)) {
-      toast('메뉴 정보가 올바르지 않아요. 다시 시도해주세요.');
+      toast(t('메뉴 정보가 올바르지 않아요. 다시 시도해주세요.'));
       return;
     }
 
     const numericAmount = parseInt(amount, 10) || 0;
 
     if (numericAmount === 0) {
-      toast('서비스 금액을 입력해주세요.');
+      toast(t('서비스 금액을 입력해주세요.'));
       return;
     }
 
@@ -85,11 +90,11 @@ export const ServiceAmountDialog = ({
         orderDetailMenuSeq,
       });
 
-      toast('서비스 금액을 적용했어요.');
+      toast(t('서비스 금액을 적용했어요.'));
       onApplySuccess?.();
       handleClose();
     } catch (error) {
-      toast('서비스 금액 적용 중 오류가 발생했어요. 다시 시도해주세요.');
+      toast(t('서비스 금액 적용 중 오류가 발생했어요. 다시 시도해주세요.'));
     }
   };
 
@@ -107,17 +112,17 @@ export const ServiceAmountDialog = ({
   return (
     <ModalBackground position="center" onClick={handleClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
-        <S.CloseButton onClick={handleClose} aria-label="닫기">
+        <S.CloseButton onClick={handleClose} aria-label={t('닫기')}>
           <CloseIcon width={32} height={32} color={colors.grey[700]} />
         </S.CloseButton>
 
         <S.ContentWrapper>
           <S.Header>
-            <S.Title>서비스 금액 입력</S.Title>
+            <S.Title>{t('서비스 금액 입력')}</S.Title>
           </S.Header>
 
           <S.AmountDisplay $isPlaceholder={amount === '0'}>
-            {formatCurrency(numericAmount)}원
+            {t('{{amount}}원', { amount: formatCurrency(numericAmount) })}
           </S.AmountDisplay>
 
           <S.KeypadWrapper>
@@ -142,7 +147,7 @@ export const ServiceAmountDialog = ({
               onClick={handleApply}
               fullWidth
             >
-              적용하기
+              {t('적용하기')}
             </BasicButton>
           </S.Footer>
         </S.ContentWrapper>

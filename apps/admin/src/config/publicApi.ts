@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { createAxiosInstance } from '@repo/api/cores';
 import type {
   AxiosError,
@@ -43,7 +44,9 @@ publicApi.interceptors.response.use(
       title: 'Server Error',
       content:
         error.response?.data?.status?.userMessage ||
-        '알 수 없는 오류가 발생했습니다.',
+        t(
+          '알 수 없는 오류가 발생했습니다.'
+        ),
     });
     return Promise.reject(error);
   }

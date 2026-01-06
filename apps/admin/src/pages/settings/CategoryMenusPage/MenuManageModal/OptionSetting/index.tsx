@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useState } from 'react';
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
@@ -68,7 +69,11 @@ export const OptionSetting = () => {
       updateOptionGroups((groups) => groups.filter((_, i) => i !== index));
     }
 
-    toast('옵션 그룹이 삭제되었습니다.');
+    toast(
+      t(
+        '옵션 그룹이 삭제되었습니다.'
+      )
+    );
   };
 
   const getOptionGroupKey = (
@@ -89,11 +94,11 @@ export const OptionSetting = () => {
   return (
     <S.Container>
       <S.Header>
-        <p>옵션 그룹 설정</p>
+        <p>{t('옵션 그룹 설정')}</p>
       </S.Header>
       <S.AddOptionGroupButton onClick={() => handleOpenModal(null)}>
         <AddIcon width={22} height={22} color={theme.colors.grey[600]} />
-        <span>옵션 그룹 추가</span>
+        <span>{t('옵션 그룹 추가')}</span>
       </S.AddOptionGroupButton>
 
       {activeOptionGroupList.length > 0 && (
@@ -139,6 +144,7 @@ export const OptionSetting = () => {
                       handleEditOptionGroup(optionGroup.optionGroupSeq, index)
                     }
                   />
+
                   <BasicButton
                     variant="Outline_Grey_XL"
                     icon={

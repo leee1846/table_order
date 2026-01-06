@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import type { i18n as I18nInstance } from 'i18next';
 import styled from '@emotion/styled';
 import { PersonIcon, PickupIcon } from '@repo/ui/icons';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import { PickupNotificationDialog } from './dialogs/PickupNotificationDialog';
+import { useTranslation } from 'react-i18next';
 
 const { colors } = theme;
 
@@ -47,6 +49,8 @@ export type OrderHeaderProps = {
   usePickupAlert?: boolean;
   shopCode: string;
   tableNumber: string;
+  pickupAlertMessage?: string;
+  i18nInstance?: I18nInstance;
 };
 
 export function OrderHeader({
@@ -57,7 +61,10 @@ export function OrderHeader({
   usePickupAlert = false,
   shopCode,
   tableNumber,
+  pickupAlertMessage,
+  i18nInstance,
 }: OrderHeaderProps) {
+  const { t } = useTranslation('admin', { i18n: i18nInstance });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [elapsedMinutes, setElapsedMinutes] = useState(0);
 
@@ -122,7 +129,7 @@ export function OrderHeader({
               onClick={handlePickupClick}
               icon={<PickupIcon width={30} height={30} />}
             >
-              픽업알림
+              {t('픽업알림')}
             </BasicButton>
           )}
           <OrderTime>
@@ -136,6 +143,8 @@ export function OrderHeader({
         onClose={handleDialogClose}
         shopCode={shopCode}
         tableNumber={tableNumber}
+        defaultMessage={pickupAlertMessage}
+        i18nInstance={i18nInstance}
       />
     </>
   );

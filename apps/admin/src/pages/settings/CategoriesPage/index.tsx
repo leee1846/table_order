@@ -12,7 +12,7 @@ export const CategoriesPage = () => {
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
 
   const { shopSeq } = useAuth();
-  const { data: categoryListResponse, isLoading } = useGetCategoryList({
+  const { data: categoryListResponse } = useGetCategoryList({
     shopSeq: shopSeq!,
   });
 
@@ -27,11 +27,7 @@ export const CategoriesPage = () => {
   return (
     <S.Container>
       <Header onClickAddCategory={openAddCategoryModal} />
-      <Categories
-        categories={categoryListResponse?.data}
-        isLoading={isLoading}
-        shopSeq={shopSeq!}
-      />
+      <Categories categories={categoryListResponse?.data} shopSeq={shopSeq!} />
 
       <S.AddButton onClick={openAddCategoryModal}>
         <button type="button" onClick={openAddCategoryModal}>

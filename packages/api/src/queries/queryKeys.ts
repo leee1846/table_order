@@ -8,6 +8,12 @@ export const queryKeys = {
       [...queryKeys.common.all, 'latestVersion', type] as const,
   },
 
+  app: {
+    all: ['app'] as const,
+    latestVersion: (appType: string) =>
+      [...queryKeys.app.all, 'latestVersion', appType] as const,
+  },
+
   shop: {
     all: ['shop'] as const,
     detail: (shopCode: string) =>

@@ -6,11 +6,17 @@ import { useGetCategoryList } from '@repo/api/queries';
 import { useNavigate } from 'react-router-dom';
 import { bestOnIcon } from '@repo/ui/icons';
 import { useAuth } from '@/hooks/useAuth';
+import { useDeviceTheftDetector } from '@/hooks/useDeviceTheftDetector';
+import { useAdminTranslation } from '@/config/i18n';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
+  const { t } = useAdminTranslation();
 
   const { shopSeq } = useAuth();
+
+  // 기기 도난 감지 (커스텀 훅)
+  useDeviceTheftDetector();
 
   const { data: categoryListResponse } = useGetCategoryList({
     shopSeq: shopSeq ?? 0,
@@ -28,10 +34,7 @@ export const SidebarLayout = () => {
     }));
   }, [categoryListResponse]);
 
-  const SIDEBAR_MENUS = useMemo(
-    () => createSidebarMenus(categoryMenuSubMenus),
-    [categoryMenuSubMenus]
-  );
+  const SIDEBAR_MENUS = useMemo(() => createSidebarMenus(t, categoryMenuSubMenus), [categoryMenuSubMenus, t]);
 
   return (
     <SettingsSidebar

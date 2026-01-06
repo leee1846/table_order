@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n';
 import { theme } from '@repo/ui';
 import { Calender, Dropdown } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
@@ -14,17 +15,21 @@ import * as S from '@/pages/settings/SalesMenuPage/salesMenuPage.style';
 import { Summary } from '@/pages/settings/SalesMenuPage/Summary';
 import { Table } from '@/pages/settings/SalesMenuPage/Table';
 
-const dateRangeOptions: { value: TDateRangePreset; label: string }[] = [
-  { value: 'today', label: '오늘' },
-  { value: 'yesterday', label: '어제' },
-  { value: 'thisWeek', label: '이번주' },
-  { value: 'thisMonth', label: '이번달' },
-  { value: '3Months', label: '3개월' },
-];
-
 export const SalesMenuPage = () => {
+  const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
+  const dateRangeOptions: { value: TDateRangePreset; label: string }[] =
+    useMemo(
+      () => [
+        { value: 'today', label: t('오늘') },
+        { value: 'yesterday', label: t('어제') },
+        { value: 'thisWeek', label: t('이번주') },
+        { value: 'thisMonth', label: t('이번달') },
+        { value: '3Months', label: t('3개월') },
+      ],
+      [t]
+    );
 
   const [showCalender, setShowCalender] = useState<boolean>(false);
   const [selectedPreset, setSelectedPreset] = useState<TDateRangePreset | null>(
@@ -40,17 +45,16 @@ export const SalesMenuPage = () => {
     [startDate, endDate]
   );
 
-  const { data: menuSalesSummaryResponse, isFetching } =
-    useGetMenuSalesSummary(
-      {
-        shopCode: shopCode ?? '',
-        startDate: apiStartDate,
-        endDate: apiEndDate,
-      },
-      {
-        enabled: !!shopCode && !!apiStartDate && !!apiEndDate,
-      }
-    );
+  const { data: menuSalesSummaryResponse, isFetching } = useGetMenuSalesSummary(
+    {
+      shopCode: shopCode ?? '',
+      startDate: apiStartDate,
+      endDate: apiEndDate,
+    },
+    {
+      enabled: !!shopCode && !!apiStartDate && !!apiEndDate,
+    }
+  );
 
   const menuSalesSummary = menuSalesSummaryResponse?.data;
   const menuSalesList = menuSalesSummary?.menuSalesList ?? [];
@@ -75,9 +79,10 @@ export const SalesMenuPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
-            매출 관리
+            {t('매출 관리')}
+
             <div />
-            <span>메뉴판매집계 </span>
+            <span>{t('메뉴판매집계')}</span>
           </S.Title>
 
           <S.Filters>
@@ -88,28 +93,29 @@ export const SalesMenuPage = () => {
               <CalendarMonthIcon
                 width={32}
                 height={32}
-              color={theme.colors.grey[700]}
+                color={theme.colors.grey[700]}
+              />
+
+              <S.CalendarText>
+                {startDate && endDate
+                  ? `${startDate} ~ ${endDate}`
+                  : t('날짜 선택')}
+              </S.CalendarText>
+            </S.CalendarButton>
+            <Dropdown
+              options={dateRangeOptions}
+              value={selectedPreset}
+              onChange={handlePresetChange}
             />
-            <S.CalendarText>
-              {startDate && endDate
-                ? `${startDate} ~ ${endDate}`
-                : '날짜 선택'}
-            </S.CalendarText>
-          </S.CalendarButton>
-          <Dropdown
-            options={dateRangeOptions}
-            value={selectedPreset}
-            onChange={handlePresetChange}
-          />
-        </S.Filters>
+          </S.Filters>
 
-        <S.TableWrapper>
-          <Summary summary={menuSalesSummary} isLoading={isFetching} />
+          <S.TableWrapper>
+            <Summary summary={menuSalesSummary} isLoading={isFetching} />
 
-          <Table items={menuSalesList} isLoading={isFetching} />
-        </S.TableWrapper>
-      </S.Container>
-    </UIStyles.setting.TablePageContainer>
+            <Table items={menuSalesList} isLoading={isFetching} />
+          </S.TableWrapper>
+        </S.Container>
+      </UIStyles.setting.TablePageContainer>
 
       {showCalender && (
         <Calender

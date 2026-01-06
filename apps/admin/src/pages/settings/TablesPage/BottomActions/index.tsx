@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/config/i18n';
 
 import * as S from './bottomActions.styles';
 import { useNavigate } from 'react-router-dom';
@@ -17,8 +18,10 @@ export const BottomActions = ({ onAddTable }: Props) => {
 
   return (
     <S.BottomActionsContainer>
-      <button onClick={handleExit}>나가기</button>
-      <button onClick={onAddTable}>테이블 추가</button>
+      <button onClick={handleExit}>{t('나가기')}</button>
+      <button onClick={onAddTable}>
+        {t('테이블 추가')}
+      </button>
     </S.BottomActionsContainer>
   );
 };

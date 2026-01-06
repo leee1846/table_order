@@ -12,6 +12,8 @@ import * as S from './selectCancelDialog.styles';
 import { css } from '@emotion/react';
 import { usePutCancelOrderMenu } from '@repo/api/queries';
 import { toast } from '@repo/feature/utils';
+import type { i18n as I18nInstance } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 const { colors } = theme;
 
@@ -20,6 +22,7 @@ export type SelectCancelDialogProps = {
   onClose: () => void;
   items: OrderItem[];
   onCancelSuccess?: () => void;
+  i18nInstance?: I18nInstance;
 };
 
 export const SelectCancelDialog = ({
@@ -27,7 +30,9 @@ export const SelectCancelDialog = ({
   onClose,
   items,
   onCancelSuccess,
+  i18nInstance,
 }: SelectCancelDialogProps) => {
+  const { t } = useTranslation('admin', { i18n: i18nInstance });
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [quantities, setQuantities] = useState<Map<string, number>>(new Map());
   const { mutateAsync: cancelOrderMenu, isPending } = usePutCancelOrderMenu();
@@ -78,7 +83,7 @@ export const SelectCancelDialog = ({
     }
 
     if (selectedItems.size === 0) {
-      toast('취소할 메뉴를 선택해주세요.');
+      toast(t('취소할 메뉴를 선택해주세요.'));
       return;
     }
 
@@ -93,18 +98,18 @@ export const SelectCancelDialog = ({
       );
 
     if (cancelItems.length === 0) {
-      toast('취소할 수 있는 메뉴가 없어요.');
+      toast(t('취소할 수 있는 메뉴가 없어요.'));
       return;
     }
 
     try {
       await cancelOrderMenu(cancelItems);
-      toast('선택한 메뉴를 취소했어요.');
+      toast(t('선택한 메뉴를 취소했어요.'));
 
       onCancelSuccess?.();
       handleClose();
     } catch (error) {
-      toast('메뉴 취소 중 오류가 발생했어요. 다시 시도해주세요.');
+      toast(t('메뉴 취소 중 오류가 발생했어요. 다시 시도해주세요.'));
     }
   };
 
@@ -121,13 +126,13 @@ export const SelectCancelDialog = ({
   return (
     <ModalBackground position="center" onClick={handleClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
-        <S.CloseButton onClick={handleClose} aria-label="닫기">
+        <S.CloseButton onClick={handleClose} aria-label={t('닫기')}>
           <CloseIcon width={32} height={32} color={colors.grey[700]} />
         </S.CloseButton>
 
         <S.ContentWrapper>
           <S.Header>
-            <S.Title>선택 취소</S.Title>
+            <S.Title>{t('선택 취소')}</S.Title>
           </S.Header>
 
           <S.ItemsList>
@@ -178,7 +183,7 @@ export const SelectCancelDialog = ({
               disabled={isPending}
               fullWidth
             >
-              선택취소
+              {t('선택 취소')}
             </BasicButton>
           </S.Footer>
         </S.ContentWrapper>

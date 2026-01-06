@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { bestOnIcon } from '@repo/ui/icons';
 import { formatCurrency } from '@repo/util/string';
 import * as S from '@/pages/settings/SalesMenuPage/Summary/summary.style';
@@ -9,9 +10,7 @@ interface Props {
   isLoading?: boolean;
 }
 
-const getBestMenu = (
-  menuSalesList: IMenuSalesSummaryItem[] | undefined
-) => {
+const getBestMenu = (menuSalesList: IMenuSalesSummaryItem[] | undefined) => {
   if (!menuSalesList || menuSalesList.length === 0) {
     return null;
   }
@@ -44,13 +43,18 @@ export const Summary = ({ summary, isLoading }: Props) => {
   return (
     <S.Container>
       <S.BestMenu>
-        <img src={bestOnIcon} alt="베스트" />
-        <S.BestMenuTitle>판매 1위 메뉴</S.BestMenuTitle>
+        <img src={bestOnIcon} alt={t('베스트')} />
+        <S.BestMenuTitle>
+          {t('판매 1위 메뉴')}
+        </S.BestMenuTitle>
         <S.BestMenuInfo>
           <p>
             {isLoading
-              ? '집계 중...'
-              : bestMenu?.menuName ?? '데이터가 없습니다.'}
+              ? t('집계 중...')
+              : (bestMenu?.menuName ??
+                t(
+                  '데이터가 없습니다.'
+                ))}
           </p>
           <p>
             {isLoading
@@ -64,13 +68,13 @@ export const Summary = ({ summary, isLoading }: Props) => {
 
       <S.TotalMenu>
         <S.TotalMenuInfo>
-          <p>총 판매 메뉴</p>
+          <p>{t('총 판매 메뉴')}</p>
           <S.TotalMenuPrice color={theme.colors.grey[600]}>
             {isLoading ? '-' : `${formatCurrency(totalMenuItemsSold)}건`}
           </S.TotalMenuPrice>
         </S.TotalMenuInfo>
         <S.TotalMenuInfo>
-          <p>총 판매 금액</p>
+          <p>{t('총 판매 금액')}</p>
           <S.TotalMenuPrice color={theme.colors.grey[800]}>
             {isLoading ? '-' : `${formatCurrency(totalSalesAmount)}원`}
           </S.TotalMenuPrice>

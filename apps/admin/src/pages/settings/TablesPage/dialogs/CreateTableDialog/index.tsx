@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useState } from 'react';
 import { ModalBackground, Input, BasicButton } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
@@ -42,24 +43,28 @@ export const CreateTableDialog = ({
           <CloseIcon width={32} height={32} color={colors.grey[600]} />
         </S.CloseButton>
         <S.ModalHeader>
-          <S.ModalTitle> 테이블 추가</S.ModalTitle>
+          <S.ModalTitle>
+            {t('테이블 추가')}
+          </S.ModalTitle>
         </S.ModalHeader>
         <S.ModalBody>
           <S.InputWrapper>
-            <S.Label>테이블 이름</S.Label>
+            <S.Label>{t('테이블 이름')}</S.Label>
             <Input
               value={tableName}
               onChange={setTableName}
-              placeholder="테이블 이름"
+              placeholder={t('테이블 이름')}
             />
           </S.InputWrapper>
           <S.InputWrapper>
-            <S.Label>테이블 ID</S.Label>
+            <S.Label>{t('테이블 ID')}</S.Label>
             <Input
               value="S-XXXX"
               onChange={() => {}}
               disabled
-              errorMessage="테이블 ID는 자동으로 생성돼요."
+              errorMessage={t(
+                '테이블 ID는 자동으로 생성돼요.'
+              )}
             />
           </S.InputWrapper>
         </S.ModalBody>
@@ -69,7 +74,7 @@ export const CreateTableDialog = ({
             onClick={handleSubmit}
             customStyle={S.SubmitButton}
           >
-            저장하기
+            {t('저장하기')}
           </BasicButton>
         </S.ModalFooter>
       </S.ModalContainer>

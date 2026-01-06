@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n';
+import { useEffect, useMemo, useState } from 'react';
 import type { IShopSetting, TShopPosCode } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
@@ -12,12 +13,15 @@ interface IntergrationProps {
   onChange?: (value: MiscellaneousChange) => void;
 }
 
-const posOptions = [
-  { value: 'NONE', label: '선택 안함' },
-  { value: 'OKPOS', label: '오케이포스' },
-];
-
 export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
+  const { t } = useAdminTranslation();
+  const posOptions = useMemo(
+    () => [
+      { value: 'NONE', label: t('선택 안함') },
+      { value: 'OKPOS', label: t('오케이포스') },
+    ],
+    [t]
+  );
   const [shopPosCode, setShopPosCode] = useState('NONE');
 
   useEffect(() => {
@@ -43,7 +47,7 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
 
   return (
     <SectionWrapper
-      title="연동 관리"
+      title={t('연동 관리')}
       icon={
         <ConnectionIcon
           width={32}
@@ -53,7 +57,7 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
       }
     >
       <UIStyles.setting.ContentLayout>
-        <p>POS 연동</p>
+        <p>{t('POS 연동')}</p>
         <Dropdown
           options={posOptions}
           value={shopPosCode}

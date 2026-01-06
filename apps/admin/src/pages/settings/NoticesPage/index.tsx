@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useEffect, useState } from 'react';
 import { BasicButton, Pagination } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
@@ -34,9 +35,9 @@ export const NoticesPage = () => {
     <UIStyles.setting.TablePageContainer>
       <S.Container>
         <S.Header>
-          <h1>공지사항 </h1>
+          <h1>{t('공지사항')}</h1>
           <BasicButton variant="Solid_Grey_L" onClick={() => {}}>
-            고객센터
+            {t('고객센터')}
           </BasicButton>
         </S.Header>
 

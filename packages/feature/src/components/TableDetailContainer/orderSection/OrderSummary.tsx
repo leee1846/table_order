@@ -1,19 +1,27 @@
 import styled from '@emotion/styled';
 import { formatCurrency } from '@repo/util/string';
 import { TYPOGRAPHY, theme } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
+import type { i18n as I18nInstance } from 'i18next';
 
 const { colors } = theme;
 
 export type OrderSummaryProps = {
   totalCount: number;
   totalPrice: number;
+  i18nInstance?: I18nInstance;
 };
 
-export function OrderSummary({ totalCount, totalPrice }: OrderSummaryProps) {
+export function OrderSummary({
+  totalCount,
+  totalPrice,
+  i18nInstance,
+}: OrderSummaryProps) {
+  const { t } = useTranslation('admin', { i18n: i18nInstance });
   return (
     <SummaryWrap>
       <Row>
-        <Cell className="name">총 결제금액</Cell>
+        <Cell className="name">{t('총 결제금액')}</Cell>
         <Cell className="qty">{totalCount}</Cell>
         <Cell className="price">{formatCurrency(totalPrice)}</Cell>
       </Row>

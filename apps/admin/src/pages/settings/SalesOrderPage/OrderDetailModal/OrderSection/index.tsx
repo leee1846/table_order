@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { BasicButton } from '@repo/ui/components';
 import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
 import { formatDateTime } from '@repo/util/date';
@@ -29,13 +30,16 @@ export const OrderSection = ({ order }: Props) => {
   return (
     <div>
       <S.TitleContainer>
-        <p>테이블 번호: {order.tableNumber ?? orderLog?.tableNumber ?? '-'}</p>
+        <p>
+          {t('테이블 번호:')}
+          {order.tableNumber ?? orderLog?.tableNumber ?? '-'}
+        </p>
         <div>
           <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
-            재결제
+            {t('재결제')}
           </BasicButton>
           <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
-            재판매
+            {t('재판매')}
           </BasicButton>
         </div>
       </S.TitleContainer>
@@ -43,19 +47,23 @@ export const OrderSection = ({ order }: Props) => {
       <S.OrderInfoContainer>
         <div>
           <p>
-            멤버십<span>-</span>
+            {t('멤버십')}
+            <span>-</span>
           </p>
           <p>
-            결제 수단<span>{paymentLabel ?? '-'}</span>
+            {t('결제 수단')}
+            <span>{paymentLabel ?? '-'}</span>
           </p>
           <p />
         </div>
         <div>
           <p>
-            주문번호<span>{order.orderNumber ?? '-'}</span>
+            {t('주문번호')}
+            <span>{order.orderNumber ?? '-'}</span>
           </p>
           <p>
-            주문 일시
+            {t('주문 일시')}
+
             <span>
               {formatDateTime(
                 order.orderClearedDate ?? orderLog?.createDate ?? ''
@@ -63,14 +71,21 @@ export const OrderSection = ({ order }: Props) => {
             </span>
           </p>
           <p>
-            객수<span>{order.customerCount ?? orderLog?.customerCount ?? '-'}</span>
+            {t('객수')}
+            <span>{order.customerCount ?? orderLog?.customerCount ?? '-'}</span>
           </p>
         </div>
       </S.OrderInfoContainer>
 
       <S.OrderList>
         <ul>
-          {menus.length === 0 && <li>주문 내역이 없습니다.</li>}
+          {menus.length === 0 && (
+            <li>
+              {t(
+                '주문 내역이 없습니다.'
+              )}
+            </li>
+          )}
           {menus.map((menu) => {
             const options = menu.orderDetailOptionList ?? [];
             const menuTotal =
@@ -104,7 +119,7 @@ export const OrderSection = ({ order }: Props) => {
       </S.OrderList>
 
       <S.Total>
-        <p>합계 금액</p>
+        <p>{t('합계 금액')}</p>
         <p>{totalQuantity}</p>
         <p>{formatCurrency(totalAmount)}</p>
       </S.Total>

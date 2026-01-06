@@ -39,6 +39,7 @@ export const ImageSection = styled.div`
   justify-content: center;
   gap: 4px;
   cursor: pointer;
+  overflow: hidden;
 
   p {
     color: ${theme.colors.grey[700]};
@@ -56,6 +57,20 @@ export const DescriptionSection = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
+`;
+
+export const ImagePreview = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+export const ImageButtonContainer = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
 `;
 
 export const TextArea = styled.textarea`

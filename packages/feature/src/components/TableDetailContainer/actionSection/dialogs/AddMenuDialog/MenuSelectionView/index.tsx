@@ -10,14 +10,17 @@ import {
 } from '@repo/ui/icons';
 import type { ICategoryWithMenus, IMenu } from '@repo/api/types';
 import type { SelectedMenuWithOptions } from '../index';
+import type { i18n as I18nInstance } from 'i18next';
 import * as S from './menuSelectionView.style';
 import * as A from '../addMenuDialog.styles';
 import { formatCurrency } from '@repo/util/string';
 import { calculateTotalAmount } from '@repo/util/calculation';
 import { css } from '@emotion/react';
+import { useTranslation } from 'react-i18next';
 const { colors } = theme;
 
 interface MenuSelectionViewProps {
+  i18nInstance?: I18nInstance;
   categories: ICategoryWithMenus[];
   isLoading: boolean;
   selectedCategory: number | null;
@@ -43,7 +46,10 @@ export const MenuSelectionView = ({
   onClose,
   onRemoveItem,
   onItemQuantityChange,
+  i18nInstance,
 }: MenuSelectionViewProps) => {
+  const { t } = useTranslation('admin', { i18n: i18nInstance });
+
   const currentMenuList = useMemo(() => {
     if (selectedCategory === null) {
       return [];
@@ -63,7 +69,7 @@ export const MenuSelectionView = ({
   return (
     <ModalBackground position="center" onClick={onClose}>
       <A.DialogContainer onClick={(e) => e.stopPropagation()}>
-        <A.CloseButton onClick={onClose} aria-label="닫기">
+        <A.CloseButton onClick={onClose} aria-label={t('닫기')}>
           <CloseIcon width={32} height={32} color={colors.grey[700]} />
         </A.CloseButton>
 
@@ -85,7 +91,7 @@ export const MenuSelectionView = ({
           <S.MenuGrid>
             {isLoading ? (
               <S.MenuGridPlaceholder>
-                메뉴를 불러오는 중입니다.
+                {t('메뉴를 불러오는 중입니다.')}
               </S.MenuGridPlaceholder>
             ) : currentMenuList.length === 0 ? (
               <S.MenuGridPlaceholder></S.MenuGridPlaceholder>
@@ -118,7 +124,7 @@ export const MenuSelectionView = ({
                     height={52}
                     color={colors.grey[600]}
                   />
-                  <A.EmptyText>현재 담긴 메뉴가 없어요.</A.EmptyText>
+                  <A.EmptyText>{t('현재 담긴 메뉴가 없어요.')}</A.EmptyText>
                 </A.EmptyState>
               ) : (
                 <S.SelectedItemsList>
@@ -154,7 +160,7 @@ export const MenuSelectionView = ({
                         <BasicButton
                           variant="Solid_Grey_2XL"
                           onClick={() => onRemoveItem(index)}
-                          aria-label="삭제"
+                          aria-label={t('삭제')}
                           customStyle={css`
                             padding: 14px;
                             height: 52px;
@@ -171,7 +177,7 @@ export const MenuSelectionView = ({
                             onClick={() =>
                               onItemQuantityChange(index, item.quantity - 1)
                             }
-                            aria-label="수량 감소"
+                            aria-label={t('수량 감소')}
                           >
                             <RemoveIcon
                               width={24}
@@ -184,7 +190,7 @@ export const MenuSelectionView = ({
                             onClick={() =>
                               onItemQuantityChange(index, item.quantity + 1)
                             }
-                            aria-label="수량 증가"
+                            aria-label={t('수량 증가')}
                           >
                             <AddIcon
                               width={24}
@@ -201,13 +207,13 @@ export const MenuSelectionView = ({
             </A.PanelContent>
             {selectedMenus.length > 0 && (
               <A.TotalSection>
-                <A.TotalLabel>합계</A.TotalLabel>
+                <A.TotalLabel>{t('합계')}</A.TotalLabel>
                 <A.TotalPrice>{formatCurrency(totalAmount)}</A.TotalPrice>
               </A.TotalSection>
             )}
             <A.PanelFooter>
               <BasicButton variant="Solid_Navy_2XL" onClick={onAdd} fullWidth>
-                추가하기
+                {t('추가하기')}
               </BasicButton>
             </A.PanelFooter>
           </A.RightPanel>

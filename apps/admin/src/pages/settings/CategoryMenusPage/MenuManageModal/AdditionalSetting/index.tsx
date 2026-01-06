@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { Input } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/AdditionalSetting/additionalSetting.style';
 import { useMenuForm } from '../context/MenuManageModalContext';
@@ -15,11 +16,13 @@ export const AdditionalSetting = () => {
   return (
     <S.Container>
       <S.SectionContainer>
-        <p>포스연동 메뉴코드</p>
+        <p>
+          {t('포스연동 메뉴코드')}
+        </p>
         <Input disabled value={formValues.mappedMenuCode ?? ''} />
       </S.SectionContainer>
       <S.SectionContainer>
-        <p>최소 주문 수량</p>
+        <p>{t('최소 주문 수량')}</p>
         <Input
           value={formValues.minQuantity?.toString() ?? ''}
           onChange={handleChangeMinQuantity}

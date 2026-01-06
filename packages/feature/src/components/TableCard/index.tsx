@@ -8,6 +8,7 @@ import {
 import * as S from './tableCard.styles';
 import { theme } from '@repo/ui';
 import { formatCurrency } from '@repo/util/string';
+import type { i18n as I18nInstance } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { TableWithStatus } from '../TablesPageContainer';
 
@@ -19,17 +20,17 @@ interface Props {
   tableNumber: string;
   orderTime: string | null;
   onClick?: () => void;
-  useTranslation: typeof useTranslation;
+  i18nInstance?: I18nInstance;
 }
 
 export const TableCard = ({
   onClick,
   id,
   orderTime,
-  useTranslation,
+  i18nInstance,
   table,
 }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('admin', { i18n: i18nInstance });
 
   const hasBatteryInfo =
     table.batteryLevel !== null && table.batteryLevel !== undefined;

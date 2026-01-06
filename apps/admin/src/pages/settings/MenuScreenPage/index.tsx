@@ -1,5 +1,6 @@
+import { t } from '@/config/i18n';
 import { useCallback, useEffect, useState } from 'react';
-import { BasicButton, FullscreenLoadingSpinner } from '@repo/ui/components';
+import { BasicButton } from '@repo/ui/components';
 import {
   queryKeys,
   useGetShopThemeMenu,
@@ -31,14 +32,12 @@ export const MenuScreenPage = () => {
   const [templateType, setTemplateType] =
     useState<TMenuboardTemplateType>('DEFAULT');
 
-  const {
-    data: themeMenuResponse,
-    isLoading,
-    isFetching,
-    refetch,
-  } = useGetShopThemeMenu(shopCode ?? '', {
-    enabled: !!shopCode,
-  });
+  const { data: themeMenuResponse, refetch } = useGetShopThemeMenu(
+    shopCode ?? '',
+    {
+      enabled: !!shopCode,
+    }
+  );
 
   const { mutateAsync: updateThemeMenu, isPending: isSaving } =
     usePutUpdateShopThemeMenu();
@@ -77,13 +76,13 @@ export const MenuScreenPage = () => {
 
   const handleSave = async () => {
     if (!shopCode) {
-      toast('매장 정보가 없습니다. 다시 로그인 후 시도해주세요.');
+      toast(t('매장 정보가 없습니다. 다시 로그인 후 시도해주세요.'));
       return;
     }
 
     const shopSeq = themeMenu?.shopSeq ?? shopSeqFromAuth;
     if (!shopSeq) {
-      toast('매장 정보를 불러오지 못했습니다.');
+      toast(t('매장 정보를 불러오지 못했습니다.'));
       return;
     }
 
@@ -110,30 +109,27 @@ export const MenuScreenPage = () => {
     });
     setIsInitialized(false);
     await refetch();
-    toast('메뉴 화면 설정을 저장했습니다.');
+    toast(t('메뉴 화면 설정을 저장했습니다.'));
   };
 
-  const isInitialLoading =
-    (!isInitialized && (isLoading || isFetching)) || !shopCode;
-
-  if (isInitialLoading) {
-    return <FullscreenLoadingSpinner />;
+  if (!shopCode) {
+    return null;
   }
 
   return (
     <S.Container>
       <S.Header>
         <S.Title>
-          <h1>테마설정</h1>
+          <h1>{t('테마설정')}</h1>
           <div />
-          <span>메뉴 화면</span>
+          <span>{t('메뉴 화면')}</span>
         </S.Title>
         <BasicButton
           variant="Solid_Navy_XL"
           onClick={handleSave}
           disabled={isSaving}
         >
-          저장하기
+          {t('저장하기')}
         </BasicButton>
       </S.Header>
 

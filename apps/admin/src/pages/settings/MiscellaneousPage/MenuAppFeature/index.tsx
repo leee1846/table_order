@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ICategory, IShopSetting, IShopTime } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import {
@@ -13,7 +14,7 @@ import { useTimeInput } from '@/hooks/useTimeInput';
 import { theme } from '@repo/ui';
 import { DeleteIcon, MenuBookIcon } from '@repo/ui/icons';
 import { CategoryModal } from './CategoryModal';
-import { DAYS } from '@/constants/days';
+import { getDays } from '@/constants/days';
 import { normalizeNumberString } from '@repo/util/string';
 import { generateTimeOptions, calculateTimeBefore } from '@repo/util/time';
 import { MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
@@ -46,6 +47,9 @@ export const MenuAppFeature = ({
   onRefreshCategories,
   onChange,
 }: MenuAppFeatureProps) => {
+  const { t } = useAdminTranslation();
+  const days = useMemo(() => getDays(t), [t]);
+  const dayValues = useMemo(() => days.map(({ value }) => value), [days]);
   const [isOrderable, setIsOrderable] = useState(false);
   const [firstOrderMinAmount, setFirstOrderMinAmount] = useState('');
   const [useCustomerCount, setUseCustomerCount] = useState(false);
@@ -186,14 +190,17 @@ export const MenuAppFeature = ({
 
       // 그룹화된 데이터를 rows로 변환
       const rows: BreakTimeRow[] = Array.from(timeGroupMap.entries()).map(
-        ([timeKey, days], index) => {
+        ([timeKey, groupedDays], index) => {
           const [startTime, endTime] = timeKey.split('-');
+          const isEveryDay =
+            dayValues.length > 0 &&
+            dayValues.every((day) => groupedDays.includes(day));
           return {
             id: `break-time-${index}`,
-            isEveryDay: false,
+            isEveryDay,
             startTime: startTime ?? '',
             endTime: endTime ?? '',
-            selectedDays: days,
+            selectedDays: groupedDays,
           };
         }
       );
@@ -221,6 +228,7 @@ export const MenuAppFeature = ({
     );
   }, [
     shopTime,
+    dayValues,
     setClosureEndTime,
     setClosureLastOrderTime,
     setClosureStartTime,
@@ -356,7 +364,7 @@ export const MenuAppFeature = ({
 
   return (
     <SectionWrapper
-      title="메뉴판 기능"
+      title={t('메뉴판 기능')}
       icon={
         <MenuBookIcon
           width={32}
@@ -366,7 +374,7 @@ export const MenuAppFeature = ({
       }
     >
       <UIStyles.setting.ContentLayout>
-        <p>주문하기 사용</p>
+        <p>{t('주문하기 사용')}</p>
         <ToggleButton
           size="M"
           isOn={isOrderable}
@@ -374,13 +382,13 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>첫주문 필수 카테고리 설정</p>
+        <p>{t('첫주문 필수 카테고리 설정')}</p>
         <BasicButton variant="Outline_Navy_M" onClick={handleOpenCategoryModal}>
-          카테고리 설정
+          {t('카테고리 설정')}
         </BasicButton>
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>첫주문 금액</p>
+        <p>{t('첫주문 금액')}</p>
         <input
           type="text"
           value={firstOrderMinAmount}
@@ -388,7 +396,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>객수사용</p>
+        <p>{t('객수사용')}</p>
         <ToggleButton
           size="M"
           isOn={useCustomerCount}
@@ -396,7 +404,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>어린이 객수 사용</p>
+        <p>{t('어린이 객수 사용')}</p>
         <ToggleButton
           size="M"
           isOn={useKidsCustomerCount}
@@ -404,7 +412,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>주문서 합계금액 노출 여부</p>
+        <p>{t('주문서 합계금액 노출 여부')}</p>
         <ToggleButton
           size="M"
           isOn={isOrderSheetTotalVisible}
@@ -414,7 +422,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>주문완료 페이지 총금액 노출 여부</p>
+        <p>{t('주문완료 페이지 총금액 노출 여부')}</p>
         <ToggleButton
           size="M"
           isOn={isOrderCompleteTotalVisible}
@@ -424,7 +432,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>단일페이지 메뉴 사용</p>
+        <p>{t('단일페이지 메뉴 사용')}</p>
         <ToggleButton
           size="M"
           isOn={useSinglePageMenuboard}
@@ -432,7 +440,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>메뉴판 관리 비밀번호(4자리)</p>
+        <p>{t('메뉴판 관리 비밀번호(4자리)')}</p>
         <input
           type="password"
           value={menuboardAdminPassword}
@@ -445,7 +453,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>관리잠금</p>
+        <p>{t('관리잠금')}</p>
         <ToggleButton
           size="M"
           isOn={isAdminLocked}
@@ -453,7 +461,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>도난방지 알림팝업</p>
+        <p>{t('도난방지 알림팝업')}</p>
         <ToggleButton
           size="M"
           isOn={useTheftPrevention}
@@ -461,7 +469,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>테이블 중복 사용 허용</p>
+        <p>{t('테이블 중복 사용 허용')}</p>
         <ToggleButton
           size="M"
           isOn={useTableOverlapping}
@@ -470,7 +478,7 @@ export const MenuAppFeature = ({
       </UIStyles.setting.ContentLayout>
       <div>
         <UIStyles.setting.ContentLayout>
-          <p>픽업 메세지 사용</p>
+          <p>{t('픽업 메세지 사용')}</p>
           <ToggleButton
             size="M"
             isOn={usePickupAlert}
@@ -494,7 +502,7 @@ export const MenuAppFeature = ({
       </div>
       <div>
         <UIStyles.setting.ContentLayout>
-          <p>브레이크타임 사용</p>
+          <p>{t('브레이크타임 사용')}</p>
           <ToggleButton
             size="M"
             isOn={useBreakTime}
@@ -504,21 +512,22 @@ export const MenuAppFeature = ({
         {useBreakTime && (
           <S.InnerSection>
             <S.BreakTimeHeader>
-              <p>요일 및 시간 설정</p>
+              <p>{t('요일 및 시간 설정')}</p>
               <BasicButton
                 variant="Solid_Sky_Blue_M"
                 onClick={() => {
+                  const hasAnyRows = breakTimeRows.length > 0;
                   const newRow: BreakTimeRow = {
                     id: `break-time-${Date.now()}`,
-                    isEveryDay: false,
+                    isEveryDay: !hasAnyRows,
                     startTime: '',
                     endTime: '',
-                    selectedDays: [],
+                    selectedDays: !hasAnyRows ? dayValues : [],
                   };
                   setBreakTimeRows([...breakTimeRows, newRow]);
                 }}
               >
-                + 추가
+                {t('+ 추가')}
               </BasicButton>
             </S.BreakTimeHeader>
             {breakTimeRows.map((row, index) => {
@@ -531,24 +540,36 @@ export const MenuAppFeature = ({
                   setBreakTimeRows(updated);
                 }
               };
+              const otherRowsSelectedDays = breakTimeRows
+                .filter((_, rowIndex) => rowIndex !== index)
+                .flatMap((otherRow) => otherRow.selectedDays);
+              const hasAllDaysSelected = dayValues.every((day) =>
+                row.selectedDays.includes(day)
+              );
+              const isEveryDayDisabled =
+                otherRowsSelectedDays.length > 0 && !hasAllDaysSelected;
 
               return (
                 <S.BreakTimeRow key={row.id}>
-                  {/* TODO 매일 로직 살리기 */}
-                  {/* <CheckButton
+                  <CheckButton
                     checked={row.isEveryDay}
+                    disabled={isEveryDayDisabled}
                     onChange={(checked) => {
+                      if (isEveryDayDisabled) {
+                        return;
+                      }
+
                       updateRow({
                         isEveryDay: checked,
                         selectedDays: checked
-                          ? DAYS.map((d) => d.value)
+                          ? dayValues
                           : row.selectedDays,
                       });
                     }}
                     customStyle={S.CheckButtonCustomStyle}
                   >
-                    매일
-                  </CheckButton> */}
+                    {t('매일')}
+                  </CheckButton>
                   <S.TimeDisplay>
                     <S.TimeSelectWrapper>
                       <Dropdown
@@ -573,13 +594,10 @@ export const MenuAppFeature = ({
                     </S.TimeSelectWrapper>
                   </S.TimeDisplay>
                   <S.DayCheckboxes>
-                    {DAYS.map((day) => {
+                    {days.map((day) => {
                       // 다른 row에서 해당 요일이 선택되어 있는지 확인
-                      const isDaySelectedInOtherRows = breakTimeRows.some(
-                        (otherRow, otherIndex) =>
-                          otherIndex !== index &&
-                          otherRow.selectedDays.includes(day.value)
-                      );
+                      const isDaySelectedInOtherRows =
+                        otherRowsSelectedDays.includes(day.value);
                       // 현재 row에서 이미 선택된 요일이 아니고, 다른 row에서 선택된 경우 비활성화
                       const isDisabled =
                         !row.selectedDays.includes(day.value) &&
@@ -638,7 +656,7 @@ export const MenuAppFeature = ({
               );
             })}
             <S.InnerSectionItem style={{ marginTop: '24px' }}>
-              <p>주문 마감 안내 시간</p>
+              <p>{t('주문 마감 안내 시간')}</p>
               <S.ClickableText>
                 <div>
                   <input
@@ -651,13 +669,13 @@ export const MenuAppFeature = ({
                     value={breakTimeLastOrderAlertTimeBefore}
                     placeholder="0"
                   />
-                  분
+                  {t('분')}
                 </div>
-                전 알림
+                {t('전 알림')}
               </S.ClickableText>
             </S.InnerSectionItem>
             <S.InnerSectionItem>
-              <p>라스트오더 가능 시간</p>
+              <p>{t('라스트오더 가능 시간')}</p>
               <S.ClickableText>
                 <div>
                   <input
@@ -670,14 +688,14 @@ export const MenuAppFeature = ({
                     }
                     value={breakTimeLastOrderTimeBefore}
                   />
-                  분
+                  {t('분')}
                 </div>
-                전 까지
+                {t('전 까지')}
               </S.ClickableText>
             </S.InnerSectionItem>
             <S.TextAreasContainer>
               <div>
-                <p>라스트오더 안내 메세지</p>
+                <p>{t('라스트오더 안내 메세지')}</p>
                 <textarea
                   value={breakTimeLastOrderMessage}
                   maxLength={MAX_DESCRIPTION_LENGTH}
@@ -690,7 +708,7 @@ export const MenuAppFeature = ({
                 />
               </div>
               <div>
-                <p>브레이크타임 안내 메세지</p>
+                <p>{t('브레이크타임 안내 메세지')}</p>
                 <textarea
                   value={breakTimeMessage}
                   maxLength={MAX_DESCRIPTION_LENGTH}
@@ -709,7 +727,7 @@ export const MenuAppFeature = ({
 
       <div>
         <UIStyles.setting.ContentLayout>
-          <p>영업마감안내 사용</p>
+          <p>{t('영업마감안내 사용')}</p>
           <ToggleButton
             size="M"
             isOn={useClosureNotice}
@@ -719,7 +737,7 @@ export const MenuAppFeature = ({
         {useClosureNotice && (
           <S.InnerSection>
             <S.InnerSectionItem>
-              <p>시간 설정</p>
+              <p>{t('시간 설정')}</p>
               <UIStyles.setting.TimeRangeInput>
                 <input
                   type="text"
@@ -729,6 +747,7 @@ export const MenuAppFeature = ({
                   onChange={closureStartTime.handleHourChange}
                   maxLength={2}
                 />
+
                 <span>:</span>
                 <input
                   ref={closureStartTime.minuteRef}
@@ -740,6 +759,7 @@ export const MenuAppFeature = ({
                   onKeyDown={closureStartTime.handleMinuteKeyDown}
                   maxLength={2}
                 />
+
                 <span>-</span>
                 <input
                   ref={closureEndHourRef}
@@ -750,6 +770,7 @@ export const MenuAppFeature = ({
                   onChange={closureEndTime.handleHourChange}
                   maxLength={2}
                 />
+
                 <span>:</span>
                 <input
                   ref={closureEndTime.minuteRef}
@@ -764,7 +785,7 @@ export const MenuAppFeature = ({
               </UIStyles.setting.TimeRangeInput>
             </S.InnerSectionItem>
             <S.InnerSectionItem>
-              <p>주문 마감 안내 시간</p>
+              <p>{t('주문 마감 안내 시간')}</p>
 
               <S.ClickableText>
                 <div>
@@ -778,13 +799,13 @@ export const MenuAppFeature = ({
                     }
                     value={closureLastOrderTimeBefore}
                   />
-                  분
+                  {t('분')}
                 </div>
-                전 알림
+                {t('전 알림')}
               </S.ClickableText>
             </S.InnerSectionItem>
             <S.InnerSectionItem>
-              <p>라스트 오더 알림</p>
+              <p>{t('라스트 오더 알림')}</p>
 
               <S.ClickableText>
                 <div>
@@ -798,14 +819,14 @@ export const MenuAppFeature = ({
                     }
                     value={closureLastOrderMinutes}
                   />
-                  분
+                  {t('분')}
                 </div>
-                전 까지
+                {t('전 까지')}
               </S.ClickableText>
             </S.InnerSectionItem>
             <S.TextAreasContainer>
               <div>
-                <p>주문 마감 사전 안내 메세지</p>
+                <p>{t('주문 마감 사전 안내 메세지')}</p>
                 <textarea
                   value={closureLastOrderMessage}
                   maxLength={MAX_DESCRIPTION_LENGTH}
@@ -818,7 +839,7 @@ export const MenuAppFeature = ({
                 />
               </div>
               <div>
-                <p>영업마감 안내 메세지</p>
+                <p>{t('영업마감 안내 메세지')}</p>
                 <textarea
                   value={closureMessage}
                   maxLength={MAX_DESCRIPTION_LENGTH}

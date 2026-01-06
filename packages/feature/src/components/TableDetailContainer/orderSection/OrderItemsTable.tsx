@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import type { OrderItem } from './types';
 import { formatCurrency } from '@repo/util/string';
 import { TYPOGRAPHY, theme } from '@repo/ui';
+import { useTranslation } from 'react-i18next';
 
 const { colors } = theme;
 
@@ -16,6 +17,7 @@ export function OrderItemsTable({
   discountRate,
   onItemClick,
 }: OrderItemsTableProps) {
+  const { t } = useTranslation('admin');
   const handleRowClick = (item: OrderItem) => {
     if (onItemClick) {
       onItemClick(item);
@@ -64,7 +66,7 @@ export function OrderItemsTable({
       ))}
       {discountRate > 0 && (
         <Row>
-          <Cell className="name">할인적용</Cell>
+          <Cell className="name">{t('할인적용')}</Cell>
           <Cell className="qty">{discountRate}%</Cell>
           <Cell className="price">{`-${formatCurrency(discountAmount)}`}</Cell>
         </Row>

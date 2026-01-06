@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useAdminTranslation } from '@/config/i18n';
+import { useEffect, useMemo, useState } from 'react';
 import type { IShopSetting, TMenuboardTemplateType } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
@@ -10,13 +11,25 @@ interface MenuAppViewProps {
   shopSetting?: IShopSetting;
 }
 
-const templateOptions = [
-  { value: 'DEFAULT' as TMenuboardTemplateType, label: '기본' },
-  { value: 'VERTICAL_TEXT' as TMenuboardTemplateType, label: '세로형 텍스트' },
-  { value: 'VERTICAL_IMAGE' as TMenuboardTemplateType, label: '세로형 이미지' },
-];
-
 export const MenuAppView = ({ shopSetting }: MenuAppViewProps) => {
+  const { t } = useAdminTranslation();
+  const templateOptions = useMemo(
+    () => [
+      {
+        value: 'DEFAULT' as TMenuboardTemplateType,
+        label: t('기본'),
+      },
+      {
+        value: 'VERTICAL_TEXT' as TMenuboardTemplateType,
+        label: t('세로형 텍스트'),
+      },
+      {
+        value: 'VERTICAL_IMAGE' as TMenuboardTemplateType,
+        label: t('세로형 이미지'),
+      },
+    ],
+    [t]
+  );
   const [useDarkTheme, setUseDarkTheme] = useState(false);
   const [menuboardTemplateType, setMenuboardTemplateType] = useState<
     TMenuboardTemplateType | ''
@@ -35,13 +48,13 @@ export const MenuAppView = ({ shopSetting }: MenuAppViewProps) => {
 
   return (
     <SectionWrapper
-      title="메뉴판 화면 설정"
+      title={t('메뉴판 화면 설정')}
       icon={
         <DisplayIcon width={32} height={32} color={theme.colors.primary[500]} />
       }
     >
       <UIStyles.setting.ContentLayout>
-        <p>템플릿 설정</p>
+        <p>{t('템플릿 설정')}</p>
         <Dropdown
           options={templateOptions}
           value={menuboardTemplateType}
@@ -51,7 +64,7 @@ export const MenuAppView = ({ shopSetting }: MenuAppViewProps) => {
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>메뉴판 3열 배치</p>
+        <p>{t('메뉴판 3열 배치')}</p>
         <ToggleButton
           size="M"
           isOn={isMenuThreeColumnLayout}

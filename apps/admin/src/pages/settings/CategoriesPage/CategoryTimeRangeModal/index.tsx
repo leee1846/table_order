@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -78,11 +79,13 @@ export const CategoryTimeRangeModal = ({
           <CloseIcon width={32} height={32} color={theme.colors.grey[600]} />
         </S.CloseButton>
 
-        <S.Title>판매 시간 설정</S.Title>
+        <S.Title>
+          {t('판매 시간 설정')}
+        </S.Title>
 
         <S.Contents>
           <S.Content>
-            <p>판매 시작 시간</p>
+            <p>{t('판매 시작 시간')}</p>
             <div>
               <input
                 id={SALE_START_HOUR_ID}
@@ -93,7 +96,8 @@ export const CategoryTimeRangeModal = ({
                 min="0"
                 max="23"
               />
-              <span>시</span>
+
+              <span>{t('시')}</span>
               <input
                 id={SALE_START_MINUTE_ID}
                 value={startMinute}
@@ -103,11 +107,12 @@ export const CategoryTimeRangeModal = ({
                 min="0"
                 max="59"
               />
-              <span>분</span>
+
+              <span>{t('분')}</span>
             </div>
           </S.Content>
           <S.Content>
-            <p>판매 종료 시간</p>
+            <p>{t('판매 종료 시간')}</p>
             <div>
               <input
                 id={SALE_END_HOUR_ID}
@@ -118,7 +123,8 @@ export const CategoryTimeRangeModal = ({
                 min="0"
                 max="23"
               />
-              <span>시</span>
+
+              <span>{t('시')}</span>
               <input
                 id={SALE_END_MINUTE_ID}
                 value={endMinute}
@@ -128,13 +134,14 @@ export const CategoryTimeRangeModal = ({
                 min="0"
                 max="59"
               />
-              <span>분</span>
+
+              <span>{t('분')}</span>
             </div>
           </S.Content>
         </S.Contents>
 
         <BasicButton variant="Solid_Navy_2XL" onClick={handleSubmit} fullWidth>
-          설정완료
+          {t('설정완료')}
         </BasicButton>
       </S.Container>
     </ModalBackground>

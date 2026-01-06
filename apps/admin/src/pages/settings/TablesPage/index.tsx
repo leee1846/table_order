@@ -1,4 +1,5 @@
-﻿'use client';
+'use client';
+import { t } from '@/config/i18n';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useQueryClient } from '@repo/api/tanstack-query';
@@ -13,7 +14,6 @@ import {
   queryKeys,
 } from '@repo/api/queries';
 import type { ITableInfo } from '@repo/api/types';
-import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { toast } from '@repo/feature/utils';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -28,11 +28,7 @@ export const TablesPage = () => {
   const { shopCode } = useAuth();
 
   // 테이블 그룹 리스트 조회
-  const {
-    data: tableGroupListResponse,
-    isLoading,
-    error,
-  } = useGetTableGroupList(
+  const { data: tableGroupListResponse, error } = useGetTableGroupList(
     { shopCode: shopCode ?? '' },
     { enabled: !!shopCode } // shopCode가 있을 때만 쿼리 실행
   );
@@ -63,7 +59,7 @@ export const TablesPage = () => {
   // 테이블 추가 다이얼로그 열기
   const handleAddTable = () => {
     if (!selectedTableGroupId) {
-      toast('테이블 그룹을 선택해주세요.');
+      toast(t('테이블 그룹을 선택해주세요.'));
       return;
     }
     setIsCreateTableDialogOpen(true);
@@ -72,7 +68,7 @@ export const TablesPage = () => {
   // 테이블 생성 처리
   const handleCreateTable = async (tableName: string) => {
     if (!selectedTableGroupId || !selectedGroup) {
-      toast('테이블 그룹을 선택해주세요.');
+      toast(t('테이블 그룹을 선택해주세요.'));
       return;
     }
 
@@ -91,22 +87,22 @@ export const TablesPage = () => {
       tableName: tableName || undefined,
     });
 
-    toast('테이블이 추가되었습니다.');
+    toast(t('테이블이 추가되었습니다.'));
     queryClient.invalidateQueries({
       queryKey: queryKeys.table.groupList(shopCode ?? ''),
     });
   };
 
-  // 로딩 중이거나 shopCode가 없을 때
-  if (isLoading || !shopCode) {
-    return <FullscreenLoadingSpinner />;
+  // shopCode가 없을 때
+  if (!shopCode) {
+    return null;
   }
 
   // 에러 발생 시
   if (error) {
     return (
       <S.TablePageContainer>
-        <div>테이블 그룹을 불러오는 중 오류가 발생했습니다.</div>
+        <div>{t('테이블 그룹을 불러오는 중 오류가 발생했습니다.')}</div>
       </S.TablePageContainer>
     );
   }
@@ -126,6 +122,7 @@ export const TablesPage = () => {
         selectedTableGroupId={selectedTableGroupId}
         onTableGroupSelect={setSelectedTableGroupId}
       />
+
       {isCreateTableDialogOpen && (
         <CreateTableDialog
           isOpen={isCreateTableDialogOpen}

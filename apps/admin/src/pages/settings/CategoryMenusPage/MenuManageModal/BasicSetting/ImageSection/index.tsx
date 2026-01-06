@@ -1,3 +1,4 @@
+import { t } from '@/config/i18n';
 import { useRef, useState } from 'react';
 import { theme } from '@repo/ui';
 import {
@@ -77,8 +78,12 @@ export const ImageSection = () => {
 
       <S.Thumbnail onClick={() => !mainImage && openModal('main')}>
         <S.BadgesContainer>
-          {formValues.isBest && <img src={bestOnIcon} alt="베스트" />}
-          {formValues.isNew && <img src={newOnIcon} alt="신규" />}
+          {formValues.isBest && (
+            <img src={bestOnIcon} alt={t('베스트')} />
+          )}
+          {formValues.isNew && (
+            <img src={newOnIcon} alt={t('신규')} />
+          )}
         </S.BadgesContainer>
 
         {mainImage && mainImageUrl ? (
@@ -89,17 +94,20 @@ export const ImageSection = () => {
                 customStyle={S.ThumbnailActionButton}
                 variant="Outline_Grey_S"
               >
-                변경
+                {t('변경')}
               </BasicButton>
               <BasicButton
                 css={S.ThumbnailActionButton}
                 onClick={removeMainImage}
                 variant="Solid_Sky_Blue_S"
               >
-                삭제
+                {t('삭제')}
               </BasicButton>
             </S.ThumbnailActionButtons>
-            <img src={mainImageUrl} alt="메인 사진" />
+            <img
+              src={mainImageUrl}
+              alt={t('메인 사진')}
+            />
           </>
         ) : (
           <>
@@ -108,8 +116,13 @@ export const ImageSection = () => {
               height={36}
               color={theme.colors.primary[400]}
             />
-            <S.Text>메인 사진 (1장) 을 선택해 주세요</S.Text>
-            <S.SubText>(700*500 px 권장)</S.SubText>
+
+            <S.Text>
+              {t(
+                '메인 사진 (1장) 을 선택해 주세요'
+              )}
+            </S.Text>
+            <S.SubText>{t('(700*500 px 권장)')}</S.SubText>
           </>
         )}
       </S.Thumbnail>
@@ -137,7 +150,10 @@ export const ImageSection = () => {
                       color={theme.colors.grey[200]}
                     />
                   </button>
-                  <img src={getImageUrl(image) ?? ''} alt="추가 이미지" />
+                  <img
+                    src={getImageUrl(image) ?? ''}
+                    alt={t('추가 이미지')}
+                  />
                 </li>
               ))}
             </ul>
@@ -146,7 +162,11 @@ export const ImageSection = () => {
       ) : (
         <S.ImageAddButton type="button" onClick={() => openModal('additional')}>
           <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
-          <span>추가할 이미지가 있다면 선택해 주세요</span>
+          <span>
+            {t(
+              '추가할 이미지가 있다면 선택해 주세요'
+            )}
+          </span>
         </S.ImageAddButton>
       )}
 

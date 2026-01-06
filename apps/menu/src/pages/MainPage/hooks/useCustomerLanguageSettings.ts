@@ -43,7 +43,7 @@ export const useCustomerLanguageSettings = (
       return;
     }
 
-    if (!shopDetailData.useLocale) {
+    if (!shopDetailData.shopSetting.useLocale) {
       setShowLanguageSelector(false);
       return;
     }
