@@ -366,14 +366,14 @@ export const StartScreenPage = () => {
           onRemoveImage={handleRemoveInitCommonImage}
         />
 
-        <OrderCompletionPage
+        {/* <OrderCompletionPage
           layout={orderCompletePageLayout}
           message={orderCompleteMessage}
           imageUrl={orderCompleteImageUrl}
           onChangeImage={handleChangeOrderCompleteImage}
           onChangeLayout={setOrderCompletePageLayout}
           onChangeMessage={setOrderCompleteMessage}
-        />
+        /> */}
       </S.Container>
     </UIStyles.setting.TablePageContainer>
   );

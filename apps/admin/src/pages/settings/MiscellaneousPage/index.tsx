@@ -1,4 +1,8 @@
-import { setStorageAdminLanguage, useAdminTranslation } from '@/config/i18n';
+import {
+  setStorageAdminLanguage,
+  useAdminTranslation,
+  getInitialLanguage,
+} from '@/config/i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { BasicButton } from '@repo/ui/components';
@@ -27,7 +31,6 @@ import { Language } from '@/pages/settings/MiscellaneousPage/Language';
 import type { MiscellaneousChange } from './types';
 import { toast } from '@repo/feature/utils';
 import { ADMIN_LANGUAGE_STORAGE_KEY } from '@/constants/keys';
-import { getInitialLanguage } from '@/config/i18n';
 
 export const MiscellaneousPage = () => {
   const { t } = useAdminTranslation();
