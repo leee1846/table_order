@@ -16,21 +16,6 @@ export const ImageWrapper = styled.div<IImageWrapper>`
   border-radius: 0.5rem;
   overflow: hidden;
 
-  &::before {
-    content: ${({ hasImage }) => (hasImage ? '' : 'none')};
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0.16) 0%,
-      rgba(0, 0, 0, 0) 50%
-    );
-    z-index: ${({ theme }) => theme.zIndex.base + 1};
-  }
-
   & > img {
     display: block;
     width: 100%;
@@ -85,4 +70,21 @@ export const ChiliIcons = styled.div`
   right: 10px;
   display: flex;
   align-items: center;
+`;
+
+export const NoImagePlaceholder = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  z-index: ${({ theme }) => theme.zIndex.base};
+  background-color: ${({ theme }) => theme.mode.grey[100]};
+  color: ${({ theme }) => theme.mode.grey[600]};
+  ${TYPOGRAPHY.ST_4}
 `;

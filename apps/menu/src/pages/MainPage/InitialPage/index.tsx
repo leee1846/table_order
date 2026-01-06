@@ -53,7 +53,7 @@ export const InitialPage = () => {
           {detailImageList.map((item) => (
             <SwiperSlide key={item.pageSeq}>
               <S.Image
-                src={item.pageDetailImagePath}
+                src={item.pageDetailImagePath ?? undefined}
                 alt={item.pageDetailDescription}
               />
             </SwiperSlide>
@@ -81,7 +81,10 @@ export const InitialPage = () => {
                 {/* 로고 */}
                 {getShopDetail(initPageLayout)?.pageDetailImagePath && (
                   <img
-                    src={getShopDetail(initPageLayout)?.pageDetailImagePath}
+                    src={
+                      getShopDetail(initPageLayout)?.pageDetailImagePath ??
+                      undefined
+                    }
                     alt={
                       getShopDetail(initPageLayout)?.pageDetailDescription ||
                       t('매장 로고')
@@ -101,7 +104,7 @@ export const InitialPage = () => {
               {/* 상세 이미지 */}
               <S.RightContainer>
                 <S.Image
-                  src={detailImage.pageDetailImagePath}
+                  src={detailImage.pageDetailImagePath ?? undefined}
                   alt={detailImage.pageDetailDescription || t('메뉴 이미지')}
                 />
               </S.RightContainer>

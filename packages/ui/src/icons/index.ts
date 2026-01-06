@@ -44,6 +44,7 @@ export { default as PaymentsIcon } from './PaymentsIcon';
 export { default as LanguageIcon } from './LanguageIcon';
 export { default as ConnectionIcon } from './ConnectionIcon';
 export { default as MenuBookIcon } from './MenuBookIcon';
+export { default as EmptedImageIcon } from './EmptedImageIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';

@@ -2,12 +2,15 @@ import {
   bestOnIcon,
   chiliOffIcon,
   chiliOnIcon,
+  EmptedImageIcon,
   newOnIcon,
+  PhotoIcon,
 } from '@repo/ui/icons';
 import * as S from '@/feature/Thumbnail/thumbnail.style';
 import type { IMenu, IMenuImage } from '@repo/api/types';
 import { useState } from 'react';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useThemeMode } from '@repo/ui';
 
 interface Props {
   menu: IMenu;
@@ -16,6 +19,7 @@ interface Props {
 }
 export const Thumbnail = ({ menu, image, width = '100%' }: Props) => {
   const { t } = useCustomerTranslation();
+  const { theme } = useThemeMode();
 
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -29,6 +33,7 @@ export const Thumbnail = ({ menu, image, width = '100%' }: Props) => {
           <p>Sold Out</p>
         </S.OutOfStock>
       )}
+
       {!imageError && image && image.imagePath && (
         <img
           src={image.imagePath ?? ''}
@@ -41,6 +46,18 @@ export const Thumbnail = ({ menu, image, width = '100%' }: Props) => {
           style={{ opacity: imageLoaded ? 1 : 0 }}
         />
       )}
+
+      {(!image || !image.imagePath || imageError) && (
+        <S.NoImagePlaceholder>
+          <EmptedImageIcon
+            width={48}
+            height={48}
+            color={theme.mode.grey[300]}
+          />
+          <p>{t('곧 이미지를 추가할 예정이에요!')}</p>
+        </S.NoImagePlaceholder>
+      )}
+
       <S.IconWrapper>
         {(menu.isBest || menu.isNew) && (
           <S.LeftBadges>
