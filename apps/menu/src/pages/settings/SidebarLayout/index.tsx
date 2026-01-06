@@ -36,10 +36,11 @@ export const SidebarLayout = () => {
       useTranslation={useAdminTranslation}
       menus={getSidebarMenus(t)}
       logoElement={
-        <button type="button" onClick={onClickLogo}>
+        <button type="button" onClick={onClickLogo} style={{ width: '100%' }}>
           <img
             src={shopPageSettingData?.shopThemeData?.logoImagePath ?? ''}
             alt={t('매장 로고')}
+            style={{ width: '100%' }}
           />
         </button>
       }

@@ -15,10 +15,14 @@ export const SidebarContainer = styled.aside`
 
 export const Logo = styled.div`
   color: ${colors.white};
-  padding: 40px 0 20px 0;
+  padding: 40px 12px 20px;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  & > img {
+    width: 100%;
+  }
 `;
 
 export const MenuList = styled.ul`
