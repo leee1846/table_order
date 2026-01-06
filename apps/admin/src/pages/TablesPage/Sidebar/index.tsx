@@ -18,6 +18,7 @@ import { toast } from '@repo/feature/utils';
 import type { ICurrentTable, ITableGroup } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
 import { TableGroupList } from './sidebar.styles';
+import { SystemControl } from '@repo/util/app';
 
 type MenuItem = {
   id: string;
@@ -72,8 +73,8 @@ export const Sidebar = ({
     }
   };
 
-  const handleClose = () => {
-    console.log(t('종료 클릭'));
+  const handleClose = async () => {
+    await SystemControl.exitApp();
   };
 
   return (

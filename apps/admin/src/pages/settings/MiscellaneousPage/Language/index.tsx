@@ -16,9 +16,16 @@ import type { MiscellaneousChange } from '../types';
 interface LanguageProps {
   shopSetting?: IShopSetting;
   onChange?: (value: MiscellaneousChange) => void;
+  adminLanguage?: TShopLanguage;
+  onAdminLanguageChange?: (value: TShopLanguage) => void;
 }
 
-export const Language = ({ shopSetting, onChange }: LanguageProps) => {
+export const Language = ({
+  shopSetting,
+  onChange,
+  adminLanguage,
+  onAdminLanguageChange,
+}: LanguageProps) => {
   const { t } = useAdminTranslation();
   const [mainLanguage, setMainLanguage] = useState<TShopLanguage>('KO');
   const [locale, setLocale] = useState(false);
@@ -76,6 +83,8 @@ export const Language = ({ shopSetting, onChange }: LanguageProps) => {
     [t]
   );
 
+  const adminLanguageValue = adminLanguage ?? 'KO';
+
   return (
     <SectionWrapper
       title={t('언어')}
@@ -87,6 +96,14 @@ export const Language = ({ shopSetting, onChange }: LanguageProps) => {
         />
       }
     >
+      <UIStyles.setting.ContentLayout>
+        <p>{t('관리자 언어')}</p>
+        <Dropdown
+          options={languageOptions}
+          value={adminLanguageValue}
+          onChange={(value) => onAdminLanguageChange?.(value as TShopLanguage)}
+        />
+      </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>{t('메인 언어')}</p>
         <Dropdown
@@ -142,9 +159,7 @@ export const Language = ({ shopSetting, onChange }: LanguageProps) => {
             onChange={() => setUseLocaleBeforeOrder(!useLocaleBeforeOrder)}
             customStyle={S.checkboxCss}
           >
-            <S.CheckboxText>
-              {t('주문 전 언어 선택')}
-            </S.CheckboxText>
+            <S.CheckboxText>{t('주문 전 언어 선택')}</S.CheckboxText>
           </CheckButton>
         </S.CheckboxWrapper>
       </div>

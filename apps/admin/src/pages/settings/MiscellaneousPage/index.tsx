@@ -1,4 +1,4 @@
-import { useAdminTranslation } from '@/config/i18n';
+import { setStorageAdminLanguage, useAdminTranslation } from '@/config/i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { BasicButton } from '@repo/ui/components';
@@ -12,6 +12,7 @@ import {
 import type {
   ICategory,
   IUpdateShopSettingRequest,
+  TShopLanguage,
   TUpdateCategoryFirstOrderRequest,
 } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
@@ -25,11 +26,15 @@ import { Intergration } from '@/pages/settings/MiscellaneousPage/Intergration';
 import { Language } from '@/pages/settings/MiscellaneousPage/Language';
 import type { MiscellaneousChange } from './types';
 import { toast } from '@repo/feature/utils';
+import { ADMIN_LANGUAGE_STORAGE_KEY } from '@/constants/keys';
+import { getInitialLanguage } from '@/config/i18n';
 
 export const MiscellaneousPage = () => {
   const { t } = useAdminTranslation();
   const { shopCode, tokenPayload, shopSeq: authShopSeq } = useAuth();
   const queryClient = useQueryClient();
+  const [adminLanguage, setAdminLanguage] =
+    useState<TShopLanguage>(getInitialLanguage());
 
   const { data: shopDetailResponse } = useGetShopDetail(shopCode ?? '', {
     enabled: !!shopCode,
@@ -162,6 +167,10 @@ export const MiscellaneousPage = () => {
       return;
     }
 
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(ADMIN_LANGUAGE_STORAGE_KEY, adminLanguage);
+    }
+
     const shopSetting = {
       ...shopInfo.shopSetting,
       ...changesRef.current.shopSetting,
@@ -209,6 +218,8 @@ export const MiscellaneousPage = () => {
       updateCategoryFirstOrderMutation.mutateAsync(categoryPayload),
     ]);
 
+    setStorageAdminLanguage(adminLanguage);
+
     if (shopCode) {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.shop.detail(shopCode),
@@ -222,6 +233,7 @@ export const MiscellaneousPage = () => {
     toast(t('설정이 저장되었습니다.'));
     changesRef.current = {};
   }, [
+    adminLanguage,
     categories,
     queryClient,
     refetchCategoryList,
@@ -281,7 +293,12 @@ export const MiscellaneousPage = () => {
           onChange={handleChange}
         />
 
-        <Language shopSetting={shopInfo?.shopSetting} onChange={handleChange} />
+        <Language
+          shopSetting={shopInfo?.shopSetting}
+          onChange={handleChange}
+          onAdminLanguageChange={setAdminLanguage}
+          adminLanguage={adminLanguage}
+        />
       </S.Sections>
     </S.Container>
   );

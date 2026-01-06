@@ -8,6 +8,7 @@ import * as S from '@/pages/settings/MiscellaneousPage/Network/network.style';
 import { NetworkIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { MiscellaneousChange } from '../types';
+import { CapacitorApp } from '@repo/util/app';
 
 interface NetworkProps {
   shopNetwork?: IShopNetwork;
@@ -39,9 +40,19 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
   const [networkSetting, setNetworkSetting] = useState<TNetworkType>('AUTO');
   const [ssid, setSsid] = useState('');
   const [ipAddress, setIpAddress] = useState('');
+  const [currentVersion, setCurrentVersion] = useState<string>('');
   const { data: latestAppVersionResponse } = useGetLatestAppVersion(appType);
 
   const latestAppVersionText = latestAppVersionResponse?.data?.version;
+
+  useEffect(() => {
+    const getAppInfo = async () => {
+      const appInfo = await CapacitorApp.getInfo();
+      setCurrentVersion(appInfo.version);
+    };
+
+    getAppInfo();
+  }, []);
 
   useEffect(() => {
     if (!shopNetwork) {
@@ -87,10 +98,9 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
           </UIStyles.setting.Title>
         </S.TitleContentContainer>
         <S.Versions>
-          {/* TODO 앱에서 받아와야 함 */}
           <p>
             {t('현재 버전')}
-            <span>2.??.??</span>
+            <span>{currentVersion}</span>
           </p>
           <div />
           <p>

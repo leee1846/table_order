@@ -13,3 +13,6 @@ export const SSE_KEYS = {
   /** SSE 연결 키 */
   MAIN_CONNECTION: 'sse-main-connection',
 } as const;
+
+/** 관리자 언어 저장 키 */
+export const ADMIN_LANGUAGE_STORAGE_KEY = 'adminLanguage';
