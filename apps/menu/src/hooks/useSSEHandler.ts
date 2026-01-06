@@ -22,6 +22,7 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
+import { useShopThemePage } from './useShopThemePage';
 
 /**
  * SSE 연결 및 메시지 처리를 담당하는 훅
@@ -107,6 +108,9 @@ export const useSSEHandler = () => {
     useTableGroupData({
       skipInitialRequest: true,
     });
+  const { refresh: refreshShopThemePageData } = useShopThemePage({
+    skipInitialRequest: true,
+  });
 
   const { data: pickupAlarmData, setData: setPickupAlarm } =
     usePickupAlarmStore();
@@ -201,6 +205,7 @@ export const useSSEHandler = () => {
     if (location.pathname !== ROUTES.ROOT.path) {
       return;
     }
+
     await refreshShopDetailData();
     window.location.reload();
   }, [refreshShopDetailData, location.pathname]);
@@ -370,6 +375,11 @@ export const useSSEHandler = () => {
     });
   }, [handleDeviceControlMessage]);
 
+  // 상점 테마 페이지 메시지 처리
+  const handleShopThemeMessage = useCallback(() => {
+    refreshShopThemePageData();
+  }, [refreshShopThemePageData]);
+
   // SSE 메시지 처리
   useEffect(() => {
     const currentShopCode = currentShopData?.shopCode;
@@ -432,6 +442,14 @@ export const useSSEHandler = () => {
         handleDeviceScreenOnMessage();
         break;
 
+      case 'SHOP_THEME_PAGE':
+        handleShopThemeMessage();
+        break;
+
+      case 'SHOP_THEME_MENU':
+        handleShopThemeMessage();
+        break;
+
       default:
         break;
     }
@@ -450,5 +468,6 @@ export const useSSEHandler = () => {
     handleDeviceAppUpdateMessage,
     handleDeviceScreenOffMessage,
     handleDeviceScreenOnMessage,
+    handleShopThemeMessage,
   ]);
 };

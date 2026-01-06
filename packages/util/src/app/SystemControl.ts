@@ -5,7 +5,12 @@ import { registerPlugin, type Plugin } from '@capacitor/core';
  */
 export interface SystemStatus {
   battery?: number;
+  // - wifi 세기를 Level에서 Rssi(dBm) 강도로 변경
+  // - Rssi 강도 범위 [ 최상(4): -55 이상, 좋음(3): -56 ~ -66, 보통(2): -67 ~ -77, 약함(1): -78 ~ -88, 연결 불가(0): -89 이하 ]
   wifi?: number;
+  // - network_recovered: 네트워크 복구
+  // - network_lost: 네트워크 끊김
+  event?: 'network_recovered' | 'network_lost';
 }
 
 /**
