@@ -47,23 +47,23 @@ export const useSSEHandler = () => {
     }
 
     // 도난방지 팝업 테스트 필요
-    if (sseMessage?.type === 'DEVICE_THEFT') {
-      // data는 DeviceVo 객체
-      if (
-        sseMessage.data &&
-        typeof sseMessage.data === 'object' &&
-        !Array.isArray(sseMessage.data)
-      ) {
-        const deviceData = sseMessage.data as unknown as IDevice;
+    // if (sseMessage?.type === 'DEVICE_THEFT') {
+    //   // data는 DeviceVo 객체
+    //   if (
+    //     sseMessage.data &&
+    //     typeof sseMessage.data === 'object' &&
+    //     !Array.isArray(sseMessage.data)
+    //   ) {
+    //     const deviceData = sseMessage.data as unknown as IDevice;
 
-        // deviceType이 MENU인 경우만 처리
-        if (deviceData?.deviceType === 'MENU') {
-          // 도난 알림 팝업 열기
-          openAlert(deviceData.tableNumber || '');
-          // 도난 알림음 재생 (경고음)
-          SystemControl.playSound({ type: 'siren' });
-        }
-      }
-    }
+    //     // deviceType이 MENU인 경우만 처리
+    //     if (deviceData?.deviceType === 'MENU') {
+    //       // 도난 알림 팝업 열기
+    //       openAlert(deviceData.tableNumber || '');
+    //       // 도난 알림음 재생 (경고음)
+    //       SystemControl.playSound({ type: 'siren' });
+    //     }
+    //   }
+    // }
   }, [sseMessage, shopCode, queryClient, openAlert]);
 };
