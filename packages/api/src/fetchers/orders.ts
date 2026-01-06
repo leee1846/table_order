@@ -14,6 +14,7 @@ import type {
   TCreateOrderGroupResponse,
   ICancelOrderMenuRequest,
   ICancelOrderAllRequest,
+  IClearOrderRequest,
   IPostCustomAmountRequest,
   IPostPickupMessageRequest,
   TPostPickupMessageResponse,
@@ -194,7 +195,7 @@ export const cancelOrderMenu = async (
     data,
   });
 
-  return response.data;
+ return response.data;
 };
 
 /**
@@ -209,6 +210,23 @@ export const cancelOrderAll = async ({
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'PUT',
     url: ENDPOINTS.ORDER.CANCEL_ALL(shopCode, tableNumber),
+  });
+
+  return response.data;
+};
+
+/**
+ * 현재 테이블 주문을 비우고 상태를 초기화합니다.
+ * PUT /order/clear/{shopCode}/{tableNumber}
+ */
+export const clearOrder = async ({
+  shopCode,
+  tableNumber,
+}: IClearOrderRequest): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.ORDER.CLEAR_ORDER(shopCode, tableNumber),
   });
 
   return response.data;

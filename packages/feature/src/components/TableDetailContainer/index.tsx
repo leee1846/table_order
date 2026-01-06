@@ -26,6 +26,7 @@ import { openDualActionDialog, toast } from '@repo/feature/utils';
 import {
   useGetTableOrderHistories,
   usePutCancelOrderAll,
+  usePutClearOrder,
   useGetCategoriesWithMenus,
   useGetShopDetail,
 } from '@repo/api/queries';
@@ -175,6 +176,9 @@ export const TableDetailContainer = ({
   const { mutateAsync: cancelOrderAll, isPending: isCancelAllPending } =
     usePutCancelOrderAll();
 
+  const { mutateAsync: clearOrder, isPending: isClearOrderPending } =
+    usePutClearOrder();
+
   const order: Order | null = useMemo(() => {
     const calculatedNumberOfPeople =
       (orderHistoriesResponse?.data?.customerCount ?? 0) +
@@ -294,12 +298,12 @@ export const TableDetailContainer = ({
     if (order.items.length > 0) {
       navigate('/tables');
       return;
-    } else if (order.items.length === 0) {
-      // TODO 클리어 통신이 없어서 일단 전체 취소로 로직 구현해 놓음
-      await cancelOrderAll({ shopCode, tableNumber });
-      await refetch();
-      navigate('/tables');
     }
+
+    await clearOrder({ shopCode, tableNumber });
+    toast(t('테이블을 정리했어요.'));
+    await refetch();
+    navigate('/tables');
   };
 
   return (

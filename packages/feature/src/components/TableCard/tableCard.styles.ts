@@ -51,6 +51,7 @@ export const CardContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
+  height: 100%;
 `;
 
 export const MenuItem = styled.div`
@@ -73,7 +74,13 @@ export const CardFooter = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: end;
+  align-items: center;
+
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 export const TotalAmount = styled.div`

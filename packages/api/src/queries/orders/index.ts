@@ -9,4 +9,5 @@ export * from './usePutShareOrderTable';
 export * from './usePostOrderGroup';
 export * from './usePutCancelOrderMenu';
 export * from './usePutCancelOrderAll';
+export * from './usePutClearOrder';
 export * from './usePostCustomAmount';

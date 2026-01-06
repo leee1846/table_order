@@ -65,7 +65,7 @@ export const TableCard = ({
       </S.CardContent>
 
       <S.CardFooter>
-        {batteryIcon}
+        <div>{batteryIcon}</div>
         {!table.menuItems ? (
           <S.StatusText>{t('빈 테이블')}</S.StatusText>
         ) : (

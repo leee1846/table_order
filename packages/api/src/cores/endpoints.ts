@@ -36,6 +36,8 @@ export const ENDPOINTS = {
       `/order/cancel/${shopCode}/${tableNumber}`,
     MOVE_ORDER_GROUP: (shopCode: string) => `/order/move/${shopCode}`,
     SHARE_ORDER_GROUP: (shopCode: string) => `/order/share/${shopCode}`,
+    CLEAR_ORDER: (shopCode: string, tableNumber: string) =>
+      `/order/clear/${shopCode}/${tableNumber}`,
     CUSTOM_AMOUNT: '/order/custom-amount',
     ORDER_LOG_LIST: (shopCode: string) => `/order/log/${shopCode}`,
   },

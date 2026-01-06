@@ -87,16 +87,7 @@ export const useTableDrag = ({
             queryClient.invalidateQueries({
               queryKey: queryKeys.orders.currentTableList(shopCode),
             });
-            toast(
-              t('주문을 이동했어요.')
-            );
-          },
-          onError: () => {
-            toast(
-              t(
-                '테이블 이동에 실패했어요. 다시 시도해주세요.'
-              )
-            );
+            toast(t('주문을 이동했어요.'));
           },
         });
         return;
@@ -107,16 +98,7 @@ export const useTableDrag = ({
           queryClient.invalidateQueries({
             queryKey: queryKeys.orders.currentTableList(shopCode),
           });
-          toast(
-            t('주문을 합석했어요.')
-          );
-        },
-        onError: () => {
-          toast(
-            t(
-              '주문 합석에 실패했어요. 다시 시도해주세요.'
-            )
-          );
+          toast(t('주문을 합석했어요.'));
         },
       });
     },

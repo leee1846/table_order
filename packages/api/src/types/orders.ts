@@ -297,6 +297,14 @@ export interface ICancelOrderAllRequest {
 }
 
 /**
+ * 테이블 주문을 초기화해서 빈 테이블로 만듭니다.
+ */
+export interface IClearOrderRequest {
+  shopCode: string;
+  tableNumber: string;
+}
+
+/**
  * 금액 변경 요청 파라미터
  */
 export interface IPostCustomAmountRequest {
