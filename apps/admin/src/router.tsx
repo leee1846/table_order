@@ -124,27 +124,31 @@ const rootRouteLoader = () => {
     return redirect(ROUTES.LOGIN.generate());
   }
 
-  // role에 따라 리디렉트
-  if (payload.role === 'SHOP') {
-    return redirect(ROUTES.TABLES.generate());
+  if (CapacitorApp.isNative()) {
+    if (payload.role === 'SHOP') {
+      return redirect(ROUTES.TABLES.generate());
+    }
+
+    // TODO: 404페이지 처리해야함.
+    return null;
   }
 
-  if (payload.role === 'ADMIN' && !CapacitorApp.isNative()) {
+  if (payload.role === 'ADMIN') {
     return redirect(ROUTES.STORES.generate());
   }
 
-  // 기본값으로 /tables로 리디렉트
   // TODO: 404페이지 처리해야함.
-  return redirect(ROUTES.TABLES.generate());
+  return null;
 };
 
 /**
  * Tables 관련 경로에서 native가 아닐 경우 settings로 리디렉트하는 loader
  */
-const redirectToOnlyForWebPage = () => {
+const onlyWebPageLoader = () => {
   if (!CapacitorApp.isNative()) {
     return redirect(ROUTES.SETTINGS.NOTICES.generate());
   }
+
   return null;
 };
 
@@ -180,7 +184,7 @@ export const router = createBrowserRouter([
       {
         // /tables
         path: ROUTES.TABLES.path,
-        loader: redirectToOnlyForWebPage,
+        loader: onlyWebPageLoader,
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
             <TablesPage />
