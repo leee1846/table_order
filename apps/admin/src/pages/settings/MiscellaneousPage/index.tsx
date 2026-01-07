@@ -3,6 +3,7 @@ import {
   useAdminTranslation,
   getInitialLanguage,
 } from '@/config/i18n';
+import { storage } from '@repo/util/function';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { BasicButton } from '@repo/ui/components';
@@ -171,7 +172,7 @@ export const MiscellaneousPage = () => {
     }
 
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem(ADMIN_LANGUAGE_STORAGE_KEY, adminLanguage);
+      storage.local.save<string>(ADMIN_LANGUAGE_STORAGE_KEY, adminLanguage);
     }
 
     const shopSetting = {

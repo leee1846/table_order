@@ -10,6 +10,7 @@ import jpTranslation from '@/locales/jp/translation.json';
 import chTranslation from '@/locales/ch/translation.json';
 import ruTranslation from '@/locales/ru/translation.json';
 import type { TShopLanguage } from '@repo/api/types';
+import { storage } from '@repo/util/function';
 
 // 기본 언어 설정
 const DEFAULT_LANGUAGE: TShopLanguage = 'KO';
@@ -24,7 +25,7 @@ const isShopLanguage = (value: string): value is TShopLanguage =>
 // 초기 언어를 가져오는 함수 (localStorage에서 읽거나 기본값 반환)
 export const getInitialLanguage = (): TShopLanguage => {
   // localStorage에서 저장된 언어 가져오기
-  const storedLanguage = window.localStorage.getItem(
+  const storedLanguage = storage.local.load<TShopLanguage>(
     ADMIN_LANGUAGE_STORAGE_KEY
   );
 
@@ -34,7 +35,10 @@ export const getInitialLanguage = (): TShopLanguage => {
   }
 
   // 유효하지 않으면 기본 언어로 저장하고 반환
-  window.localStorage.setItem(ADMIN_LANGUAGE_STORAGE_KEY, DEFAULT_LANGUAGE);
+  storage.local.save<TShopLanguage>(
+    ADMIN_LANGUAGE_STORAGE_KEY,
+    DEFAULT_LANGUAGE
+  );
   return DEFAULT_LANGUAGE;
 };
 

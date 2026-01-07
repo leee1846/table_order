@@ -1,8 +1,7 @@
 import { create } from '@repo/feature/zustand';
 import type { ITokenPayload } from '@repo/api/types';
 import { getAccessToken } from '@repo/api/auth';
-import { decodeJwtToken } from '@repo/util/function';
-import storage from '@/utils/storage';
+import { decodeJwtToken, storage } from '@repo/util/function';
 import { STORAGE_KEYS } from '@/constants/keys';
 
 export interface IAuthStore {
@@ -58,7 +57,7 @@ export const useAuthStore = create<IAuthStore>((set, _) => {
       const accessToken = getAccessToken();
       if (!accessToken) {
         set({ tokenPayload: null, shopCode: null, shopSeq: null });
-        storage.remove(STORAGE_KEYS.AUTH);
+        storage.local.remove(STORAGE_KEYS.AUTH);
         return;
       }
 
@@ -66,7 +65,7 @@ export const useAuthStore = create<IAuthStore>((set, _) => {
 
       if (!payload) {
         set({ tokenPayload: null, shopCode: null, shopSeq: null });
-        storage.remove(STORAGE_KEYS.AUTH);
+        storage.local.remove(STORAGE_KEYS.AUTH);
         return;
       }
 
@@ -78,7 +77,7 @@ export const useAuthStore = create<IAuthStore>((set, _) => {
       });
     },
     clearAuth: () => {
-      storage.remove(STORAGE_KEYS.AUTH);
+      storage.local.remove(STORAGE_KEYS.AUTH);
       set({ tokenPayload: null, shopCode: null, shopSeq: null });
     },
   };

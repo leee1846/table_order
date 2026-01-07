@@ -253,40 +253,25 @@ export const TablesPage = () => {
   ]);
 
   // 테이블 선택 처리
-  const selectTable = useCallback(
-    async (table: TableWithStatus) => {
-      await createDeviceDetail({
-        tableNumber: table.tableNumber,
-        shopCode: shopData?.shopCode ?? '',
-        deviceType: 'MENU',
-        orderPosNumber: null,
-        androidId: deviceData?.androidId ?? '',
-        battery: deviceData?.battery ?? 0,
-        wifiSignal: deviceData?.wifiSignal ?? '',
-        ipAddress: deviceData?.ipAddress ?? '',
-        version: deviceData?.version ?? '',
-        buildNumber: deviceData?.buildNumber ?? '',
-      });
+  const selectTable = async (table: TableWithStatus) => {
+    await createDeviceDetail({
+      tableNumber: table.tableNumber,
+      shopCode: shopData?.shopCode ?? '',
+      deviceType: 'MENU',
+      orderPosNumber: null,
+      androidId: deviceData?.androidId ?? '',
+      battery: deviceData?.battery ?? 0,
+      wifiSignal: deviceData?.wifiSignal ?? '',
+      ipAddress: deviceData?.ipAddress ?? '',
+      version: deviceData?.version ?? '',
+      buildNumber: deviceData?.buildNumber ?? '',
+    });
 
-      await refreshDeviceData();
-      await refreshMenuInitialData();
-      clearAdminPasswordCache();
-      navigate(ROUTES.ROOT.generate());
-    },
-    [
-      createDeviceDetail,
-      shopData?.shopCode,
-      deviceData?.androidId,
-      deviceData?.battery,
-      deviceData?.wifiSignal,
-      deviceData?.ipAddress,
-      deviceData?.version,
-      deviceData?.buildNumber,
-      refreshDeviceData,
-      refreshMenuInitialData,
-      navigate,
-    ]
-  );
+    await refreshDeviceData();
+    await refreshMenuInitialData();
+    clearAdminPasswordCache();
+    navigate(ROUTES.ROOT.generate());
+  };
 
   // 일반 모드: 디바이스 타입 및 테이블 상태 확인 함수
   const isCurrentSelectedTable = (tableNumber: string) =>

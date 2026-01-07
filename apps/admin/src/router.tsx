@@ -9,6 +9,10 @@ import { ROUTES } from '@/constants/routes';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { getAccessToken } from '@repo/api/auth';
 import App from '@/App';
+import type { ITokenPayload } from '@repo/api/types';
+import { decodeJwtToken } from '@repo/util/function';
+import { CapacitorApp } from '@repo/util/app';
+import { StoresPage } from './pages/StoresPage';
 
 const LoginPage = lazy(() =>
   import('@/pages/LoginPage').then((module) => ({
@@ -106,6 +110,44 @@ const protectedRouteLoader = () => {
   return null;
 };
 
+/**
+ * 루트 경로에서 role에 따라 리디렉트하는 loader
+ */
+const rootRouteLoader = () => {
+  const token = getAccessToken();
+  if (!token) {
+    return redirect(ROUTES.LOGIN.generate());
+  }
+
+  const payload = decodeJwtToken<ITokenPayload>(token);
+  if (!payload) {
+    return redirect(ROUTES.LOGIN.generate());
+  }
+
+  // role에 따라 리디렉트
+  if (payload.role === 'SHOP') {
+    return redirect(ROUTES.TABLES.generate());
+  }
+
+  if (payload.role === 'ADMIN' && !CapacitorApp.isNative()) {
+    return redirect(ROUTES.STORES.generate());
+  }
+
+  // 기본값으로 /tables로 리디렉트
+  // TODO: 404페이지 처리해야함.
+  return redirect(ROUTES.TABLES.generate());
+};
+
+/**
+ * Tables 관련 경로에서 native가 아닐 경우 settings로 리디렉트하는 loader
+ */
+const redirectToOnlyForWebPage = () => {
+  if (!CapacitorApp.isNative()) {
+    return redirect(ROUTES.SETTINGS.NOTICES.generate());
+  }
+  return null;
+};
+
 export const router = createBrowserRouter([
   {
     path: ROUTES.LOGIN.path,
@@ -115,18 +157,30 @@ export const router = createBrowserRouter([
       </Suspense>
     ),
   },
+
   {
     loader: protectedRouteLoader,
     element: <App />,
     children: [
       {
-        // 루트 경로 → /tables로 리디렉트
+        // 루트 경로 → role에 따라 리디렉트
         path: '/',
-        element: <Navigate to={ROUTES.TABLES.path} replace />,
+        loader: rootRouteLoader,
       },
+
+      {
+        path: ROUTES.STORES.path,
+        element: (
+          <Suspense fallback={<FullscreenLoadingSpinner />}>
+            <StoresPage />
+          </Suspense>
+        ),
+      },
+
       {
         // /tables
         path: ROUTES.TABLES.path,
+        loader: redirectToOnlyForWebPage,
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
             <TablesPage />
@@ -136,6 +190,7 @@ export const router = createBrowserRouter([
       {
         // /tables/:tableNum
         path: ROUTES.TABLE_DETAIL.path,
+        loader: redirectToOnlyForWebPage,
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
             <TableDetailPage />
@@ -232,6 +287,7 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTES.SETTINGS.TABLES.generate(),
+        loader: redirectToOnlyForWebPage,
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
             <SettingsTablesPage />

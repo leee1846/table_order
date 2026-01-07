@@ -9,6 +9,11 @@ export const ROUTES = {
     generate: () => '/',
   },
 
+  STORES: {
+    path: '/stores',
+    generate: () => '/stores',
+  },
+
   SETTINGS: {
     path: '/settings',
 

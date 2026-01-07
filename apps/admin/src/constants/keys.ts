@@ -7,6 +7,8 @@ export const STORAGE_KEYS = {
   CUSTOMER_COUNT: 'customer-count',
   /** admin 다국어 코드 키 */
   ADMIN_I18N_LANGUAGE: 'adminI18Lng',
+  /** 관리자 웹에서 선택한 매장 코드 키 */
+  SHOP_CODE: 'shop-code',
 } as const;
 
 export const SSE_KEYS = {

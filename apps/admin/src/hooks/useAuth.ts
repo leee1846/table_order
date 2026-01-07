@@ -13,6 +13,7 @@ export const useAuth = () => {
   const { data: shopsResponse } = useGetShops({
     enabled: !!shopSeq && !shopCode, // shopSeq가 있고 shopCode가 없을 때만 호출
   });
+
   const shops = shopsResponse?.data ?? [];
 
   // shopSeq로 shopCode 매칭
