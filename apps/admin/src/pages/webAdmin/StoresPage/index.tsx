@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Pagination, Input, Dropdown } from '@repo/ui/components';
+import { Pagination, Input, BasicButton } from '@repo/ui/components';
+import { useNavigate } from 'react-router-dom';
 import * as UIStyles from '@repo/ui/styles';
 import { Table } from './Table';
 import * as S from './storesPage.style';
+import { ROUTES } from '@/constants/routes';
 
 interface StoreItem {
   sid: string;
@@ -122,27 +124,10 @@ const MOCK_STORES: StoreItem[] = [
 const PAGE_SIZE = 10;
 
 export const StoresPage = () => {
+  const navigate = useNavigate();
+
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchKeyword, setSearchKeyword] = useState<string>('');
-  const [contractStatus, setContractStatus] = useState<string | number | null>(
-    null
-  );
-  const [isPrePayment, setIsPrePayment] = useState<string | number | null>(
-    null
-  );
-
-  const contractStatusOptions = [
-    { value: 'all', label: '전체' },
-    { value: 'active', label: '계약중' },
-    { value: 'expired', label: '계약만료' },
-    { value: 'pending', label: '계약대기' },
-  ];
-
-  const prePaymentOptions = [
-    { value: 'all', label: '전체' },
-    { value: 'yes', label: 'Y' },
-    { value: 'no', label: 'N' },
-  ];
 
   const totalPages = Math.ceil(MOCK_STORES.length / PAGE_SIZE);
   const startIndex = (currentPage - 1) * PAGE_SIZE;
@@ -165,6 +150,10 @@ export const StoresPage = () => {
     console.log('Detail store:', store);
   };
 
+  const handleCreate = () => {
+    navigate(ROUTES.ADMIN_WEB.STORES_NEW.generate());
+  };
+
   return (
     <UIStyles.setting.TablePageContainer>
       <S.Container>
@@ -182,6 +171,9 @@ export const StoresPage = () => {
               onChange={(value) => setSearchKeyword(value)}
             />
           </S.SearchInputWrapper>
+          <BasicButton variant="Solid_Navy_M" onClick={handleCreate}>
+            매장 생성
+          </BasicButton>
         </S.SearchContainer>
 
         <Table

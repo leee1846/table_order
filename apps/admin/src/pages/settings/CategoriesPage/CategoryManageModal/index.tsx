@@ -225,7 +225,7 @@ export const CategoryManageModal = ({
           isStaffCall,
           categoryDescription: categoryDescription || null,
           isFirstOrderRequired: false,
-          selectedLanguageCode: selectedLanguageCode,
+          selectedLanguageCode,
           useSaleDay,
           useSaleTime,
         });

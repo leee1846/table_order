@@ -29,7 +29,7 @@ export const Title = styled.div`
 
 export const SearchContainer = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: flex-end;
   gap: 10px;
 `;
@@ -37,13 +37,6 @@ export const SearchContainer = styled.div`
 export const SearchInputWrapper = styled.div`
   flex: 1;
   max-width: 300px;
-`;
-
-export const DropdownWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 150px;
 `;
 
 export const DropdownLabel = styled.label`

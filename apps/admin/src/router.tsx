@@ -29,6 +29,11 @@ const StoresSidebar = lazy(() =>
     default: module.StoresSidebarLayout,
   }))
 );
+const StoreNewPage = lazy(() =>
+  import('@/pages/webAdmin/StoreNewPage').then((module) => ({
+    default: module.StoreNewPage,
+  }))
+);
 const NoticesPage = lazy(() =>
   import('@/pages/settings/NoticesPage').then((module) => ({
     default: module.NoticesPage,
@@ -210,6 +215,15 @@ export const router = createBrowserRouter([
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <StoresPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: ROUTES.ADMIN_WEB.STORES_NEW.path,
+            loader: onlyWebPageLoader,
+            element: (
+              <Suspense fallback={<FullscreenLoadingSpinner />}>
+                <StoreNewPage />
               </Suspense>
             ),
           },

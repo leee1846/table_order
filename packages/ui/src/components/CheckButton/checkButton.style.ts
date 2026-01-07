@@ -81,4 +81,8 @@ export const Label = styled.label<Props>`
     ${({ checked, disabled, theme }) =>
       getCheckButtonStyles(checked, disabled, theme)}
   }
+
+  & > input {
+    display: none;
+  }
 `;

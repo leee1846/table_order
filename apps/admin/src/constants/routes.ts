@@ -17,6 +17,10 @@ export const ROUTES = {
       path: 'stores',
       generate: () => '/admin/stores',
     },
+    STORES_NEW: {
+      path: 'stores/new',
+      generate: () => '/admin/stores/new',
+    },
   },
 
   SETTINGS: {
