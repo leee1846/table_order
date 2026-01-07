@@ -141,11 +141,9 @@ const rootRouteLoader = () => {
   return null;
 };
 
-/**
- * Tables 관련 경로에서 native가 아닐 경우 settings로 리디렉트하는 loader
- */
-const onlyWebPageLoader = () => {
+const onlyNativePageLoader = () => {
   if (!CapacitorApp.isNative()) {
+    // 웹일경우 웹과 합께 볼 수 있는 페이지로 리다이렉트함.
     return redirect(ROUTES.SETTINGS.NOTICES.generate());
   }
 
@@ -184,7 +182,7 @@ export const router = createBrowserRouter([
       {
         // /tables
         path: ROUTES.TABLES.path,
-        loader: onlyWebPageLoader,
+        loader: onlyNativePageLoader,
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
             <TablesPage />
@@ -194,7 +192,7 @@ export const router = createBrowserRouter([
       {
         // /tables/:tableNum
         path: ROUTES.TABLE_DETAIL.path,
-        loader: redirectToOnlyForWebPage,
+        loader: onlyNativePageLoader,
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
             <TableDetailPage />
@@ -291,7 +289,7 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTES.SETTINGS.TABLES.generate(),
-        loader: redirectToOnlyForWebPage,
+        loader: onlyNativePageLoader,
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
             <SettingsTablesPage />
