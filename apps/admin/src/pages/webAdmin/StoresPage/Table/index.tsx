@@ -1,5 +1,7 @@
+import { ROUTES } from '@/constants/routes';
 import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
+import { useNavigate } from 'react-router-dom';
 
 interface StoreItem {
   sid: string;
@@ -18,7 +20,9 @@ interface Props {
   onDetail?: (store: StoreItem) => void;
 }
 
-export const Table = ({ stores, onEdit, onDetail }: Props) => {
+export const Table = ({ stores, onDetail }: Props) => {
+  const navigate = useNavigate();
+
   const renderRows = () => {
     if (!stores || stores.length === 0) {
       return (
@@ -44,7 +48,9 @@ export const Table = ({ stores, onEdit, onDetail }: Props) => {
           >
             <BasicButton
               variant="Outline_Navy_S"
-              onClick={() => onEdit?.(store)}
+              onClick={() =>
+                navigate(ROUTES.ADMIN_WEB.STORES_EDIT.generate(store.id))
+              }
             >
               수정
             </BasicButton>

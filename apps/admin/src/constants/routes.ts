@@ -21,6 +21,10 @@ export const ROUTES = {
       path: 'stores/new',
       generate: () => '/admin/stores/new',
     },
+    STORES_EDIT: {
+      path: 'stores/:storeCode/edit',
+      generate: (storeCode: string) => `/admin/stores/${storeCode}/edit`,
+    },
   },
 
   SETTINGS: {

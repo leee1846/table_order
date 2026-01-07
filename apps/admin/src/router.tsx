@@ -34,6 +34,11 @@ const StoreNewPage = lazy(() =>
     default: module.StoreNewPage,
   }))
 );
+const StoreEditPage = lazy(() =>
+  import('@/pages/webAdmin/StoreEditPage').then((module) => ({
+    default: module.StoreEditPage,
+  }))
+);
 const NoticesPage = lazy(() =>
   import('@/pages/settings/NoticesPage').then((module) => ({
     default: module.NoticesPage,
@@ -224,6 +229,15 @@ export const router = createBrowserRouter([
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <StoreNewPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: ROUTES.ADMIN_WEB.STORES_EDIT.path,
+            loader: onlyWebPageLoader,
+            element: (
+              <Suspense fallback={<FullscreenLoadingSpinner />}>
+                <StoreEditPage />
               </Suspense>
             ),
           },
