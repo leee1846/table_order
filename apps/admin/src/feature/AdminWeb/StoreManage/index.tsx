@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BasicButton } from '@repo/ui/components';
 import { StoreInfoTab } from '@/feature/AdminWeb/StoreManage/StoreInfoTab';
 import * as S from './storeManage.style';
@@ -15,7 +15,7 @@ interface Props {
 
 const getDefaultFormData = (): IShopFormData => ({
   account: '',
-  sid: '',
+  shopCode: '',
   shopName: '',
   isActive: false,
   address1: '',
@@ -47,6 +47,38 @@ export const StoreManage = ({ mode, initialData, onSave }: Props) => {
     const defaultData = getDefaultFormData();
     return initialData ? { ...defaultData, ...initialData } : defaultData;
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        account: initialData.account ?? '',
+        shopCode: initialData.shopCode ?? '',
+        shopName: initialData.shopName ?? '',
+        isActive: initialData.isActive ?? false,
+        address1: initialData.address1 ?? '',
+        address2: initialData.address2 ?? '',
+        businessNumber: initialData.businessNumber ?? '',
+        shopType: initialData.shopType ?? '',
+        ownerName: initialData.ownerName ?? '',
+        ownerPhoneNumber: initialData.ownerPhoneNumber ?? '',
+        isCorporate: initialData.isCorporate ?? false,
+        businessType: initialData.businessType ?? '',
+        managerName: initialData.managerName ?? '',
+        managerPhoneNumber: initialData.managerPhoneNumber ?? '',
+        shopEmail: initialData.shopEmail ?? '',
+        shopPhoneNumber: initialData.shopPhoneNumber ?? '',
+        isTestShop: initialData.isTestShop ?? false,
+        shopBusinessCategory: initialData.shopBusinessCategory ?? '',
+        shopBusinessStatus: initialData.shopBusinessStatus ?? '',
+        isEarlyBetaUpdate: initialData.isEarlyBetaUpdate ?? false,
+        isEarlyUpdate: initialData.isEarlyUpdate ?? false,
+        shopSearchName: initialData.shopSearchName ?? '',
+        isDeleted: initialData.isDeleted ?? false,
+        useLocale: initialData.useLocale ?? false,
+        useDatadog: initialData.useDatadog ?? false,
+      });
+    }
+  }, [initialData]);
   const [isSaving, setIsSaving] = useState(false);
 
   const updateFormData = (updates: Partial<IShopFormData>) => {

@@ -31,9 +31,9 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
         <S.Section>
           <S.HorizontalLayout>
             <S.FieldGroup>
-              <S.Label>계정정보</S.Label>
+              <S.Label>계정 정보</S.Label>
               <Input
-                placeholder="계정정보"
+                placeholder="계정 정보"
                 value={formData.account || ''}
                 onChange={() => {
                   // readOnly
@@ -45,7 +45,7 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
               <S.Label>SID</S.Label>
               <Input
                 placeholder="SID"
-                value={formData.sid || ''}
+                value={formData.shopCode ?? ''}
                 onChange={() => {
                   // readOnly
                 }}
