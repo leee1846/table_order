@@ -3,7 +3,7 @@ import { getAdminShopList } from '../../fetchers/admin';
 import { queryKeys } from '../queryKeys';
 import {
   IGetAdminShopListParams,
-  IGetAdminShopListResponse,
+  TGetAdminShopListResponse,
 } from '../../types/admin';
 import { AxiosError } from 'axios';
 import { IApiError } from '../../types/common';
@@ -11,11 +11,11 @@ import { IApiError } from '../../types/common';
 export const useGetAdminShopList = (
   params: IGetAdminShopListParams,
   options?: Omit<
-    UseQueryOptions<IGetAdminShopListResponse, AxiosError<IApiError>>,
+    UseQueryOptions<TGetAdminShopListResponse, AxiosError<IApiError>>,
     'queryKey' | 'queryFn'
   >
 ) => {
-  return useQuery<IGetAdminShopListResponse, AxiosError<IApiError>>({
+  return useQuery<TGetAdminShopListResponse, AxiosError<IApiError>>({
     queryKey: queryKeys.admin.shopList(
       params.pageNumber,
       params.pageSize,

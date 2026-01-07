@@ -1,5 +1,6 @@
 import { getAxiosInstance } from '../cores/axios';
 import { ENDPOINTS } from '../cores/endpoints';
+import { TVoidApiResponse } from '../types/common';
 import type {
   TGetShopsResponse,
   TGetShopResponse,
@@ -11,6 +12,7 @@ import type {
   TUpdateShopThemeMenuResponse,
   IUpdateShopThemePageRequest,
   TUpdateShopThemePageResponse,
+  ICreateShopRequest,
 } from '../types/shop';
 
 export const getShops = async (): Promise<TGetShopsResponse> => {
@@ -151,6 +153,19 @@ export const updateShopThemePage = async ({
     url: ENDPOINTS.SHOP.THEME_PAGE_UPDATE,
     data: formData,
     headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  return response.data;
+};
+
+export const createShop = async (
+  params: ICreateShopRequest
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.SHOP.CREATE,
+    data: params,
   });
 
   return response.data;

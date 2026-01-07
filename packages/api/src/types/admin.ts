@@ -1,3 +1,5 @@
+import { IApiResponse } from './common';
+
 export interface IGetAdminShopListParams {
   pageNumber: number;
   pageSize: number;
@@ -20,8 +22,8 @@ export interface IGetAdminShopItem {
   shopSearchName: string;
 }
 
-export interface IGetAdminShopListResponse {
+export type TGetAdminShopListResponse = IApiResponse<{
   currentPageNumber: number;
   totalPageNumber: number;
   shopList: IGetAdminShopItem[];
-}
+}>;

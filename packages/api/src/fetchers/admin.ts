@@ -2,15 +2,15 @@ import { getAxiosInstance } from '../cores/axios';
 import { ENDPOINTS } from '../cores/endpoints';
 import type {
   IGetAdminShopListParams,
-  IGetAdminShopListResponse,
+  TGetAdminShopListResponse,
 } from '../types/admin';
 
 export const getAdminShopList = async (
   params: IGetAdminShopListParams
-): Promise<IGetAdminShopListResponse> => {
+): Promise<TGetAdminShopListResponse> => {
   const axiosInstance = getAxiosInstance('private');
 
-  const response = await axiosInstance<IGetAdminShopListResponse>({
+  const response = await axiosInstance<TGetAdminShopListResponse>({
     method: 'GET',
     url: ENDPOINTS.ADMIN.SHOP_LIST,
     params,

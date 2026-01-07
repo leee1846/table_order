@@ -217,3 +217,29 @@ export interface IUpdateShopThemePageRequest {
 }
 
 export type TUpdateShopThemePageResponse = TVoidApiResponse;
+
+export interface ICreateShopRequest {
+  shopName: string;
+  isActive: boolean;
+  address1: string;
+  address2: string;
+  businessNumber: string;
+  shopType: TShopType;
+  ownerName: string;
+  ownerPhoneNumber: string;
+  isCorporate: boolean;
+  businessType: string;
+  managerName: string;
+  managerPhoneNumber: string;
+  shopEmail: string;
+  shopPhoneNumber: string;
+  isTestShop: boolean;
+  shopBusinessCategory: string;
+  shopBusinessStatus: string;
+  isEarlyBetaUpdate: boolean;
+  isEarlyUpdate: boolean;
+  shopSearchName: string;
+  isDeleted: boolean;
+  useLocale: boolean;
+  useDatadog: boolean;
+}

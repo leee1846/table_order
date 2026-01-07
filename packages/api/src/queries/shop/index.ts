@@ -5,3 +5,4 @@ export * from './useGetShopThemeMenu';
 export * from './useGetShopThemePage';
 export * from './usePutUpdateShopThemeMenu';
 export * from './usePutUpdateShopThemePage';
+export * from './usePostShop';

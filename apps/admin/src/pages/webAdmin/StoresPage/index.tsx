@@ -51,14 +51,14 @@ export const StoresPage = () => {
           </BasicButton>
         </S.SearchContainer>
 
-        <Table stores={shopList?.shopList ?? []} />
+        <Table stores={shopList?.data?.shopList ?? []} />
       </S.Container>
 
       <UIStyles.setting.Footer>
         <div />
         <Pagination
-          totalPages={shopList?.totalPageNumber ?? 0}
-          currentPage={shopList?.currentPageNumber ?? 0}
+          totalPages={shopList?.data?.totalPageNumber ?? 0}
+          currentPage={shopList?.data?.currentPageNumber ?? 0}
           onPageChange={handlePageChange}
         />
       </UIStyles.setting.Footer>

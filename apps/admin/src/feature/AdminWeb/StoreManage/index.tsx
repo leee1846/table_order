@@ -1,48 +1,55 @@
 import { useState } from 'react';
 import { BasicButton } from '@repo/ui/components';
-import type { StoreFormData } from '@/feature/AdminWeb/StoreManage/types';
 import { StoreInfoTab } from '@/feature/AdminWeb/StoreManage/StoreInfoTab';
 import * as S from './storeManage.style';
+import type { IShopFormData } from '@/feature/AdminWeb/types';
 
 type TabType = 'storeInfo' | 'settingInfo';
 type Mode = 'create' | 'edit';
 
 interface Props {
   mode: Mode;
-  initialData?: Partial<StoreFormData>;
-  onSave: (data: StoreFormData) => Promise<void>;
+  initialData?: Partial<IShopFormData>;
+  onSave: (data: IShopFormData) => Promise<void>;
 }
 
-const getDefaultFormData = (): StoreFormData => ({
-  storeName: '',
-  searchStoreName: '',
+const getDefaultFormData = (): IShopFormData => ({
+  account: '',
+  sid: '',
+  shopName: '',
+  isActive: false,
+  address1: '',
+  address2: '',
   businessNumber: '',
-  isCorporation: false,
-  address: '',
-  detailAddress: '',
-  storeEmail: '',
-  representativeName: '',
-  representativeContact: '',
+  shopType: '',
+  ownerName: '',
+  ownerPhoneNumber: '',
+  isCorporate: false,
+  businessType: '',
   managerName: '',
-  managerContact: '',
-  businessType: null,
-  businessCategory: null,
-  isActive: true,
-  isTestStore: false,
-  isOfficialUpdate: false,
-  isBetaUpdate: false,
-  version: '1.0.0',
+  managerPhoneNumber: '',
+  shopEmail: '',
+  shopPhoneNumber: '',
+  isTestShop: false,
+  shopBusinessCategory: '',
+  shopBusinessStatus: '',
+  isEarlyBetaUpdate: false,
+  isEarlyUpdate: false,
+  shopSearchName: '',
+  isDeleted: false,
+  useLocale: false,
+  useDatadog: false,
 });
 
 export const StoreManage = ({ mode, initialData, onSave }: Props) => {
   const [activeTab, setActiveTab] = useState<TabType>('storeInfo');
-  const [formData, setFormData] = useState<StoreFormData>(() => {
+  const [formData, setFormData] = useState<IShopFormData>(() => {
     const defaultData = getDefaultFormData();
     return initialData ? { ...defaultData, ...initialData } : defaultData;
   });
   const [isSaving, setIsSaving] = useState(false);
 
-  const updateFormData = (updates: Partial<StoreFormData>) => {
+  const updateFormData = (updates: Partial<IShopFormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
   };
 
