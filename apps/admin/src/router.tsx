@@ -12,7 +12,7 @@ import App from '@/App';
 import type { ITokenPayload } from '@repo/api/types';
 import { decodeJwtToken } from '@repo/util/function';
 import { CapacitorApp } from '@repo/util/app';
-import { StoresPage } from './pages/StoresPage';
+import { StoresPage } from './pages/webAdmin/StoresPage';
 
 const LoginPage = lazy(() =>
   import('@/pages/LoginPage').then((module) => ({
@@ -22,6 +22,11 @@ const LoginPage = lazy(() =>
 const SettingSidebar = lazy(() =>
   import('@/pages/settings/SidebarLayout').then((module) => ({
     default: module.SidebarLayout,
+  }))
+);
+const StoresSidebar = lazy(() =>
+  import('@/feature/AdminWeb/SidebarLayout').then((module) => ({
+    default: module.StoresSidebarLayout,
   }))
 );
 const NoticesPage = lazy(() =>
@@ -98,6 +103,11 @@ const MenuScreenPage = lazy(() =>
     default: module.MenuScreenPage,
   }))
 );
+const NotFoundPage = lazy(() =>
+  import('@/pages/NotFoundPage').then((module) => ({
+    default: module.NotFoundPage,
+  }))
+);
 
 /**
  * 모든 보호된 라우트에 공통으로 적용되는 인증 체크 loader
@@ -129,22 +139,30 @@ const rootRouteLoader = () => {
       return redirect(ROUTES.TABLES.generate());
     }
 
-    // TODO: 404페이지 처리해야함.
-    return null;
+    return redirect(ROUTES.NOT_FOUND.generate());
   }
 
   if (payload.role === 'ADMIN') {
-    return redirect(ROUTES.STORES.generate());
+    return redirect(ROUTES.ADMIN_WEB.STORES.generate());
   }
 
-  // TODO: 404페이지 처리해야함.
-  return null;
+  return redirect(ROUTES.NOT_FOUND.generate());
 };
 
 const onlyNativePageLoader = () => {
   if (!CapacitorApp.isNative()) {
-    // 웹일경우 웹과 합께 볼 수 있는 페이지로 리다이렉트함.
-    return redirect(ROUTES.SETTINGS.NOTICES.generate());
+    return redirect(ROUTES.NOT_FOUND.generate());
+  }
+
+  return null;
+};
+
+/**
+ * Admin Web 경로에서 native일 경우 404로 리디렉트하는 loader
+ */
+const onlyWebPageLoader = () => {
+  if (CapacitorApp.isNative()) {
+    return redirect(ROUTES.NOT_FOUND.generate());
   }
 
   return null;
@@ -171,12 +189,31 @@ export const router = createBrowserRouter([
       },
 
       {
-        path: ROUTES.STORES.path,
+        path: ROUTES.ADMIN_WEB.path,
+        loader: onlyWebPageLoader,
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
-            <StoresPage />
+            <StoresSidebar />
           </Suspense>
         ),
+        children: [
+          {
+            index: true,
+            loader: onlyWebPageLoader,
+            element: (
+              <Navigate to={ROUTES.ADMIN_WEB.STORES.generate()} replace />
+            ),
+          },
+          {
+            path: ROUTES.ADMIN_WEB.STORES.path,
+            loader: onlyWebPageLoader,
+            element: (
+              <Suspense fallback={<FullscreenLoadingSpinner />}>
+                <StoresPage />
+              </Suspense>
+            ),
+          },
+        ],
       },
 
       {
@@ -293,6 +330,14 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
             <SettingsTablesPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: ROUTES.NOT_FOUND.path,
+        element: (
+          <Suspense fallback={<FullscreenLoadingSpinner />}>
+            <NotFoundPage />
           </Suspense>
         ),
       },
