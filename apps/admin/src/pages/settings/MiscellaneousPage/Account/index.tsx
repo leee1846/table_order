@@ -6,8 +6,8 @@ import { theme } from '@repo/ui';
 import { UserIcon } from '@repo/ui/icons';
 import { useAdminTranslation } from '@/config/i18n';
 import { disconnectSse } from '@/utils/sseConnection';
-import { useAuthStore } from '@/stores/useAuthStore';
 import { ROUTES } from '@/constants/routes';
+import { removeAuthTokens } from '@repo/api/auth';
 
 interface AccountProps {
   shopName?: string;
@@ -21,10 +21,7 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
     disconnectSse();
 
     // store 비우기
-    useAuthStore.getState().clearAuth();
-
-    // 인증 관련 스토리지 정리 (토큰 + 저장된 인증 데이터)
-    useAuthStore.getState().clearAuth();
+    removeAuthTokens();
 
     // 로그인 페이지로 이동
     window.location.replace(ROUTES.LOGIN.generate());
