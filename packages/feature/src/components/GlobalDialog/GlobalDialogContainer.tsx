@@ -17,7 +17,8 @@ export const GlobalDialogContainer = () => {
     <>
       {dialogs.map((modal: DialogConfig) => {
         const handleClose = () => {
-          closeDialog(modal.id);
+          // 태블릿 사용자 경험상 터치했을때 dialog노출과 모달 background가 같이 클릭되는 이슈가 있기때문에 주석처리
+          // closeDialog(modal.id);
         };
 
         const renderModalContent = () => {

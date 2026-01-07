@@ -72,7 +72,7 @@ export const Account = () => {
           <p>{shopName}</p>
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
-          <p>{t('언어 선택')}</p>
+          <p>{t('관리자 언어 선택')}</p>
           <S.LanguageList>
             {availableLanguageOptions.map((languageOption) => (
               <RadioButton
