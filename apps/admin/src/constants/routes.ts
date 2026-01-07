@@ -9,9 +9,14 @@ export const ROUTES = {
     generate: () => '/',
   },
 
-  STORES: {
-    path: '/stores',
-    generate: () => '/stores',
+  ADMIN_WEB: {
+    path: '/admin',
+    generate: () => '/admin',
+
+    STORES: {
+      path: 'stores',
+      generate: () => '/admin/stores',
+    },
   },
 
   SETTINGS: {
@@ -81,5 +86,9 @@ export const ROUTES = {
   TABLE_DETAIL: {
     path: '/tables/:tableNum',
     generate: (tableNum: string | number) => `/tables/${tableNum}`,
+  },
+  NOT_FOUND: {
+    path: '/404',
+    generate: () => '/404',
   },
 } as const;
