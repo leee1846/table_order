@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pagination, Input, Dropdown, BasicButton } from '@repo/ui/components';
+import { Pagination, Input, Dropdown } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import { Table } from './Table';
 import * as S from './storesPage.style';
