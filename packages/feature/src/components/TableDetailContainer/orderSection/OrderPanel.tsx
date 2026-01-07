@@ -53,6 +53,7 @@ export function OrderPanel({
         items={order.items}
         onItemClick={onItemClick}
         discountRate={order.discountRate ?? 0}
+        i18nInstance={i18nInstance}
       />
       <OrderSummary
         totalCount={order.totalCount}

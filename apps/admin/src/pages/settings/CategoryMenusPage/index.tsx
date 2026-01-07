@@ -7,8 +7,11 @@ import * as S from '@/pages/settings/CategoryMenusPage/categoryMenusPage.style';
 import { useGetMenuList, queryKeys } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import type { IMenu, TGetCategoryListResponse } from '@repo/api/types';
+import { useAdminTranslation } from '@/config/i18n';
+import { getCurrentShopLanguage } from '@repo/util/i18n';
 
 export const CategoryMenusPage = () => {
+  const { i18n } = useAdminTranslation();
   const [isMenuManageModalOpen, setIsMenuManageModalOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<IMenu | null>(null);
   const location = useLocation();
@@ -26,7 +29,7 @@ export const CategoryMenusPage = () => {
 
   const { data: menuListResponse } = useGetMenuList(
     { categorySeq: isValidCategorySeq ? categorySeq : 0 },
-    { enabled: isValidCategorySeq } // 카테고리 시퀀스가 유효할 때 만 쿼리가 실행되도록 함함
+    { enabled: isValidCategorySeq }
   );
 
   // categorySeq와 일치하는 카테고리 이름 찾기
@@ -35,8 +38,8 @@ export const CategoryMenusPage = () => {
     const category = categoryListResponse.data.find(
       (cat) => cat.categorySeq === categorySeq
     );
-    return category?.localeCategoryName?.['KO'] ?? '';
-  }, [categoryListResponse, categorySeq, isValidCategorySeq]);
+    return category?.localeCategoryName?.[getCurrentShopLanguage(i18n)] ?? '';
+  }, [categoryListResponse, categorySeq, isValidCategorySeq, i18n.language]);
 
   const onClickAddMenu = () => {
     setSelectedMenu(null);

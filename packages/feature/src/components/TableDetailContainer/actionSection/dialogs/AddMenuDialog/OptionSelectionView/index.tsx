@@ -38,7 +38,8 @@ export const OptionSelectionView = ({
   onAdd,
   onBack,
 }: OptionSelectionViewProps) => {
-  const { t } = useTranslation('admin', { i18n: i18nInstance });
+  const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
+  const currentLan = i18n.language || 'KO';
   const optionGroups = selectedMenu.optionGroupList || [];
 
   const hasSelectedOptions = Array.from(selectedOptions.values()).some(
@@ -137,14 +138,16 @@ export const OptionSelectionView = ({
           {/* 왼쪽 패널 - 옵션 그룹 및 옵션 리스트 */}
           <S.OptionLeftPanel>
             <S.OptionHeader>
-              <S.OptionMenuName>{selectedMenu.menuName}</S.OptionMenuName>
+              <S.OptionMenuName>
+                {selectedMenu.localeMenuName?.[currentLan]}
+              </S.OptionMenuName>
             </S.OptionHeader>
             <S.OptionListContainer>
               {optionGroups.map((group) => (
                 <S.OptionGroup key={group.optionGroupSeq}>
                   <S.OptionGroupHeader>
                     <S.OptionGroupName>
-                      {group.optionGroupName}
+                      {group.localeOptionGroupName?.[currentLan]}
                       {(() => {
                         const hasMin = group.minQuantity > 0;
                         const hasMax = group.maxQuantity > 0;
@@ -182,7 +185,9 @@ export const OptionSelectionView = ({
                           key={option.optionSeq}
                           isDisabled={isDisabled}
                         >
-                          <S.OptionName>{option.optionName}</S.OptionName>
+                          <S.OptionName>
+                            {option.localeOptionName?.[currentLan]}
+                          </S.OptionName>
 
                           <NumberInput
                             variant="rounded"
@@ -226,7 +231,7 @@ export const OptionSelectionView = ({
                             disabled={isDisabled}
                             customStyle={S.checkboxCss}
                           >
-                            {option.optionName}
+                            {option.localeOptionName?.[currentLan]}
                           </CheckButton>
                         </S.OptionRow>
                       );
@@ -251,7 +256,7 @@ export const OptionSelectionView = ({
                           customStyle={S.radioCss}
                           disabled={isDisabled}
                         >
-                          {option.optionName}
+                          {option.localeOptionName?.[currentLan]}
                         </RadioButton>
                       </S.OptionRow>
                     );
@@ -287,7 +292,7 @@ export const OptionSelectionView = ({
                       return (
                         <S.SelectedOptionItem key={optionSeq}>
                           <S.OptionItemName>
-                            ㄴ{option.optionName}
+                            ㄴ{option.localeOptionName?.[currentLan]}
                           </S.OptionItemName>
                           <S.OptionItemPrice>
                             {t('(+{{price}})', {

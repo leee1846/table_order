@@ -7,10 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import { bestOnIcon } from '@repo/ui/icons';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
+import { getCurrentShopLanguage } from '@repo/util/i18n';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
 
   const { shopSeq } = useAuth();
 
@@ -25,10 +26,10 @@ export const SidebarLayout = () => {
 
     return categoryListResponse.data.map((category) => ({
       id: category.categorySeq,
-      label: category.localeCategoryName?.['KO'] ?? '',
+      label: category.localeCategoryName?.[getCurrentShopLanguage(i18n)] ?? '',
       path: ROUTES.SETTINGS.CATEGORY_MENUS.generate(category.categorySeq),
     }));
-  }, [categoryListResponse]);
+  }, [categoryListResponse, i18n.language]);
 
   const SIDEBAR_MENUS = useMemo(
     () => createSidebarMenus(t, categoryMenuSubMenus),

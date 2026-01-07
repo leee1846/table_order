@@ -6,7 +6,7 @@ import { ChevronForwardIcon, DeleteIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryManageModal';
 import { CategoryTableAssignModal } from '@/pages/settings/CategoriesPage/CategoryTableAssignModal';
-import type { ICategory } from '@repo/api/types';
+import type { ICategory, TShopLanguage } from '@repo/api/types';
 import {
   queryKeys,
   useDeleteCategory,
@@ -17,6 +17,7 @@ import {
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { getDays } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
+import { getCurrentShopLanguage } from '@repo/util/i18n';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -26,7 +27,7 @@ interface Props {
 }
 
 export const Category = ({ category, shopSeq }: Props) => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const days = useMemo(() => getDays(t), [t]);
   const queryClient = useQueryClient();
   const { shopCode } = useAuth();
@@ -85,9 +86,7 @@ export const Category = ({ category, shopSeq }: Props) => {
 
   const handleDeleteCategory = (categorySeq: number) => {
     openDualActionDialog({
-      title: t(
-        '카테고리를 삭제할까요?'
-      ),
+      title: t('카테고리를 삭제할까요?'),
       primaryText: t('삭제'),
       secondaryText: t('취소'),
       size: 'xsmall',
@@ -99,18 +98,12 @@ export const Category = ({ category, shopSeq }: Props) => {
               queryClient.invalidateQueries({
                 queryKey: queryKeys.category.list(),
               });
-              toast(
-                t(
-                  '카테고리가 삭제되었습니다.'
-                )
-              );
+              toast(t('카테고리가 삭제되었습니다.'));
             },
             onError: (error) => {
               toast(
                 error.response?.data?.status?.userMessage ||
-                  t(
-                    '카테고리 삭제에 실패했습니다.'
-                  )
+                  t('카테고리 삭제에 실패했습니다.')
               );
             },
           }
@@ -132,20 +125,14 @@ export const Category = ({ category, shopSeq }: Props) => {
           });
           toast(
             category.isHidden
-              ? t(
-                  '카테고리가 표시되었습니다.'
-                )
-              : t(
-                  '카테고리가 숨김 처리되었습니다.'
-                )
+              ? t('카테고리가 표시되었습니다.')
+              : t('카테고리가 숨김 처리되었습니다.')
           );
         },
         onError: (error) => {
           toast(
             error.response?.data?.status?.userMessage ||
-              t(
-                '카테고리 숨김 상태 변경에 실패했습니다.'
-              )
+              t('카테고리 숨김 상태 변경에 실패했습니다.')
           );
         },
       }
@@ -171,13 +158,21 @@ export const Category = ({ category, shopSeq }: Props) => {
     ? `${formatTimeDisplay(category.saleStartTime as string)} ~ ${formatTimeDisplay(category.saleEndTime as string)}`
     : t('상시');
 
+  // 현재 언어 코드를 안전하게 가져오기
+  const currentLanguage: TShopLanguage = useMemo(
+    () => getCurrentShopLanguage(i18n),
+    [i18n]
+  );
+
+  // 현재 언어에 맞는 카테고리 이름
+  const displayCategoryName = useMemo(
+    () => category.localeCategoryName?.[currentLanguage],
+    [category.localeCategoryName, category.categoryName, currentLanguage]
+  );
+
   const handleSaveTableAssign = async (tableNumbers: string[]) => {
     if (!shopCode) {
-      toast(
-        t(
-          '매장 정보를 불러오는 중입니다.'
-        )
-      );
+      toast(t('매장 정보를 불러오는 중입니다.'));
       throw new Error('shopCode is not available');
     }
 
@@ -190,11 +185,7 @@ export const Category = ({ category, shopSeq }: Props) => {
       queryKey: queryKeys.category.exceptTable(shopCode, category.categorySeq),
     });
     setAssignedTableNumbers(tableNumbers);
-    toast(
-      t(
-        '카테고리 테이블 지정이 저장되었습니다.'
-      )
-    );
+    toast(t('카테고리 테이블 지정이 저장되었습니다.'));
   };
 
   return (
@@ -202,7 +193,7 @@ export const Category = ({ category, shopSeq }: Props) => {
       <S.Container>
         <S.Header>
           <div>
-            <span>{category.localeCategoryName?.['KO']}</span>
+            <span>{displayCategoryName}</span>
             <button type="button" onClick={() => {}}>
               <ChevronForwardIcon
                 width={30}
@@ -220,7 +211,6 @@ export const Category = ({ category, shopSeq }: Props) => {
             <DeleteIcon width={14} height={14} color={theme.colors.grey[600]} />
           </button>
         </S.Header>
-
         <S.Badges>
           <li>
             <p>{t('판매시간')}</p>
@@ -247,12 +237,9 @@ export const Category = ({ category, shopSeq }: Props) => {
             </li>
           )}
         </S.Badges>
-
         <S.Footer>
           <S.HiddenContainer>
-            <p>
-              {t('메뉴판에서 숨기기')}
-            </p>
+            <p>{t('메뉴판에서 숨기기')}</p>
             <ToggleButton
               size="S"
               isOn={category.isHidden}
@@ -288,7 +275,6 @@ export const Category = ({ category, shopSeq }: Props) => {
       )}
       {isTableAssignModalOpen && (
         <CategoryTableAssignModal
-          categoryName={category.categoryName}
           categorySeq={category.categorySeq}
           initialSelectedTableNumbers={assignedTableNumbers}
           onClose={() => setIsTableAssignModalOpen(false)}

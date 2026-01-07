@@ -17,6 +17,7 @@ import {
   MenuManageModalProvider,
   useMenuManageModal,
 } from './context/MenuManageModalContext';
+import { getCurrentShopLanguage } from '@repo/util/i18n';
 
 interface Props {
   menu?: IMenu;
@@ -25,7 +26,7 @@ interface Props {
 }
 
 const MenuManageModalContent = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const languageOptions: { value: TShopLanguage; label: string }[] = useMemo(
     () => [
       { value: 'KO', label: t('한국어') },
@@ -48,8 +49,8 @@ const MenuManageModalContent = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const modalTitle = mode === 'create' ? t('메뉴 추가') : t('메뉴 수정');
-  const selectedLanguageCode =
-    (formValues.selectedLanguageCode as TShopLanguage) || 'KO';
+
+  const selectedLanguageCode = formValues.selectedLanguageCode as TShopLanguage;
 
   const handleLanguageChange = (languageCode: TShopLanguage) => {
     updateFormValues({ selectedLanguageCode: languageCode });

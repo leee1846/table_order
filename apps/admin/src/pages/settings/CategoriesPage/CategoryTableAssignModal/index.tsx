@@ -15,7 +15,6 @@ import {
 } from '@repo/ui/components';
 
 interface Props {
-  categoryName: string;
   categorySeq: number;
   onClose: () => void;
   initialSelectedTableNumbers?: string[];
@@ -141,9 +140,7 @@ export const CategoryTableAssignModal = ({
               onClick={() => handleToggleTable(table.tableNumber)}
             >
               <S.TableNumber>{tableName}</S.TableNumber>
-              <S.TableStatus>
-                {!isSelected ? t('선택됨') : ''}
-              </S.TableStatus>
+              <S.TableStatus>{!isSelected ? t('선택됨') : ''}</S.TableStatus>
             </S.TableCard>
           );
         })}

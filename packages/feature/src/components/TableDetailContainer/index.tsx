@@ -94,11 +94,7 @@ export const TableDetailContainer = ({
   const [splitPayments, setSplitPayments] = useState<SplitPayment[]>([]);
 
   // API 데이터 가져오기
-  const {
-    data: orderHistoriesResponse,
-    isLoading,
-    refetch,
-  } = useGetTableOrderHistories(
+  const { data: orderHistoriesResponse, refetch } = useGetTableOrderHistories(
     {
       shopCode,
       tableNumber,
@@ -108,19 +104,16 @@ export const TableDetailContainer = ({
     }
   );
 
-  const {
-    data: menuboardResponse,
-    isLoading: isMenuboardLoading,
-    refetch: refetchMenuboard,
-  } = useGetCategoriesWithMenus(
-    {
-      shopCode,
-      tableNumber,
-    },
-    {
-      enabled: !!shopCode && !!tableNumber,
-    }
-  );
+  const { data: menuboardResponse, refetch: refetchMenuboard } =
+    useGetCategoriesWithMenus(
+      {
+        shopCode,
+        tableNumber,
+      },
+      {
+        enabled: !!shopCode && !!tableNumber,
+      }
+    );
 
   const menuboardCategories = menuboardResponse?.data ?? [];
 
@@ -195,7 +188,6 @@ export const TableDetailContainer = ({
         orderTime: '',
       };
     }
-
     const data: ICurrentTable = orderHistoriesResponse.data;
 
     // orderDetailMenuList를 OrderItem[]로 변환
@@ -208,6 +200,7 @@ export const TableDetailContainer = ({
                 name: option.optionName,
                 qty: option.optionQuantity,
                 unitPrice: option.optionPrice,
+                localeOptionName: option.localeOptionName,
               }))
             : undefined;
 
@@ -218,6 +211,7 @@ export const TableDetailContainer = ({
           qty: menu.menuQuantity,
           unitPrice: menu.menuPrice,
           options,
+          localeMenuName: menu.localeMenuName,
         };
       }) || [];
 
@@ -242,11 +236,6 @@ export const TableDetailContainer = ({
       orderTime,
     };
   }, [orderHistoriesResponse, tableNumber]);
-
-  // 로딩 중일 때
-  if (isLoading) {
-    return <FullscreenLoadingSpinner />;
-  }
 
   // 데이터가 없을 때
   if (!order) {
@@ -335,7 +324,6 @@ export const TableDetailContainer = ({
         onClose={() => setIsAddMenuDialogOpen(false)}
         tableName={order.tableName}
         categories={menuboardCategories}
-        isCategoriesLoading={isMenuboardLoading}
         shopCode={shopCode}
         tableNumber={tableNumber}
         numberOfPeople={order.numberOfPeople}

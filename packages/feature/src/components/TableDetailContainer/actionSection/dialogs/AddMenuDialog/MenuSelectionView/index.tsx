@@ -22,7 +22,6 @@ const { colors } = theme;
 interface MenuSelectionViewProps {
   i18nInstance?: I18nInstance;
   categories: ICategoryWithMenus[];
-  isLoading: boolean;
   selectedCategory: number | null;
   selectedMenus: SelectedMenuWithOptions[];
   tableName: string;
@@ -36,7 +35,6 @@ interface MenuSelectionViewProps {
 
 export const MenuSelectionView = ({
   categories,
-  isLoading,
   selectedCategory,
   selectedMenus,
   tableName,
@@ -48,7 +46,8 @@ export const MenuSelectionView = ({
   onItemQuantityChange,
   i18nInstance,
 }: MenuSelectionViewProps) => {
-  const { t } = useTranslation('admin', { i18n: i18nInstance });
+  const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
+  const currentLan = i18n.language || 'KO';
 
   const currentMenuList = useMemo(() => {
     if (selectedCategory === null) {
@@ -89,11 +88,7 @@ export const MenuSelectionView = ({
 
           {/* 중앙 영역 - 메뉴 그리드 */}
           <S.MenuGrid>
-            {isLoading ? (
-              <S.MenuGridPlaceholder>
-                {t('메뉴를 불러오는 중입니다.')}
-              </S.MenuGridPlaceholder>
-            ) : currentMenuList.length === 0 ? (
+            {currentMenuList.length === 0 ? (
               <S.MenuGridPlaceholder></S.MenuGridPlaceholder>
             ) : (
               currentMenuList.map((menu) => (
@@ -102,9 +97,7 @@ export const MenuSelectionView = ({
                   onClick={() => onMenuClick(menu)}
                   isSelected={false}
                 >
-                  <S.MenuTitle>
-                    {menu.localeMenuNameStr || menu.menuName}
-                  </S.MenuTitle>
+                  <S.MenuTitle>{menu.localeMenuName?.[currentLan]}</S.MenuTitle>
                   <S.MenuPrice>{formatCurrency(menu.menuPrice)}</S.MenuPrice>
                 </S.MenuCard>
               ))
@@ -133,7 +126,9 @@ export const MenuSelectionView = ({
                       key={`${item.menu.menuSeq}-${item.menu.menuName}-${index}`}
                     >
                       <S.ItemHeader>
-                        <S.ItemName>{item.menu.menuName}</S.ItemName>
+                        <S.ItemName>
+                          {item.menu.localeMenuName?.[currentLan]}
+                        </S.ItemName>
                         <S.ItemPrice>
                           {formatCurrency(item.menu.menuPrice * item.quantity)}
                         </S.ItemPrice>
@@ -143,7 +138,7 @@ export const MenuSelectionView = ({
                           {item.selectedOptions.map((option) => (
                             <S.SelectedOptionItem key={option.optionSeq}>
                               <S.OptionItemName>
-                                ㄴ{option.optionName}
+                                ㄴ{option.localeOptionName?.[currentLan]}
                               </S.OptionItemName>
                               <S.OptionItemPrice>
                                 {formatCurrency(

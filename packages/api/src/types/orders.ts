@@ -212,6 +212,13 @@ export interface ITableCurrentStatusOption {
   optionPrice: number;
   optionGroupName: string;
   optionQuantity: number;
+  localeOptionName: {
+    RU: string;
+    KO: string;
+    CH: string;
+    JP: string;
+    EN: string;
+  };
 }
 
 /**
@@ -226,6 +233,13 @@ export interface ITableCurrentStatus {
   menuQuantity: number;
   menuCreateDate: string;
   optionList: ITableCurrentStatusOption[];
+  localeMenuName: {
+    RU: string;
+    KO: string;
+    CH: string;
+    JP: string;
+    EN: string;
+  };
 }
 
 /**

@@ -30,7 +30,6 @@ interface AddMenuDialogProps {
   onClose: () => void;
   tableName?: string;
   categories?: ICategoryWithMenus[];
-  isCategoriesLoading?: boolean;
   shopCode?: string;
   tableNumber?: string;
   numberOfPeople?: number;
@@ -45,7 +44,6 @@ export const AddMenuDialog = ({
   onClose,
   tableName,
   categories = [],
-  isCategoriesLoading = false,
   shopCode,
   tableNumber,
   numberOfPeople = 0,
@@ -343,7 +341,6 @@ export const AddMenuDialog = ({
       <MenuSelectionView
         i18nInstance={i18nInstance}
         categories={menuboardCategories}
-        isLoading={isCategoriesLoading}
         selectedCategory={selectedCategory}
         selectedMenus={selectedMenus}
         tableName={tableName ?? t('테이블 이름')}

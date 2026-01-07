@@ -116,7 +116,6 @@ export const TablesPage = () => {
    */
   const handleTableClick = useCallback(
     async (table: TableWithStatus) => {
-      // shopDetailData refetch
       await refreshShopDetailData();
       // 주문이 있는 테이블은 바로 디테일 페이지로 이동
       if (table.hasOrder) {

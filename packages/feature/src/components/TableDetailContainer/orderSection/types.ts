@@ -3,6 +3,7 @@ export interface OrderItemOption {
   name: string;
   qty: number;
   unitPrice: number;
+  localeOptionName?: Record<string, string>;
 }
 
 export interface OrderItem {
@@ -12,6 +13,7 @@ export interface OrderItem {
   qty: number;
   unitPrice: number;
   options?: OrderItemOption[];
+  localeMenuName?: Record<string, string>;
 }
 
 export interface Order {

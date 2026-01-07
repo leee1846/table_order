@@ -1,10 +1,18 @@
-import type { ICreateMenuRequest, IOptionGroup, IMenu } from '@repo/api/types';
+import type {
+  ICreateMenuRequest,
+  IOptionGroup,
+  IMenu,
+  IGetMenu,
+  TLocale,
+} from '@repo/api/types';
 
 export type FormValues = Omit<
-  Partial<ICreateMenuRequest>,
+  Partial<ICreateMenuRequest | IGetMenu>,
   'optionGroupList'
 > & {
   optionGroupList?: IOptionGroup[];
+  localeMenuName?: TLocale | null;
+  localeMenuDescription?: TLocale | null;
 };
 
 export type ModalMode = 'create' | 'edit';

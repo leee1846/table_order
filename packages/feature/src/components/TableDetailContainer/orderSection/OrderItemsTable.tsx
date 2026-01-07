@@ -4,6 +4,7 @@ import type { OrderItem } from './types';
 import { formatCurrency } from '@repo/util/string';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
+import type { i18n as I18nInstance } from 'i18next';
 
 const { colors } = theme;
 
@@ -11,13 +12,18 @@ export type OrderItemsTableProps = {
   items: OrderItem[];
   discountRate: number;
   onItemClick?: (item: OrderItem) => void;
+  i18nInstance?: I18nInstance;
 };
 export function OrderItemsTable({
   items,
   discountRate,
   onItemClick,
+  i18nInstance,
 }: OrderItemsTableProps) {
-  const { t } = useTranslation('admin');
+  const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
+
+  const currentLanguage = (i18n?.language || 'KO').toUpperCase();
+
   const handleRowClick = (item: OrderItem) => {
     if (onItemClick) {
       onItemClick(item);
@@ -37,14 +43,14 @@ export function OrderItemsTable({
   // 할인 금액 계산
   const discountAmount =
     discountRate > 0 ? totalPrice * (discountRate / 100) : 0;
-
+  console.log('items', items);
   return (
     <TableWrap>
       {items.map((it, index) => (
         <React.Fragment key={`${it.id}-${index}`}>
           <Row data-item-id={it.id} onClick={() => handleRowClick(it)}>
-            <Cell className="name" title={it.name}>
-              {it.name}
+            <Cell className="name" title={it.localeMenuName?.[currentLanguage]}>
+              {it.localeMenuName?.[currentLanguage]}
             </Cell>
             <Cell className="qty">{it.qty}</Cell>
             <Cell className="price">
@@ -53,8 +59,11 @@ export function OrderItemsTable({
           </Row>
           {it.options?.map((option) => (
             <Row key={option.id} className="option-row">
-              <Cell className="name option-name" title={option.name}>
-                ㄴ{option.name}
+              <Cell
+                className="name option-name"
+                title={option.localeOptionName?.[currentLanguage]}
+              >
+                ㄴ{option.localeOptionName?.[currentLanguage]}
               </Cell>
               <Cell className="qty">{option.qty}</Cell>
               <Cell className="price">

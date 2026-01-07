@@ -3,6 +3,7 @@ import type {
   ICreateMenuRequest,
   ICreateOption,
   ICreateOptionGroup,
+  IGetMenu,
   IMenu,
   IMenuImage,
   IOption,
@@ -18,17 +19,22 @@ import {
   type FormValues,
   type MenuImageData,
 } from './types';
+import { getCurrentShopLanguage } from '@repo/util/i18n';
+import type { i18n } from 'i18next';
 
 export const getInitialFormValues = (
-  menu?: IMenu,
-  categorySeq?: number
+  menu: IGetMenu | undefined,
+  categorySeq: number | undefined,
+  i18nInstance: i18n
 ): FormValues => {
+  const currentLanguage = getCurrentShopLanguage(i18nInstance);
+
   if (!menu) return { ...DEFAULT_FORM_VALUES, categorySeq };
 
   return {
-    menuName: menu.localeMenuName?.['KO'] ?? '',
+    menuName: menu.localeMenuName?.[currentLanguage] ?? '',
     menuPrice: menu.menuPrice ?? undefined,
-    menuDescription: menu.menuDescription ?? '',
+    menuDescription: menu.localeMenuDescription?.[currentLanguage] ?? '',
     isBest: menu.isBest ?? false,
     isNew: menu.isNew ?? false,
     spiceLevel: menu.spiceLevel ?? 0,
@@ -38,8 +44,10 @@ export const getInitialFormValues = (
     categorySeq: menu.categorySeq,
     isRecommended: menu.isRecommended ?? false,
     optionGroupList: menu.optionGroupList ?? [],
-    selectedLanguageCode: menu.selectedLanguageCode ?? 'KO',
+    selectedLanguageCode: currentLanguage,
     menuImageList: menu.menuImageList ?? [],
+    localeMenuName: menu.localeMenuName ?? null,
+    localeMenuDescription: menu.localeMenuDescription ?? null,
   };
 };
 
@@ -148,7 +156,8 @@ const convertOptionGroupListForUpdate = (
 export const buildMenuData = (
   formValues: FormValues,
   categorySeq: number,
-  menuImageList: ICreateMenuImage[]
+  menuImageList: ICreateMenuImage[],
+  i18nInstance: i18n
 ): ICreateMenuRequest => ({
   menuName: formValues.menuName ?? '',
   categorySeq,
@@ -163,7 +172,7 @@ export const buildMenuData = (
   optionGroupList: convertOptionGroupList(
     formValues.optionGroupList
   ) as unknown as ICreateOptionGroup[],
-  selectedLanguageCode: formValues.selectedLanguageCode ?? 'KO',
+  selectedLanguageCode: getCurrentShopLanguage(i18nInstance),
   menuImageList,
 });
 

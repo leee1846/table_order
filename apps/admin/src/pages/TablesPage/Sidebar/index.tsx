@@ -79,13 +79,7 @@ export const Sidebar = ({
 
   return (
     <SidebarContainer>
-      <Logo
-        onClick={() => {
-          toast('test', {
-            position: 'top-center',
-          });
-        }}
-      >
+      <Logo>
         {/* <img
            src={logoImage}
            alt="캡스 스마트오더 로고"

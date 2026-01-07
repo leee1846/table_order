@@ -1,4 +1,4 @@
-import { t } from '@/config/i18n';
+import { useAdminTranslation } from '@/config/i18n';
 import { useMemo, useState } from 'react';
 import { BasicButton, ToggleButton } from '@repo/ui/components';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
@@ -20,6 +20,7 @@ import {
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { css } from '@emotion/react';
+import { getCurrentShopLanguage } from '@repo/util/i18n';
 
 interface Props {
   menu: IMenu;
@@ -27,12 +28,12 @@ interface Props {
 }
 
 export const Menu = ({ menu, onEditMenu }: Props) => {
+  const { t, i18n } = useAdminTranslation();
   const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const deleteMenuMutation = useDeleteMenu();
   const { mutateAsync: updateMenuHidden } = usePutUpdateMenuHidden();
   const { mutateAsync: updateMenuOutOfStock } = usePutUpdateMenuOutOfStock();
-
   const thumbnailSrc = useMemo(() => {
     if (!menu.menuImageList || menu.menuImageList.length === 0) {
       return null;
@@ -69,19 +70,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
               queryClient.invalidateQueries({
                 queryKey: queryKeys.menu.list(menu.categorySeq),
               });
-              toast(
-                t(
-                  '메뉴가 삭제되었습니다.'
-                )
-              );
-            },
-            onError: (error) => {
-              toast(
-                error.response?.data?.status?.userMessage ||
-                  t(
-                    '메뉴 삭제에 실패했습니다.'
-                  )
-              );
+              toast(t('메뉴가 삭제되었습니다.'));
             },
           }
         );
@@ -102,20 +91,8 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
           });
           toast(
             menu.isHidden
-              ? t(
-                  '메뉴가 표시되었습니다.'
-                )
-              : t(
-                  '메뉴가 숨김 처리되었습니다.'
-                )
-          );
-        },
-        onError: (error) => {
-          toast(
-            error.response?.data?.status?.userMessage ||
-              t(
-                '메뉴 숨김 상태 변경에 실패했습니다.'
-              )
+              ? t('메뉴가 표시되었습니다.')
+              : t('메뉴가 숨김 처리되었습니다.')
           );
         },
       }
@@ -135,20 +112,8 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
           });
           toast(
             menu.isOutOfStock
-              ? t(
-                  '메뉴 품절이 해제되었습니다.'
-                )
-              : t(
-                  '메뉴가 품절 처리되었습니다.'
-                )
-          );
-        },
-        onError: (error) => {
-          toast(
-            error.response?.data?.status?.userMessage ||
-              t(
-                '메뉴 품절 상태 변경에 실패했습니다.'
-              )
+              ? t('메뉴 품절이 해제되었습니다.')
+              : t('메뉴가 품절 처리되었습니다.')
           );
         },
       }
@@ -163,12 +128,8 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
             {thumbnailSrc && <img src={thumbnailSrc} alt={menu.menuName} />}
           </S.ThumbnailContainer>
           <S.ImagesContainer>
-            {menu.isBest && (
-              <img src={bestOnIcon} alt={t('베스트')} />
-            )}
-            {menu.isNew && (
-              <img src={newOnIcon} alt={t('신규')} />
-            )}
+            {menu.isBest && <img src={bestOnIcon} alt={t('베스트')} />}
+            {menu.isNew && <img src={newOnIcon} alt={t('신규')} />}
           </S.ImagesContainer>
           {spiceLevel > 0 && (
             <S.ChiliContainer>
@@ -189,7 +150,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
         <S.InfoContainer>
           <div>
             <S.TitleContainer>
-              <span>{menu.localeMenuName?.['KO']}</span>
+              <span>{menu.localeMenuName?.[getCurrentShopLanguage(i18n)]}</span>
               <div>
                 <BasicButton
                   variant="Outline_Grey_L"
@@ -217,7 +178,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
 
             <S.Price>{formatCurrency(menu.menuPrice)}</S.Price>
             <S.Description>
-              {menu.localeMenuDescription?.['KO'] ?? ''}
+              {menu.localeMenuDescription?.[getCurrentShopLanguage(i18n)] ?? ''}
             </S.Description>
           </div>
 

@@ -47,7 +47,8 @@ export const useTablesData = ({
     if (deviceListResponse?.data) {
       deviceListResponse.data.forEach((device) => {
         //TODO : 중복 테이블의 경우 어떤 테이블의 배터리량을 보여줘야 하는지
-        if (device.deviceType === 'MENU' && device.tableNumber) {
+        //TODO device.deviceType === 'MENU' &&
+        if (device.tableNumber) {
           map.set(device.tableNumber, device);
         }
       });
@@ -110,10 +111,13 @@ export const useTablesData = ({
 
         // orderDetailMenuList를 menuItems로 변환
         const menuItems = orderInfo.orderDetailMenuList
-          ? orderInfo.orderDetailMenuList.map((menu) => ({
-              name: menu.menuName,
-              quantity: menu.menuQuantity,
-            }))
+          ? orderInfo.orderDetailMenuList.map((menu) => {
+              return {
+                name: menu.menuName,
+                quantity: menu.menuQuantity,
+                localeMenuName: menu.localeMenuName,
+              };
+            })
           : null;
 
         return {

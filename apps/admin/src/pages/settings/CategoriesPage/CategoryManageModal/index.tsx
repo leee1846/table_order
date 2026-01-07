@@ -11,7 +11,11 @@ import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
 import { useState, useEffect, useMemo } from 'react';
 import { CategoryTimeRangeModal } from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal';
-import type { ICategory, IUpdateCategoryRequest } from '@repo/api/types';
+import type {
+  ICategory,
+  IUpdateCategoryRequest,
+  TShopLanguage,
+} from '@repo/api/types';
 import {
   queryKeys,
   usePostCreateCategory,
@@ -22,6 +26,7 @@ import { formatTimeDisplay } from '@repo/util/time';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
 import { MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
+import { getCurrentShopLanguage } from '@repo/util/i18n';
 
 interface Props {
   onClose: () => void;
@@ -33,12 +38,26 @@ export const CategoryManageModal = ({
   categoryData,
   shopSeq,
 }: Props) => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const days = useMemo(() => getDays(t), [t]);
   const isEdit = !!categoryData;
   const queryClient = useQueryClient();
   const createCategoryMutation = usePostCreateCategory();
   const updateCategoryMutation = usePutUpdateCategory();
+
+  // 현재 언어 코드를 안전하게 가져오기
+  const currentLanguage: TShopLanguage = useMemo(
+    () => getCurrentShopLanguage(i18n),
+    [i18n]
+  );
+
+  // 언어 선택 상태 초기값 계산
+  const initialLanguageCode: TShopLanguage = useMemo(() => {
+    if (isEdit && categoryData?.selectedLanguageCode) {
+      return categoryData.selectedLanguageCode;
+    }
+    return currentLanguage;
+  }, [isEdit, categoryData?.selectedLanguageCode, currentLanguage]);
 
   // 카테고리 이름 상태 관리
   const [categoryName, setCategoryName] = useState<string>(
@@ -63,9 +82,8 @@ export const CategoryManageModal = ({
   );
 
   //공휴일 판매 여부
-  //TODO : 카테고리 생성할 때 공휴일 무조건 true로 생성
   const [isSaleOnHoliday, setIsSaleOnHoliday] = useState<boolean>(
-    (categoryData as ICategory)?.isSaleOnHoliday ?? true // 생성 시 기본값 true
+    (categoryData as ICategory)?.isSaleOnHoliday ?? true
   );
 
   // 추가 설정 상태 관리
@@ -86,9 +104,8 @@ export const CategoryManageModal = ({
   );
 
   // 언어 선택 상태
-  const [selectedLanguageCode, setSelectedLanguageCode] = useState<
-    'KO' | 'JP' | 'CH' | 'EN' | 'RU'
-  >('KO');
+  const [selectedLanguageCode, setSelectedLanguageCode] =
+    useState<TShopLanguage>(initialLanguageCode);
 
   // 판매 시간 설정
   const [useSaleTime, setUseSaleTime] = useState<boolean>(
@@ -163,11 +180,7 @@ export const CategoryManageModal = ({
   // 완료 버튼 핸들러
   const handleSubmit = async () => {
     if (categoryName === '') {
-      toast(
-        t(
-          '카테고리 이름을 입력해주세요.'
-        )
-      );
+      toast(t('카테고리 이름을 입력해주세요.'));
       return;
     }
 
@@ -249,9 +262,7 @@ export const CategoryManageModal = ({
                 ]}
                 value={selectedLanguageCode}
                 onChange={(value) =>
-                  setSelectedLanguageCode(
-                    value as 'KO' | 'JP' | 'CH' | 'EN' | 'RU'
-                  )
+                  setSelectedLanguageCode(value as TShopLanguage)
                 }
               />
             </S.DropdownContainer>
@@ -260,9 +271,7 @@ export const CategoryManageModal = ({
           <S.Title>
             <p>
               {t('카테고리')}
-              {isEdit
-                ? t('수정')
-                : t('추가')}
+              {isEdit ? t('수정') : t('추가')}
             </p>
           </S.Title>
 
@@ -274,9 +283,7 @@ export const CategoryManageModal = ({
               </S.SubTitle>
 
               <Input
-                placeholder={t(
-                  '카테고리 이름을 입력해주세요.'
-                )}
+                placeholder={t('카테고리 이름을 입력해주세요.')}
                 value={categoryName}
                 onChange={(value) => {
                   if (value.length <= MAX_NAME_LENGTH) {
@@ -287,9 +294,7 @@ export const CategoryManageModal = ({
             </div>
 
             <Input
-              placeholder={t(
-                '카테고리 설명을 입력해주세요.'
-              )}
+              placeholder={t('카테고리 설명을 입력해주세요.')}
               value={categoryDescription}
               onChange={(value) => {
                 if (value.length <= MAX_DESCRIPTION_LENGTH) {
@@ -299,9 +304,7 @@ export const CategoryManageModal = ({
             />
 
             <div>
-              <S.SubTitle>
-                {t('판매 요일')}
-              </S.SubTitle>
+              <S.SubTitle>{t('판매 요일')}</S.SubTitle>
               <S.DayList>
                 {days.map((day) => (
                   <li key={day.value}>
@@ -333,9 +336,7 @@ export const CategoryManageModal = ({
             </div>
 
             <div>
-              <S.SubTitle>
-                {t('추가 설정')}
-              </S.SubTitle>
+              <S.SubTitle>{t('추가 설정')}</S.SubTitle>
               <S.CheckButtonList>
                 <CheckButton
                   checked={isQuantitySelectable}
@@ -356,11 +357,7 @@ export const CategoryManageModal = ({
                   onChange={(checked) => setUseTwoColumnLayout(checked)}
                   customStyle={S.checkButtonCss}
                 >
-                  <p>
-                    {t(
-                      '2열 배치(가로 기본형)'
-                    )}
-                  </p>
+                  <p>{t('2열 배치(가로 기본형)')}</p>
                 </CheckButton>
                 <S.TimeRangeWrapper>
                   <CheckButton
@@ -368,9 +365,7 @@ export const CategoryManageModal = ({
                     onChange={(checked) => setUseSaleTime(checked)}
                     customStyle={S.checkButtonCss}
                   >
-                    <p>
-                      {t('판매 시간 설정')}
-                    </p>
+                    <p>{t('판매 시간 설정')}</p>
                   </CheckButton>
                   <S.TimeRangeContainer>
                     <S.TimeRangeDisplay

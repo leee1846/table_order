@@ -5,7 +5,11 @@ export interface TableWithStatus {
   batteryLevel: number | null;
   totalAmount?: number | null;
   orderTime?: string | null;
-  menuItems?: Array<{ name: string; quantity: number }> | null;
+  menuItems?: Array<{
+    name: string;
+    quantity: number;
+    localeMenuName?: Record<string, string> | null;
+  }> | null;
   hasOrder: boolean;
   customerCount?: number;
   kidsCustomerCount?: number;

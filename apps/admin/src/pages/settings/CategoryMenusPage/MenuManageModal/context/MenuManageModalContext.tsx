@@ -15,7 +15,7 @@ import {
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
-import { t } from '@/config/i18n';
+import { useAdminTranslation } from '@/config/i18n';
 import type {
   FormValues,
   MenuManageModalContextValue,
@@ -46,16 +46,18 @@ const MenuManageModalContext =
  * 3. 부분 업데이트를 지원하는 updateFormValues 함수 제공
  */
 const useMenuFormState = (menu: IMenu | undefined, categorySeq: number) => {
+  const { i18n } = useAdminTranslation();
+
   // 초기 폼 값 설정: menu가 있으면 기존 값으로, 없으면 기본값으로 초기화
   const [formValues, setFormValues] = useState<FormValues>(() =>
-    getInitialFormValues(menu, categorySeq)
+    getInitialFormValues(menu, categorySeq, i18n)
   );
 
   // menu나 categorySeq가 변경되면 폼 값을 재초기화
   // (예: 다른 메뉴를 수정하거나 다른 카테고리로 변경 시)
   useEffect(() => {
-    setFormValues(getInitialFormValues(menu, categorySeq));
-  }, [menu, categorySeq]);
+    setFormValues(getInitialFormValues(menu, categorySeq, i18n));
+  }, [menu, categorySeq, i18n]);
 
   // 폼 값을 부분 업데이트하는 함수 (병합 방식)
   const updateFormValues = useCallback(
@@ -118,6 +120,7 @@ export const MenuManageModalProvider = ({
   onClose,
   children,
 }: Props) => {
+  const { i18n, t } = useAdminTranslation();
   const queryClient = useQueryClient();
 
   // menu가 있으면 수정 모드, 없으면 생성 모드
@@ -176,11 +179,12 @@ export const MenuManageModalProvider = ({
     const menuData = buildMenuData(
       formValues,
       categorySeq,
-      images.getMenuImageList()
+      images.getMenuImageList(),
+      i18n
     );
 
     await runMutation(() => createMenu({ menu: menuData, files }));
-  }, [formValues, categorySeq, images, runMutation, createMenu]);
+  }, [formValues, categorySeq, images, runMutation, createMenu, i18n]);
 
   /**
    * 메뉴 수정 핸들러

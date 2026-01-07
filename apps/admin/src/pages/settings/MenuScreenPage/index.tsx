@@ -39,8 +39,7 @@ export const MenuScreenPage = () => {
     }
   );
 
-  const { mutateAsync: updateThemeMenu, isPending: isSaving } =
-    usePutUpdateShopThemeMenu();
+  const { mutateAsync: updateThemeMenu } = usePutUpdateShopThemeMenu();
 
   const themeMenu = themeMenuResponse?.data;
 
@@ -124,11 +123,7 @@ export const MenuScreenPage = () => {
           <div />
           <span>{t('메뉴 화면')}</span>
         </S.Title>
-        <BasicButton
-          variant="Solid_Navy_XL"
-          onClick={handleSave}
-          disabled={isSaving}
-        >
+        <BasicButton variant="Solid_Navy_XL" onClick={handleSave}>
           {t('저장하기')}
         </BasicButton>
       </S.Header>

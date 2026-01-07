@@ -199,6 +199,54 @@ export type TGetMenuListResponse = IApiResponse<IMenu[]>;
  * - READ_ONLY 필드 제외
  * - CLIENT_ONLY 필드 제외
  */
+
+export type IGetMenu = Omit<
+  IMenuBase,
+  | 'menuSeq'
+  | 'isDeleted'
+  | 'mappedMenuName'
+  | 'mappedCategoryCode'
+  | 'mappedOptionGroupCode'
+  | 'mappedOptionGroupCode2'
+  | 'mappedUptDt'
+  | 'isMapped'
+  | 'createDate'
+  | 'createMemberUuid'
+  | 'updateDate'
+  | 'updateMemberUuid'
+  | 'localeMenuNameStr'
+  | 'localeMenuDescriptionStr'
+  | 'quantity'
+  | 'selectedOptions'
+  | 'totalPrice'
+  | 'isOutOfStock'
+  | 'index'
+  | 'mappedMenuCode'
+  | 'isHidden'
+  | 'menuImageList'
+  | 'optionGroupList'
+> &
+  Partial<
+    Pick<
+      IMenuBase,
+      | 'mappedMenuCode'
+      | 'menuDescription'
+      | 'isRecommended'
+      | 'isOutOfStock'
+      | 'index'
+      | 'isHidden'
+      | 'isBest'
+      | 'isNew'
+      | 'spiceLevel'
+      | 'isTaxFree'
+      | 'minQuantity'
+      | 'selectedLanguageCode'
+    >
+  > & {
+    menuImageList?: IMenuImage[];
+    optionGroupList?: IOptionGroup[];
+  };
+
 export type ICreateMenuRequest = Omit<
   IMenuBase,
   | 'menuSeq'
@@ -210,6 +258,7 @@ export type ICreateMenuRequest = Omit<
   | 'mappedUptDt'
   | 'isMapped'
   | 'localeMenuName'
+  | 'localeMenuDescription'
   | 'createDate'
   | 'createMemberUuid'
   | 'updateDate'

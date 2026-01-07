@@ -30,8 +30,8 @@ export const TableCard = ({
   i18nInstance,
   table,
 }: Props) => {
-  const { t } = useTranslation('admin', { i18n: i18nInstance });
-
+  const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
+  const currentLanguage = (i18n?.language || 'KO').toUpperCase();
   const hasBatteryInfo =
     table.batteryLevel !== null && table.batteryLevel !== undefined;
   const batteryLevel = table.batteryLevel ?? 0;
@@ -58,7 +58,9 @@ export const TableCard = ({
       <S.CardContent>
         {table.menuItems?.slice(0, 3).map((item, idx) => (
           <S.MenuItem key={`item-${table.tableName}-${id}-${idx + 1}`}>
-            <S.MenuItemName>{item.name}</S.MenuItemName>
+            <S.MenuItemName>
+              {item.localeMenuName?.[currentLanguage] ?? item.name}
+            </S.MenuItemName>
             <S.MenuItemQuantity>{item.quantity}</S.MenuItemQuantity>
           </S.MenuItem>
         ))}

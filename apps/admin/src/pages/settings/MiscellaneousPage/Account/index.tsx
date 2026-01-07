@@ -5,6 +5,9 @@ import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
 import { theme } from '@repo/ui';
 import { UserIcon } from '@repo/ui/icons';
 import { useAdminTranslation } from '@/config/i18n';
+import { disconnectSse } from '@/utils/sseConnection';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { ROUTES } from '@/constants/routes';
 
 interface AccountProps {
   shopName?: string;
@@ -13,6 +16,20 @@ interface AccountProps {
 }
 export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
   const { t } = useAdminTranslation();
+  const handleLogout = () => {
+    // sse 연결 끊기
+    disconnectSse();
+
+    // store 비우기
+    useAuthStore.getState().clearAuth();
+
+    // 인증 관련 스토리지 정리 (토큰 + 저장된 인증 데이터)
+    useAuthStore.getState().clearAuth();
+
+    // 로그인 페이지로 이동
+    window.location.replace(ROUTES.LOGIN.generate());
+  };
+
   return (
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
@@ -34,7 +51,7 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
             </S.SID>
           </S.Content>
 
-          <BasicButton variant="Outline_Grey_M" onClick={() => {}}>
+          <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
             {t('로그아웃')}
           </BasicButton>
         </UIStyles.setting.ContentLayout>

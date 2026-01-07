@@ -52,10 +52,18 @@ const formatOrderTime = (
 // 헬퍼 함수: 주문 상세 메뉴 리스트를 메뉴 아이템 형태로 변환
 const convertOrderDetailMenuListToMenuItems = (
   orderDetailMenuList:
-    | Array<{ menuName: string; menuQuantity: number }>
+    | Array<{
+        menuName: string;
+        menuQuantity: number;
+        localeMenuName: Record<string, string>;
+      }>
     | null
     | undefined
-): Array<{ name: string; quantity: number }> | null => {
+): Array<{
+  name: string;
+  quantity: number;
+  localeMenuName: Record<string, string>;
+}> | null => {
   if (!orderDetailMenuList) {
     return null;
   }
@@ -63,6 +71,7 @@ const convertOrderDetailMenuListToMenuItems = (
   return orderDetailMenuList.map((menu) => ({
     name: menu.menuName,
     quantity: menu.menuQuantity,
+    localeMenuName: menu.localeMenuName,
   }));
 };
 
