@@ -19,7 +19,7 @@ import { decodeJwtToken } from '@repo/util/function';
 import { isExpired } from '@repo/util/date';
 import { getCurrentUnixTime } from '@repo/util/time';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { disconnectSse } from '@/utils/sseConnection';
+import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 
 const forceReLogin = () => {
   removeAuthTokens();
@@ -35,6 +35,8 @@ const forceReLogin = () => {
 
 accessTokenRefreshManager.configure({
   onRefreshFailed: forceReLogin,
+  reconnectSse: initializeSseConnection,
+  disconnectSse,
 });
 
 export const privateApi = createAxiosInstance({

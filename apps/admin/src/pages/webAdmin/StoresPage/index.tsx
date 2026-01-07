@@ -153,10 +153,16 @@ export const StoresPage = () => {
     setCurrentPage(page);
   };
 
-  const handleStoreClick = (store: StoreItem) => {
+  const handleEdit = (store: StoreItem) => {
+    // TODO: 매장 수정 기능 구현
+    // eslint-disable-next-line no-console
+    console.log('Edit store:', store);
+  };
+
+  const handleDetail = (store: StoreItem) => {
     // TODO: 매장 상세 페이지로 리다이렉트
     // eslint-disable-next-line no-console
-    console.log('Store clicked:', store);
+    console.log('Detail store:', store);
   };
 
   return (
@@ -176,23 +182,13 @@ export const StoresPage = () => {
               onChange={(value) => setSearchKeyword(value)}
             />
           </S.SearchInputWrapper>
-
-          <Dropdown
-            options={contractStatusOptions}
-            value={contractStatus}
-            onChange={(value) => setContractStatus(value)}
-            placeholder="계약상태"
-          />
-
-          <Dropdown
-            options={prePaymentOptions}
-            value={isPrePayment}
-            onChange={(value) => setIsPrePayment(value)}
-            placeholder="선결제 여부"
-          />
         </S.SearchContainer>
 
-        <Table stores={currentStores} onStoreClick={handleStoreClick} />
+        <Table
+          stores={currentStores}
+          onEdit={handleEdit}
+          onDetail={handleDetail}
+        />
       </S.Container>
 
       <UIStyles.setting.Footer>

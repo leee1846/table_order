@@ -14,21 +14,16 @@ interface StoreItem {
 
 interface Props {
   stores: StoreItem[];
-  onStoreClick?: (store: StoreItem) => void;
+  onEdit?: (store: StoreItem) => void;
+  onDetail?: (store: StoreItem) => void;
 }
 
-export const Table = ({ stores, onStoreClick }: Props) => {
-  const handleStoreClick = (store: StoreItem) => {
-    if (onStoreClick) {
-      onStoreClick(store);
-    }
-  };
-
+export const Table = ({ stores, onEdit, onDetail }: Props) => {
   const renderRows = () => {
     if (!stores || stores.length === 0) {
       return (
         <tr>
-          <td colSpan={8}>매장 목록이 없습니다.</td>
+          <td colSpan={9}>매장 목록이 없습니다.</td>
         </tr>
       );
     }
@@ -37,19 +32,30 @@ export const Table = ({ stores, onStoreClick }: Props) => {
       <tr key={store.sid}>
         <td>{store.sid}</td>
         <td>{store.id}</td>
-        <td>
-          <BasicButton
-            variant="Outline_Navy_S"
-            onClick={() => handleStoreClick(store)}
-          >
-            {store.name}
-          </BasicButton>
-        </td>
+        <td>{store.name}</td>
         <td>{store.businessNumber}</td>
         <td>{store.address}</td>
         <td>{store.contact}</td>
         <td>{store.version}</td>
         <td>{store.isActive ? 'Y' : 'N'}</td>
+        <td>
+          <div
+            style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
+          >
+            <BasicButton
+              variant="Outline_Navy_S"
+              onClick={() => onEdit?.(store)}
+            >
+              수정
+            </BasicButton>
+            <BasicButton
+              variant="Outline_Navy_S"
+              onClick={() => onDetail?.(store)}
+            >
+              매장 상세
+            </BasicButton>
+          </div>
+        </td>
       </tr>
     ));
   };
@@ -67,6 +73,7 @@ export const Table = ({ stores, onStoreClick }: Props) => {
             <th>대표자 연락처</th>
             <th>버전</th>
             <th>활성화</th>
+            <th>작업</th>
           </tr>
         </UIStyles.setting.Thead>
         <UIStyles.setting.Tbody>{renderRows()}</UIStyles.setting.Tbody>
