@@ -181,4 +181,16 @@ export const queryKeys = {
         pageSize,
       ] as const,
   },
+
+  admin: {
+    all: ['admin'] as const,
+    shopList: (pageNumber: number, pageSize: number, searchWord: string) =>
+      [
+        ...queryKeys.admin.all,
+        'shopList',
+        pageNumber,
+        pageSize,
+        searchWord,
+      ] as const,
+  },
 } as const;

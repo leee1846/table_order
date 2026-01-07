@@ -92,7 +92,6 @@ export const ENDPOINTS = {
   },
 
   SSE: {
-    CONNECT: '/sse/connect',
     CONNECT_DEVICE: '/sse/connect/device',
   },
 
@@ -111,5 +110,9 @@ export const ENDPOINTS = {
 
   PAYMENT: {
     PAYMENT: '/payment',
+  },
+
+  ADMIN: {
+    SHOP_LIST: '/admin/shop/list',
   },
 } as const;

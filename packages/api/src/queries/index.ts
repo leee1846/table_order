@@ -10,4 +10,5 @@ export * from './app';
 export * from './notice';
 export * from './sales';
 export * from './payment';
+export * from './admin';
 export { queryKeys } from './queryKeys';

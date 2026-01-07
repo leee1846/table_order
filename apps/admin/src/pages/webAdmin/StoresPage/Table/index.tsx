@@ -1,26 +1,14 @@
 import { ROUTES } from '@/constants/routes';
 import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
+import type { IGetAdminShopItem } from 'node_modules/@repo/api/src/types/admin';
 import { useNavigate } from 'react-router-dom';
 
-interface StoreItem {
-  sid: string;
-  id: string;
-  name: string;
-  businessNumber: string;
-  address: string;
-  contact: string;
-  version: string;
-  isActive: boolean;
-}
-
 interface Props {
-  stores: StoreItem[];
-  onEdit?: (store: StoreItem) => void;
-  onDetail?: (store: StoreItem) => void;
+  stores: IGetAdminShopItem[];
 }
 
-export const Table = ({ stores, onDetail }: Props) => {
+export const Table = ({ stores }: Props) => {
   const navigate = useNavigate();
 
   const renderRows = () => {
@@ -33,15 +21,13 @@ export const Table = ({ stores, onDetail }: Props) => {
     }
 
     return stores.map((store) => (
-      <tr key={store.sid}>
-        <td>{store.sid}</td>
-        <td>{store.id}</td>
-        <td>{store.name}</td>
+      <tr key={store.memberId}>
+        <td>{store.memberId}</td>
+        <td>{store.shopSeq}</td>
+        <td>{store.shopName}</td>
         <td>{store.businessNumber}</td>
-        <td>{store.address}</td>
-        <td>{store.contact}</td>
-        <td>{store.version}</td>
-        <td>{store.isActive ? 'Y' : 'N'}</td>
+        <td>{store.address1}</td>
+        <td>{store.managerPhoneNumber}</td>
         <td>
           <div
             style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
@@ -49,15 +35,12 @@ export const Table = ({ stores, onDetail }: Props) => {
             <BasicButton
               variant="Outline_Navy_S"
               onClick={() =>
-                navigate(ROUTES.ADMIN_WEB.STORES_EDIT.generate(store.id))
+                navigate(ROUTES.ADMIN_WEB.STORES_EDIT.generate(store.shopCode))
               }
             >
               수정
             </BasicButton>
-            <BasicButton
-              variant="Outline_Navy_S"
-              onClick={() => onDetail?.(store)}
-            >
+            <BasicButton variant="Outline_Navy_S" onClick={() => {}}>
               매장 상세
             </BasicButton>
           </div>
@@ -77,8 +60,6 @@ export const Table = ({ stores, onDetail }: Props) => {
             <th>사업자등록번호</th>
             <th>기본 주소</th>
             <th>대표자 연락처</th>
-            <th>버전</th>
-            <th>활성화</th>
             <th>작업</th>
           </tr>
         </UIStyles.setting.Thead>
