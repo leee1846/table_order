@@ -20,7 +20,6 @@ import {
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { css } from '@emotion/react';
-import { getCurrentShopLanguage } from '@repo/util/i18n';
 
 interface Props {
   menu: IMenu;
@@ -150,7 +149,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
         <S.InfoContainer>
           <div>
             <S.TitleContainer>
-              <span>{menu.localeMenuName?.[getCurrentShopLanguage(i18n)]}</span>
+              <span>{menu.localeMenuName?.[i18n.language?.toUpperCase()]}</span>
               <div>
                 <BasicButton
                   variant="Outline_Grey_L"
@@ -178,7 +177,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
 
             <S.Price>{formatCurrency(menu.menuPrice)}</S.Price>
             <S.Description>
-              {menu.localeMenuDescription?.[getCurrentShopLanguage(i18n)] ?? ''}
+              {menu.localeMenuDescription?.[i18n.language?.toUpperCase()] ?? ''}
             </S.Description>
           </div>
 

@@ -17,7 +17,6 @@ import {
   MenuManageModalProvider,
   useMenuManageModal,
 } from './context/MenuManageModalContext';
-import { getCurrentShopLanguage } from '@repo/util/i18n';
 
 interface Props {
   menu?: IMenu;
@@ -26,7 +25,7 @@ interface Props {
 }
 
 const MenuManageModalContent = () => {
-  const { t, i18n } = useAdminTranslation();
+  const { t } = useAdminTranslation();
   const languageOptions: { value: TShopLanguage; label: string }[] = useMemo(
     () => [
       { value: 'KO', label: t('한국어') },

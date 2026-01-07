@@ -17,7 +17,6 @@ import {
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { getDays } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
-import { getCurrentShopLanguage } from '@repo/util/i18n';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -28,6 +27,7 @@ interface Props {
 
 export const Category = ({ category, shopSeq }: Props) => {
   const { t, i18n } = useAdminTranslation();
+
   const days = useMemo(() => getDays(t), [t]);
   const queryClient = useQueryClient();
   const { shopCode } = useAuth();
@@ -158,9 +158,8 @@ export const Category = ({ category, shopSeq }: Props) => {
     ? `${formatTimeDisplay(category.saleStartTime as string)} ~ ${formatTimeDisplay(category.saleEndTime as string)}`
     : t('상시');
 
-  // 현재 언어 코드를 안전하게 가져오기
   const currentLanguage: TShopLanguage = useMemo(
-    () => getCurrentShopLanguage(i18n),
+    () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
     [i18n]
   );
 

@@ -26,7 +26,6 @@ import { formatTimeDisplay } from '@repo/util/time';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
 import { MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
-import { getCurrentShopLanguage } from '@repo/util/i18n';
 
 interface Props {
   onClose: () => void;
@@ -47,7 +46,7 @@ export const CategoryManageModal = ({
 
   // 현재 언어 코드를 안전하게 가져오기
   const currentLanguage: TShopLanguage = useMemo(
-    () => getCurrentShopLanguage(i18n),
+    () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
     [i18n]
   );
 

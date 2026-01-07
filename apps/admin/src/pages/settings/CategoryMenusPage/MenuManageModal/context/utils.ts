@@ -11,6 +11,7 @@ import type {
   IUpdateMenuRequest,
   IUpdateOption,
   IUpdateOptionGroup,
+  TShopLanguage,
 } from '@repo/api/types';
 import { generateId } from '@repo/util/string';
 import {
@@ -19,7 +20,6 @@ import {
   type FormValues,
   type MenuImageData,
 } from './types';
-import { getCurrentShopLanguage } from '@repo/util/i18n';
 import type { i18n } from 'i18next';
 
 export const getInitialFormValues = (
@@ -27,7 +27,8 @@ export const getInitialFormValues = (
   categorySeq: number | undefined,
   i18nInstance: i18n
 ): FormValues => {
-  const currentLanguage = getCurrentShopLanguage(i18nInstance);
+  const currentLanguage = (i18nInstance.language?.toUpperCase() ||
+    'KO') as TShopLanguage;
 
   if (!menu) return { ...DEFAULT_FORM_VALUES, categorySeq };
 
@@ -172,7 +173,8 @@ export const buildMenuData = (
   optionGroupList: convertOptionGroupList(
     formValues.optionGroupList
   ) as unknown as ICreateOptionGroup[],
-  selectedLanguageCode: getCurrentShopLanguage(i18nInstance),
+  selectedLanguageCode: (i18nInstance.language?.toUpperCase() ||
+    'KO') as TShopLanguage,
   menuImageList,
 });
 

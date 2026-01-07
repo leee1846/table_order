@@ -7,7 +7,7 @@ import {
   useEffect,
   type ReactNode,
 } from 'react';
-import type { IMenu, IUpdateMenuRequest } from '@repo/api/types';
+import type { IGetMenu, IMenu, IUpdateMenuRequest } from '@repo/api/types';
 import {
   queryKeys,
   usePostCreateMenu,
@@ -45,18 +45,21 @@ const MenuManageModalContext =
  * 2. menu나 categorySeq가 변경되면 폼 값을 재초기화
  * 3. 부분 업데이트를 지원하는 updateFormValues 함수 제공
  */
-const useMenuFormState = (menu: IMenu | undefined, categorySeq: number) => {
+const useMenuFormState = (
+  menu: IMenu | IGetMenu | undefined,
+  categorySeq: number
+) => {
   const { i18n } = useAdminTranslation();
 
   // 초기 폼 값 설정: menu가 있으면 기존 값으로, 없으면 기본값으로 초기화
   const [formValues, setFormValues] = useState<FormValues>(() =>
-    getInitialFormValues(menu, categorySeq, i18n)
+    getInitialFormValues(menu as IGetMenu, categorySeq, i18n)
   );
 
   // menu나 categorySeq가 변경되면 폼 값을 재초기화
   // (예: 다른 메뉴를 수정하거나 다른 카테고리로 변경 시)
   useEffect(() => {
-    setFormValues(getInitialFormValues(menu, categorySeq, i18n));
+    setFormValues(getInitialFormValues(menu as IGetMenu, categorySeq, i18n));
   }, [menu, categorySeq, i18n]);
 
   // 폼 값을 부분 업데이트하는 함수 (병합 방식)

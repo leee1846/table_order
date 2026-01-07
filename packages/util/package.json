@@ -12,7 +12,6 @@
     "./date": "./src/date/index.ts",
     "./device": "./src/device/index.ts",
     "./function": "./src/function/index.ts",
-    "./i18n": "./src/i18n/index.ts",
     "./string": "./src/string/index.ts",
     "./time": "./src/time/index.ts",
     "./timerManager": "./src/timerManager/index.ts",
@@ -37,7 +36,6 @@
     "@capacitor/app": "^6.0.3",
     "@capacitor/core": "^8.0.0",
     "dayjs": "^1.11.19",
-    "i18next": "^25.6.3",
     "jwt-decode": "^4.0.0"
   }
 }

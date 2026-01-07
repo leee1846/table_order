@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { bestOnIcon } from '@repo/ui/icons';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
-import { getCurrentShopLanguage } from '@repo/util/i18n';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
@@ -26,7 +25,7 @@ export const SidebarLayout = () => {
 
     return categoryListResponse.data.map((category) => ({
       id: category.categorySeq,
-      label: category.localeCategoryName?.[getCurrentShopLanguage(i18n)] ?? '',
+      label: category.localeCategoryName?.[i18n.language?.toUpperCase()] ?? '',
       path: ROUTES.SETTINGS.CATEGORY_MENUS.generate(category.categorySeq),
     }));
   }, [categoryListResponse, i18n.language]);

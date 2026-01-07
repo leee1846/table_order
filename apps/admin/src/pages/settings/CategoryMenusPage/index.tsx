@@ -8,7 +8,6 @@ import { useGetMenuList, queryKeys } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import type { IMenu, TGetCategoryListResponse } from '@repo/api/types';
 import { useAdminTranslation } from '@/config/i18n';
-import { getCurrentShopLanguage } from '@repo/util/i18n';
 
 export const CategoryMenusPage = () => {
   const { i18n } = useAdminTranslation();
@@ -38,7 +37,7 @@ export const CategoryMenusPage = () => {
     const category = categoryListResponse.data.find(
       (cat) => cat.categorySeq === categorySeq
     );
-    return category?.localeCategoryName?.[getCurrentShopLanguage(i18n)] ?? '';
+    return category?.localeCategoryName?.[i18n.language?.toUpperCase()];
   }, [categoryListResponse, categorySeq, isValidCategorySeq, i18n.language]);
 
   const onClickAddMenu = () => {
