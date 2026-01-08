@@ -257,9 +257,12 @@ export const MenuManageModalProvider = ({
       mainImage: images.mainImage, // 메인 이미지 데이터
       additionalImages: images.additionalImages, // 추가 이미지 목록
       setMainImage: images.setMainImage, // 메인 이미지 설정
+      setMainExistingImage: images.setMainExistingImage, // 기존 메인 이미지 설정
       removeMainImage: images.removeMainImage, // 메인 이미지 제거
       addAdditionalImages: images.addAdditionalImages, // 추가 이미지 추가
+      addExistingImages: images.addExistingImages, // 기존 이미지 추가
       removeAdditionalImage: images.removeAdditionalImage, // 추가 이미지 제거
+      replaceAdditionalImage: images.replaceAdditionalImage, // 추가 이미지 교체
       handleSubmit, // 메뉴 제출 핸들러 (생성/수정)
       isSaving, // 저장 중 상태
       onClose, // 모달 닫기 핸들러
@@ -273,9 +276,12 @@ export const MenuManageModalProvider = ({
       images.mainImage,
       images.additionalImages,
       images.setMainImage,
+      images.setMainExistingImage,
       images.removeMainImage,
       images.addAdditionalImages,
+      images.addExistingImages,
       images.removeAdditionalImage,
+      images.replaceAdditionalImage,
       handleSubmit,
       isSaving,
       onClose,
@@ -344,17 +350,23 @@ export const useMenuImages = () => {
     mainImage,
     additionalImages,
     setMainImage,
+    setMainExistingImage,
     removeMainImage,
     addAdditionalImages,
+    addExistingImages,
     removeAdditionalImage,
+    replaceAdditionalImage,
   } = useMenuManageModal();
 
   return {
     mainImage,
     additionalImages,
     setMainImage,
+    setMainExistingImage,
     removeMainImage,
     addAdditionalImages,
+    addExistingImages,
     removeAdditionalImage,
+    replaceAdditionalImage,
   };
 };

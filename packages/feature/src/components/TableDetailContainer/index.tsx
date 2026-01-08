@@ -249,7 +249,7 @@ export const TableDetailContainer = ({
     }
 
     openDualActionDialog({
-      title: t('전체 메뉴를\\n취소하시겠어요?'),
+      title: t('전체 메뉴를 취소하시겠어요?'),
       primaryText: t('네'),
       secondaryText: t('아니오'),
       onConfirm: async () => {

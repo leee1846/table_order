@@ -53,6 +53,12 @@ export const queryKeys = {
     /** 메뉴 리스트 조회 */
     list: (categorySeq?: number | string) =>
       [...queryKeys.menu.all, 'list', categorySeq ?? 'all'] as const,
+    /** 기존 메뉴 이미지 목록 조회 */
+    existingImageList: (shopCode: string) =>
+      [...queryKeys.menu.all, 'existingImageList', shopCode] as const,
+    /** 추천 메뉴 이미지 목록 조회 */
+    sampleImageList: () =>
+      [...queryKeys.menu.all, 'sampleImageList'] as const,
   },
 
   orders: {

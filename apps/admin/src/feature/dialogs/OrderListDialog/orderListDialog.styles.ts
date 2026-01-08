@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 import {
   BaseDialogContainer,
-  BaseCloseButton,
   BaseHeader,
   BaseTitle,
 } from '@repo/feature/components';
@@ -69,4 +68,3 @@ export const Footer = styled.div`
   justify-content: flex-end;
   padding: 24px 40px;
 `;
-

@@ -4,7 +4,6 @@ import { theme } from '@repo/ui';
 import {
   BaseDialogContainer,
   BaseHeader,
-  BaseCloseButton,
   BaseTitle,
 } from '@repo/feature/components';
 
@@ -18,7 +17,11 @@ export const ModalHeader = styled(BaseHeader)`
 
 export const ModalTitle = BaseTitle;
 
-export const CloseButton = BaseCloseButton;
+export const CloseButton = styled.button`
+  cursor: pointer;
+  text-align: right;
+  transform: translate(-6px, 6px);
+`;
 
 export const ModalBody = styled.div`
   display: flex;

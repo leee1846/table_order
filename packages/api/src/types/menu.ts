@@ -112,6 +112,20 @@ export interface IMenuImage {
   isMainImage: boolean;
 }
 
+export interface IExistingMenuImage {
+  imageSeq: number;
+  imagePath: string | null;
+  imageName?: string;
+  imageExtension?: string | null;
+}
+
+export interface ISampleMenuImage {
+  menuImageSampleSeq: string;
+  imageName: string;
+  imagePath: string;
+  imageIndex: string;
+}
+
 /**
  * 메뉴 생성 요청 시 사용하는 이미지 타입
  * - imageName: 파일명 (UUID 또는 timestamp)
@@ -122,6 +136,13 @@ export interface ICreateMenuImage {
   imageName: string;
   imageIndex: number;
   isMainImage: boolean;
+  /**
+   * 기존/추천 이미지를 파일 업로드 없이 재사용할 때 0으로 전달한다.
+   * 서버에서는 imageSeq가 0인 항목을 새 이미지로 간주한다.
+   */
+  imageSeq?: number;
+  imagePath?: string | null;
+  imageExtension?: string | null;
 }
 
 // ============================================================================
@@ -188,6 +209,26 @@ export interface IGetMenuListParams {
 }
 
 export type TGetMenuListResponse = IApiResponse<IMenu[]>;
+
+// ============================================================================
+// GET /menu/image/existing/list/{shopCode}
+// ============================================================================
+
+export type TGetExistingMenuImageListResponse = IApiResponse<
+  IExistingMenuImage[]
+>;
+
+// ============================================================================
+// GET /menu/image/sample/list
+// ============================================================================
+
+export interface ISampleMenuImageListResponse {
+  categoryCode: string;
+  imageList: ISampleMenuImage[];
+}
+
+export type TGetSampleMenuImageListResponse =
+  IApiResponse<ISampleMenuImageListResponse>;
 
 // ============================================================================
 // POST /menu

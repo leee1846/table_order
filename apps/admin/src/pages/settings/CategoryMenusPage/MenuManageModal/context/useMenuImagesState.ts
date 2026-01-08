@@ -74,6 +74,17 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
     }
   }, []);
 
+  const restoreDeletedImage = useCallback((imageSeq: number) => {
+    setDeletedImageIds((prev) => {
+      if (!prev.has(imageSeq)) {
+        return prev;
+      }
+      const next = new Set(prev);
+      next.delete(imageSeq);
+      return next;
+    });
+  }, []);
+
   // 메인 이미지를 교체할 때 기존 메인은 삭제 처리 후 새 파일로 교체한다.
   const setMainImage = useCallback(
     (file: File) => {
@@ -85,6 +96,29 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
       });
     },
     [markAsDeleted]
+  );
+
+  const setMainExistingImage = useCallback(
+    (image: MenuImageData) => {
+      setMainImageData((prev) => {
+        if (prev?.id === image.id) {
+          return prev;
+        }
+        if (prev) {
+          markAsDeleted(prev.id);
+        }
+        return { ...image, isMainImage: true };
+      });
+
+      setAdditionalImagesData((prev) =>
+        prev.filter((img) => img.id !== image.id)
+      );
+
+      if (typeof image.imageSeq === 'number') {
+        restoreDeletedImage(image.imageSeq);
+      }
+    },
+    [markAsDeleted, restoreDeletedImage]
   );
 
   const removeMainImage = useCallback(() => {
@@ -100,6 +134,35 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
     setAdditionalImagesData((prev) => [...prev, ...newImages]);
   }, []);
 
+  const addExistingImages = useCallback(
+    (images: MenuImageData[]) => {
+      setAdditionalImagesData((prev) => {
+        const existingIds = new Set<string>();
+        if (mainImageData) {
+          existingIds.add(mainImageData.id);
+        }
+        prev.forEach((img) => existingIds.add(img.id));
+
+        const newImages = images
+          .filter((img) => !existingIds.has(img.id))
+          .map((img) => ({ ...img, isMainImage: false }));
+
+        return [...prev, ...newImages];
+      });
+
+      setDeletedImageIds((prev) => {
+        const next = new Set(prev);
+        images.forEach((img) => {
+          if (typeof img.imageSeq === 'number') {
+            next.delete(img.imageSeq);
+          }
+        });
+        return next;
+      });
+    },
+    [mainImageData]
+  );
+
   const removeAdditionalImage = useCallback(
     (id: string) => {
       if (isExistingImage(id)) {
@@ -107,6 +170,27 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
       } else {
         setAdditionalImagesData((prev) => prev.filter((img) => img.id !== id));
       }
+    },
+    [markAsDeleted]
+  );
+
+  const replaceAdditionalImage = useCallback(
+    (id: string, file: File) => {
+      setAdditionalImagesData((prev) => {
+        const targetIndex = prev.findIndex((img) => img.id === id);
+        const nextImage = createMenuImageData(file, false);
+
+        if (targetIndex < 0) {
+          return [...prev, nextImage];
+        }
+
+        const next = [...prev];
+        if (isExistingImage(id)) {
+          markAsDeleted(id);
+        }
+        next.splice(targetIndex, 1, nextImage);
+        return next;
+      });
     },
     [markAsDeleted]
   );
@@ -119,9 +203,16 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
 
   const getMenuImageList = useCallback((): ICreateMenuImage[] => {
     return getAllActiveImages().map((img, index) => ({
-      imageName: img.file?.id || `existing-${img.imageSeq}`,
+      imageName:
+        img.file?.id ||
+        img.imageName ||
+        `existing-${img.imageSeq ?? index}`,
       imageIndex: index,
       isMainImage: img.isMainImage,
+      // imageSeq는 POST에서도 0으로 내려 보낸다(기존/추천 이미지는 파일 없이 사용).
+      imageSeq: img.imageSeq ?? 0,
+      imagePath: img.imagePath ?? null,
+      imageExtension: img.imageExtension ?? null,
     }));
   }, [getAllActiveImages]);
 
@@ -133,13 +224,23 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
         const originalImage = img.imageSeq
           ? originalImagesMap.get(img.imageSeq)
           : null;
+        const fallbackImageName = img.imageSeq
+          ? `existing-${img.imageSeq}`
+          : '';
 
         return {
           imageSeq: img.imageSeq ?? 0,
           menuSeq,
-          imagePath: originalImage?.imagePath ?? null,
-          imageName: img.file?.id || originalImage?.imageName || '',
-          imageExtension: originalImage?.imageExtension ?? null,
+          imagePath: originalImage?.imagePath ?? img.imagePath ?? null,
+          imageName:
+            img.file?.id ||
+            originalImage?.imageName ||
+            img.imageName ||
+            fallbackImageName,
+          imageExtension:
+            originalImage?.imageExtension ??
+            img.imageExtension ??
+            null,
           imageIndex: imageIndex++,
           isDeleted: false,
           isMainImage: img.isMainImage,
@@ -181,9 +282,12 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
       mainImage,
       additionalImages,
       setMainImage,
+      setMainExistingImage,
       removeMainImage,
       addAdditionalImages,
+      addExistingImages,
       removeAdditionalImage,
+      replaceAdditionalImage,
       getMenuImageList,
       getUpdateMenuImageList,
       getFiles,
@@ -192,9 +296,12 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
       mainImage,
       additionalImages,
       setMainImage,
+      setMainExistingImage,
       removeMainImage,
       addAdditionalImages,
+      addExistingImages,
       removeAdditionalImage,
+      replaceAdditionalImage,
       getMenuImageList,
       getUpdateMenuImageList,
       getFiles,

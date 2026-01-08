@@ -31,7 +31,6 @@ export const BaseHeader = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
-  margin-top: 20px;
 `;
 
 export const BaseTitle = styled.h3`

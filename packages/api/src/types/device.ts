@@ -7,8 +7,8 @@ export interface IDeviceBase {
   deviceType: TDeviceType;
   orderPosNumber: number | null;
   tableNumber: string | null;
-  battery: number;
-  wifiSignal: string;
+  battery: number | null;
+  wifiSignal: string | null;
   ipAddress: string;
   version: string;
   buildNumber: string;

@@ -13,7 +13,11 @@ export const DialogContainer = styled(BaseDialogContainer)`
   padding: 0;
 `;
 
-export const CloseButton = BaseCloseButton;
+export const CloseButton = styled(BaseCloseButton)`
+  width: 50px;
+  height: 50px;
+  transform: translate(6px, 6px);
+`;
 
 export const RightPanel = styled.div`
   flex: 2.1;

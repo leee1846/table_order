@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import {
   BaseDialogContainer,
-  BaseCloseButton,
   BaseHeader,
   BaseTitle,
 } from '@repo/feature/components';
@@ -19,7 +18,11 @@ export const Header = styled(BaseHeader)`
   margin-bottom: 40px;
 `;
 
-export const CloseButtonWrapper = styled(BaseCloseButton)``;
+export const CloseButtonWrapper = styled.button`
+  cursor: pointer;
+  text-align: right;
+  transform: translate(-12px, 12px);
+`;
 
 export const Title = BaseTitle;
 
@@ -156,4 +159,3 @@ export const TotalPrice = styled.div`
   color: ${colors.primary[500]};
   text-align: right;
 `;
-

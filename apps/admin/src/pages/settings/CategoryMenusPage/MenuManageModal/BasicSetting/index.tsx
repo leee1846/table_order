@@ -1,6 +1,6 @@
 import { t } from '@/config/i18n';
 import { useId, useCallback } from 'react';
-import { CheckButton, Input } from '@repo/ui/components';
+import { Input } from '@repo/ui/components';
 import {
   bestOnIcon,
   chiliOffIcon,

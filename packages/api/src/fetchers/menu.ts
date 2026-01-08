@@ -8,6 +8,8 @@ import type {
   IUpdateMenuIndexRequest,
   IUpdateMenuHiddenParams,
   IUpdateMenuOutOfStockParams,
+  TGetExistingMenuImageListResponse,
+  TGetSampleMenuImageListResponse,
   TGetMenuListResponse,
 } from '../types/menu';
 import type { TVoidApiResponse } from '../types/common';
@@ -28,6 +30,37 @@ export const getMenuListByCategory = async (
 
   return response.data;
 };
+
+/**
+ * 기존 이미지 목록을 조회합니다.
+ * GET /menu/image/existing/list/{shopCode}
+ */
+export const getExistingMenuImageList = async (
+  shopCode: string
+): Promise<TGetExistingMenuImageListResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetExistingMenuImageListResponse>({
+    method: 'GET',
+    url: ENDPOINTS.MENU.EXISTING_IMAGE_LIST(shopCode),
+  });
+
+  return response.data;
+};
+
+/**
+ * 추천 이미지 목록을 조회합니다.
+ * GET /menu/image/sample/list
+ */
+export const getSampleMenuImageList =
+  async (): Promise<TGetSampleMenuImageListResponse> => {
+    const axiosInstance = getAxiosInstance('private');
+    const response = await axiosInstance<TGetSampleMenuImageListResponse>({
+      method: 'GET',
+      url: ENDPOINTS.MENU.SAMPLE_IMAGE_LIST,
+    });
+
+    return response.data;
+  };
 
 /**
  * 메뉴를 생성합니다.
@@ -83,13 +116,22 @@ export const updateMenu = async (params: {
   const menuBlob = new Blob([JSON.stringify(params.menu)], {
     type: 'application/json',
   });
-  formData.append('menu', menuBlob);
 
+  formData.append('menu', menuBlob);
   // files가 있으면 추가 (파일명과 menu.menuImageList.imageName이 일치해야 함)
   if (params.files && params.files.length > 0) {
     params.files.forEach((file) => {
       formData.append('files', file);
     });
+  }
+
+  // FormData 콘솔 출력
+  for (const [key, value] of formData.entries()) {
+    if (value instanceof Blob) {
+      value.text().then((text) => {
+        console.log(`${key} blob 내용`, JSON.parse(text));
+      });
+    }
   }
 
   const response = await axiosInstance<TVoidApiResponse>({

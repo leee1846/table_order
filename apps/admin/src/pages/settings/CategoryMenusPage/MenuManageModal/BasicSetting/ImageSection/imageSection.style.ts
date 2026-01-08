@@ -102,8 +102,8 @@ export const ScrollableContent = styled.div`
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 1.875rem;
-        height: 1.625rem;
+        width: 2rem;
+        height: 2rem;
         background-color: ${theme.colors.primary[600]};
         border-radius: 0 0.75rem 0 0.75rem;
         cursor: pointer;

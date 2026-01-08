@@ -70,6 +70,8 @@ export const toExistingImageData = (
   id: `existing-${image.imageSeq}`,
   imagePath: image.imagePath ?? undefined,
   imageSeq: image.imageSeq,
+  imageName: image.imageName,
+  imageExtension: image.imageExtension ?? null,
   isMainImage,
 });
 

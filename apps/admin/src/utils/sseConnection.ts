@@ -9,6 +9,7 @@ import { AndroidInfo } from '@repo/util/app';
  */
 export const initializeSseConnection = async () => {
   const androidId = await AndroidInfo.getId();
+
   if (!androidId) {
     return;
   }

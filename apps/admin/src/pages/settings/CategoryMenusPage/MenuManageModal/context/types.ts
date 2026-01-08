@@ -26,6 +26,8 @@ export interface MenuImageData {
   file?: FileWithId;
   imagePath?: string;
   imageSeq?: number;
+  imageName?: string;
+  imageExtension?: string | null;
   isMainImage: boolean;
 }
 
@@ -38,9 +40,12 @@ export interface MenuManageModalContextValue {
   mainImage: MenuImageData | null;
   additionalImages: MenuImageData[];
   setMainImage: (file: File) => void;
+  setMainExistingImage: (image: MenuImageData) => void;
   removeMainImage: () => void;
   addAdditionalImages: (files: FileList | File[]) => void;
+  addExistingImages: (images: MenuImageData[]) => void;
   removeAdditionalImage: (id: string) => void;
+  replaceAdditionalImage: (id: string, file: File) => void;
   handleSubmit: () => Promise<void>;
   isSaving: boolean;
   onClose: () => void;

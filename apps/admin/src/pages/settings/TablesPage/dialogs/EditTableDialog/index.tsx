@@ -38,11 +38,7 @@ export const EditTableDialog = ({
 
   const handleSubmit = async () => {
     if (!tableName.trim()) {
-      toast(
-        t(
-          '테이블 이름을 입력해주세요.'
-        )
-      );
+      toast(t('테이블 이름을 입력해주세요.'));
       return;
     }
 
@@ -54,11 +50,7 @@ export const EditTableDialog = ({
         tablePositionY: table.tablePositionY,
       });
 
-      toast(
-        t(
-          '테이블이 수정되었습니다.'
-        )
-      );
+      toast(t('테이블이 수정되었습니다.'));
       queryClient.invalidateQueries({
         queryKey: queryKeys.table.groupList(shopCode),
       });
@@ -69,15 +61,8 @@ export const EditTableDialog = ({
 
       onClose();
     } catch (error) {
-      toast(
-        t(
-          '테이블 수정 중 오류가 발생했습니다.'
-        )
-      );
-      console.error(
-        t('테이블 수정 오류:'),
-        error
-      );
+      toast(t('테이블 수정 중 오류가 발생했습니다.'));
+      console.error(t('테이블 수정 오류:'), error);
     }
   };
 
@@ -97,9 +82,7 @@ export const EditTableDialog = ({
           <CloseIcon width={32} height={32} color={colors.grey[600]} />
         </S.CloseButton>
         <S.ModalHeader>
-          <S.ModalTitle>
-            {t('테이블 수정')}
-          </S.ModalTitle>
+          <S.ModalTitle>{t('테이블 수정')}</S.ModalTitle>
         </S.ModalHeader>
         <S.ModalBody>
           <S.InputWrapper>

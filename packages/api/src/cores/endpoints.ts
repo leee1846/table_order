@@ -62,6 +62,9 @@ export const ENDPOINTS = {
     INDEX_UPDATE: '/menu/index',
     HIDDEN: '/menu/hidden',
     OUT_OF_STOCK: '/menu/out-of-stock',
+    EXISTING_IMAGE_LIST: (shopCode: string) =>
+      `/menu/image/existing/list/${shopCode}`,
+    SAMPLE_IMAGE_LIST: '/menu/image/sample/list',
   },
 
   SHOP: {

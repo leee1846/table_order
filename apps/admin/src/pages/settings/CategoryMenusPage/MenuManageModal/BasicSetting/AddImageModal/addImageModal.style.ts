@@ -3,7 +3,6 @@ import { theme, TYPOGRAPHY } from '@repo/ui';
 import {
   BaseDialogContainer,
   BaseHeader,
-  BaseCloseButton,
   BaseTitle,
 } from '@repo/feature/components';
 
@@ -19,7 +18,11 @@ export const ModalTitle = styled(BaseTitle)`
   font-weight: 700;
 `;
 
-export const CloseButton = BaseCloseButton;
+export const CloseButton = styled.button`
+  cursor: pointer;
+  text-align: right;
+  transform: translate(-6px, 6px);
+`;
 
 export const ModalBody = styled.div`
   display: flex;

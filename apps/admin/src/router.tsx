@@ -139,11 +139,13 @@ const rootRouteLoader = () => {
     return redirect(ROUTES.LOGIN.generate());
   }
 
+  // 토큰 디코딩
   const payload = decodeJwtToken<ITokenPayload>(token);
   if (!payload) {
     return redirect(ROUTES.LOGIN.generate());
   }
 
+  // Native 앱인 경우: SHOP 역할만 허용
   if (CapacitorApp.isNative()) {
     if (payload.role === 'SHOP') {
       return redirect(ROUTES.TABLES.generate());
@@ -152,6 +154,7 @@ const rootRouteLoader = () => {
     return redirect(ROUTES.NOT_FOUND.generate());
   }
 
+  // Web인 경우: ADMIN 역할만 허용
   if (payload.role === 'ADMIN') {
     return redirect(ROUTES.ADMIN_WEB.STORES.generate());
   }
