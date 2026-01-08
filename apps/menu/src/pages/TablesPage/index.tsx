@@ -285,8 +285,13 @@ export const TablesPage = () => {
   // 일반 모드: 디바이스 타입 및 테이블 상태 확인 함수
   const isCurrentSelectedTable = (tableNumber: string) =>
     deviceData?.tableNumber === tableNumber;
-  const isTableOccupiedByOther = (table: TableWithStatus) =>
-    table.menuItems && !isCurrentSelectedTable(table.tableNumber);
+  const isTableOccupiedByOther = (table: TableWithStatus) => {
+    const hasMenuDevice = deviceListData?.data?.some(
+      (device) =>
+        device.tableNumber === table.tableNumber && device.deviceType === 'MENU'
+    );
+    return hasMenuDevice && !isCurrentSelectedTable(table.tableNumber);
+  };
 
   // 사용 중인 테이블 클릭 처리
   const handleOccupiedTableClick = (table: TableWithStatus) => {
