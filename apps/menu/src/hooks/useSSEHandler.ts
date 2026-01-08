@@ -10,7 +10,7 @@ import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys } from '@repo/api/queries';
+import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { CapacitorApp, SystemControl, AndroidInfo } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
@@ -33,7 +33,11 @@ export const useSSEHandler = () => {
   const queryClient = useQueryClient();
   const { t } = useCustomerTranslation();
 
+  const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
   const { data: deviceStoreData, setDataAsync } = useDeviceData({
+    skipInitialRequest: true,
+  });
+  const { shopData: currentShopData } = useShopData({
     skipInitialRequest: true,
   });
 
@@ -46,6 +50,10 @@ export const useSSEHandler = () => {
 
   // 초기 디바이스 데이터 설정 및 SSE 연결
   useEffect(() => {
+    if (!currentShopData?.shopCode) {
+      return;
+    }
+
     const getDeviceData = async () => {
       const ipAddress = await AndroidInfo.getIp();
       const androidId = await AndroidInfo.getId();
@@ -53,12 +61,23 @@ export const useSSEHandler = () => {
 
       const currentDeviceStoreData = deviceStoreDataRef.current;
 
-      await setDataAsync({
+      const baseDeviceDetail = {
         ...(currentDeviceStoreData ?? {}),
         ipAddress: ipAddress ?? '',
         androidId: androidId ?? '',
         version: appInfo.version,
         buildNumber: appInfo.build,
+      };
+
+      await setDataAsync(baseDeviceDetail);
+      await postDeviceDetail({
+        shopCode: currentShopData.shopCode,
+        ...baseDeviceDetail,
+        deviceType: baseDeviceDetail.deviceType ?? 'MENU',
+        orderPosNumber: baseDeviceDetail.orderPosNumber ?? null,
+        tableNumber: baseDeviceDetail.tableNumber ?? null,
+        battery: baseDeviceDetail.battery ?? 0,
+        wifiSignal: baseDeviceDetail.wifiSignal ?? '',
       });
 
       initializeSseConnection();
@@ -70,7 +89,7 @@ export const useSSEHandler = () => {
       disconnectSse();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentShopData?.shopCode]); // shopCode가 있을 때만 실행
 
   // SSE 데이터 구독
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
@@ -79,9 +98,6 @@ export const useSSEHandler = () => {
 
   // 필요한 데이터 훅들
   const { data: currentDeviceData } = useDeviceData({
-    skipInitialRequest: true,
-  });
-  const { shopData: currentShopData } = useShopData({
     skipInitialRequest: true,
   });
   const { data: shopDetailData, refresh: refreshShopDetailData } =
@@ -212,7 +228,7 @@ export const useSSEHandler = () => {
     handleShopMessage: async () => {
       const { locationPathname } = dataRefs.current;
 
-      if (locationPathname !== ROUTES.ROOT.path) {
+      if (locationPathname === ROUTES.LOGIN.path) {
         return;
       }
 

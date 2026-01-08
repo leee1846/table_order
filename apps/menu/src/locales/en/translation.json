@@ -214,5 +214,6 @@
   "인원 수": "Number of people",
   "완료": "Done",
   "곧 이미지를 추가할 예정이에요!": "We will add an image soon!",
-  "관리자 언어 선택": "Select Admin Language"
+  "관리자 언어 선택": "Select Admin Language",
+  "최소 주문 금액은 {{minAmount}}원 입니다.": "The minimum order amount is {{minAmount}} KRW."
 }

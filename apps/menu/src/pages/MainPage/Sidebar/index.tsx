@@ -89,7 +89,7 @@ export const Sidebar = ({
               </button>
             </S.StaffCall>
           )}
-          {shopDetailData?.useLocale && (
+          {shopDetailData?.shopSetting?.useLocale && (
             <S.Language>
               <button
                 type="button"

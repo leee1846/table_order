@@ -82,12 +82,6 @@ export const CartList = ({
     }, 0);
   };
 
-  const calculateTotalMenuQuantity = (): number => {
-    return cartData.menus.reduce((total, menu) => {
-      return total + menu.quantity;
-    }, 0);
-  };
-
   const handleRemoveMenu = (index: number) => {
     removeFromCart(index);
     toast(t('메뉴가 삭제되었습니다.'), TOAST_OPTIONS);
@@ -129,18 +123,18 @@ export const CartList = ({
       return;
     }
 
-    const totalMenuQuantity = calculateTotalMenuQuantity();
+    const totalMenuAmount = calculateTotalPrice();
     const firstOrderMinAmount =
       shopDetailData?.shopSetting?.firstOrderMinAmount;
 
     if (
       firstOrderMinAmount &&
       firstOrderMinAmount > 0 &&
-      totalMenuQuantity < firstOrderMinAmount
+      totalMenuAmount < firstOrderMinAmount
     ) {
       toast(
-        t('최소 주문 수량은 {{minQuantity}}개 입니다.', {
-          minQuantity: firstOrderMinAmount,
+        t('최소 주문 금액은 {{minAmount}}원 입니다.', {
+          minAmount: formatCurrency(firstOrderMinAmount),
         }),
         TOAST_OPTIONS
       );

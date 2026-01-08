@@ -9,12 +9,15 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTouchDetectTimer } from '@/hooks/useTouchDetectTimer';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { globalTimerManager } from '@/utils/timerManager';
-import { TIMER_KEYS } from '@/constants/keys';
+import { STORAGE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import type { UseBreakTimeReturn } from '@/hooks/useBreakTime';
 import type { UseShopClosureReturn } from '@/hooks/useShopClosure';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
+import { ROUTES } from '@/constants/routes';
+import { AppStorage } from '@repo/util/app';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -28,6 +31,7 @@ export const Header = ({
   breakTimeState,
   closureState,
 }: Props) => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const { t } = useCustomerTranslation();
 
@@ -227,6 +231,16 @@ export const Header = ({
   }, []);
 
   const handleLogoClick = () => {
+    if (!shopDetailData?.shopSetting?.isAdminLocked) {
+      AppStorage.saveData({
+        key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
+        value: true,
+        isTemporary: true,
+      });
+      navigate(ROUTES.TABLES.generate());
+      return;
+    }
+
     clickCountRef.current += 1;
 
     // 3번 연속 클릭 시 모달 열기

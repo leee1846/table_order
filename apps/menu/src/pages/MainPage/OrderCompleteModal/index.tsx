@@ -5,6 +5,7 @@ import * as S from '@/pages/MainPage/OrderCompleteModal/OrderCompleteModal.style
 import type { IOrder } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 interface Props {
   orderData: IOrder[];
@@ -18,6 +19,7 @@ export const OrderCompleteModal = ({
   onClose,
 }: Props) => {
   const { t } = useCustomerTranslation();
+  const { data: shopDetailData } = useShopDetailData();
 
   return (
     <ModalBackground position="center" onClick={onClose}>
@@ -65,10 +67,12 @@ export const OrderCompleteModal = ({
           </S.OrderList>
 
           <S.TotalContainer>
-            <div>
-              <h3>{t('합계')}</h3>
-              <p>{formatCurrency(totalPrice)}</p>
-            </div>
+            {shopDetailData?.shopSetting?.isOrderCompleteTotalVisible && (
+              <div>
+                <h3>{t('합계')}</h3>
+                <p>{formatCurrency(totalPrice)}</p>
+              </div>
+            )}
             <BasicButton
               variant="Solid_Blue_2XL"
               onClick={onClose}
