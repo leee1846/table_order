@@ -77,3 +77,12 @@ export const HorizontalLayoutLeft = styled.div`
   }
 `;
 
+export const ButtonContainer = styled.div`
+  width: fit-content;
+`;
+
+export const MessageText = styled.p`
+  color: ${theme.colors.semantic[500]};
+  ${TYPOGRAPHY.ST_2}
+`;
+

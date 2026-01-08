@@ -11,3 +11,5 @@ export * from './sse';
 export * from './notice';
 export * from './sales';
 export * from './payment';
+export * from './member';
+export * from './admin';

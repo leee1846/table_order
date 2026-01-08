@@ -1,3 +1,5 @@
+export type TMemberRole = 'ADMIN' | 'SHOP';
+
 export interface IApiStatus {
   code: number;
   userMessage: string | null;
@@ -16,7 +18,7 @@ export interface IApiError {
 
 export interface ITokenPayload {
   sub: string;
-  role: 'ADMIN' | 'SHOP';
+  role: TMemberRole;
   shopSeq: number;
   token_type: 'access_token' | 'refresh_token';
   iat: number;

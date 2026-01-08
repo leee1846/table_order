@@ -1,28 +1,14 @@
-import { Input, CheckButton, Dropdown } from '@repo/ui/components';
+import { Input, CheckButton } from '@repo/ui/components';
 import * as S from './storeInfoTab.style';
-import type { IShopFormData } from '@/feature/AdminWeb/types';
+import type { IGetAdminShopDetail } from '@repo/api/types';
 
 type Mode = 'create' | 'edit';
 
 interface Props {
   mode: Mode;
-  formData: IShopFormData;
-  updateFormData: (updates: Partial<IShopFormData>) => void;
+  formData: IGetAdminShopDetail;
+  updateFormData: (updates: Partial<IGetAdminShopDetail>) => void;
 }
-
-const businessTypeOptions = [
-  { value: 'restaurant', label: '음식점' },
-  { value: 'cafe', label: '카페' },
-  { value: 'bar', label: '바' },
-  { value: 'bakery', label: '베이커리' },
-  { value: 'other', label: '기타' },
-];
-
-const businessCategoryOptions = [
-  { value: 'individual', label: '개인사업자' },
-  { value: 'corporation', label: '법인사업자' },
-  { value: 'franchise', label: '프랜차이즈' },
-];
 
 export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
   return (
@@ -30,17 +16,6 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
       {mode === 'edit' && (
         <S.Section>
           <S.HorizontalLayout>
-            <S.FieldGroup>
-              <S.Label>계정 정보</S.Label>
-              <Input
-                placeholder="계정 정보"
-                value={formData.account || ''}
-                onChange={() => {
-                  // readOnly
-                }}
-                disabled
-              />
-            </S.FieldGroup>
             <S.FieldGroup>
               <S.Label>SID</S.Label>
               <Input
@@ -183,34 +158,6 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
             />
           </S.FieldGroup>
         </S.HorizontalLayout>
-      </S.Section>
-
-      <S.Section>
-        <S.HorizontalLayoutLeft>
-          <S.FieldGroup>
-            <S.Label>업종</S.Label>
-            <Dropdown
-              options={businessTypeOptions}
-              value={formData.businessType}
-              onChange={(value) =>
-                updateFormData({ businessType: value as string })
-              }
-              placeholder="업종을 선택하세요"
-            />
-          </S.FieldGroup>
-
-          <S.FieldGroup>
-            <S.Label>업태</S.Label>
-            <Dropdown
-              options={businessCategoryOptions}
-              value={formData.shopBusinessCategory}
-              onChange={(value) =>
-                updateFormData({ shopBusinessCategory: value as string })
-              }
-              placeholder="업태를 선택하세요"
-            />
-          </S.FieldGroup>
-        </S.HorizontalLayoutLeft>
       </S.Section>
 
       <S.Section>

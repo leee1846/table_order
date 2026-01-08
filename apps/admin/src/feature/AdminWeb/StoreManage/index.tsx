@@ -1,101 +1,73 @@
 import { useState, useEffect } from 'react';
 import { BasicButton } from '@repo/ui/components';
 import { StoreInfoTab } from '@/feature/AdminWeb/StoreManage/StoreInfoTab';
+import { MemberInfoTab } from '@/feature/AdminWeb/StoreManage/MemberInfoTab';
 import * as S from './storeManage.style';
-import type { IShopFormData } from '@/feature/AdminWeb/types';
+import type {
+  ICreateMemberRequest,
+  IGetAdminShopDetail,
+} from '@repo/api/types';
+import { DEFAULT_MEMBER_DATA, DEFAULT_SHOP_DATA } from './constants';
 
-type TabType = 'storeInfo' | 'settingInfo';
+type TabType = 'storeInfo' | 'memberInfo';
 type Mode = 'create' | 'edit';
 
 interface Props {
   mode: Mode;
-  initialData?: Partial<IShopFormData>;
-  onSave: (data: IShopFormData) => Promise<void>;
+  initialData?: IGetAdminShopDetail;
+  memberInitialData?: ICreateMemberRequest;
+  onSave: (
+    shopData: IGetAdminShopDetail,
+    memberData: ICreateMemberRequest
+  ) => Promise<void>;
 }
 
-const getDefaultFormData = (): IShopFormData => ({
-  account: '',
-  shopCode: '',
-  shopName: '',
-  isActive: false,
-  address1: '',
-  address2: '',
-  businessNumber: '',
-  shopType: '',
-  ownerName: '',
-  ownerPhoneNumber: '',
-  isCorporate: false,
-  businessType: '',
-  managerName: '',
-  managerPhoneNumber: '',
-  shopEmail: '',
-  shopPhoneNumber: '',
-  isTestShop: false,
-  shopBusinessCategory: '',
-  shopBusinessStatus: '',
-  isEarlyBetaUpdate: false,
-  isEarlyUpdate: false,
-  shopSearchName: '',
-  isDeleted: false,
-  useLocale: false,
-  useDatadog: false,
-});
+const getDefaultFormData = (): IGetAdminShopDetail => DEFAULT_SHOP_DATA;
 
-export const StoreManage = ({ mode, initialData, onSave }: Props) => {
+const getDefaultMemberFormData = (): ICreateMemberRequest =>
+  DEFAULT_MEMBER_DATA;
+
+export const StoreManage = ({
+  mode,
+  initialData,
+  memberInitialData,
+  onSave,
+}: Props) => {
   const [activeTab, setActiveTab] = useState<TabType>('storeInfo');
-  const [formData, setFormData] = useState<IShopFormData>(() => {
+  const [formData, setFormData] = useState<IGetAdminShopDetail>(() => {
     const defaultData = getDefaultFormData();
     return initialData ? { ...defaultData, ...initialData } : defaultData;
   });
+  const [memberFormData, setMemberFormData] = useState<ICreateMemberRequest>(
+    () => {
+      const defaultData = getDefaultMemberFormData();
+      return memberInitialData
+        ? { ...defaultData, ...memberInitialData }
+        : defaultData;
+    }
+  );
+
+  useEffect(() => {
+    if (memberInitialData) {
+      setMemberFormData({
+        ...memberInitialData,
+      });
+      return;
+    }
+  }, [memberInitialData]);
 
   useEffect(() => {
     if (initialData) {
-      setFormData({
-        account: initialData.account ?? '',
-        shopCode: initialData.shopCode ?? '',
-        shopName: initialData.shopName ?? '',
-        isActive: initialData.isActive ?? false,
-        address1: initialData.address1 ?? '',
-        address2: initialData.address2 ?? '',
-        businessNumber: initialData.businessNumber ?? '',
-        shopType: initialData.shopType ?? '',
-        ownerName: initialData.ownerName ?? '',
-        ownerPhoneNumber: initialData.ownerPhoneNumber ?? '',
-        isCorporate: initialData.isCorporate ?? false,
-        businessType: initialData.businessType ?? '',
-        managerName: initialData.managerName ?? '',
-        managerPhoneNumber: initialData.managerPhoneNumber ?? '',
-        shopEmail: initialData.shopEmail ?? '',
-        shopPhoneNumber: initialData.shopPhoneNumber ?? '',
-        isTestShop: initialData.isTestShop ?? false,
-        shopBusinessCategory: initialData.shopBusinessCategory ?? '',
-        shopBusinessStatus: initialData.shopBusinessStatus ?? '',
-        isEarlyBetaUpdate: initialData.isEarlyBetaUpdate ?? false,
-        isEarlyUpdate: initialData.isEarlyUpdate ?? false,
-        shopSearchName: initialData.shopSearchName ?? '',
-        isDeleted: initialData.isDeleted ?? false,
-        useLocale: initialData.useLocale ?? false,
-        useDatadog: initialData.useDatadog ?? false,
-      });
+      setFormData({ ...initialData });
     }
   }, [initialData]);
-  const [isSaving, setIsSaving] = useState(false);
 
-  const updateFormData = (updates: Partial<IShopFormData>) => {
+  const updateFormData = (updates: Partial<IGetAdminShopDetail>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      await onSave(formData);
-    } catch (error) {
-      // TODO: 에러 처리
-      // eslint-disable-next-line no-console
-      console.error('Failed to save store:', error);
-    } finally {
-      setIsSaving(false);
-    }
+    await onSave(formData, memberFormData);
   };
 
   const title = mode === 'create' ? '매장 생성' : '매장 수정';
@@ -110,11 +82,7 @@ export const StoreManage = ({ mode, initialData, onSave }: Props) => {
             <p>{title}</p>
           </div>
         </S.Titles>
-        <BasicButton
-          variant="Solid_Navy_M"
-          onClick={handleSave}
-          disabled={isSaving}
-        >
+        <BasicButton variant="Solid_Navy_M" onClick={handleSave}>
           저장
         </BasicButton>
       </S.Header>
@@ -127,6 +95,15 @@ export const StoreManage = ({ mode, initialData, onSave }: Props) => {
         >
           매장정보
         </S.TabButton>
+        {mode === 'edit' && (
+          <S.TabButton
+            type="button"
+            isActive={activeTab === 'memberInfo'}
+            onClick={() => setActiveTab('memberInfo')}
+          >
+            계정정보
+          </S.TabButton>
+        )}
       </S.TabContainer>
 
       <S.TabContent>
@@ -135,6 +112,15 @@ export const StoreManage = ({ mode, initialData, onSave }: Props) => {
             mode={mode}
             formData={formData}
             updateFormData={updateFormData}
+          />
+        )}
+
+        {activeTab === 'memberInfo' && mode === 'edit' && (
+          <MemberInfoTab
+            formData={memberFormData}
+            updateFormData={(updates) =>
+              setMemberFormData((prev) => ({ ...prev, ...updates }))
+            }
           />
         )}
       </S.TabContent>

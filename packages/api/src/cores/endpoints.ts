@@ -114,6 +114,14 @@ export const ENDPOINTS = {
   },
 
   ADMIN: {
+    SHOP: '/admin/shop',
     SHOP_LIST: '/admin/shop/list',
+    SHOP_DETAIL: (shopCode: string) => `/admin/shop/${shopCode}`,
+  },
+
+  MEMBER: {
+    GET: '/member',
+    CREATE: '/member',
+    UPDATE: '/member',
   },
 } as const;

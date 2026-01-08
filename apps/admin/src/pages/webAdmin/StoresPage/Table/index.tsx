@@ -1,4 +1,5 @@
 import { ROUTES } from '@/constants/routes';
+import { useAuthStore } from '@/stores/useAuthStore';
 import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import type { IGetAdminShopItem } from 'node_modules/@repo/api/src/types/admin';
@@ -11,6 +12,12 @@ interface Props {
 export const Table = ({ stores }: Props) => {
   const navigate = useNavigate();
 
+  const redirectToStoreDetail = (shopCode: string, shopSeq: number) => {
+    useAuthStore.getState().setShopDataForAdminWeb(shopCode, shopSeq);
+    const url = `${window.location.origin}${ROUTES.SETTINGS.SALES.SUMMARY.generate()}`;
+    window.open(url, '_blank');
+  };
+
   const renderRows = () => {
     if (!stores || stores.length === 0) {
       return (
@@ -22,9 +29,8 @@ export const Table = ({ stores }: Props) => {
 
     return stores.map((store) => (
       <tr key={store.memberId}>
-        <td>{store.memberId}</td>
-        <td>{store.shopSeq}</td>
         <td>{store.shopName}</td>
+        <td>{store.memberId}</td>
         <td>{store.businessNumber}</td>
         <td>{store.address1}</td>
         <td>{store.managerPhoneNumber}</td>
@@ -40,8 +46,13 @@ export const Table = ({ stores }: Props) => {
             >
               수정
             </BasicButton>
-            <BasicButton variant="Outline_Navy_S" onClick={() => {}}>
-              매장 상세
+            <BasicButton
+              variant="Outline_Navy_S"
+              onClick={() =>
+                redirectToStoreDetail(store.shopCode, store.shopSeq)
+              }
+            >
+              매장 설정
             </BasicButton>
           </div>
         </td>
@@ -54,9 +65,8 @@ export const Table = ({ stores }: Props) => {
       <UIStyles.setting.Table>
         <UIStyles.setting.Thead>
           <tr>
-            <th>SID</th>
-            <th>아이디</th>
             <th>매장명</th>
+            <th>계정</th>
             <th>사업자등록번호</th>
             <th>기본 주소</th>
             <th>대표자 연락처</th>

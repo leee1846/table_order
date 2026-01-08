@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { bestOnIcon } from '@repo/ui/icons';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
+import { CapacitorApp } from '@repo/util/app';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
@@ -35,19 +36,24 @@ export const SidebarLayout = () => {
     [categoryMenuSubMenus, t]
   );
 
+  const onClickLogo = () => {
+    if (!CapacitorApp.isNative()) {
+      return;
+    }
+
+    navigate(ROUTES.TABLES.generate());
+  };
+
   return (
     <SettingsSidebar
       useTranslation={useTranslation}
       menus={SIDEBAR_MENUS}
       logoElement={
-        <button
-          type="button"
-          onClick={() => navigate(ROUTES.TABLES.generate())}
-        >
+        <button type="button" onClick={onClickLogo}>
           <img src={bestOnIcon} alt="logo" />
         </button>
       }
-      onClickHomeButton={() => navigate(ROUTES.TABLES.generate())}
+      onClickHomeButton={onClickLogo}
     />
   );
 };

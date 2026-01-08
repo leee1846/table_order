@@ -27,3 +27,42 @@ export type TGetAdminShopListResponse = IApiResponse<{
   totalPageNumber: number;
   shopList: IGetAdminShopItem[];
 }>;
+
+export interface IGetAdminShopDetail {
+  shopSeq: number;
+  shopName: string;
+  isActive: boolean;
+  address1: string;
+  address2: string;
+  businessNumber: string;
+  shopType: string;
+  shopCode: string;
+  ownerName: string;
+  ownerPhoneNumber: string;
+  isCorporate: boolean;
+  businessType: string;
+  managerName: string;
+  managerPhoneNumber: string;
+  shopEmail: string;
+  shopPhoneNumber: string;
+  isDeleted: boolean;
+  useLocale: boolean;
+  isTestShop: boolean;
+  etcNote: string;
+  shopBusinessCategory: string;
+  shopBusinessStatus: string;
+  shopCountryCode: string;
+  isEarlyBetaUpdate: boolean;
+  isEarlyUpdate: boolean;
+  useDatadog: boolean;
+  shopSearchName: string;
+  apiToken: string;
+  mappedShopCode: string;
+  mappedHeadCode: string;
+  createDate: string;
+  createMemberUuid: string;
+  updateDate: string;
+  updateMemberUuid: string;
+}
+
+export type TGetAdminShopDetailResponse = IApiResponse<IGetAdminShopDetail>;

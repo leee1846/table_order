@@ -13,9 +13,7 @@ export const Header = ({ onClickAddCategory }: Props) => {
       <S.TextContainer>
         <h1>{t('카테고리 관리')}</h1>
         <div />
-        <h2>
-          {t('카테고리 추가하기')}
-        </h2>
+        <h2>{t('카테고리 추가하기')}</h2>
       </S.TextContainer>
       <BasicButton
         variant="Solid_Navy_2XL"

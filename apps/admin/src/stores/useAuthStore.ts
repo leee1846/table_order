@@ -16,7 +16,7 @@ export interface IAuthStore {
   /** 데이터 초기화 */
   clearAuth: () => void;
   /** 관리자 웹에서 선택한 매장 코드를 저장하는 함수 */
-  setShopCodeForAdminWeb: (shopCode: string) => void;
+  setShopDataForAdminWeb: (shopCode: string, shopSeq: number) => void;
 }
 
 /**
@@ -41,7 +41,22 @@ export const useAuthStore = create<IAuthStore>((set, _) => {
       return { tokenPayload: null, shopCode: null, shopSeq: null };
     }
 
-    // shopSeq는 토큰에서 가져옴
+    // sessionStorage에서 관리자 웹에서 선택한 매장 정보 확인
+    const sessionShopCode = storage.session.load<string>(
+      STORAGE_KEYS.SHOP_CODE
+    );
+    const sessionShopSeq = storage.session.load<number>(STORAGE_KEYS.SHOP_SEQ);
+
+    // sessionStorage에 값이 있으면 우선 사용
+    if (sessionShopCode && sessionShopSeq !== null) {
+      return {
+        tokenPayload: payload,
+        shopCode: sessionShopCode,
+        shopSeq: sessionShopSeq,
+      };
+    }
+
+    // sessionStorage에 값이 없으면 기존 로직대로 토큰에서 가져옴
     const shopSeq = payload.shopSeq;
 
     // shopCode는 매장 목록에서 찾아야 하므로 null로 초기화
@@ -81,11 +96,13 @@ export const useAuthStore = create<IAuthStore>((set, _) => {
     clearAuth: () => {
       storage.local.remove(STORAGE_KEYS.AUTH);
       storage.session.remove(STORAGE_KEYS.SHOP_CODE);
+      storage.session.remove(STORAGE_KEYS.SHOP_SEQ);
       set({ tokenPayload: null, shopCode: null, shopSeq: null });
     },
-    setShopCodeForAdminWeb: (shopCode: string) => {
+    setShopDataForAdminWeb: (shopCode: string, shopSeq: number) => {
       storage.session.save<string>(STORAGE_KEYS.SHOP_CODE, shopCode);
-      set({ shopCode });
+      storage.session.save<number>(STORAGE_KEYS.SHOP_SEQ, shopSeq);
+      set({ shopCode, shopSeq });
     },
   };
 });

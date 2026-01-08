@@ -46,12 +46,14 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
   const latestAppVersionText = latestAppVersionResponse?.data?.version;
 
   useEffect(() => {
-    const getAppInfo = async () => {
-      const appInfo = await CapacitorApp.getInfo();
-      setCurrentVersion(appInfo.version);
-    };
+    if (!CapacitorApp.isNative()) {
+      const getAppInfo = async () => {
+        const appInfo = await CapacitorApp.getInfo();
+        setCurrentVersion(appInfo.version);
+      };
 
-    getAppInfo();
+      getAppInfo();
+    }
   }, []);
 
   useEffect(() => {

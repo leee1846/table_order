@@ -6,6 +6,7 @@ import { ChevronForwardIcon, HomeFilledIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { type SettingsSidebarProps, type TMenu, type TSubMenu } from './types';
 import { toast } from '@repo/feature/utils';
+import { CapacitorApp } from '@repo/util/app';
 
 export type { SettingsSidebarProps, TMenu, TSubMenu } from './types';
 
@@ -133,14 +134,16 @@ export const SettingsSidebar = ({
           })}
         </S.List>
 
-        <S.FloatingHomeButton type="button" onClick={onClickHomeButton}>
-          <HomeFilledIcon
-            width={24}
-            height={24}
-            color={theme.colors.grey[700]}
-          />
-          <span>{t('메인 홈')}</span>
-        </S.FloatingHomeButton>
+        {CapacitorApp.isNative() && (
+          <S.FloatingHomeButton type="button" onClick={onClickHomeButton}>
+            <HomeFilledIcon
+              width={24}
+              height={24}
+              color={theme.colors.grey[700]}
+            />
+            <span>{t('메인 홈')}</span>
+          </S.FloatingHomeButton>
+        )}
       </S.Section>
 
       <S.Content>
