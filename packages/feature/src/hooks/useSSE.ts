@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { openConfirmDialog } from '../utils/dialog';
 
 /**
  * SSE 연결 상태를 나타내는 타입
@@ -16,6 +17,8 @@ type TSSEConnectionState<T> = {
   setIsConnectedCallbacks: Set<React.Dispatch<React.SetStateAction<boolean>>>;
   messageQueue: T[];
   isProcessingQueue: boolean;
+  url: string | null;
+  isReconnecting: boolean;
 };
 
 /**
@@ -54,9 +57,15 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       setIsConnectedCallbacks: new Set(),
       messageQueue: [],
       isProcessingQueue: false,
+      url: null,
+      isReconnecting: false,
     };
     sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
   }
+
+  // URL 저장 및 재연결 플래그 초기화
+  state.url = url;
+  state.isReconnecting = false;
 
   // EventSource 생성 및 연결
   const eventSource = new EventSource(url);
@@ -64,6 +73,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 
   eventSource.onopen = () => {
     state.isConnected = true;
+    state.isReconnecting = false; // 재연결 성공 시 플래그 해제
     // 모든 콜백 호출 (state.setIsConnected는 no-op일 수 있으므로 제거)
     state.setIsConnectedCallbacks.forEach((callback) => callback(true));
   };
@@ -114,13 +124,44 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
   };
 
   eventSource.onerror = (err) => {
-    const error = new Error(JSON.stringify(err));
-    state.originError = error;
-    // 모든 콜백 호출 (state.setError는 no-op일 수 있으므로 제거)
-    state.setErrorCallbacks.forEach((callback) => callback(error));
-    state.isConnected = false;
-    // 모든 콜백 호출 (state.setIsConnected는 no-op일 수 있으므로 제거)
-    state.setIsConnectedCallbacks.forEach((callback) => callback(false));
+    // 연결이 끊어진 경우 (CLOSED 또는 CONNECTING 상태)
+    if (
+      eventSource.readyState === EventSource.CLOSED ||
+      eventSource.readyState === EventSource.CONNECTING
+    ) {
+      // 기존 EventSource 종료
+      eventSource.close();
+      state.eventSource = null;
+      state.isConnected = false;
+      state.setIsConnectedCallbacks.forEach((callback) => callback(false));
+
+      // 재연결 시도 중이었다면 재연결 실패로 간주하여 플래그 해제
+      if (state.isReconnecting) {
+        state.isReconnecting = false;
+      }
+
+      // 다이얼로그 표시 및 재연결 시도
+      setTimeout(() => {
+        openConfirmDialog({
+          title: '연결 오류',
+          content: 'SSE 연결이 끊어졌습니다. 다시 연결하시겠습니까?',
+          confirmText: '확인',
+          onConfirm: () => {
+            if (state.url) {
+              state.isReconnecting = true;
+              connectSSE(key, state.url);
+            }
+          },
+        });
+      }, 0);
+    } else {
+      // 기존 로직 (OPEN 상태의 에러)
+      const error = new Error(JSON.stringify(err));
+      state.originError = error;
+      state.setErrorCallbacks.forEach((callback) => callback(error));
+      state.isConnected = false;
+      state.setIsConnectedCallbacks.forEach((callback) => callback(false));
+    }
   };
 };
 
@@ -171,6 +212,8 @@ export const useSSEData = <T = unknown>(key: string) => {
         setIsConnectedCallbacks: new Set(),
         messageQueue: [],
         isProcessingQueue: false,
+        url: null,
+        isReconnecting: false,
       };
       sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
     }

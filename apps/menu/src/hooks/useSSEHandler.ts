@@ -14,7 +14,7 @@ import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { CapacitorApp, SystemControl, AndroidInfo } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
-import { toast } from '@repo/feature/utils';
+import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartStore } from '@/stores/useCartStore';
@@ -55,9 +55,34 @@ export const useSSEHandler = () => {
     }
 
     const getDeviceData = async () => {
-      const ipAddress = await AndroidInfo.getIp();
-      const androidId = await AndroidInfo.getId();
-      const appInfo = await CapacitorApp.getInfo();
+      let ipAddress: string | null = null;
+      let androidId: string | null = null;
+      let appInfo: Awaited<ReturnType<typeof CapacitorApp.getInfo>> | null =
+        null;
+
+      // 모두 성공할 때까지 반복
+      while (!ipAddress || !androidId || !appInfo) {
+        // 3개 모두 요청
+        [ipAddress, androidId, appInfo] = await Promise.all([
+          AndroidInfo.getIp(),
+          AndroidInfo.getId(),
+          CapacitorApp.getInfo(),
+        ]);
+
+        // 1개라도 실패하면 다이얼로그 표시
+        if (!ipAddress || !androidId || !appInfo) {
+          await new Promise<void>((resolve) => {
+            openConfirmDialog({
+              title: t('오류'),
+              content: t(
+                '디바이스 정보를 가져오는데 실패했습니다. 다시 시도해주세요.'
+              ),
+              confirmText: t('확인'),
+              onConfirm: resolve,
+            });
+          });
+        }
+      }
 
       const currentDeviceStoreData = deviceStoreDataRef.current;
 
@@ -65,8 +90,8 @@ export const useSSEHandler = () => {
         ...(currentDeviceStoreData ?? {}),
         ipAddress: ipAddress ?? '',
         androidId: androidId ?? '',
-        version: appInfo.version,
-        buildNumber: appInfo.build,
+        version: appInfo.version ?? '',
+        buildNumber: appInfo.build ?? '',
       };
 
       await setDataAsync(baseDeviceDetail);
@@ -80,7 +105,7 @@ export const useSSEHandler = () => {
         wifiSignal: baseDeviceDetail.wifiSignal ?? '',
       });
 
-      initializeSseConnection();
+      await initializeSseConnection();
     };
 
     getDeviceData();
