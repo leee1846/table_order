@@ -194,12 +194,7 @@ export const queryKeys = {
       ] as const,
     shopDetail: (shopCode: string) =>
       [...queryKeys.admin.all, 'shopDetail', shopCode] as const,
-  },
-
-  member: {
-    all: ['member'] as const,
-    /** 회원 조회 */
-    get: (memberId: string) =>
-      [...queryKeys.member.all, 'get', memberId] as const,
+    member: (memberId: string) =>
+      [...queryKeys.admin.all, 'member', memberId] as const,
   },
 } as const;

@@ -5,7 +5,7 @@ import { validateShopData } from '@/feature/AdminWeb/util';
 import { usePostShop } from '@repo/api/queries';
 import { toast } from '@repo/feature/utils';
 import type {
-  ICreateMemberRequest,
+  ICreateAdminMemberRequest,
   IGetAdminShopDetail,
 } from '@repo/api/types';
 
@@ -16,7 +16,7 @@ export const StoreNewPage = () => {
 
   const handleSave = async (
     shopData: IGetAdminShopDetail,
-    _: ICreateMemberRequest
+    _: ICreateAdminMemberRequest
   ) => {
     if (!validateShopData(shopData)) {
       return;

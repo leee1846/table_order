@@ -1,6 +1,6 @@
 import { toast } from '@repo/feature/utils';
 import type {
-  ICreateMemberRequest,
+  ICreateAdminMemberRequest,
   IGetAdminShopDetail,
 } from '@repo/api/types';
 
@@ -34,7 +34,7 @@ export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
 };
 
 export const validateMemberData = (
-  memberData: ICreateMemberRequest
+  memberData: ICreateAdminMemberRequest
 ): boolean => {
   if (!memberData.memberId || !memberData.memberId.trim()) {
     toast('계정정보 > 아이디를 입력해주세요.');

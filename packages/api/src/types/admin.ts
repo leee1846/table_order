@@ -1,4 +1,4 @@
-import { IApiResponse } from './common';
+import { IApiResponse, TMemberRole } from './common';
 
 export interface IGetAdminShopListParams {
   pageNumber: number;
@@ -66,3 +66,29 @@ export interface IGetAdminShopDetail {
 }
 
 export type TGetAdminShopDetailResponse = IApiResponse<IGetAdminShopDetail>;
+
+export interface IGetAdminMember {
+  memberUuid: string;
+  memberId: string;
+  shopSeq: number;
+  memberRole: TMemberRole;
+  memberName: string;
+  isDeleted: boolean;
+  isAgreed: boolean;
+  memberTel: string;
+  createDate: string;
+  createMemberUuid: string;
+  updateDate: string;
+  updateMemberUuid: string;
+}
+
+export type TGetAdminMemberResponse = IApiResponse<IGetAdminMember>;
+
+export interface ICreateAdminMemberRequest {
+  memberId: string;
+  shopSeq: number;
+  memberRole: TMemberRole;
+  memberName: string;
+  isAgreed: boolean;
+  memberTel: string;
+}

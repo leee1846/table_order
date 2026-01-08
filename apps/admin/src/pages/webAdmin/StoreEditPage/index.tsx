@@ -3,14 +3,15 @@ import { StoreManage } from '@/feature/AdminWeb/StoreManage';
 import { validateShopData, validateMemberData } from '@/feature/AdminWeb/util';
 import {
   useGetAdminShopDetail,
-  useGetMember,
+  useGetAdminMember,
   usePutAdminShop,
-  usePutMember,
+  usePostAdminMember,
+  usePutAdminMember,
 } from '@repo/api/queries';
 import { toast } from '@repo/feature/utils';
 import { ROUTES } from '@/constants/routes';
 import type {
-  ICreateMemberRequest,
+  ICreateAdminMemberRequest,
   IGetAdminShopDetail,
 } from '@repo/api/types';
 
@@ -23,19 +24,34 @@ export const StoreEditPage = () => {
       enabled: !!shopCode,
     }
   );
-  const { data: memberDetailDataResponse } = useGetMember(
-    shopDetailDataResponse?.data?.shopCode ?? '',
-    {
+
+  const { data: memberDetailDataResponse } = useGetAdminMember({
+    memberId: shopDetailDataResponse?.data?.shopCode ?? '',
+    options: {
       enabled: !!shopDetailDataResponse?.data?.shopCode,
-    }
-  );
+    },
+    ignoreGlobalErrors: [404],
+  });
 
   const { mutateAsync: updateAdminShop } = usePutAdminShop();
-  const { mutateAsync: updateMember } = usePutMember();
+  const { mutateAsync: updateMember } = usePutAdminMember();
+  const { mutateAsync: createMember } = usePostAdminMember();
+
+  const memberInitialData: ICreateAdminMemberRequest | undefined =
+    memberDetailDataResponse?.data
+      ? {
+          memberId: memberDetailDataResponse?.data?.memberId,
+          memberName: memberDetailDataResponse?.data?.memberName,
+          memberTel: memberDetailDataResponse?.data?.memberTel,
+          shopSeq: memberDetailDataResponse?.data?.shopSeq,
+          memberRole: memberDetailDataResponse?.data?.memberRole,
+          isAgreed: true,
+        }
+      : undefined;
 
   const handleSave = async (
     shopData: IGetAdminShopDetail,
-    memberData: ICreateMemberRequest
+    memberData: ICreateAdminMemberRequest
   ) => {
     if (!validateShopData(shopData)) {
       return;
@@ -46,7 +62,12 @@ export const StoreEditPage = () => {
     }
 
     await updateAdminShop(shopData);
-    await updateMember(memberData);
+    if (memberInitialData) {
+      await updateMember(memberData);
+    } else {
+      await createMember(memberData);
+    }
+
     toast('매장 정보가 수정되었습니다.');
     navigate(ROUTES.ADMIN_WEB.STORES.generate());
   };
@@ -55,7 +76,7 @@ export const StoreEditPage = () => {
     <StoreManage
       mode="edit"
       initialData={shopDetailDataResponse?.data}
-      memberInitialData={memberDetailDataResponse?.data}
+      memberInitialData={memberInitialData}
       onSave={handleSave}
     />
   );

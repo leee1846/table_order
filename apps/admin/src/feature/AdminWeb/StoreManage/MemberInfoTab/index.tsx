@@ -1,10 +1,10 @@
 import { Input } from '@repo/ui/components';
 import * as S from '../StoreInfoTab/storeInfoTab.style';
-import type { ICreateMemberRequest } from '@repo/api/types';
+import type { ICreateAdminMemberRequest } from '@repo/api/types';
 
 interface Props {
-  formData: ICreateMemberRequest;
-  updateFormData: (updates: Partial<ICreateMemberRequest>) => void;
+  formData: ICreateAdminMemberRequest;
+  updateFormData: (updates: Partial<ICreateAdminMemberRequest>) => void;
 }
 
 export const MemberInfoTab = ({ formData, updateFormData }: Props) => {

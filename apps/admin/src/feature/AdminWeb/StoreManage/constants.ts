@@ -1,5 +1,5 @@
 import type {
-  ICreateMemberRequest,
+  ICreateAdminMemberRequest,
   IGetAdminShopDetail,
 } from '@repo/api/types';
 
@@ -40,7 +40,7 @@ export const DEFAULT_SHOP_DATA: IGetAdminShopDetail = {
   ownerPhoneNumber: '',
 };
 
-export const DEFAULT_MEMBER_DATA: ICreateMemberRequest = {
+export const DEFAULT_MEMBER_DATA: ICreateAdminMemberRequest = {
   memberId: '',
   shopSeq: 0,
   memberRole: 'SHOP',

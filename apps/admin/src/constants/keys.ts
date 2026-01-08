@@ -1,7 +1,4 @@
 export const STORAGE_KEYS = {
-  /** 인증 정보 (토큰 페이로드) 키 */
-  AUTH: 'auth',
-
   /** 관리자 웹에서 선택한 매장 코드 키 */
   SHOP_CODE: 'shop-code',
   /** 관리자 웹에서 선택한 매장 시퀀스 키 */

@@ -156,6 +156,10 @@ const rootRouteLoader = () => {
     return redirect(ROUTES.ADMIN_WEB.STORES.generate());
   }
 
+  if (payload.role === 'SHOP') {
+    return redirect(ROUTES.SETTINGS.NOTICES.generate());
+  }
+
   return redirect(ROUTES.NOT_FOUND.generate());
 };
 

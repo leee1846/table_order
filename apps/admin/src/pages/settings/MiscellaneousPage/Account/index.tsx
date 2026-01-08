@@ -7,7 +7,10 @@ import { UserIcon } from '@repo/ui/icons';
 import { useAdminTranslation } from '@/config/i18n';
 import { disconnectSse } from '@/utils/sseConnection';
 import { ROUTES } from '@/constants/routes';
-import { removeAuthTokens } from '@repo/api/auth';
+import { getAccessToken } from '@repo/api/auth';
+import { decodeJwtToken } from '@repo/util/function';
+import type { ITokenPayload } from '@repo/api/types';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 interface AccountProps {
   shopName?: string;
@@ -16,16 +19,21 @@ interface AccountProps {
 }
 export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
   const { t } = useAdminTranslation();
+  const { clearAuth } = useAuthStore();
+
   const handleLogout = () => {
     // sse 연결 끊기
     disconnectSse();
 
     // store 비우기
-    removeAuthTokens();
+    clearAuth();
 
     // 로그인 페이지로 이동
     window.location.replace(ROUTES.LOGIN.generate());
   };
+
+  const token = getAccessToken();
+  const payload = decodeJwtToken<ITokenPayload>(token ?? '');
 
   return (
     <UIStyles.setting.Container>
@@ -48,9 +56,11 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
             </S.SID>
           </S.Content>
 
-          <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
-            {t('로그아웃')}
-          </BasicButton>
+          {payload && payload.role === 'SHOP' && (
+            <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
+              {t('로그아웃')}
+            </BasicButton>
+          )}
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>

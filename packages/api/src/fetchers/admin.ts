@@ -5,6 +5,8 @@ import type {
   TGetAdminShopDetailResponse,
   TGetAdminShopListResponse,
   IGetAdminShopDetail,
+  TGetAdminMemberResponse,
+  ICreateAdminMemberRequest,
 } from '../types/admin';
 import { TVoidApiResponse } from '../types/common';
 
@@ -44,6 +46,49 @@ export const updateAdminShop = async (
     method: 'PUT',
     url: ENDPOINTS.ADMIN.SHOP,
     data: params,
+  });
+
+  return response.data;
+};
+
+export const getAdminMember = async (
+  memberId: string,
+  ignoreGlobalErrors: number[] = []
+): Promise<TGetAdminMemberResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetAdminMemberResponse>({
+    method: 'GET',
+    url: ENDPOINTS.ADMIN.MEMBER,
+    params: {
+      memberId,
+    },
+    ignoreGlobalErrors,
+  });
+
+  return response.data;
+};
+
+export const createAdminMember = async (
+  data: ICreateAdminMemberRequest
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.ADMIN.MEMBER,
+    data,
+  });
+
+  return response.data;
+};
+
+export const updateAdminMember = async (
+  data: ICreateAdminMemberRequest
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.ADMIN.MEMBER,
+    data,
   });
 
   return response.data;

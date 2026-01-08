@@ -19,6 +19,7 @@ import { normalizeNumberString } from '@repo/util/string';
 import { generateTimeOptions, calculateTimeBefore } from '@repo/util/time';
 import { MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 import type { MiscellaneousChange } from '../types';
+import { CapacitorApp } from '@repo/util/app';
 
 interface MenuAppFeatureProps {
   shopSetting?: IShopSetting;
@@ -450,6 +451,7 @@ export const MenuAppFeature = ({
             const value = event.target.value.replace(/\D/g, '').slice(0, 4);
             setMenuboardAdminPassword(value);
           }}
+          disabled={CapacitorApp.isNative()}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
@@ -458,6 +460,7 @@ export const MenuAppFeature = ({
           size="M"
           isOn={isAdminLocked}
           onChange={() => setIsAdminLocked(!isAdminLocked)}
+          disabled={CapacitorApp.isNative()}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
@@ -561,9 +564,7 @@ export const MenuAppFeature = ({
 
                       updateRow({
                         isEveryDay: checked,
-                        selectedDays: checked
-                          ? dayValues
-                          : row.selectedDays,
+                        selectedDays: checked ? dayValues : row.selectedDays,
                       });
                     }}
                     customStyle={S.CheckButtonCustomStyle}

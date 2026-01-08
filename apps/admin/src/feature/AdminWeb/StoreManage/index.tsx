@@ -4,7 +4,7 @@ import { StoreInfoTab } from '@/feature/AdminWeb/StoreManage/StoreInfoTab';
 import { MemberInfoTab } from '@/feature/AdminWeb/StoreManage/MemberInfoTab';
 import * as S from './storeManage.style';
 import type {
-  ICreateMemberRequest,
+  ICreateAdminMemberRequest,
   IGetAdminShopDetail,
 } from '@repo/api/types';
 import { DEFAULT_MEMBER_DATA, DEFAULT_SHOP_DATA } from './constants';
@@ -15,17 +15,12 @@ type Mode = 'create' | 'edit';
 interface Props {
   mode: Mode;
   initialData?: IGetAdminShopDetail;
-  memberInitialData?: ICreateMemberRequest;
+  memberInitialData?: ICreateAdminMemberRequest;
   onSave: (
     shopData: IGetAdminShopDetail,
-    memberData: ICreateMemberRequest
+    memberData: ICreateAdminMemberRequest
   ) => Promise<void>;
 }
-
-const getDefaultFormData = (): IGetAdminShopDetail => DEFAULT_SHOP_DATA;
-
-const getDefaultMemberFormData = (): ICreateMemberRequest =>
-  DEFAULT_MEMBER_DATA;
 
 export const StoreManage = ({
   mode,
@@ -34,23 +29,18 @@ export const StoreManage = ({
   onSave,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<TabType>('storeInfo');
-  const [formData, setFormData] = useState<IGetAdminShopDetail>(() => {
-    const defaultData = getDefaultFormData();
-    return initialData ? { ...defaultData, ...initialData } : defaultData;
-  });
-  const [memberFormData, setMemberFormData] = useState<ICreateMemberRequest>(
-    () => {
-      const defaultData = getDefaultMemberFormData();
-      return memberInitialData
-        ? { ...defaultData, ...memberInitialData }
-        : defaultData;
-    }
-  );
+  const [formData, setFormData] =
+    useState<IGetAdminShopDetail>(DEFAULT_SHOP_DATA);
+  const [memberFormData, setMemberFormData] =
+    useState<ICreateAdminMemberRequest>(DEFAULT_MEMBER_DATA);
 
   useEffect(() => {
     if (memberInitialData) {
-      setMemberFormData({
-        ...memberInitialData,
+      setMemberFormData((prev) => {
+        return {
+          ...prev,
+          ...memberInitialData,
+        };
       });
       return;
     }
@@ -59,6 +49,10 @@ export const StoreManage = ({
   useEffect(() => {
     if (initialData) {
       setFormData({ ...initialData });
+      setMemberFormData((prev) => ({
+        ...prev,
+        shopSeq: initialData?.shopSeq ?? 0,
+      }));
     }
   }, [initialData]);
 
