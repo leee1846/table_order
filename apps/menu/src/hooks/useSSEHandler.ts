@@ -44,15 +44,13 @@ export const useSSEHandler = () => {
     deviceStoreDataRef.current = deviceStoreData;
   }, [deviceStoreData]);
 
-  // 초기 디바이스 데이터 설정
-  // sse 연결
+  // 초기 디바이스 데이터 설정 및 SSE 연결
   useEffect(() => {
     const getDeviceData = async () => {
       const ipAddress = await AndroidInfo.getIp();
       const androidId = await AndroidInfo.getId();
       const appInfo = await CapacitorApp.getInfo();
 
-      // 최신 deviceStoreData 값을 참조
       const currentDeviceStoreData = deviceStoreDataRef.current;
 
       await setDataAsync({
@@ -63,7 +61,6 @@ export const useSSEHandler = () => {
         buildNumber: appInfo.build,
       });
 
-      // 로그인이 되어있을경우 연결 시도
       initializeSseConnection();
     };
 
@@ -79,10 +76,6 @@ export const useSSEHandler = () => {
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
     SSE_KEYS.MAIN_CONNECTION
   );
-
-  const { clearData: clearInitialPage } = useInitialPageStore();
-  const { clearCart } = useCartStore();
-  const { clearData: clearCustomerCountData } = useCustomerCountStore();
 
   // 필요한 데이터 훅들
   const { data: currentDeviceData } = useDeviceData({
@@ -112,17 +105,50 @@ export const useSSEHandler = () => {
     skipInitialRequest: true,
   });
 
+  const { clearData: clearInitialPage } = useInitialPageStore();
+  const { clearCart } = useCartStore();
+  const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { data: pickupAlarmData, setData: setPickupAlarm } =
     usePickupAlarmStore();
 
-  // 픽업 알림 상태를 ref로 관리 (dependency 변경 방지)
+  // 모든 동적 데이터를 ref로 관리하여 dependency 변경 방지
+  const dataRefs = useRef({
+    currentDeviceData: null as typeof currentDeviceData,
+    currentShopData: null as typeof currentShopData,
+    shopDetailData: null as typeof shopDetailData,
+    tableOrderHistoriesData: null as typeof tableOrderHistoriesData,
+    tableGroupData: null as typeof tableGroupData,
+    pickupAlarmData: null as typeof pickupAlarmData | null,
+    locationPathname: location.pathname,
+  });
+
+  // ref 업데이트 (렌더링을 트리거하지 않음)
+  useEffect(() => {
+    dataRefs.current.currentDeviceData = currentDeviceData;
+    dataRefs.current.currentShopData = currentShopData;
+    dataRefs.current.shopDetailData = shopDetailData;
+    dataRefs.current.tableOrderHistoriesData = tableOrderHistoriesData;
+    dataRefs.current.tableGroupData = tableGroupData;
+    dataRefs.current.pickupAlarmData = pickupAlarmData;
+    dataRefs.current.locationPathname = location.pathname;
+  }, [
+    currentDeviceData,
+    currentShopData,
+    shopDetailData,
+    tableOrderHistoriesData,
+    tableGroupData,
+    pickupAlarmData,
+    location.pathname,
+  ]);
+
+  // 픽업 알림 상태를 ref로 관리
   const pickupAlarmStateRef = useRef(pickupAlarmData.showPickupAlarm);
 
-  // pickupAlarmData 변경 시 ref 업데이트
   useEffect(() => {
     pickupAlarmStateRef.current = pickupAlarmData.showPickupAlarm;
   }, [pickupAlarmData.showPickupAlarm]);
 
+  // refetch 함수들
   const refetchCurrentTableList = useCallback(
     (shopCode: string) => {
       queryClient.refetchQueries({
@@ -141,20 +167,20 @@ export const useSSEHandler = () => {
     [queryClient]
   );
 
-  // 주문 메시지 처리
-  const handleOrderMessage = useCallback(
-    (shopCode: string) => {
-      queryClient.refetchQueries({
-        queryKey: queryKeys.orders.currentTableList(shopCode),
-      });
+  // 모든 handler 함수들을 ref로 관리하여 dependency 변경 방지
+  const handlersRef = useRef({
+    handleOrderMessage: (shopCode: string, message: ISseMessage) => {
+      handlersRef.current.refetchCurrentTableList(shopCode);
 
-      if (!sseMessage?.data || !currentDeviceData?.tableNumber) {
+      const { currentDeviceData, tableOrderHistoriesData } = dataRefs.current;
+
+      if (!message.data || !currentDeviceData?.tableNumber) {
         return;
       }
 
       const currentTableNumber = currentDeviceData.tableNumber;
-      const orderDataByTable = sseMessage.data as { [key: string]: number };
-      // 주문이 관리자앱에 의해 모두 삭제 되었을경우
+      const orderDataByTable = message.data as { [key: string]: number };
+
       if (!(currentTableNumber in orderDataByTable)) {
         const hasExistingOrders =
           tableOrderHistoriesData &&
@@ -162,13 +188,9 @@ export const useSSEHandler = () => {
           tableOrderHistoriesData?.orderDetailMenuList?.length > 0;
 
         if (hasExistingOrders) {
-          // 주문내역 api refresh
           refreshTableOrderHistoriesData();
-          // 초기화면 노출
           clearInitialPage();
-          // 장바구니 비우기
           clearCart();
-          // 객수 선택 초기화
           clearCustomerCountData();
         }
         return;
@@ -180,69 +202,51 @@ export const useSSEHandler = () => {
         tableOrderHistoriesData !== 'isEmptyTable' &&
         tableOrderHistoriesData?.sseUpdatedAt === sseUpdatedAt;
 
-      // 주문이 변경되었을경우
       if (isOrderUnchanged) {
         return;
       }
 
       refreshTableOrderHistoriesData(sseUpdatedAt);
     },
-    [
-      queryClient,
-      sseMessage?.data,
-      currentDeviceData?.tableNumber,
-      tableOrderHistoriesData,
-      refreshTableOrderHistoriesData,
-      clearInitialPage,
-      clearCart,
-      clearCustomerCountData,
-    ]
-  );
 
-  // 매장 정보 변경 메시지 처리
-  const handleShopMessage = useCallback(async () => {
-    // root 페이지에 있을 경우에만 실행
-    if (location.pathname !== ROUTES.ROOT.path) {
-      return;
-    }
+    handleShopMessage: async () => {
+      const { locationPathname } = dataRefs.current;
 
-    await refreshShopDetailData();
-    window.location.reload();
-  }, [refreshShopDetailData, location.pathname]);
+      if (locationPathname !== ROUTES.ROOT.path) {
+        return;
+      }
 
-  // 메뉴 변경 메시지 처리
-  const handleMenuMessage = useCallback(() => {
-    refreshCategoriesData();
-    useModalStore.getState().closeMenuDetail();
-    toast(t('메뉴정보가 업데이트 되었습니다.'), {
-      position: 'center-center',
-      duration: 1500,
-    });
-  }, [refreshCategoriesData, t]);
+      await refreshShopDetailData();
+      window.location.reload();
+    },
 
-  // 테이블 변경 메시지 처리
-  const handleTableMessage = useCallback(
-    async (shopCode: string) => {
-      // 테이블 그룹 데이터 새로고침
+    handleMenuMessage: () => {
+      refreshCategoriesData();
+      useModalStore.getState().closeMenuDetail();
+      toast(t('메뉴정보가 업데이트 되었습니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
+    },
+
+    handleTableMessage: async (shopCode: string) => {
       await refreshTableGroupData();
-      refetchCurrentTableList(shopCode);
-      refetchDeviceList(shopCode);
+      handlersRef.current.refetchCurrentTableList(shopCode);
+      handlersRef.current.refetchDeviceList(shopCode);
 
-      // 현재 테이블이 삭제되었는지 확인
+      const { currentDeviceData, tableGroupData, locationPathname } =
+        dataRefs.current;
+
       if (!currentDeviceData?.tableNumber) {
         return;
       }
 
       const currentTableNumber = currentDeviceData.tableNumber;
 
-      // 테이블 그룹 데이터가 로드된 후에만 확인
-      // refreshTableGroupData가 완료되면 tableGroupData가 업데이트되므로
-      // 약간의 지연을 두고 확인
       setTimeout(() => {
         const updatedTableGroupData =
           useTableGroupStore.getState()?.data || tableGroupData;
 
-        // 테이블이 삭제되었는지 확인
         if (
           !!updatedTableGroupData &&
           !updatedTableGroupData
@@ -253,221 +257,167 @@ export const useSSEHandler = () => {
                 table?.tableNumber === currentTableNumber
             )
         ) {
-          // 현재 페이지가 ROOT인 경우 TABLES 페이지로 리다이렉트
-          if (location.pathname === ROUTES.ROOT.path) {
+          if (locationPathname === ROUTES.ROOT.path) {
             navigate(ROUTES.TABLES.generate(), { replace: true });
           }
         }
       }, 100);
     },
-    [
-      refreshTableGroupData,
-      refetchCurrentTableList,
-      refetchDeviceList,
-      currentDeviceData?.tableNumber,
-      tableGroupData,
-      location.pathname,
-      navigate,
-    ]
-  );
 
-  // 디바이스 변경 메시지 처리
-  const handleDeviceMessage = useCallback(
-    (shopCode: string) => {
-      // api요청
-      refetchDeviceList(shopCode);
+    handleDeviceMessage: (shopCode: string) => {
+      handlersRef.current.refetchDeviceList(shopCode);
     },
-    [refetchDeviceList]
-  );
 
-  // 픽업 알림 메시지 처리
-  const handlePickupMessage = useCallback(() => {
-    const usePickupAlert = shopDetailData?.shopSetting?.usePickupAlert ?? false;
+    handlePickupMessage: (message: ISseMessage) => {
+      const { shopDetailData, currentDeviceData } = dataRefs.current;
+      const usePickupAlert =
+        shopDetailData?.shopSetting?.usePickupAlert ?? false;
 
-    // 픽업 알림이 비활성화되어 있으면 실행하지 않음
-    if (!usePickupAlert) {
-      return;
-    }
-
-    if (!currentDeviceData?.tableNumber || !sseMessage?.data) {
-      return;
-    }
-
-    // 이미 팝업이 표시 중이면 중복 실행 방지 (ref 사용으로 dependency 변경 없음)
-    if (pickupAlarmStateRef.current) {
-      return;
-    }
-
-    const currentTableNumber = currentDeviceData.tableNumber;
-    const pickupDataByTable = sseMessage.data as { [key: string]: string };
-
-    if (!(currentTableNumber in pickupDataByTable)) {
-      return;
-    }
-
-    const pickupAlertMessage = pickupDataByTable[currentTableNumber] ?? '';
-
-    setPickupAlarm({
-      showPickupAlarm: true,
-      pickupAlertMessage,
-    });
-    SystemControl.playSound({ type: 'dingdong' });
-  }, [
-    shopDetailData?.shopSetting?.usePickupAlert,
-    currentDeviceData?.tableNumber,
-    sseMessage?.data,
-    setPickupAlarm,
-  ]);
-
-  // 디바이스 제어 메시지 처리 (공통 로직)
-  const handleDeviceControlMessage = useCallback(
-    (controlAction: () => void) => {
-      if (!sseMessage?.data || !currentDeviceData?.androidId) {
+      if (!usePickupAlert) {
         return;
       }
 
-      const targetDeviceIds = sseMessage.data as string[];
+      if (!currentDeviceData?.tableNumber || !message?.data) {
+        return;
+      }
+
+      if (pickupAlarmStateRef.current) {
+        return;
+      }
+
+      const currentTableNumber = currentDeviceData.tableNumber;
+      const pickupDataByTable = message.data as { [key: string]: string };
+
+      if (!(currentTableNumber in pickupDataByTable)) {
+        return;
+      }
+
+      const pickupAlertMessage = pickupDataByTable[currentTableNumber] ?? '';
+
+      setPickupAlarm({
+        showPickupAlarm: true,
+        pickupAlertMessage,
+      });
+      SystemControl.playSound({ type: 'dingdong' });
+    },
+
+    handleDeviceControlMessage: (
+      controlAction: () => void,
+      message: ISseMessage
+    ) => {
+      const { currentDeviceData } = dataRefs.current;
+
+      if (!message.data || !currentDeviceData?.androidId) {
+        return;
+      }
+
+      const targetDeviceIds = message.data as string[];
       const currentAndroidId = currentDeviceData.androidId;
 
       if (targetDeviceIds.includes(currentAndroidId)) {
         controlAction();
       }
     },
-    [sseMessage?.data, currentDeviceData?.androidId]
-  );
 
-  // 앱 종료 메시지 처리
-  const handleDeviceOffMessage = useCallback(() => {
-    handleDeviceControlMessage(() => {
-      // App 종료
-      SystemControl.exitApp();
-    });
-  }, [handleDeviceControlMessage]);
+    handleShopThemeMessage: () => {
+      refreshShopThemePageData();
+    },
 
-  // 기기 재부팅 메시지 처리
-  const handleDeviceRestartMessage = useCallback(() => {
-    handleDeviceControlMessage(() => {
-      // 기기 재부팅
-      SystemControl.reboot();
-    });
-  }, [handleDeviceControlMessage]);
+    // refetch 함수들
+    refetchCurrentTableList,
+    refetchDeviceList,
+  });
 
-  // 앱 업데이트 메시지 처리
-  const handleDeviceAppUpdateMessage = useCallback(() => {
-    handleDeviceControlMessage(() => {
-      // TODO: 앱 업데이트 브릿지 호출 필요
-    });
-  }, [handleDeviceControlMessage]);
-
-  // 화면 끄기 메시지 처리
-  const handleDeviceScreenOffMessage = useCallback(() => {
-    handleDeviceControlMessage(() => {
-      // 기기 화면 끄기
-      SystemControl.lockScreen();
-    });
-  }, [handleDeviceControlMessage]);
-
-  // 화면 켜기 메시지 처리
-  const handleDeviceScreenOnMessage = useCallback(() => {
-    handleDeviceControlMessage(() => {
-      // 기기 화면 켜기
-      SystemControl.wakeScreen();
-    });
-  }, [handleDeviceControlMessage]);
-
-  // 상점 테마 페이지 메시지 처리
-  const handleShopThemeMessage = useCallback(() => {
-    refreshShopThemePageData();
-  }, [refreshShopThemePageData]);
-
-  // SSE 메시지 처리
+  // handler ref 업데이트 (필요한 함수들만)
   useEffect(() => {
-    const currentShopCode = currentShopData?.shopCode;
+    handlersRef.current.refetchCurrentTableList = refetchCurrentTableList;
+    handlersRef.current.refetchDeviceList = refetchDeviceList;
+  }, [refetchCurrentTableList, refetchDeviceList]);
 
-    if (
-      !sseMessage ||
-      !currentDeviceData ||
-      !currentShopData ||
-      !currentShopCode
-    ) {
+  // SSE 메시지 처리 (sseMessage만 dependency에 포함)
+  useEffect(() => {
+    // sseMessage가 없으면 처리하지 않음
+    if (!sseMessage) {
       return;
     }
 
-    if (sseMessage.shopCode !== currentShopData?.shopCode) {
+    const { currentShopData, currentDeviceData } = dataRefs.current;
+
+    // 필수 데이터 검증
+    if (!currentDeviceData || !currentShopData || !currentShopData.shopCode) {
       return;
     }
 
+    // shopCode 일치 확인
+    if (sseMessage.shopCode !== currentShopData.shopCode) {
+      return;
+    }
+
+    const shopCode = currentShopData.shopCode;
+
+    // 메시지 타입에 따라 처리
     switch (sseMessage.type) {
       case 'ORDER':
-        handleOrderMessage(currentShopCode);
+        handlersRef.current.handleOrderMessage(shopCode, sseMessage);
         break;
 
       case 'SHOP':
-        handleShopMessage();
+        handlersRef.current.handleShopMessage();
         break;
 
       case 'MENU':
-        handleMenuMessage();
+        handlersRef.current.handleMenuMessage();
         break;
 
       case 'TABLE':
-        handleTableMessage(currentShopCode);
+        handlersRef.current.handleTableMessage(shopCode);
         break;
 
       case 'DEVICE':
-        handleDeviceMessage(currentShopCode);
+        handlersRef.current.handleDeviceMessage(shopCode);
         break;
 
       case 'PICKUP':
-        handlePickupMessage();
+        handlersRef.current.handlePickupMessage(sseMessage);
         break;
 
       case 'DEVICE_OFF':
-        handleDeviceOffMessage();
+        handlersRef.current.handleDeviceControlMessage(() => {
+          SystemControl.exitApp();
+        }, sseMessage);
         break;
 
       case 'DEVICE_RESTART':
-        handleDeviceRestartMessage();
+        handlersRef.current.handleDeviceControlMessage(() => {
+          SystemControl.reboot();
+        }, sseMessage);
         break;
 
       case 'DEVICE_APP_UPDATE':
-        handleDeviceAppUpdateMessage();
+        handlersRef.current.handleDeviceControlMessage(() => {
+          // TODO: 앱 업데이트 브릿지 호출 필요
+        }, sseMessage);
         break;
 
       case 'DEVICE_SCREEN_OFF':
-        handleDeviceScreenOffMessage();
+        handlersRef.current.handleDeviceControlMessage(() => {
+          SystemControl.lockScreen();
+        }, sseMessage);
         break;
 
       case 'DEVICE_SCREEN_ON':
-        handleDeviceScreenOnMessage();
+        handlersRef.current.handleDeviceControlMessage(() => {
+          SystemControl.wakeScreen();
+        }, sseMessage);
         break;
 
       case 'SHOP_THEME_PAGE':
-        handleShopThemeMessage();
-        break;
-
       case 'SHOP_THEME_MENU':
-        handleShopThemeMessage();
+        handlersRef.current.handleShopThemeMessage();
         break;
 
       default:
         break;
     }
-  }, [
-    sseMessage,
-    currentDeviceData,
-    currentShopData,
-    handleOrderMessage,
-    handleShopMessage,
-    handleMenuMessage,
-    handleTableMessage,
-    handleDeviceMessage,
-    handlePickupMessage,
-    handleDeviceOffMessage,
-    handleDeviceRestartMessage,
-    handleDeviceAppUpdateMessage,
-    handleDeviceScreenOffMessage,
-    handleDeviceScreenOnMessage,
-    handleShopThemeMessage,
-  ]);
+  }, [sseMessage]); // sseMessage만 dependency에 포함
 };

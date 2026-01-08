@@ -19,7 +19,6 @@ export const PickupAlarm = () => {
       <S.Image src={waiterHandIcon} alt="" aria-hidden="true" />
       <S.Title id="pickup-title">{t('주문하신 메뉴가 준비되었어요!')}</S.Title>
       <S.Description>
-        {t('주문번호를 확인하고 메뉴를 수령해 주세요.')}
         <br />
         {piupAlarmData.pickupAlertMessage
           ? `(${piupAlarmData.pickupAlertMessage})`
