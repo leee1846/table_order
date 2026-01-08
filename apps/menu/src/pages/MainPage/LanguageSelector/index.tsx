@@ -3,6 +3,7 @@ import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LANGUAGE_CONFIG } from '@/constants/common';
 import type { TShopLanguage } from '@repo/api/types';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 export const LANGUAGE_CONFIG_LIST = Object.entries(LANGUAGE_CONFIG).map(
   ([value, config]) => ({
@@ -12,6 +13,7 @@ export const LANGUAGE_CONFIG_LIST = Object.entries(LANGUAGE_CONFIG).map(
 );
 
 export const LanguageSelector = () => {
+  const { t } = useCustomerTranslation();
   const { data: shopDetailData } = useShopDetailData();
   const { setData: setLanguageData } = useCustomerLanguageStore();
 
@@ -22,8 +24,8 @@ export const LanguageSelector = () => {
   return (
     <S.Container>
       <S.ContentWrapper>
-        <h1>언어 선택</h1>
-        <p>주문에 사용하실 언어를 선택해 주세요.</p>
+        <h1>{t('언어 선택')}</h1>
+        <p>{t('주문에 사용하실 언어를 선택해 주세요.')}</p>
         <S.Buttons>
           {shopDetailData.shopSetting.shopLocaleMapList.map((lang) => {
             const config = LANGUAGE_CONFIG[lang.localeCode as TShopLanguage];
