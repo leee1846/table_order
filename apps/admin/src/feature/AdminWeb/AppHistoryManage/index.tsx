@@ -16,14 +16,11 @@ interface Props {
   onSave?: (data: AppHistoryFormData) => Promise<void>;
 }
 
-export const AppHistoryManage = ({
-  mode,
-  initialData,
-  onSave,
-}: Props) => {
+export const AppHistoryManage = ({ mode, initialData, onSave }: Props) => {
   const navigate = useNavigate();
-  const [formData, setFormData] =
-    useState<AppHistoryFormData>(DEFAULT_APP_HISTORY_DATA);
+  const [formData, setFormData] = useState<AppHistoryFormData>(
+    DEFAULT_APP_HISTORY_DATA
+  );
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -52,12 +49,12 @@ export const AppHistoryManage = ({
 
   const getTitle = () => {
     if (mode === 'create') {
-      return '앱 히스토리 생성';
+      return '생성';
     }
     if (mode === 'edit') {
-      return '앱 히스토리 수정';
+      return '수정';
     }
-    return '앱 히스토리 상세';
+    return '상세';
   };
 
   return (
@@ -96,4 +93,3 @@ export const AppHistoryManage = ({
     </S.Container>
   );
 };
-
