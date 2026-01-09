@@ -144,7 +144,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       setTimeout(() => {
         openConfirmDialog({
           title: '연결 오류',
-          content: 'SSE 연결이 끊어졌습니다. 다시 연결하시겠습니까?',
+          content: '네트워크가 끊어졌습니다. 다시 시도하시겠습니까?',
           confirmText: '확인',
           onConfirm: () => {
             if (state.url) {
