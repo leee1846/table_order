@@ -278,7 +278,8 @@ export const ImageSection = () => {
 
   // 갤러리에서 선택 (네이티브: 갤러리 모달, 웹: 파일 입력)
   const handleSelectFromGallery = useCallback(() => {
-    if (!isNativeApp) {
+    const isNative = CapacitorApp.isNative();
+    if (!isNative) {
       fileInputRef.current?.click();
       return;
     }
@@ -288,7 +289,7 @@ export const ImageSection = () => {
       setIsGalleryModalOpen(true);
       await loadAlbumPage(0);
     })();
-  }, [isNativeApp, loadAlbumPage, resetGalleryState]);
+  }, [loadAlbumPage, resetGalleryState]);
 
   // 앨범 더 불러오기
   const handleLoadMoreAlbum = useCallback(() => {
@@ -358,9 +359,8 @@ export const ImageSection = () => {
     } catch (error) {
       console.error('Gallery upload error:', error);
       toast(t('이미지 업로드에 실패했습니다.'));
-    } finally {
-      setIsAlbumUploading(false);
     }
+    setIsAlbumUploading(false);
   }, [applyGalleryFiles, resetGalleryState, selectedAlbumUris, isNativeApp, t]);
 
   // 갤러리 모달 닫기
@@ -522,6 +522,8 @@ export const ImageSection = () => {
     [modalMode, setMainExistingImage, addExistingImages, toSampleMenuImageData]
   );
 
+  console.log('additionalImages', additionalImages);
+
   return (
     <S.Container>
       <input
@@ -586,29 +588,31 @@ export const ImageSection = () => {
               <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
             </S.ImageAddButton>
             <ul>
-              {additionalImages.map((image) => (
-                <li key={image.id}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeAdditionalImage(image.id);
-                    }}
-                  >
-                    <CloseIcon
-                      width={14}
-                      height={14}
-                      color={theme.colors.grey[200]}
+              {additionalImages
+                .sort((a, b) => (a.imageSeq ?? 0) - (b.imageSeq ?? 0))
+                .map((image) => (
+                  <li key={image.id}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeAdditionalImage(image.id);
+                      }}
+                    >
+                      <CloseIcon
+                        width={14}
+                        height={14}
+                        color={theme.colors.grey[200]}
+                      />
+                    </button>
+                    <img
+                      src={getImageUrl(image) ?? ''}
+                      alt={t('추가 이미지')}
+                      onClick={() => openModal('additional', image.id)}
+                      onClickCapture={(e) => e.stopPropagation()}
                     />
-                  </button>
-                  <img
-                    src={getImageUrl(image) ?? ''}
-                    alt={t('추가 이미지')}
-                    onClick={() => openModal('additional', image.id)}
-                    onClickCapture={(e) => e.stopPropagation()}
-                  />
-                </li>
-              ))}
+                  </li>
+                ))}
             </ul>
           </S.ScrollableContent>
         </S.ImagesContainer>

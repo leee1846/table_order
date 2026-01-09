@@ -119,6 +119,7 @@ export const CameraManager: ICameraManager = {
   loadAlbum: async (page = 0, limit = 20) => {
     try {
       const result = await NativeCamera.loadAlbumImages({ page, limit });
+
       return (result.images || []).map((img: any) => ({
         ...img,
         thumbUrl: Capacitor.convertFileSrc(img.thumbPath),
