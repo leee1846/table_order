@@ -25,6 +25,10 @@ export const ROUTES = {
       path: 'stores/:shopCode/edit',
       generate: (shopCode: string) => `/admin/stores/${shopCode}/edit`,
     },
+    MYPAGE: {
+      path: 'mypage',
+      generate: () => '/admin/mypage',
+    },
   },
 
   SETTINGS: {

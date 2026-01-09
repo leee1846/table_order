@@ -30,7 +30,7 @@ export const Table = ({ stores }: Props) => {
     return stores.map((store) => (
       <tr key={store.memberId}>
         <td>{store.shopName}</td>
-        <td>{store.memberId}</td>
+        <td>{store.memberId ?? '_'}</td>
         <td>{store.businessNumber}</td>
         <td>{store.address1}</td>
         <td>{store.managerPhoneNumber}</td>

@@ -118,6 +118,11 @@ const NotFoundPage = lazy(() =>
     default: module.NotFoundPage,
   }))
 );
+const AdminMyPage = lazy(() =>
+  import('@/pages/webAdmin/AdminMyPage').then((module) => ({
+    default: module.AdminMyPage,
+  }))
+);
 
 /**
  * 모든 보호된 라우트에 공통으로 적용되는 인증 체크 loader
@@ -245,6 +250,15 @@ export const router = createBrowserRouter([
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <StoreEditPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: ROUTES.ADMIN_WEB.MYPAGE.path,
+            loader: onlyWebPageLoader,
+            element: (
+              <Suspense fallback={<FullscreenLoadingSpinner />}>
+                <AdminMyPage />
               </Suspense>
             ),
           },
