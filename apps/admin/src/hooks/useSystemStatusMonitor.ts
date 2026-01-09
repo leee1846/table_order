@@ -25,13 +25,16 @@ export const useSystemStatusMonitor = () => {
     buildNumber: '',
   });
 
+  //모니터링 true면 종료
   const isMonitoringRef = useRef(false);
   const shopCodeRef = useRef<string | null>(shopCode ?? null);
 
+  // 컴포넌트 마운트, shopCode 변경 시 초기화
   useEffect(() => {
     shopCodeRef.current = shopCode ?? null;
   }, [shopCode]);
 
+  //deviceDetail post 함수
   const tryPostDeviceDetail = useCallback(async () => {
     const currentShopCode = shopCodeRef.current;
     const { version, buildNumber } = deviceStateRef.current;
@@ -80,6 +83,7 @@ export const useSystemStatusMonitor = () => {
     }
   }, [postDeviceDetail]);
 
+  //deviceInfo 초기화 함수
   const hydrateDeviceInfo = useCallback(async () => {
     const [androidId, ipAddress, appInfo] = await Promise.all([
       AndroidInfo.getId(),
@@ -98,6 +102,7 @@ export const useSystemStatusMonitor = () => {
     await tryPostDeviceDetail();
   }, [tryPostDeviceDetail]);
 
+  //상태 업데이트 함수
   const handleStatusUpdate = useCallback(
     async (status: SystemStatus) => {
       const currentState = deviceStateRef.current;
@@ -133,12 +138,14 @@ export const useSystemStatusMonitor = () => {
     [tryPostDeviceDetail]
   );
 
+  //모니터링 시작 함수
   const startMonitoringStatus = useCallback(() => {
     if (isMonitoringRef.current) {
       return;
     }
 
     try {
+      //배터리, 와이파이 신호 감지 리스너 등록 네이티브에서 배터리랑 와이파이 값이 달라지면 handleStatusUpdate 함수 호출
       SystemControl.startMonitoring(handleStatusUpdate);
       isMonitoringRef.current = true;
     } catch (error) {
@@ -147,6 +154,7 @@ export const useSystemStatusMonitor = () => {
     }
   }, [handleStatusUpdate]);
 
+  //모니터링 종료 함수
   const stopMonitoringStatus = useCallback(() => {
     if (!isMonitoringRef.current) {
       return;
@@ -155,17 +163,19 @@ export const useSystemStatusMonitor = () => {
     try {
       SystemControl.stopMonitoring();
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('시스템 상태 모니터링 종료 실패:', error);
     }
     isMonitoringRef.current = false;
   }, []);
 
+  //shopCode가 변경될 때마다 초기화, 모니터링 시작, deviceDetail 전송
   useEffect(() => {
+    //shopCode가 없으면 종료
     if (!shopCode) {
       return;
     }
 
+    //deviceInfo 초기화, 모니터링 시작, deviceDetail 전송
     const setupDeviceStatus = async () => {
       await hydrateDeviceInfo();
       startMonitoringStatus();

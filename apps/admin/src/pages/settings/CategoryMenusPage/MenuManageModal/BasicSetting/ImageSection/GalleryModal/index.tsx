@@ -1,11 +1,14 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { t } from '@/config/i18n';
-import { ModalBackground, BasicButton } from '@repo/ui/components';
+import {
+  ModalBackground,
+  BasicButton,
+  FullscreenLoadingSpinner,
+} from '@repo/ui/components';
 import { CloseIcon, PhotoIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { AlbumPhoto } from '@repo/util/app';
 import * as S from './galleryModal.style';
-import { FullscreenLoadingSpinner } from '@repo/ui/components';
 
 interface GalleryModalProps {
   isOpen: boolean;
@@ -33,6 +36,7 @@ export const GalleryModal = ({
   onConfirm,
 }: GalleryModalProps) => {
   const selectedList = useMemo(() => Array.from(selected), [selected]);
+  const gridRef = useRef<HTMLUListElement | null>(null);
   const selectionOrderMap = useMemo(() => {
     const map = new Map<string, number>();
     selectedList.forEach((uri, index) => {
@@ -47,6 +51,16 @@ export const GalleryModal = ({
     },
     [selectionOrderMap]
   );
+  const handleGridScroll = useCallback(() => {
+    const grid = gridRef.current;
+    if (!grid || isLoading || !hasMore) return;
+
+    const threshold = 120;
+    const remaining = grid.scrollHeight - grid.scrollTop - grid.clientHeight;
+    if (remaining <= threshold) {
+      onLoadMore();
+    }
+  }, [hasMore, isLoading, onLoadMore]);
 
   if (!isOpen) {
     return null;
@@ -73,7 +87,7 @@ export const GalleryModal = ({
               <span>{t('가져올 이미지가 없습니다.')}</span>
             </S.EmptyState>
           ) : (
-            <S.ImageGrid>
+            <S.ImageGrid ref={gridRef} onScroll={handleGridScroll}>
               {items.map((item) => {
                 const isSelected = selected.has(item.originalUri);
                 const order = getSelectionOrder(item.originalUri);
@@ -96,7 +110,7 @@ export const GalleryModal = ({
                   </S.ImageButton>
                 );
               })}
-              {/* {isLoading && (
+              {isLoading && (
                 <S.StatusText>
                   {t('이미지를 불러오는 중입니다...')}
                 </S.StatusText>
@@ -105,7 +119,7 @@ export const GalleryModal = ({
                 <S.StatusText>
                   {t('더 이상 불러올 이미지가 없습니다.')}
                 </S.StatusText>
-              )} */}
+              )}
             </S.ImageGrid>
           )}
 

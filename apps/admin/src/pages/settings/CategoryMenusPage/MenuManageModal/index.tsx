@@ -55,6 +55,7 @@ const MenuManageModalContent = () => {
     updateFormValues({ selectedLanguageCode: languageCode });
   };
 
+  // 현재 선택된 언어 코드(selectedLanguageCode)에 맞는 언어 옵션 객체를 찾아 반환
   const selectedLanguage: { value: TShopLanguage; label: string } =
     languageOptions.find((option) => option.value === selectedLanguageCode) ??
     languageOptions[0]!;

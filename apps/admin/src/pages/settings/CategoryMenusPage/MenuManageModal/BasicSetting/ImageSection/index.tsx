@@ -1,6 +1,5 @@
 import { t } from '@/config/i18n';
-import type { ChangeEvent } from 'react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, type ChangeEvent } from 'react';
 import { theme } from '@repo/ui';
 import {
   AddIcon,
@@ -40,7 +39,7 @@ type CaptureTarget = {
   imageId?: string;
 };
 
-const GALLERY_PAGE_LIMIT = 20;
+const GALLERY_PAGE_LIMIT = 21;
 
 export const ImageSection = () => {
   // 파일 입력 요소 참조
@@ -262,7 +261,7 @@ export const ImageSection = () => {
         // 현재 페이지 번호 업데이트
         setAlbumPage(page);
         // 가져온 이미지가 없거나 페이지 제한보다 적으면 더 이상 불러올 이미지가 없음
-        if (!newItems.length || newItems.length < GALLERY_PAGE_LIMIT) {
+        if (!newItems.length) {
           setHasMoreAlbum(false);
         }
       } catch (error) {
