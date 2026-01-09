@@ -4,10 +4,11 @@ import { cardInsertGif } from '@repo/ui/icons';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
+  message?: string;
   onClose: () => void;
 }
 
-export const CardPaymentProgressModal = ({ onClose }: Props) => {
+export const CardPaymentProgressModal = ({ onClose, message }: Props) => {
   const { t } = useCustomerTranslation();
 
   return (
@@ -24,7 +25,7 @@ export const CardPaymentProgressModal = ({ onClose }: Props) => {
           </S.Header>
 
           <S.InstructionText>
-            {t('카드를 투입구에 넣어주세요')}
+            {message || t('카드를 투입구에 넣어주세요')}
           </S.InstructionText>
 
           <S.CardImageWrapper>

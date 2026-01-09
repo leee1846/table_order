@@ -44,7 +44,6 @@ export const CartButton = ({ categories }: Props) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     'card' | 'cash' | 'split' | 'payAfter' | null
   >(null);
-  /** 분할 결제 모달 */
 
   const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
     const options = cartMenu.selectedOptions.map((option) => ({
@@ -163,7 +162,9 @@ export const CartButton = ({ categories }: Props) => {
     if (selectedPaymentMethod === 'split') {
       setModalData('isSplitPaymentModalOpened', true);
     }
-    // setIsPaymentsModalOpen(false);
+    if (selectedPaymentMethod === 'card') {
+      setModalData('isCardPaymentInstallmentModalOpened', true);
+    }
   };
 
   const handleSplitPaymentModalClose = () => {

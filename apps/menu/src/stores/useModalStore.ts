@@ -18,6 +18,8 @@ interface IModalStore {
     isPaymentsModalOpened: boolean;
     /** 분할 결제 모달 */
     isSplitPaymentModalOpened: boolean;
+    /** 카드 결제 할부 선택 모달 */
+    isCardPaymentInstallmentModalOpened: boolean;
     /** 카드 결제 진행 모달 */
     isCardPaymentProgressModalOpened: boolean;
   };
@@ -43,6 +45,7 @@ const initialData = {
   openedMenuDetailSeq: null,
   isPaymentsModalOpened: false,
   isSplitPaymentModalOpened: false,
+  isCardPaymentInstallmentModalOpened: false,
   isCardPaymentProgressModalOpened: false,
 };
 
