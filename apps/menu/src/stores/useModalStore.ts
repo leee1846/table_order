@@ -1,4 +1,5 @@
 import { create } from '@repo/feature/zustand';
+import type { IOrder } from '@repo/api/types';
 
 interface IModalStore {
   data: {
@@ -22,9 +23,18 @@ interface IModalStore {
     isCardPaymentInstallmentModalOpened: boolean;
     /** 카드 결제 진행 모달 */
     isCardPaymentProgressModalOpened: boolean;
+    /** 주문 완료 모달 */
+    isOrderCompleteModalOpened: boolean;
+    /** 주문 완료 모달 데이터 */
+    orderCompleteData: IOrder[] | null;
+    /** 주문 완료 모달 총 가격 */
+    orderCompleteTotalPrice: number;
   };
 
-  setModalData: (dataKey: keyof IModalStore['data'], value: boolean) => void;
+  setModalData: <K extends keyof IModalStore['data']>(
+    dataKey: K,
+    value: IModalStore['data'][K]
+  ) => void;
 
   /** 메뉴 상세 모달 열기 */
   openMenuDetail: (menuSeq: number) => void;
@@ -47,6 +57,9 @@ const initialData = {
   isSplitPaymentModalOpened: false,
   isCardPaymentInstallmentModalOpened: false,
   isCardPaymentProgressModalOpened: false,
+  isOrderCompleteModalOpened: false,
+  orderCompleteData: null,
+  orderCompleteTotalPrice: 0,
 };
 
 /**
@@ -56,8 +69,10 @@ export const useModalStore = create<IModalStore>((set) => ({
   // 초기 상태
   data: initialData,
 
-  setModalData: (dataKey: keyof IModalStore['data'], value: boolean) =>
-    set((state) => ({ data: { ...state.data, [dataKey]: value } })),
+  setModalData: <K extends keyof IModalStore['data']>(
+    dataKey: K,
+    value: IModalStore['data'][K]
+  ) => set((state) => ({ data: { ...state.data, [dataKey]: value } })),
 
   // 메뉴 상세 모달 열기
   openMenuDetail: (menuSeq: number) =>

@@ -10,3 +10,11 @@ export interface IPostPaymentRequest {
   installmentMonths?: string;
   transactionDate?: string;
 }
+
+export type TPaymentMethodCode = 'EASY';
+
+export interface IPostPaymentApprovalRequestParams {
+  paymentMethodCode: TPaymentMethodCode;
+  orderGroupUuid: string;
+  orderUuid: string;
+}

@@ -13,196 +13,292 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { CardPaymentProgressModal } from '../CardPaymentProgressModal';
 import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
-import { toast } from '@repo/feature/utils';
+import { openConfirmDialog } from '@repo/feature/utils';
 import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import type { IOrder } from '@repo/api/types';
+import type { ICartMenu } from '@/types/cart';
+import { ROUTES } from '@/constants/routes';
+import { useNavigate } from 'react-router-dom';
 
-// 할부 옵션 생성 (일시불, 2~24개월, 36/48/60개월)
-const generateInstallmentOptions = (
-  t: (key: string, params?: Record<string, string | number>) => string
-): IOption[] => {
-  const options: IOption[] = [{ value: 0, label: t('일시불') }];
+const INSTALLMENT_MINIMUM_AMOUNT = 50000;
+const INSTALLMENT_MONTHS_STANDARD = [36, 48, 60];
+const INSTALLMENT_MONTHS_MIN = 2;
+const INSTALLMENT_MONTHS_MAX = 24;
+const INSTALLMENT_LUMP_SUM = 0;
+const INSTALLMENT_STRING_LUMP_SUM = '00';
+const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
+const PAYMENT_METHOD_CODE_EASY = 'EASY';
+const PAYMENT_EVENT_NAME = 'paymentEvent';
+const HTTP_STATUS_BAD_REQUEST = 400;
 
-  // 2~24개월 (1개월씩)
-  for (let i = 2; i <= 24; i++) {
-    options.push({ value: i, label: t('{{months}}개월', { months: i }) });
-  }
-
-  // 36, 48, 60개월
-  [36, 48, 60].forEach((months) => {
-    options.push({ value: months, label: t('{{months}}개월', { months }) });
-  });
-
-  return options;
-};
-
-// 할부 개월을 문자열로 변환 (0 -> "00", 2-24 -> "02"-"24", 36/48/60 -> "36"/"48"/"60")
-const convertInstallmentToString = (months: number): string => {
-  if (months === 0) {
-    return '00';
-  }
-  if (months >= 2 && months <= 24) {
-    return months.toString().padStart(2, '0');
-  }
-  if ([36, 48, 60].includes(months)) {
-    return months.toString();
-  }
-  return '00';
-};
-
-type IOption = {
+type InstallmentOption = {
   value: string | number;
   label: string;
   disabled?: boolean;
 };
 
-interface Props {
+interface CardPaymentInstallmentModalProps {
   onClose: () => void;
   totalPrice: number;
 }
 
-export const CardPaymentInstallmentModal = ({ onClose, totalPrice }: Props) => {
+/**
+ * 할부 옵션 목록 생성
+ * 일시불, 2~24개월, 36/48/60개월 옵션을 포함
+ */
+const createInstallmentOptions = (
+  translate: (key: string, params?: Record<string, string | number>) => string
+): InstallmentOption[] => {
+  const options: InstallmentOption[] = [
+    { value: INSTALLMENT_LUMP_SUM, label: translate('일시불') },
+  ];
+
+  // 2~24개월 옵션 추가
+  for (
+    let month = INSTALLMENT_MONTHS_MIN;
+    month <= INSTALLMENT_MONTHS_MAX;
+    month++
+  ) {
+    options.push({
+      value: month,
+      label: translate('{{months}}개월', { months: month }),
+    });
+  }
+
+  // 36, 48, 60개월 옵션 추가
+  INSTALLMENT_MONTHS_STANDARD.forEach((month) => {
+    options.push({
+      value: month,
+      label: translate('{{months}}개월', { months: month }),
+    });
+  });
+
+  return options;
+};
+
+/**
+ * 할부 개월 수를 결제 API 형식 문자열로 변환
+ * @param months - 할부 개월 수 (0: 일시불, 2-24: 2~24개월, 36/48/60: 해당 개월)
+ * @returns 결제 API 형식 문자열 ("00", "02"-"24", "36"/"48"/"60")
+ */
+const formatInstallmentMonthsToString = (months: number): string => {
+  if (months === INSTALLMENT_LUMP_SUM) {
+    return INSTALLMENT_STRING_LUMP_SUM;
+  }
+
+  if (months >= INSTALLMENT_MONTHS_MIN && months <= INSTALLMENT_MONTHS_MAX) {
+    return months.toString().padStart(2, '0');
+  }
+
+  if (INSTALLMENT_MONTHS_STANDARD.includes(months)) {
+    return months.toString();
+  }
+
+  return INSTALLMENT_STRING_LUMP_SUM;
+};
+
+/**
+ * 장바구니 데이터를 주문 데이터 형식으로 변환
+ */
+const convertCartMenusToOrders = (cartMenus: ICartMenu[]): IOrder[] => {
+  return cartMenus.map((menu: ICartMenu) => ({
+    menuSeq: menu.menuSeq,
+    menuName: menu.menuName,
+    menuPrice: menu.menuPrice,
+    quantity: menu.quantity,
+    selectedOptions: menu.selectedOptions.map((selectedOption) => ({
+      optionSeq: selectedOption.optionSeq,
+      optionGroupSeq: selectedOption.optionGroupSeq,
+      optionName: selectedOption.optionName,
+      optionPrice: selectedOption.optionPrice,
+      quantity: selectedOption.quantity,
+    })),
+  }));
+};
+
+/**
+ * 주문 옵션 수량을 주문 수량에 맞게 조정
+ * (메뉴 수량 × 옵션 수량)
+ */
+const adjustOrderOptionQuantities = (orders: IOrder[]): IOrder[] => {
+  return orders.map((order) => ({
+    ...order,
+    selectedOptions: order.selectedOptions.map((option) => ({
+      ...option,
+      quantity: order.quantity * option.quantity,
+    })),
+  }));
+};
+
+export const CardPaymentInstallmentModal = ({
+  onClose,
+  totalPrice,
+}: CardPaymentInstallmentModalProps) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
+  const navigate = useNavigate();
   const modalStore = useModalStore();
   const { shopData } = useShopData();
   const { data: deviceData } = useDeviceData();
   const { data: cartData } = useCartStore();
   const { data: customerCountData } = useCustomerCountStore();
+  const { clearCart } = useCartStore();
   const { mutateAsync: createTableOrder } = usePostTableOrder({
-    ignoreGlobalErrors: [400],
+    ignoreGlobalErrors: [HTTP_STATUS_BAD_REQUEST],
   });
+  const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
 
-  const [cardPaymentProgressMessage, setCardPaymentProgressMessage] =
+  const [paymentProgressMessage, setPaymentProgressMessage] =
     useState<string>('');
-  const [selectedInstallment, setSelectedInstallment] = useState<number>(0);
+  const [selectedInstallmentMonths, setSelectedInstallmentMonths] =
+    useState<number>(INSTALLMENT_LUMP_SUM);
   const paymentListenerRef = useRef<{ remove: () => Promise<void> } | null>(
     null
   );
 
-  const installmentOptions = generateInstallmentOptions(t);
+  const installmentOptions = createInstallmentOptions(t);
+  const shouldShowInstallmentSection = totalPrice > INSTALLMENT_MINIMUM_AMOUNT;
+  const isPaymentProgressModalOpen =
+    modalStore.data.isCardPaymentProgressModalOpened;
 
-  const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
+  // ==========================================================================
+  // Data Transformation Functions
+  // ==========================================================================
 
-  // CartButton의 로직을 참고하여 주문 데이터 변환 함수들
-
-  const convertCartDataToOrders = (): IOrder[] => {
-    return cartData.menus.map((menu) => ({
-      menuSeq: menu.menuSeq,
-      menuName: menu.menuName,
-      menuPrice: menu.menuPrice,
-      quantity: menu.quantity,
-      selectedOptions: menu.selectedOptions.map((selectedOption) => ({
-        optionSeq: selectedOption.optionSeq,
-        optionGroupSeq: selectedOption.optionGroupSeq,
-        optionName: selectedOption.optionName,
-        optionPrice: selectedOption.optionPrice,
-        quantity: selectedOption.quantity,
-      })),
-    }));
+  const getOrdersFromCart = (): IOrder[] => {
+    return convertCartMenusToOrders(cartData.menus);
   };
 
-  const adjustOptionQuantitiesForOrder = (orders: IOrder[]): IOrder[] => {
-    return orders.map((order) => ({
-      ...order,
-      selectedOptions: order.selectedOptions.map((option) => ({
-        ...option,
-        quantity: order.quantity * option.quantity,
-      })),
-    }));
-  };
-
-  // 결제 이벤트 리스너 설정
   useEffect(() => {
-    if (!modalStore.data.isCardPaymentProgressModalOpened) {
+    if (!isPaymentProgressModalOpen) {
       return;
     }
 
-    let listener: { remove: () => Promise<void> } | null = null;
+    let paymentListener: { remove: () => Promise<void> } | null = null;
 
-    const setupListener = async () => {
-      listener = await Payment.addListener(
-        'paymentEvent',
-        (data: IPaymentEventData) => {
-          setCardPaymentProgressMessage(data.EVENT_MSG);
+    const setupPaymentListener = async () => {
+      paymentListener = await Payment.addListener(
+        PAYMENT_EVENT_NAME,
+        (eventData: IPaymentEventData) => {
+          setPaymentProgressMessage(eventData.EVENT_MSG);
         }
       );
-      paymentListenerRef.current = listener;
+      paymentListenerRef.current = paymentListener;
     };
 
-    setupListener();
+    setupPaymentListener();
 
     return () => {
-      if (listener) {
-        listener.remove();
+      // TODO: 결제 요청했던거 제거 해야함.
+      if (paymentListener) {
+        paymentListener.remove();
       }
     };
-  }, [modalStore.data.isCardPaymentProgressModalOpened]);
+  }, [isPaymentProgressModalOpen]);
 
-  const onClickConfirm = async () => {
-    try {
-      // 1. 주문 생성
-      // const orders = convertCartDataToOrders();
-      // const orderResponse = await createTableOrder({
-      //   shopCode: shopData?.shopCode ?? '',
-      //   tableNumber: deviceData?.tableNumber ?? '',
-      //   orderType: 'MENU',
-      //   customerCount: customerCountData?.adultCount ?? 1,
-      //   kidsCustomerCount: customerCountData?.childCount ?? 0,
-      //   totalAmount: totalPrice.toString(),
-      //   orders: adjustOptionQuantitiesForOrder(orders),
-      // });
+  const createOrder = async () => {
+    const orders = getOrdersFromCart();
+    const adjustedOrders = adjustOrderOptionQuantities(orders);
 
-      // const orderGroupUuid = orderResponse?.data?.orderGroupUuid;
-      // if (!orderGroupUuid) {
-      //   return;
-      // }
+    const orderResponse = await createTableOrder({
+      shopCode: shopData?.shopCode ?? '',
+      tableNumber: deviceData?.tableNumber ?? '',
+      orderType: ORDER_TYPE_PREPAYMENT,
+      customerCount: customerCountData?.adultCount ?? 1,
+      kidsCustomerCount: customerCountData?.childCount ?? 0,
+      totalAmount: totalPrice.toString(),
+      orders: adjustedOrders,
+    }).catch((error) => {
+      if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
+        navigate(ROUTES.TABLES.generate());
+      }
+    });
 
-      // 2. 진행 모달 열기
-      modalStore.setModalData('isCardPaymentProgressModalOpened', true);
+    const orderGroupUuid = orderResponse?.data?.orderGroupUuid;
+    const orderUuid = orderResponse?.data?.orderInfoList[0]?.orderUuid;
 
-      // 3. 네이티브 결제 시도
-      const installmentString = convertInstallmentToString(selectedInstallment);
-      const paymentResult: IPaymentResponse = await Payment.approve({
-        amount: totalPrice,
-        installment: installmentString,
-      });
-
-      // // 4. 서버에 승인 요청
-      // await postPaymentApproval({
-      //   params: {
-      //     paymentMethodCode: 'EASY',
-      //     orderGroupUuid,
-      //     orderUuid: '',
-      //   },
-      //   data: paymentResult,
-      // });
-
-      // 5. 성공 처리
-      modalStore.setModalData('isCardPaymentProgressModalOpened', false);
-      modalStore.setModalData('isPaymentsModalOpened', false);
-      onClose();
-
-      toast(t('결제가 완료되었습니다.'), {
-        position: 'center-center',
-        duration: 2000,
-      });
-    } catch (error) {
-      modalStore.setModalData('isCardPaymentProgressModalOpened', false);
-
-      toast(
-        error instanceof Error
-          ? error.message
-          : t('결제 처리 중 오류가 발생했습니다.'),
-        {
-          position: 'center-center',
-          duration: 2000,
-        }
-      );
+    if (!orderGroupUuid || !orderUuid) {
+      throw new Error('주문 생성에 실패했습니다.');
     }
+
+    return { orderGroupUuid, orderUuid };
+  };
+
+  const processPayment = async (orderGroupUuid: string, orderUuid: string) => {
+    modalStore.setModalData('isCardPaymentProgressModalOpened', true);
+
+    const paymentResult: IPaymentResponse = await Payment.approve({
+      amount: totalPrice,
+      installment: formatInstallmentMonthsToString(selectedInstallmentMonths),
+    });
+
+    await postPaymentApproval({
+      params: {
+        paymentMethodCode: PAYMENT_METHOD_CODE_EASY,
+        orderGroupUuid,
+        orderUuid,
+      },
+      data: paymentResult,
+    });
+
+    return paymentResult;
+  };
+
+  const handlePaymentSuccess = () => {
+    const orderData = getOrdersFromCart();
+
+    // 주문 완료 모달을 위한 데이터 저장
+    modalStore.setModalData('orderCompleteData', orderData);
+    modalStore.setModalData('orderCompleteTotalPrice', totalPrice);
+    modalStore.setModalData('isOrderCompleteModalOpened', true);
+
+    // 모든 모달 닫기
+    modalStore.setModalData('isCardPaymentProgressModalOpened', false);
+    modalStore.setModalData('isPaymentsModalOpened', false);
+    modalStore.setModalData('isCartListOpened', false);
+    modalStore.setModalData('isCardPaymentInstallmentModalOpened', false);
+
+    // 장바구니 비우기
+    clearCart();
+
+    // 현재 모달 닫기
+    onClose();
+  };
+
+  const handlePaymentError = (error: unknown) => {
+    modalStore.setModalData('isCardPaymentProgressModalOpened', false);
+
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : t('결제 처리 중 오류가 발생했습니다.');
+
+    openConfirmDialog({
+      title: t('오류'),
+      content: errorMessage,
+      confirmText: t('확인'),
+    });
+  };
+
+  const handleConfirmPayment = async () => {
+    try {
+      const { orderGroupUuid, orderUuid } = await createOrder();
+      await processPayment(orderGroupUuid, orderUuid);
+      handlePaymentSuccess();
+    } catch (error) {
+      handlePaymentError(error);
+    }
+  };
+
+  const handleClosePaymentProgressModal = () => {
+    modalStore.setModalData('isCardPaymentProgressModalOpened', false);
+  };
+
+  const handleInstallmentChange = (value: string | number) => {
+    setSelectedInstallmentMonths(value as number);
   };
 
   return (
@@ -225,20 +321,22 @@ export const CardPaymentInstallmentModal = ({ onClose, totalPrice }: Props) => {
               </S.PaymentInfoRow>
             </S.PaymentInfoSection>
 
-            <S.InstallmentSection>
-              <S.InstallmentLabel>{t('할부 선택')}</S.InstallmentLabel>
-              <Dropdown
-                options={installmentOptions}
-                value={selectedInstallment}
-                onChange={(value) => setSelectedInstallment(value as number)}
-                customStyle={S.DropdownStyle(theme)}
-              />
-            </S.InstallmentSection>
+            {shouldShowInstallmentSection && (
+              <S.InstallmentSection>
+                <S.InstallmentLabel>{t('할부 선택')}</S.InstallmentLabel>
+                <Dropdown
+                  options={installmentOptions}
+                  value={selectedInstallmentMonths}
+                  onChange={handleInstallmentChange}
+                  customStyle={S.DropdownStyle(theme)}
+                />
+              </S.InstallmentSection>
+            )}
 
             <S.Footer>
               <BasicButton
                 variant="Solid_Blue_2XL"
-                onClick={onClickConfirm}
+                onClick={handleConfirmPayment}
                 customStyle={S.ConfirmButtonStyle}
               >
                 {t('결제하기')}
@@ -248,10 +346,10 @@ export const CardPaymentInstallmentModal = ({ onClose, totalPrice }: Props) => {
         </S.DialogContainer>
       </ModalBackground>
 
-      {modalStore.data.isCardPaymentProgressModalOpened && (
+      {isPaymentProgressModalOpen && (
         <CardPaymentProgressModal
-          onClose={onClose}
-          message={cardPaymentProgressMessage}
+          onClose={handleClosePaymentProgressModal}
+          message={paymentProgressMessage}
         />
       )}
     </>

@@ -16,7 +16,7 @@ export interface ISendPickupNotificationData {
   message?: string;
 }
 
-export type TOrderType = 'MENU' | 'ORDER_POS' | 'POS_APP';
+export type TOrderType = 'MENU' | 'ORDER_POS' | 'POS_APP' | 'PREPAYMENT';
 
 /**
  * 픽업 알림 전송 응답 타입 (IApiResponse 래핑)
@@ -52,6 +52,7 @@ export interface ICreateTableOrderRequest {
 
 export interface ICreateTableOrderData {
   orderGroupUuid: string;
+  orderInfoList: IOrderInfo[];
 }
 
 export type TCreateTableOrderResponse = IApiResponse<ICreateTableOrderData>;

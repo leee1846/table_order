@@ -35,11 +35,6 @@ export const CartButton = ({ categories }: Props) => {
   const { data: customerCountData } = useCustomerCountStore();
   const { data: shopDetailData } = useShopDetailData();
 
-  /** 주문 완료 모달 */
-  const [orderCompleteData, setOrderCompleteData] = useState<IOrder[] | null>(
-    null
-  );
-  const [orderTotalPrice, setOrderTotalPrice] = useState<number>(0);
   /** 결제 방법 선택 모달 */
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     'card' | 'cash' | 'split' | 'payAfter' | null
@@ -119,8 +114,9 @@ export const CartButton = ({ categories }: Props) => {
         }
       });
 
-      setOrderCompleteData(orders);
-      setOrderTotalPrice(totalPrice);
+      setModalData('orderCompleteData', orders);
+      setModalData('orderCompleteTotalPrice', totalPrice);
+      setModalData('isOrderCompleteModalOpened', true);
       clearCart();
       setModalData('isCartListOpened', false);
 
@@ -172,7 +168,9 @@ export const CartButton = ({ categories }: Props) => {
   };
 
   const handleOrderCompleteModalClose = () => {
-    setOrderCompleteData(null);
+    setModalData('isOrderCompleteModalOpened', false);
+    setModalData('orderCompleteData', null);
+    setModalData('orderCompleteTotalPrice', 0);
   };
 
   const getTotalCartItemCount = (): number => {
@@ -217,11 +215,11 @@ export const CartButton = ({ categories }: Props) => {
       )}
 
       {/* 주문 완료 모달 */}
-      {orderCompleteData && (
+      {modalData.isOrderCompleteModalOpened && (
         <OrderCompleteModal
           onClose={handleOrderCompleteModalClose}
-          orderData={orderCompleteData}
-          totalPrice={orderTotalPrice}
+          orderData={modalData.orderCompleteData ?? []}
+          totalPrice={modalData.orderCompleteTotalPrice}
         />
       )}
     </>
