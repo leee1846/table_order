@@ -123,6 +123,26 @@ const AdminMyPage = lazy(() =>
     default: module.AdminMyPage,
   }))
 );
+const AppHistoryPage = lazy(() =>
+  import('@/pages/webAdmin/AppHistoryPage').then((module) => ({
+    default: module.AppHistoryPage,
+  }))
+);
+const AppHistoryNewPage = lazy(() =>
+  import('@/pages/webAdmin/AppHistoryNewPage').then((module) => ({
+    default: module.AppHistoryNewPage,
+  }))
+);
+const AppHistoryEditPage = lazy(() =>
+  import('@/pages/webAdmin/AppHistoryEditPage').then((module) => ({
+    default: module.AppHistoryEditPage,
+  }))
+);
+const AppHistoryDetailPage = lazy(() =>
+  import('@/pages/webAdmin/AppHistoryDetailPage').then((module) => ({
+    default: module.AppHistoryDetailPage,
+  }))
+);
 
 /**
  * 모든 보호된 라우트에 공통으로 적용되는 인증 체크 loader
@@ -259,6 +279,42 @@ export const router = createBrowserRouter([
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <AdminMyPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: ROUTES.ADMIN_WEB.APP_HISTORY.path,
+            loader: onlyWebPageLoader,
+            element: (
+              <Suspense fallback={<FullscreenLoadingSpinner />}>
+                <AppHistoryPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: ROUTES.ADMIN_WEB.APP_HISTORY_NEW.path,
+            loader: onlyWebPageLoader,
+            element: (
+              <Suspense fallback={<FullscreenLoadingSpinner />}>
+                <AppHistoryNewPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: ROUTES.ADMIN_WEB.APP_HISTORY_EDIT.path,
+            loader: onlyWebPageLoader,
+            element: (
+              <Suspense fallback={<FullscreenLoadingSpinner />}>
+                <AppHistoryEditPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: ROUTES.ADMIN_WEB.APP_HISTORY_DETAIL.path,
+            loader: onlyWebPageLoader,
+            element: (
+              <Suspense fallback={<FullscreenLoadingSpinner />}>
+                <AppHistoryDetailPage />
               </Suspense>
             ),
           },

@@ -28,14 +28,19 @@ export const StoresSidebarLayout = () => {
   const SIDEBAR_MENUS = useMemo<TMenu[]>(
     () => [
       {
+        id: 'mypage',
+        label: '내 정보',
+        path: ROUTES.ADMIN_WEB.MYPAGE.generate(),
+      },
+      {
         id: 'stores',
         label: '매장 관리',
         path: ROUTES.ADMIN_WEB.STORES.generate(),
       },
       {
-        id: 'mypage',
-        label: '내 정보',
-        path: ROUTES.ADMIN_WEB.MYPAGE.generate(),
+        id: 'app-history',
+        label: '앱 히스토리',
+        path: ROUTES.ADMIN_WEB.APP_HISTORY.generate(),
       },
     ],
     []

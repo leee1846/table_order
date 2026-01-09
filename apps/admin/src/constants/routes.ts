@@ -29,6 +29,22 @@ export const ROUTES = {
       path: 'mypage',
       generate: () => '/admin/mypage',
     },
+    APP_HISTORY: {
+      path: 'app-history',
+      generate: () => '/admin/app-history',
+    },
+    APP_HISTORY_NEW: {
+      path: 'app-history/new',
+      generate: () => '/admin/app-history/new',
+    },
+    APP_HISTORY_EDIT: {
+      path: 'app-history/:id/edit',
+      generate: (id: string | number) => `/admin/app-history/${id}/edit`,
+    },
+    APP_HISTORY_DETAIL: {
+      path: 'app-history/:id',
+      generate: (id: string | number) => `/admin/app-history/${id}`,
+    },
   },
 
   SETTINGS: {
