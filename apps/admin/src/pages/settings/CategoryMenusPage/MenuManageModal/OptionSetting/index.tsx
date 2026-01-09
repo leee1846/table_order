@@ -57,7 +57,7 @@ export const OptionSetting = () => {
   };
 
   const handleDeleteOptionGroup = (optionGroupSeq: number, index: number) => {
-    if (optionGroupSeq) {
+    if (optionGroupSeq && optionGroupSeq > 0) {
       updateOptionGroups((groups) =>
         groups.map((group) =>
           group.optionGroupSeq === optionGroupSeq
@@ -69,11 +69,7 @@ export const OptionSetting = () => {
       updateOptionGroups((groups) => groups.filter((_, i) => i !== index));
     }
 
-    toast(
-      t(
-        '옵션 그룹이 삭제되었습니다.'
-      )
-    );
+    toast(t('옵션 그룹이 삭제되었습니다.'));
   };
 
   const getOptionGroupKey = (

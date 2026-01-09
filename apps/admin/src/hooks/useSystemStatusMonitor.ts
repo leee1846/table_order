@@ -157,9 +157,8 @@ export const useSystemStatusMonitor = () => {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('시스템 상태 모니터링 종료 실패:', error);
-    } finally {
-      isMonitoringRef.current = false;
     }
+    isMonitoringRef.current = false;
   }, []);
 
   useEffect(() => {

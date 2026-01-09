@@ -1,5 +1,5 @@
 import { t } from '@/config/i18n';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { theme } from '@repo/ui';
 import {
   BasicButton,
@@ -61,9 +61,20 @@ export const OptionGroupManageModal = ({
   onCreated,
 }: Props) => {
   const { formValues, updateFormValues, mode } = useMenuManageModal();
+  const tempOptionGroupSeqRef = useRef(0);
+  const tempOptionSeqRef = useRef(0);
 
   // 메뉴가 생성 모드인지 수정 모드인지
   const isMenuCreateMode = mode === 'create';
+  const getTempOptionGroupSeq = useCallback(() => {
+    tempOptionGroupSeqRef.current += 1;
+    return -(Date.now() + tempOptionGroupSeqRef.current);
+  }, []);
+
+  const getTempOptionSeq = useCallback(() => {
+    tempOptionSeqRef.current += 1;
+    return -(Date.now() + tempOptionSeqRef.current);
+  }, []);
 
   // 옵션 그룹 생성 모드인지 수정 모드인지
   // 메뉴 생성 모드: optionGroupIndex가 null이 아니면 수정 모드
@@ -167,9 +178,22 @@ export const OptionGroupManageModal = ({
         option.optionSeq != null &&
         option.optionSeq > 0;
       const isDeleted = 'isDeleted' in option && option.isDeleted === true;
+      const shouldAssignTempOptionSeq =
+        !isMenuCreateMode &&
+        (!('optionSeq' in option) ||
+          option.optionSeq == null ||
+          option.optionSeq === 0);
+
+      const optionSeqValue = isExistingOption
+        ? option.optionSeq
+        : shouldAssignTempOptionSeq
+          ? getTempOptionSeq()
+          : 'optionSeq' in option && option.optionSeq != null
+            ? option.optionSeq
+            : 0;
 
       return {
-        optionSeq: isExistingOption ? option.optionSeq : 0,
+        optionSeq: optionSeqValue,
         optionGroupSeq: optionGroupSeqValue ?? 0,
         optionName: option.optionName.trim(),
         optionPrice: option.optionPrice,
@@ -222,7 +246,7 @@ export const OptionGroupManageModal = ({
       return;
     }
 
-    if (optionSeq) {
+    if (optionSeq && optionSeq > 0) {
       const updatedList = options.map((option) =>
         'optionSeq' in option && option.optionSeq === optionSeq
           ? { ...option, isDeleted: true }
@@ -425,13 +449,18 @@ export const OptionGroupManageModal = ({
     }
 
     // 메뉴 수정 모드에서 새로운 옵션 그룹 추가
-    const updateOptionList = buildUpdateOptionList(0);
+    const tempOptionGroupSeq = getTempOptionGroupSeq();
+    const updateOptionList = buildUpdateOptionList(tempOptionGroupSeq);
 
     // IOptionGroup 형식으로 변환 (formValues에 저장하기 위해)
     const optionListForForm = updateOptionList.map(addOptionDefaultsForForm);
 
     const newOptionGroup: IOptionGroup = {
-      ...buildOptionGroupBase(0, 0, currentOptionGroupList.length + 1),
+      ...buildOptionGroupBase(
+        tempOptionGroupSeq,
+        0,
+        currentOptionGroupList.length + 1
+      ),
       optionList: optionListForForm,
       localeOptionGroupName: {} as TLocale,
       localeOptionGroupNameStr: {} as TLocale,
