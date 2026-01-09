@@ -12,6 +12,7 @@ import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
 import { initializeSseConnection } from '@/utils/sseConnection';
 import * as S from '@/pages/LoginPage/loginPage.style';
+import { AndroidInfo, CapacitorApp } from '@repo/util/app';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -85,21 +86,57 @@ export const LoginPage = () => {
     setAccessToken(loginResponse.data.accessToken);
     setRefreshToken(loginResponse.data.refreshToken);
 
+    let ipAddress: string | null = null;
+    let androidId: string | null = null;
+    let appInfo: Awaited<ReturnType<typeof CapacitorApp.getInfo>> | null = null;
+
+    // 모두 성공할 때까지 반복
+    while (!ipAddress || !androidId || !appInfo) {
+      // 3개 모두 요청
+      [ipAddress, androidId, appInfo] = await Promise.all([
+        AndroidInfo.getIp(),
+        AndroidInfo.getId(),
+        CapacitorApp.getInfo(),
+      ]);
+
+      // 1개라도 실패하면 다이얼로그 표시
+      if (!ipAddress || !androidId || !appInfo) {
+        await new Promise<void>((resolve) => {
+          openConfirmDialog({
+            title: t('오류'),
+            content: t(
+              '디바이스 정보를 가져오는데 실패했습니다. 다시 시도해주세요.'
+            ),
+            confirmText: t('확인'),
+            onConfirm: resolve,
+          });
+        });
+      }
+    }
+
+    await setDeviceData({
+      ...deviceStoreData,
+      ipAddress: ipAddress ?? '',
+      androidId: androidId ?? '',
+      version: appInfo?.version ?? '',
+      buildNumber: appInfo?.build ?? '',
+    });
     const shopDataResponse = await refreshShopData();
-    const deviceDataResponse = await refetchDeviceDetail();
 
     if (!shopDataResponse) {
       return;
     }
 
+    const deviceDataResponse = await refetchDeviceDetail();
+
     const deviceData = {
       // App.tsx에서 app plugin을 통해 초기화한 디바이스 데이터
       wifiSignal: deviceStoreData?.wifiSignal ?? '',
       battery: deviceStoreData?.battery ?? 0,
-      version: deviceStoreData?.version ?? '',
-      buildNumber: deviceStoreData?.buildNumber ?? '',
-      ipAddress: deviceStoreData?.ipAddress ?? '',
-      androidId: deviceStoreData?.androidId ?? '',
+      ipAddress: ipAddress ?? deviceStoreData?.ipAddress ?? '',
+      androidId: androidId ?? deviceStoreData?.androidId ?? '',
+      version: appInfo?.version ?? deviceStoreData?.version ?? '',
+      buildNumber: appInfo?.build ?? deviceStoreData?.buildNumber ?? '',
 
       // 새로 api를 통해 조회한 디바이스 데이터
       deviceType: deviceDataResponse?.data?.data?.deviceType ?? 'MENU',
@@ -108,10 +145,6 @@ export const LoginPage = () => {
     };
 
     await setDeviceData(deviceData);
-    await postDeviceDetail({
-      ...deviceData,
-      shopCode: shopDataResponse.shopCode,
-    });
     initializeSseConnection();
     navigate(ROUTES.ROOT.generate());
   };

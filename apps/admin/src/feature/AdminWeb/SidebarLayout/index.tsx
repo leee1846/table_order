@@ -32,6 +32,11 @@ export const StoresSidebarLayout = () => {
         label: '매장 관리',
         path: ROUTES.ADMIN_WEB.STORES.generate(),
       },
+      {
+        id: 'mypage',
+        label: '내 정보',
+        path: ROUTES.ADMIN_WEB.MYPAGE.generate(),
+      },
     ],
     []
   );
