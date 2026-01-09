@@ -84,6 +84,10 @@ interface IPaymentPlugin extends Plugin {
     eventName: string,
     callback: (data: IPaymentEventData) => void
   ): Promise<{ remove: () => Promise<void> }>;
+  /**
+   * 결제 중단 (네이티브 메서드)
+   */
+  stopPayment(): Promise<void>;
 }
 
 const NativePayment = registerPlugin<IPaymentPlugin>('Payment');
@@ -124,6 +128,14 @@ export interface IPayment {
    * @returns 취소 성공 데이터
    */
   cancel(options: IPaymentCancelOptions): Promise<IPaymentResponse>;
+
+  /**
+   * [결제 중단] 진행 중인 결제 프로세스 강제 종료 (STOP)
+   * - 사용자가 모달에서 '취소' 또는 '닫기' 버튼을 눌렀을 때 호출
+   * - 진행 중인 결제 요청을 취소하고, 리더기를 초기화 상태로 되돌림
+   * @returns Promise<void>
+   */
+  stop(): Promise<void>;
 }
 
 export const Payment: IPayment = {
@@ -152,5 +164,9 @@ export const Payment: IPayment = {
       installment: '00', // 취소는 항상 일시불 처리
       tran_no: Math.floor(Math.random() * 99999).toString(),
     });
+  },
+
+  stop: async () => {
+    return NativePayment.stopPayment();
   },
 };

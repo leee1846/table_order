@@ -192,7 +192,7 @@ export const CardPaymentInstallmentModal = ({
     setupPaymentListener();
 
     return () => {
-      // TODO: 결제 요청했던거 제거 해야함.
+      Payment.stop();
       if (paymentListener) {
         paymentListener.remove();
       }
@@ -289,6 +289,14 @@ export const CardPaymentInstallmentModal = ({
       await processPayment(orderGroupUuid, orderUuid);
       handlePaymentSuccess();
     } catch (error) {
+      if (
+        (error as Error).message === 'USER_CANCEL' &&
+        (error as unknown as { code: string }).code === 'CANCELED'
+      ) {
+        // 사용자가 결제를 취소했을 경우
+        return;
+      }
+
       handlePaymentError(error);
     }
   };
