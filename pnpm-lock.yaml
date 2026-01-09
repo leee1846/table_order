@@ -387,10 +387,10 @@ importers:
     dependencies:
       '@capacitor/app':
         specifier: ^6.0.3
-        version: 6.0.3(@capacitor/core@8.0.0)
+        version: 6.0.3(@capacitor/core@6.2.1)
       '@capacitor/core':
-        specifier: ^8.0.0
-        version: 8.0.0
+        specifier: ^6.2.1
+        version: 6.2.1
       dayjs:
         specifier: ^1.11.19
         version: 1.11.19
@@ -514,8 +514,8 @@ packages:
     peerDependencies:
       '@capacitor/core': ^6.0.0
 
-  '@capacitor/core@8.0.0':
-    resolution: {integrity: sha512-250HTVd/W/KdMygoqaedisvNbHbpbQTN2Hy/8ZYGm1nAqE0Fx7sGss4l0nDg33STxEdDhtVRoL2fIaaiukKseA==}
+  '@capacitor/core@6.2.1':
+    resolution: {integrity: sha512-urZwxa7hVE/BnA18oCFAdizXPse6fCKanQyEqpmz6cBJ2vObwMpyJDG5jBeoSsgocS9+Ax+9vb4ducWJn0y2qQ==}
 
   '@dnd-kit/accessibility@3.1.1':
     resolution: {integrity: sha512-2P+YgaXF+gRsIihwwY1gCsQSYnu9Zyj2py8kY5fFvUM1qm2WA2u639R6YNVfU4GWr+ZM5mqEsfHZZLoRONbemw==}
@@ -2430,11 +2430,11 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  '@capacitor/app@6.0.3(@capacitor/core@8.0.0)':
+  '@capacitor/app@6.0.3(@capacitor/core@6.2.1)':
     dependencies:
-      '@capacitor/core': 8.0.0
+      '@capacitor/core': 6.2.1
 
-  '@capacitor/core@8.0.0':
+  '@capacitor/core@6.2.1':
     dependencies:
       tslib: 2.8.1
 

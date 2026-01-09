@@ -4,14 +4,35 @@ import { registerPlugin, type Plugin } from '@capacitor/core';
  * 배터리/와이파이 상태 정보
  */
 export interface SystemStatus {
-  battery?: number;
-  // - wifi 세기를 Level에서 Rssi(dBm) 강도로 변경
+  battery?: number | null;
+  // - wifi 세기를 RSSI(dBm) 강도에서 0~4 레벨로 정규화
   // - Rssi 강도 범위 [ 최상(4): -55 이상, 좋음(3): -56 ~ -66, 보통(2): -67 ~ -77, 약함(1): -78 ~ -88, 연결 불가(0): -89 이하 ]
-  wifi?: number;
+  wifi?: number | null; // 0~4 범위의 정규화된 값
   // - network_recovered: 네트워크 복구
   // - network_lost: 네트워크 끊김
   event?: 'network_recovered' | 'network_lost';
 }
+
+/**
+ * RSSI(dBm) 값을 0~4 레벨로 정규화
+ * @param rssi - RSSI 값 (dBm, 음수)
+ * @returns 0~4 범위의 정규화된 값
+ */
+const normalizeRssiToLevel = (rssi: number): number => {
+  if (rssi >= -55) {
+    return 4; // 최상
+  }
+  if (rssi >= -66) {
+    return 3; // 좋음
+  }
+  if (rssi >= -77) {
+    return 2; // 보통
+  }
+  if (rssi >= -88) {
+    return 1; // 약함
+  }
+  return 0; // 연결 불가
+};
 
 /**
  * SystemControlPlugin 인터페이스
@@ -105,7 +126,21 @@ const NativeSystem = registerPlugin<ISystemControl & Plugin>('SystemControl');
 export const SystemControl: ISystemControl = {
   startMonitoring: async (callback) => {
     NativeSystem.stopMonitoring();
-    return NativeSystem.startMonitoring(callback);
+
+    // RSSI 값을 0~4로 정규화하는 래퍼 콜백
+    const normalizedCallback = (status: SystemStatus) => {
+      const normalizedStatus: SystemStatus = {
+        ...status,
+        // wifi 값이 있으면 정규화
+        wifi:
+          status.wifi !== undefined && status.wifi !== null
+            ? normalizeRssiToLevel(status.wifi)
+            : null,
+      };
+      callback(normalizedStatus);
+    };
+
+    return NativeSystem.startMonitoring(normalizedCallback);
   },
 
   stopMonitoring: async () => {

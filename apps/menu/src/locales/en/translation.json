@@ -218,5 +218,12 @@
   "최소 주문 금액은 {{minAmount}}원 입니다.": "The minimum order amount is {{minAmount}} KRW.",
   "오류": "Error",
   "디바이스 정보를 가져오는데 실패했습니다. 다시 시도해주세요.": "Failed to get device information. Please try again.",
-  "주문에 사용하실 언어를 선택해 주세요.": "Please select the language you will use for ordering."
+  "주문에 사용하실 언어를 선택해 주세요.": "Please select the language you will use for ordering.",
+  "체크·신용카드 결제": "Card Payment",
+  "결제 금액": "Payment Amount",
+  "할부 선택": "Installment Selection",
+  "결제하기": "Pay",
+  "일시불": "Lump Sum",
+  "{{months}}개월": "{{months}} months",
+  "결제 처리 중 오류가 발생했습니다.": "An error occurred while processing the payment."
 }
