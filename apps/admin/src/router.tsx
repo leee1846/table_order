@@ -170,22 +170,15 @@ const rootRouteLoader = () => {
     return redirect(ROUTES.LOGIN.generate());
   }
 
-  // Native 앱인 경우: SHOP 역할만 허용
-  if (CapacitorApp.isNative()) {
-    if (payload.role === 'SHOP') {
+  if (payload.role === 'SHOP') {
+    if (CapacitorApp.isNative()) {
       return redirect(ROUTES.TABLES.generate());
     }
-
-    return redirect(ROUTES.NOT_FOUND.generate());
-  }
-
-  // Web인 경우: ADMIN 역할만 허용
-  if (payload.role === 'ADMIN') {
-    return redirect(ROUTES.ADMIN_WEB.STORES.generate());
-  }
-
-  if (payload.role === 'SHOP') {
     return redirect(ROUTES.SETTINGS.NOTICES.generate());
+  }
+
+  if (!CapacitorApp.isNative()) {
+    return redirect(ROUTES.ADMIN_WEB.STORES.generate());
   }
 
   return redirect(ROUTES.NOT_FOUND.generate());
@@ -210,6 +203,30 @@ const onlyWebPageLoader = () => {
   return null;
 };
 
+/**
+ * Admin Web 경로에서 Web 체크와 ADMIN 권한 체크를 모두 수행하는 loader
+ */
+const adminWebPageLoader = () => {
+  // Admin 권한 체크
+  const token = getAccessToken();
+  if (!token) {
+    return redirect(ROUTES.LOGIN.generate());
+  }
+
+  // 토큰 디코딩
+  const payload = decodeJwtToken<ITokenPayload>(token);
+  if (!payload) {
+    return redirect(ROUTES.LOGIN.generate());
+  }
+
+  // SHOP 역할은 접근 불가
+  if (payload.role === 'SHOP') {
+    return redirect(ROUTES.NOT_FOUND.generate());
+  }
+
+  return null;
+};
+
 export const router = createBrowserRouter([
   {
     path: ROUTES.LOGIN.path,
@@ -218,6 +235,7 @@ export const router = createBrowserRouter([
         <LoginPage />
       </Suspense>
     ),
+    loader: rootRouteLoader,
   },
 
   {
@@ -241,14 +259,14 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            loader: onlyWebPageLoader,
+            loader: adminWebPageLoader,
             element: (
               <Navigate to={ROUTES.ADMIN_WEB.STORES.generate()} replace />
             ),
           },
           {
             path: ROUTES.ADMIN_WEB.STORES.path,
-            loader: onlyWebPageLoader,
+            loader: adminWebPageLoader,
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <StoresPage />
@@ -257,7 +275,7 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.ADMIN_WEB.STORES_NEW.path,
-            loader: onlyWebPageLoader,
+            loader: adminWebPageLoader,
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <StoreNewPage />
@@ -266,7 +284,7 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.ADMIN_WEB.STORES_EDIT.path,
-            loader: onlyWebPageLoader,
+            loader: adminWebPageLoader,
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <StoreEditPage />
@@ -275,7 +293,7 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.ADMIN_WEB.MYPAGE.path,
-            loader: onlyWebPageLoader,
+            loader: adminWebPageLoader,
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <AdminMyPage />
@@ -284,7 +302,7 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.ADMIN_WEB.APP_HISTORY.path,
-            loader: onlyWebPageLoader,
+            loader: adminWebPageLoader,
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <AppHistoryPage />
@@ -293,7 +311,7 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.ADMIN_WEB.APP_HISTORY_NEW.path,
-            loader: onlyWebPageLoader,
+            loader: adminWebPageLoader,
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <AppHistoryNewPage />
@@ -302,7 +320,7 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.ADMIN_WEB.APP_HISTORY_EDIT.path,
-            loader: onlyWebPageLoader,
+            loader: adminWebPageLoader,
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <AppHistoryEditPage />
@@ -311,7 +329,7 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.ADMIN_WEB.APP_HISTORY_DETAIL.path,
-            loader: onlyWebPageLoader,
+            loader: adminWebPageLoader,
             element: (
               <Suspense fallback={<FullscreenLoadingSpinner />}>
                 <AppHistoryDetailPage />
