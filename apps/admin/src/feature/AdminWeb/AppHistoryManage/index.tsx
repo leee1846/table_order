@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { BasicButton } from '@repo/ui/components';
 import { AppHistoryForm } from './AppHistoryForm';
 import { AppHistoryHistoryDialog } from './AppHistoryHistoryDialog';
 import * as S from './appHistoryManage.style';
-import { ROUTES } from '@/constants/routes';
-import type { AppHistoryFormData } from './constants';
-import { DEFAULT_APP_HISTORY_DATA } from './constants';
+import { type AppHistoryFormData, DEFAULT_APP_HISTORY_DATA } from './constants';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -17,7 +14,6 @@ interface Props {
 }
 
 export const AppHistoryManage = ({ mode, initialData, onSave }: Props) => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState<AppHistoryFormData>(
     DEFAULT_APP_HISTORY_DATA
   );
