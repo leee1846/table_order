@@ -130,6 +130,7 @@ export interface IShopSetting {
   useTableOverlapping: boolean;
   vanId: string;
   useLocale: boolean;
+  isSalesDetailLocked: boolean;
 }
 
 export type TNetworkType = 'AUTO' | 'LAN' | 'WIFI';

@@ -1,5 +1,5 @@
 import { useAdminTranslation } from '@/config/i18n';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   SidebarContainer,
   Logo,
@@ -14,11 +14,10 @@ import { SalesListDialog } from '@/feature/dialogs/SalesListDialog';
 import { DeviceListDialog } from '@/feature/dialogs/DeviceListDialog';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import { toast } from '@repo/feature/utils';
 import type { ICurrentTable, ITableGroup } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
 import { TableGroupList } from './sidebar.styles';
-import { SystemControl } from '@repo/util/app';
+import { CapacitorApp, SystemControl } from '@repo/util/app';
 
 type MenuItem = {
   id: string;

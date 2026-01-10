@@ -6,8 +6,9 @@ import * as UIStyles from '@repo/ui/styles';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
 import { PaymentsIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import * as S from './payment.style';
 import type { MiscellaneousChange } from '../types';
+import { CapacitorApp } from '@repo/util/app';
+import { toast } from '@repo/feature/utils';
 
 type PaymentTypeOption = 'prepayment' | 'postpayment';
 
@@ -65,7 +66,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
   const [serviceChargeRate, setServiceChargeRate] = useState('');
   const [isSalesTotalVisible, setIsSalesTotalVisible] = useState(false);
   const [salesPassword, setSalesPassword] = useState('');
-
+  const [isSalesDetailLocked, setIsSalesDetailLocked] = useState(false);
   const [usePrepayment, setUsePrepayment] = useState(false);
   const [usePrepaymentDutch, setUsePrepaymentDutch] = useState(false);
 
@@ -107,6 +108,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       shopSetting.usePrepaymentCashPaymentInducement
     );
     setUsePrepaymentCashPayment(shopSetting.usePrepaymentCashPayment);
+    setIsSalesDetailLocked(shopSetting.isSalesDetailLocked);
   }, [shopSetting]);
 
   useEffect(() => {
@@ -123,6 +125,8 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       shopCardTerminalCode: shopCardTerminal || undefined,
       isSalesTotalVisible,
       salesPassword: salesPassword || undefined,
+      // 매출 총 금액 노출 여부가 true이면 매출 세부 내역 잠금 여부를 false로 강제 설정
+      isSalesDetailLocked: isSalesTotalVisible ? false : isSalesDetailLocked,
       usePrepaymentDutch,
       usePrepaymentDeferredPayment,
       usePrepaymentAutoReset,
@@ -147,6 +151,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
     });
   }, [
     currencySetting,
+    isSalesDetailLocked,
     isSalesTotalVisible,
     onChange,
     salesPassword,
@@ -212,11 +217,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           </UIStyles.setting.ContentLayout>
 
           <UIStyles.setting.ContentLayout>
-            <p>
-              {t(
-                '선결제 더치페이 사용'
-              )}
-            </p>
+            <p>{t('선결제 더치페이 사용')}</p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentDutch}
@@ -224,11 +225,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>
-              {t(
-                '선불형 후불결제 사용'
-              )}
-            </p>
+            <p>{t('선불형 후불결제 사용')}</p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentDeferredPayment}
@@ -236,11 +233,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>
-              {t(
-                '선불형 자동초기화 사용'
-              )}
-            </p>
+            <p>{t('선불형 자동초기화 사용')}</p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentAutoReset}
@@ -248,11 +241,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>
-              {t(
-                '현금결제 유도 팝업 사용'
-              )}
-            </p>
+            <p>{t('현금결제 유도 팝업 사용')}</p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentCashPaymentInducement}
@@ -260,11 +249,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>
-              {t(
-                '선불형 현금결제 사용'
-              )}
-            </p>
+            <p>{t('선불형 현금결제 사용')}</p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentCashPayment}
@@ -303,15 +288,17 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
          </S.ServiceChargeInputWrapper>
         </UIStyles.setting.ContentLayout> */}
       <UIStyles.setting.ContentLayout>
-        <p>
-          {t(
-            '매출 총 금액 노출 여부'
-          )}
-        </p>
+        <p>{t('매출 총 금액 노출 여부')}</p>
         <ToggleButton
           size="M"
           isOn={isSalesTotalVisible}
-          onChange={() => setIsSalesTotalVisible(!isSalesTotalVisible)}
+          onChange={() => {
+            if (CapacitorApp.isNative()) {
+              toast(t('관리자 웹에서 변경해주세요.'));
+              return;
+            }
+            setIsSalesTotalVisible(!isSalesTotalVisible);
+          }}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
@@ -321,9 +308,31 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           maxLength={4}
           value={salesPassword}
           placeholder="****"
-          onChange={(event) => setSalesPassword(event.target.value)}
+          onChange={(event) => {
+            if (CapacitorApp.isNative()) {
+              toast(t('관리자 웹에서 변경해주세요.'));
+              return;
+            }
+            setSalesPassword(event.target.value);
+          }}
         />
       </UIStyles.setting.ContentLayout>
+      {!isSalesTotalVisible && (
+        <UIStyles.setting.ContentLayout>
+          <p>{t('매출 세부 내역 잠금 여부')}</p>
+          <ToggleButton
+            size="M"
+            isOn={isSalesDetailLocked}
+            onChange={() => {
+              if (CapacitorApp.isNative()) {
+                toast(t('관리자 웹에서 변경해주세요.'));
+                return;
+              }
+              setIsSalesDetailLocked(!isSalesDetailLocked);
+            }}
+          />
+        </UIStyles.setting.ContentLayout>
+      )}
     </SectionWrapper>
   );
 };

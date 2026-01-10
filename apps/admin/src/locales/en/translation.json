@@ -298,6 +298,8 @@
   "매출 비밀번호": "Sales password",
   "매출 요약": "Sales summary",
   "매출 총 금액 노출 여부": "Show total sales amount",
+  "매출 세부 내역 잠금 여부": "Lock sales detail",
+  "관리자 웹에서 변경해주세요.": "Please change it on the admin web.",
   "매출(결제 전)": "Sales (before payment)",
   "매출(결제완료)": "Sales (paid)",
   "메뉴 설명": "Menu description",

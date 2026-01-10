@@ -24,6 +24,11 @@ const SettingSidebar = lazy(() =>
     default: module.SidebarLayout,
   }))
 );
+const SettingsAccessGuard = lazy(() =>
+  import('@/pages/settings/SettingsAccessGuard').then((module) => ({
+    default: module.SettingsAccessGuard,
+  }))
+);
 const StoresSidebar = lazy(() =>
   import('@/feature/AdminWeb/SidebarLayout').then((module) => ({
     default: module.StoresSidebarLayout,
@@ -156,6 +161,39 @@ const protectedRouteLoader = () => {
 };
 
 /**
+ * 로그인 페이지 전용 loader
+ * 이미 로그인된 사용자는 role에 따라 적절한 페이지로 리디렉트
+ */
+const loginPageLoader = () => {
+  const token = getAccessToken();
+  if (!token) {
+    // 토큰이 없으면 로그인 페이지를 보여줌 (redirect 없음)
+    return null;
+  }
+
+  // 토큰 디코딩
+  const payload = decodeJwtToken<ITokenPayload>(token);
+  if (!payload) {
+    // 토큰이 유효하지 않으면 로그인 페이지를 보여줌
+    return null;
+  }
+
+  // 이미 로그인된 사용자는 role에 따라 적절한 페이지로 리디렉트
+  if (payload.role === 'SHOP') {
+    if (CapacitorApp.isNative()) {
+      return redirect(ROUTES.TABLES.generate());
+    }
+    return redirect(ROUTES.SETTINGS.NOTICES.generate());
+  }
+
+  if (!CapacitorApp.isNative()) {
+    return redirect(ROUTES.ADMIN_WEB.STORES.generate());
+  }
+
+  return redirect(ROUTES.NOT_FOUND.generate());
+};
+
+/**
  * 루트 경로에서 role에 따라 리디렉트하는 loader
  */
 const rootRouteLoader = () => {
@@ -235,7 +273,7 @@ export const router = createBrowserRouter([
         <LoginPage />
       </Suspense>
     ),
-    loader: rootRouteLoader,
+    loader: loginPageLoader,
   },
 
   {
@@ -364,7 +402,9 @@ export const router = createBrowserRouter([
         path: ROUTES.SETTINGS.path,
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
-            <SettingSidebar />
+            <SettingsAccessGuard>
+              <SettingSidebar />
+            </SettingsAccessGuard>
           </Suspense>
         ),
         children: [
