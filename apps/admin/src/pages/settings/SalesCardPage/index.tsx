@@ -226,6 +226,7 @@ export const SalesCardPage = () => {
           afterYears={1}
         />
       )}
+      {/* TODO 카드 승인 내역 총 금액 없음.. */}
     </>
   );
 };

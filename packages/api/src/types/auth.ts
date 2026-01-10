@@ -21,3 +21,8 @@ export interface ILoginMenuboardAdminRequest {
   shopCode: string;
   pw: string;
 }
+
+export interface ILoginSalesRequest {
+  shopCode: string;
+  pw: string;
+}

@@ -18,6 +18,7 @@ export const ENDPOINTS = {
     LOGIN: '/login',
     TOKEN_REFRESH: '/token/refresh',
     LOGIN_MENUBOARD_ADMIN: '/login/menuboard',
+    LOGIN_SALES: '/login/sales',
   },
 
   ORDER: {

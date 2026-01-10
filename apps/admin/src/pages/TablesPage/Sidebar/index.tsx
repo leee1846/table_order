@@ -1,5 +1,5 @@
 import { useAdminTranslation } from '@/config/i18n';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   SidebarContainer,
   Logo,
@@ -10,14 +10,15 @@ import {
   ActionButton,
 } from '@repo/ui/components';
 import { OrderListDialog } from '@/feature/dialogs/OrderListDialog';
-import { SalesListDialog } from '@/feature/dialogs/SalesListDialog';
+import { SalesListDialogWithGuard } from '@/feature/dialogs/SalesListDialog';
 import { DeviceListDialog } from '@/feature/dialogs/DeviceListDialog';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import type { ICurrentTable, ITableGroup } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
 import { TableGroupList } from './sidebar.styles';
-import { CapacitorApp, SystemControl } from '@repo/util/app';
+import { SystemControl } from '@repo/util/app';
+import { useGetShopThemeMenu } from '@repo/api/queries';
 
 type MenuItem = {
   id: string;
@@ -49,6 +50,11 @@ export const Sidebar = ({
   const navigate = useNavigate();
 
   const { shopCode } = useAuth();
+
+  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
+    enabled: !!shopCode,
+  });
+
   const [selectedMenu, setSelectedMenu] = useState<string>('');
   //주문 모달
   const [isOrderListDialogOpen, setIsOrderListDialogOpen] = useState(false);
@@ -79,12 +85,15 @@ export const Sidebar = ({
   return (
     <SidebarContainer>
       <Logo>
-        {/* <img
-           src={logoImage}
-           alt="캡스 스마트오더 로고"
-           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
-          /> */}
-        {t('캡스 스마트오더')}
+        {shopThemeMenuResponse?.data?.logoImagePath ? (
+          <img
+            src={shopThemeMenuResponse.data.logoImagePath}
+            alt={t('매장 로고')}
+            style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+          />
+        ) : (
+          t('캡스 스마트오더')
+        )}
       </Logo>
 
       <TableGroupList>
@@ -125,7 +134,7 @@ export const Sidebar = ({
         shopCode={shopCode ?? undefined}
       />
 
-      <SalesListDialog
+      <SalesListDialogWithGuard
         shopCode={shopCode ?? undefined}
         isOpen={isSalesDialogOpen}
         onClose={() => {

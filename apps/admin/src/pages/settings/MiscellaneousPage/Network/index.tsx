@@ -49,7 +49,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
     if (!CapacitorApp.isNative()) {
       const getAppInfo = async () => {
         const appInfo = await CapacitorApp.getInfo();
-        setCurrentVersion(appInfo.version);
+        setCurrentVersion(appInfo?.version ?? '');
       };
 
       getAppInfo();
@@ -100,11 +100,13 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
           </UIStyles.setting.Title>
         </S.TitleContentContainer>
         <S.Versions>
-          <p>
-            {t('현재 버전')}
-            <span>{currentVersion}</span>
-          </p>
-          <div />
+          {CapacitorApp.isNative() && (
+            <p>
+              {t('현재 버전')}
+              <span>{currentVersion}</span>
+            </p>
+          )}
+          {CapacitorApp.isNative() && <div />}
           <p>
             {t('최신 버전')}
             <span>{latestAppVersionText}</span>

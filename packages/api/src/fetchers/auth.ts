@@ -6,6 +6,7 @@ import type {
   TLoginResponse,
   TRefreshAccessTokenResponse,
   ILoginMenuboardAdminRequest,
+  ILoginSalesRequest,
 } from '../types/auth';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -47,6 +48,22 @@ export const loginMenuboardAdmin = async ({
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'POST',
     url: ENDPOINTS.AUTH.LOGIN_MENUBOARD_ADMIN,
+    params: { shopCode, pw },
+    ignoreGlobalErrors,
+  });
+
+  return response.data;
+};
+
+export const loginSales = async ({
+  shopCode,
+  pw,
+  ignoreGlobalErrors,
+}: ILoginSalesRequest & { ignoreGlobalErrors: number[] }) => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.AUTH.LOGIN_SALES,
     params: { shopCode, pw },
     ignoreGlobalErrors,
   });

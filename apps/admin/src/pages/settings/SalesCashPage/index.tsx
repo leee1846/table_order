@@ -36,9 +36,7 @@ export const SalesCashPage = () => {
             {t('매출 관리')}
 
             <div />
-            <span>
-              {t('단순현금결제내역')}
-            </span>
+            <span>{t('단순현금결제내역')}</span>
           </S.Title>
 
           <S.Filters>
@@ -71,16 +69,13 @@ export const SalesCashPage = () => {
         <UIStyles.setting.Footer>
           <UIStyles.setting.FooterContents>
             <p>
-              <span>{t('총 매출:')}</span> 9999999{' '}
-              <span>{t('0건')}</span>
+              <span>{t('총 매출:')}</span> 9999999 <span>{t('0건')}</span>
             </p>
             <p>
-              <span>{t('결제 전 매출:')}</span>{' '}
-              9999999 <span>{t('0건')}</span>
+              <span>{t('결제 전 매출:')}</span> 9999999 <span>{t('0건')}</span>
             </p>
             <p>
-              <span>{t('총 예상 매출:')}</span>{' '}
-              9999999 <span>{t('0건')}</span>
+              <span>{t('총 예상 매출:')}</span> 9999999 <span>{t('0건')}</span>
             </p>
           </UIStyles.setting.FooterContents>
           <Pagination totalPages={10} currentPage={1} onPageChange={() => {}} />

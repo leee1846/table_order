@@ -13,6 +13,7 @@ import type { ITokenPayload } from '@repo/api/types';
 import { decodeJwtToken } from '@repo/util/function';
 import { CapacitorApp } from '@repo/util/app';
 import { StoresPage } from './pages/webAdmin/StoresPage';
+import { SalesAccessGuard } from '@/feature/SalesAccessGuard';
 
 const LoginPage = lazy(() =>
   import('@/pages/LoginPage').then((module) => ({
@@ -433,7 +434,11 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.SETTINGS.SALES.path,
-            element: <Outlet />,
+            element: (
+              <SalesAccessGuard>
+                <Outlet />
+              </SalesAccessGuard>
+            ),
             children: [
               {
                 index: true,

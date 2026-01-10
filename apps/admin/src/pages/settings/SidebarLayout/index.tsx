@@ -2,9 +2,8 @@ import { useMemo } from 'react';
 import { SettingsSidebar, useTranslation } from '@repo/feature/components';
 import { createSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
-import { useGetCategoryList } from '@repo/api/queries';
+import { useGetCategoryList, useGetShopThemeMenu } from '@repo/api/queries';
 import { useNavigate } from 'react-router-dom';
-import { bestOnIcon } from '@repo/ui/icons';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
 import { CapacitorApp } from '@repo/util/app';
@@ -13,10 +12,14 @@ export const SidebarLayout = () => {
   const navigate = useNavigate();
   const { t, i18n } = useAdminTranslation();
 
-  const { shopSeq } = useAuth();
+  const { shopSeq, shopCode } = useAuth();
 
   const { data: categoryListResponse } = useGetCategoryList({
     shopSeq: shopSeq ?? 0,
+  });
+
+  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
+    enabled: !!shopCode,
   });
 
   const categoryMenuSubMenus = useMemo(() => {
@@ -49,8 +52,12 @@ export const SidebarLayout = () => {
       useTranslation={useTranslation}
       menus={SIDEBAR_MENUS}
       logoElement={
-        <button type="button" onClick={onClickLogo}>
-          <img src={bestOnIcon} alt="logo" />
+        <button type="button" onClick={onClickLogo} style={{ width: '100%' }}>
+          <img
+            src={shopThemeMenuResponse?.data?.logoImagePath}
+            alt={t('매장 로고')}
+            style={{ width: '100%' }}
+          />
         </button>
       }
       onClickHomeButton={onClickLogo}

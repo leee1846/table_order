@@ -12,6 +12,7 @@ import {
   type TDateRangePreset,
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { OrderDetailModal } from '@/pages/settings/SalesOrderPage/OrderDetailModal';
 import { Table } from '@/pages/settings/SalesOrderPage/Table';
 import * as UIStyles from '@repo/ui/styles';
@@ -22,6 +23,8 @@ const PAGE_SIZE = 10;
 export const SalesOrderPage = () => {
   const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
+  const { data: shopDetailData } = useShopDetailData();
+  const { shopSetting } = shopDetailData ?? {};
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
   const ORDER_STATUS_OPTIONS: { value: TDateRangePreset; label: string }[] =
     useMemo(
@@ -103,7 +106,6 @@ export const SalesOrderPage = () => {
         <S.Container>
           <S.Title>
             {t('매출 관리')}
-
             <div />
             <span>{t('주문내역')}</span>
           </S.Title>
@@ -139,39 +141,40 @@ export const SalesOrderPage = () => {
           />
         </S.Container>
 
-        <UIStyles.setting.Footer>
-          <UIStyles.setting.FooterContents>
-            <p>
-              <span>{t('총 매출:')}</span>{' '}
-              {formatCurrency(totalSalesAmount)}{' '}
-              <span>
-                {totalSalesCount}
-                {t('건')}
-              </span>
-            </p>
-            <p>
-              <span>{t('결제 전 매출:')}</span>{' '}
-              {formatCurrency(prePaymentAmount)}{' '}
-              <span>
-                {prePaymentCount}
-                {t('건')}
-              </span>
-            </p>
-            <p>
-              <span>{t('총 예상 매출:')}</span>{' '}
-              {formatCurrency(estimatedTotalAmount)}{' '}
-              <span>
-                {estimatedTotalCount}
-                {t('건')}
-              </span>
-            </p>
-          </UIStyles.setting.FooterContents>
-          <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        </UIStyles.setting.Footer>
+        {shopSetting?.isSalesTotalVisible !== false && (
+          <UIStyles.setting.Footer>
+            <UIStyles.setting.FooterContents>
+              <p>
+                <span>{t('총 매출:')}</span> {formatCurrency(totalSalesAmount)}
+                <span>
+                  {totalSalesCount}
+                  {t('건')}
+                </span>
+              </p>
+              <p>
+                <span>{t('결제 전 매출:')}</span>
+                {formatCurrency(prePaymentAmount)}
+                <span>
+                  {prePaymentCount}
+                  {t('건')}
+                </span>
+              </p>
+              <p>
+                <span>{t('총 예상 매출:')}</span>
+                {formatCurrency(estimatedTotalAmount)}
+                <span>
+                  {estimatedTotalCount}
+                  {t('건')}
+                </span>
+              </p>
+            </UIStyles.setting.FooterContents>
+            <Pagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </UIStyles.setting.Footer>
+        )}
       </UIStyles.setting.TablePageContainer>
 
       {showCalender && (

@@ -17,6 +17,8 @@ import {
 } from '@repo/util/date';
 import * as UIStyles from '@repo/ui/styles';
 import { useAdminTranslation } from '@/config/i18n';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { SalesAccessGuard } from '@/feature/SalesAccessGuard';
 import * as S from './salesListDialog.style';
 import { Table } from './Table';
 import { OrderDetailModal } from './OrderDetailModal';
@@ -39,6 +41,8 @@ export const SalesListDialog = ({
   itemsPerPage = PAGE_SIZE,
 }: SalesListDialogProps) => {
   const { t } = useAdminTranslation();
+  const { data: shopDetailData } = useShopDetailData();
+  const { shopSetting } = shopDetailData ?? {};
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
 
   const dateOptions: { value: TDateRangePreset; label: string }[] = [
@@ -173,38 +177,41 @@ export const SalesListDialog = ({
               onSelectOrder={(order) => setSelectedOrder(order)}
             />
           </S.Container>
-          <UIStyles.setting.Footer>
-            <UIStyles.setting.FooterContents>
-              <p>
-                <span>{t('총 매출:')}</span> {formatCurrency(totalSalesAmount)}{' '}
-                <span>
-                  {totalSalesCount}
-                  {t('건')}
-                </span>
-              </p>
-              <p>
-                <span>{t('결제 전 매출:')}</span>{' '}
-                {formatCurrency(prePaymentAmount)}{' '}
-                <span>
-                  {prePaymentCount}
-                  {t('건')}
-                </span>
-              </p>
-              <p>
-                <span>{t('총 예상 매출:')}</span>
-                {formatCurrency(estimatedTotalAmount)}{' '}
-                <span>
-                  {estimatedTotalCount}
-                  {t('건')}
-                </span>
-              </p>
-            </UIStyles.setting.FooterContents>
-            <Pagination
-              totalPages={totalPages}
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-            />
-          </UIStyles.setting.Footer>
+          {shopSetting?.isSalesTotalVisible !== false && (
+            <UIStyles.setting.Footer>
+              <UIStyles.setting.FooterContents>
+                <p>
+                  <span>{t('총 매출:')}</span>{' '}
+                  {formatCurrency(totalSalesAmount)}{' '}
+                  <span>
+                    {totalSalesCount}
+                    {t('건')}
+                  </span>
+                </p>
+                <p>
+                  <span>{t('결제 전 매출:')}</span>{' '}
+                  {formatCurrency(prePaymentAmount)}{' '}
+                  <span>
+                    {prePaymentCount}
+                    {t('건')}
+                  </span>
+                </p>
+                <p>
+                  <span>{t('총 예상 매출:')}</span>
+                  {formatCurrency(estimatedTotalAmount)}{' '}
+                  <span>
+                    {estimatedTotalCount}
+                    {t('건')}
+                  </span>
+                </p>
+              </UIStyles.setting.FooterContents>
+              <Pagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+              />
+            </UIStyles.setting.Footer>
+          )}
         </S.DialogContainer>
       </ModalBackground>
 
@@ -227,5 +234,15 @@ export const SalesListDialog = ({
         />
       )}
     </>
+  );
+};
+
+export const SalesListDialogWithGuard = (props: SalesListDialogProps) => {
+  const { isOpen } = props;
+
+  return (
+    <SalesAccessGuard revalidateKey={isOpen}>
+      {isOpen && <SalesListDialog {...props} />}
+    </SalesAccessGuard>
   );
 };
