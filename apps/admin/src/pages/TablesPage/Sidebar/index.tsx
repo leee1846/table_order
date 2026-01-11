@@ -18,7 +18,7 @@ import type { ICurrentTable, ITableGroup } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
 import { TableGroupList } from './sidebar.styles';
 import { SystemControl } from '@repo/util/app';
-import { useGetShopThemeMenu } from '@repo/api/queries';
+import { useGetShopThemePage } from '@repo/api/queries';
 
 type MenuItem = {
   id: string;
@@ -51,9 +51,18 @@ export const Sidebar = ({
 
   const { shopCode } = useAuth();
 
-  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
+  const { data: shopThemePageResponse } = useGetShopThemePage(shopCode ?? '', {
     enabled: !!shopCode,
   });
+
+  const initLightImage = useMemo(() => {
+    const shopPageDetailList = shopThemePageResponse?.data?.shopPageDetailList;
+    if (!shopPageDetailList) return null;
+    const initLightItem = shopPageDetailList.find(
+      (item) => item.pageDetailType === 'INIT_LIGHT'
+    );
+    return initLightItem?.pageDetailImagePath || null;
+  }, [shopThemePageResponse?.data?.shopPageDetailList]);
 
   const [selectedMenu, setSelectedMenu] = useState<string>('');
   //주문 모달
@@ -82,12 +91,13 @@ export const Sidebar = ({
     await SystemControl.exitApp();
   };
 
+  console.log('shopThemeMenuResponse', shopThemePageResponse?.data);
   return (
     <SidebarContainer>
       <Logo>
-        {shopThemeMenuResponse?.data?.logoImagePath ? (
+        {initLightImage ? (
           <img
-            src={shopThemeMenuResponse.data.logoImagePath}
+            src={initLightImage}
             alt={t('매장 로고')}
             style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
           />

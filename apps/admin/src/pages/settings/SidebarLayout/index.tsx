@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { SettingsSidebar, useTranslation } from '@repo/feature/components';
 import { createSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
-import { useGetCategoryList, useGetShopThemeMenu } from '@repo/api/queries';
+import { useGetCategoryList, useGetShopThemePage } from '@repo/api/queries';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
@@ -18,9 +18,18 @@ export const SidebarLayout = () => {
     shopSeq: shopSeq ?? 0,
   });
 
-  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
+  const { data: shopThemePageResponse } = useGetShopThemePage(shopCode ?? '', {
     enabled: !!shopCode,
   });
+
+  const initLightImage = useMemo(() => {
+    const shopPageDetailList = shopThemePageResponse?.data?.shopPageDetailList;
+    if (!shopPageDetailList) return null;
+    const initLightItem = shopPageDetailList.find(
+      (item) => item.pageDetailType === 'INIT_LIGHT'
+    );
+    return initLightItem?.pageDetailImagePath || null;
+  }, [shopThemePageResponse?.data?.shopPageDetailList]);
 
   const categoryMenuSubMenus = useMemo(() => {
     if (!categoryListResponse?.data) {
@@ -53,11 +62,13 @@ export const SidebarLayout = () => {
       menus={SIDEBAR_MENUS}
       logoElement={
         <button type="button" onClick={onClickLogo} style={{ width: '100%' }}>
-          <img
-            src={shopThemeMenuResponse?.data?.logoImagePath}
-            alt={t('매장 로고')}
-            style={{ width: '100%' }}
-          />
+          {initLightImage && (
+            <img
+              src={initLightImage}
+              alt={t('매장 로고')}
+              style={{ width: '100%' }}
+            />
+          )}
         </button>
       }
       onClickHomeButton={onClickLogo}
