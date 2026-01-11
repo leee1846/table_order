@@ -91,7 +91,6 @@ export const Sidebar = ({
     await SystemControl.exitApp();
   };
 
-  console.log('shopThemeMenuResponse', shopThemePageResponse?.data);
   return (
     <SidebarContainer>
       <Logo>

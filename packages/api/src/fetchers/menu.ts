@@ -112,12 +112,12 @@ export const updateMenu = async (params: {
 
   const formData = new FormData();
 
-  // menu를 JSON(application/json) Blob으로 추가
+  // // menu를 JSON(application/json) Blob으로 추가
   const menuBlob = new Blob([JSON.stringify(params.menu)], {
     type: 'application/json',
   });
-
   formData.append('menu', menuBlob);
+
   // files가 있으면 추가 (파일명과 menu.menuImageList.imageName이 일치해야 함)
   if (params.files && params.files.length > 0) {
     params.files.forEach((file) => {

@@ -522,8 +522,6 @@ export const ImageSection = () => {
     [modalMode, setMainExistingImage, addExistingImages, toSampleMenuImageData]
   );
 
-  console.log('additionalImages', additionalImages);
-
   return (
     <S.Container>
       <input

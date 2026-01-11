@@ -38,6 +38,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
     [t]
   );
 
+  //TODO 졔님한테 가상결제 -> 결제,  결제버튼 미사용 -> 미사용 으로 쓰이고 있다고 전달하기
   const cardTerminalOptions = useMemo(
     () => [
       {
