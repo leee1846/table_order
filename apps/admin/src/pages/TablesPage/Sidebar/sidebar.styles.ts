@@ -4,8 +4,7 @@ export const TableGroupList = styled.div`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  flex: 1;
-  margin-top: 30px;
+  min-height: 200px;
 
   /* 스크롤바 스타일링 (선택사항) */
   &::-webkit-scrollbar {

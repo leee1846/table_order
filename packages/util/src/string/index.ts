@@ -69,12 +69,12 @@ export const padZero = (num: number): string => {
  * generateId() // "1234567890123"
  * ```
  */
-const generateIdCounterRef = { value: 0 };
+const generateIdCounterState = { value: 0 };
+
 export const generateId = (): string => {
-  // Avoid collisions when multiple IDs are created in the same millisecond.
-  generateIdCounterRef.value = (generateIdCounterRef.value + 1) % 100000;
+  generateIdCounterState.value = (generateIdCounterState.value + 1) % 100000;
   const rand = Math.random().toString(36).slice(2, 8);
-  return `${Date.now()}-${generateIdCounterRef.value}-${rand}`;
+  return `${Date.now()}-${generateIdCounterState.value}-${rand}`;
 };
 
 /**

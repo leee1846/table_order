@@ -108,14 +108,16 @@ export const updateShopThemeMenu = async ({
 };
 
 export interface IUpdateShopThemePageParams {
+  shopCode: string;
   body: IUpdateShopThemePageRequest;
-  initLightFile?: File | null;
-  initDarkFile?: File | null;
-  orderCompleteFile?: File | null;
-  initCommonFiles?: Array<File | null>;
+  initLightFile?: { file: File; fileName: string };
+  initDarkFile?: { file: File; fileName: string };
+  orderCompleteFile?: { file: File; fileName: string };
+  initCommonFiles?: Array<{ file: File; fileName: string }>;
 }
 
 export const updateShopThemePage = async ({
+  shopCode,
   body,
   initLightFile,
   initDarkFile,
@@ -131,26 +133,32 @@ export const updateShopThemePage = async ({
   );
 
   if (initLightFile) {
-    formData.append('initLightFile', initLightFile);
+    formData.append(
+      'initLightFile',
+      initLightFile.file,
+      initLightFile.fileName
+    );
   }
 
   if (initDarkFile) {
-    formData.append('initDarkFile', initDarkFile);
+    formData.append('initDarkFile', initDarkFile.file, initDarkFile.fileName);
   }
 
   if (orderCompleteFile) {
-    formData.append('orderCompleteFile', orderCompleteFile);
+    formData.append(
+      'orderCompleteFile',
+      orderCompleteFile.file,
+      orderCompleteFile.fileName
+    );
   }
 
-  initCommonFiles
-    ?.filter((file): file is File => Boolean(file))
-    .forEach((file) => {
-      formData.append('initCommonFiles', file);
-    });
+  initCommonFiles?.forEach(({ file, fileName }) => {
+    formData.append('initCommonFiles', file, fileName);
+  });
 
   const response = await axiosInstance<TUpdateShopThemePageResponse>({
     method: 'PUT',
-    url: ENDPOINTS.SHOP.THEME_PAGE_UPDATE,
+    url: ENDPOINTS.SHOP.THEME_PAGE_UPDATE(),
     data: formData,
     headers: { 'Content-Type': 'multipart/form-data' },
   });

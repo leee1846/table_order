@@ -10,7 +10,6 @@ import type {
   IShopPageDetail,
   TInitPageLayout,
   TOrderCompletePageLayout,
-  TPageDetailType,
 } from '@repo/api/types';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
@@ -18,7 +17,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Theme } from '@/pages/settings/StartScreenPage/Theme';
 import { Logo } from '@/pages/settings/StartScreenPage/Logo';
 import { ImageRegistration } from '@/pages/settings/StartScreenPage/ImageRegistration';
-import { OrderCompletionPage } from '@/pages/settings/StartScreenPage/OrderCompletionPage';
+import { generateId } from '@repo/util/string';
 import * as S from './startScreenPage.style';
 import * as UIStyles from '@repo/ui/styles';
 
@@ -50,14 +49,6 @@ export const StartScreenPage = () => {
     useState<TInitPageLayout>('LIGHT');
   const [orderCompletePageLayout, setOrderCompletePageLayout] =
     useState<TOrderCompletePageLayout>('DEFAULT');
-  const [orderCompleteMessage, setOrderCompleteMessage] = useState('');
-  const [orderCompleteImageUrl, setOrderCompleteImageUrl] = useState<
-    string | null
-  >(null);
-  const [orderCompleteImageSeq, setOrderCompleteImageSeq] = useState<
-    number | null
-  >(null);
-  const [orderCompleteFile, setOrderCompleteFile] = useState<File | null>(null);
   const [storeName, setStoreName] = useState('');
   const [logoImages, setLogoImages] = useState<{
     LIGHT: string | null;
@@ -67,10 +58,9 @@ export const StartScreenPage = () => {
     LIGHT: File | null;
     DARK: File | null;
   }>({ LIGHT: null, DARK: null });
-  const [initLightImageSeq, setInitLightImageSeq] = useState<number | null>(
-    null
-  );
   const [initDarkImageSeq, setInitDarkImageSeq] = useState<number | null>(null);
+  const [initLightDetail, setInitLightDetail] =
+    useState<IShopPageDetail | null>(null);
   const [initCommonItems, setInitCommonItems] = useState<InitCommonItem[]>([]);
   const [initCommonFiles, setInitCommonFiles] = useState<
     Record<number, File | null>
@@ -89,19 +79,14 @@ export const StartScreenPage = () => {
     blobUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     blobUrlsRef.current.clear();
     initCommonItems.forEach((item) => revokeUrl(item.imageUrl));
-    revokeUrl(orderCompleteImageUrl);
     setIsInitialized(false);
     setInitPageLayout('LIGHT');
     setOrderCompletePageLayout('DEFAULT');
-    setOrderCompleteMessage('');
-    setOrderCompleteImageUrl(null);
-    setOrderCompleteImageSeq(null);
-    setOrderCompleteFile(null);
     setStoreName('');
     setLogoImages({ LIGHT: null, DARK: null });
     setLogoFiles({ LIGHT: null, DARK: null });
-    setInitLightImageSeq(null);
     setInitDarkImageSeq(null);
+    setInitLightDetail(null);
     setInitCommonItems([]);
     setInitCommonFiles({});
   }, [shopCode]);
@@ -118,9 +103,6 @@ export const StartScreenPage = () => {
     const initDark = pageDetails.find(
       ({ pageDetailType }) => pageDetailType === 'INIT_DARK'
     );
-    const orderComplete = pageDetails.find(
-      ({ pageDetailType }) => pageDetailType === 'ORDER_COMPLETE'
-    );
 
     setInitPageLayout(themePage.initPageLayout);
     setOrderCompletePageLayout(themePage.orderCompletePageLayout);
@@ -129,12 +111,8 @@ export const StartScreenPage = () => {
       DARK: initDark?.pageDetailImagePath ?? null,
     });
     setLogoFiles({ LIGHT: null, DARK: null });
-    setInitLightImageSeq(initLight?.pageDetailImageSeq ?? null);
     setInitDarkImageSeq(initDark?.pageDetailImageSeq ?? null);
-    setOrderCompleteMessage(orderComplete?.pageDetailDescription ?? '');
-    setOrderCompleteImageUrl(orderComplete?.pageDetailImagePath ?? null);
-    setOrderCompleteImageSeq(orderComplete?.pageDetailImageSeq ?? null);
-    setOrderCompleteFile(null);
+    setInitLightDetail(initLight ?? null);
     setStoreName(
       initDark?.pageDetailDescription ?? initLight?.pageDetailDescription ?? ''
     );
@@ -155,9 +133,8 @@ export const StartScreenPage = () => {
   useEffect(() => {
     return () => {
       initCommonItems.forEach((item) => revokeUrl(item.imageUrl));
-      revokeUrl(orderCompleteImageUrl);
     };
-  }, [initCommonItems, orderCompleteImageUrl]);
+  }, [initCommonItems]);
 
   const currentLogoImage = useMemo(() => {
     if (initPageLayout === 'LIGHT') {
@@ -228,29 +205,6 @@ export const StartScreenPage = () => {
     handleChangeInitCommonImage(id, null);
   };
 
-  const handleChangeOrderCompleteImage = (file: File | null) => {
-    revokeUrl(orderCompleteImageUrl);
-    const nextUrl = file ? URL.createObjectURL(file) : null;
-    trackBlobUrl(nextUrl);
-    setOrderCompleteImageUrl(nextUrl);
-    setOrderCompleteFile(file);
-  };
-
-  const buildDetail = (
-    type: TPageDetailType,
-    pageDetailImageSeq: number | null,
-    imagePath: string | null,
-    description: string,
-    shopSeq: number
-  ): IShopPageDetail => ({
-    shopSeq,
-    pageSeq: 0,
-    pageDetailType: type,
-    pageDetailImageSeq: pageDetailImageSeq ?? 0,
-    pageDetailImagePath: imagePath,
-    pageDetailDescription: description,
-  });
-
   const handleSave = async () => {
     if (!shopCode) {
       toast(t('매장 정보가 없습니다. 다시 로그인 후 시도해주세요.'));
@@ -264,52 +218,112 @@ export const StartScreenPage = () => {
       return;
     }
 
+    const createDetail = ({
+      type,
+      description,
+      pageDetailImageSeq,
+      pageDetailImagePath,
+      pageDetailImageFileName,
+    }: {
+      type: IShopPageDetail['pageDetailType'];
+      description: string;
+      pageDetailImageSeq?: number | null;
+      pageDetailImagePath: string | null;
+      pageDetailImageFileName?: string;
+    }): IShopPageDetail => ({
+      shopSeq,
+      pageSeq: 0,
+      pageDetailType: type,
+      pageDetailImageSeq: pageDetailImageSeq ?? 0,
+      pageDetailImagePath,
+      pageDetailDescription: description,
+      pageDetailImageFileName,
+    });
+
+    let initLightFile: { file: File; fileName: string } | undefined;
+    const initCommonFilesToSend: Array<{ file: File; fileName: string }> = [];
+
+    const layoutDetails: IShopPageDetail[] = [];
+    if (initPageLayout === 'LIGHT') {
+      if (initLightDetail) {
+        layoutDetails.push(initLightDetail);
+      } else {
+        layoutDetails.push(
+          createDetail({
+            type: 'INIT_LIGHT',
+            pageDetailImageSeq: 0,
+            pageDetailImagePath: null,
+            pageDetailImageFileName: '',
+            description: '',
+          })
+        );
+      }
+
+      if (logoFiles.LIGHT) {
+        const imageId = generateId();
+        const fileName = `${imageId}.jpg`;
+        initLightFile = { file: logoFiles.LIGHT, fileName };
+      }
+    } else if (initPageLayout === 'DARK') {
+      layoutDetails.push(
+        createDetail({
+          type: 'INIT_DARK',
+          pageDetailImageSeq: initDarkImageSeq ?? 0,
+          pageDetailImagePath: null,
+          pageDetailImageFileName: '',
+          description: storeName,
+        })
+      );
+    }
+
+    const commonDetails = initCommonItems.flatMap((item) => {
+      const file = initCommonFiles[item.id];
+      if (file) {
+        const imageId = generateId();
+        const fileName = `${imageId}.jpg`;
+        initCommonFilesToSend.push({ file, fileName });
+
+        return [
+          createDetail({
+            type: 'INIT_COMMON',
+            pageDetailImageSeq: 0,
+            pageDetailImagePath: null,
+            pageDetailImageFileName: imageId,
+            description: item.description,
+          }),
+        ];
+      }
+
+      if (item.imageUrl) {
+        return [
+          createDetail({
+            type: 'INIT_COMMON',
+            pageDetailImageSeq: item.pageDetailImageSeq ?? 0,
+            pageDetailImagePath: item.imageUrl,
+            pageDetailImageFileName: '',
+            description: item.description,
+          }),
+        ];
+      }
+
+      return [];
+    });
+
     const shopPageDetailList: IShopPageDetail[] = [
-      buildDetail(
-        'INIT_LIGHT',
-        initLightImageSeq,
-        logoFiles.LIGHT ? null : logoImages.LIGHT,
-        storeName,
-        shopSeq
-      ),
-      buildDetail(
-        'INIT_DARK',
-        initDarkImageSeq,
-        logoFiles.DARK ? null : logoImages.DARK,
-        storeName,
-        shopSeq
-      ),
-      ...initCommonItems.map((item) =>
-        buildDetail(
-          'INIT_COMMON',
-          item.pageDetailImageSeq ?? null,
-          initCommonFiles[item.id] ? null : item.imageUrl,
-          item.description,
-          shopSeq
-        )
-      ),
-      buildDetail(
-        'ORDER_COMPLETE',
-        orderCompleteImageSeq,
-        orderCompleteFile ? null : orderCompleteImageUrl,
-        orderCompleteMessage,
-        shopSeq
-      ),
+      ...layoutDetails,
+      ...commonDetails,
     ];
 
     await updateShopThemePage({
+      shopCode,
       body: {
         shopSeq,
         initPageLayout,
         orderCompletePageLayout,
         shopPageDetailList,
       },
-      initLightFile: logoFiles.LIGHT,
-      initDarkFile: logoFiles.DARK,
-      orderCompleteFile,
-      initCommonFiles: initCommonItems.map(
-        (item) => initCommonFiles[item.id] ?? null
-      ),
+      initLightFile,
+      initCommonFiles: initCommonFilesToSend,
     });
 
     await queryClient.invalidateQueries({

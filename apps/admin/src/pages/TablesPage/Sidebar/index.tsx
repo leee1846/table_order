@@ -108,8 +108,8 @@ export const Sidebar = ({
         ))}
       </TableGroupList>
 
-      <MenuList style={{ flex: '0 0 auto' }}>
-        <MenuDivider style={{ margin: ' 0' }} />
+      <MenuList>
+        <MenuDivider />
         {menuItems.map((menu) => (
           <MenuItem
             key={menu.id}

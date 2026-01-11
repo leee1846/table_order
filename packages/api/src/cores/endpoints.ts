@@ -75,7 +75,7 @@ export const ENDPOINTS = {
     SETTING: '/shop/setting',
     THEME_MENU: (shopCode: string) => `/shop/theme/menu/${shopCode}`,
     THEME_PAGE: (shopCode: string) => `/shop/theme/page/${shopCode}`,
-    THEME_PAGE_UPDATE: '/shop/theme/page',
+    THEME_PAGE_UPDATE: () => `/shop/theme/page`,
   },
 
   TABLE: {

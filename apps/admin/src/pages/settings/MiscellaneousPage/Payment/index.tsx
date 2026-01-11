@@ -42,19 +42,20 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
     () => [
       {
         value: 'VIRTUAL' as TShopCardTerminalCode,
-        label: t('가상결제'),
+        label: t('결제'),
       },
-      {
-        value: 'EASY' as TShopCardTerminalCode,
-        label: t('이지카드'),
-      },
+      // {
+      //   value: 'EASY' as TShopCardTerminalCode,
+      //   label: t('이지카드'),
+      // },
       {
         value: 'NO_BUTTON' as TShopCardTerminalCode,
-        label: t('결제버튼 미사용'),
+        label: t('미사용'), //결제버튼 미사용
       },
     ],
     [t]
   );
+
   const [paymentType, setPaymentType] =
     useState<PaymentTypeOption>('postpayment');
   const [vanCode, setVanCode] = useState('');
