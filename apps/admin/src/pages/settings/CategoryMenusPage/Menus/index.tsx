@@ -11,9 +11,10 @@ interface MenusProps {
   menus: IMenu[] | undefined;
   hasCategory: boolean;
   onClickEditMenu: (menu: IMenu) => void;
+  isPosLinked: boolean;
 }
 
-export const Menus = ({ menus, onClickEditMenu }: MenusProps) => {
+export const Menus = ({ menus, onClickEditMenu, isPosLinked }: MenusProps) => {
   const queryClient = useQueryClient();
   const [localMenus, setLocalMenus] = useState<IMenu[]>([]);
   const { mutateAsync: updateMenuIndex } = usePutUpdateMenuIndex();
@@ -76,7 +77,13 @@ export const Menus = ({ menus, onClickEditMenu }: MenusProps) => {
       items={displayMenus ?? []}
       onReorder={handleReorder}
       getId={(menu) => menu.menuSeq}
-      renderItem={(menu) => <Menu menu={menu} onEditMenu={onClickEditMenu} />}
+      renderItem={(menu) => (
+        <Menu
+          menu={menu}
+          onEditMenu={onClickEditMenu}
+          isPosLinked={isPosLinked}
+        />
+      )}
     />
   );
 };

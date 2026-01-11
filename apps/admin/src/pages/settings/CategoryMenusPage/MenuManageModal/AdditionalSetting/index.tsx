@@ -16,9 +16,7 @@ export const AdditionalSetting = () => {
   return (
     <S.Container>
       <S.SectionContainer>
-        <p>
-          {t('포스연동 메뉴코드')}
-        </p>
+        <p>{t('포스연동 메뉴코드')}</p>
         <Input disabled value={formValues.mappedMenuCode ?? ''} />
       </S.SectionContainer>
       <S.SectionContainer>

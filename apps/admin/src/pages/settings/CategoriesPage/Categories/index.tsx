@@ -10,9 +10,14 @@ import { toast } from '@repo/feature/utils';
 interface CategoriesProps {
   categories: ICategory[] | undefined;
   shopSeq: number;
+  isPosLinked: boolean;
 }
 
-export const Categories = ({ categories, shopSeq }: CategoriesProps) => {
+export const Categories = ({
+  categories,
+  shopSeq,
+  isPosLinked,
+}: CategoriesProps) => {
   const queryClient = useQueryClient();
   const [localCategories, setLocalCategories] = useState<ICategory[]>([]); //드래그 중 UI 반영
   const { mutateAsync: updateCategoryIndex } = usePutUpdateCategoryIndex();
@@ -70,7 +75,11 @@ export const Categories = ({ categories, shopSeq }: CategoriesProps) => {
       onReorder={handleReorder}
       getId={(category) => category.categorySeq}
       renderItem={(category) => (
-        <Category category={category} shopSeq={shopSeq} />
+        <Category
+          category={category}
+          shopSeq={shopSeq}
+          isPosLinked={isPosLinked}
+        />
       )}
     />
   );

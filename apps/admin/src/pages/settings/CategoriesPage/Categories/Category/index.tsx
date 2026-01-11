@@ -23,9 +23,10 @@ import { useAuth } from '@/hooks/useAuth';
 interface Props {
   category: ICategory;
   shopSeq: number;
+  isPosLinked: boolean;
 }
 
-export const Category = ({ category, shopSeq }: Props) => {
+export const Category = ({ category, shopSeq, isPosLinked }: Props) => {
   const { t, i18n } = useAdminTranslation();
 
   const days = useMemo(() => getDays(t), [t]);
@@ -85,6 +86,10 @@ export const Category = ({ category, shopSeq }: Props) => {
   };
 
   const handleDeleteCategory = (categorySeq: number) => {
+    if (isPosLinked) {
+      return;
+    }
+
     openDualActionDialog({
       title: t('카테고리를 삭제할까요?'),
       primaryText: t('삭제'),
@@ -205,6 +210,11 @@ export const Category = ({ category, shopSeq }: Props) => {
             type="button"
             onClick={() => {
               handleDeleteCategory(category.categorySeq);
+            }}
+            disabled={isPosLinked}
+            style={{
+              opacity: isPosLinked ? 0.5 : 1,
+              cursor: isPosLinked ? 'not-allowed' : 'pointer',
             }}
           >
             <DeleteIcon width={14} height={14} color={theme.colors.grey[600]} />

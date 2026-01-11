@@ -8,6 +8,7 @@ import { useGetMenuList, queryKeys } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import type { IMenu, TGetCategoryListResponse } from '@repo/api/types';
 import { useAdminTranslation } from '@/config/i18n';
+import { useIsPosLinked } from '@/hooks/useIsPosLinked';
 
 export const CategoryMenusPage = () => {
   const { i18n } = useAdminTranslation();
@@ -40,7 +41,12 @@ export const CategoryMenusPage = () => {
     return category?.localeCategoryName?.[i18n.language?.toUpperCase()];
   }, [categoryListResponse, categorySeq, isValidCategorySeq, i18n.language]);
 
+  const isPosLinked = useIsPosLinked();
+
   const onClickAddMenu = () => {
+    if (isPosLinked) {
+      return;
+    }
     setSelectedMenu(null);
     setIsMenuManageModalOpen(true);
   };
@@ -62,11 +68,16 @@ export const CategoryMenusPage = () => {
 
   return (
     <S.Container>
-      <Header onClickAddMenu={onClickAddMenu} categoryName={categoryName} />
+      <Header
+        onClickAddMenu={onClickAddMenu}
+        categoryName={categoryName}
+        isPosLinked={isPosLinked}
+      />
       <Menus
         menus={menuListResponse?.data}
         hasCategory={isValidCategorySeq}
         onClickEditMenu={handleEditMenu}
+        isPosLinked={isPosLinked}
       />
 
       {isMenuManageModalOpen && isValidCategorySeq && (
@@ -74,6 +85,7 @@ export const CategoryMenusPage = () => {
           menu={selectedMenu ?? undefined}
           categorySeq={categorySeq}
           onClose={handleCloseMenuModal}
+          isPosLinked={isPosLinked}
         />
       )}
     </S.Container>

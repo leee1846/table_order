@@ -16,6 +16,7 @@ import {
 import type { ITableInfo } from '@repo/api/types';
 import { toast } from '@repo/feature/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsPosLinked } from '@/hooks/useIsPosLinked';
 
 export const TablesPage = () => {
   const queryClient = useQueryClient();
@@ -26,6 +27,7 @@ export const TablesPage = () => {
 
   // shopCode 가져오기
   const { shopCode } = useAuth();
+  const isPosLinked = useIsPosLinked();
 
   // 테이블 그룹 리스트 조회
   const { data: tableGroupListResponse, error } = useGetTableGroupList(
@@ -58,6 +60,9 @@ export const TablesPage = () => {
 
   // 테이블 추가 다이얼로그 열기
   const handleAddTable = () => {
+    if (isPosLinked) {
+      return;
+    }
     if (!selectedTableGroupId) {
       toast(t('테이블 그룹을 선택해주세요.'));
       return;
@@ -115,12 +120,13 @@ export const TablesPage = () => {
             <TableCard key={table.tableSeq} table={table} shopCode={shopCode} />
           ))}
         </S.GridContainer>
-        <BottomActions onAddTable={handleAddTable} />
+        <BottomActions onAddTable={handleAddTable} isPosLinked={isPosLinked} />
       </S.TableGridContainer>
       <Sidebar
         tableGroups={tableGroups}
         selectedTableGroupId={selectedTableGroupId}
         onTableGroupSelect={setSelectedTableGroupId}
+        isPosLinked={isPosLinked}
       />
 
       {isCreateTableDialogOpen && (

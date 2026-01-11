@@ -8,11 +8,15 @@ import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSet
 import { OptionGroupManageModal } from './OptionGroupManageModal';
 import { useMenuManageModal } from '../context/MenuManageModalContext';
 
+interface Props {
+  isPosLinked: boolean;
+}
+
 /**
  * 메뉴 옵션 그룹 추가/수정/삭제를 관리하는 설정 섹션.
  * 컨텍스트 기반으로 모달 상태를 제어하고, 옵션 그룹 리스트 변경을 반영한다.
  */
-export const OptionSetting = () => {
+export const OptionSetting = ({ isPosLinked }: Props) => {
   const { formValues, updateFormValues, mode } = useMenuManageModal();
   const [isOptionGroupManageModalOpen, setIsOptionGroupManageModalOpen] =
     useState(false);
@@ -31,6 +35,11 @@ export const OptionSetting = () => {
     optionGroupSeq: number | null = null,
     index: number | null = null
   ) => {
+    // 추가 모드일 때만 포스 연동 체크 (수정 모드는 허용)
+    const isAddMode = optionGroupSeq === null;
+    if (isAddMode && isPosLinked) {
+      return;
+    }
     setEditingOptionGroupSeq(optionGroupSeq ?? null);
     setEditingIndex(index ?? null);
     setIsOptionGroupManageModalOpen(true);
@@ -57,6 +66,10 @@ export const OptionSetting = () => {
   };
 
   const handleDeleteOptionGroup = (optionGroupSeq: number, index: number) => {
+    if (isPosLinked) {
+      return;
+    }
+
     if (optionGroupSeq && optionGroupSeq > 0) {
       updateOptionGroups((groups) =>
         groups.map((group) =>
@@ -140,9 +153,9 @@ export const OptionSetting = () => {
                       handleEditOptionGroup(optionGroup.optionGroupSeq, index)
                     }
                   />
-
                   <BasicButton
                     variant="Outline_Grey_XL"
+                    disabled={isPosLinked}
                     icon={
                       <DeleteIcon
                         width={22}
@@ -168,6 +181,7 @@ export const OptionSetting = () => {
           optionGroupSeq={editingOptionGroupSeq}
           optionGroupIndex={isMenuCreateMode ? editingIndex : null}
           onCreated={handleCreated}
+          isPosLinked={isPosLinked}
         />
       )}
     </S.Container>

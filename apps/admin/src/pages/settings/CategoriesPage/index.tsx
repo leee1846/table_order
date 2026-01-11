@@ -7,6 +7,7 @@ import * as S from '@/pages/settings/CategoriesPage/categoryPage.style';
 import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryManageModal';
 import { useGetCategoryList } from '@repo/api/queries';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsPosLinked } from '@/hooks/useIsPosLinked';
 
 export const CategoriesPage = () => {
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
@@ -16,7 +17,12 @@ export const CategoriesPage = () => {
     shopSeq: shopSeq!,
   });
 
+  const isPosLinked = useIsPosLinked();
+
   const openAddCategoryModal = () => {
+    if (isPosLinked) {
+      return;
+    }
     setIsAddCategoryModalOpen(true);
   };
 
@@ -26,8 +32,15 @@ export const CategoriesPage = () => {
 
   return (
     <S.Container>
-      <Header onClickAddCategory={openAddCategoryModal} />
-      <Categories categories={categoryListResponse?.data} shopSeq={shopSeq!} />
+      <Header
+        onClickAddCategory={openAddCategoryModal}
+        isPosLinked={isPosLinked}
+      />
+      <Categories
+        categories={categoryListResponse?.data}
+        shopSeq={shopSeq!}
+        isPosLinked={isPosLinked}
+      />
 
       <S.AddButton onClick={openAddCategoryModal}>
         <button type="button" onClick={openAddCategoryModal}>

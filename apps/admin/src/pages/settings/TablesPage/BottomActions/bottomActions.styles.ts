@@ -24,6 +24,12 @@ export const BottomActionsContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+
+    &:disabled {
+      color: ${colors.grey[500]};
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
   }
 
   button:first-of-type {

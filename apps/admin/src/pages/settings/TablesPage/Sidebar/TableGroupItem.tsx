@@ -17,6 +17,7 @@ export interface TableGroupItemProps {
   onEdit: () => void;
   onDelete: () => void;
   onEditingChange: (groupId: number | null) => void;
+  isPosLinked: boolean;
 }
 
 export const TableGroupItem = ({
@@ -29,6 +30,7 @@ export const TableGroupItem = ({
   onEdit,
   onDelete,
   onEditingChange,
+  isPosLinked,
 }: TableGroupItemProps) => {
   const editDeleteButtonsRef = useRef<HTMLDivElement>(null);
 
@@ -57,10 +59,26 @@ export const TableGroupItem = ({
           ref={editDeleteButtonsRef}
           buttonPosition={buttonPosition}
         >
-          <S.EditButton onClick={onEdit} type="button">
+          <S.EditButton
+            onClick={onEdit}
+            type="button"
+            disabled={isPosLinked}
+            style={{
+              opacity: isPosLinked ? 0.5 : 1,
+              cursor: isPosLinked ? 'not-allowed' : 'pointer',
+            }}
+          >
             <EditIcon width={32} height={32} color={colors.grey[700]} />
           </S.EditButton>
-          <S.DeleteButton onClick={onDelete} type="button">
+          <S.DeleteButton
+            onClick={onDelete}
+            type="button"
+            disabled={isPosLinked}
+            style={{
+              opacity: isPosLinked ? 0.5 : 1,
+              cursor: isPosLinked ? 'not-allowed' : 'pointer',
+            }}
+          >
             <DeleteIcon width={32} height={32} color={colors.grey[700]} />
           </S.DeleteButton>
         </S.EditDeleteButtons>

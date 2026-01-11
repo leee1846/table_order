@@ -20,12 +20,14 @@ interface SidebarProps {
   tableGroups: ITableGroup[];
   selectedTableGroupId: number | null;
   onTableGroupSelect: (groupId: number) => void;
+  isPosLinked: boolean;
 }
 
 export const Sidebar = ({
   tableGroups,
   selectedTableGroupId,
   onTableGroupSelect,
+  isPosLinked,
 }: SidebarProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -49,15 +51,20 @@ export const Sidebar = ({
   const editTableGroupDialogRef = useRef<HTMLDivElement>(null);
 
   const handleEdit = (group: ITableGroup) => {
+    if (isPosLinked) {
+      return;
+    }
     setEditingGroupId(group.tableGroupSeq);
     setIsEditTableGroupDialogOpen(true);
   };
 
   const handleDelete = async (group: ITableGroup) => {
+    if (isPosLinked) {
+      return;
+    }
+
     openDualActionDialog({
-      title: t(
-        '정말 그룹을 삭제할까요?'
-      ),
+      title: t('정말 그룹을 삭제할까요?'),
       content: `그룹 명 : ${group.tableGroupName}`,
       primaryText: t('확인'),
       secondaryText: t('취소'),
@@ -73,19 +80,11 @@ export const Sidebar = ({
               await queryClient.invalidateQueries({
                 queryKey: queryKeys.table.groupList(shopCode ?? ''),
               });
-              toast(
-                t(
-                  '테이블 그룹이 삭제되었습니다.'
-                )
-              );
+              toast(t('테이블 그룹이 삭제되었습니다.'));
               setEditingGroupId(null);
             },
             onError: () => {
-              toast(
-                t(
-                  '테이블 그룹 삭제에 실패했습니다.'
-                )
-              );
+              toast(t('테이블 그룹 삭제에 실패했습니다.'));
             },
           }
         );
@@ -232,6 +231,7 @@ export const Sidebar = ({
               onEdit={() => handleEdit(group)}
               onDelete={() => handleDelete(group)}
               onEditingChange={setEditingGroupId}
+              isPosLinked={isPosLinked}
             />
           ))}
         </S.TableGroupList>
@@ -241,7 +241,15 @@ export const Sidebar = ({
         <S.AddGroupButton
           type="button"
           onClick={() => {
+            if (isPosLinked) {
+              return;
+            }
             setIsAddTableGroupDialogOpen(true);
+          }}
+          disabled={isPosLinked}
+          style={{
+            opacity: isPosLinked ? 0.5 : 1,
+            cursor: isPosLinked ? 'not-allowed' : 'pointer',
           }}
         >
           <AddIcon width={20} height={20} color={colors.grey[200]} />

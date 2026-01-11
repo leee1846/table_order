@@ -24,9 +24,10 @@ import { css } from '@emotion/react';
 interface Props {
   menu: IMenu;
   onEditMenu: (menu: IMenu) => void;
+  isPosLinked: boolean;
 }
 
-export const Menu = ({ menu, onEditMenu }: Props) => {
+export const Menu = ({ menu, onEditMenu, isPosLinked }: Props) => {
   const { t, i18n } = useAdminTranslation();
   const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -55,6 +56,10 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
   const spiceLevel = menu.spiceLevel ?? 0;
 
   const handleDeleteMenu = () => {
+    if (isPosLinked) {
+      return;
+    }
+
     openDualActionDialog({
       title: t('메뉴 삭제'),
       content: `"${menu.menuName}" 메뉴를 삭제하시겠습니까?`,
@@ -163,6 +168,7 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
                 <BasicButton
                   variant="Outline_Grey_L"
                   onClick={handleDeleteMenu}
+                  disabled={isPosLinked}
                 >
                   {t('삭제')}
                 </BasicButton>
@@ -174,7 +180,6 @@ export const Menu = ({ menu, onEditMenu }: Props) => {
                 </BasicButton>
               </div>
             </S.TitleContainer>
-
             <S.Price>{formatCurrency(menu.menuPrice)}</S.Price>
             <S.Description>
               {menu.localeMenuDescription?.[i18n.language?.toUpperCase()] ?? ''}

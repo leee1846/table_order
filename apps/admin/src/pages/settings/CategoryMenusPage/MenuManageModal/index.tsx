@@ -22,9 +22,16 @@ interface Props {
   menu?: IMenu;
   categorySeq: number;
   onClose: () => void;
+  isPosLinked: boolean;
 }
 
-const MenuManageModalContent = () => {
+interface MenuManageModalContentProps {
+  isPosLinked: boolean;
+}
+
+const MenuManageModalContent = ({
+  isPosLinked,
+}: MenuManageModalContentProps) => {
   const { t } = useAdminTranslation();
   const languageOptions: { value: TShopLanguage; label: string }[] = useMemo(
     () => [
@@ -146,8 +153,8 @@ const MenuManageModalContent = () => {
         </S.LanguageSelector>
       )}
 
-      <BasicSetting />
-      <OptionSetting />
+      <BasicSetting isPosLinked={isPosLinked} />
+      <OptionSetting isPosLinked={isPosLinked} />
       <AdditionalSetting />
 
       <BasicButton
@@ -162,14 +169,19 @@ const MenuManageModalContent = () => {
   );
 };
 
-export const MenuManageModal = ({ menu, categorySeq, onClose }: Props) => {
+export const MenuManageModal = ({
+  menu,
+  categorySeq,
+  onClose,
+  isPosLinked,
+}: Props) => {
   return (
     <MenuManageModalProvider
       menu={menu}
       categorySeq={categorySeq}
       onClose={onClose}
     >
-      <MenuManageModalContent />
+      <MenuManageModalContent isPosLinked={isPosLinked} />
     </MenuManageModalProvider>
   );
 };

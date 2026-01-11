@@ -3,11 +3,20 @@ import { BasicButton } from '@repo/ui/components';
 import { AddIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from '@/pages/settings/CategoriesPage/Header/header.style';
+import { toast } from '@repo/feature/utils';
 
 interface Props {
   onClickAddCategory: () => void;
+  isPosLinked: boolean;
 }
-export const Header = ({ onClickAddCategory }: Props) => {
+export const Header = ({ onClickAddCategory, isPosLinked }: Props) => {
+  const handleClick = () => {
+    if (isPosLinked) {
+      return;
+    }
+    onClickAddCategory();
+  };
+
   return (
     <S.Header>
       <S.TextContainer>
@@ -17,8 +26,9 @@ export const Header = ({ onClickAddCategory }: Props) => {
       </S.TextContainer>
       <BasicButton
         variant="Solid_Navy_2XL"
-        onClick={onClickAddCategory}
+        onClick={handleClick}
         icon={<AddIcon color={theme.colors.white} />}
+        disabled={isPosLinked}
       >
         {t('카테고리 추가')}
       </BasicButton>

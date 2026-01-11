@@ -7,9 +7,10 @@ import { ROUTES } from '@/constants/routes';
 
 interface Props {
   onAddTable: () => void;
+  isPosLinked: boolean;
 }
 
-export const BottomActions = ({ onAddTable }: Props) => {
+export const BottomActions = ({ onAddTable, isPosLinked }: Props) => {
   const navigate = useNavigate();
 
   const handleExit = () => {
@@ -19,7 +20,7 @@ export const BottomActions = ({ onAddTable }: Props) => {
   return (
     <S.BottomActionsContainer>
       <button onClick={handleExit}>{t('나가기')}</button>
-      <button onClick={onAddTable}>
+      <button onClick={onAddTable} disabled={isPosLinked}>
         {t('테이블 추가')}
       </button>
     </S.BottomActionsContainer>

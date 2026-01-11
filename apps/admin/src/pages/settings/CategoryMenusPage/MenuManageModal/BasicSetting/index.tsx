@@ -17,7 +17,11 @@ import { MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 
 const SPICE_LEVELS = [1, 2, 3] as const;
 
-export const BasicSetting = () => {
+interface Props {
+  isPosLinked: boolean;
+}
+
+export const BasicSetting = ({ isPosLinked }: Props) => {
   const descriptionInputId = useId();
   const { formValues, updateFormValues } = useMenuForm();
   const currentSpiceLevel = formValues.spiceLevel ?? 0;
@@ -135,6 +139,7 @@ export const BasicSetting = () => {
                 formValues.menuPrice ? formatCurrency(formValues.menuPrice) : ''
               }
               onChange={handlePriceChange}
+              disabled={isPosLinked}
             />
           </S.VerticalLayout>
 

@@ -34,6 +34,7 @@ interface Props {
   optionGroupSeq?: number | null;
   optionGroupIndex?: number | null; // 메뉴 생성 모드에서 사용할 index
   onCreated?: () => void;
+  isPosLinked: boolean;
 }
 
 const DEFAULT_SETTINGS: OptionGroupSettings = {
@@ -59,6 +60,7 @@ export const OptionGroupManageModal = ({
   optionGroupSeq,
   optionGroupIndex,
   onCreated,
+  isPosLinked,
 }: Props) => {
   const { formValues, updateFormValues, mode } = useMenuManageModal();
   const tempOptionGroupSeqRef = useRef(0);
@@ -165,6 +167,9 @@ export const OptionGroupManageModal = ({
   }, [existingOptionGroup, isOptionGroupEditMode]);
 
   const handleAddOption = () => {
+    if (isPosLinked) {
+      return;
+    }
     setOptions([...options, createEmptyOption()]);
   };
 
@@ -237,12 +242,12 @@ export const OptionGroupManageModal = ({
   });
 
   const handleDeleteOption = (optionSeq: number | null, index: number) => {
+    if (isPosLinked) {
+      return;
+    }
+
     if (options.length <= 1) {
-      toast(
-        t(
-          '최소 1개 이상의 옵션이 필요합니다.'
-        )
-      );
+      toast(t('최소 1개 이상의 옵션이 필요합니다.'));
       return;
     }
 
@@ -259,11 +264,7 @@ export const OptionGroupManageModal = ({
       setOptions(updatedList);
     }
 
-    toast(
-      t(
-        '옵션이 삭제되었습니다.'
-      )
-    );
+    toast(t('옵션이 삭제되었습니다.'));
   };
 
   const handleOptionChange = (
@@ -305,20 +306,12 @@ export const OptionGroupManageModal = ({
 
   const validateForm = (): boolean => {
     if (!optionGroupName.trim()) {
-      toast(
-        t(
-          '옵션 그룹명을 입력해주세요.'
-        )
-      );
+      toast(t('옵션 그룹명을 입력해주세요.'));
       return false;
     }
 
     if (options.length === 0) {
-      toast(
-        t(
-          '최소 1개 이상의 옵션을 추가해주세요.'
-        )
-      );
+      toast(t('최소 1개 이상의 옵션을 추가해주세요.'));
       return false;
     }
 
@@ -493,6 +486,10 @@ export const OptionGroupManageModal = ({
     : t('옵션 그룹 추가');
 
   const handlePriceChange = (index: number, value: string) => {
+    if (isPosLinked) {
+      return;
+    }
+
     const numericValue = value.replace(/,/g, '');
     const parsedValue = parseInt(numericValue, 10);
 
@@ -520,9 +517,7 @@ export const OptionGroupManageModal = ({
               <span>*</span>
             </p>
             <Input
-              placeholder={t(
-                '옵션 그룹명을 입력해주세요.'
-              )}
+              placeholder={t('옵션 그룹명을 입력해주세요.')}
               customStyle={S.inputCss}
               value={optionGroupName}
               onChange={handleOptionGroupNameChange}
@@ -565,9 +560,7 @@ export const OptionGroupManageModal = ({
                         <span>{t('품절')}</span>
                       </CheckButton>
                       <Input
-                        placeholder={t(
-                          '옵션 이름을 입력해주세요.'
-                        )}
+                        placeholder={t('옵션 이름을 입력해주세요.')}
                         customStyle={S.inputCss}
                         value={option.optionName}
                         onChange={(value) =>
@@ -576,12 +569,11 @@ export const OptionGroupManageModal = ({
                       />
 
                       <Input
-                        placeholder={t(
-                          '옵션 가격을 입력해주세요.'
-                        )}
+                        placeholder={t('옵션 가격을 입력해주세요.')}
                         customStyle={S.inputCss}
                         value={formatCurrency(option.optionPrice)}
                         onChange={(value) => handlePriceChange(index, value)}
+                        disabled={isPosLinked}
                       />
 
                       <Input
@@ -602,13 +594,22 @@ export const OptionGroupManageModal = ({
                         }
                         customStyle={S.deleteButtonCss}
                         onClick={() => handleDeleteOption(optionSeq, index)}
+                        disabled={isPosLinked}
                       />
                     </li>
                   );
                 })}
               </S.OptionList>
             )}
-            <S.OptionAddButton type="button" onClick={handleAddOption}>
+            <S.OptionAddButton
+              type="button"
+              onClick={handleAddOption}
+              disabled={isPosLinked}
+              style={{
+                opacity: isPosLinked ? 0.5 : 1,
+                cursor: isPosLinked ? 'not-allowed' : 'pointer',
+              }}
+            >
               <AddCircleIcon
                 width={16}
                 height={16}
@@ -663,9 +664,7 @@ export const OptionGroupManageModal = ({
                 }
                 customStyle={S.checkButtonCss}
               >
-                <span>
-                  {t('옵션 수량 선택')}
-                </span>
+                <span>{t('옵션 수량 선택')}</span>
               </CheckButton>
 
               <CheckButton
@@ -675,11 +674,7 @@ export const OptionGroupManageModal = ({
                 }
                 customStyle={S.checkButtonCss}
               >
-                <span>
-                  {t(
-                    '중복체크 허용 (선택 옵션)'
-                  )}
-                </span>
+                <span>{t('중복체크 허용 (선택 옵션)')}</span>
               </CheckButton>
             </S.AdditionalsContainer>
           </S.TitleContainer>
@@ -688,18 +683,14 @@ export const OptionGroupManageModal = ({
             <p>{t('포스 코드 연동')}</p>
             <S.CodeContainer>
               <Input
-                placeholder={t(
-                  '옵션 그룹 코드'
-                )}
+                placeholder={t('옵션 그룹 코드')}
                 disabled
                 customStyle={S.inputCss}
                 value={existingOptionGroup?.mappedOptionGroupCode ?? ''}
               />
 
               <Input
-                placeholder={t(
-                  '옵션 분류 코드'
-                )}
+                placeholder={t('옵션 분류 코드')}
                 disabled
                 customStyle={S.inputCss}
                 value={existingOptionGroup?.mappedHeadOptionGroupCode ?? ''}
