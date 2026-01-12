@@ -13,7 +13,7 @@ export const SidebarContainer = styled.aside`
   overflow: auto;
 `;
 
-export const Logo = styled.div`
+export const Logo = styled.button`
   color: ${colors.white};
   padding: 40px 12px 20px;
   display: flex;

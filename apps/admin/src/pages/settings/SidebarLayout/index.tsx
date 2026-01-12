@@ -61,7 +61,7 @@ export const SidebarLayout = () => {
       useTranslation={useTranslation}
       menus={SIDEBAR_MENUS}
       logoElement={
-        <button type="button" onClick={onClickLogo} style={{ width: '100%' }}>
+        <button type="button" onClick={onClickLogo}>
           {initLightImage && (
             <img
               src={initLightImage}

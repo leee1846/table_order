@@ -265,6 +265,9 @@ export const StartScreenPage = () => {
         initLightFile = { file: logoFiles.LIGHT, fileName };
       }
     } else if (initPageLayout === 'DARK') {
+      if (initLightDetail) {
+        layoutDetails.push(initLightDetail);
+      }
       layoutDetails.push(
         createDetail({
           type: 'INIT_DARK',
@@ -307,12 +310,20 @@ export const StartScreenPage = () => {
       }
 
       return [];
-    });
+    }).sort(
+      (a, b) =>
+        (a.pageDetailImageSeq ?? 0) - (b.pageDetailImageSeq ?? 0)
+    );
 
-    const shopPageDetailList: IShopPageDetail[] = [
-      ...layoutDetails,
-      ...commonDetails,
-    ];
+    const shopPageDetailList: IShopPageDetail[] =
+      initPageLayout === 'IMAGE'
+        ? [
+            ...(themePage?.shopPageDetailList ?? []).filter(
+              ({ pageDetailType }) => pageDetailType !== 'INIT_COMMON'
+            ),
+            ...commonDetails,
+          ]
+        : [...layoutDetails, ...commonDetails];
 
     await updateShopThemePage({
       shopCode,

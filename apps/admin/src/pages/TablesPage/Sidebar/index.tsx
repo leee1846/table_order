@@ -94,15 +94,11 @@ export const Sidebar = ({
   return (
     <SidebarContainer>
       <Logo>
-        {initLightImage ? (
-          <img
-            src={initLightImage}
-            alt={t('매장 로고')}
-            style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
-          />
-        ) : (
-          t('캡스 스마트오더')
-        )}
+        <img
+          src={initLightImage ?? ''}
+          alt={t('매장 로고')}
+          style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+        />
       </Logo>
 
       <TableGroupList>

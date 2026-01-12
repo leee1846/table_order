@@ -10,7 +10,6 @@ export const Layout = styled.div`
 export const Section = styled.section`
   display: flex;
   flex-direction: column;
-  gap: 30px;
   background-color: ${theme.colors.grey[800]};
   width: 100%;
   min-width: 13.125rem;
