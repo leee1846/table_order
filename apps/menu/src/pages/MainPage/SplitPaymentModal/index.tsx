@@ -1,6 +1,6 @@
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/SplitPaymentModal/splitPaymentModal.style';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { MenuSelector } from '@/pages/MainPage/SplitPaymentModal/MenuSelector';
 import { PriceSelector } from '@/pages/MainPage/SplitPaymentModal/PriceSelector';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -11,19 +11,49 @@ import type { ICartMenuWithId, ICartMenu } from '@/types/cart';
 import { formatCurrency } from '@repo/util/string';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
-import { toast } from '@repo/feature/utils';
+import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useModalStore } from '@/stores/useModalStore';
 import { CardPaymentProgressModal } from '@/pages/MainPage/CardPaymentProgressModal';
+import { SplitPaymentInstallmentModal } from './SplitPaymentInstallmentModal';
+import {
+  Payment,
+  type IPaymentResponse,
+  type IPaymentEventData,
+} from '@repo/util/app';
+import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
+import type { IOrder } from '@repo/api/types';
+import { useShopData } from '@/hooks/useShopData';
+import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes';
+import {
+  INSTALLMENT_MINIMUM_AMOUNT,
+  INSTALLMENT_LUMP_SUM,
+  formatInstallmentMonthsToString,
+} from '@/feature/Installment';
 
 interface Props {
   onClose: () => void;
 }
+
+const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
+const PAYMENT_EVENT_NAME = 'paymentEvent';
+const HTTP_STATUS_BAD_REQUEST = 400;
+const TOAST_DURATION = 1500;
+const TOAST_POSITION = 'center-center' as const;
+const INITIAL_PERSON_COUNT = 2;
 
 export interface Person {
   id: string;
   isSelected: boolean;
   customPrice?: number; // 사용자가 직접 설정한 금액
   paidAmount?: number; // 결제 완료된 금액 (합계 계산용)
+}
+
+interface PaymentResult {
+  orderGroupUuid: string;
+  orderUuid: string;
 }
 
 const calculateSingleMenuPrice = (menu: ICartMenu): number => {
@@ -84,35 +114,96 @@ const calculatePersonPrice = (
   return personIndex === 0 ? remainderAmount : baseAmount;
 };
 
+/**
+ * 장바구니 데이터를 주문 데이터 형식으로 변환
+ */
+const convertCartMenusToOrders = (cartMenus: ICartMenu[]): IOrder[] => {
+  return cartMenus.map((menu: ICartMenu) => ({
+    menuSeq: menu.menuSeq,
+    menuName: menu.menuName,
+    menuPrice: menu.menuPrice,
+    quantity: menu.quantity,
+    selectedOptions: menu.selectedOptions.map((selectedOption) => ({
+      optionSeq: selectedOption.optionSeq,
+      optionGroupSeq: selectedOption.optionGroupSeq,
+      optionName: selectedOption.optionName,
+      optionPrice: selectedOption.optionPrice,
+      quantity: selectedOption.quantity,
+    })),
+  }));
+};
+
+/**
+ * 주문 옵션 수량을 주문 수량에 맞게 조정
+ * (메뉴 수량 × 옵션 수량)
+ */
+const adjustOrderOptionQuantities = (orders: IOrder[]): IOrder[] => {
+  return orders.map((order) => ({
+    ...order,
+    selectedOptions: order.selectedOptions.map((option) => ({
+      ...option,
+      quantity: order.quantity * option.quantity,
+    })),
+  }));
+};
+
+const isUserCancelError = (error: unknown): boolean => {
+  return (
+    (error as Error).message === 'USER_CANCEL' &&
+    (error as unknown as { code: string }).code === 'CANCELED'
+  );
+};
+
 export const SplitPaymentModal = ({ onClose }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
+  const navigate = useNavigate();
 
   const { data: deviceData } = useDeviceData();
   const { data: cartData, clearCart } = useCartStore();
-  const { data: modalData, setModalData, closeAllModals } = useModalStore();
+  const { data: shopDetailData } = useShopDetailData();
+  const { data: modalData, setModalData } = useModalStore();
+  const { shopData } = useShopData();
+  const { data: customerCountData } = useCustomerCountStore();
+  const { mutateAsync: createTableOrder } = usePostTableOrder({
+    ignoreGlobalErrors: [HTTP_STATUS_BAD_REQUEST],
+  });
+  const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
 
   // 결제 방식 상태
   const [isPaymentByMenu, setIsPaymentByMenu] = useState(true);
 
   // 메뉴별 나누기 상태
-  const [menuSplit_selectedMenus, setMenuSplit_selectedMenus] = useState<
-    ICartMenuWithId[]
-  >([]);
-  const [menuSplit_paidMenuIds, setMenuSplit_paidMenuIds] = useState<
-    Set<string>
-  >(new Set());
+  const [selectedMenus, setSelectedMenus] = useState<ICartMenuWithId[]>([]);
+  const [paidMenuIds, setPaidMenuIds] = useState<Set<string>>(new Set());
+
+  // 주문 정보 (첫 결제 시 저장, 이후 재사용)
+  const [orderGroupUuid, setOrderGroupUuid] = useState<string | null>(null);
+  const [orderUuid, setOrderUuid] = useState<string | null>(null);
+
+  // Payment 진행 상태
+  const [paymentProgressMessage, setPaymentProgressMessage] =
+    useState<string>('');
+  const paymentListenerRef = useRef<{ remove: () => Promise<void> } | null>(
+    null
+  );
+
+  // 할부 선택
+  const [selectedInstallmentMonths, setSelectedInstallmentMonths] =
+    useState<number>(INSTALLMENT_LUMP_SUM);
+
+  // 할부 선택 모달 상태
+  const [isInstallmentModalOpen, setIsInstallmentModalOpen] =
+    useState<boolean>(false);
 
   // 인원수로 나누기 상태
-  const [personSplit_persons, setPersonSplit_persons] = useState<Person[]>(() =>
-    Array.from({ length: 2 }, (_, index) => ({
+  const [persons, setPersons] = useState<Person[]>(() =>
+    Array.from({ length: INITIAL_PERSON_COUNT }, (_, index) => ({
       id: `person-${index}`,
       isSelected: false,
     }))
   );
-  const [personSplit_paidPersonIds, setPersonSplit_paidPersonIds] = useState<
-    Set<string>
-  >(new Set());
+  const [paidPersonIds, setPaidPersonIds] = useState<Set<string>>(new Set());
 
   // 전체 메뉴 목록 (quantity만큼 개별 항목으로 펼침)
   const allMenus = useMemo(
@@ -134,85 +225,251 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   );
 
   // ----------------------------------------------------------------------------
-  // "메뉴별 나누기"
+  // "메뉴별 나누기" 계산값
   // ----------------------------------------------------------------------------
 
-  const menuSplit_remainingMenus = useMemo(
-    () => allMenus.filter((menu) => !menuSplit_paidMenuIds.has(menu.id)),
-    [allMenus, menuSplit_paidMenuIds]
+  const remainingMenus = useMemo(
+    () => allMenus.filter((menu) => !paidMenuIds.has(menu.id)),
+    [allMenus, paidMenuIds]
   );
 
-  const menuSplit_selectedPrice = useMemo(
-    () => calculateTotalMenusPrice(menuSplit_selectedMenus),
-    [menuSplit_selectedMenus]
+  const selectedMenuPrice = useMemo(
+    () => calculateTotalMenusPrice(selectedMenus),
+    [selectedMenus]
   );
 
-  const menuSplit_remainingPrice = useMemo(
-    () => calculateTotalMenusPrice(menuSplit_remainingMenus),
-    [menuSplit_remainingMenus]
+  const remainingMenuPrice = useMemo(
+    () => calculateTotalMenusPrice(remainingMenus),
+    [remainingMenus]
   );
 
   // ----------------------------------------------------------------------------
-  // "인원수로 나누기"
+  // "인원수로 나누기" 계산값
   // ----------------------------------------------------------------------------
 
-  const personSplit_remainingPersons = useMemo(
-    () =>
-      personSplit_persons.filter(
-        (person) => !personSplit_paidPersonIds.has(person.id)
-      ),
-    [personSplit_persons, personSplit_paidPersonIds]
+  const remainingPersons = useMemo(
+    () => persons.filter((person) => !paidPersonIds.has(person.id)),
+    [persons, paidPersonIds]
   );
 
-  const personSplit_paidAmount = useMemo(() => {
-    return personSplit_persons
-      .filter((person) => personSplit_paidPersonIds.has(person.id))
+  const paidPersonAmount = useMemo(() => {
+    return persons
+      .filter((person) => paidPersonIds.has(person.id))
       .reduce((sum, person) => sum + (person.paidAmount ?? 0), 0);
-  }, [personSplit_persons, personSplit_paidPersonIds]);
+  }, [persons, paidPersonIds]);
 
-  const personSplit_remainingTotal = useMemo(
-    () => totalPrice - personSplit_paidAmount,
-    [totalPrice, personSplit_paidAmount]
+  const remainingPersonTotal = useMemo(
+    () => totalPrice - paidPersonAmount,
+    [totalPrice, paidPersonAmount]
   );
 
-  const personSplit_getPersonPrice = useCallback(
+  const getPersonPrice = useCallback(
     (person: Person, allPersons: Person[]): number => {
-      return calculatePersonPrice(
-        person,
-        allPersons,
-        personSplit_remainingTotal
-      );
+      return calculatePersonPrice(person, allPersons, remainingPersonTotal);
     },
-    [personSplit_remainingTotal]
+    [remainingPersonTotal]
   );
 
-  const personSplit_selectedPrice = useMemo(() => {
-    return personSplit_remainingPersons
+  const selectedPersonPrice = useMemo(() => {
+    return remainingPersons
       .filter((person) => person.isSelected)
       .reduce((sum, person) => {
-        return (
-          sum + personSplit_getPersonPrice(person, personSplit_remainingPersons)
-        );
+        return sum + getPersonPrice(person, remainingPersons);
       }, 0);
-  }, [personSplit_remainingPersons, personSplit_getPersonPrice]);
+  }, [remainingPersons, getPersonPrice]);
 
   // ----------------------------------------------------------------------------
-  // UI에서 사용
+  // UI에서 사용하는 계산값
   // ----------------------------------------------------------------------------
 
   const currentSelectedPrice = isPaymentByMenu
-    ? menuSplit_selectedPrice
-    : personSplit_selectedPrice;
+    ? selectedMenuPrice
+    : selectedPersonPrice;
 
   const currentRemainingPrice = isPaymentByMenu
-    ? menuSplit_remainingPrice
-    : personSplit_remainingTotal;
+    ? remainingMenuPrice
+    : remainingPersonTotal;
 
   // ----------------------------------------------------------------------------
-  // Event Handlers
+  // Payment 이벤트 리스너 설정
   // ----------------------------------------------------------------------------
 
-  const handlePaymentMethodChange = (changeToMenuMode: boolean) => {
+  useEffect(() => {
+    if (!modalData.isCardPaymentProgressModalOpened) {
+      return;
+    }
+
+    let paymentListener: { remove: () => Promise<void> } | null = null;
+
+    const setupPaymentListener = async () => {
+      paymentListener = await Payment.addListener(
+        PAYMENT_EVENT_NAME,
+        (eventData: IPaymentEventData) => {
+          setPaymentProgressMessage(eventData.EVENT_MSG);
+        }
+      );
+      paymentListenerRef.current = paymentListener;
+    };
+
+    setupPaymentListener();
+
+    return () => {
+      Payment.stop();
+      if (paymentListener) {
+        paymentListener.remove();
+      }
+    };
+  }, [modalData.isCardPaymentProgressModalOpened]);
+
+  // ----------------------------------------------------------------------------
+  // 주문 생성 및 결제 처리 함수
+  // ----------------------------------------------------------------------------
+
+  const createOrder = async (): Promise<PaymentResult> => {
+    const orders = convertCartMenusToOrders(cartData.menus);
+    const adjustedOrders = adjustOrderOptionQuantities(orders);
+
+    const orderResponse = await createTableOrder({
+      shopCode: shopData?.shopCode ?? '',
+      tableNumber: deviceData?.tableNumber ?? '',
+      orderType: ORDER_TYPE_PREPAYMENT,
+      customerCount: customerCountData?.adultCount ?? 1,
+      kidsCustomerCount: customerCountData?.childCount ?? 0,
+      totalAmount: totalPrice.toString(),
+      orders: adjustedOrders,
+    }).catch((error) => {
+      // 테이블이 삭제된 경우
+      if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
+        navigate(ROUTES.TABLES.generate());
+      }
+    });
+
+    const orderGroupUuid = orderResponse?.data?.orderGroupUuid;
+    const orderUuid = orderResponse?.data?.orderInfoList[0]?.orderUuid;
+
+    if (!orderGroupUuid || !orderUuid) {
+      openConfirmDialog({
+        title: t('오류'),
+        content: t('주문 생성에 실패했습니다.'),
+        confirmText: t('확인'),
+      });
+      throw new Error('주문 생성에 실패했습니다.');
+    }
+
+    return { orderGroupUuid, orderUuid };
+  };
+
+  const processPayment = async (
+    orderGroupUuid: string,
+    orderUuid: string,
+    paymentAmount: number
+  ): Promise<IPaymentResponse> => {
+    setModalData('isCardPaymentProgressModalOpened', true);
+
+    // 5만원 미만이면 항상 일시불('00')으로 설정
+    const installmentMonths =
+      paymentAmount < INSTALLMENT_MINIMUM_AMOUNT
+        ? INSTALLMENT_LUMP_SUM
+        : selectedInstallmentMonths;
+
+    const paymentResult: IPaymentResponse = await Payment.approve({
+      amount: paymentAmount,
+      installment: formatInstallmentMonthsToString(installmentMonths),
+    });
+
+    await postPaymentApproval({
+      params: {
+        paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
+        orderGroupUuid,
+        orderUuid,
+      },
+      data: paymentResult,
+    });
+
+    return paymentResult;
+  };
+
+  const ensureOrderCreated = async (): Promise<PaymentResult> => {
+    if (orderGroupUuid && orderUuid) {
+      return { orderGroupUuid, orderUuid };
+    }
+
+    const result = await createOrder();
+    setOrderGroupUuid(result.orderGroupUuid);
+    setOrderUuid(result.orderUuid);
+    return result;
+  };
+
+  const executePayment = async (
+    paymentAmount: number,
+    onSuccess: () => void
+  ): Promise<void> => {
+    try {
+      const { orderGroupUuid, orderUuid } = await ensureOrderCreated();
+      await processPayment(orderGroupUuid, orderUuid, paymentAmount);
+      onSuccess();
+    } catch (error) {
+      if (isUserCancelError(error)) {
+        setModalData('isCardPaymentProgressModalOpened', false);
+        return;
+      }
+      handlePaymentError(error);
+    }
+  };
+
+  const handlePaymentError = (error: unknown): void => {
+    setModalData('isCardPaymentProgressModalOpened', false);
+
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : t('결제 처리 중 오류가 발생했습니다.');
+
+    openConfirmDialog({
+      title: t('오류'),
+      content: errorMessage,
+      confirmText: t('확인'),
+    });
+  };
+
+  const handlePaymentSuccess = (isAllPaid: boolean): void => {
+    if (!isAllPaid) {
+      // 아직 결제할 메뉴가 남아있으면 모달만 닫기
+      setModalData('isCardPaymentProgressModalOpened', false);
+      // 결제 성공 toast 표시 (부분 결제든 전체 결제든 항상 표시)
+      toast(t('결제를 성공했습니다.'), {
+        duration: TOAST_DURATION,
+        position: TOAST_POSITION,
+      });
+      return;
+    }
+
+    // 모든 결제 완료 시 (CardPaymentInstallmentModal과 동일)
+    const orderData = convertCartMenusToOrders(cartData.menus);
+
+    // 결제 성공 toast 표시
+    toast(t('결제를 성공했습니다.'), {
+      duration: TOAST_DURATION,
+      position: TOAST_POSITION,
+    });
+
+    setModalData('orderCompleteData', orderData);
+    setModalData('orderCompleteTotalPrice', totalPrice);
+    setModalData('isOrderCompleteModalOpened', true);
+
+    // 모든 모달 닫기
+    setModalData('isCardPaymentProgressModalOpened', false);
+    setModalData('isPaymentsModalOpened', false);
+    setModalData('isCartListOpened', false);
+
+    // 장바구니 비우기
+    clearCart();
+
+    // 현재 모달 닫기
+    onClose();
+  };
+
+  const handlePaymentMethodChange = (changeToMenuMode: boolean): void => {
     if (isPaymentByMenu === changeToMenuMode) {
       return;
     }
@@ -220,86 +477,59 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     setIsPaymentByMenu(changeToMenuMode);
 
     // 선택 상태 초기화
-    setMenuSplit_selectedMenus([]);
-    setPersonSplit_persons((prev) =>
+    setSelectedMenus([]);
+    setPersons((prev) =>
       prev.map((person) => ({ ...person, isSelected: false }))
     );
   };
 
-  const handlePaymentComplete = (isAllPaid: boolean) => {
-    if (isAllPaid) {
-      clearCart();
-      closeAllModals();
-      toast(t('결제가 완료되었습니다.'), {
-        position: 'center-center',
-        duration: 1500,
-      });
-      // TODO: 주문내역 api를 호출 해야하는가?? 확인 필요.
-    }
-  };
-
-  const handleMenuSplitPayment = () => {
-    if (menuSplit_selectedMenus.length === 0) {
+  const handleMenuPayment = async (): Promise<void> => {
+    if (selectedMenus.length === 0) {
       toast(t('선택된 메뉴가 없습니다.'), {
-        position: 'center-center',
-        duration: 1500,
+        position: TOAST_POSITION,
+        duration: TOAST_DURATION,
       });
       return;
     }
 
-    const selectedIds = menuSplit_selectedMenus.map((menu) => menu.id);
-    const isAllPaid =
-      menuSplit_remainingMenus.length === menuSplit_selectedMenus.length;
+    const selectedMenuIds = selectedMenus.map((menu) => menu.id);
+    const isAllPaid = remainingMenus.length === selectedMenus.length;
+    const paymentAmount = selectedMenuPrice;
 
-    // 카드 결제 진행 모달 열기
-    setModalData('isCardPaymentProgressModalOpened', true);
-
-    // TODO: 카드 결제 API 호출 (추후 구현)
-    setTimeout(() => {
-      setModalData('isCardPaymentProgressModalOpened', false);
-
-      // 결제 완료 처리
-      setMenuSplit_paidMenuIds((prev) => new Set([...prev, ...selectedIds]));
-      setMenuSplit_selectedMenus([]);
-
-      handlePaymentComplete(isAllPaid);
-    }, 2000);
+    await executePayment(paymentAmount, () => {
+      setPaidMenuIds((prev) => new Set([...prev, ...selectedMenuIds]));
+      setSelectedMenus([]);
+      handlePaymentSuccess(isAllPaid);
+    });
   };
 
-  const handlePersonSplitPayment = () => {
-    const selectedPersons = personSplit_remainingPersons.filter(
+  const handlePersonPayment = async (): Promise<void> => {
+    const selectedPersons = remainingPersons.filter(
       (person) => person.isSelected
     );
 
     if (selectedPersons.length === 0) {
       toast(t('선택된 인원이 없습니다.'), {
-        position: 'center-center',
-        duration: 1500,
+        position: TOAST_POSITION,
+        duration: TOAST_DURATION,
       });
       return;
     }
 
     const selectedPersonsData = selectedPersons.map((person) => ({
       id: person.id,
-      price: personSplit_getPersonPrice(person, personSplit_remainingPersons),
+      price: getPersonPrice(person, remainingPersons),
     }));
-    const isAllPaid =
-      personSplit_remainingPersons.length === selectedPersons.length;
+    const isAllPaid = remainingPersons.length === selectedPersons.length;
+    const paymentAmount = selectedPersonPrice;
 
-    // 카드 결제 진행 모달 열기
-    setModalData('isCardPaymentProgressModalOpened', true);
-
-    // TODO: 카드 결제 API 호출 (추후 구현)
-    setTimeout(() => {
-      setModalData('isCardPaymentProgressModalOpened', false);
-
-      // 결제 완료 처리
-      setPersonSplit_paidPersonIds(
+    await executePayment(paymentAmount, () => {
+      setPaidPersonIds(
         (prev) => new Set([...prev, ...selectedPersonsData.map((p) => p.id)])
       );
 
       // 결제 금액을 paidAmount에 저장 (이후 합계 계산용)
-      setPersonSplit_persons((prev) =>
+      setPersons((prev) =>
         prev.map((person) => {
           const paidPerson = selectedPersonsData.find(
             (p) => p.id === person.id
@@ -315,20 +545,45 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         })
       );
 
-      handlePaymentComplete(isAllPaid);
-    }, 2000);
+      handlePaymentSuccess(isAllPaid);
+    });
   };
 
-  const handlePayment = () => {
+  const handlePayment = (): void => {
     if (isPaymentByMenu) {
-      handleMenuSplitPayment();
+      // 5만원 이상이면 할부 선택 모달 열기
+      if (selectedMenuPrice >= INSTALLMENT_MINIMUM_AMOUNT) {
+        setIsInstallmentModalOpen(true);
+      } else {
+        // 5만원 미만이면 바로 결제 진행
+        handleMenuPayment();
+      }
     } else {
-      handlePersonSplitPayment();
+      // 인원 수로 나누기: 5만원 이상이면 할부 선택 모달 열기
+      if (selectedPersonPrice >= INSTALLMENT_MINIMUM_AMOUNT) {
+        setIsInstallmentModalOpen(true);
+      } else {
+        // 5만원 미만이면 바로 결제 진행
+        handlePersonPayment();
+      }
     }
   };
 
-  const hasAnyPayment =
-    menuSplit_paidMenuIds.size > 0 || personSplit_paidPersonIds.size > 0;
+  const handleInstallmentModalConfirm = (selectedMonths: number): void => {
+    setSelectedInstallmentMonths(selectedMonths);
+    setIsInstallmentModalOpen(false);
+    if (isPaymentByMenu) {
+      handleMenuPayment();
+    } else {
+      handlePersonPayment();
+    }
+  };
+
+  const handleInstallmentModalClose = (): void => {
+    setIsInstallmentModalOpen(false);
+  };
+
+  const hasAnyPayment = paidMenuIds.size > 0 || paidPersonIds.size > 0;
 
   return (
     <>
@@ -377,18 +632,18 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
             <S.SelectorContainer>
               {isPaymentByMenu && (
                 <MenuSelector
-                  menus={menuSplit_remainingMenus}
-                  selectedMenus={menuSplit_selectedMenus}
-                  setSelectedMenus={setMenuSplit_selectedMenus}
+                  menus={remainingMenus}
+                  selectedMenus={selectedMenus}
+                  setSelectedMenus={setSelectedMenus}
                 />
               )}
 
               {!isPaymentByMenu && (
                 <PriceSelector
-                  totalPrice={personSplit_remainingTotal}
-                  persons={personSplit_remainingPersons}
-                  setPersons={setPersonSplit_persons}
-                  hasAnyPayment={personSplit_paidPersonIds.size > 0}
+                  totalPrice={remainingPersonTotal}
+                  persons={remainingPersons}
+                  setPersons={setPersons}
+                  hasAnyPayment={paidPersonIds.size > 0}
                 />
               )}
 
@@ -465,12 +720,22 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         </S.Container>
       </ModalBackground>
 
+      {/* 할부 선택 모달 */}
+      {isInstallmentModalOpen && (
+        <SplitPaymentInstallmentModal
+          onClose={handleInstallmentModalClose}
+          totalPrice={currentSelectedPrice}
+          onConfirm={handleInstallmentModalConfirm}
+        />
+      )}
+
       {/* 카드 결제 진행 모달 */}
       {modalData.isCardPaymentProgressModalOpened && (
         <CardPaymentProgressModal
           onClose={() =>
             setModalData('isCardPaymentProgressModalOpened', false)
           }
+          message={paymentProgressMessage}
         />
       )}
     </>

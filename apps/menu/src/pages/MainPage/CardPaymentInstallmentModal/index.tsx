@@ -1,19 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { BasicButton, ModalBackground, Dropdown } from '@repo/ui/components';
+import { ModalBackground } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
-import { formatCurrency } from '@repo/util/string';
 import {
   Payment,
   type IPaymentResponse,
   type IPaymentEventData,
 } from '@repo/util/app';
-import * as S from './cardPaymentInstallmentModal.style';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { CardPaymentProgressModal } from '../CardPaymentProgressModal';
 import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
-import { openConfirmDialog } from '@repo/feature/utils';
+import { openConfirmDialog, toast } from '@repo/feature/utils';
 import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useCartStore } from '@/stores/useCartStore';
@@ -23,83 +21,23 @@ import type { ICartMenu } from '@/types/cart';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import {
+  INSTALLMENT_MINIMUM_AMOUNT,
+  INSTALLMENT_LUMP_SUM,
+  formatInstallmentMonthsToString,
+  InstallmentModalContent,
+  DialogContainer,
+  CloseButton,
+} from '@/feature/Installment';
 
-const INSTALLMENT_MINIMUM_AMOUNT = 50000;
-const INSTALLMENT_MONTHS_STANDARD = [36, 48, 60];
-const INSTALLMENT_MONTHS_MIN = 2;
-const INSTALLMENT_MONTHS_MAX = 24;
-const INSTALLMENT_LUMP_SUM = 0;
-const INSTALLMENT_STRING_LUMP_SUM = '00';
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
-const PAYMENT_METHOD_CODE_EASY = 'EASY';
 const PAYMENT_EVENT_NAME = 'paymentEvent';
 const HTTP_STATUS_BAD_REQUEST = 400;
-
-type InstallmentOption = {
-  value: string | number;
-  label: string;
-  disabled?: boolean;
-};
 
 interface CardPaymentInstallmentModalProps {
   onClose: () => void;
   totalPrice: number;
 }
-
-/**
- * 할부 옵션 목록 생성
- * 일시불, 2~24개월, 36/48/60개월 옵션을 포함
- */
-const createInstallmentOptions = (
-  translate: (key: string, params?: Record<string, string | number>) => string
-): InstallmentOption[] => {
-  const options: InstallmentOption[] = [
-    { value: INSTALLMENT_LUMP_SUM, label: translate('일시불') },
-  ];
-
-  // 2~24개월 옵션 추가
-  for (
-    let month = INSTALLMENT_MONTHS_MIN;
-    month <= INSTALLMENT_MONTHS_MAX;
-    month++
-  ) {
-    options.push({
-      value: month,
-      label: translate('{{months}}개월', { months: month }),
-    });
-  }
-
-  // 36, 48, 60개월 옵션 추가
-  INSTALLMENT_MONTHS_STANDARD.forEach((month) => {
-    options.push({
-      value: month,
-      label: translate('{{months}}개월', { months: month }),
-    });
-  });
-
-  return options;
-};
-
-/**
- * 할부 개월 수를 결제 API 형식 문자열로 변환
- * @param months - 할부 개월 수 (0: 일시불, 2-24: 2~24개월, 36/48/60: 해당 개월)
- * @returns 결제 API 형식 문자열 ("00", "02"-"24", "36"/"48"/"60")
- */
-const formatInstallmentMonthsToString = (months: number): string => {
-  if (months === INSTALLMENT_LUMP_SUM) {
-    return INSTALLMENT_STRING_LUMP_SUM;
-  }
-
-  if (months >= INSTALLMENT_MONTHS_MIN && months <= INSTALLMENT_MONTHS_MAX) {
-    return months.toString().padStart(2, '0');
-  }
-
-  if (INSTALLMENT_MONTHS_STANDARD.includes(months)) {
-    return months.toString();
-  }
-
-  return INSTALLMENT_STRING_LUMP_SUM;
-};
 
 /**
  * 장바구니 데이터를 주문 데이터 형식으로 변환
@@ -121,7 +59,7 @@ const convertCartMenusToOrders = (cartMenus: ICartMenu[]): IOrder[] => {
 };
 
 /**
- * 주문 옵션 수량을 주문 수량에 맞게 조정
+ * 주문 옵션 수량을 주문 수량에 맞게 조정 (백엔드 요구 사항)
  * (메뉴 수량 × 옵션 수량)
  */
 const adjustOrderOptionQuantities = (orders: IOrder[]): IOrder[] => {
@@ -146,9 +84,11 @@ export const CardPaymentInstallmentModal = ({
   const { shopData } = useShopData();
   const { data: shopDetailData } = useShopDetailData();
   const { data: deviceData } = useDeviceData();
+
   const { data: cartData } = useCartStore();
   const { data: customerCountData } = useCustomerCountStore();
   const { clearCart } = useCartStore();
+
   const { mutateAsync: createTableOrder } = usePostTableOrder({
     ignoreGlobalErrors: [HTTP_STATUS_BAD_REQUEST],
   });
@@ -158,23 +98,20 @@ export const CardPaymentInstallmentModal = ({
     useState<string>('');
   const [selectedInstallmentMonths, setSelectedInstallmentMonths] =
     useState<number>(INSTALLMENT_LUMP_SUM);
+
   const paymentListenerRef = useRef<{ remove: () => Promise<void> } | null>(
     null
   );
 
-  const installmentOptions = createInstallmentOptions(t);
   const shouldShowInstallmentSection = totalPrice > INSTALLMENT_MINIMUM_AMOUNT;
   const isPaymentProgressModalOpen =
     modalStore.data.isCardPaymentProgressModalOpened;
-
-  // ==========================================================================
-  // Data Transformation Functions
-  // ==========================================================================
 
   const getOrdersFromCart = (): IOrder[] => {
     return convertCartMenusToOrders(cartData.menus);
   };
 
+  // 결제 진행 모달 오픈 시 결제 이벤트 리스너 설정
   useEffect(() => {
     if (!isPaymentProgressModalOpen) {
       return;
@@ -215,6 +152,7 @@ export const CardPaymentInstallmentModal = ({
       totalAmount: totalPrice.toString(),
       orders: adjustedOrders,
     }).catch((error) => {
+      // 테이블이 삭제된 경우
       if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
         navigate(ROUTES.TABLES.generate());
       }
@@ -224,6 +162,11 @@ export const CardPaymentInstallmentModal = ({
     const orderUuid = orderResponse?.data?.orderInfoList[0]?.orderUuid;
 
     if (!orderGroupUuid || !orderUuid) {
+      openConfirmDialog({
+        title: t('오류'),
+        content: t('주문 생성에 실패했습니다.'),
+        confirmText: t('확인'),
+      });
       throw new Error('주문 생성에 실패했습니다.');
     }
 
@@ -240,9 +183,7 @@ export const CardPaymentInstallmentModal = ({
 
     await postPaymentApproval({
       params: {
-        // TODO: 테스트 중이라 임시로 EASY로 설정
-        // paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? '',
-        paymentMethodCode: 'EASY',
+        paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
         orderGroupUuid,
         orderUuid,
       },
@@ -254,6 +195,11 @@ export const CardPaymentInstallmentModal = ({
 
   const handlePaymentSuccess = () => {
     const orderData = getOrdersFromCart();
+
+    toast(t('결제를 성공했습니다.'), {
+      duration: 1500,
+      position: 'center-center',
+    });
 
     // 주문 완료 모달을 위한 데이터 저장
     modalStore.setModalData('orderCompleteData', orderData);
@@ -294,11 +240,11 @@ export const CardPaymentInstallmentModal = ({
       await processPayment(orderGroupUuid, orderUuid);
       handlePaymentSuccess();
     } catch (error) {
+      // 사용자가 결제를 직접 취소했을 경우
       if (
         (error as Error).message === 'USER_CANCEL' &&
         (error as unknown as { code: string }).code === 'CANCELED'
       ) {
-        // 사용자가 결제를 취소했을 경우
         return;
       }
 
@@ -317,46 +263,19 @@ export const CardPaymentInstallmentModal = ({
   return (
     <>
       <ModalBackground position="center" onClick={onClose}>
-        <S.DialogContainer onClick={(e) => e.stopPropagation()}>
-          <S.CloseButton onClick={onClose} aria-label={t('닫기')}>
+        <DialogContainer onClick={(e) => e.stopPropagation()}>
+          <CloseButton onClick={onClose} aria-label={t('닫기')}>
             <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
-          </S.CloseButton>
+          </CloseButton>
 
-          <S.ContentWrapper>
-            <S.Title>{t('체크·신용카드 결제')}</S.Title>
-
-            <S.PaymentInfoSection>
-              <S.PaymentInfoRow>
-                <S.PaymentLabel>{t('결제 금액')}</S.PaymentLabel>
-                <S.PaymentAmount>
-                  {t('{{amount}}원', { amount: formatCurrency(totalPrice) })}
-                </S.PaymentAmount>
-              </S.PaymentInfoRow>
-            </S.PaymentInfoSection>
-
-            {shouldShowInstallmentSection && (
-              <S.InstallmentSection>
-                <S.InstallmentLabel>{t('할부 선택')}</S.InstallmentLabel>
-                <Dropdown
-                  options={installmentOptions}
-                  value={selectedInstallmentMonths}
-                  onChange={handleInstallmentChange}
-                  customStyle={S.DropdownStyle(theme)}
-                />
-              </S.InstallmentSection>
-            )}
-
-            <S.Footer>
-              <BasicButton
-                variant="Solid_Blue_2XL"
-                onClick={handleConfirmPayment}
-                customStyle={S.ConfirmButtonStyle}
-              >
-                {t('결제하기')}
-              </BasicButton>
-            </S.Footer>
-          </S.ContentWrapper>
-        </S.DialogContainer>
+          <InstallmentModalContent
+            totalPrice={totalPrice}
+            selectedInstallmentMonths={selectedInstallmentMonths}
+            onInstallmentChange={handleInstallmentChange}
+            showInstallmentSection={shouldShowInstallmentSection}
+            onConfirm={handleConfirmPayment}
+          />
+        </DialogContainer>
       </ModalBackground>
 
       {isPaymentProgressModalOpen && (

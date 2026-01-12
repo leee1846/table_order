@@ -151,7 +151,7 @@ export const Payment: IPayment = {
       tran_type: 'D1',
       amount: amt,
       installment: options.installment || '00',
-      tran_no: Math.floor(Math.random() * 99999).toString(), // 트랜잭션 ID 자동 생성
+      tran_no: Date.now().toString(),
     });
   },
 
@@ -162,7 +162,7 @@ export const Payment: IPayment = {
       approval_num: options.orgApprNum,
       approval_date: options.orgApprDate,
       installment: '00', // 취소는 항상 일시불 처리
-      tran_no: Math.floor(Math.random() * 99999).toString(),
+      tran_no: Date.now().toString(),
     });
   },
 

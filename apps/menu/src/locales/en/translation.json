@@ -225,5 +225,7 @@
   "결제하기": "Pay",
   "일시불": "Lump Sum",
   "{{months}}개월": "{{months}} months",
-  "결제 처리 중 오류가 발생했습니다.": "An error occurred while processing the payment."
+  "결제 처리 중 오류가 발생했습니다.": "An error occurred while processing the payment.",
+  "결제를 성공했습니다.": "Payment was successful.",
+  "주문 생성에 실패했습니다.": "Failed to create order."
 }
