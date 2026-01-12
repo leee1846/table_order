@@ -1,15 +1,14 @@
 import { t } from '@/config/i18n';
-import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/SalesCardPage/Table/table.style';
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
+import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency } from '@repo/util/string';
 import { openDualActionDialog } from '@repo/feature/utils';
 import type { ICardApprovalHistoryItem } from '@repo/api/types';
 
 interface Props {
   items: ICardApprovalHistoryItem[];
-  isLoading?: boolean;
 }
 
 const toNumber = (value?: number | string | null) => {
@@ -39,7 +38,7 @@ const formatTransactionDate = (raw?: string | null) => {
   return raw;
 };
 
-export const Table = ({ items, isLoading }: Props) => {
+export const Table = ({ items }: Props) => {
   const getTextColor = (isCancel: boolean, isApproval?: boolean) => {
     if (isApproval) {
       return isCancel ? theme.colors.semantic[400] : theme.colors.primary[500];
@@ -50,9 +49,7 @@ export const Table = ({ items, isLoading }: Props) => {
 
   const onClickCancel = () => {
     openDualActionDialog({
-      title: t(
-        '정말 취소하시겠습니까?'
-      ),
+      title: t('정말 취소하시겠습니까?'),
       primaryText: t('확인'),
       secondaryText: t('취소'),
       onConfirm: () => {
@@ -62,26 +59,10 @@ export const Table = ({ items, isLoading }: Props) => {
   };
 
   const renderRows = () => {
-    if (isLoading) {
-      return (
-        <tr>
-          <td colSpan={9}>
-            {t(
-              '카드 승인 내역을 불러오는 중입니다.'
-            )}
-          </td>
-        </tr>
-      );
-    }
-
     if (!items || items.length === 0) {
       return (
         <tr>
-          <td colSpan={9}>
-            {t(
-              '카드 승인 내역이 없습니다.'
-            )}
-          </td>
+          <td colSpan={9}>{t('카드 승인 내역이 없습니다.')}</td>
         </tr>
       );
     }
@@ -96,9 +77,7 @@ export const Table = ({ items, isLoading }: Props) => {
       return (
         <tr key={`${index}-${item.approvalNumber}`}>
           <S.ColorTd color={getTextColor(isCancel, true)}>
-            {item.approvalType === 'APPROVAL'
-              ? t('승인')
-              : t('취소')}
+            {item.approvalType === 'APPROVAL' ? t('승인') : t('취소')}
           </S.ColorTd>
           <S.ColorTd color={getTextColor(isCancel)}>
             {item.cardNumber ?? '-'}
@@ -181,6 +160,40 @@ export const Table = ({ items, isLoading }: Props) => {
         </tr>
       </UIStyles.setting.Thead>
       <UIStyles.setting.Tbody>{renderRows()}</UIStyles.setting.Tbody>
+      {/* {shopSetting?.isSalesTotalVisible !== false && (
+        <UIStyles.setting.Footer>
+          <UIStyles.setting.FooterContents>
+            <p>
+              <span>{t('총 매출:')}</span> {formatCurrency(totalSalesAmount)}
+              <span>
+                {totalSalesCount}
+                {t('건')}
+              </span>
+            </p>
+            <p>
+              <span>{t('결제 전 매출:')}</span>
+              {formatCurrency(prePaymentAmount)}
+              <span>
+                {prePaymentCount}
+                {t('건')}
+              </span>
+            </p>
+            <p>
+              <span>{t('총 예상 매출:')}</span>
+              {formatCurrency(estimatedTotalAmount)}
+              <span>
+                {estimatedTotalCount}
+                {t('건')}
+              </span>
+            </p>
+          </UIStyles.setting.FooterContents>
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </UIStyles.setting.Footer>
+      )} */}
     </UIStyles.setting.Table>
   );
 };

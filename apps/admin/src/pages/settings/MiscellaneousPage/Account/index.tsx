@@ -28,6 +28,8 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
     // store 비우기
     clearAuth();
 
+    localStorage.removeItem('theme-mode');
+
     // 로그인 페이지로 이동
     window.location.replace(ROUTES.LOGIN.generate());
   };

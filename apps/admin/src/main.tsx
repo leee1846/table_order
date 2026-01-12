@@ -11,7 +11,7 @@ import '@/config/i18n';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryProvider>
-      <ThemeModeProvider>
+      <ThemeModeProvider active={false} initialMode="light">
         <DynamicThemeProvider>
           <RouterProvider router={router} />
           <GlobalDialogContainer />

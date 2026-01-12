@@ -134,6 +134,14 @@ export interface ICardApprovalHistoryItem {
   vat: number | string;
 }
 
+export interface ICardApprovalHistory {
+  currentPageNumber: number;
+  totalPageNumber: number;
+  totalSalesAmount: number;
+  totalCount: number;
+  cardApprovalHistory: ICardApprovalHistoryItem[];
+}
+
 export interface IGetCardApprovalHistoryParams {
   shopCode: string;
   cardCode?: string;
@@ -152,6 +160,5 @@ export interface IGetCardApprovalHistoryParams {
   pageSize?: number;
 }
 
-export type TGetCardApprovalHistoryResponse = IApiResponse<
-  ICardApprovalHistoryItem[]
->;
+export type TGetCardApprovalHistoryResponse =
+  IApiResponse<ICardApprovalHistory>;

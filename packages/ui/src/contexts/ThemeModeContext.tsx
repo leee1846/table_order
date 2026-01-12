@@ -16,18 +16,14 @@ export const ThemeModeContext = createContext<
 
 export const THEME_MODE_STORAGE_KEY = 'theme-mode';
 
-const getInitialMode = (): ThemeMode => {
+const getInitialMode = (active: boolean): ThemeMode => {
+  if (!active) {
+    return 'light';
+  }
+
   const stored = localStorage.getItem(THEME_MODE_STORAGE_KEY);
   if (stored === 'light' || stored === 'dark') {
     return stored;
-  }
-
-  // 시스템 설정 확인
-  if (
-    window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  ) {
-    return 'dark';
   }
 
   return 'light';
@@ -68,7 +64,7 @@ export const ThemeModeProvider = ({
   active,
 }: ThemeModeProviderProps) => {
   const [mode, setModeState] = useState<ThemeMode>(
-    initialMode ?? getInitialMode
+    initialMode ?? getInitialMode(!!active)
   );
 
   // localStorage에 모드 저장

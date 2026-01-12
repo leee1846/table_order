@@ -7,40 +7,22 @@ import { theme } from '@repo/ui';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { Table } from '@/pages/settings/SalesCardPage/Table';
 import { useAuth } from '@/hooks/useAuth';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 import {
   getDateRangeByPreset,
   toYYYYMMDDRange,
   type TDateRangePreset,
 } from '@repo/util/date';
+import { formatCurrency } from '@repo/util/string';
 import { useGetCardApprovalHistory } from '@repo/api/queries';
-import type { ICardApprovalHistoryItem } from '@repo/api/types';
 
 const PAGE_SIZE = 10;
-
-interface ICardApprovalHistoryWithPagination {
-  cardApprovalHistory: ICardApprovalHistoryItem[];
-  totalPageNumber: number;
-}
-
-function isCardApprovalHistoryWithPagination(
-  data: unknown
-): data is ICardApprovalHistoryWithPagination {
-  if (!data || Array.isArray(data) || typeof data !== 'object') {
-    return false;
-  }
-
-  const obj = data as Record<string, unknown>;
-  return (
-    'cardApprovalHistory' in obj &&
-    Array.isArray(obj.cardApprovalHistory) &&
-    'totalPageNumber' in obj &&
-    typeof obj.totalPageNumber === 'number'
-  );
-}
 
 export const SalesCardPage = () => {
   const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
+  const { data: shopDetailData } = useShopDetailData();
+  const { shopSetting } = shopDetailData ?? {};
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
   const dateRangeOptions: { value: TDateRangePreset; label: string }[] =
     useMemo(
@@ -87,50 +69,30 @@ export const SalesCardPage = () => {
     [startDate, endDate]
   );
 
-  const { data: cardApprovalHistoryResponse, isFetching } =
-    useGetCardApprovalHistory(
-      {
-        shopCode: shopCode ?? '',
-        cardCode: selectedCardCode === 'all' ? undefined : selectedCardCode,
-        startDate: apiStartDate,
-        endDate: apiEndDate,
-        pageNumber: currentPage - 1,
-        pageSize: PAGE_SIZE,
-      },
-      {
-        enabled: !!shopCode && !!apiStartDate && !!apiEndDate,
-      }
-    );
+  const { data: cardApprovalHistoryResponse } = useGetCardApprovalHistory(
+    {
+      shopCode: shopCode ?? '',
+      cardCode: selectedCardCode === 'all' ? undefined : selectedCardCode,
+      startDate: apiStartDate,
+      endDate: apiEndDate,
+      pageNumber: currentPage - 1,
+      pageSize: PAGE_SIZE,
+    },
+    {
+      enabled: !!shopCode && !!apiStartDate && !!apiEndDate,
+    }
+  );
 
   const cardApprovalData = cardApprovalHistoryResponse?.data;
-
-  const getCardApprovalInfo = (
-    data: ICardApprovalHistoryItem[] | unknown
-  ): {
-    history: ICardApprovalHistoryItem[];
-    totalPages: number | undefined;
-  } => {
-    if (Array.isArray(data)) {
-      return { history: data, totalPages: undefined };
-    }
-
-    if (isCardApprovalHistoryWithPagination(data)) {
-      return {
-        history: data.cardApprovalHistory,
-        totalPages: data.totalPageNumber,
-      };
-    }
-
-    return { history: [], totalPages: undefined };
-  };
-
-  const { history: cardApprovalHistory, totalPages: totalPagesFromResponse } =
-    getCardApprovalInfo(cardApprovalData);
+  const cardApprovalHistory = cardApprovalData?.cardApprovalHistory ?? [];
+  const totalPagesFromResponse = cardApprovalData?.totalPageNumber;
   const hasNextPage = cardApprovalHistory.length === PAGE_SIZE;
   const totalPages = Math.max(
     totalPagesFromResponse ?? (hasNextPage ? currentPage + 1 : currentPage),
     1
   );
+  const totalSalesAmount = cardApprovalData?.totalSalesAmount ?? 0;
+  const totalCount = cardApprovalData?.totalCount ?? 0;
 
   const onSelectDate = (startDate: string, endDate: string) => {
     setStartDate(startDate);
@@ -201,18 +163,27 @@ export const SalesCardPage = () => {
             </S.FiltersRight>
           </S.Filters>
 
-          <Table items={cardApprovalHistory} isLoading={isFetching} />
+          <Table items={cardApprovalHistory} />
         </S.Container>
 
-        <UIStyles.setting.Footer>
-          <S.BottomButtonContainer>
+        {shopSetting?.isSalesTotalVisible !== false && (
+          <UIStyles.setting.Footer>
+            <UIStyles.setting.FooterContents>
+              <p>
+                <span>{t('총 매출:')}</span> {formatCurrency(totalSalesAmount)}
+                <span>
+                  {totalCount}
+                  {t('건')}
+                </span>
+              </p>
+            </UIStyles.setting.FooterContents>
             <Pagination
               totalPages={totalPages}
               currentPage={currentPage}
               onPageChange={handlePageChange}
             />
-          </S.BottomButtonContainer>
-        </UIStyles.setting.Footer>
+          </UIStyles.setting.Footer>
+        )}
       </UIStyles.setting.TablePageContainer>
 
       {showCalender && (
@@ -226,7 +197,6 @@ export const SalesCardPage = () => {
           afterYears={1}
         />
       )}
-      {/* TODO 카드 승인 내역 총 금액 없음.. */}
     </>
   );
 };

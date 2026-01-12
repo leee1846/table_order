@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { TheftAlertDialog } from '@/feature/dialogs/TheftAlertDialog';
 import { useTheftAlertStore } from '@/stores/useTheftAlertStore';
@@ -6,6 +7,12 @@ import { useSystemStatusMonitor } from './hooks/useSystemStatusMonitor';
 
 const App = () => {
   const { isOpen, tableNumber, closeAlert } = useTheftAlertStore();
+
+  useEffect(() => {
+    if (localStorage.getItem('theme-mode')) {
+      localStorage.removeItem('theme-mode');
+    }
+  }, []);
 
   useSSEHandler();
   useSystemStatusMonitor();

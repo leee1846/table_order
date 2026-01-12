@@ -17,4 +17,7 @@ export const Container = styled.div`
 export const SpinnerWrapper = styled.div<{ size: number }>`
   width: ${({ size }) => size}px;
   height: ${({ size }) => size}px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
