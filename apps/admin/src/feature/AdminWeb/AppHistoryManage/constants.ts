@@ -1,6 +1,8 @@
+import type { TAppType } from '@repo/api/types';
+
 export interface AppHistoryFormData {
   id?: number; // 앱 히스토리 ID
-  type: string; // 구분: 'MENU' | 'POS' | 'AGENT'
+  type: TAppType;
   title: string; // 제목
   deployDateTime: string; // 배포일시
   version: string; // 버전
@@ -10,7 +12,7 @@ export interface AppHistoryFormData {
 }
 
 export const DEFAULT_APP_HISTORY_DATA: AppHistoryFormData = {
-  type: '',
+  type: 'MENU',
   title: '',
   deployDateTime: '',
   version: '',

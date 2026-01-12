@@ -8,6 +8,8 @@ export const ENDPOINTS = {
 
   APP: {
     LATEST_VERSION: (type: string) => `/app/version/latest/${type}`,
+    VERSION_LIST: `/app/version/list`,
+    VERSION: '/app/version',
   },
 
   AUTH: {

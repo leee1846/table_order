@@ -10,6 +10,14 @@ export const queryKeys = {
     all: ['app'] as const,
     latestVersion: (appType: TAppType) =>
       [...queryKeys.app.all, 'latestVersion', appType] as const,
+    versionList: (pageNumber: number, pageSize: number, searchWord: string) =>
+      [
+        ...queryKeys.app.all,
+        'versionList',
+        pageNumber,
+        pageSize,
+        searchWord,
+      ] as const,
   },
 
   shop: {

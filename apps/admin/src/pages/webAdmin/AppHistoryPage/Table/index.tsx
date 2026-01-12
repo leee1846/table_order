@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { BasicButton } from '@repo/ui/components';
+import { formatDateTime } from '@repo/util/date';
 import * as UIStyles from '@repo/ui/styles';
 import { ROUTES } from '@/constants/routes';
-import type { AppHistoryItem } from '../mockData';
+import type { IAppVersion } from '@repo/api/types';
 
 interface Props {
-  histories: AppHistoryItem[];
+  histories: IAppVersion[];
 }
 
 export const Table = ({ histories }: Props) => {
@@ -19,6 +20,18 @@ export const Table = ({ histories }: Props) => {
     navigate(ROUTES.ADMIN_WEB.APP_HISTORY_EDIT.generate(id));
   };
 
+  // deployDate: YYYYMMDDHHMMSS 형식을 YYYY-MM-DD HH시로 변환
+  const formatDeployDate = (dateStr: string | null | undefined): string => {
+    if (!dateStr || typeof dateStr !== 'string') {
+      return '';
+    }
+
+    if (dateStr.length === 14) {
+      return formatDateTime(dateStr, 'YYYY-MM-DD HH시');
+    }
+    return dateStr;
+  };
+
   const renderRows = () => {
     if (!histories || histories.length === 0) {
       return (
@@ -28,32 +41,35 @@ export const Table = ({ histories }: Props) => {
       );
     }
 
-    return histories.map((history) => (
-      <tr key={history.id}>
-        <td>{history.type}</td>
-        <td>{history.deployDateTime}</td>
-        <td>{history.version}</td>
-        <td>{history.title}</td>
-        <td>
-          <div
-            style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
-          >
-            <BasicButton
-              variant="Outline_Navy_S"
-              onClick={() => handleDetail(history.id)}
+    return histories.map((history) => {
+      const id = history.appVersionSeq ?? 0;
+      return (
+        <tr key={id}>
+          <td>{history.type || '_'}</td>
+          <td>{formatDeployDate(history.deployDate) || '_'}</td>
+          <td>{history.version || '_'}</td>
+          <td>{history.title || '_'}</td>
+          <td>
+            <div
+              style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
             >
-              상세 이동
-            </BasicButton>
-            <BasicButton
-              variant="Outline_Navy_S"
-              onClick={() => handleEdit(history.id)}
-            >
-              수정
-            </BasicButton>
-          </div>
-        </td>
-      </tr>
-    ));
+              <BasicButton
+                variant="Outline_Navy_S"
+                onClick={() => handleDetail(id)}
+              >
+                상세 이동
+              </BasicButton>
+              <BasicButton
+                variant="Outline_Navy_S"
+                onClick={() => handleEdit(id)}
+              >
+                수정
+              </BasicButton>
+            </div>
+          </td>
+        </tr>
+      );
+    });
   };
 
   return (
@@ -73,4 +89,3 @@ export const Table = ({ histories }: Props) => {
     </div>
   );
 };
-

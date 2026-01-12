@@ -2,6 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { Input, Dropdown, Calender } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import { toast } from '@repo/feature/utils';
+import { formatDateTime } from '@repo/util/date';
+import type { TAppType } from '@repo/api/types';
 import * as S from './appHistoryForm.style';
 import type { AppHistoryFormData } from '../constants';
 
@@ -13,17 +16,19 @@ interface Props {
   updateFormData: (updates: Partial<AppHistoryFormData>) => void;
 }
 
-const TYPE_OPTIONS = [
+const TYPE_OPTIONS: Array<{ value: TAppType; label: string }> = [
   { value: 'MENU', label: '메뉴판' },
-  { value: 'POS', label: '포스앱' },
+  { value: 'POS_APP', label: '포스앱' },
   { value: 'AGENT', label: '에이전트' },
 ];
 
-export const AppHistoryForm = ({
-  mode,
-  formData,
-  updateFormData,
-}: Props) => {
+// 0-23시 옵션 생성
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => ({
+  value: String(i).padStart(2, '0'),
+  label: `${String(i).padStart(2, '0')}시`,
+}));
+
+export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
   const [showCalender, setShowCalender] = useState<boolean>(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -32,19 +37,75 @@ export const AppHistoryForm = ({
     if (!dateTime) {
       return '';
     }
-    // "YYYY-MM-DD HH:mm:ss" 형식에서 날짜 부분만 추출
-    return dateTime.split(' ')[0];
+    // formatDateTime을 사용하여 날짜 부분만 추출
+    return formatDateTime(dateTime, 'YYYY-MM-DD');
+  };
+
+  // deployDateTime에서 시간 부분만 추출 (HH 형식, 없으면 null)
+  const getHourOnly = (dateTime: string): string | null => {
+    if (!dateTime) {
+      return null;
+    }
+    // "YYYY-MM-DD" 형식인지 확인 (시간 부분이 없으면 null 반환)
+    // 시간 부분이 있으면 "YYYY-MM-DD HH:mm:ss" 형식이어야 함
+    const parts = dateTime.split(' ');
+    if (parts.length < 2) {
+      return null; // 시간 부분이 없음
+    }
+    // formatDateTime을 사용하여 시간 부분만 추출
+    const hour = formatDateTime(dateTime, 'HH');
+    return hour || null;
+  };
+
+  // 날짜와 시간을 조합하여 deployDateTime 생성
+  const combineDateTime = (date: string, hour: string | null) => {
+    if (!date) {
+      return '';
+    }
+    if (!hour) {
+      return date; // 시간이 없으면 날짜만 반환
+    }
+    const hourValue = hour.padStart(2, '0');
+    return `${date} ${hourValue}:00:00`;
   };
 
   const handleDateSelect = (startDate: string, _endDate: string) => {
-    // 단일 날짜 선택이므로 startDate만 사용
-    // 시간은 기본값으로 00:00:00을 추가
-    const dateTime = `${startDate} 00:00:00`;
-    updateFormData({ deployDateTime: dateTime });
+    // 날짜 선택 시 시간은 null로 설정 (미선택 상태)
+    // 기존에 시간이 선택되어 있으면 유지
+    const currentHour = getHourOnly(formData.deployDateTime);
+    if (currentHour) {
+      const dateTime = combineDateTime(startDate, currentHour);
+      updateFormData({ deployDateTime: dateTime });
+    } else {
+      // 시간이 없으면 날짜만 설정 (시간은 미선택)
+      updateFormData({ deployDateTime: startDate });
+    }
     setShowCalender(false);
   };
 
+  const handleHourDropdownClick = (e: React.MouseEvent) => {
+    const currentDate = getDateOnly(formData.deployDateTime);
+    if (!currentDate) {
+      e.preventDefault();
+      e.stopPropagation();
+      toast('날짜 먼저 선택하세요.');
+    }
+  };
+
+  const handleHourChange = (hour: string | number) => {
+    // 기존 날짜 유지하면서 시간만 업데이트
+    const currentDate = getDateOnly(formData.deployDateTime);
+    if (!currentDate) {
+      return;
+    }
+    const dateTime = combineDateTime(currentDate, String(hour));
+    updateFormData({ deployDateTime: dateTime });
+  };
+
   const displayDate = getDateOnly(formData.deployDateTime);
+  const isDateSelected = !!displayDate;
+
+  const selectedHour = getHourOnly(formData.deployDateTime);
   const calendarStartDate = displayDate || '';
   const isReadOnly = mode === 'detail';
 
@@ -67,7 +128,7 @@ export const AppHistoryForm = ({
             <Dropdown
               options={TYPE_OPTIONS}
               value={formData.type}
-              onChange={(value) => updateFormData({ type: value as string })}
+              onChange={(value) => updateFormData({ type: value as TAppType })}
               disabled={isReadOnly}
             />
           </S.FieldGroup>
@@ -102,19 +163,28 @@ export const AppHistoryForm = ({
                 disabled
               />
             ) : (
-              <S.CalendarButton
-                type="button"
-                onClick={() => setShowCalender(true)}
-              >
-                <CalendarMonthIcon
-                  width={32}
-                  height={32}
-                  color={theme.colors.grey[700]}
-                />
-                <S.CalendarText>
-                  {displayDate || '날짜 선택'}
-                </S.CalendarText>
-              </S.CalendarButton>
+              <S.DateTimeContainer>
+                <S.CalendarButton
+                  type="button"
+                  onClick={() => setShowCalender(true)}
+                >
+                  <CalendarMonthIcon
+                    width={32}
+                    height={32}
+                    color={theme.colors.grey[700]}
+                  />
+                  <S.CalendarText>{displayDate || '날짜 선택'}</S.CalendarText>
+                </S.CalendarButton>
+                <S.HourDropdownWrapper onClick={handleHourDropdownClick}>
+                  <Dropdown
+                    options={HOUR_OPTIONS}
+                    value={selectedHour}
+                    onChange={handleHourChange}
+                    disabled={isReadOnly || !isDateSelected}
+                    placeholder="시간 선택"
+                  />
+                </S.HourDropdownWrapper>
+              </S.DateTimeContainer>
             )}
           </S.FieldGroup>
         </S.Section>
@@ -150,34 +220,32 @@ export const AppHistoryForm = ({
         </S.Section>
 
         {(mode === 'edit' || mode === 'detail') && (
-          <>
-            <S.Section>
-              <S.HorizontalLayout>
-                <S.FieldGroup>
-                  <S.Label>최초 등록일시</S.Label>
-                  <Input
-                    placeholder="최초 등록일시"
-                    value={formData.createdAt || ''}
-                    onChange={() => {
-                      // readOnly
-                    }}
-                    disabled
-                  />
-                </S.FieldGroup>
-                <S.FieldGroup>
-                  <S.Label>마지막 수정일시</S.Label>
-                  <Input
-                    placeholder="마지막 수정일시"
-                    value={formData.updatedAt || ''}
-                    onChange={() => {
-                      // readOnly
-                    }}
-                    disabled
-                  />
-                </S.FieldGroup>
-              </S.HorizontalLayout>
-            </S.Section>
-          </>
+          <S.Section>
+            <S.HorizontalLayout>
+              <S.FieldGroup>
+                <S.Label>최초 등록일시</S.Label>
+                <Input
+                  placeholder="최초 등록일시"
+                  value={formData.createdAt || ''}
+                  onChange={() => {
+                    // readOnly
+                  }}
+                  disabled
+                />
+              </S.FieldGroup>
+              <S.FieldGroup>
+                <S.Label>마지막 수정일시</S.Label>
+                <Input
+                  placeholder="마지막 수정일시"
+                  value={formData.updatedAt || ''}
+                  onChange={() => {
+                    // readOnly
+                  }}
+                  disabled
+                />
+              </S.FieldGroup>
+            </S.HorizontalLayout>
+          </S.Section>
         )}
       </S.Container>
 
@@ -195,4 +263,3 @@ export const AppHistoryForm = ({
     </>
   );
 };
-

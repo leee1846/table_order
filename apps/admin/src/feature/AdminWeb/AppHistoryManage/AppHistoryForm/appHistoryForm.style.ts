@@ -68,6 +68,34 @@ export const CalendarText = styled.span`
   ${TYPOGRAPHY.ST_4};
 `;
 
+export const DateTimeContainer = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  & > button {
+    flex: 1;
+  }
+
+  & > div {
+    flex: 1;
+    width: 100%;
+  }
+`;
+
+export const HourDropdownWrapper = styled.div`
+  flex: 1;
+  width: 100%;
+
+  & > div {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+`;
+
 export const TextArea = styled.textarea<{ isDetail?: boolean }>`
   width: 100%;
   min-height: ${({ isDetail }) => (isDetail ? 'auto' : '200px')};

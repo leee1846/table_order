@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Pagination, Input, BasicButton } from '@repo/ui/components';
 import { createDebounce } from '@repo/util/function';
+import { useGetAppVersionList } from '@repo/api/queries';
 import { Table } from './Table';
 import * as S from './appHistoryPage.style';
 import * as UIStyles from '@repo/ui/styles';
-import { MOCK_APP_HISTORY_DATA } from './mockData';
 import { ROUTES } from '@/constants/routes';
 
 const PAGE_SIZE = 10;
@@ -31,25 +31,25 @@ export const AppHistoryPage = () => {
     setCurrentPage(1);
   }, [searchKeyword]);
 
-  // MockData 필터링 (실제로는 API 호출)
-  const filteredData = MOCK_APP_HISTORY_DATA.filter((item) => {
-    if (!searchKeyword) {
-      return true;
-    }
-    return (
-      item.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-      item.version.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-      item.type.toLowerCase().includes(searchKeyword.toLowerCase())
-    );
+  // API 호출
+  const { data } = useGetAppVersionList({
+    pageNumber: currentPage - 1,
+    pageSize: PAGE_SIZE,
+    searchWord: searchKeyword,
   });
 
-  // 페이지네이션 적용
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
+  // API 응답 데이터
+  const histories = useMemo(() => {
+    if (
+      !data?.data?.appVersionList ||
+      !Array.isArray(data.data.appVersionList)
+    ) {
+      return [];
+    }
+    return data.data.appVersionList;
+  }, [data]);
 
-  const totalPages = Math.ceil(filteredData.length / PAGE_SIZE) || 1;
+  const totalPages = data?.data?.totalPageNumber ?? 1;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -84,7 +84,7 @@ export const AppHistoryPage = () => {
           </BasicButton>
         </S.SearchContainer>
 
-        <Table histories={paginatedData} />
+        <Table histories={histories} />
       </S.Container>
 
       <UIStyles.setting.Footer>
