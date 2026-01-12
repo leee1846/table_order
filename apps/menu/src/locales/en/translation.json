@@ -197,6 +197,7 @@
   "할인적용": "Apply Discount",
   "픽업알림": "Pickup Alert",
   "테이블 나가기": "Leave Table",
+  "테이블 비우기": "Clear table",
   "메뉴가 나왔으니 가지고 가십시오.": "Your order is ready, please pick it up.",
   "픽업 알림이 전송되었습니다.": "Pickup notification has been sent.",
   "픽업 알림 전송 중 오류가 발생했습니다. 다시 시도해주세요.": "An error occurred while sending the pickup notification. Please try again.",

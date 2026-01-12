@@ -12,7 +12,7 @@ export type OrderPanelProps = {
   // onPayCard?: () => void;
   // onPayCash?: () => void;
   // onSplitPay?: () => void;
-  onLeaveTable?: () => void;
+  onClearTable?: () => void;
   onItemClick?: (item: OrderItem) => void;
   useCustomerCount?: boolean;
   usePickupAlert?: boolean;
@@ -28,7 +28,7 @@ export function OrderPanel({
   // onPayCash,
   // onSplitPay,
   onItemClick,
-  onLeaveTable,
+  onClearTable,
   useCustomerCount,
   usePickupAlert,
   shopCode,
@@ -36,6 +36,7 @@ export function OrderPanel({
   pickupAlertMessage,
   i18nInstance,
 }: OrderPanelProps) {
+  console.log('order', order);
   return (
     <Wrap>
       <OrderHeader
@@ -66,7 +67,8 @@ export function OrderPanel({
         // onPayCard={onPayCard}
         // onPayCash={onPayCash}
         // onSplitPay={onSplitPay}
-        onLeaveTable={onLeaveTable}
+        order={order}
+        onClearTable={onClearTable}
         i18nInstance={i18nInstance}
       />
     </Wrap>

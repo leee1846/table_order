@@ -18,6 +18,7 @@ import { useTableDrag } from '@/hooks/useTableDrag';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import adminI18n from '@/config/i18n';
+import { TABLE_GROUP_STORAGE_KEY } from '@/constants/keys';
 
 export const TablesPage = () => {
   const { shopCode } = useAuth();
@@ -30,7 +31,10 @@ export const TablesPage = () => {
 
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
     number | null
-  >(null);
+  >(() => {
+    const saved = sessionStorage.getItem(TABLE_GROUP_STORAGE_KEY);
+    return saved ? Number(saved) : null;
+  });
   const [isGuestCountDialogOpen, setIsGuestCountDialogOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState<TableWithStatus | null>(
     null
@@ -43,17 +47,29 @@ export const TablesPage = () => {
       selectedTableGroupSeq,
     });
 
+  // 테이블 그룹 선택값을 세션 스토리지에 저장해, 페이지 재진입 시 유지
+  useEffect(() => {
+    if (selectedTableGroupSeq !== null) {
+      sessionStorage.setItem(
+        TABLE_GROUP_STORAGE_KEY,
+        String(selectedTableGroupSeq)
+      );
+    }
+  }, [selectedTableGroupSeq]);
+
   // 첫 번째 테이블 그룹을 기본 선택
   useEffect(() => {
-    if (
-      tableGroupListResponse?.data &&
-      tableGroupListResponse.data.length > 0 &&
-      selectedTableGroupSeq === null
-    ) {
-      const firstGroup = tableGroupListResponse.data[0];
-      if (firstGroup) {
-        setSelectedTableGroupSeq(firstGroup.tableGroupSeq);
-      }
+    const groups = tableGroupListResponse?.data;
+    if (!groups || groups.length === 0) {
+      return;
+    }
+
+    // 저장된 그룹이 존재하지 않거나 더 이상 없으면 첫 그룹으로 초기화
+    const exists = groups.some(
+      (group) => group.tableGroupSeq === selectedTableGroupSeq
+    );
+    if (!exists) {
+      setSelectedTableGroupSeq(groups[0]?.tableGroupSeq ?? null);
     }
   }, [tableGroupListResponse, selectedTableGroupSeq]);
 

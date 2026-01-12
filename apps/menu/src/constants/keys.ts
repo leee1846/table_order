@@ -59,6 +59,9 @@ export const SSE_KEYS = {
   MAIN_CONNECTION: 'sse-main-connection',
 } as const;
 
+/** 테이블 그룹 선택 키 */
+export const TABLE_GROUP_STORAGE_KEY = 'selectedTableGroupSeq';
+
 export const DOM_IDS = {
   /** 카테고리 섹션 ID 접두사 */
   CATEGORY_SECTION_PREFIX: 'category-',

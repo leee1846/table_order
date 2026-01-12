@@ -46,7 +46,6 @@ export function OrderItemsTable({
   // 할인 금액 계산
   const discountAmount =
     discountRate > 0 ? totalPrice * (discountRate / 100) : 0;
-  console.log('items', items);
   return (
     <TableWrap>
       {items.map((it, index) => (

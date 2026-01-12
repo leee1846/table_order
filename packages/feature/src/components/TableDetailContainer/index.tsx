@@ -285,16 +285,29 @@ export const TableDetailContainer = ({
     setIsServiceAmountDialogOpen(true);
   };
 
-  const handleLeaveTable = async () => {
-    if (order.items.length > 0) {
-      navigate('/tables');
+  const handleClearTable = async () => {
+    await refetchOrderHistories();
+
+    const totalPaidAmount = order.paymentList
+      .filter((payment) => !payment.isCanceled)
+      .reduce((sum, payment) => sum + payment.transactionAmount, 0);
+
+    const remainingAmount = order.totalPrice - totalPaidAmount;
+
+    // 부동소수점 오차를 고려하여 0.01원 이내의 차이는 허용
+    if (remainingAmount !== 0) {
+      toast(
+        t('결제가 완료되지 않았어요. 남은 금액: {{amount}}원', {
+          amount: remainingAmount.toLocaleString(),
+        })
+      );
       return;
     }
 
     await clearOrder({ shopCode, tableNumber });
     toast(t('테이블을 정리했어요.'));
-    await refetchOrderHistories();
     navigate('/tables');
+    await refetchOrderHistories();
   };
 
   return (
@@ -306,7 +319,7 @@ export const TableDetailContainer = ({
             // onPayCard={() => setIsCardPaymentDialogOpen(true)}
             // onPayCash={() => setIsCashPaymentDialogOpen(true)}
             // onSplitPay={() => setIsSplitPaymentDialogOpen(true)}
-            onLeaveTable={handleLeaveTable}
+            onClearTable={handleClearTable}
             onItemClick={handleItemClick}
             useCustomerCount={useCustomerCount}
             usePickupAlert={usePickupAlert}

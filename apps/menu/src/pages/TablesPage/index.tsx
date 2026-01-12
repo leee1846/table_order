@@ -20,7 +20,7 @@ import {
 } from '@repo/feature/components';
 import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
-import { STORAGE_KEYS } from '@/constants/keys';
+import { STORAGE_KEYS, TABLE_GROUP_STORAGE_KEY } from '@/constants/keys';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
@@ -91,7 +91,10 @@ export const TablesPage = () => {
   // 상태 관리
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
     number | null
-  >(null);
+  >(() => {
+    const saved = sessionStorage.getItem(TABLE_GROUP_STORAGE_KEY);
+    return saved ? Number(saved) : null;
+  });
   const [isGuestCountDialogOpen, setIsGuestCountDialogOpen] = useState(false);
   const [selectedTableForGuestCount, setSelectedTableForGuestCount] =
     useState<TableWithStatus | null>(null);
@@ -219,17 +222,29 @@ export const TablesPage = () => {
   const { clearData: clearLanguageData } = useCustomerLanguageStore();
   const { showInitialPage } = useInitialPageStore();
 
-  // 공통: 첫 번째 테이블 그룹을 기본 선택
+  // 테이블 그룹 선택값을 세션 스토리지에 저장해, 페이지 재진입 시 유지
   useEffect(() => {
-    if (
-      tableGroupsData &&
-      tableGroupsData.length > 0 &&
-      selectedTableGroupSeq === null
-    ) {
-      const firstGroup = tableGroupsData[0];
-      if (firstGroup) {
-        setSelectedTableGroupSeq(firstGroup.tableGroupSeq);
-      }
+    if (selectedTableGroupSeq !== null) {
+      sessionStorage.setItem(
+        TABLE_GROUP_STORAGE_KEY,
+        String(selectedTableGroupSeq)
+      );
+    }
+  }, [selectedTableGroupSeq]);
+
+  // 첫 번째 테이블 그룹을 기본 선택
+  useEffect(() => {
+    const groups = tableGroupsData;
+    if (!groups || groups.length === 0) {
+      return;
+    }
+
+    // 저장된 그룹이 존재하지 않거나 더 이상 없으면 첫 그룹으로 초기화
+    const exists = groups.some(
+      (group) => group.tableGroupSeq === selectedTableGroupSeq
+    );
+    if (!exists) {
+      setSelectedTableGroupSeq(groups[0]?.tableGroupSeq ?? null);
     }
   }, [tableGroupsData, selectedTableGroupSeq]);
 

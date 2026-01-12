@@ -12,3 +12,6 @@ export const SSE_KEYS = {
 
 /** 관리자 언어 저장 키 */
 export const ADMIN_LANGUAGE_STORAGE_KEY = 'adminLanguage';
+
+/** 테이블 그룹 선택 키 */
+export const TABLE_GROUP_STORAGE_KEY = 'selectedTableGroupSeq';
