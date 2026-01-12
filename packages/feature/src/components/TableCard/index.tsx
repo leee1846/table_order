@@ -46,6 +46,8 @@ export const TableCard = ({
     ) : null
   ) : null;
 
+  const displayAmount = table.remainingAmount;
+
   return (
     <S.CardContainer onClick={onClick}>
       <S.CardHeader>
@@ -71,9 +73,7 @@ export const TableCard = ({
         {!table.menuItems ? (
           <S.StatusText>{t('빈 테이블')}</S.StatusText>
         ) : (
-          <S.TotalAmount>
-            {formatCurrency(table.totalAmount ?? 0)}
-          </S.TotalAmount>
+          <S.TotalAmount>{formatCurrency(displayAmount ?? 0)}</S.TotalAmount>
         )}
       </S.CardFooter>
     </S.CardContainer>

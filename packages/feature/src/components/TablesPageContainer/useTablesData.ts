@@ -6,6 +6,7 @@ import {
 } from '@repo/api/queries';
 import type { IGetDeviceListItem } from '@repo/api/types';
 import type { TableWithStatus } from './types';
+import { isOrderFullyPaid } from '../../utils';
 
 export interface UseTablesDataProps {
   shopCode: string;
@@ -96,9 +97,14 @@ export const useTablesData = ({
       const batteryLevel = deviceInfo?.battery ?? null;
 
       const hasOrder = !!orderInfo && !!orderInfo.orderDetailMenuList;
-
       // 주문 정보가 있는 경우
       if (hasOrder) {
+        const totalAmount = orderInfo.totalAmount ?? 0;
+        const remainingAmount = isOrderFullyPaid(
+          orderInfo.paymentList,
+          totalAmount
+        );
+
         // updateDate에서 시간만 추출 (HH:mm 형식)
         const orderTime = new Date(orderInfo.createDate).toLocaleTimeString(
           'ko-KR',
@@ -126,6 +132,7 @@ export const useTablesData = ({
           tableName: table.tableName ?? '',
           batteryLevel,
           totalAmount: orderInfo.totalAmount ?? null,
+          remainingAmount,
           orderTime,
           menuItems,
           hasOrder,
@@ -139,6 +146,7 @@ export const useTablesData = ({
         tableName: table.tableName ?? '',
         batteryLevel,
         totalAmount: null,
+        remainingAmount: null,
         orderTime: null,
         menuItems: null,
         hasOrder: false,

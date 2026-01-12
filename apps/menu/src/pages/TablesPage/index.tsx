@@ -1,7 +1,11 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppStorage } from '@repo/util/app';
-import { openConfirmDialog, openDualActionDialog } from '@repo/feature/utils';
+import {
+  openConfirmDialog,
+  openDualActionDialog,
+  isOrderFullyPaid,
+} from '@repo/feature/utils';
 import {
   useGetCurrentTableList,
   usePostDeviceDetail,
@@ -175,12 +179,19 @@ export const TablesPage = () => {
       );
       const orderTime = formatOrderTime(tableOrderData?.createDate);
 
+      // 주문 정보가 있는 경우 remainingAmount 계산
+      const totalAmount = tableOrderData?.totalAmount ?? 0;
+      const remainingAmount = hasOrder
+        ? isOrderFullyPaid(tableOrderData.paymentList ?? [], totalAmount)
+        : totalAmount;
+
       return {
         id: table.tableSeq,
         tableNumber: table.tableNumber,
         tableName: table.tableName ?? '',
         batteryLevel: deviceForTable?.battery ?? 0,
         totalAmount: tableOrderData?.totalAmount ?? null,
+        remainingAmount,
         orderTime,
         menuItems,
         hasOrder,

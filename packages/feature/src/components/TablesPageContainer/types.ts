@@ -4,6 +4,7 @@ export interface TableWithStatus {
   tableName: string;
   batteryLevel: number | null;
   totalAmount?: number | null;
+  remainingAmount?: number | null;
   orderTime?: string | null;
   menuItems?: Array<{
     name: string;
