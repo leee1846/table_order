@@ -25,6 +25,8 @@
   "취소할 메뉴가 없어요.": "There are no items to cancel.",
   "전체 메뉴를 취소하시겠어요?": "Cancel all items?",
   "전체 메뉴를 취소했어요.": "All items have been cancelled.",
+  "일부 결제 내역이 있어 취소할 수 없습니다.": "Cannot cancel because there are some payment records.",
+  "일부 결제 내역이 있어 할인할 수 없습니다": "Cannot apply discount because there are some payment records.",
   "월": "Mon",
   "화": "Tue",
   "수": "Wed",

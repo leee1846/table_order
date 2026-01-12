@@ -94,15 +94,16 @@ export const TableDetailContainer = ({
   const [splitPayments, setSplitPayments] = useState<SplitPayment[]>([]);
 
   // API 데이터 가져오기
-  const { data: orderHistoriesResponse, refetch } = useGetTableOrderHistories(
-    {
-      shopCode,
-      tableNumber,
-    },
-    {
-      enabled: !!shopCode && !!tableNumber,
-    }
-  );
+  const { data: orderHistoriesResponse, refetch: refetchOrderHistories } =
+    useGetTableOrderHistories(
+      {
+        shopCode,
+        tableNumber,
+      },
+      {
+        enabled: !!shopCode && !!tableNumber,
+      }
+    );
 
   const { data: menuboardResponse, refetch: refetchMenuboard } =
     useGetCategoriesWithMenus(
@@ -149,9 +150,9 @@ export const TableDetailContainer = ({
 
     // shopCode가 일치하고 type이 ORDER인 경우
     if (sseMessage.shopCode === shopCode && sseMessage.type === 'ORDER') {
-      refetch();
+      refetchOrderHistories();
     }
-  }, [sseMessage, shopCode, tableNumber, refetch]);
+  }, [sseMessage, shopCode, tableNumber, refetchOrderHistories]);
 
   // MENU SSE 이벤트 처리: 메뉴판 정보 재수신
   useEffect(() => {
@@ -261,7 +262,7 @@ export const TableDetailContainer = ({
 
         await cancelOrderAll({ shopCode, tableNumber });
         toast(t('전체 메뉴를 취소했어요.'));
-        await refetch();
+        await refetchOrderHistories();
         navigate('/tables');
       },
     });
@@ -292,7 +293,7 @@ export const TableDetailContainer = ({
 
     await clearOrder({ shopCode, tableNumber });
     toast(t('테이블을 정리했어요.'));
-    await refetch();
+    await refetchOrderHistories();
     navigate('/tables');
   };
 
@@ -316,7 +317,12 @@ export const TableDetailContainer = ({
           />
         </S.Left>
         <S.Right>
-          <ActionGrid onPress={handleActionPress} i18nInstance={i18nInstance} />
+          <ActionGrid
+            onPress={handleActionPress}
+            i18nInstance={i18nInstance}
+            paymentList={order.paymentList}
+            refetchOrderHistories={refetchOrderHistories}
+          />
         </S.Right>
       </S.Layout>
       {/* 메뉴 추가 모달 */}
@@ -338,7 +344,7 @@ export const TableDetailContainer = ({
         isOpen={isSelectCancelDialogOpen}
         onClose={() => setIsSelectCancelDialogOpen(false)}
         items={order.items}
-        onCancelSuccess={() => refetch()}
+        onCancelSuccess={() => refetchOrderHistories()}
         i18nInstance={i18nInstance}
       />
       {/* 금액 변경 모달 */}
@@ -349,7 +355,7 @@ export const TableDetailContainer = ({
           orderHistoriesResponse?.data?.orderDetailMenuList?.[0]
             ?.orderGroupUuid as string
         }
-        onApplySuccess={() => refetch()}
+        onApplySuccess={() => refetchOrderHistories()}
         i18nInstance={i18nInstance}
       />
       {/* 전체 할인 모달 */}
@@ -360,7 +366,7 @@ export const TableDetailContainer = ({
           orderHistoriesResponse?.data?.orderDetailMenuList?.[0]
             ?.orderGroupUuid as string
         }
-        onApplySuccess={() => refetch()}
+        onApplySuccess={() => refetchOrderHistories()}
         i18nInstance={i18nInstance}
       />
       {/* 서비스 금액 변경 모달 */}
@@ -377,7 +383,7 @@ export const TableDetailContainer = ({
         orderDetailMenuSeq={
           selectedItemForService ? Number(selectedItemForService.id) : 0
         }
-        onApplySuccess={() => refetch()}
+        onApplySuccess={() => refetchOrderHistories()}
         i18nInstance={i18nInstance}
       />
       {/* 카드 결제 모달 */}

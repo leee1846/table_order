@@ -12,17 +12,58 @@ import { BasicButton } from '@repo/ui/components';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { i18n as I18nInstance } from 'i18next';
+import { IPayment } from '@repo/api/types';
+import { toast } from '@repo/feature/utils';
 
 const { colors } = theme;
 
 export type ActionGridProps = {
   onPress?: (id: string) => void;
   i18nInstance?: I18nInstance;
+  paymentList: IPayment[];
+  refetchOrderHistories?: () => void;
 };
 
-export function ActionGrid({ onPress, i18nInstance }: ActionGridProps) {
+export function ActionGrid({
+  onPress,
+  i18nInstance,
+  paymentList,
+  refetchOrderHistories,
+}: ActionGridProps) {
   const { t } = useTranslation('admin', { i18n: i18nInstance });
   const navigate = useNavigate();
+
+  const handleSelectCancel = async () => {
+    await refetchOrderHistories?.();
+
+    if (paymentList.length > 0) {
+      toast(t('일부 결제 내역이 있어 취소할 수 없습니다.'));
+      return;
+    }
+    onPress?.('select-cancel');
+  };
+
+  const handleAllCancel = async () => {
+    await refetchOrderHistories?.();
+
+    if (paymentList.length > 0) {
+      toast(t('일부 결제 내역이 있어 취소할 수 없습니다.'));
+      return;
+    }
+    onPress?.('all-cancel');
+  };
+
+  const handleAllDiscount = async () => {
+    await refetchOrderHistories?.();
+
+    if (paymentList.length > 0) {
+      toast(t('일부 결제 내역이 있어 할인할 수 없습니다'));
+      return;
+    }
+    onPress?.('all-discount');
+  };
+
+  //선택 취소, 전체 취소, 전체 할인
   return (
     <Wrap>
       <Grid>
@@ -33,11 +74,11 @@ export function ActionGrid({ onPress, i18nInstance }: ActionGridProps) {
           <ListAltAddIcon width={24} height={24} color={colors.white} />
           <label>{t('메뉴 추가')}</label>
         </ActionBtn>
-        <ActionBtn onClick={() => onPress?.('select-cancel')}>
+        <ActionBtn onClick={handleSelectCancel}>
           <CancelIcon width={24} height={24} color={colors.grey[300]} />
           <label>{t('선택 취소')}</label>
         </ActionBtn>
-        <ActionBtn onClick={() => onPress?.('all-cancel')}>
+        <ActionBtn onClick={handleAllCancel}>
           <DeleteIcon width={24} height={24} color={colors.grey[300]} />
           <label>{t('전체 취소')}</label>
         </ActionBtn>
@@ -49,7 +90,7 @@ export function ActionGrid({ onPress, i18nInstance }: ActionGridProps) {
           />
           <label>{t('금액 변경')}</label>
         </ActionBtn>
-        <ActionBtn onClick={() => onPress?.('all-discount')}>
+        <ActionBtn onClick={handleAllDiscount}>
           <DiscountIcon width={24} height={24} color={colors.grey[300]} />
           <label>{t('전체 할인')}</label>
         </ActionBtn>

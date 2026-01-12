@@ -86,7 +86,7 @@ export function OrderItemsTable({
       {paymentList.map((payment) => (
         <Row key={payment.paymentSeq}>
           <Cell className="name">
-            {payment.paymentType === 'CARD' ? '카드' : '현금'}
+            {payment.paymentType === 'CARD' ? t('카드') : t('현금')}
           </Cell>
           <Cell className="qty">{}</Cell>
           <Cell className="price">
