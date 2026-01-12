@@ -22,7 +22,11 @@ import {
   SplitPaymentDialog,
   type SplitPayment,
 } from './orderSection/dialogs/SplitPaymentDialog';
-import { openDualActionDialog, toast } from '@repo/feature/utils';
+import {
+  isOrderFullyPaid,
+  openDualActionDialog,
+  toast,
+} from '@repo/feature/utils';
 import {
   useGetTableOrderHistories,
   usePutCancelOrderAll,
@@ -288,19 +292,13 @@ export const TableDetailContainer = ({
   const handleClearTable = async () => {
     await refetchOrderHistories();
 
-    const totalPaidAmount = order.paymentList
-      .filter((payment) => !payment.isCanceled)
-      .reduce((sum, payment) => sum + payment.transactionAmount, 0);
+    const remainingAmount = isOrderFullyPaid(
+      order.paymentList,
+      order.totalPrice
+    );
 
-    const remainingAmount = order.totalPrice - totalPaidAmount;
-
-    // 부동소수점 오차를 고려하여 0.01원 이내의 차이는 허용
     if (remainingAmount !== 0) {
-      toast(
-        t('결제가 완료되지 않았어요. 남은 금액: {{amount}}원', {
-          amount: remainingAmount.toLocaleString(),
-        })
-      );
+      toast(t('결제가 완료되지 않았어요.'));
       return;
     }
 

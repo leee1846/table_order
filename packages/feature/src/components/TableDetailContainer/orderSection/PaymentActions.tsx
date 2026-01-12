@@ -4,6 +4,7 @@ import { BasicButton } from '@repo/ui/components';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import type { i18n as I18nInstance } from 'i18next';
+import { isOrderFullyPaid } from '@repo/feature/utils';
 import type { Order } from './types';
 
 export type PaymentActionsProps = {
@@ -25,15 +26,10 @@ export function PaymentActions({
 }: PaymentActionsProps) {
   const { t } = useTranslation('admin', { i18n: i18nInstance });
 
-  const shouldShowClearButton = useMemo(() => {
-    const paidAmount = (order.paymentList ?? []).reduce(
-      (sum, payment) => sum + (payment.transactionAmount ?? 0),
-      0
-    );
-    const remainingPrice = (order.totalPrice ?? 0) - paidAmount;
-
-    return remainingPrice === 0;
-  }, [order]);
+  const shouldShowClearButton = useMemo(
+    () => isOrderFullyPaid(order.paymentList, order.totalPrice),
+    [order]
+  );
 
   return (
     <Wrap>

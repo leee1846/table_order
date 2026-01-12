@@ -560,5 +560,8 @@
   "선택 완료": "selected",
   "추천 이미지": "Recommended images",
   "이 카테고리에 이미지가 없습니다.": "No images in this category.",
-  "이미지를 불러올 수 없습니다.": "Unable to load image."
+  "이미지를 불러올 수 없습니다.": "Unable to load image.",
+  "결제가 완료되지 않았어요.": "Payment has not been completed.",
+  "테이블을 정리했어요.": "Table has been cleared.",
+  "앱을 종료하시겠습니까?": "Do you want to exit the app?"
 }

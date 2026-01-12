@@ -228,5 +228,7 @@
   "{{months}}개월": "{{months}} months",
   "결제 처리 중 오류가 발생했습니다.": "An error occurred while processing the payment.",
   "결제를 성공했습니다.": "Payment was successful.",
-  "주문 생성에 실패했습니다.": "Failed to create order."
+  "주문 생성에 실패했습니다.": "Failed to create order.",
+  "결제가 완료되지 않았어요.": "Payment has not been completed.",
+  "테이블을 정리했어요.": "Table has been cleared."
 }

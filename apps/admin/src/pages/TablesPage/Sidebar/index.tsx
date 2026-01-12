@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { TableGroupList } from './sidebar.styles';
 import { SystemControl } from '@repo/util/app';
 import { useGetShopThemePage } from '@repo/api/queries';
+import { openDualActionDialog } from '@repo/feature/utils';
 
 type MenuItem = {
   id: string;
@@ -87,8 +88,16 @@ export const Sidebar = ({
     }
   };
 
-  const handleClose = async () => {
-    await SystemControl.exitApp();
+  const handleClose = () => {
+    openDualActionDialog({
+      content: t('앱을 종료하시겠습니까?'),
+      primaryText: t('예'),
+      secondaryText: t('아니요'),
+      size: 'medium',
+      onConfirm: async () => {
+        await SystemControl.exitApp();
+      },
+    });
   };
 
   return (

@@ -36,7 +36,6 @@ export function OrderPanel({
   pickupAlertMessage,
   i18nInstance,
 }: OrderPanelProps) {
-  console.log('order', order);
   return (
     <Wrap>
       <OrderHeader
