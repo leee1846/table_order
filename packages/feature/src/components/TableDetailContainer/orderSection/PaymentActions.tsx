@@ -26,10 +26,13 @@ export function PaymentActions({
 }: PaymentActionsProps) {
   const { t } = useTranslation('admin', { i18n: i18nInstance });
 
-  const shouldShowClearButton = useMemo(
-    () => isOrderFullyPaid(order.paymentList, order.totalPrice),
-    [order]
-  );
+  const shouldShowClearButton = useMemo(() => {
+    const remainingAmount = isOrderFullyPaid(
+      order.paymentList,
+      order.totalPrice
+    );
+    return remainingAmount === 0;
+  }, [order]);
 
   return (
     <Wrap>
