@@ -14,6 +14,7 @@ export const DialogContainer = styled(BaseDialogContainer)`
 
 export const Container = styled.div`
   padding: 24px;
+  height: 100%;
 `;
 
 export const CloseButton = styled.button`

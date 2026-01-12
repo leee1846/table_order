@@ -177,8 +177,9 @@ export const SalesListDialog = ({
               onSelectOrder={(order) => setSelectedOrder(order)}
             />
           </S.Container>
-          {shopSetting?.isSalesTotalVisible !== false && (
-            <UIStyles.setting.Footer>
+
+          <UIStyles.setting.Footer>
+            {shopSetting?.isSalesTotalVisible !== false ? (
               <UIStyles.setting.FooterContents>
                 <p>
                   <span>{t('총 매출:')}</span>{' '}
@@ -205,13 +206,16 @@ export const SalesListDialog = ({
                   </span>
                 </p>
               </UIStyles.setting.FooterContents>
-              <Pagination
-                totalPages={totalPages}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-              />
-            </UIStyles.setting.Footer>
-          )}
+            ) : (
+              <div />
+            )}
+
+            <Pagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </UIStyles.setting.Footer>
         </S.DialogContainer>
       </ModalBackground>
 

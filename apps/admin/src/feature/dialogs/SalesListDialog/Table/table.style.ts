@@ -18,4 +18,3 @@ export const Tbody = styled(UIStyles.setting.Tbody)`
     height: calc((100% - 60px) / 6);
   }
 `;
-
