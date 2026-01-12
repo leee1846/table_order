@@ -1,6 +1,6 @@
 import { useAdminTranslation } from '@/config/i18n';
 import { useEffect, useMemo, useState } from 'react';
-import type { IShopSetting, TShopCardTerminalCode } from '@repo/api/types';
+import type { IShopSetting, TVanCode } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
@@ -38,32 +38,16 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
     [t]
   );
 
-  //TODO 졔님한테 가상결제 -> 결제,  결제버튼 미사용 -> 미사용 으로 쓰이고 있다고 전달하기
-  const cardTerminalOptions = useMemo(
-    () => [
-      {
-        value: 'VIRTUAL' as TShopCardTerminalCode,
-        label: t('결제'),
-      },
-      // {
-      //   value: 'EASY' as TShopCardTerminalCode,
-      //   label: t('이지카드'),
-      // },
-      {
-        value: 'NO_BUTTON' as TShopCardTerminalCode,
-        label: t('미사용'), //결제버튼 미사용
-      },
-    ],
-    [t]
-  );
+  const cardTerminalOptions = [
+    { value: 'KICC', label: t('KICC') },
+    { value: 'NONE', label: t('미사용') },
+  ];
 
   const [paymentType, setPaymentType] =
     useState<PaymentTypeOption>('postpayment');
-  const [vanCode, setVanCode] = useState('');
+  const [vanCode, setVanCode] = useState<TVanCode>('EASY');
   const [vanId, setVanId] = useState('');
-  const [shopCardTerminal, setShopCardTerminal] = useState<
-    TShopCardTerminalCode | ''
-  >('');
+  const [shopCardTerminal, setShopCardTerminal] = useState<string>('');
   const [currencySetting, setCurrencySetting] = useState('');
   const [serviceChargeRate, setServiceChargeRate] = useState('');
   const [isSalesTotalVisible, setIsSalesTotalVisible] = useState(false);
@@ -170,9 +154,23 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
     vanId,
   ]);
 
-  const vanOptions = vanCode
-    ? [{ value: vanCode, label: vanCode }]
-    : [{ value: '', label: t('미지정') }];
+  const vanOptions = useMemo(
+    () => [
+      // {
+      //   value: 'VIRTUAL' as TShopCardTerminalCode,
+      //   label: t('가상 결제'),
+      // },
+      {
+        value: 'EASY' as TVanCode,
+        label: t('이지카드'),
+      },
+      {
+        value: 'NO_BUTTON' as TVanCode,
+        label: t('결제버튼 미사용'),
+      },
+    ],
+    [t]
+  );
 
   return (
     <SectionWrapper
@@ -205,7 +203,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             <Dropdown
               options={vanOptions}
               value={vanCode}
-              onChange={(value) => setVanCode(value as string)}
+              onChange={(value) => setVanCode(value as TVanCode)}
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
@@ -265,9 +263,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
         <Dropdown
           options={cardTerminalOptions}
           value={shopCardTerminal}
-          onChange={(value) =>
-            setShopCardTerminal(value as TShopCardTerminalCode | '')
-          }
+          onChange={(value) => setShopCardTerminal(value as string)}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>

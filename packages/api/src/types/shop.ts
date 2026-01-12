@@ -85,7 +85,7 @@ export type TMenuboardTemplateType =
   | 'VERTICAL_TEXT'
   | 'VERTICAL_IMAGE';
 export type TShopPosCode = 'NONE' | 'OKPOS';
-export type TShopCardTerminalCode = 'VIRTUAL' | 'EASY' | 'NO_BUTTON';
+export type TVanCode = 'VIRTUAL' | 'EASY' | 'NO_BUTTON';
 export type TShopLanguage = 'KO' | 'EN' | 'JP' | 'CH' | 'RU';
 
 export interface IShopLocaleMap {
@@ -113,12 +113,12 @@ export interface IShopSetting {
   useSinglePageMenuboard: boolean;
   menuboardAdminPassword: string | null;
   isAdminLocked: boolean;
-  vanCode: TPaymentMethodCode;
+  vanCode: TVanCode;
   isSalesTotalVisible: boolean;
   salesPassword: string | null;
   menuboardTemplateType: TMenuboardTemplateType;
   shopPosCode: TShopPosCode;
-  shopCardTerminalCode: TShopCardTerminalCode;
+  shopCardTerminalCode: string; //아직 어떤 값 넘어올지 몰라서 string으로 해놓음
   shopLanguage: TShopLanguage;
   useLocaleBeforeOrder: boolean;
   usePrepayment: boolean;

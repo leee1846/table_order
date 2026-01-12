@@ -5,6 +5,7 @@ import { formatCurrency } from '@repo/util/string';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import type { i18n as I18nInstance } from 'i18next';
+import { IPayment } from '@repo/api/types';
 
 const { colors } = theme;
 
@@ -13,12 +14,14 @@ export type OrderItemsTableProps = {
   discountRate: number;
   onItemClick?: (item: OrderItem) => void;
   i18nInstance?: I18nInstance;
+  paymentList: IPayment[];
 };
 export function OrderItemsTable({
   items,
   discountRate,
   onItemClick,
   i18nInstance,
+  paymentList,
 }: OrderItemsTableProps) {
   const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
 
@@ -80,6 +83,17 @@ export function OrderItemsTable({
           <Cell className="price">{`-${formatCurrency(discountAmount)}`}</Cell>
         </Row>
       )}
+      {paymentList.map((payment) => (
+        <Row key={payment.paymentSeq}>
+          <Cell className="name">
+            {payment.paymentType === 'CARD' ? '카드' : '현금'}
+          </Cell>
+          <Cell className="qty">{}</Cell>
+          <Cell className="price">
+            {`-${formatCurrency(payment.transactionAmount)}`}
+          </Cell>
+        </Row>
+      ))}
     </TableWrap>
   );
 }

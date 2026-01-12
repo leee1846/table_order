@@ -1,4 +1,5 @@
 import type { IApiResponse, TVoidApiResponse } from './common';
+import { TPaymentType } from './sales';
 
 /**
  * 픽업 알림 전송 요청 타입
@@ -244,6 +245,44 @@ export interface ITableCurrentStatus {
 }
 
 /**
+ * 결제 내역 정보
+ */
+export interface IPayment {
+  /** 결제 SEQ */
+  paymentSeq?: number;
+  /** 주문그룹 UUID */
+  orderGroupUuid: string;
+  /** 결제수단 (CASH : 현금, CARD : 카드) */
+  paymentType: TPaymentType;
+  /** 결제금액 */
+  transactionAmount: number;
+  /** (카드결제) 거래고유번호 */
+  transactionNumber?: string;
+  /** (카드결제) 거래승인번호 */
+  approvalNumber?: string;
+  /** (카드결제) 카드번호 */
+  cardNumber?: string;
+  /** (카드결제) 카드발급사 */
+  issuerCompany?: string;
+  /** (카드결제) 카드매입사 */
+  acquirerCompany?: string;
+  /** (카드결제) 할부개월수 */
+  installmentMonths?: string;
+  /** (카드결제) 거래승인일시 */
+  transactionDate?: string;
+  /** 취소 여부 */
+  isCanceled: boolean;
+  /** 취소일시 */
+  cancelDate?: string;
+  /** 취소 거래고유번호 */
+  cancelTransactionNumber?: string;
+  /** 생성일시 */
+  createDate?: string;
+  /** 주문 UUID */
+  orderUuid?: string;
+}
+
+/**
  * 현재 테이블 정보 (GET /order/{shopCode} 응답)
  */
 export interface ICurrentTable {
@@ -256,6 +295,7 @@ export interface ICurrentTable {
   customerCount: number | null;
   kidsCustomerCount: number | null;
   orderDetailMenuList: ITableCurrentStatus[];
+  paymentList: IPayment[];
 }
 
 /**

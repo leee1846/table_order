@@ -114,7 +114,6 @@ export const TableDetailContainer = ({
         enabled: !!shopCode && !!tableNumber,
       }
     );
-
   const menuboardCategories = menuboardResponse?.data ?? [];
 
   // 매장 상세 정보 조회
@@ -183,6 +182,7 @@ export const TableDetailContainer = ({
         discountRate: 0,
         numberOfPeople: calculatedNumberOfPeople,
         items: [],
+        paymentList: [],
         totalCount: 0,
         totalPrice: 0,
         orderTime: '',
@@ -234,6 +234,7 @@ export const TableDetailContainer = ({
         .reduce((sum, item) => sum + item.qty, 0),
       totalPrice: data.totalAmount || 0,
       orderTime,
+      paymentList: data.paymentList ?? [],
     };
   }, [orderHistoriesResponse, tableNumber]);
 

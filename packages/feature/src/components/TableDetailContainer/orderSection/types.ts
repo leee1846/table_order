@@ -1,3 +1,5 @@
+import { IPayment } from '@repo/api/types';
+
 export interface OrderItemOption {
   id: string;
   name: string;
@@ -21,6 +23,7 @@ export interface Order {
   discountRate: number;
   numberOfPeople?: number;
   items: OrderItem[];
+  paymentList: IPayment[];
   totalCount: number;
   totalPrice: number;
   orderTime: string;
