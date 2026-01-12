@@ -59,6 +59,7 @@ export function OrderPanel({
       <OrderSummary
         totalCount={order.totalCount}
         totalPrice={order.totalPrice}
+        paymentList={order.paymentList ?? []}
       />
       {/* TODO slot 뚫어서 받기 */}
       <PaymentActions
