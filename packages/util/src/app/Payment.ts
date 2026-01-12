@@ -160,6 +160,7 @@ export const Payment: IPayment = {
       tran_type: 'D4',
       amount: options.amount.toString(),
       approval_num: options.orgApprNum,
+      // YYMMDD 형식
       approval_date: options.orgApprDate,
       installment: '00', // 취소는 항상 일시불 처리
       tran_no: Date.now().toString(),

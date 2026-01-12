@@ -1,16 +1,14 @@
-import { TAppVersionType } from '../types/common';
+import { TAppType } from '../types/app';
 
 export const queryKeys = {
   common: {
     all: ['common'] as const,
     holidays: () => [...queryKeys.common.all, 'holidays'] as const,
-    latestVersion: (type: TAppVersionType) =>
-      [...queryKeys.common.all, 'latestVersion', type] as const,
   },
 
   app: {
     all: ['app'] as const,
-    latestVersion: (appType: string) =>
+    latestVersion: (appType: TAppType) =>
       [...queryKeys.app.all, 'latestVersion', appType] as const,
   },
 
@@ -57,8 +55,7 @@ export const queryKeys = {
     existingImageList: (shopCode: string) =>
       [...queryKeys.menu.all, 'existingImageList', shopCode] as const,
     /** 추천 메뉴 이미지 목록 조회 */
-    sampleImageList: () =>
-      [...queryKeys.menu.all, 'sampleImageList'] as const,
+    sampleImageList: () => [...queryKeys.menu.all, 'sampleImageList'] as const,
   },
 
   orders: {
