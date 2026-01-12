@@ -1,4 +1,3 @@
-import { TPaymentMethodCode } from './payment';
 import { IApiResponse, TVoidApiResponse } from './common';
 
 // TODO: 타입이 정의되자않아 정의되면 변경 필요

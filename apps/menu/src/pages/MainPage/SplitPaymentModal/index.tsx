@@ -434,9 +434,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
   const handlePaymentSuccess = (isAllPaid: boolean): void => {
     if (!isAllPaid) {
-      // 아직 결제할 메뉴가 남아있으면 모달만 닫기
       setModalData('isCardPaymentProgressModalOpened', false);
-      // 결제 성공 toast 표시 (부분 결제든 전체 결제든 항상 표시)
       toast(t('결제를 성공했습니다.'), {
         duration: TOAST_DURATION,
         position: TOAST_POSITION,

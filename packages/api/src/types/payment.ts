@@ -1,3 +1,5 @@
+import { TVanCode } from './shop';
+
 export interface IPostPaymentRequest {
   orderGroupUuid: string;
   paymentType: 'CARD' | 'CASH';
@@ -11,10 +13,8 @@ export interface IPostPaymentRequest {
   transactionDate?: string;
 }
 
-export type TPaymentMethodCode = 'EASY';
-
 export interface IPostPaymentApprovalRequestParams {
-  paymentMethodCode: TPaymentMethodCode;
+  paymentMethodCode: TVanCode;
   orderGroupUuid: string;
   orderUuid: string;
 }

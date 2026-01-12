@@ -38,7 +38,9 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   const currencySymbol =
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
-  const firstImage = menu.menuImageList?.[0];
+  const firstImage = menu.menuImageList?.filter(
+    (image) => image.imageIndex === 0
+  )[0];
 
   const { data: modalData, openMenuDetail, closeMenuDetail } = useModalStore();
 
