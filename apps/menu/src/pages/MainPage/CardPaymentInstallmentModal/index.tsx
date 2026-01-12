@@ -22,6 +22,7 @@ import type { IOrder } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
 
 const INSTALLMENT_MINIMUM_AMOUNT = 50000;
 const INSTALLMENT_MONTHS_STANDARD = [36, 48, 60];
@@ -141,7 +142,9 @@ export const CardPaymentInstallmentModal = ({
   const { theme } = useThemeMode();
   const navigate = useNavigate();
   const modalStore = useModalStore();
+
   const { shopData } = useShopData();
+  const { data: shopDetailData } = useShopDetailData();
   const { data: deviceData } = useDeviceData();
   const { data: cartData } = useCartStore();
   const { data: customerCountData } = useCustomerCountStore();
@@ -237,7 +240,9 @@ export const CardPaymentInstallmentModal = ({
 
     await postPaymentApproval({
       params: {
-        paymentMethodCode: PAYMENT_METHOD_CODE_EASY,
+        // TODO: 테스트 중이라 임시로 EASY로 설정
+        // paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? '',
+        paymentMethodCode: 'EASY',
         orderGroupUuid,
         orderUuid,
       },
