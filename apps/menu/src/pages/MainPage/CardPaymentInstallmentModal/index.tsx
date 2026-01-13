@@ -173,13 +173,15 @@ export const CardPaymentInstallmentModal = ({
     return { orderGroupUuid, orderUuid };
   };
 
-  const processPayment = async (orderGroupUuid: string, orderUuid: string) => {
+  const processPayment = async () => {
     modalStore.setModalData('isCardPaymentProgressModalOpened', true);
 
     const paymentResult: IPaymentResponse = await Payment.approve({
       amount: totalPrice,
       installment: formatInstallmentMonthsToString(selectedInstallmentMonths),
     });
+
+    const { orderGroupUuid, orderUuid } = await createOrder();
 
     await postPaymentApproval({
       params: {
@@ -236,8 +238,7 @@ export const CardPaymentInstallmentModal = ({
 
   const handleConfirmPayment = async () => {
     try {
-      const { orderGroupUuid, orderUuid } = await createOrder();
-      await processPayment(orderGroupUuid, orderUuid);
+      await processPayment();
       handlePaymentSuccess();
     } catch (error) {
       // 사용자가 결제를 직접 취소했을 경우

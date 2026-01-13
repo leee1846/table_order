@@ -359,36 +359,6 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     return { orderGroupUuid, orderUuid };
   };
 
-  const processPayment = async (
-    orderGroupUuid: string,
-    orderUuid: string,
-    paymentAmount: number
-  ): Promise<IPaymentResponse> => {
-    setModalData('isCardPaymentProgressModalOpened', true);
-
-    // 5만원 미만이면 항상 일시불('00')으로 설정
-    const installmentMonths =
-      paymentAmount < INSTALLMENT_MINIMUM_AMOUNT
-        ? INSTALLMENT_LUMP_SUM
-        : selectedInstallmentMonths;
-
-    const paymentResult: IPaymentResponse = await Payment.approve({
-      amount: paymentAmount,
-      installment: formatInstallmentMonthsToString(installmentMonths),
-    });
-
-    await postPaymentApproval({
-      params: {
-        paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
-        orderGroupUuid,
-        orderUuid,
-      },
-      data: paymentResult,
-    });
-
-    return paymentResult;
-  };
-
   const ensureOrderCreated = async (): Promise<PaymentResult> => {
     if (orderGroupUuid && orderUuid) {
       return { orderGroupUuid, orderUuid };
@@ -405,8 +375,33 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     onSuccess: () => void
   ): Promise<void> => {
     try {
+      setModalData('isCardPaymentProgressModalOpened', true);
+
+      // 5만원 미만이면 항상 일시불('00')으로 설정
+      const installmentMonths =
+        paymentAmount < INSTALLMENT_MINIMUM_AMOUNT
+          ? INSTALLMENT_LUMP_SUM
+          : selectedInstallmentMonths;
+
+      // 1. Payment.approve를 먼저 실행
+      const paymentResult: IPaymentResponse = await Payment.approve({
+        amount: paymentAmount,
+        installment: formatInstallmentMonthsToString(installmentMonths),
+      });
+
+      // 2. 처음 결제시에만 주문 생성, 이후에는 기존 주문 재사용
       const { orderGroupUuid, orderUuid } = await ensureOrderCreated();
-      await processPayment(orderGroupUuid, orderUuid, paymentAmount);
+
+      // 3. postPaymentApproval 실행
+      await postPaymentApproval({
+        params: {
+          paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
+          orderGroupUuid,
+          orderUuid,
+        },
+        data: paymentResult,
+      });
+
       onSuccess();
     } catch (error) {
       if (isUserCancelError(error)) {
@@ -585,19 +580,21 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
   return (
     <>
-      <ModalBackground onClick={onClose}>
+      <ModalBackground>
         <S.Container
           role="dialog"
           aria-modal="true"
           aria-labelledby="split-payment-title"
         >
-          <S.CloseButton
-            type="button"
-            onClick={onClose}
-            aria-label={t('모달 닫기')}
-          >
-            <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
-          </S.CloseButton>
+          {!hasAnyPayment && (
+            <S.CloseButton
+              type="button"
+              onClick={onClose}
+              aria-label={t('모달 닫기')}
+            >
+              <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
+            </S.CloseButton>
+          )}
 
           <S.LeftContainer>
             <h2 id="split-payment-title">{t('분할 결제 방식을 선택하세요')}</h2>
