@@ -65,3 +65,18 @@ export const getAppVersionDetail = async (
 
   return response.data;
 };
+
+export const updateAppVersion = async (
+  appVersionSeq: number,
+  params: ICreateAppVersionParams & { appVersionSeq: number }
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.APP.VERSION,
+    data: { ...params, appVersionSeq },
+  });
+
+  return response.data;
+};

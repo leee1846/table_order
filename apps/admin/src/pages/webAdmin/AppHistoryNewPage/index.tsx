@@ -5,6 +5,7 @@ import { AppHistoryManage } from '@/feature/AdminWeb/AppHistoryManage';
 import { validateAppHistoryData } from '@/feature/AdminWeb/util';
 import { toast } from '@repo/feature/utils';
 import { queryKeys, usePostAppVersion } from '@repo/api/queries';
+import { formatDateTime } from '@repo/util/date';
 import type { AppHistoryFormData } from '@/feature/AdminWeb/AppHistoryManage/constants';
 import type { ICreateAppVersionParams } from '@repo/api/types';
 
@@ -17,13 +18,7 @@ const convertToCreateParams = (
     if (!dateTime) {
       return '';
     }
-    // "YYYY-MM-DD HH:mm:ss" 형식에서 숫자만 추출
-    const digits = dateTime.replace(/\D/g, '');
-    if (digits.length >= 14) {
-      return digits.slice(0, 14);
-    }
-    // 부족한 경우 0으로 채움
-    return digits.padEnd(14, '0');
+    return formatDateTime(dateTime, 'YYYYMMDDHHmmss');
   };
 
   return {
