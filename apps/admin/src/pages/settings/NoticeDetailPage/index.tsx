@@ -78,8 +78,7 @@ export const NoticeDetailPage = () => {
               </span>
               <span>•</span>
               <span>
-                {/* TODO 조회수 추가, 아직 필드 없음 */}
-                {t('조회수')}: {notice.view ?? 0}
+                {t('조회수')}: {notice.views ?? 0}
               </span>
             </S.MetaSection>
           </S.HeaderSection>

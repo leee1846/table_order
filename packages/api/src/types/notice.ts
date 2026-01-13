@@ -39,7 +39,7 @@ export interface INoticeListData {
  * 공지사항 상세 정보 (view 필드 포함)
  */
 export interface INoticeDetail extends INotice {
-  view: number;
+  views: number;
 }
 
 /**
