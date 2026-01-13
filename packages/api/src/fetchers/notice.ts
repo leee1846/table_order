@@ -1,9 +1,12 @@
 import { getAxiosInstance } from '../cores/axios';
 import { ENDPOINTS } from '../cores/endpoints';
+import { TVoidApiResponse } from '../types/common';
 import type {
   IGetNoticeListParams,
   TGetNoticeListResponse,
   TGetNoticeDetailResponse,
+  INotice,
+  ICreateNoticeRequest,
 } from '../types/notice';
 
 /**
@@ -49,4 +52,17 @@ export const updateNoticeView = async (noticeSeq: number): Promise<void> => {
     method: 'GET',
     url: ENDPOINTS.NOTICE.VIEW(noticeSeq),
   });
+};
+
+export const createNotice = async (
+  params: ICreateNoticeRequest
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.NOTICE.NOTICE,
+    data: params,
+  });
+
+  return response.data;
 };

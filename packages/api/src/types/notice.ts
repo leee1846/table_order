@@ -51,3 +51,9 @@ export type TGetNoticeListResponse = IApiResponse<INoticeListData>;
  * GET /notice/{noticeSeq} 응답 타입
  */
 export type TGetNoticeDetailResponse = IApiResponse<INoticeDetail>;
+
+export interface ICreateNoticeRequest {
+  noticeTitle: string;
+  noticeContent: string;
+  boardType: TNoticeBoardType;
+}
