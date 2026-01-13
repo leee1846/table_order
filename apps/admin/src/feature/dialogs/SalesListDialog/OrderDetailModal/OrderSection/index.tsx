@@ -34,14 +34,14 @@ export const OrderSection = ({ order }: Props) => {
           {t('테이블 번호 ')}:{' '}
           {order.tableNumber ?? orderLog?.tableNumber ?? '-'}
         </p>
-        <div>
+        {/* <div>
           <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
             {t('재결제')}
           </BasicButton>
           <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
             {t('재판매')}
           </BasicButton>
-        </div>
+        </div> */}
       </S.TitleContainer>
 
       <S.OrderInfoContainer>

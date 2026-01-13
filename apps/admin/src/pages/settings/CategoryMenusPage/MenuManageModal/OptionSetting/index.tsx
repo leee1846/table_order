@@ -29,6 +29,8 @@ export const OptionSetting = ({ isPosLinked }: Props) => {
   const activeOptionGroupList = optionGroupList.filter(
     (group) => !group.isDeleted
   );
+  const selectedLanguageCode = formValues.selectedLanguageCode as string;
+
   const isMenuCreateMode = mode === 'create';
 
   const handleOpenModal = (
@@ -116,10 +118,14 @@ export const OptionSetting = ({ isPosLinked }: Props) => {
             const optionList = optionGroup.optionList ?? [];
             const key = getOptionGroupKey(optionGroup.optionGroupSeq, index);
 
+            const displayOptionGroupName =
+              optionGroup.localeOptionGroupName?.[selectedLanguageCode] ??
+              optionGroup.optionGroupName;
+
             return (
               <S.OptionGroup key={key}>
                 <S.OptionNames>
-                  <p>{optionGroup.optionGroupName}</p>
+                  <p>{displayOptionGroupName}</p>
                   <span>
                     {optionList.map((option, optionIndex) => {
                       const optionKey = getOptionKey(
@@ -127,10 +133,13 @@ export const OptionSetting = ({ isPosLinked }: Props) => {
                         index,
                         optionIndex
                       );
+                      const displayOptionName =
+                        option.localeOptionName?.[selectedLanguageCode] ??
+                        option.optionName;
 
                       return (
                         <span key={optionKey}>
-                          {option.optionName}
+                          {displayOptionName}
                           {optionIndex < optionList.length - 1 ? ', ' : ''}
                         </span>
                       );

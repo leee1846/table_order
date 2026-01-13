@@ -66,6 +66,8 @@ export const OptionGroupManageModal = ({
   const tempOptionGroupSeqRef = useRef(0);
   const tempOptionSeqRef = useRef(0);
 
+  const selectedLanguageCode = formValues.selectedLanguageCode as string;
+
   // 메뉴가 생성 모드인지 수정 모드인지
   const isMenuCreateMode = mode === 'create';
   const getTempOptionGroupSeq = useCallback(() => {
@@ -134,7 +136,10 @@ export const OptionGroupManageModal = ({
   //모달 열릴 때마다 초기화
   useEffect(() => {
     if (existingOptionGroup) {
-      setOptionGroupName(existingOptionGroup.optionGroupName);
+      setOptionGroupName(
+        existingOptionGroup.localeOptionGroupName?.[selectedLanguageCode] ??
+          existingOptionGroup.optionGroupName
+      );
       setSettings({
         minQuantity: existingOptionGroup.minQuantity,
         maxQuantity: existingOptionGroup.maxQuantity,
@@ -149,7 +154,9 @@ export const OptionGroupManageModal = ({
           return {
             optionSeq: option.optionSeq,
             optionGroupSeq: existingOptionGroup.optionGroupSeq,
-            optionName: option.optionName,
+            optionName:
+              option.localeOptionName?.[selectedLanguageCode] ??
+              option.optionName,
             optionPrice: option.optionPrice,
             isDeleted: option.isDeleted ?? false,
             index: option.index,
