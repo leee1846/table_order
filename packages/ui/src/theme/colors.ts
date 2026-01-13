@@ -60,5 +60,6 @@ export const colors = {
     1200: '#EEF0FF', // primary[100]
     1300: '#4F78FF', // primary[500]
     1400: '#8FA2FF', // primary[400]
+    1500: '#4F78FF', // primary[500]
   },
 } as const;

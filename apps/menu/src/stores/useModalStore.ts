@@ -31,6 +31,8 @@ interface IModalStore {
     orderCompleteTotalPrice: number;
     /** 현금 결제 유도 모달 */
     isCashPaymentInducementModalOpened: boolean;
+    /** 현금 결제 유도 모달 총 가격 */
+    cashPaymentInducementTotalPrice: number;
   };
 
   setModalData: <K extends keyof IModalStore['data']>(
@@ -63,6 +65,7 @@ const initialData = {
   orderCompleteData: null,
   orderCompleteTotalPrice: 0,
   isCashPaymentInducementModalOpened: false,
+  cashPaymentInducementTotalPrice: 0,
 };
 
 /**

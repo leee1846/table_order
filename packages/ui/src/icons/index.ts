@@ -71,3 +71,4 @@ export { default as ruFlagIcon } from './ru_flag.svg';
 export { default as closedIcon } from './closed.svg';
 export { default as dishWashIcon } from './dish_wash.svg';
 export { default as cardInsertGif } from './card-insert.gif';
+export { default as printerIcon } from './3D_Success.svg';

@@ -11,7 +11,6 @@ import { css } from '@emotion/react';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { openDualActionDialog } from '@repo/feature/utils';
-import { usePostPayment } from '@repo/api/queries';
 import { useThemeMode } from '@repo/ui';
 import { CardPaymentInstallmentModal } from '../CardPaymentInstallmentModal';
 import { CashPaymentInducement } from '@/feature/CashPaymentInducement';
@@ -44,7 +43,6 @@ export const PaymentsModal = ({
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
   const { data: shopDetailData } = useShopDetailData();
-  const { mutateAsync: postPayment } = usePostPayment();
   const { data: modalData, setModalData } = useModalStore();
   const { data: cartData } = useCartStore();
 
@@ -81,16 +79,11 @@ export const PaymentsModal = ({
         onConfirm: async () => {
           const response = await executePostpaidOrder();
           if (response.result) {
-            await postPayment({
-              orderGroupUuid: response.orderGroupUuid,
-              paymentType: 'CASH',
-              transactionAmount: response.totalPrice,
-            });
-
             // 현금 결제 유도 설정이 활성화되어 있으면 전체 화면 다이얼로그 열기
             if (
               shopDetailData?.shopSetting?.usePrepaymentCashPaymentInducement
             ) {
+              setModalData('cashPaymentInducementTotalPrice', totalPrice);
               setModalData('isCashPaymentInducementModalOpened', true);
               return;
             }

@@ -269,9 +269,7 @@ export const useSSEHandler = () => {
           clearInitialPage();
           clearCart();
           clearCustomerCountData();
-          useModalStore
-            .getState()
-            .setModalData('isCashPaymentInducementModalOpened', false);
+          useModalStore.getState().closeAllModals();
         }
         return;
       }
