@@ -50,11 +50,6 @@ const NoticesPage = lazy(() =>
     default: module.NoticesPage,
   }))
 );
-const NoticeDetailPage = lazy(() =>
-  import('@/pages/settings/NoticeDetailPage').then((module) => ({
-    default: module.NoticeDetailPage,
-  }))
-);
 const CategoriesPage = lazy(() =>
   import('@/pages/settings/CategoriesPage').then((module) => ({
     default: module.CategoriesPage,
@@ -111,11 +106,6 @@ const SettingsTablesPage = lazy(() =>
 const MiscellaneousPage = lazy(() =>
   import('@/pages/settings/MiscellaneousPage').then((module) => ({
     default: module.MiscellaneousPage,
-  }))
-);
-const MyPage = lazy(() =>
-  import('@/pages/settings/MyPage').then((module) => ({
-    default: module.MyPage,
   }))
 );
 
@@ -429,14 +419,6 @@ export const router = createBrowserRouter([
             element: <NoticesPage />,
           },
           {
-            path: ROUTES.SETTINGS.NOTICES.DETAIL.path,
-            element: (
-              <Suspense fallback={<FullscreenLoadingSpinner />}>
-                <NoticeDetailPage />
-              </Suspense>
-            ),
-          },
-          {
             path: ROUTES.SETTINGS.CATEGORIES.path,
             element: <CategoriesPage />,
           },
@@ -507,14 +489,6 @@ export const router = createBrowserRouter([
           {
             path: ROUTES.SETTINGS.MISCELLANEOUS.path,
             element: <MiscellaneousPage />,
-          },
-          {
-            path: ROUTES.SETTINGS.MYPAGE.path,
-            element: (
-              <Suspense fallback={<FullscreenLoadingSpinner />}>
-                <MyPage />
-              </Suspense>
-            ),
           },
         ],
       },
