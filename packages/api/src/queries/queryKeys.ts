@@ -18,6 +18,8 @@ export const queryKeys = {
         pageSize,
         searchWord,
       ] as const,
+    versionDetail: (appVersionSeq: number) =>
+      [...queryKeys.app.all, 'versionDetail', appVersionSeq] as const,
   },
 
   shop: {

@@ -42,3 +42,5 @@ export interface ICreateAppVersionParams {
   title: string;
   deployDate: string;
 }
+
+export type TGetAppVersionResponse = IApiResponse<IAppVersion>;

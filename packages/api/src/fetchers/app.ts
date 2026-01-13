@@ -6,6 +6,7 @@ import type {
   IGetAppVersionListParams,
   TGetAppVersionListResponse,
   ICreateAppVersionParams,
+  TGetAppVersionResponse,
 } from '../types/app';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -44,6 +45,22 @@ export const createAppVersion = async (
     method: 'POST',
     url: ENDPOINTS.APP.VERSION,
     data: params,
+  });
+
+  return response.data;
+};
+
+export const getAppVersionDetail = async (
+  appVersionSeq: number
+): Promise<TGetAppVersionResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+
+  const response = await axiosInstance<TGetAppVersionResponse>({
+    method: 'GET',
+    url: ENDPOINTS.APP.VERSION,
+    params: {
+      appVersionSeq,
+    },
   });
 
   return response.data;
