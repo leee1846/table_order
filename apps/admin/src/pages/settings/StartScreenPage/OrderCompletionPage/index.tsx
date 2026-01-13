@@ -33,9 +33,9 @@ export const OrderCompletionPage = ({
     e.target.value = '';
   };
 
-  const handleDeleteImage = () => {
-    onChangeImage(null);
-  };
+  // const handleDeleteImage = () => {
+  //   onChangeImage(null);
+  // };
 
   return (
     <S.Container>

@@ -1,23 +1,11 @@
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 
-export const Container = styled.ul<{
-  pageSize?: number;
-  noticesLength?: number;
-}>`
+export const Container = styled.ul`
   display: flex;
   flex-direction: column;
-  height: 100%;
   overflow-y: auto;
-
-  ${({ pageSize, noticesLength }) =>
-    pageSize && noticesLength && pageSize === noticesLength
-      ? `
-    & > li:last-child {
-      border-bottom: none;
-    }
-  `
-      : ''}
+  flex: 1;
 `;
 
 export const Message = styled.p`
@@ -27,13 +15,32 @@ export const Message = styled.p`
   text-align: center;
 `;
 
-export const Notice = styled.li<{ isOpen: boolean }>`
+export const Notice = styled.li<{
+  isOpen: boolean;
+  pageSize?: number;
+  noticesLength?: number;
+}>`
   display: flex;
   flex-direction: column;
   background-color: ${({ isOpen }) =>
     isOpen ? theme.colors.grey[50] : theme.colors.white};
-  flex: 0 0 10%;
   border-bottom: 1px solid ${theme.colors.grey[200]};
+
+  ${({ pageSize, noticesLength }) =>
+    pageSize && noticesLength && pageSize === noticesLength
+      ? `
+    &:last-child {
+      border-bottom: none;
+    }
+  `
+      : ''}
+
+  ${({ isOpen }) =>
+    !isOpen
+      ? `
+    height: 9.9%;
+  `
+      : ''}
 `;
 
 export const Header = styled.button<{ isOpen: boolean }>`
@@ -107,6 +114,7 @@ export const CreatedAt = styled.p`
 
 export const Content = styled.div`
   padding: 24px 40px 40px;
+
   & > p {
     ${TYPOGRAPHY.ST_5}
     color: ${theme.colors.grey[700]};

@@ -78,12 +78,17 @@ export const Notices = ({
   }
 
   return (
-    <S.Container pageSize={pageSize} noticesLength={notices.length}>
+    <S.Container>
       {notices.map((notice) => {
         const isOpen = openNoticeId === notice.noticeSeq;
 
         return (
-          <S.Notice key={notice.noticeSeq} isOpen={isOpen}>
+          <S.Notice
+            key={notice.noticeSeq}
+            isOpen={isOpen}
+            pageSize={pageSize}
+            noticesLength={notices.length}
+          >
             <S.Header
               type="button"
               onClick={() => handleOpenNotice(notice.noticeSeq)}
