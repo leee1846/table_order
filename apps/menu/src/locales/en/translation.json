@@ -230,5 +230,9 @@
   "결제를 성공했습니다.": "Payment was successful.",
   "주문 생성에 실패했습니다.": "Failed to create order.",
   "결제가 완료되지 않았어요.": "Payment has not been completed.",
-  "테이블을 정리했어요.": "Table has been cleared."
+  "테이블을 정리했어요.": "Table has been cleared.",
+  "현금 결제 유도": "Cash Payment Inducement",
+  "현금 결제를 선택하셨어요!": "You have selected cash payment!",
+  "카운터에서 결제를 진행해 주세요.": "Please proceed with payment at the counter.",
+  "결제할 금액": "Amount to Pay"
 }
