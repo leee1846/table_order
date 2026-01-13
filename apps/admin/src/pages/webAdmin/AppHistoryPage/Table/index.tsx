@@ -27,7 +27,7 @@ export const Table = ({ histories }: Props) => {
     }
 
     if (dateStr.length === 14) {
-      return formatDateTime(dateStr, 'YYYY-MM-DD HH시');
+      return formatDateTime(dateStr, 'YYYY-MM-DD HH시 mm분');
     }
     return dateStr;
   };
