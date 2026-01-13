@@ -45,6 +45,22 @@ export const ROUTES = {
       path: 'app-history/:id',
       generate: (id: string | number) => `/admin/app-history/${id}`,
     },
+    NOTICES: {
+      path: 'notices',
+      generate: () => '/admin/notices',
+    },
+    NOTICES_NEW: {
+      path: 'notices/new',
+      generate: () => '/admin/notices/new',
+    },
+    NOTICES_EDIT: {
+      path: 'notices/:id/edit',
+      generate: (id: string | number) => `/admin/notices/${id}/edit`,
+    },
+    NOTICES_DETAIL: {
+      path: 'notices/:id',
+      generate: (id: string | number) => `/admin/notices/${id}`,
+    },
   },
 
   SETTINGS: {

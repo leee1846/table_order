@@ -38,6 +38,11 @@ export const StoresSidebarLayout = () => {
         path: ROUTES.ADMIN_WEB.STORES.generate(),
       },
       {
+        id: 'notices',
+        label: '공지사항',
+        path: ROUTES.ADMIN_WEB.NOTICES.generate(),
+      },
+      {
         id: 'app-history',
         label: '앱 히스토리',
         path: ROUTES.ADMIN_WEB.APP_HISTORY.generate(),

@@ -4,6 +4,7 @@ import type {
   IGetAdminShopDetail,
 } from '@repo/api/types';
 import type { AppHistoryFormData } from './AppHistoryManage/constants';
+import type { NoticeFormData } from './NoticeManage/constants';
 
 export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
   if (!shopData.shopName || !shopData.shopName.trim()) {
@@ -86,6 +87,25 @@ export const validateAppHistoryData = (
   }
 
   if (!appHistoryData.content || !appHistoryData.content.trim()) {
+    toast('내용을 입력해주세요.');
+    return false;
+  }
+
+  return true;
+};
+
+export const validateNoticeData = (noticeData: NoticeFormData): boolean => {
+  if (!noticeData.boardType || !noticeData.boardType.trim()) {
+    toast('유형을 선택해주세요.');
+    return false;
+  }
+
+  if (!noticeData.title || !noticeData.title.trim()) {
+    toast('제목을 입력해주세요.');
+    return false;
+  }
+
+  if (!noticeData.content || !noticeData.content.trim()) {
     toast('내용을 입력해주세요.');
     return false;
   }

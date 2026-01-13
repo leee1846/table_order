@@ -1,5 +1,7 @@
 import { IApiResponse } from './common';
 
+export type TNoticeBoardType = 'GENERAL' | 'EMERGENCY';
+
 /**
  * 공지사항 정보
  */
@@ -12,7 +14,8 @@ export interface INotice {
   updateDate: string;
   updateMemberUuid: string | null;
   isDeleted: boolean;
-  boardType: string | null;
+  boardType: TNoticeBoardType | null;
+  views: number;
 }
 
 /**
