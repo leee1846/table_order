@@ -96,6 +96,19 @@ export const HourDropdownWrapper = styled.div`
   }
 `;
 
+export const MinuteDropdownWrapper = styled.div`
+  flex: 1;
+  width: 100%;
+
+  & > div {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+`;
+
 export const TextArea = styled.textarea<{ isDetail?: boolean }>`
   width: 100%;
   min-height: ${({ isDetail }) => (isDetail ? 'auto' : '200px')};

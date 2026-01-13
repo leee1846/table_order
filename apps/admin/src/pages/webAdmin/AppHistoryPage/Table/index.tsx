@@ -45,6 +45,7 @@ export const Table = ({ histories }: Props) => {
       const id = history.appVersionSeq ?? 0;
       return (
         <tr key={id}>
+          <td>{history.appVersionSeq || '_'}</td>
           <td>{history.type || '_'}</td>
           <td>{formatDeployDate(history.deployDate) || '_'}</td>
           <td>{history.version || '_'}</td>
@@ -77,6 +78,7 @@ export const Table = ({ histories }: Props) => {
       <UIStyles.setting.Table>
         <UIStyles.setting.Thead>
           <tr>
+            <th>ID</th>
             <th>구분</th>
             <th>배포일시</th>
             <th>버전</th>

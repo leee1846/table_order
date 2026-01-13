@@ -28,6 +28,15 @@ const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => ({
   label: `${String(i).padStart(2, '0')}시`,
 }));
 
+// 10분 단위 분 옵션 생성 (00, 10, 20, 30, 40, 50)
+const MINUTE_OPTIONS = Array.from({ length: 6 }, (_, i) => {
+  const minute = i * 10;
+  return {
+    value: String(minute).padStart(2, '0'),
+    label: `${String(minute).padStart(2, '0')}분`,
+  };
+});
+
 export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
   const [showCalender, setShowCalender] = useState<boolean>(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -57,8 +66,27 @@ export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
     return hour || null;
   };
 
-  // 날짜와 시간을 조합하여 deployDateTime 생성
-  const combineDateTime = (date: string, hour: string | null) => {
+  // deployDateTime에서 분 부분만 추출 (mm 형식, 없으면 null)
+  const getMinuteOnly = (dateTime: string): string | null => {
+    if (!dateTime) {
+      return null;
+    }
+    // "YYYY-MM-DD" 형식인지 확인 (시간 부분이 없으면 null 반환)
+    const parts = dateTime.split(' ');
+    if (parts.length < 2) {
+      return null; // 시간 부분이 없음
+    }
+    // formatDateTime을 사용하여 분 부분만 추출
+    const minute = formatDateTime(dateTime, 'mm');
+    return minute || null;
+  };
+
+  // 날짜, 시간, 분을 조합하여 deployDateTime 생성
+  const combineDateTime = (
+    date: string,
+    hour: string | null,
+    minute: string | null = null
+  ) => {
     if (!date) {
       return '';
     }
@@ -66,15 +94,16 @@ export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
       return date; // 시간이 없으면 날짜만 반환
     }
     const hourValue = hour.padStart(2, '0');
-    return `${date} ${hourValue}:00:00`;
+    const minuteValue = minute ? minute.padStart(2, '0') : '00';
+    return `${date} ${hourValue}:${minuteValue}:00`;
   };
 
   const handleDateSelect = (startDate: string, _endDate: string) => {
-    // 날짜 선택 시 시간은 null로 설정 (미선택 상태)
-    // 기존에 시간이 선택되어 있으면 유지
+    // 날짜 선택 시 기존에 선택된 시간과 분을 유지
     const currentHour = getHourOnly(formData.deployDateTime);
+    const currentMinute = getMinuteOnly(formData.deployDateTime);
     if (currentHour) {
-      const dateTime = combineDateTime(startDate, currentHour);
+      const dateTime = combineDateTime(startDate, currentHour, currentMinute);
       updateFormData({ deployDateTime: dateTime });
     } else {
       // 시간이 없으면 날짜만 설정 (시간은 미선택)
@@ -93,12 +122,34 @@ export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
   };
 
   const handleHourChange = (hour: string | number) => {
-    // 기존 날짜 유지하면서 시간만 업데이트
+    // 기존 날짜와 분 유지하면서 시간만 업데이트
     const currentDate = getDateOnly(formData.deployDateTime);
     if (!currentDate) {
       return;
     }
-    const dateTime = combineDateTime(currentDate, String(hour));
+    const currentMinute = getMinuteOnly(formData.deployDateTime);
+    const dateTime = combineDateTime(currentDate, String(hour), currentMinute);
+    updateFormData({ deployDateTime: dateTime });
+  };
+
+  const handleMinuteDropdownClick = (e: React.MouseEvent) => {
+    const currentDate = getDateOnly(formData.deployDateTime);
+    const currentHour = getHourOnly(formData.deployDateTime);
+    if (!currentDate || !currentHour) {
+      e.preventDefault();
+      e.stopPropagation();
+      toast('날짜와 시간을 먼저 선택하세요.');
+    }
+  };
+
+  const handleMinuteChange = (minute: string | number) => {
+    // 기존 날짜와 시간 유지하면서 분만 업데이트
+    const currentDate = getDateOnly(formData.deployDateTime);
+    const currentHour = getHourOnly(formData.deployDateTime);
+    if (!currentDate || !currentHour) {
+      return;
+    }
+    const dateTime = combineDateTime(currentDate, currentHour, String(minute));
     updateFormData({ deployDateTime: dateTime });
   };
 
@@ -106,6 +157,8 @@ export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
   const isDateSelected = !!displayDate;
 
   const selectedHour = getHourOnly(formData.deployDateTime);
+  const selectedMinute = getMinuteOnly(formData.deployDateTime);
+  const isHourSelected = !!selectedHour;
   const calendarStartDate = displayDate || '';
   const isReadOnly = mode === 'detail';
 
@@ -184,6 +237,15 @@ export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
                     placeholder="시간 선택"
                   />
                 </S.HourDropdownWrapper>
+                <S.MinuteDropdownWrapper onClick={handleMinuteDropdownClick}>
+                  <Dropdown
+                    options={MINUTE_OPTIONS}
+                    value={selectedMinute}
+                    onChange={handleMinuteChange}
+                    disabled={isReadOnly || !isDateSelected || !isHourSelected}
+                    placeholder="분 선택"
+                  />
+                </S.MinuteDropdownWrapper>
               </S.DateTimeContainer>
             )}
           </S.FieldGroup>
