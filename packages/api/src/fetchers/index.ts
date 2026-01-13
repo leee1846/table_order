@@ -11,3 +11,4 @@ export * from './common';
 export * from './notice';
 export * from './sales';
 export * from './payment';
+export * from './member';

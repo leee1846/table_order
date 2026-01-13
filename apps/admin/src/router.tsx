@@ -126,9 +126,20 @@ const SettingsTablesPage = lazy(() =>
 // ============================================================================
 // Lazy Loaded Components - Settings Pages
 // ============================================================================
+const MyPage = lazy(() =>
+  import('@/pages/settings/MyPage').then((module) => ({
+    default: module.MyPage,
+  }))
+);
+
 const NoticesPage = lazy(() =>
   import('@/pages/settings/NoticesPage').then((module) => ({
     default: module.NoticesPage,
+  }))
+);
+const SettingsNoticeDetailPage = lazy(() =>
+  import('@/pages/settings/NoticeDetailPage').then((module) => ({
+    default: module.NoticeDetailPage,
   }))
 );
 const CategoriesPage = lazy(() =>
@@ -414,6 +425,15 @@ const createSettingsRoutes = () => [
     element: <Navigate to={ROUTES.SETTINGS.CATEGORIES.path} replace />,
   },
   {
+    path: ROUTES.SETTINGS.MYPAGE.path,
+    loader: requireWebLoader,
+    element: (
+      <Suspense fallback={<FullscreenLoadingSpinner />}>
+        <MyPage />
+      </Suspense>
+    ),
+  },
+  {
     path: ROUTES.SETTINGS.NOTICES.path,
     element: <NoticesPage />,
   },
@@ -430,6 +450,14 @@ const createSettingsRoutes = () => [
   {
     path: ROUTES.SETTINGS.CATEGORY_MENUS.path,
     element: <CategoryMenusPage />,
+  },
+  {
+    path: ROUTES.SETTINGS.NOTICES.DETAIL.path,
+    element: (
+      <Suspense fallback={<FullscreenLoadingSpinner />}>
+        <SettingsNoticeDetailPage />
+      </Suspense>
+    ),
   },
   {
     path: ROUTES.SETTINGS.SALES.path,

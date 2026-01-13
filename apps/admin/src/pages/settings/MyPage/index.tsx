@@ -6,10 +6,15 @@ import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ROUTES } from '@/constants/routes';
-import { openDualActionDialog } from '@repo/feature/utils';
+import { openDualActionDialog, toast } from '@repo/feature/utils';
+import { useAdminTranslation } from '@/config/i18n';
+import { usePutMemberPassword } from '@repo/api/queries';
 
 export const MyPage = () => {
-  const { clearAuth } = useAuthStore();
+  const { t } = useAdminTranslation();
+  const { clearAuth, tokenPayload } = useAuthStore();
+  const { mutateAsync: putMemberPassword, isPending } = usePutMemberPassword();
+  const memberId = tokenPayload?.sub ?? '';
 
   // 비밀번호 입력 상태
   const [currentPassword, setCurrentPassword] = useState('');
@@ -54,7 +59,7 @@ export const MyPage = () => {
     if (value.length > 0) {
       setCurrentPasswordError('');
     } else {
-      setCurrentPasswordError('기존 비밀번호를 입력해주세요.');
+      setCurrentPasswordError(t('기존 비밀번호를 입력해주세요.'));
     }
   };
 
@@ -65,12 +70,12 @@ export const MyPage = () => {
       setNewPasswordError('');
       // 새 비밀번호 확인과 일치하는지 확인
       if (confirmPassword && value !== confirmPassword) {
-        setConfirmPasswordError('새 비밀번호와 일치하지 않습니다.');
+        setConfirmPasswordError(t('새 비밀번호와 일치하지 않습니다.'));
       } else if (confirmPassword && value === confirmPassword) {
         setConfirmPasswordError('');
       }
     } else {
-      setNewPasswordError('새 비밀번호를 입력해주세요.');
+      setNewPasswordError(t('새 비밀번호를 입력해주세요.'));
     }
   };
 
@@ -79,46 +84,62 @@ export const MyPage = () => {
     setConfirmPassword(value);
     if (value.length > 0) {
       if (value !== newPassword) {
-        setConfirmPasswordError('새 비밀번호와 일치하지 않습니다.');
+        setConfirmPasswordError(t('새 비밀번호와 일치하지 않습니다.'));
       } else {
         setConfirmPasswordError('');
       }
     } else {
-      setConfirmPasswordError('새 비밀번호 확인을 입력해주세요.');
+      setConfirmPasswordError(t('새 비밀번호 확인을 입력해주세요.'));
     }
   };
 
-  // 비밀번호 변경 핸들러 (기능은 나중에 구현)
-  const handleChangePassword = () => {
+  // 비밀번호 변경 핸들러
+  const handleChangePassword = async () => {
     // 유효성 검사
     if (!currentPassword) {
-      setCurrentPasswordError('기존 비밀번호를 입력해주세요.');
+      setCurrentPasswordError(t('기존 비밀번호를 입력해주세요.'));
       return;
     }
     if (!newPassword) {
-      setNewPasswordError('새 비밀번호를 입력해주세요.');
+      setNewPasswordError(t('새 비밀번호를 입력해주세요.'));
       return;
     }
     if (!confirmPassword) {
-      setConfirmPasswordError('새 비밀번호 확인을 입력해주세요.');
+      setConfirmPasswordError(t('새 비밀번호 확인을 입력해주세요.'));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setConfirmPasswordError('새 비밀번호와 일치하지 않습니다.');
+      setConfirmPasswordError(t('새 비밀번호와 일치하지 않습니다.'));
       return;
     }
 
-    // TODO: 비밀번호 변경 API 호출
-    // 비밀번호 변경 로직 구현 예정
+    if (!memberId) {
+      toast(t('회원 정보가 유효하지 않습니다. 다시 로그인 후 시도해주세요.'));
+      return;
+    }
+
+    await putMemberPassword({
+      memberId,
+      memberPassword: newPassword,
+      existingMemberPassword: currentPassword,
+    });
+
+    toast(t('비밀번호가 변경되었습니다.'));
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+
+    //TODO 비밀번호 바뀌면 해당 계정 로그아웃
+    //TODO SSE로 모든 디바이스 로그아웃
   };
 
   // 로그아웃 핸들러
   const handleLogout = () => {
     openDualActionDialog({
-      title: '로그아웃',
-      content: '로그아웃 하시겠습니까?',
-      primaryText: '확인',
-      secondaryText: '취소',
+      title: t('로그아웃'),
+      content: t('로그아웃 하시겠습니까?'),
+      primaryText: t('확인'),
+      secondaryText: t('취소'),
       onConfirm: () => {
         // store 비우기
         clearAuth();
@@ -134,23 +155,23 @@ export const MyPage = () => {
       <S.Container>
         <S.TitleContainer>
           <S.Title>
-            내 정보
+            {t('내 정보')}
             <div />
-            <span>계정 관리</span>
+            <span>{t('계정 관리')}</span>
           </S.Title>
           <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
-            로그아웃
+            {t('로그아웃')}
           </BasicButton>
         </S.TitleContainer>
 
         <S.Section>
-          <S.SectionTitle>비밀번호 변경</S.SectionTitle>
+          <S.SectionTitle>{t('비밀번호 변경')}</S.SectionTitle>
           <S.PasswordForm>
             <S.InputWrapper>
-              <S.Label>기존 비밀번호</S.Label>
+              <S.Label>{t('기존 비밀번호')}</S.Label>
               <Input
                 type={currentPasswordVisible ? 'text' : 'password'}
-                placeholder="기존 비밀번호를 입력해주세요"
+                placeholder={t('기존 비밀번호를 입력해주세요')}
                 value={currentPassword}
                 onChange={handleCurrentPasswordChange}
                 rightComponent={renderPasswordVisibilityToggle(
@@ -162,10 +183,10 @@ export const MyPage = () => {
             </S.InputWrapper>
 
             <S.InputWrapper>
-              <S.Label>새 비밀번호</S.Label>
+              <S.Label>{t('새 비밀번호')}</S.Label>
               <Input
                 type={newPasswordVisible ? 'text' : 'password'}
-                placeholder="새 비밀번호를 입력해주세요"
+                placeholder={t('새 비밀번호를 입력해주세요')}
                 value={newPassword}
                 onChange={handleNewPasswordChange}
                 rightComponent={renderPasswordVisibilityToggle(
@@ -177,10 +198,10 @@ export const MyPage = () => {
             </S.InputWrapper>
 
             <S.InputWrapper>
-              <S.Label>새 비밀번호 확인</S.Label>
+              <S.Label>{t('새 비밀번호 확인')}</S.Label>
               <Input
                 type={confirmPasswordVisible ? 'text' : 'password'}
-                placeholder="새 비밀번호를 다시 입력해주세요"
+                placeholder={t('새 비밀번호를 다시 입력해주세요')}
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
                 rightComponent={renderPasswordVisibilityToggle(
@@ -194,9 +215,10 @@ export const MyPage = () => {
             <S.ButtonWrapper>
               <BasicButton
                 variant="Solid_Navy_M"
+                disabled={isPending}
                 onClick={handleChangePassword}
               >
-                비밀번호 변경
+                {t('비밀번호 변경')}
               </BasicButton>
             </S.ButtonWrapper>
           </S.PasswordForm>

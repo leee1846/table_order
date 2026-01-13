@@ -564,5 +564,17 @@
   "이미지를 불러올 수 없습니다.": "Unable to load image.",
   "결제가 완료되지 않았어요.": "Payment has not been completed.",
   "테이블을 정리했어요.": "Table has been cleared.",
-  "앱을 종료하시겠습니까?": "Do you want to exit the app?"
+  "앱을 종료하시겠습니까?": "Do you want to exit the app?",
+  "내 정보": "My Information",
+  "계정 관리": "Account Management",
+  "비밀번호 변경": "Change Password",
+  "기존 비밀번호": "Current Password",
+  "기존 비밀번호를 입력해주세요": "Please enter your current password",
+  "새 비밀번호": "New Password",
+  "새 비밀번호를 입력해주세요": "Please enter your new password",
+  "새 비밀번호 확인": "Confirm New Password",
+  "새 비밀번호를 다시 입력해주세요": "Please enter your new password again",
+  "새 비밀번호 확인을 입력해주세요.": "Please enter the new password confirmation.",
+  "새 비밀번호와 일치하지 않습니다.": "The new password does not match.",
+  "로그아웃 하시겠습니까?": "Do you want to log out?"
 }

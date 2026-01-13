@@ -1,8 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { Input, Dropdown } from '@repo/ui/components';
 import * as S from './noticeForm.style';
-import type { NoticeFormData } from '../constants';
-import { BOARD_TYPE_OPTIONS } from '../constants';
+import { BOARD_TYPE_OPTIONS, type NoticeFormData } from '../constants';
 
 type Mode = 'create' | 'edit' | 'detail';
 

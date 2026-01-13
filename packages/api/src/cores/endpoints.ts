@@ -19,6 +19,10 @@ export const ENDPOINTS = {
     LOGIN_SALES: '/login/sales',
   },
 
+  MEMBER: {
+    PASSWORD: '/member/password',
+  },
+
   ORDER: {
     SEND_PICKUP_NOTIFICATION: '/orders/pickup-notification',
     PICKUP: (shopCode: string, tableNumber: string) =>
