@@ -178,20 +178,20 @@ export const SalesListDialog = ({
             />
           </S.Container>
 
-          <UIStyles.setting.Footer>
+          <S.StyledFooter>
             {shopSetting?.isSalesTotalVisible !== false ? (
               <UIStyles.setting.FooterContents>
                 <p>
-                  <span>{t('총 매출:')}</span>{' '}
-                  {formatCurrency(totalSalesAmount)}{' '}
+                  <span>{t('총 매출:')}</span>
+                  {formatCurrency(totalSalesAmount)}
                   <span>
                     {totalSalesCount}
                     {t('건')}
                   </span>
                 </p>
                 <p>
-                  <span>{t('결제 전 매출:')}</span>{' '}
-                  {formatCurrency(prePaymentAmount)}{' '}
+                  <span>{t('결제 전 매출:')}</span>
+                  {formatCurrency(prePaymentAmount)}
                   <span>
                     {prePaymentCount}
                     {t('건')}
@@ -199,7 +199,7 @@ export const SalesListDialog = ({
                 </p>
                 <p>
                   <span>{t('총 예상 매출:')}</span>
-                  {formatCurrency(estimatedTotalAmount)}{' '}
+                  {formatCurrency(estimatedTotalAmount)}
                   <span>
                     {estimatedTotalCount}
                     {t('건')}
@@ -215,7 +215,7 @@ export const SalesListDialog = ({
               currentPage={currentPage}
               onPageChange={handlePageChange}
             />
-          </UIStyles.setting.Footer>
+          </S.StyledFooter>
         </S.DialogContainer>
       </ModalBackground>
 

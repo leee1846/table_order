@@ -4,8 +4,8 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 40px 24px 40px 30px;
+  padding: 40px 24px 0 30px;
+  flex: 1;
 `;
 
 export const Title = styled.div`
@@ -32,12 +32,12 @@ export const Filters = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
+  margin-bottom: 12px;
 `;
 
 export const CalendarButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 12px;
   cursor: pointer;
 `;
 

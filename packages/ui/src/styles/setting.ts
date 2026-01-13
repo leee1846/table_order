@@ -128,7 +128,7 @@ export const Table = styled.table`
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-height: 0;
+  height: 100%;
 `;
 
 export const Thead = styled.thead`
@@ -163,9 +163,9 @@ export const Tbody = styled.tbody`
 
   & > tr {
     width: 100%;
-    padding: 14px 6px;
+    padding: 12px 6px;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 6px;
     border-bottom: 1px solid ${theme.colors.grey[200]};
   }
@@ -190,6 +190,7 @@ export const Footer = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
+  border-top: 1px solid ${theme.colors.grey[200]};
 `;
 
 export const FooterContents = styled.div`

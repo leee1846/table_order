@@ -44,11 +44,7 @@ export const Table = ({ orders, isLoading, onSelectOrder }: Props) => {
     if (isLoading) {
       return (
         <tr>
-          <td colSpan={7}>
-            {t(
-              '주문 내역을 불러오는 중입니다.'
-            )}
-          </td>
+          <td colSpan={7}>{t('주문 내역을 불러오는 중입니다.')}</td>
         </tr>
       );
     }
@@ -56,11 +52,7 @@ export const Table = ({ orders, isLoading, onSelectOrder }: Props) => {
     if (!orders || orders.length === 0) {
       return (
         <tr>
-          <td colSpan={7}>
-            {t(
-              '주문 내역이 없습니다.'
-            )}
-          </td>
+          <td colSpan={7}>{t('주문 내역이 없습니다.')}</td>
         </tr>
       );
     }
@@ -102,21 +94,19 @@ export const Table = ({ orders, isLoading, onSelectOrder }: Props) => {
   };
 
   return (
-    <div>
-      <UIStyles.setting.Table>
-        <UIStyles.setting.Thead>
-          <tr>
-            <th>{t('주문번호')}</th>
-            <th>{t('거래일자')}</th>
-            <th>{t('테이블 번호')}</th>
-            <th>{t('거래금액')}</th>
-            <th>{t('결제수단')}</th>
-            <th>{t('객수')}</th>
-            <th>{t('상세 내역')}</th>
-          </tr>
-        </UIStyles.setting.Thead>
-        <UIStyles.setting.Tbody>{renderRows()}</UIStyles.setting.Tbody>
-      </UIStyles.setting.Table>
-    </div>
+    <UIStyles.setting.Table>
+      <UIStyles.setting.Thead>
+        <tr>
+          <th>{t('주문번호')}</th>
+          <th>{t('거래일자')}</th>
+          <th>{t('테이블 번호')}</th>
+          <th>{t('거래금액')}</th>
+          <th>{t('결제수단')}</th>
+          <th>{t('객수')}</th>
+          <th>{t('상세 내역')}</th>
+        </tr>
+      </UIStyles.setting.Thead>
+      <S.Tbody>{renderRows()}</S.Tbody>
+    </UIStyles.setting.Table>
   );
 };

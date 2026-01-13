@@ -26,7 +26,6 @@ export const OrderInfoContainer = styled.div`
   flex-direction: column;
   gap: 6px;
   margin-bottom: 24px;
-
   & > div {
     display: flex;
     gap: 6px;
@@ -59,7 +58,8 @@ export const OrderInfoContainer = styled.div`
 
 export const OrderList = styled.div`
   border-top: 1px solid ${theme.colors.grey[200]};
-  padding: 12px 0;
+  max-height: 218px;
+  overflow-y: auto;
 
   & > ul {
     padding: 12px;
@@ -155,4 +155,3 @@ export const Total = styled.div`
     text-align: right;
   }
 `;
-

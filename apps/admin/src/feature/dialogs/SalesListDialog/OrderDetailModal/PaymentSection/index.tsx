@@ -10,11 +10,6 @@ interface Props {
   order: IOrderHistoryItem;
 }
 
-const getPaymentLabel = (order: IOrderHistoryItem) =>
-  formatPaymentMethodLabel(
-    order.paymentMethod || order.paymentList?.[0]?.paymentType
-  );
-
 const sumAmounts = (
   payments: IPaymentHistory[],
   predicate: (p: IPaymentHistory) => boolean
@@ -34,10 +29,12 @@ export const PaymentSection = ({ order }: Props) => {
   const totalAmount = sumAmounts(payments, () => true);
   const canceledAmount = sumAmounts(payments, (p) => !!p.isCanceled);
   const paidAmount = totalAmount - canceledAmount;
-  const paymentLabel = getPaymentLabel(order);
+
+  // 현금과 카드가 모두 있는 경우 복합결제
+  const paymentLabel = formatPaymentMethodLabel(order.paymentMethod);
 
   return (
-    <div>
+    <S.Container>
       <S.TitleContainer>
         <p>{t('결제 내역')}</p>
         <div>
@@ -125,19 +122,16 @@ export const PaymentSection = ({ order }: Props) => {
               <th>{t('승인구분')}</th>
               <th>
                 {t('카드번호')}
-                <br />
-                [{t('승인번호')}]
+                <br />[{t('승인번호')}]
               </th>
               <th>{t('총거래금액')}</th>
               <th>
                 {t('거래승인(취소)일시')}
-                <br />
-                [{t('거래고유번호')}]
+                <br />[{t('거래고유번호')}]
               </th>
               <th>
                 {t('매입사')}
-                <br />
-                [{t('발급사')}]
+                <br />[{t('발급사')}]
               </th>
               <th>
                 {t('공급가')}
@@ -161,8 +155,7 @@ export const PaymentSection = ({ order }: Props) => {
                 <td>{payment.isCanceled ? t('취소') : t('승인')}</td>
                 <td>
                   {payment.cardNumber ?? '-'}
-                  <br />
-                  [{payment.approvalNumber ?? '-'}]
+                  <br />[{payment.approvalNumber ?? '-'}]
                 </td>
                 <td>{formatCurrency(payment.transactionAmount ?? 0)}</td>
                 <td>
@@ -170,16 +163,15 @@ export const PaymentSection = ({ order }: Props) => {
                     payment.transactionDate ?? '',
                     'YYYY-MM-DD HH:mm:ss'
                   ) || '-'}
-                  <br />
-                  [{payment.transactionNumber ?? '-'}]
+                  <br />[{payment.transactionNumber ?? '-'}]
                 </td>
                 <td>
                   {payment.acquirerCompany ?? '-'}
-                  <br />
-                  [{payment.issuerCompany ?? '-'}]
+                  <br />[{payment.issuerCompany ?? '-'}]
                 </td>
                 <td>
-                  {formatCurrency(payment.transactionAmount ?? 0)}{t('원')}
+                  {formatCurrency(payment.transactionAmount ?? 0)}
+                  {t('원')}
                   <br />-
                 </td>
                 <td>
@@ -196,7 +188,6 @@ export const PaymentSection = ({ order }: Props) => {
           </UIStyles.setting.Tbody>
         </UIStyles.setting.Table>
       </S.Tables>
-    </div>
+    </S.Container>
   );
 };
-

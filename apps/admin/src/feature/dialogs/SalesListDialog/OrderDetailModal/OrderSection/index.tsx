@@ -19,19 +19,21 @@ export const OrderSection = ({ order }: Props) => {
     (sum, menu) => sum + (menu.menuQuantity ?? 0),
     0
   );
+
   const totalAmount = menus.reduce((sum, menu) => {
-    const unitPrice = menu.finalPrice ?? menu.menuPrice ?? 0;
-    return sum + unitPrice * (menu.menuQuantity ?? 0);
+    const unitPrice = menu.finalPrice;
+    return sum + unitPrice;
   }, 0);
 
-  const paymentLabel = formatPaymentMethodLabel(
-    order.paymentMethod || order.paymentList?.[0]?.paymentType
-  );
+  const paymentLabel = formatPaymentMethodLabel(order.paymentMethod);
 
   return (
     <S.Container>
       <S.TitleContainer>
-        <p>{t('테이블 번호')}: {order.tableNumber ?? orderLog?.tableNumber ?? '-'}</p>
+        <p>
+          {t('테이블 번호 ')}:{' '}
+          {order.tableNumber ?? orderLog?.tableNumber ?? '-'}
+        </p>
         <div>
           <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
             {t('재결제')}
@@ -45,16 +47,19 @@ export const OrderSection = ({ order }: Props) => {
       <S.OrderInfoContainer>
         <div>
           <p>
-            {t('멤버십')}<span>-</span>
+            {t('멤버십')}
+            <span>-</span>
           </p>
           <p>
-            {t('결제 수단')}<span>{paymentLabel ?? '-'}</span>
+            {t('결제 수단')}
+            <span>{paymentLabel ?? '-'}</span>
           </p>
           <p />
         </div>
         <div>
           <p>
-            {t('주문번호')}<span>{order.orderNumber ?? '-'}</span>
+            {t('주문번호')}
+            <span>{order.orderNumber ?? '-'}</span>
           </p>
           <p>
             {t('주문 일시')}
@@ -76,16 +81,13 @@ export const OrderSection = ({ order }: Props) => {
           {menus.length === 0 && <li>{t('주문 내역이 없습니다.')}</li>}
           {menus.map((menu) => {
             const options = menu.orderDetailOptionList ?? [];
-            const menuTotal =
-              (menu.finalPrice ?? menu.menuPrice ?? 0) *
-              (menu.menuQuantity ?? 0);
 
             return (
               <li key={menu.orderDetailMenuSeq}>
                 <S.MenuItem>
                   <p>{menu.menuName}</p>
                   <p>{menu.menuQuantity ?? 0}</p>
-                  <p>{formatCurrency(menuTotal)}</p>
+                  <p>{formatCurrency(menu.finalPrice)}</p>
                 </S.MenuItem>
                 {options.length > 0 && (
                   <ul>
@@ -114,4 +116,3 @@ export const OrderSection = ({ order }: Props) => {
     </S.Container>
   );
 };
-

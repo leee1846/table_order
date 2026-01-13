@@ -46,7 +46,7 @@ export const TableCard = ({
     ) : null
   ) : null;
 
-  const displayAmount = table.remainingAmount;
+  const displayAmount = table.remainingAmount ?? table.totalAmount;
 
   return (
     <S.CardContainer onClick={onClick}>

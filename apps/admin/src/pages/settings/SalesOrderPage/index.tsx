@@ -13,12 +13,12 @@ import {
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { OrderDetailModal } from '@/pages/settings/SalesOrderPage/OrderDetailModal';
+import { OrderDetailModal } from '@/feature/dialogs/SalesListDialog/OrderDetailModal';
 import { Table } from '@/pages/settings/SalesOrderPage/Table';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from './salesOrderPage.style';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 7;
 
 export const SalesOrderPage = () => {
   const { t } = useAdminTranslation();
@@ -141,8 +141,8 @@ export const SalesOrderPage = () => {
           />
         </S.Container>
 
-        {shopSetting?.isSalesTotalVisible !== false && (
-          <UIStyles.setting.Footer>
+        <UIStyles.setting.Footer>
+          {shopSetting?.isSalesTotalVisible !== false && (
             <UIStyles.setting.FooterContents>
               <p>
                 <span>{t('총 매출:')}</span> {formatCurrency(totalSalesAmount)}
@@ -168,13 +168,14 @@ export const SalesOrderPage = () => {
                 </span>
               </p>
             </UIStyles.setting.FooterContents>
-            <Pagination
-              totalPages={totalPages}
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-            />
-          </UIStyles.setting.Footer>
-        )}
+          )}
+          <div />
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </UIStyles.setting.Footer>
       </UIStyles.setting.TablePageContainer>
 
       {showCalender && (

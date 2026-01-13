@@ -61,7 +61,7 @@ export const Table = ({ orders, onSelectOrder }: TableProps) => {
       </UIStyles.setting.Thead>
       <S.Tbody>
         {orders.length === 0 ? (
-          <tr style={{ height: '100%' }}>
+          <tr>
             <td
               style={{
                 padding: '24px',

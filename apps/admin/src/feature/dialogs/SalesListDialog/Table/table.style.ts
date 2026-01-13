@@ -8,13 +8,9 @@ export const ColorTd = styled.td<{ color: string }>`
 `;
 
 export const Tbody = styled(UIStyles.setting.Tbody)`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   height: 100%;
-
   & > tr {
     align-items: center;
-    height: calc((100% - 60px) / 6);
+    height: calc(100% / 6);
   }
 `;

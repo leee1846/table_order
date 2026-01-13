@@ -5,6 +5,7 @@ import {
   BaseHeader,
   BaseTitle,
 } from '@repo/feature/components';
+import * as UIStyles from '@repo/ui/styles';
 
 export const DialogContainer = styled(BaseDialogContainer)`
   width: 90vw;
@@ -13,8 +14,9 @@ export const DialogContainer = styled(BaseDialogContainer)`
 `;
 
 export const Container = styled.div`
-  padding: 24px;
-  height: 100%;
+    padding: 24px;
+    height: 69.5%;
+  }
 `;
 
 export const CloseButton = styled.button`
@@ -35,7 +37,6 @@ export const FilterContainer = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-
   margin-bottom: 12px;
 `;
 
@@ -61,4 +62,17 @@ export const PaymentMethod = styled.span<{ color: string }>`
   ${TYPOGRAPHY.ST_4}
   color: ${(props) => props.color};
   cursor: pointer;
+`;
+
+export const StyledFooter = styled(UIStyles.setting.Footer)`
+  position: sticky;
+  bottom: 0;
+  padding: 16px 40px 24px;
+  background-color: ${theme.colors.white};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  border-top: 1px solid ${theme.colors.grey[200]};
+  height: 13%;
 `;

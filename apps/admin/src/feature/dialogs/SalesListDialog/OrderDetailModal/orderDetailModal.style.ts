@@ -6,7 +6,7 @@ export const Container = styled.div`
   background-color: ${theme.colors.white};
   border-radius: 1rem;
   width: 60rem;
-  max-height: 95vh;
+  max-height: 700px;
 
   > button {
     cursor: pointer;
@@ -34,4 +34,3 @@ export const TabButton = styled.button<{ isSelected: boolean }>`
     isSelected ? theme.colors.white : theme.colors.grey[700]};
   ${TYPOGRAPHY.ST_1}
 `;
-

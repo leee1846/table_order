@@ -14,7 +14,7 @@ interface Props {
 }
 export const OrderDetailModal = ({ order, onClose }: Props) => {
   const { t } = useAdminTranslation();
-  const [tab, setTab] = useState<'order' | 'payment'>('payment');
+  const [tab, setTab] = useState<'order' | 'payment'>('order');
 
   return (
     <ModalBackground position="center" onClick={onClose}>
@@ -44,4 +44,3 @@ export const OrderDetailModal = ({ order, onClose }: Props) => {
     </ModalBackground>
   );
 };
-
