@@ -147,18 +147,20 @@ export const CartList = ({
       primaryText: t('주문하기'),
       secondaryText: t('이전으로'),
       onConfirm: async () => {
-        // 선불
-        if (shopDetailData?.shopSetting?.usePrepayment) {
-          openPaymentsModal();
+        const totalPrice = calculateTotalPrice();
+
+        // 총 금액이 0원이거나 선불이 아닌 경우 후불 처리
+        if (totalPrice === 0 || !shopDetailData?.shopSetting?.usePrepayment) {
+          const response = await executePostpaidOrder();
+          if (response.result) {
+            setModalData('isOrderCompleteModalOpened', true);
+            onClose();
+          }
           return;
         }
 
-        // 후불
-        const response = await executePostpaidOrder();
-        if (response.result) {
-          setModalData('isOrderCompleteModalOpened', true);
-          onClose();
-        }
+        // 선불 처리
+        openPaymentsModal();
       },
     });
   };

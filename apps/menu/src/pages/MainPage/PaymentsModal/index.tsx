@@ -118,7 +118,7 @@ export const PaymentsModal = ({
 
   return (
     <>
-      <ModalBackground position="center" onClick={onClose}>
+      <ModalBackground position="center">
         <S.Container
           role="dialog"
           aria-modal="true"
