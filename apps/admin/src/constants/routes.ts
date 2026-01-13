@@ -53,6 +53,11 @@ export const ROUTES = {
     NOTICES: {
       path: 'notices',
       generate: () => '/settings/notices',
+      DETAIL: {
+        path: 'notices/:noticeSeq',
+        generate: (noticeSeq: string | number) =>
+          `/settings/notices/${noticeSeq}`,
+      },
     },
     CATEGORIES: {
       path: 'categories',
@@ -105,6 +110,10 @@ export const ROUTES = {
     MISCELLANEOUS: {
       path: 'misc',
       generate: () => '/settings/misc',
+    },
+    MYPAGE: {
+      path: 'myPage',
+      generate: () => '/settings/myPage',
     },
   },
   TABLES: {

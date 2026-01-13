@@ -135,6 +135,9 @@ export const queryKeys = {
     /** 공지사항 목록 조회 */
     list: (page?: number, pageSize?: number) =>
       [...queryKeys.notice.all, 'list', page ?? 1, pageSize ?? 20] as const,
+    /** 공지사항 상세 조회 */
+    detail: (noticeSeq: number) =>
+      [...queryKeys.notice.all, 'detail', noticeSeq] as const,
   },
 
   sales: {

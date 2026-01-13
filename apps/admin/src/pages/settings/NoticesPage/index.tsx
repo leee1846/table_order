@@ -7,13 +7,13 @@ import { Notices } from '@/pages/settings/NoticesPage/Notices';
 import { useGetNoticeList } from '@repo/api/queries';
 import type { INotice } from '@repo/api/types';
 
-const PAGE_SIZE = 10; // 스크롤 없이 한 화면에 표시할 수 있는 적절한 개수
+const PAGE_SIZE = 10;
 
 export const NoticesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [notices, setNotices] = useState<INotice[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const { data: noticeListResponse, isFetching } = useGetNoticeList({
+  const { data: noticeListResponse } = useGetNoticeList({
     page: currentPage,
     pageSize: PAGE_SIZE,
   });
@@ -27,7 +27,6 @@ export const NoticesPage = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // 페이지 변경 시 스크롤을 맨 위로 이동
   };
 
   return (
@@ -40,11 +39,7 @@ export const NoticesPage = () => {
           </BasicButton>
         </S.Header>
 
-        <Notices
-          notices={notices}
-          isLoading={isFetching}
-          pageSize={PAGE_SIZE}
-        />
+        <Notices notices={notices} pageSize={PAGE_SIZE} />
       </S.Container>
 
       <UIStyles.setting.Footer>

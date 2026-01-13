@@ -112,7 +112,7 @@ export const Table = ({
           <th>{t('상세 내역')}</th>
         </tr>
       </UIStyles.setting.Thead>
-      <S.Tbody pageSize={pageSize}>{renderRows()}</S.Tbody>
+      <S.Tbody pageSize={pageSize} ordersLength={orders.length}>{renderRows()}</S.Tbody>
     </UIStyles.setting.Table>
   );
 };

@@ -5,15 +5,18 @@ export const ColorTd = styled.td<{ color: string }>`
   color: ${({ color }) => color};
 `;
 
-export const Tbody = styled(UIStyles.setting.Tbody)<{ pageSize?: number }>`
+export const Tbody = styled(UIStyles.setting.Tbody)<{
+  pageSize?: number;
+  ordersLength?: number;
+}>`
   height: 100%;
   & > tr {
     align-items: center;
-    height: calc(100% / 7);
+    height: calc(100% / ${({ pageSize }) => pageSize});
   }
 
-  ${({ pageSize }) =>
-    pageSize && pageSize >= 7
+  ${({ pageSize, ordersLength }) =>
+    pageSize && ordersLength && pageSize === ordersLength
       ? `
     & > tr:last-child {
       border-bottom: none;

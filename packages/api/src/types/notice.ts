@@ -13,7 +13,6 @@ export interface INotice {
   updateMemberUuid: string | null;
   isDeleted: boolean;
   boardType: string | null;
-  views: number;
 }
 
 /**
@@ -34,6 +33,18 @@ export interface INoticeListData {
 }
 
 /**
+ * 공지사항 상세 정보 (view 필드 포함)
+ */
+export interface INoticeDetail extends INotice {
+  view: number;
+}
+
+/**
  * GET /notice/list 응답 타입
  */
 export type TGetNoticeListResponse = IApiResponse<INoticeListData>;
+
+/**
+ * GET /notice/{noticeSeq} 응답 타입
+ */
+export type TGetNoticeDetailResponse = IApiResponse<INoticeDetail>;

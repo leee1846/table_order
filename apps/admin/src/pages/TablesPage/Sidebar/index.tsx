@@ -90,10 +90,10 @@ export const Sidebar = ({
 
   const handleClose = () => {
     openDualActionDialog({
-      content: t('앱을 종료하시겠습니까?'),
+      title: t('앱을 종료하시겠습니까?'),
       primaryText: t('예'),
       secondaryText: t('아니요'),
-      size: 'medium',
+      size: 'small',
       onConfirm: async () => {
         await SystemControl.exitApp();
       },

@@ -11,6 +11,9 @@ import { getAccessToken } from '@repo/api/auth';
 import { decodeJwtToken } from '@repo/util/function';
 import type { ITokenPayload } from '@repo/api/types';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { CapacitorApp } from '@repo/util/app';
+import { css } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
 
 interface AccountProps {
   shopName?: string;
@@ -20,6 +23,7 @@ interface AccountProps {
 export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
   const { t } = useAdminTranslation();
   const { clearAuth } = useAuthStore();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     // sse 연결 끊기
@@ -59,9 +63,22 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
           </S.Content>
 
           {payload && payload.role === 'SHOP' && (
-            <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
-              {t('로그아웃')}
-            </BasicButton>
+            <div>
+              {!CapacitorApp.isNative() && (
+                <BasicButton
+                  variant="Outline_Grey_M"
+                  onClick={() => navigate(ROUTES.SETTINGS.MYPAGE.generate())}
+                  customStyle={css`
+                    margin-right: 12px;
+                  `}
+                >
+                  {t('내 정보')}
+                </BasicButton>
+              )}
+              <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
+                {t('로그아웃')}
+              </BasicButton>
+            </div>
           )}
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>

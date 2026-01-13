@@ -1,42 +1,23 @@
 import { t } from '@/config/i18n';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { KeyboardArrowDownIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { INotice } from '@repo/api/types';
+import { updateNoticeView } from '@repo/api/fetchers';
+import { CapacitorApp } from '@repo/util/app';
+import { formatDateTime } from '@repo/util/date';
+import { ROUTES } from '@/constants/routes';
 import * as S from '@/pages/settings/NoticesPage/Notices/notices.style';
 
 interface NoticesProps {
   notices: INotice[];
-  isLoading?: boolean;
   pageSize?: number;
 }
 
-const formatDateTime = (value?: string | number | null) => {
-  if (value === undefined || value === null) {
-    return '-';
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return '-';
-  }
-
-  return date.toLocaleString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
-
-export const Notices = ({
-  notices,
-  isLoading = false,
-  pageSize,
-}: NoticesProps) => {
+export const Notices = ({ notices, pageSize }: NoticesProps) => {
   const [openNoticeId, setOpenNoticeId] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (openNoticeId === null) {
@@ -52,22 +33,24 @@ export const Notices = ({
     }
   }, [notices, openNoticeId]);
 
-  const handleOpenNotice = (noticeSeq: number) => {
+  const handleOpenNotice = async (noticeSeq: number) => {
     if (openNoticeId === noticeSeq) {
       setOpenNoticeId(null);
       return;
     }
 
-    setOpenNoticeId(noticeSeq);
-  };
+    // 앱 환경인 경우 기존 로직 유지
+    if (CapacitorApp.isNative()) {
+      setOpenNoticeId(noticeSeq);
+      // 공지사항 조회수 증가 API 호출
+      await updateNoticeView(noticeSeq);
+      return;
+    }
 
-  if (isLoading) {
-    return (
-      <S.Container>
-        <S.Message>{t('공지사항을 불러오는 중입니다...')}</S.Message>
-      </S.Container>
-    );
-  }
+    // 웹 환경인 경우 상세 페이지로 이동
+    // GET /notice/{noticeSeq} 통신은 상세 페이지에서 수행됨
+    navigate(ROUTES.SETTINGS.NOTICES.DETAIL.generate(noticeSeq));
+  };
 
   if (!notices.length) {
     return (
@@ -104,12 +87,16 @@ export const Notices = ({
                 <S.Title>{notice.noticeTitle}</S.Title>
               </S.LeftContainer>
               <S.RightContainer isOpen={isOpen}>
-                <S.CreatedAt>{formatDateTime(notice.createDate)}</S.CreatedAt>
-                <KeyboardArrowDownIcon
-                  width={24}
-                  height={24}
-                  color={theme.colors.grey[500]}
-                />
+                <S.CreatedAt>
+                  {formatDateTime(notice.createDate, 'YYYY.MM.DD HH:mm')}
+                </S.CreatedAt>
+                {CapacitorApp.isNative() && (
+                  <KeyboardArrowDownIcon
+                    width={24}
+                    height={24}
+                    color={theme.colors.grey[500]}
+                  />
+                )}
               </S.RightContainer>
             </S.Header>
 

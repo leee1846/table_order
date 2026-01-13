@@ -100,6 +100,8 @@ export const ENDPOINTS = {
 
   NOTICE: {
     LIST: '/notice/list',
+    DETAIL: (noticeSeq: number) => `/notice/${noticeSeq}`,
+    VIEW: (noticeSeq: number) => `/notice/${noticeSeq}/view`,
   },
 
   SALES: {
