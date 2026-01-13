@@ -14,6 +14,7 @@ import { openDualActionDialog } from '@repo/feature/utils';
 import { usePostPayment } from '@repo/api/queries';
 import { useThemeMode } from '@repo/ui';
 import { CardPaymentInstallmentModal } from '../CardPaymentInstallmentModal';
+import { CashPaymentInducement } from '@/feature/CashPaymentInducement';
 import { useModalStore } from '@/stores/useModalStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
@@ -80,11 +81,21 @@ export const PaymentsModal = ({
         onConfirm: async () => {
           const response = await executePostpaidOrder();
           if (response.result) {
-            postPayment({
+            await postPayment({
               orderGroupUuid: response.orderGroupUuid,
               paymentType: 'CASH',
               transactionAmount: response.totalPrice,
             });
+
+            // 현금 결제 유도 설정이 활성화되어 있으면 전체 화면 다이얼로그 열기
+            if (
+              shopDetailData?.shopSetting?.usePrepaymentCashPaymentInducement
+            ) {
+              setModalData('isCashPaymentInducementModalOpened', true);
+              return;
+            }
+
+            setModalData('isOrderCompleteModalOpened', true);
             onClose();
           }
         },
@@ -101,6 +112,7 @@ export const PaymentsModal = ({
         onConfirm: async () => {
           const response = await executePostpaidOrder();
           if (response.result) {
+            setModalData('isOrderCompleteModalOpened', true);
             onClose();
           }
         },
@@ -205,6 +217,11 @@ export const PaymentsModal = ({
             totalPrice={totalPrice}
           />
         )}
+
+      {/* 현금 결제 유도 모달 */}
+      {modalData.isCashPaymentInducementModalOpened && (
+        <CashPaymentInducement />
+      )}
     </>
   );
 };

@@ -3,6 +3,7 @@ import { SystemControl, type SystemStatus } from '@repo/util/app';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
 import { usePostDeviceDetail } from '@repo/api/queries';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 
 /**
  * SystemControl 리스너를 등록하고 상태 변경을 모니터링하는 훅
@@ -15,10 +16,12 @@ export const useSystemStatusMonitor = () => {
   });
   const { shopData } = useShopData({ skipInitialRequest: true });
   const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
+  const { isInitialized } = useDeviceStore();
 
   // 최신 값들을 참조하기 위한 ref
   const deviceDataRef = useRef(deviceData);
   const shopDataRef = useRef(shopData);
+  const isInitializedRef = useRef(isInitialized);
 
   useEffect(() => {
     deviceDataRef.current = deviceData;
@@ -27,6 +30,10 @@ export const useSystemStatusMonitor = () => {
   useEffect(() => {
     shopDataRef.current = shopData;
   }, [shopData]);
+
+  useEffect(() => {
+    isInitializedRef.current = isInitialized;
+  }, [isInitialized]);
 
   // 리스너는 앱 시작 시 즉시 등록
   useEffect(() => {
@@ -82,12 +89,16 @@ export const useSystemStatusMonitor = () => {
         // setDataAsync는 항상 실행
         setDataAsync(updatedDeviceData);
 
-        // postDeviceDetail은 조건부로 실행 (deviceData가 있어야 함)
-        if (currentDeviceData) {
+        // postDeviceDetail은 조건부로 실행
+        // - deviceData가 있어야 함
+        // - 초기화가 완료되어야 함 (GET 요청이 완료된 후에만 POST)
+        if (
+          currentDeviceData &&
+          isInitializedRef.current &&
+          currentShopData?.shopCode
+        ) {
           const tableNumber = currentDeviceData.tableNumber ?? null;
           if (
-            tableNumber &&
-            currentShopData?.shopCode &&
             currentDeviceData?.androidId &&
             currentDeviceData?.ipAddress &&
             currentDeviceData?.wifiSignal

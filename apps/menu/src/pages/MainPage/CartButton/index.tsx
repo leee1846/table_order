@@ -116,7 +116,6 @@ export const CartButton = ({ categories }: Props) => {
 
       setModalData('orderCompleteData', orders);
       setModalData('orderCompleteTotalPrice', totalPrice);
-      setModalData('isOrderCompleteModalOpened', true);
       clearCart();
       setModalData('isCartListOpened', false);
 

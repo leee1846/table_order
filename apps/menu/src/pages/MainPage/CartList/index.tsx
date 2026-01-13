@@ -156,6 +156,7 @@ export const CartList = ({
         // 후불
         const response = await executePostpaidOrder();
         if (response.result) {
+          setModalData('isOrderCompleteModalOpened', true);
           onClose();
         }
       },

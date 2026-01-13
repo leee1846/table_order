@@ -34,7 +34,11 @@ export const useSSEHandler = () => {
   const { t } = useCustomerTranslation();
 
   const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
-  const { data: deviceStoreData, setDataAsync } = useDeviceData({
+  const {
+    data: deviceStoreData,
+    setDataAsync,
+    refresh: refreshDeviceData,
+  } = useDeviceData({
     skipInitialRequest: true,
   });
   const { shopData: currentShopData } = useShopData({
@@ -55,6 +59,7 @@ export const useSSEHandler = () => {
     }
 
     const getDeviceData = async () => {
+      // 1. AndroidInfo에서 기기 정보 가져오기 (androidId가 필요하므로 먼저 실행)
       let ipAddress: string | null = null;
       let androidId: string | null = null;
       let appInfo: Awaited<ReturnType<typeof CapacitorApp.getInfo>> | null =
@@ -84,7 +89,34 @@ export const useSSEHandler = () => {
         }
       }
 
-      const currentDeviceStoreData = deviceStoreDataRef.current;
+      // 2. androidId를 얻었으므로, 먼저 GET 요청을 통해 서버에서 최신 device 데이터를 가져옴
+      let fetchedDeviceData = null;
+      if (androidId) {
+        // androidId를 먼저 저장해서 refreshDeviceData가 동작하도록 함
+        const currentDeviceStoreData = deviceStoreDataRef.current;
+        if (!currentDeviceStoreData?.androidId) {
+          await setDataAsync({
+            ...(currentDeviceStoreData ?? {}),
+            androidId,
+          });
+          // ref 업데이트
+          deviceStoreDataRef.current = {
+            ...(currentDeviceStoreData ?? {}),
+            androidId,
+          };
+        }
+
+        fetchedDeviceData = await refreshDeviceData();
+        // refreshDeviceData가 완료되면 deviceStoreDataRef도 업데이트됨
+        // 하지만 ref는 수동으로 업데이트해야 함
+        if (fetchedDeviceData) {
+          deviceStoreDataRef.current = fetchedDeviceData;
+        }
+      }
+
+      // 3. GET으로 가져온 데이터와 AndroidInfo 데이터를 병합
+      const currentDeviceStoreData =
+        fetchedDeviceData ?? deviceStoreDataRef.current;
 
       const baseDeviceDetail = {
         ...(currentDeviceStoreData ?? {}),
@@ -94,7 +126,10 @@ export const useSSEHandler = () => {
         buildNumber: appInfo.build ?? '',
       };
 
+      // 4. 로컬 스토리지에 저장
       await setDataAsync(baseDeviceDetail);
+
+      // 5. 서버에 POST 요청 (GET으로 가져온 최신 데이터를 기반으로)
       await postDeviceDetail({
         shopCode: currentShopData.shopCode,
         ...baseDeviceDetail,
@@ -105,6 +140,7 @@ export const useSSEHandler = () => {
         wifiSignal: baseDeviceDetail.wifiSignal ?? '',
       });
 
+      // 6. SSE 연결 초기화
       await initializeSseConnection();
     };
 
@@ -233,6 +269,9 @@ export const useSSEHandler = () => {
           clearInitialPage();
           clearCart();
           clearCustomerCountData();
+          useModalStore
+            .getState()
+            .setModalData('isCashPaymentInducementModalOpened', false);
         }
         return;
       }

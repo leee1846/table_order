@@ -7,7 +7,7 @@ const App = () => {
   useSSEHandler();
   useSystemStatusMonitor();
 
-  // 디버깅용, 모든 데이터 콘솔 출력
+  // 디버깅용, AppStorage 저장된 모든 데이터 콘솔 출력
   AppStorage.getAllData().then((data) => {
     const parsedData: Record<string, unknown> = {};
     Object.entries(data.temporary).forEach(([key, value]) => {
