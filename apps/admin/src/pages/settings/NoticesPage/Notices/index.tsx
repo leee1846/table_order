@@ -8,6 +8,7 @@ import * as S from '@/pages/settings/NoticesPage/Notices/notices.style';
 interface NoticesProps {
   notices: INotice[];
   isLoading?: boolean;
+  pageSize?: number;
 }
 
 const formatDateTime = (value?: string | number | null) => {
@@ -30,7 +31,11 @@ const formatDateTime = (value?: string | number | null) => {
   });
 };
 
-export const Notices = ({ notices, isLoading = false }: NoticesProps) => {
+export const Notices = ({
+  notices,
+  isLoading = false,
+  pageSize,
+}: NoticesProps) => {
   const [openNoticeId, setOpenNoticeId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -73,7 +78,7 @@ export const Notices = ({ notices, isLoading = false }: NoticesProps) => {
   }
 
   return (
-    <S.Container>
+    <S.Container pageSize={pageSize} noticesLength={notices.length}>
       {notices.map((notice) => {
         const isOpen = openNoticeId === notice.noticeSeq;
 

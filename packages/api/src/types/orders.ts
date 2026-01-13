@@ -17,7 +17,12 @@ export interface ISendPickupNotificationData {
   message?: string;
 }
 
-export type TOrderType = 'MENU' | 'ORDER_POS' | 'POS_APP' | 'PREPAYMENT';
+export type TOrderType =
+  | 'MENU'
+  | 'ORDER_POS'
+  | 'POS_APP'
+  | 'POS'
+  | 'PREPAYMENT';
 
 /**
  * 픽업 알림 전송 응답 타입 (IApiResponse 래핑)

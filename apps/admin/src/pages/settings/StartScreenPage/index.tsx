@@ -17,6 +17,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Theme } from '@/pages/settings/StartScreenPage/Theme';
 import { Logo } from '@/pages/settings/StartScreenPage/Logo';
 import { ImageRegistration } from '@/pages/settings/StartScreenPage/ImageRegistration';
+import { OrderCompletionPage } from '@/pages/settings/StartScreenPage/OrderCompletionPage';
 import { generateId } from '@repo/util/string';
 import * as S from './startScreenPage.style';
 import * as UIStyles from '@repo/ui/styles';
@@ -65,6 +66,13 @@ export const StartScreenPage = () => {
   const [initCommonFiles, setInitCommonFiles] = useState<
     Record<number, File | null>
   >({});
+  const [orderCompleteMessage, setOrderCompleteMessage] = useState('');
+  const [orderCompleteImage, setOrderCompleteImage] = useState<string | null>(
+    null
+  );
+  const [orderCompleteFile, setOrderCompleteFile] = useState<File | null>(null);
+  const [orderCompleteDetail, setOrderCompleteDetail] =
+    useState<IShopPageDetail | null>(null);
 
   const { data, refetch } = useGetShopThemePage(shopCode ?? '', {
     enabled: !!shopCode,
@@ -79,6 +87,7 @@ export const StartScreenPage = () => {
     blobUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     blobUrlsRef.current.clear();
     initCommonItems.forEach((item) => revokeUrl(item.imageUrl));
+    revokeUrl(orderCompleteImage);
     setIsInitialized(false);
     setInitPageLayout('LIGHT');
     setOrderCompletePageLayout('DEFAULT');
@@ -89,6 +98,10 @@ export const StartScreenPage = () => {
     setInitLightDetail(null);
     setInitCommonItems([]);
     setInitCommonFiles({});
+    setOrderCompleteMessage('');
+    setOrderCompleteImage(null);
+    setOrderCompleteFile(null);
+    setOrderCompleteDetail(null);
   }, [shopCode]);
 
   useEffect(() => {
@@ -103,6 +116,9 @@ export const StartScreenPage = () => {
     const initDark = pageDetails.find(
       ({ pageDetailType }) => pageDetailType === 'INIT_DARK'
     );
+    const orderComplete = pageDetails.find(
+      ({ pageDetailType }) => pageDetailType === 'ORDER_COMPLETE'
+    );
 
     setInitPageLayout(themePage.initPageLayout);
     setOrderCompletePageLayout(themePage.orderCompletePageLayout);
@@ -116,6 +132,10 @@ export const StartScreenPage = () => {
     setStoreName(
       initDark?.pageDetailDescription ?? initLight?.pageDetailDescription ?? ''
     );
+    setOrderCompleteDetail(orderComplete ?? null);
+    setOrderCompleteMessage(orderComplete?.pageDetailDescription ?? '');
+    setOrderCompleteImage(orderComplete?.pageDetailImagePath ?? null);
+    setOrderCompleteFile(null);
     setInitCommonItems(
       pageDetails
         .filter(({ pageDetailType }) => pageDetailType === 'INIT_COMMON')
@@ -132,9 +152,10 @@ export const StartScreenPage = () => {
 
   useEffect(() => {
     return () => {
-      initCommonItems.forEach((item) => revokeUrl(item.imageUrl));
+      blobUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      blobUrlsRef.current.clear();
     };
-  }, [initCommonItems]);
+  }, []);
 
   const currentLogoImage = useMemo(() => {
     if (initPageLayout === 'LIGHT') {
@@ -205,6 +226,21 @@ export const StartScreenPage = () => {
     handleChangeInitCommonImage(id, null);
   };
 
+  const handleChangeOrderCompleteImage = (file: File | null) => {
+    setOrderCompleteFile(file);
+
+    setOrderCompleteImage((prev) => {
+      if (prev && prev.startsWith('blob:')) {
+        revokeUrl(prev);
+      }
+
+      const nextUrl = file ? URL.createObjectURL(file) : null;
+      trackBlobUrl(nextUrl);
+
+      return nextUrl;
+    });
+  };
+
   const handleSave = async () => {
     if (!shopCode) {
       toast(t('매장 정보가 없습니다. 다시 로그인 후 시도해주세요.'));
@@ -242,6 +278,12 @@ export const StartScreenPage = () => {
 
     let initLightFile: { file: File; fileName: string } | undefined;
     const initCommonFilesToSend: Array<{ file: File; fileName: string }> = [];
+    let orderCompleteFileToSend:
+      | {
+          file: File;
+          fileName: string;
+        }
+      | undefined;
 
     const layoutDetails: IShopPageDetail[] = [];
     if (initPageLayout === 'LIGHT') {
@@ -279,51 +321,84 @@ export const StartScreenPage = () => {
       );
     }
 
-    const commonDetails = initCommonItems.flatMap((item) => {
-      const file = initCommonFiles[item.id];
-      if (file) {
+    const commonDetails = initCommonItems
+      .flatMap((item) => {
+        const file = initCommonFiles[item.id];
+        if (file) {
+          const imageId = generateId();
+          const fileName = `${imageId}.jpg`;
+          initCommonFilesToSend.push({ file, fileName });
+
+          return [
+            createDetail({
+              type: 'INIT_COMMON',
+              pageDetailImageSeq: 0,
+              pageDetailImagePath: null,
+              pageDetailImageFileName: imageId,
+              description: item.description,
+            }),
+          ];
+        }
+
+        if (item.imageUrl) {
+          return [
+            createDetail({
+              type: 'INIT_COMMON',
+              pageDetailImageSeq: item.pageDetailImageSeq ?? 0,
+              pageDetailImagePath: item.imageUrl,
+              pageDetailImageFileName: '',
+              description: item.description,
+            }),
+          ];
+        }
+
+        return [];
+      })
+      .sort(
+        (a, b) => (a.pageDetailImageSeq ?? 0) - (b.pageDetailImageSeq ?? 0)
+      );
+
+    const orderCompleteDetailPayload = (() => {
+      const pageDetailImageSeq = orderCompleteDetail?.pageDetailImageSeq ?? 0;
+
+      if (orderCompleteFile) {
         const imageId = generateId();
         const fileName = `${imageId}.jpg`;
-        initCommonFilesToSend.push({ file, fileName });
+        orderCompleteFileToSend = { file: orderCompleteFile, fileName };
 
-        return [
-          createDetail({
-            type: 'INIT_COMMON',
-            pageDetailImageSeq: 0,
-            pageDetailImagePath: null,
-            pageDetailImageFileName: imageId,
-            description: item.description,
-          }),
-        ];
+        return createDetail({
+          type: 'ORDER_COMPLETE',
+          pageDetailImageSeq,
+          pageDetailImagePath: null,
+          pageDetailImageFileName: imageId,
+          description: orderCompleteMessage,
+        });
       }
 
-      if (item.imageUrl) {
-        return [
-          createDetail({
-            type: 'INIT_COMMON',
-            pageDetailImageSeq: item.pageDetailImageSeq ?? 0,
-            pageDetailImagePath: item.imageUrl,
-            pageDetailImageFileName: '',
-            description: item.description,
-          }),
-        ];
-      }
-
-      return [];
-    }).sort(
-      (a, b) =>
-        (a.pageDetailImageSeq ?? 0) - (b.pageDetailImageSeq ?? 0)
-    );
+      return createDetail({
+        type: 'ORDER_COMPLETE',
+        pageDetailImageSeq,
+        pageDetailImagePath: orderCompleteImage,
+        pageDetailImageFileName: '',
+        description: orderCompleteMessage,
+      });
+    })();
 
     const shopPageDetailList: IShopPageDetail[] =
       initPageLayout === 'IMAGE'
         ? [
             ...(themePage?.shopPageDetailList ?? []).filter(
-              ({ pageDetailType }) => pageDetailType !== 'INIT_COMMON'
+              ({ pageDetailType }) =>
+                pageDetailType !== 'INIT_COMMON' &&
+                pageDetailType !== 'ORDER_COMPLETE'
             ),
             ...commonDetails,
           ]
         : [...layoutDetails, ...commonDetails];
+
+    if (orderCompleteDetailPayload) {
+      shopPageDetailList.push(orderCompleteDetailPayload);
+    }
 
     await updateShopThemePage({
       shopCode,
@@ -335,6 +410,7 @@ export const StartScreenPage = () => {
       },
       initLightFile,
       initCommonFiles: initCommonFilesToSend,
+      orderCompleteFile: orderCompleteFileToSend,
     });
 
     await queryClient.invalidateQueries({
@@ -391,14 +467,14 @@ export const StartScreenPage = () => {
           onRemoveImage={handleRemoveInitCommonImage}
         />
 
-        {/* <OrderCompletionPage
+        <OrderCompletionPage
           layout={orderCompletePageLayout}
           message={orderCompleteMessage}
-          imageUrl={orderCompleteImageUrl}
+          imageUrl={orderCompleteImage}
           onChangeImage={handleChangeOrderCompleteImage}
           onChangeLayout={setOrderCompletePageLayout}
           onChangeMessage={setOrderCompleteMessage}
-        /> */}
+        />
       </S.Container>
     </UIStyles.setting.TablePageContainer>
   );

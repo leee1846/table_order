@@ -22,10 +22,9 @@ import { SalesAccessGuard } from '@/feature/SalesAccessGuard';
 import * as S from './salesListDialog.style';
 import { Table } from './Table';
 import { OrderDetailModal } from './OrderDetailModal';
+import { PAZE_SIZE } from '@/constants/keys';
 
 const { colors } = theme;
-
-const PAGE_SIZE = 6;
 
 export type SalesListDialogProps = {
   isOpen: boolean;
@@ -38,7 +37,7 @@ export const SalesListDialog = ({
   isOpen,
   onClose,
   shopCode,
-  itemsPerPage = PAGE_SIZE,
+  itemsPerPage = PAZE_SIZE,
 }: SalesListDialogProps) => {
   const { t } = useAdminTranslation();
   const { data: shopDetailData } = useShopDetailData();
@@ -175,6 +174,7 @@ export const SalesListDialog = ({
             <Table
               orders={orders}
               onSelectOrder={(order) => setSelectedOrder(order)}
+              pageSize={itemsPerPage}
             />
           </S.Container>
 

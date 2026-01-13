@@ -28,7 +28,6 @@ export const NoticesPage = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     // 페이지 변경 시 스크롤을 맨 위로 이동
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -41,7 +40,11 @@ export const NoticesPage = () => {
           </BasicButton>
         </S.Header>
 
-        <Notices notices={notices} isLoading={isFetching} />
+        <Notices
+          notices={notices}
+          isLoading={isFetching}
+          pageSize={PAGE_SIZE}
+        />
       </S.Container>
 
       <UIStyles.setting.Footer>

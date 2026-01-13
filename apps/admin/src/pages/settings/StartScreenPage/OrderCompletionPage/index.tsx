@@ -89,19 +89,14 @@ export const OrderCompletionPage = ({
                 >
                   {t('변경')}
                 </BasicButton>
-                <BasicButton
+                {/* <BasicButton
                   variant="Solid_Sky_Blue_L"
                   onClick={handleDeleteImage}
                 >
                   {t('삭제')}
-                </BasicButton>
+                </BasicButton> */}
               </S.ButtonContainer>
-              <S.ImagePreview
-                src={imageUrl}
-                alt={t(
-                  '주문 완료 이미지'
-                )}
-              />
+              <S.ImagePreview src={imageUrl} alt={t('주문 완료 이미지')} />
             </>
           ) : (
             <>
@@ -110,24 +105,16 @@ export const OrderCompletionPage = ({
                 height={36}
                 color={theme.colors.grey[400]}
               />
-              <p>
-                {t(
-                  '메뉴판 사용 종료후 노출될 사진을 설정할 수 있어요.'
-                )}
-              </p>
+              <p>{t('메뉴판 사용 종료후 노출될 사진을 설정할 수 있어요.')}</p>
               <S.SizeInfo>
-                <span>
-                  {t('(권장사이즈 930 * 800px)')}
-                </span>
+                <span>{t('(권장사이즈 930 * 800px)')}</span>
               </S.SizeInfo>
             </>
           )}
         </S.ImageSection>
         <S.MessageSection>
           <S.TextArea
-            placeholder={t(
-              '주문 후 마지막 화면에 표시될 문구를 적어주세요.'
-            )}
+            placeholder={t('주문 후 마지막 화면에 표시될 문구를 적어주세요.')}
             value={message}
             onChange={(e) => onChangeMessage(e.target.value)}
           />

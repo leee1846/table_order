@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { theme } from '@repo/ui';
 import {
   BaseDialogContainer,
   BaseHeader,
@@ -14,10 +15,9 @@ export const DialogContainer = styled(BaseDialogContainer)`
 
 export const Container = styled.div`
   padding: 24px 24px 0 24px;
+  height: 90%;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 0;
 `;
 
 export const CloseButton = styled.button`
@@ -39,7 +39,6 @@ export const TableContainer = styled.div`
   padding: 0;
   display: flex;
   flex-direction: column;
-  min-height: 0;
 `;
 
 export const Table = styled.table`
@@ -51,20 +50,35 @@ export const Thead = styled.thead`
   margin-bottom: 24px;
 `;
 
-export const Tbody = styled(UIStyles.setting.Tbody)`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+export const Tbody = styled(UIStyles.setting.Tbody)<{
+  pageSize?: number;
+  ordersLength?: number;
+}>`
   height: 100%;
-
   & > tr {
     align-items: center;
-    height: calc((100% - 60px) / 6.5);
+    height: calc(100% / ${({ pageSize }) => pageSize});
   }
+
+  ${({ pageSize, ordersLength }) =>
+    pageSize && ordersLength && pageSize === ordersLength
+      ? `
+    & > tr:last-child {
+      border-bottom: none;
+    }
+  `
+      : ''}
 `;
 
-export const Footer = styled.div`
+export const StyledFooter = styled(UIStyles.setting.Footer)`
+  position: sticky;
+  bottom: 0;
+  padding: 16px 40px 24px;
+  background-color: ${theme.colors.white};
   display: flex;
-  justify-content: flex-end;
-  padding: 24px 40px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  border-top: 1px solid ${theme.colors.grey[200]};
+  height: 13%;
 `;

@@ -20,6 +20,7 @@ import type {
 import { toast } from '@repo/feature/utils';
 import { getDeviceTypeLabel } from '@repo/util/device';
 import { useAdminTranslation } from '@/config/i18n';
+import { PAZE_SIZE } from '@/constants/keys';
 import * as S from './deviceListDialog.style';
 
 const { colors } = theme;
@@ -40,7 +41,6 @@ export type DeviceListDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   shopCode?: string;
-  itemsPerPage?: number;
 };
 
 const formatWifiSignal = (signal: DeviceItem['wifiSignal']) => {
@@ -59,7 +59,6 @@ const formatWifiSignal = (signal: DeviceItem['wifiSignal']) => {
 export const DeviceListDialog = ({
   isOpen,
   onClose,
-  itemsPerPage = 8,
   shopCode,
 }: DeviceListDialogProps) => {
   const { t } = useAdminTranslation();
@@ -81,7 +80,7 @@ export const DeviceListDialog = ({
       setCurrentPage(1);
       setSelectedDevices(new Set());
     }
-  }, [isOpen, shopCode, itemsPerPage]);
+  }, [isOpen, shopCode, PAZE_SIZE]);
 
   const {
     data: deviceListResponse,
@@ -90,7 +89,7 @@ export const DeviceListDialog = ({
   } = useGetDeviceListWithPagination({
     shopCode: shopCode ?? '',
     pageNumber: currentPage - 1,
-    pageSize: itemsPerPage,
+    pageSize: PAZE_SIZE,
   });
 
   const { mutateAsync: postDeviceControl, isPending: isDeviceControlLoading } =
@@ -102,7 +101,7 @@ export const DeviceListDialog = ({
     }
 
     refetch();
-  }, [isOpen, shopCode, currentPage, itemsPerPage, refetch]);
+  }, [isOpen, shopCode, currentPage, PAZE_SIZE, refetch]);
 
   // API 응답이 배열로 오는 경우 처리
   const paginationData = useMemo(() => {
@@ -279,7 +278,14 @@ export const DeviceListDialog = ({
                   <th>{t('빌드번호')}</th>
                 </tr>
               </UIStyles.setting.Thead>
-              <S.Tbody>
+              <S.Tbody
+                pageSize={PAZE_SIZE}
+                devicesLength={
+                  !isInitialLoading && deviceItems.length > 0
+                    ? deviceItems.length
+                    : undefined
+                }
+              >
                 {isInitialLoading ? (
                   <tr style={{ height: '100%' }}>
                     <td
@@ -362,13 +368,14 @@ export const DeviceListDialog = ({
           </S.TableContainer>
         </S.Container>
 
-        <S.Footer>
+        <S.StyledFooter>
+          <div />
           <Pagination
             totalPages={totalPages}
             currentPage={currentPage}
             onPageChange={handlePageChange}
           />
-        </S.Footer>
+        </S.StyledFooter>
       </S.DialogContainer>
     </ModalBackground>
   );

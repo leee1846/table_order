@@ -11,9 +11,15 @@ interface Props {
   orders: IOrderHistoryItem[];
   isLoading?: boolean;
   onSelectOrder: (order: IOrderHistoryItem) => void;
+  pageSize?: number;
 }
 
-export const Table = ({ orders, isLoading, onSelectOrder }: Props) => {
+export const Table = ({
+  orders,
+  isLoading,
+  onSelectOrder,
+  pageSize,
+}: Props) => {
   const getTextColor = (isCancel: boolean, isPayment?: boolean) => {
     if (isPayment) {
       return isCancel ? theme.colors.semantic[400] : theme.colors.primary[500];
@@ -106,7 +112,7 @@ export const Table = ({ orders, isLoading, onSelectOrder }: Props) => {
           <th>{t('상세 내역')}</th>
         </tr>
       </UIStyles.setting.Thead>
-      <S.Tbody>{renderRows()}</S.Tbody>
+      <S.Tbody pageSize={pageSize}>{renderRows()}</S.Tbody>
     </UIStyles.setting.Table>
   );
 };

@@ -11,9 +11,10 @@ const { colors } = theme;
 interface TableProps {
   orders: IOrderHistoryItem[];
   onSelectOrder: (order: IOrderHistoryItem) => void;
+  pageSize?: number;
 }
 
-export const Table = ({ orders, onSelectOrder }: TableProps) => {
+export const Table = ({ orders, onSelectOrder, pageSize }: TableProps) => {
   const { t } = useAdminTranslation();
 
   const getTextColor = (isCancel: boolean, isPayment?: boolean) => {
@@ -59,7 +60,7 @@ export const Table = ({ orders, onSelectOrder }: TableProps) => {
           <th>{t('상세 내역')}</th>
         </tr>
       </UIStyles.setting.Thead>
-      <S.Tbody>
+      <S.Tbody pageSize={pageSize} ordersLength={orders.length}>
         {orders.length === 0 ? (
           <tr>
             <td

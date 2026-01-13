@@ -138,6 +138,7 @@ export const SalesOrderPage = () => {
             orders={orders}
             isLoading={isFetching}
             onSelectOrder={(order) => setSelectedOrder(order)}
+            pageSize={PAGE_SIZE}
           />
         </S.Container>
 

@@ -12,6 +12,7 @@ import type {
 import { formatDateTime } from '@repo/util/date';
 import type { OrderItem as MenuItem } from '@repo/feature/components';
 import { useAdminTranslation } from '@/config/i18n';
+import { PAZE_SIZE } from '@/constants/keys';
 import * as S from './orderListDialog.styles';
 import DetailOrderDialog from './DetailOrderDialog';
 import * as UIStyles from '@repo/ui/styles';
@@ -72,14 +73,12 @@ export type OrderListDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   shopCode?: string;
-  itemsPerPage?: number;
 };
 
 export const OrderListDialog = ({
   isOpen,
   onClose,
   shopCode,
-  itemsPerPage = 7,
 }: OrderListDialogProps) => {
   const { t } = useAdminTranslation();
   const [currentPage, setCurrentPage] = useState(1);
@@ -90,6 +89,8 @@ export const OrderListDialog = ({
     MENU: t('메뉴판'),
     ORDER_POS: t('오더포스'),
     POS_APP: t('포스앱'),
+    POS: t('연동포스'),
+    PREPAYMENT: t('메뉴판'),
   };
 
   const PAYMENT_STATUS_LABELS: Record<TOrderPaymentStatus, string> = {
@@ -111,7 +112,7 @@ export const OrderListDialog = ({
       setSelectedOrder(null);
       setOpenDetailOrderDialog(false);
     }
-  }, [isOpen, shopCode]);
+  }, [isOpen, shopCode, PAZE_SIZE]);
 
   const {
     data: orderLogResponse,
@@ -120,7 +121,7 @@ export const OrderListDialog = ({
   } = useGetOrderLogList({
     shopCode: shopCode ?? '',
     pageNumber: currentPage - 1,
-    pageSize: itemsPerPage,
+    pageSize: PAZE_SIZE,
   });
 
   useEffect(() => {
@@ -129,7 +130,7 @@ export const OrderListDialog = ({
     }
 
     refetch();
-  }, [isOpen, shopCode, currentPage, refetch]);
+  }, [isOpen, shopCode, currentPage, PAZE_SIZE, refetch]);
 
   const orderLogData = useMemo(() => {
     const data = orderLogResponse?.data;
@@ -182,6 +183,11 @@ export const OrderListDialog = ({
     });
   }, [orderLogData]);
 
+  const displayedOrderItems = useMemo(
+    () => orderItems.filter((order) => order.menuItems.length > 0),
+    [orderItems]
+  );
+
   const totalPages =
     orderLogData?.totalPageNumber && orderLogData.totalPageNumber > 0
       ? orderLogData.totalPageNumber
@@ -227,7 +233,14 @@ export const OrderListDialog = ({
                     <th>{t('주문상태')}</th>
                   </tr>
                 </UIStyles.setting.Thead>
-                <S.Tbody>
+                <S.Tbody
+                  pageSize={PAZE_SIZE}
+                  ordersLength={
+                    hasShopCode && !isInitialLoading
+                      ? displayedOrderItems.length
+                      : undefined
+                  }
+                >
                   {!hasShopCode ? (
                     <tr style={{ height: '100%' }}>
                       <td
@@ -254,24 +267,18 @@ export const OrderListDialog = ({
                         {t('주문 목록을 불러오는 중입니다.')}
                       </td>
                     </tr>
-                  ) : orderItems.flatMap((order) => order.menuItems).length >
-                    0 ? (
-                    orderItems
-                      .filter((order) => order.menuItems.length > 0)
-                      .map((order) => (
-                        <tr
-                          key={order.id}
-                          onClick={() => handleRowClick(order)}
-                        >
-                          <td>{order.orderNumber}</td>
-                          <td>{order.orderDateTime}</td>
-                          <td>{order.tableNumber}</td>
-                          <td>{order.orderChannel}</td>
-                          {/* TODO paymentStatus 아직 백엔드에서 구현 안됨 현재 null로 오는 중 */}
-                          <td>{order.paymentStatus}</td>
-                          <td>{order.orderStatus}</td>
-                        </tr>
-                      ))
+                  ) : displayedOrderItems.length > 0 ? (
+                    displayedOrderItems.map((order) => (
+                      <tr key={order.id} onClick={() => handleRowClick(order)}>
+                        <td>{order.orderNumber}</td>
+                        <td>{order.orderDateTime}</td>
+                        <td>{order.tableNumber}</td>
+                        <td>{order.orderChannel}</td>
+                        {/* TODO paymentStatus 아직 백엔드에서 구현 안됨 현재 null로 오는 중 */}
+                        <td>{order.paymentStatus}</td>
+                        <td>{order.orderStatus}</td>
+                      </tr>
+                    ))
                   ) : (
                     <tr style={{ height: '100%' }}>
                       <td
@@ -291,13 +298,14 @@ export const OrderListDialog = ({
             </S.TableContainer>
           </S.Container>
 
-          <S.Footer>
+          <S.StyledFooter>
+            <div />
             <Pagination
               totalPages={totalPages}
               currentPage={currentPage}
               onPageChange={handlePageChange}
             />
-          </S.Footer>
+          </S.StyledFooter>
         </S.DialogContainer>
       </ModalBackground>
       {openDetailOrderDialog && (
@@ -317,4 +325,3 @@ export const OrderListDialog = ({
     </>
   );
 };
-

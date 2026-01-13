@@ -1,11 +1,23 @@
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 
-export const Container = styled.ul`
+export const Container = styled.ul<{
+  pageSize?: number;
+  noticesLength?: number;
+}>`
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+
+  ${({ pageSize, noticesLength }) =>
+    pageSize && noticesLength && pageSize === noticesLength
+      ? `
+    & > li:last-child {
+      border-bottom: none;
+    }
+  `
+      : ''}
 `;
 
 export const Message = styled.p`
@@ -95,7 +107,6 @@ export const CreatedAt = styled.p`
 
 export const Content = styled.div`
   padding: 24px 40px 40px;
-
   & > p {
     ${TYPOGRAPHY.ST_5}
     color: ${theme.colors.grey[700]};
