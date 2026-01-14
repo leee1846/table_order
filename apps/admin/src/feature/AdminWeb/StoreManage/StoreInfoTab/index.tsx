@@ -1,4 +1,5 @@
 import { Input, CheckButton } from '@repo/ui/components';
+import { allowOnlyNumbers } from '@repo/util/string';
 import * as S from './storeInfoTab.style';
 import type { IGetAdminShopDetail } from '@repo/api/types';
 
@@ -66,7 +67,10 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
             <Input
               placeholder="사업자등록번호를 입력하세요"
               value={formData.businessNumber}
-              onChange={(value) => updateFormData({ businessNumber: value })}
+              onChange={(value) =>
+                updateFormData({ businessNumber: allowOnlyNumbers(value) })
+              }
+              type="tel"
             />
             <CheckButton
               checked={formData.isCorporate}
@@ -130,7 +134,10 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
             <Input
               placeholder="대표자 연락처를 입력하세요"
               value={formData.ownerPhoneNumber}
-              onChange={(value) => updateFormData({ ownerPhoneNumber: value })}
+              onChange={(value) =>
+                updateFormData({ ownerPhoneNumber: allowOnlyNumbers(value) })
+              }
+              type="tel"
             />
           </S.FieldGroup>
         </S.HorizontalLayout>
@@ -153,8 +160,11 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
               placeholder="실무 담당자 연락처를 입력하세요"
               value={formData.managerPhoneNumber}
               onChange={(value) =>
-                updateFormData({ managerPhoneNumber: value })
+                updateFormData({
+                  managerPhoneNumber: allowOnlyNumbers(value),
+                })
               }
+              type="tel"
             />
           </S.FieldGroup>
         </S.HorizontalLayout>

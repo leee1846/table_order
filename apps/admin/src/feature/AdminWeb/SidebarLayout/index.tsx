@@ -36,22 +36,34 @@ export const StoresSidebarLayout = () => {
         id: 'stores',
         label: '매장 관리',
         path: ROUTES.ADMIN_WEB.STORES.generate(),
+        matchPattern: '/admin/stores/*',
       },
       {
         id: 'notices',
         label: '공지사항',
         path: ROUTES.ADMIN_WEB.NOTICES.generate(),
+        matchPattern: '/admin/notices/*',
       },
       {
         id: 'app-history',
         label: '앱 히스토리',
         path: ROUTES.ADMIN_WEB.APP_HISTORY.generate(),
+        matchPattern: '/admin/app-history/*',
       },
     ],
     []
   );
 
-  const isPathActive = (path: string) => location.pathname === path;
+  const isPathActive = (path: string, matchPattern?: string) => {
+    if (matchPattern) {
+      const match = matchPath(
+        { path: matchPattern, end: false },
+        location.pathname
+      );
+      return match !== null;
+    }
+    return location.pathname === path;
+  };
   const isMenuOpened = (menuId: string) => openedMenuIds.has(menuId);
 
   const handleMenuClick = (menu: TMenu) => {
@@ -128,7 +140,8 @@ export const StoresSidebarLayout = () => {
           {SIDEBAR_MENUS.map((menu) => {
             const hasSubMenus = !!menu.subMenus?.length;
             const isActive =
-              (menu.path && isPathActive(menu.path)) || hasActiveSubMenu(menu);
+              (menu.path && isPathActive(menu.path, menu.matchPattern)) ||
+              hasActiveSubMenu(menu);
             const isOpened = hasSubMenus && isMenuOpened(menu.id);
 
             return (

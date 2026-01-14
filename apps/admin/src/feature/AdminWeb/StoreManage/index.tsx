@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BasicButton } from '@repo/ui/components';
 import { StoreInfoTab } from '@/feature/AdminWeb/StoreManage/StoreInfoTab';
 import { MemberInfoTab } from '@/feature/AdminWeb/StoreManage/MemberInfoTab';
+import { SettingInfoTab } from '@/feature/AdminWeb/StoreManage/SettingInfoTab';
 import * as S from './storeManage.style';
 import type {
   ICreateAdminMemberRequest,
@@ -9,7 +10,7 @@ import type {
 } from '@repo/api/types';
 import { DEFAULT_MEMBER_DATA, DEFAULT_SHOP_DATA } from './constants';
 
-type TabType = 'storeInfo' | 'memberInfo';
+type TabType = 'storeInfo' | 'memberInfo' | 'settingInfo';
 type Mode = 'create' | 'edit';
 
 interface Props {
@@ -87,7 +88,7 @@ export const StoreManage = ({
           isActive={activeTab === 'storeInfo'}
           onClick={() => setActiveTab('storeInfo')}
         >
-          매장정보
+          매장 정보
         </S.TabButton>
         {mode === 'edit' && (
           <S.TabButton
@@ -95,9 +96,16 @@ export const StoreManage = ({
             isActive={activeTab === 'memberInfo'}
             onClick={() => setActiveTab('memberInfo')}
           >
-            계정정보
+            계정 정보
           </S.TabButton>
         )}
+        <S.TabButton
+          type="button"
+          isActive={activeTab === 'settingInfo'}
+          onClick={() => setActiveTab('settingInfo')}
+        >
+          세팅 정보
+        </S.TabButton>
       </S.TabContainer>
 
       <S.TabContent>
@@ -115,6 +123,14 @@ export const StoreManage = ({
             updateFormData={(updates) =>
               setMemberFormData((prev) => ({ ...prev, ...updates }))
             }
+          />
+        )}
+
+        {activeTab === 'settingInfo' && (
+          <SettingInfoTab
+            mode={mode}
+            formData={formData}
+            updateFormData={updateFormData}
           />
         )}
       </S.TabContent>

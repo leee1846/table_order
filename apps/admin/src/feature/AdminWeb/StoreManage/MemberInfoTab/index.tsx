@@ -1,4 +1,5 @@
 import { Input } from '@repo/ui/components';
+import { allowOnlyNumbers } from '@repo/util/string';
 import * as S from '../StoreInfoTab/storeInfoTab.style';
 import type { ICreateAdminMemberRequest } from '@repo/api/types';
 
@@ -28,7 +29,10 @@ export const MemberInfoTab = ({ formData, updateFormData }: Props) => {
           <Input
             placeholder="아이디"
             value={formData.memberId ?? ''}
-            onChange={(value) => updateFormData({ memberId: value })}
+            onChange={() => {
+              // readOnly
+            }}
+            disabled
           />
         </S.FieldGroup>
       </S.Section>
@@ -52,7 +56,10 @@ export const MemberInfoTab = ({ formData, updateFormData }: Props) => {
             <Input
               placeholder="회원 전화번호를 입력하세요"
               value={formData.memberTel || ''}
-              onChange={(value) => updateFormData({ memberTel: value })}
+              onChange={(value) =>
+                updateFormData({ memberTel: allowOnlyNumbers(value) })
+              }
+              type="tel"
             />
           </S.FieldGroup>
         </S.HorizontalLayout>

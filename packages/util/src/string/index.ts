@@ -20,6 +20,25 @@ export const isEmpty = (str: string | null | undefined): boolean => {
 };
 
 /**
+ * 문자열에서 숫자만 추출합니다.
+ * 입력값에서 숫자가 아닌 문자를 모두 제거하여 반환합니다.
+ *
+ * @param value - 필터링할 문자열
+ * @returns 숫자만 포함된 문자열
+ *
+ * @example
+ * ```ts
+ * allowOnlyNumbers('123-456-7890') // "1234567890"
+ * allowOnlyNumbers('abc123def') // "123"
+ * allowOnlyNumbers('123.45') // "12345"
+ * allowOnlyNumbers('') // ""
+ * ```
+ */
+export const allowOnlyNumbers = (value: string): string => {
+  return value.replace(/[^0-9]/g, '');
+};
+
+/**
  * 숫자를 원화 포맷으로 포맷팅합니다.
  *
  * @param num - 포맷팅할 숫자

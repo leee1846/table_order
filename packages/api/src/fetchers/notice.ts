@@ -76,7 +76,7 @@ export const updateNotice = async ({
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'PUT',
-    url: ENDPOINTS.NOTICE.DETAIL(noticeSeq),
+    url: ENDPOINTS.NOTICE.NOTICE,
     data: { ...params, noticeSeq },
   });
 
