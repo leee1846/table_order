@@ -6,10 +6,16 @@ import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ROUTES } from '@/constants/routes';
-import { openDualActionDialog } from '@repo/feature/utils';
+import {
+  openConfirmDialog,
+  openDualActionDialog,
+  toast,
+} from '@repo/feature/utils';
+import { usePutMemberPassword } from '@repo/api/queries';
 
 export const AdminMyPage = () => {
-  const { clearAuth } = useAuthStore();
+  const { clearAuth, tokenPayload } = useAuthStore();
+  const { mutateAsync: updatePassword } = usePutMemberPassword();
 
   // 비밀번호 입력 상태
   const [currentPassword, setCurrentPassword] = useState('');
@@ -88,8 +94,8 @@ export const AdminMyPage = () => {
     }
   };
 
-  // 비밀번호 변경 핸들러 (기능은 나중에 구현)
-  const handleChangePassword = () => {
+  // 비밀번호 변경 핸들러
+  const handleChangePassword = async () => {
     // 유효성 검사
     if (!currentPassword) {
       setCurrentPasswordError('기존 비밀번호를 입력해주세요.');
@@ -108,8 +114,28 @@ export const AdminMyPage = () => {
       return;
     }
 
-    // TODO: 비밀번호 변경 API 호출
-    // 비밀번호 변경 로직 구현 예정
+    if (!tokenPayload?.sub) {
+      toast('사용자 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    await updatePassword({
+      memberId: tokenPayload.sub,
+      memberPassword: newPassword,
+      existingMemberPassword: currentPassword,
+    });
+
+    openConfirmDialog({
+      title: '비밀번호 변경',
+      content: '비밀번호가 변경되었습니다. 다시 로그인 해주세요.',
+      onConfirm: () => {
+        // store 비우기
+        clearAuth();
+
+        // 로그인 페이지로 이동
+        window.location.replace(ROUTES.LOGIN.generate());
+      },
+    });
   };
 
   // 로그아웃 핸들러
