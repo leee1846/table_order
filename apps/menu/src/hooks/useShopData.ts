@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useGetShops } from '@repo/api/queries';
 import { useShopStore } from '@/stores/useShopStore';
+import { getAccessToken } from '@repo/api/auth';
 
 interface Props {
   /**
@@ -20,7 +21,7 @@ export const useShopData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
   const { data: storeData, setData: setShopData } = useShopStore();
   const { data: apiData, refetch } = useGetShops({
-    enabled: storeData === null && !skipInitialRequest,
+    enabled: storeData === null && !skipInitialRequest && !!getAccessToken(),
   });
 
   useEffect(() => {

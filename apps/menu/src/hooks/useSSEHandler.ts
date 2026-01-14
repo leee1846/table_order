@@ -29,6 +29,7 @@ import { ROUTES } from '@/constants/routes';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useShopThemePage } from './useShopThemePage';
 import { useDialogStore } from '@repo/feature/stores';
+import { clearAuthData } from '@/utils/auth';
 
 /**
  * SSE(Server-Sent Events) 연결 및 실시간 메시지 처리를 담당하는 커스텀 훅
@@ -533,6 +534,19 @@ export const useSSEHandler = () => {
       }
     },
 
+    // LOGOUT 메시지 핸들러: 로그아웃 처리
+    handleLogoutMessage: () => {
+      openConfirmDialog({
+        title: t('로그아웃'),
+        content: t('비밀번호가 변경되었습니다. 다시 로그인 해주세요.'),
+        primaryText: t('확인'),
+        onConfirm: async () => {
+          await clearAuthData();
+          window.location.replace(ROUTES.LOGIN.generate());
+        },
+      });
+    },
+
     // refetch 함수들 (ref에 저장하여 핸들러에서 사용)
     refetchCurrentTableList,
     refetchDeviceList,
@@ -635,6 +649,10 @@ export const useSSEHandler = () => {
 
       case 'PAYMENT':
         handlersRef.current.handlePaymentMessage(sseMessage);
+        break;
+
+      case 'LOGOUT':
+        handlersRef.current.handleLogoutMessage();
         break;
 
       default:
