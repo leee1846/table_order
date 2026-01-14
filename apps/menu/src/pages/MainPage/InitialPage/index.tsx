@@ -1,11 +1,15 @@
+import { useCallback, useEffect, useRef } from 'react';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
 import * as S from '@/pages/MainPage/InitialPage/initialPage.style';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { NoContent } from '@/feature/NoContent';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { globalTimerManager } from '@/utils/timerManager';
+import { TIMER_KEYS } from '@/constants/keys';
 
 export const InitialPage = () => {
   const { t } = useCustomerTranslation();
@@ -14,16 +18,51 @@ export const InitialPage = () => {
   const { hideInitialPage } = useInitialPageStore();
   const { data: shopPageSettingData } = useShopThemePage();
   const { themePageData } = shopPageSettingData;
+  const swiperRef = useRef<SwiperType | null>(null);
+
+  const hasEnoughSlides = (themePageData?.shopPageDetailList?.length ?? 0) >= 2;
+  const detailImageList =
+    themePageData?.shopPageDetailList?.filter(
+      (item) => item.pageDetailType === 'INIT_COMMON'
+    ) ?? [];
+
+  // Swiper 인스턴스가 설정되면 자동 스와이프 시작
+  const startAutoplay = useCallback(() => {
+    if (!hasEnoughSlides || !swiperRef.current) {
+      return;
+    }
+
+    // 기존 타이머가 있으면 정리
+    globalTimerManager.clear(TIMER_KEYS.INITIAL_PAGE_SWIPER_AUTOPLAY);
+
+    globalTimerManager.setInterval(
+      TIMER_KEYS.INITIAL_PAGE_SWIPER_AUTOPLAY,
+      () => {
+        if (swiperRef.current) {
+          swiperRef.current.slideNext();
+        }
+      },
+      15000 // 15초
+    );
+  }, [hasEnoughSlides]);
+
+  // 15초마다 자동 스와이프
+  useEffect(() => {
+    // Swiper 인스턴스가 이미 설정되어 있으면 시작
+    if (swiperRef.current) {
+      startAutoplay();
+    }
+
+    return () => {
+      globalTimerManager.clear(TIMER_KEYS.INITIAL_PAGE_SWIPER_AUTOPLAY);
+    };
+  }, [startAutoplay]);
 
   if (!shopDetailData || !themePageData) {
     return null;
   }
 
-  const hasEnoughSlides = themePageData.shopPageDetailList.length >= 2;
   const initPageLayout = themePageData.initPageLayout;
-  const detailImageList = themePageData.shopPageDetailList.filter(
-    (item) => item.pageDetailType === 'INIT_COMMON'
-  );
 
   const getShopDetail = (layout: 'LIGHT' | 'DARK') => {
     const pageDetailType = layout === 'LIGHT' ? 'INIT_LIGHT' : 'INIT_DARK';
@@ -49,7 +88,15 @@ export const InitialPage = () => {
         aria-label={t('주문 시작하기')}
         tabIndex={0}
       >
-        <Swiper spaceBetween={0} slidesPerView={1} loop={hasEnoughSlides}>
+        <Swiper
+          spaceBetween={0}
+          slidesPerView={1}
+          loop={hasEnoughSlides}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+            startAutoplay();
+          }}
+        >
           {detailImageList.map((item) => (
             <SwiperSlide key={item.pageSeq}>
               <S.Image
@@ -73,7 +120,15 @@ export const InitialPage = () => {
       aria-label={t('주문 시작하기')}
       tabIndex={0}
     >
-      <Swiper spaceBetween={0} slidesPerView={1} loop={hasEnoughSlides}>
+      <Swiper
+        spaceBetween={0}
+        slidesPerView={1}
+        loop={hasEnoughSlides}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper;
+          startAutoplay();
+        }}
+      >
         {detailImageList.map((detailImage) => (
           <SwiperSlide key={detailImage.pageSeq}>
             <S.DarkLightContainer>
