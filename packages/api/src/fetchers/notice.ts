@@ -82,3 +82,16 @@ export const updateNotice = async ({
 
   return response.data;
 };
+
+export const deleteNotice = async (
+  noticeSeq: number
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'DELETE',
+    url: ENDPOINTS.NOTICE.NOTICE,
+    params: { noticeSeq },
+  });
+
+  return response.data;
+};
