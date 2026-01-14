@@ -45,6 +45,15 @@ export const useSSEHandler = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.orders.currentTableList(shopCode),
       });
+
+      //TODO 알림음 울리는 로직
+      return;
+    }
+
+    if (sseMessage?.type === 'PAYMENT') {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.currentTableList(shopCode),
+      });
       return;
     }
 

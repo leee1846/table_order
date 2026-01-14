@@ -15,7 +15,8 @@ export interface ISseMessage {
     | 'DEVICE_APP_UPDATE'
     | 'LOGOUT'
     | 'SHOP_THEME_PAGE'
-    | 'SHOP_THEME_MENU';
+    | 'SHOP_THEME_MENU'
+    | 'PAYMENT';
   data:
     | {
         [key: string]: number | string;
