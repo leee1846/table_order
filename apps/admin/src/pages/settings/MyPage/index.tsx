@@ -16,6 +16,11 @@ export const MyPage = () => {
   const { mutateAsync: putMemberPassword, isPending } = usePutMemberPassword();
   const memberId = tokenPayload?.sub ?? '';
 
+  const performLogout = () => {
+    clearAuth();
+    window.location.replace(ROUTES.LOGIN.generate());
+  };
+
   // 비밀번호 입력 상태
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -129,8 +134,7 @@ export const MyPage = () => {
     setNewPassword('');
     setConfirmPassword('');
 
-    //TODO 비밀번호 바뀌면 해당 계정 로그아웃
-    //TODO SSE로 모든 디바이스 로그아웃
+    performLogout();
   };
 
   // 로그아웃 핸들러
@@ -141,11 +145,7 @@ export const MyPage = () => {
       primaryText: t('확인'),
       secondaryText: t('취소'),
       onConfirm: () => {
-        // store 비우기
-        clearAuth();
-
-        // 로그인 페이지로 이동
-        window.location.replace(ROUTES.LOGIN.generate());
+        performLogout();
       },
     });
   };

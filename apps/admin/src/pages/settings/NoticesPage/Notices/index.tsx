@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { KeyboardArrowDownIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import type { INotice } from '@repo/api/types';
+import type { INotice, TNoticeBoardType } from '@repo/api/types';
 import { updateNoticeView } from '@repo/api/fetchers';
 import { CapacitorApp } from '@repo/util/app';
 import { formatDateTime } from '@repo/util/date';
@@ -14,6 +14,11 @@ interface NoticesProps {
   notices: INotice[];
   pageSize?: number;
 }
+
+const BOARD_TYPE_LABELS: Record<TNoticeBoardType, string> = {
+  GENERAL: t('일반'),
+  EMERGENCY: t('응급'),
+};
 
 export const Notices = ({ notices, pageSize }: NoticesProps) => {
   const [openNoticeId, setOpenNoticeId] = useState<number | null>(null);
@@ -80,9 +85,9 @@ export const Notices = ({ notices, pageSize }: NoticesProps) => {
               <S.LeftContainer>
                 <S.Num>{notice.noticeSeq}</S.Num>
                 <S.Status>
-                  {notice.boardType === 'GENERAL'
-                    ? t('일반')
-                    : notice.boardType || t('일반')}
+                  {notice.boardType
+                    ? BOARD_TYPE_LABELS[notice.boardType]
+                    : t('일반')}
                 </S.Status>
                 <S.Title>{notice.noticeTitle}</S.Title>
               </S.LeftContainer>

@@ -13,6 +13,7 @@ export interface ISseMessage {
     | 'DEVICE_SCREEN_OFF'
     | 'DEVICE_SCREEN_ON'
     | 'DEVICE_APP_UPDATE'
+    | 'LOGOUT'
     | 'SHOP_THEME_PAGE'
     | 'SHOP_THEME_MENU';
   data:

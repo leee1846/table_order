@@ -7,10 +7,13 @@ import { useAuth } from './useAuth';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
 import { useTheftAlertStore } from '@/stores/useTheftAlertStore';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { ROUTES } from '@/constants/routes';
 
 export const useSSEHandler = () => {
   const queryClient = useQueryClient();
   const { shopCode } = useAuth();
+  const { clearAuth } = useAuthStore();
 
   const { openAlert } = useTheftAlertStore();
 
@@ -28,6 +31,13 @@ export const useSSEHandler = () => {
 
   useEffect(() => {
     if (!shopCode) {
+      return;
+    }
+
+    if (sseMessage?.type === 'LOGOUT') {
+      clearAuth();
+      disconnectSse();
+      window.location.replace(ROUTES.LOGIN.generate());
       return;
     }
 
@@ -64,5 +74,5 @@ export const useSSEHandler = () => {
     //     }
     //   }
     // }
-  }, [sseMessage, shopCode, queryClient, openAlert]);
+  }, [sseMessage, shopCode, queryClient, openAlert, clearAuth]);
 };
