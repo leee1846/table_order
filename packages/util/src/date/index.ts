@@ -525,3 +525,25 @@ export const getCurrentDayOfWeek = (date: Date = new Date()): number => {
 export const getTodayDateString = (format: string = 'YYYY-MM-DD'): string => {
   return dayjs().format(format);
 };
+
+/**
+ * 주어진 연도와 월의 시작일과 종료일을 'YYYY-MM-DD' 형식으로 반환합니다.
+ *
+ * @param year - 연도
+ * @param month - 월 (1-12)
+ * @returns 시작일과 종료일 객체
+ *
+ * @example
+ * ```ts
+ * getMonthDateRange(2025, 1); // { start: '2025-01-01', end: '2025-01-31' }
+ * getMonthDateRange(2025, 2); // { start: '2025-02-01', end: '2025-02-28' }
+ * ```
+ */
+export const getMonthDateRange = (
+  year: number,
+  month: number
+): { start: string; end: string } => {
+  const start = formatDateString(year, month, 1);
+  const end = dayjs(start).endOf('month').format('YYYY-MM-DD');
+  return { start, end };
+};

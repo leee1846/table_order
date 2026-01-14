@@ -110,9 +110,29 @@ export const ROUTES = {
         path: 'menu',
         generate: () => '/settings/sales/menu',
       },
+      MENU_HISTORY: {
+        path: 'menu-history',
+        generate: () => '/settings/sales/menu-history',
+      },
       SALES_DAILY: {
         path: 'daily',
         generate: () => '/settings/sales/daily',
+      },
+      SALES_DAILY_HISTORY: {
+        path: 'daily-history',
+        generate: () => '/settings/sales/daily-history',
+      },
+      SALES_HOURLY: {
+        path: 'hourly',
+        generate: () => '/settings/sales/hourly',
+      },
+      SALES_CALENDAR: {
+        path: 'calendar',
+        generate: () => '/settings/sales/calendar',
+      },
+      SALES_REPORT: {
+        path: 'report',
+        generate: () => '/settings/sales/report',
       },
     },
     TABLES: {

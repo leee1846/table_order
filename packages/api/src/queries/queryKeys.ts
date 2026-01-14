@@ -196,6 +196,46 @@ export const queryKeys = {
         pageNumber,
         pageSize,
       ] as const,
+    /** 당일 매출 내역 조회 */
+    oneDaySales: (shopCode: string, saleDate: string, paymentType?: string) =>
+      [
+        ...queryKeys.sales.all,
+        'oneDaySales',
+        shopCode,
+        saleDate,
+        paymentType ?? 'all',
+      ] as const,
+    /** 일별 매출 내역 조회 */
+    dailySales: (shopCode: string, startDate: string, endDate: string) =>
+      [
+        ...queryKeys.sales.all,
+        'dailySales',
+        shopCode,
+        startDate,
+        endDate,
+      ] as const,
+    /** 시간대별 매출 조회 */
+    hourlySales: (shopCode: string, startDate: string, endDate: string) =>
+      [
+        ...queryKeys.sales.all,
+        'hourlySales',
+        shopCode,
+        startDate,
+        endDate,
+      ] as const,
+    /** 메뉴별 매출 내역 조회 */
+    menuSalesHistory: (shopCode: string, startDate: string, endDate: string) =>
+      [
+        ...queryKeys.sales.all,
+        'menuSalesHistory',
+        shopCode,
+        startDate,
+        endDate,
+      ] as const,
+    /** 달력 매출 내역 조회 */
+    calendarSales: (shopCode: string, yearMonth: string) =>
+      [...queryKeys.sales.all, 'calendarSales', shopCode, yearMonth] as const,
+    /** 메뉴별 매출 조회 (기간) */
   },
 
   admin: {

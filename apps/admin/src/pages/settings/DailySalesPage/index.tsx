@@ -3,122 +3,84 @@ import { BasicButton, Calender } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
-import { useGetOrderHistory } from '@repo/api/queries';
-import type {
-  IOrderHistoryItem,
-  IPaymentHistory,
-  TPaymentType,
-} from '@repo/api/types';
+import { useGetOneDaySales } from '@repo/api/queries';
+import type { TPaymentType } from '@repo/api/types';
 import {
-  formatDateTime,
   formatDateToYYYYMMDD,
+  formatDateTime,
   getTodayDateString,
 } from '@repo/util/date';
 import { toast } from '@repo/feature/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdminTranslation } from '@/config/i18n';
 import { DailySalesTable, type TDailySaleRow } from './Table';
 import * as S from './dailySalesPage.style';
 
-type TPaymentTab =
-  | 'ALL'
-  | 'GENERAL'
-  | 'CARD'
-  | 'CASH'
-  | 'CASH_RECEIPT'
-  | 'SPLIT';
+type TPaymentTab = null | 'CARD' | 'CASH' | 'PARTIAL';
 
-const PAYMENT_TABS: { key: TPaymentTab; label: string }[] = [
-  { key: 'ALL', label: '전체매출' },
-  { key: 'GENERAL', label: '일반' },
-  { key: 'CARD', label: '카드' },
-  { key: 'CASH', label: '현금' },
-  { key: 'CASH_RECEIPT', label: '현금영수증' },
-  { key: 'SPLIT', label: '분할' },
+const PAYMENT_TABS: { key: TPaymentTab; labelKey: string }[] = [
+  { key: null, labelKey: '전체' },
+  { key: 'CARD', labelKey: '카드' },
+  { key: 'CASH', labelKey: '현금' },
+  { key: 'PARTIAL', labelKey: '분할' },
 ];
 
-const buildPaymentRows = (orders: IOrderHistoryItem[]): TDailySaleRow[] => {
-  return orders.flatMap((order) => {
-    const payments = order.paymentList ?? [];
-    const hasMultiplePayments = payments.length > 1;
-    const fallbackTime = formatDateTime(
-      order.orderClearedDate,
-      'YYYY-MM-DD HH:mm'
-    );
-    const tableName =
-      order?.orderLog?.tableName || order.tableNumber || order.orderNumber;
+const formatTransactionTime = (time: string, saleDate: string): string => {
+  if (!time || time.length !== 4) {
+    return '';
+  }
+  const hours = time.substring(0, 2);
+  const minutes = time.substring(2, 4);
+  return `${saleDate.substring(0, 4)}-${saleDate.substring(4, 6)}-${saleDate.substring(6, 8)} ${hours}:${minutes}`;
+};
 
-    if (!payments.length) {
-      const paidAmount = order.paidAmount ?? 0;
-      return [
-        {
-          id: order.orderNumber,
-          paymentTime: fallbackTime,
-          tableName,
-          totalSales: paidAmount,
-          actualSales: paidAmount,
-          discountAmount: 0,
-          cancelAmount: 0,
-          usedPoint: 0,
-          status: '완료',
-          paymentMethod: order.paymentMethod ?? '-',
-          paymentType: null,
-          isSplit: hasMultiplePayments,
-          isCanceled: false,
-        },
-      ];
-    }
+const buildPaymentRows = (
+  oneDaySales: Array<{
+    transactionTime: string;
+    tableNumber: string;
+    totalSales: number;
+    actualSales: number;
+    discountAmount: number;
+    cancelAmount: number;
+    status: string;
+    paymentMethod: string;
+  }>,
+  saleDate: string
+): TDailySaleRow[] => {
+  return oneDaySales.map((sale, index) => {
+    const paymentTime = formatTransactionTime(sale.transactionTime, saleDate);
+    const isCanceled = sale.cancelAmount > 0;
+    const paymentType =
+      sale.paymentMethod === 'CARD'
+        ? 'CARD'
+        : sale.paymentMethod === 'CASH'
+          ? 'CASH'
+          : null;
 
-    return payments.map((payment: IPaymentHistory, index) => {
-      const amount = Number(payment.transactionAmount ?? 0);
-      const isCanceled = payment.isCanceled ?? false;
-      const paymentTime =
-        payment.transactionDate || payment.createDate || fallbackTime;
-
-      return {
-        id: `${order.orderNumber}-${payment.paymentSeq ?? index}`,
-        paymentTime: paymentTime
-          ? formatDateTime(paymentTime, 'YYYY-MM-DD HH:mm')
-          : fallbackTime,
-        tableName,
-        totalSales: amount,
-        actualSales: isCanceled ? 0 : amount,
-        discountAmount: 0,
-        cancelAmount: isCanceled ? amount : 0,
-        usedPoint: 0,
-        status: isCanceled ? '취소' : '완료',
-        paymentMethod: (payment.paymentType ??
-          order.paymentMethod ??
-          '-') as string,
-        paymentType: payment.paymentType as TPaymentType | null,
-        isSplit: hasMultiplePayments,
-        isCanceled,
-      };
-    });
+    return {
+      id: `${saleDate}-${index}`,
+      paymentTime,
+      tableName: sale.tableNumber,
+      totalSales: sale.totalSales,
+      actualSales: sale.actualSales,
+      discountAmount: sale.discountAmount,
+      cancelAmount: sale.cancelAmount,
+      usedPoint: 0,
+      status: sale.status,
+      paymentMethod: sale.paymentMethod,
+      paymentType: paymentType as TPaymentType | null,
+      isSplit: false,
+      isCanceled,
+    };
   });
 };
 
-const filterRowsByTab = (rows: TDailySaleRow[], tab: TPaymentTab) => {
-  switch (tab) {
-    case 'CARD':
-      return rows.filter((row) => row.paymentType === 'CARD');
-    case 'CASH':
-      return rows.filter((row) => row.paymentType === 'CASH');
-    case 'CASH_RECEIPT':
-      return rows.filter((row) => row.paymentType === 'CASH');
-    case 'SPLIT':
-      return rows.filter((row) => row.isSplit);
-    case 'GENERAL':
-      return rows.filter((row) => !row.isSplit);
-    default:
-      return rows;
-  }
-};
-
 export const DailySalesPage = () => {
+  const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
   const [selectedDate, setSelectedDate] =
     useState<string>(getTodayDateString());
-  const [activeTab, setActiveTab] = useState<TPaymentTab>('ALL');
+  const [activeTab, setActiveTab] = useState<TPaymentTab>(null);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
 
   const apiDate = useMemo(
@@ -126,25 +88,25 @@ export const DailySalesPage = () => {
     [selectedDate]
   );
 
-  const { data: orderHistoryResponse, isFetching } = useGetOrderHistory(
+  const paymentType = useMemo((): TPaymentType | undefined => {
+    return activeTab === null ? undefined : (activeTab as TPaymentType);
+  }, [activeTab]);
+
+  const { data: oneDaySalesResponse, isFetching } = useGetOneDaySales(
     {
       shopCode: shopCode ?? '',
-      startDate: apiDate,
-      endDate: apiDate,
-      pageNumber: 0,
-      pageSize: 50,
+      saleDate: apiDate,
+      paymentType,
     },
     {
       enabled: !!shopCode && !!apiDate,
     }
   );
 
-  const orders = orderHistoryResponse?.data?.orderHistory ?? [];
-  const paymentRows = useMemo(() => buildPaymentRows(orders), [orders]);
-
-  const filteredRows = useMemo(
-    () => filterRowsByTab(paymentRows, activeTab),
-    [paymentRows, activeTab]
+  const oneDaySales = oneDaySalesResponse?.data ?? [];
+  const paymentRows = useMemo(
+    () => buildPaymentRows(oneDaySales, apiDate),
+    [oneDaySales, apiDate]
   );
 
   const displayDate = useMemo(
@@ -159,7 +121,7 @@ export const DailySalesPage = () => {
   };
 
   const handleDownload = () => {
-    toast('내역 다운로드 준비 중입니다.');
+    toast(t('내역 다운로드 준비 중입니다.'));
   };
 
   return (
@@ -168,9 +130,9 @@ export const DailySalesPage = () => {
         <S.Container>
           <S.Header>
             <S.Title>
-              매출
+              {t('매출')}
               <div />
-              <span>당일 매출내역</span>
+              <span>{t('당일 매출내역')}</span>
             </S.Title>
 
             <S.Controls>
@@ -191,7 +153,7 @@ export const DailySalesPage = () => {
                 onClick={handleDownload}
                 disabled={!shopCode}
               >
-                내역 다운로드
+                {t('내역 다운로드')}
               </BasicButton>
             </S.Controls>
           </S.Header>
@@ -205,19 +167,19 @@ export const DailySalesPage = () => {
                   selected={activeTab === tab.key}
                   onClick={() => setActiveTab(tab.key)}
                 >
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </S.TabButton>
               ))}
             </S.Tabs>
             {!shopCode && (
               <S.FooterNote>
-                매장 정보가 확인되면 당일 매출 내역을 불러옵니다.
+                {t('매장 정보가 확인되면 당일 매출 내역을 불러옵니다.')}
               </S.FooterNote>
             )}
           </S.Filters>
 
           <S.TableCard>
-            <DailySalesTable rows={filteredRows} isLoading={isFetching} />
+            <DailySalesTable rows={paymentRows} isLoading={isFetching} />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

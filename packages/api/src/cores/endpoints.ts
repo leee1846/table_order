@@ -116,6 +116,13 @@ export const ENDPOINTS = {
       `/sales/card-approval/${shopCode}`,
     MENU_SALES_SUMMARY: (shopCode: string) =>
       `/sales/menu-sales-summary/${shopCode}`,
+    MENU_SALES_HISTORY: (shopCode: string) =>
+      `/sales/menu-sales-history/${shopCode}`,
+    ONE_DAY_SALES: (shopCode: string) => `/sales/one-day-sales/${shopCode}`,
+    DAILY_SALES: (shopCode: string) => `/sales/daily-sales/${shopCode}`,
+    HOURLY_SALES: (shopCode: string) => `/sales/hourly-sales/${shopCode}`,
+    CALENDAR_SALES: (shopCode: string) =>
+      `/sales/calendar-sales/${shopCode}`,
   },
 
   PAYMENT: {

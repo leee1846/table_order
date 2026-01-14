@@ -29,6 +29,23 @@ export interface IMenuSalesSummary {
   menuSalesList: IMenuSalesSummaryItem[];
 }
 
+export interface IMenuSalesHistoryItem {
+  categoryName: string;
+  menuName: string;
+  unitPrice: number;
+  salesCount: number;
+  totalSalesAmount: number;
+}
+
+export interface ICalendarSalesHistoryItem {
+  saleDate: string;
+  salesCount: number;
+  totalSalesAmount: number;
+  totalPaymentAmount: number;
+  totalCancelAmount: number;
+  customerCount: number;
+}
+
 export interface IGetSalesSummaryParams {
   shopCode: string;
   /**
@@ -56,8 +73,32 @@ export interface IGetMenuSalesSummaryParams {
 }
 
 export type TGetMenuSalesSummaryResponse = IApiResponse<IMenuSalesSummary>;
+export interface IGetMenuSalesHistoryParams {
+  shopCode: string;
+  /**
+   * YYYYMMDD
+   */
+  startDate: string;
+  /**
+   * YYYYMMDD
+   */
+  endDate: string;
+}
+export type TGetMenuSalesHistoryResponse =
+  IApiResponse<IMenuSalesHistoryItem[]>;
 
-export type TPaymentType = 'CASH' | 'CARD';
+export interface IGetCalendarSalesParams {
+  shopCode: string;
+  /**
+   * YYYYMM
+   */
+  yearMonth: string;
+}
+
+export type TGetCalendarSalesResponse =
+  IApiResponse<ICalendarSalesHistoryItem[]>;
+
+export type TPaymentType = 'CASH' | 'CARD' | 'PARTIAL' | null;
 
 export interface IPaymentHistory {
   paymentSeq: number;
@@ -162,3 +203,88 @@ export interface IGetCardApprovalHistoryParams {
 
 export type TGetCardApprovalHistoryResponse =
   IApiResponse<ICardApprovalHistory>;
+
+export interface IHourlySalesItem {
+  hour: string;
+  actualSalesCount: number;
+  actualSalesAmount: number;
+  customerCount: number;
+  pricePerCustomer: number;
+  tableCount: number;
+}
+
+export interface IGetHourlySalesParams {
+  shopCode: string;
+  /**
+   * YYYYMMDD
+   */
+  startDate: string;
+  /**
+   * YYYYMMDD
+   */
+  endDate: string;
+}
+
+export type TGetHourlySalesResponse = IApiResponse<IHourlySalesItem[]>;
+
+export interface IOneDaySales {
+  transactionTime: string;
+  tableNumber: string;
+  totalSales: number;
+  actualSales: number;
+  discountAmount: number;
+  cancelAmount: number;
+  status: string;
+  paymentMethod: string;
+}
+
+export interface IGetOneDaySalesParams {
+  shopCode: string;
+  /**
+   * yyyyMMdd 형식
+   */
+  saleDate: string;
+  /**
+   * 결제 타입 필터 (optional)
+   */
+  paymentType?: TPaymentType;
+}
+
+export type TGetOneDaySalesResponse = IApiResponse<IOneDaySales[]>;
+
+export interface ISalesMetric {
+  count: number;
+  amount?: number;
+}
+
+export interface IDailySalesHistoryItem {
+  date: string;
+  totalSales?: ISalesMetric;
+  actualSales?: ISalesMetric;
+  totalCancel?: ISalesMetric;
+  totalGuests?: number;
+  averageGuestPrice?: number;
+  usedPoint?: number;
+  card?: ISalesMetric;
+  cardCancel?: ISalesMetric;
+  cash?: ISalesMetric;
+  cashCancel?: ISalesMetric;
+  cashReceipt?: ISalesMetric;
+  cashReceiptCancel?: ISalesMetric;
+  discount?: ISalesMetric;
+  service?: ISalesMetric;
+}
+
+export interface IGetDailySalesParams {
+  shopCode: string;
+  /**
+   * YYYYMMDD
+   */
+  startDate: string;
+  /**
+   * YYYYMMDD
+   */
+  endDate: string;
+}
+
+export type TGetDailySalesResponse = IApiResponse<IDailySalesHistoryItem[]>;

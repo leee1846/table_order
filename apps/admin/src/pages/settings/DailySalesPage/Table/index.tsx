@@ -4,6 +4,7 @@ import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
 import type { TPaymentType } from '@repo/api/types';
+import { useAdminTranslation } from '@/config/i18n';
 import * as S from '../dailySalesPage.style';
 
 export type TDailySaleRow = {
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export const DailySalesTable = ({ rows, isLoading = false }: Props) => {
+  const { t } = useAdminTranslation();
   const totals = useMemo(
     () =>
       rows.reduce(
@@ -54,7 +56,7 @@ export const DailySalesTable = ({ rows, isLoading = false }: Props) => {
     if (isLoading) {
       return (
         <tr>
-          <td colSpan={9}>당일 매출 내역을 불러오는 중입니다.</td>
+          <td colSpan={9}>{t('당일 매출 내역을 불러오는 중입니다.')}</td>
         </tr>
       );
     }
@@ -62,7 +64,7 @@ export const DailySalesTable = ({ rows, isLoading = false }: Props) => {
     if (!rows.length) {
       return (
         <tr>
-          <td colSpan={9}>표시할 매출 내역이 없습니다.</td>
+          <td colSpan={9}>{t('표시할 매출 내역이 없습니다.')}</td>
         </tr>
       );
     }
@@ -95,11 +97,11 @@ export const DailySalesTable = ({ rows, isLoading = false }: Props) => {
       <UIStyles.setting.Table>
         <UIStyles.setting.Thead>
           <tr>
-            <th>결제시간</th>
-            <th>테이블명</th>
+            <th>{t('결제시간')}</th>
+            <th>{t('테이블명')}</th>
             <th>
               <S.HeaderLabel>
-                총 매출
+                {t('총 매출')}
                 <InfoIcon
                   width={18}
                   height={18}
@@ -109,7 +111,7 @@ export const DailySalesTable = ({ rows, isLoading = false }: Props) => {
             </th>
             <th>
               <S.HeaderLabel>
-                실 매출
+                {t('실 매출')}
                 <InfoIcon
                   width={18}
                   height={18}
@@ -117,11 +119,11 @@ export const DailySalesTable = ({ rows, isLoading = false }: Props) => {
                 />
               </S.HeaderLabel>
             </th>
-            <th>할인 금액</th>
-            <th>취소 금액</th>
+            <th>{t('할인 금액')}</th>
+            <th>{t('취소 금액')}</th>
             <th>
               <S.HeaderLabel>
-                사용 포인트
+                {t('사용 포인트')}
                 <InfoIcon
                   width={18}
                   height={18}
@@ -129,14 +131,14 @@ export const DailySalesTable = ({ rows, isLoading = false }: Props) => {
                 />
               </S.HeaderLabel>
             </th>
-            <th>상태</th>
-            <th>결제 수단</th>
+            <th>{t('상태')}</th>
+            <th>{t('결제 수단')}</th>
           </tr>
         </UIStyles.setting.Thead>
 
         <UIStyles.setting.Tbody>
           <S.SummaryRow>
-            <td>총계</td>
+            <td>{t('총계')}</td>
             <td>-</td>
             <td>{formatCurrency(totals.totalSales)}</td>
             <td>{formatCurrency(totals.actualSales)}</td>
