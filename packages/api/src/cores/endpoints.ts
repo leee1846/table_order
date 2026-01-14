@@ -104,6 +104,7 @@ export const ENDPOINTS = {
 
   NOTICE: {
     NOTICE: '/notice',
+    NOTICE_DETAIL: (noticeSeq: number) => `/notice/${noticeSeq}`,
     LIST: '/notice/list',
     DETAIL: (noticeSeq: number) => `/notice/${noticeSeq}`,
     VIEW: (noticeSeq: number) => `/notice/${noticeSeq}/view`,
