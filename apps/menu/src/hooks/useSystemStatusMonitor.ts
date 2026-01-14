@@ -6,9 +6,15 @@ import { usePostDeviceDetail } from '@repo/api/queries';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 
 /**
- * SystemControl 리스너를 등록하고 상태 변경을 모니터링하는 훅
- * - 리스너는 앱 시작 시 즉시 등록
- * - 관련 값(battery, wifiSignal)을 업데이트
+ * 시스템 상태(배터리, WiFi 신호) 모니터링 및 동기화를 담당하는 커스텀 훅
+ *
+ * @description
+ * 이 훅은 Android 네이티브 브릿지를 통해 시스템 상태를 실시간으로 모니터링하며, 다음과 같은 주요 기능을 제공합니다:
+ *
+ * ## 주요 기능
+ *
+ * 1. 시스템 상태 모니터링 시작 및 종료
+ * 2. 배터리 및 WiFi 신호 변경 감지 및 업데이트
  */
 export const useSystemStatusMonitor = () => {
   const { data: deviceData, setDataAsync } = useDeviceData({
@@ -18,25 +24,30 @@ export const useSystemStatusMonitor = () => {
   const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
   const { isInitialized } = useDeviceStore();
 
-  // 최신 값들을 참조하기 위한 ref
+  // 최신 값들을 참조하기 위한 ref (비동기 콜백에서 최신 값 참조용)
   const deviceDataRef = useRef(deviceData);
   const shopDataRef = useRef(shopData);
   const isInitializedRef = useRef(isInitialized);
 
+  // deviceData 변경 시 ref 동기화 (렌더링 없이 최신 값 유지)
   useEffect(() => {
     deviceDataRef.current = deviceData;
   }, [deviceData]);
 
+  // shopData 변경 시 ref 동기화
   useEffect(() => {
     shopDataRef.current = shopData;
   }, [shopData]);
 
+  // isInitialized 변경 시 ref 동기화
   useEffect(() => {
     isInitializedRef.current = isInitialized;
   }, [isInitialized]);
 
   // 리스너는 앱 시작 시 즉시 등록
+  // SystemControl.startMonitoring이 호출되면 즉시 현재 상태를 1회 발송하고, 이후 변경 시마다 콜백 호출
   useEffect(() => {
+    // 시스템 상태 업데이트 핸들러: 배터리 및 WiFi 신호 변경 시 호출됨
     const handleStatusUpdate = async (status: SystemStatus) => {
       // TODO 브릿지가 계속 pending상태임 체크 필요.
       const currentDeviceData = deviceDataRef.current;
@@ -45,64 +56,69 @@ export const useSystemStatusMonitor = () => {
       let shouldUpdateDeviceData = false;
       let newBattery: number | undefined;
       let newWifi: number | undefined;
-      // battery가 제공된 경우
+
+      // 배터리 레벨이 제공된 경우
       if (status.battery !== undefined && status.battery !== null) {
         if (currentDeviceData) {
-          // deviceData가 있으면 비교 후 변경된 경우에만 업데이트
+          // deviceData가 있으면 비교 후 변경된 경우에만 업데이트 (중복 업데이트 방지)
           const prevBattery = currentDeviceData.battery ?? 0;
           if (prevBattery !== status.battery) {
             shouldUpdateDeviceData = true;
             newBattery = status.battery;
           }
         } else {
-          // deviceData가 null이면 항상 업데이트
+          // deviceData가 null이면 항상 업데이트 (초기 설정)
           shouldUpdateDeviceData = true;
           newBattery = status.battery;
         }
       }
 
-      // wifi가 제공된 경우
+      // WiFi 신호 강도가 제공된 경우 (0~4 정규화된 값)
       if (status.wifi !== undefined && status.wifi !== null) {
         const newWifiSignal = String(status.wifi);
         if (currentDeviceData) {
-          // deviceData가 있으면 비교 후 변경된 경우에만 업데이트
+          // deviceData가 있으면 비교 후 변경된 경우에만 업데이트 (중복 업데이트 방지)
           const prevWifiSignal = currentDeviceData.wifiSignal ?? '';
           if (prevWifiSignal !== newWifiSignal) {
             shouldUpdateDeviceData = true;
             newWifi = status.wifi;
           }
         } else {
-          // deviceData가 null이면 항상 업데이트
+          // deviceData가 null이면 항상 업데이트 (초기 설정)
           shouldUpdateDeviceData = true;
           newWifi = status.wifi;
         }
       }
 
-      // status 관련 값은 항상 업데이트
+      // 상태 값이 변경된 경우에만 업데이트 수행
       if (shouldUpdateDeviceData) {
+        // 기존 디바이스 데이터와 새로운 배터리/WiFi 값을 병합
         const updatedDeviceData = {
           ...(currentDeviceData || {}),
           ...(newBattery !== undefined && { battery: newBattery }),
           ...(newWifi !== undefined && { wifiSignal: String(newWifi) }),
         };
 
-        // setDataAsync는 항상 실행
+        // 로컬 스토리지에 항상 업데이트 (변경된 값이 있을 때만 실행됨)
         setDataAsync(updatedDeviceData);
 
-        // postDeviceDetail은 조건부로 실행
-        // - deviceData가 있어야 함
-        // - 초기화가 완료되어야 함 (GET 요청이 완료된 후에만 POST)
+        // 서버 동기화는 조건부로 실행
+        // 조건 1: deviceData가 존재해야 함
+        // 조건 2: 초기화가 완료되어야 함 (GET 요청이 완료된 후에만 POST)
+        // 조건 3: shopCode가 있어야 함
         if (
           currentDeviceData &&
           isInitializedRef.current &&
           currentShopData?.shopCode
         ) {
           const tableNumber = currentDeviceData.tableNumber ?? null;
+          // 필수 디바이스 정보가 모두 있어야 서버에 전송
           if (
             currentDeviceData?.androidId &&
             currentDeviceData?.ipAddress &&
             currentDeviceData?.wifiSignal
           ) {
+            // 서버에 디바이스 정보 동기화 (새로운 값이 있으면 사용, 없으면 기존 값 사용)
             await postDeviceDetail({
               shopCode: currentShopData.shopCode,
               androidId: currentDeviceData.androidId,
@@ -124,8 +140,11 @@ export const useSystemStatusMonitor = () => {
       }
     };
 
+    // 시스템 상태 모니터링 시작 (배터리, WiFi 신호 감지 리스너 등록)
+    // 호출 즉시 현재 상태를 1회 발송하고, 이후 변경 시마다 handleStatusUpdate 호출
     SystemControl.startMonitoring(handleStatusUpdate);
 
+    // cleanup: 컴포넌트 언마운트 시 모니터링 중지
     return () => {
       SystemControl.stopMonitoring();
     };
