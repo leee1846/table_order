@@ -80,7 +80,7 @@ export const AppHistoryPage = () => {
             />
           </S.SearchInputWrapper>
           <BasicButton variant="Solid_Navy_M" onClick={handleCreate}>
-            앱 히스토리 생성
+            생성
           </BasicButton>
         </S.SearchContainer>
 

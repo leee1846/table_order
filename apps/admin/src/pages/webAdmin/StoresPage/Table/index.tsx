@@ -39,7 +39,7 @@ export const Table = ({ stores }: Props) => {
             style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
           >
             <BasicButton
-              variant="Outline_Navy_S"
+              variant="Outline_Blue_S"
               onClick={() =>
                 navigate(ROUTES.ADMIN_WEB.STORES_EDIT.generate(store.shopCode))
               }
@@ -47,7 +47,7 @@ export const Table = ({ stores }: Props) => {
               수정
             </BasicButton>
             <BasicButton
-              variant="Outline_Navy_S"
+              variant="Outline_Grey_S"
               onClick={() =>
                 redirectToStoreDetail(store.shopCode, store.shopSeq)
               }

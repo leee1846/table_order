@@ -55,16 +55,16 @@ export const Table = ({ histories }: Props) => {
               style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
             >
               <BasicButton
-                variant="Outline_Navy_S"
-                onClick={() => handleDetail(id)}
-              >
-                상세 이동
-              </BasicButton>
-              <BasicButton
-                variant="Outline_Navy_S"
+                variant="Outline_Blue_S"
                 onClick={() => handleEdit(id)}
               >
                 수정
+              </BasicButton>
+              <BasicButton
+                variant="Outline_Grey_S"
+                onClick={() => handleDetail(id)}
+              >
+                상세
               </BasicButton>
             </div>
           </td>

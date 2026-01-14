@@ -45,13 +45,13 @@ export const Table = ({ notices }: Props) => {
             style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
           >
             <BasicButton
-              variant="Outline_Navy_S"
+              variant="Outline_Blue_S"
               onClick={() => handleEdit(notice.noticeSeq)}
             >
               수정
             </BasicButton>
             <BasicButton
-              variant="Outline_Navy_S"
+              variant="Outline_Grey_S"
               onClick={() => handleDetail(notice.noticeSeq)}
             >
               상세
