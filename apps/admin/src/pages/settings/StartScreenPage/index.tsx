@@ -17,7 +17,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Theme } from '@/pages/settings/StartScreenPage/Theme';
 import { Logo } from '@/pages/settings/StartScreenPage/Logo';
 import { ImageRegistration } from '@/pages/settings/StartScreenPage/ImageRegistration';
-import { OrderCompletionPage } from '@/pages/settings/StartScreenPage/OrderCompletionPage';
+// import { OrderCompletionPage } from '@/pages/settings/StartScreenPage/OrderCompletionPage';
 import { generateId } from '@repo/util/string';
 import * as S from './startScreenPage.style';
 import * as UIStyles from '@repo/ui/styles';
@@ -226,20 +226,20 @@ export const StartScreenPage = () => {
     handleChangeInitCommonImage(id, null);
   };
 
-  const handleChangeOrderCompleteImage = (file: File | null) => {
-    setOrderCompleteFile(file);
+  // const handleChangeOrderCompleteImage = (file: File | null) => {
+  //   setOrderCompleteFile(file);
 
-    setOrderCompleteImage((prev) => {
-      if (prev && prev.startsWith('blob:')) {
-        revokeUrl(prev);
-      }
+  //   setOrderCompleteImage((prev) => {
+  //     if (prev && prev.startsWith('blob:')) {
+  //       revokeUrl(prev);
+  //     }
 
-      const nextUrl = file ? URL.createObjectURL(file) : null;
-      trackBlobUrl(nextUrl);
+  //     const nextUrl = file ? URL.createObjectURL(file) : null;
+  //     trackBlobUrl(nextUrl);
 
-      return nextUrl;
-    });
-  };
+  //     return nextUrl;
+  //   });
+  // };
 
   const handleSave = async () => {
     if (!shopCode) {
@@ -467,14 +467,14 @@ export const StartScreenPage = () => {
           onRemoveImage={handleRemoveInitCommonImage}
         />
 
-        <OrderCompletionPage
+        {/* <OrderCompletionPage
           layout={orderCompletePageLayout}
           message={orderCompleteMessage}
           imageUrl={orderCompleteImage}
           onChangeImage={handleChangeOrderCompleteImage}
           onChangeLayout={setOrderCompletePageLayout}
           onChangeMessage={setOrderCompleteMessage}
-        />
+        /> */}
       </S.Container>
     </UIStyles.setting.TablePageContainer>
   );

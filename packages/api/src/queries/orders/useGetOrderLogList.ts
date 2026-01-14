@@ -19,7 +19,7 @@ export const useGetOrderLogList = (
     queryKey: queryKeys.orders.orderLogList(
       params.shopCode,
       params.pageNumber ?? 0,
-      params.pageSize ?? 10
+      params.pageSize ?? 7
     ),
     queryFn: () => getOrderLogList(params),
     ...options,

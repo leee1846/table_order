@@ -28,33 +28,45 @@ export const createSidebarMenus = (
       id: 'sales',
       label: translate('매출 관리'),
       matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.SALES.path}`,
-      subMenus: [
-        {
-          id: 'summary',
-          label: translate('매출요약'),
-          path: ROUTES.SETTINGS.SALES.SUMMARY.generate(),
-        },
-        {
-          id: 'order',
-          label: translate('주문내역'),
-          path: ROUTES.SETTINGS.SALES.ORDER.generate(),
-        },
-        {
-          id: 'card',
-          label: translate('카드승인내역'),
-          path: ROUTES.SETTINGS.SALES.CARD.generate(),
-        },
-        // {
-        //   id: 'cash',
-        //   label: '단순현금결제내역',
-        //   path: ROUTES.SETTINGS.SALES.CASH.generate(),
-        // },
-        {
-          id: 'menu',
-          label: translate('메뉴판매집계'),
-          path: ROUTES.SETTINGS.SALES.MENU.generate(),
-        },
-      ],
+      // 앱이면 매출요약, 웹이면 당일매출로 이동
+      path: CapacitorApp.isNative()
+        ? ROUTES.SETTINGS.SALES.SUMMARY.generate()
+        : ROUTES.SETTINGS.SALES.SALES_DAILY.generate(),
+      subMenus: CapacitorApp.isNative()
+        ? [
+            {
+              id: 'summary',
+              label: translate('매출요약'),
+              path: ROUTES.SETTINGS.SALES.SUMMARY.generate(),
+            },
+            {
+              id: 'order',
+              label: translate('주문내역'),
+              path: ROUTES.SETTINGS.SALES.ORDER.generate(),
+            },
+            {
+              id: 'card',
+              label: translate('카드승인내역'),
+              path: ROUTES.SETTINGS.SALES.CARD.generate(),
+            },
+            // {
+            //   id: 'cash',
+            //   label: '단순현금결제내역',
+            //   path: ROUTES.SETTINGS.SALES.CASH.generate(),
+            // },
+            {
+              id: 'menu',
+              label: translate('메뉴판매집계'),
+              path: ROUTES.SETTINGS.SALES.MENU.generate(),
+            },
+          ]
+        : [
+            {
+              id: 'daily',
+              label: translate('당일 매출 내역'),
+              path: ROUTES.SETTINGS.SALES.SALES_DAILY.generate(),
+            },
+          ],
     },
     {
       id: 'theme',

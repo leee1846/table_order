@@ -104,6 +104,12 @@ const NoticeDetailPage = lazy(() =>
   }))
 );
 
+const DailySalesPage = lazy(() =>
+  import('@/pages/settings/DailySalesPage').then((module) => ({
+    default: module.DailySalesPage,
+  }))
+);
+
 // ============================================================================
 // Lazy Loaded Components - Native App Pages
 // ============================================================================
@@ -469,27 +475,42 @@ const createSettingsRoutes = () => [
     children: [
       {
         index: true,
-        loader: () => redirect(ROUTES.SETTINGS.SALES.SUMMARY.generate()),
+        loader: () => {
+          // 앱이면 매출요약, 웹이면 당일매출로 리다이렉트
+          if (CapacitorApp.isNative()) {
+            return redirect(ROUTES.SETTINGS.SALES.SUMMARY.generate());
+          }
+          return redirect(ROUTES.SETTINGS.SALES.SALES_DAILY.generate());
+        },
       },
       {
-        path: ROUTES.SETTINGS.SALES.SUMMARY.path,
+        path: ROUTES.SETTINGS.SALES.SUMMARY.path, //매출요약(앱)
         element: <SalesSummaryPage />,
+        loader: requireNativeLoader,
       },
       {
-        path: ROUTES.SETTINGS.SALES.ORDER.path,
+        path: ROUTES.SETTINGS.SALES.ORDER.path, //주문내역 (앱)
         element: <SalesOrderPage />,
+        loader: requireNativeLoader,
       },
       {
-        path: ROUTES.SETTINGS.SALES.CARD.path,
+        path: ROUTES.SETTINGS.SALES.CARD.path, // 카드승인내역 (앱)
         element: <SalesCardPage />,
+        loader: requireNativeLoader,
       },
       // {
       //   path: ROUTES.SETTINGS.SALES.CASH.path,
       //   element: <SalesCashPage />,
       // },
       {
-        path: ROUTES.SETTINGS.SALES.MENU.path,
+        path: ROUTES.SETTINGS.SALES.MENU.path, //메뉴판매집계(앱)
         element: <SalesMenuPage />,
+        loader: requireNativeLoader,
+      },
+      {
+        path: ROUTES.SETTINGS.SALES.SALES_DAILY.path, //당일매출 (웹)
+        element: <DailySalesPage />,
+        loader: requireWebLoader,
       },
     ],
   },

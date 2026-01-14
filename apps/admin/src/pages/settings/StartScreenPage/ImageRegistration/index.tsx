@@ -9,6 +9,7 @@ interface ImageItem {
   id: number;
   description: string;
   imageUrl: string | null;
+  pageDetailImageSeq?: number;
 }
 
 interface ImageRegistrationProps {
@@ -40,12 +41,16 @@ export const ImageRegistration = ({
     event.target.value = '';
   };
 
+  const sortedItems = [...items].sort(
+    (a, b) => (a.pageDetailImageSeq ?? 0) - (b.pageDetailImageSeq ?? 0)
+  );
+
   return (
     <S.Container>
       <S.Header>
         <p>{t('이미지 등록')}</p>
       </S.Header>
-      {items.map((item) => (
+      {sortedItems.map((item) => (
         <S.ContentContainer key={item.id}>
           <input
             id={`init-common-${item.id}`}

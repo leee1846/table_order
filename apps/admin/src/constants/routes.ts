@@ -106,6 +106,10 @@ export const ROUTES = {
         path: 'menu',
         generate: () => '/settings/sales/menu',
       },
+      SALES_DAILY: {
+        path: 'daily',
+        generate: () => '/settings/sales/daily',
+      },
     },
     TABLES: {
       path: 'tables',
