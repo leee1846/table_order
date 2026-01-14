@@ -8,7 +8,7 @@ import * as S from '@/pages/settings/MiscellaneousPage/Network/network.style';
 import { NetworkIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { MiscellaneousChange } from '../types';
-import { CapacitorApp } from '@repo/util/app';
+import { CapacitorApp, AndroidInfo } from '@repo/util/app';
 
 interface NetworkProps {
   shopNetwork?: IShopNetwork;
@@ -40,6 +40,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
   const [networkSetting, setNetworkSetting] = useState<TNetworkType>('AUTO');
   const [ssid, setSsid] = useState('');
   const [ipAddress, setIpAddress] = useState('');
+  const [androidId, setAndroidId] = useState('');
   const [currentVersion, setCurrentVersion] = useState<string>('');
   const { data: latestAppVersionResponse } = useGetLatestAppVersion(appType);
 
@@ -53,7 +54,19 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
         setCurrentVersion(version);
       };
 
+      const getAndroidInfo = async () => {
+        const ip = await AndroidInfo.getIp();
+        const id = await AndroidInfo.getId();
+        if (ip) {
+          setIpAddress(ip);
+        }
+        if (id) {
+          setAndroidId(id);
+        }
+      };
+
       getAppInfo();
+      getAndroidInfo();
     }
   }, []);
 
@@ -118,7 +131,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
           <p>Android ID</p>
-          <p>-</p>
+          <p>{androidId || '-'}</p>
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
           <p>{t('네트워크 설정')}</p>
