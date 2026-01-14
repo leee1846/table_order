@@ -5,7 +5,6 @@ import type {
   IGetNoticeListParams,
   TGetNoticeListResponse,
   TGetNoticeDetailResponse,
-  INotice,
   ICreateNoticeRequest,
 } from '../types/notice';
 
@@ -62,6 +61,23 @@ export const createNotice = async (
     method: 'POST',
     url: ENDPOINTS.NOTICE.NOTICE,
     data: params,
+  });
+
+  return response.data;
+};
+
+export const updateNotice = async ({
+  noticeSeq,
+  params,
+}: {
+  noticeSeq: number;
+  params: ICreateNoticeRequest;
+}): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.NOTICE.DETAIL(noticeSeq),
+    data: { ...params, noticeSeq },
   });
 
   return response.data;

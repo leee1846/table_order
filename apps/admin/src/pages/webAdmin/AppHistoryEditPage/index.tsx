@@ -1,15 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
-import { useQueryClient } from '@repo/api/tanstack-query';
 import { AppHistoryManage } from '@/feature/AdminWeb/AppHistoryManage';
 import { validateAppHistoryData } from '@/feature/AdminWeb/util';
 import { toast } from '@repo/feature/utils';
 import { ROUTES } from '@/constants/routes';
-import {
-  queryKeys,
-  useGetAppVersionDetail,
-  usePutAppVersion,
-} from '@repo/api/queries';
+import { useGetAppVersionDetail, usePutAppVersion } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import type { AppHistoryFormData } from '@/feature/AdminWeb/AppHistoryManage/constants';
 import type { IAppVersion, ICreateAppVersionParams } from '@repo/api/types';
@@ -73,7 +68,6 @@ const convertToUpdateParams = (
 export const AppHistoryEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const queryClient = useQueryClient();
   const { mutateAsync: updateAppVersion } = usePutAppVersion();
 
   // API 호출
@@ -98,11 +92,6 @@ export const AppHistoryEditPage = () => {
 
     const params = convertToUpdateParams(formData);
     await updateAppVersion({ ...params, appVersionSeq: formData.id });
-
-    // 앱 버전 리스트 쿼리 무효화
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.app.all,
-    });
 
     toast('앱 히스토리 수정이 완료되었습니다.');
     navigate(ROUTES.ADMIN_WEB.APP_HISTORY.generate());

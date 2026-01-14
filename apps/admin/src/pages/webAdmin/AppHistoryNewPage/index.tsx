@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@repo/api/tanstack-query';
 import { ROUTES } from '@/constants/routes';
 import { AppHistoryManage } from '@/feature/AdminWeb/AppHistoryManage';
 import { validateAppHistoryData } from '@/feature/AdminWeb/util';
 import { toast } from '@repo/feature/utils';
-import { queryKeys, usePostAppVersion } from '@repo/api/queries';
+import { usePostAppVersion } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import type { AppHistoryFormData } from '@/feature/AdminWeb/AppHistoryManage/constants';
 import type { ICreateAppVersionParams } from '@repo/api/types';
@@ -33,7 +32,6 @@ const convertToCreateParams = (
 
 export const AppHistoryNewPage = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { mutateAsync: createAppVersion } = usePostAppVersion();
 
   const handleSave = async (data: AppHistoryFormData) => {
@@ -43,11 +41,6 @@ export const AppHistoryNewPage = () => {
 
     const params = convertToCreateParams(data);
     await createAppVersion(params);
-
-    // 앱 버전 리스트 쿼리 무효화
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.app.all,
-    });
 
     toast('앱 히스토리 생성이 완료되었습니다.');
     navigate(ROUTES.ADMIN_WEB.APP_HISTORY.generate());

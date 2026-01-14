@@ -5,10 +5,10 @@ import { NoticeManage } from '@/feature/AdminWeb/NoticeManage';
 import { validateNoticeData } from '@/feature/AdminWeb/util';
 import { toast } from '@repo/feature/utils';
 import { ROUTES } from '@/constants/routes';
-import { queryKeys } from '@repo/api/queries';
+import { queryKeys, useGetNoticeDetail, usePutNotice } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import type { NoticeFormData } from '@/feature/AdminWeb/NoticeManage/constants';
-import type { INotice } from '@repo/api/types';
+import type { INotice, ICreateNoticeRequest } from '@repo/api/types';
 
 // INotice를 NoticeFormData로 변환
 const convertToFormData = (
@@ -37,17 +37,16 @@ export const NoticeEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
 
-  // TODO: 공지사항 상세 조회 API 호출
-  // const { data } = useGetNoticeDetail(Number(id || 0), {
-  //   enabled: !!id,
-  // });
+  const { data } = useGetNoticeDetail(Number(id || 0), {
+    enabled: !!id,
+  });
+
+  const updateNoticeMutation = usePutNotice();
 
   // API 응답을 NoticeFormData로 변환
   const initialData = useMemo(() => {
-    // TODO: API 데이터로 변환
-    // return convertToFormData(data?.data);
-    return undefined;
-  }, []);
+    return convertToFormData(data?.data);
+  }, [data]);
 
   const handleSave = async (formData: NoticeFormData) => {
     if (!validateNoticeData(formData)) {
@@ -59,12 +58,15 @@ export const NoticeEditPage = () => {
       return;
     }
 
-    // TODO: 공지사항 수정 API 호출
-    // await updateNotice(formData.id, params);
+    const params: ICreateNoticeRequest = {
+      noticeTitle: formData.title,
+      noticeContent: formData.content,
+      boardType: formData.boardType as 'GENERAL' | 'EMERGENCY',
+    };
 
-    // 공지사항 리스트 쿼리 무효화
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.notice.all,
+    await updateNoticeMutation.mutateAsync({
+      noticeSeq: formData.id,
+      params,
     });
 
     toast('공지사항 수정이 완료되었습니다.');
@@ -72,10 +74,6 @@ export const NoticeEditPage = () => {
   };
 
   return (
-    <NoticeManage
-      mode="edit"
-      initialData={initialData}
-      onSave={handleSave}
-    />
+    <NoticeManage mode="edit" initialData={initialData} onSave={handleSave} />
   );
 };

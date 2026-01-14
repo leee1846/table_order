@@ -4,6 +4,7 @@ import { NoticeManage } from '@/feature/AdminWeb/NoticeManage';
 import { formatDateTime } from '@repo/util/date';
 import type { NoticeFormData } from '@/feature/AdminWeb/NoticeManage/constants';
 import type { INotice } from '@repo/api/types';
+import { useGetNoticeDetail } from '@repo/api/queries';
 
 // INotice를 NoticeFormData로 변환
 const convertToFormData = (
@@ -30,17 +31,14 @@ const convertToFormData = (
 export const NoticeDetailPage = () => {
   const { id } = useParams<{ id: string }>();
 
-  // TODO: 공지사항 상세 조회 API 호출
-  // const { data } = useGetNoticeDetail(Number(id || 0), {
-  //   enabled: !!id,
-  // });
+  const { data } = useGetNoticeDetail(Number(id || 0), {
+    enabled: !!id,
+  });
 
   // API 응답을 NoticeFormData로 변환
   const initialData = useMemo(() => {
-    // TODO: API 데이터로 변환
-    // return convertToFormData(data?.data);
-    return undefined;
-  }, []);
+    return convertToFormData(data?.data);
+  }, [data]);
 
   return <NoticeManage mode="detail" initialData={initialData} />;
 };
