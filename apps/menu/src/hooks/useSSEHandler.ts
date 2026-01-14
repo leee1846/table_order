@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
-import { SSE_KEYS } from '@/constants/keys';
+import { SSE_KEYS, STORAGE_KEYS } from '@/constants/keys';
 import type { ISseMessage, ITableGroup, ITableInfo } from '@repo/api/types';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
@@ -12,7 +12,12 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
-import { CapacitorApp, SystemControl, AndroidInfo } from '@repo/util/app';
+import {
+  CapacitorApp,
+  SystemControl,
+  AndroidInfo,
+  AppStorage,
+} from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -23,6 +28,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useShopThemePage } from './useShopThemePage';
+import { useDialogStore } from '@repo/feature/stores';
 
 /**
  * SSE(Server-Sent Events) 연결 및 실시간 메시지 처리를 담당하는 커스텀 훅
@@ -298,6 +304,7 @@ export const useSSEHandler = () => {
           clearCart(); // 장바구니 초기화
           clearCustomerCountData(); // 고객 수 초기화
           useModalStore.getState().closeAllModals(); // 모든 모달 닫기
+          useDialogStore.getState().closeAllDialogs(); // 모든 다이얼로그 닫기
         }
         return;
       }
@@ -453,6 +460,79 @@ export const useSSEHandler = () => {
       refreshShopThemePageData(); // 매장 테마 페이지 데이터 새로고침
     },
 
+    // PAYMENT 메시지 핸들러: 결제 정보 업데이트 처리
+    handlePaymentMessage: async (message: ISseMessage) => {
+      const { currentDeviceData } = dataRefs.current;
+
+      if (!message.data || !currentDeviceData?.tableNumber) {
+        return;
+      }
+
+      const currentTableNumber = currentDeviceData.tableNumber;
+      // 메시지 데이터: { [tableNumber]: sseUpdatedAt } 형태 (ORDER와 동일)
+      const paymentDataByTable = message.data as { [key: string]: number };
+
+      // 현재 테이블이 결제 목록에 없으면 무시
+      if (!(currentTableNumber in paymentDataByTable)) {
+        return;
+      }
+
+      // 현재 테이블의 결제 업데이트 시간
+      const sseUpdatedAt = paymentDataByTable[currentTableNumber];
+
+      // sseUpdatedAt이 없으면 처리하지 않음
+      if (sseUpdatedAt === undefined) {
+        return;
+      }
+
+      // AppStorage에서 저장된 sseUpdatedAt 가져오기
+      const storedData = await AppStorage.loadData<number>({
+        key: STORAGE_KEYS.PAYMENT_SSE_UPDATED_AT,
+      });
+      const storedSseUpdatedAt = storedData.value;
+
+      // 결제 정보가 변경되지 않았으면 (중복 처리 방지)
+      const isPaymentUnchanged = storedSseUpdatedAt === sseUpdatedAt;
+
+      if (isPaymentUnchanged) {
+        return;
+      }
+
+      // 현금 결제 유도 모달이 열려있는지 확인
+      const isCashPaymentInducementModalOpened =
+        useModalStore.getState().data.isCashPaymentInducementModalOpened;
+
+      // 현금 결제 유도 모달이 열려있으면 주문 내역 새로고침
+      if (isCashPaymentInducementModalOpened) {
+        const refreshResult = await refreshTableOrderHistoriesData();
+        // refresh 결과가 없거나 null이면 처리하지 않음
+        if (!refreshResult) {
+          return;
+        }
+
+        // AppStorage에 sseUpdatedAt 임시 저장 (앱 종료 시 삭제)
+        await AppStorage.saveData({
+          key: STORAGE_KEYS.PAYMENT_SSE_UPDATED_AT,
+          value: sseUpdatedAt,
+          isTemporary: true,
+        });
+
+        // totalAmount 계산 (null이면 0으로 처리)
+        const totalAmount = refreshResult.totalAmount ?? 0;
+
+        // paymentList에서 isCanceled가 false인 항목들의 transactionAmount 합계 계산
+        const paidAmount = refreshResult.paymentList
+          .filter((payment) => !payment.isCanceled)
+          .reduce((sum, payment) => sum + payment.transactionAmount, 0);
+
+        // 모든 주문금액 결제가 완료 되었을경우
+        if (totalAmount - paidAmount === 0) {
+          // 현금 결제 유도 모달 닫기
+          useModalStore.getState().closeAllModals();
+        }
+      }
+    },
+
     // refetch 함수들 (ref에 저장하여 핸들러에서 사용)
     refetchCurrentTableList,
     refetchDeviceList,
@@ -551,6 +631,10 @@ export const useSSEHandler = () => {
       case 'SHOP_THEME_PAGE':
       case 'SHOP_THEME_MENU':
         handlersRef.current.handleShopThemeMessage();
+        break;
+
+      case 'PAYMENT':
+        handlersRef.current.handlePaymentMessage(sseMessage);
         break;
 
       default:

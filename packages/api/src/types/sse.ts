@@ -2,6 +2,7 @@ export interface ISseMessage {
   shopCode: string;
   type:
     | 'ORDER'
+    | 'PAYMENT'
     | 'SHOP'
     | 'MENU'
     | 'TABLE'

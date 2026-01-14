@@ -29,6 +29,8 @@ export const STORAGE_KEYS = {
   SHOP_THEME_PAGE: 'shop-theme-page',
   /** 디바이스 리스트 data 키 */
   DEVICE_LIST: 'device-list',
+  /** PAYMENT 메시지 sseUpdatedAt 키 */
+  PAYMENT_SSE_UPDATED_AT: 'payment-sse-updated-at',
 } as const;
 
 export const TIMER_KEYS = {
