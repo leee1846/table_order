@@ -20,6 +20,7 @@ import { TableGroupList } from './sidebar.styles';
 import { SystemControl } from '@repo/util/app';
 import { useGetShopThemePage } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
+import { capsSmartOrderWhiteLogo } from '@repo/ui/icons';
 
 type MenuItem = {
   id: string;
@@ -104,7 +105,7 @@ export const Sidebar = ({
     <SidebarContainer>
       <Logo>
         <img
-          src={initLightImage ?? ''}
+          src={initLightImage ?? capsSmartOrderWhiteLogo}
           alt={t('매장 로고')}
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         />

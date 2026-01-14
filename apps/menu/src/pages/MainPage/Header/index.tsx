@@ -1,4 +1,8 @@
-import { MenuIcon } from '@repo/ui/icons';
+import {
+  MenuIcon,
+  smartOrderGreyLogo,
+  smartOrderWhiteLogo,
+} from '@repo/ui/icons';
 import { useTheme } from '@emotion/react';
 import * as S from '@/pages/MainPage/Header/header.style';
 import { useState, useRef, useEffect } from 'react';
@@ -263,7 +267,12 @@ export const Header = ({
             aria-label={t('설정')}
           >
             <img
-              src={shopThemeData?.logoImagePath ?? ''}
+              src={
+                shopThemeData?.logoImagePath ??
+                (shopThemeData?.useDarkTheme
+                  ? smartOrderWhiteLogo
+                  : smartOrderGreyLogo)
+              }
               alt={t('매장 로고')}
             />
           </button>

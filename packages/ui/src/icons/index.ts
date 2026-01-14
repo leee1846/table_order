@@ -72,3 +72,7 @@ export { default as closedIcon } from './closed.svg';
 export { default as dishWashIcon } from './dish_wash.svg';
 export { default as cardInsertGif } from './card-insert.gif';
 export { default as printerIcon } from './3D_Success.svg';
+export { default as smartOrderGreyLogo } from './smart_order_logo_grey.png';
+export { default as smartOrderWhiteLogo } from './smart_order_logo_white.png';
+export { default as capsSmartOrderBlueGreyLogo } from './caps_smart_order_logo_blue_grey.png';
+export { default as capsSmartOrderWhiteLogo } from './caps_smart_order_logo_white.png';

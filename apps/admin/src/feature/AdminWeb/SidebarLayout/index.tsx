@@ -2,7 +2,7 @@ import { Suspense, useState, useEffect, useMemo } from 'react';
 import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import * as S from './sidebarLayout.style';
-import { ChevronForwardIcon, bestOnIcon } from '@repo/ui/icons';
+import { capsSmartOrderWhiteLogo, ChevronForwardIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -149,7 +149,7 @@ export const StoresSidebarLayout = () => {
             type="button"
             onClick={() => navigate(ROUTES.ADMIN_WEB.STORES.generate())}
           >
-            <img src={bestOnIcon} alt="logo" />
+            <img src={capsSmartOrderWhiteLogo} alt="logo" />
           </button>
         </S.Logo>
 

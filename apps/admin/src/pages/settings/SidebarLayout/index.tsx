@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
 import { CapacitorApp } from '@repo/util/app';
+import { capsSmartOrderWhiteLogo } from '@repo/ui/icons';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
@@ -24,7 +25,9 @@ export const SidebarLayout = () => {
 
   const initLightImage = useMemo(() => {
     const shopPageDetailList = shopThemePageResponse?.data?.shopPageDetailList;
-    if (!shopPageDetailList) return null;
+    if (!shopPageDetailList) {
+      return null;
+    }
     const initLightItem = shopPageDetailList.find(
       (item) => item.pageDetailType === 'INIT_LIGHT'
     );
@@ -64,7 +67,7 @@ export const SidebarLayout = () => {
         <button type="button" onClick={onClickLogo}>
           {initLightImage && (
             <img
-              src={initLightImage}
+              src={initLightImage ?? capsSmartOrderWhiteLogo}
               alt={t('매장 로고')}
               style={{ width: '100%' }}
             />

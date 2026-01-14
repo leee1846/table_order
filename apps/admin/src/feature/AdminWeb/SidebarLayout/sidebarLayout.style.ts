@@ -25,6 +25,10 @@ export const Logo = styled.div`
   & > button {
     width: 100%;
     padding: 40px 20px 20px;
+
+    & > img {
+      width: 100%;
+    }
   }
 `;
 
@@ -128,4 +132,3 @@ export const Content = styled.main`
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 `;
-

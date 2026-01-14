@@ -2,7 +2,12 @@ import { t } from '@/config/i18n';
 import { BasicButton, Input } from '@repo/ui/components';
 import { useState } from 'react';
 import * as S from '@/pages/LoginPage/loginPage.style';
-import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
+import {
+  capsSmartOrderBlueGreyLogo,
+  capsSmartOrderWhiteLogo,
+  VisibilityIcon,
+  VisibilityOffIcon,
+} from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { usePostLogin } from '@repo/api/queries';
 import { openConfirmDialog } from '@repo/feature/utils';
@@ -122,7 +127,11 @@ export const LoginPage = () => {
 
   return (
     <S.Container>
-      <div>{t('로고 이미지 영역')}</div>
+      <img
+        src={capsSmartOrderBlueGreyLogo}
+        alt="logo"
+        style={{ width: '200px' }}
+      />
 
       <S.LoginContainer>
         <div>

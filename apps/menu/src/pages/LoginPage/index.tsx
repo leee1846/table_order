@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BasicButton, Input } from '@repo/ui/components';
-import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
+import {
+  capsSmartOrderBlueGreyLogo,
+  VisibilityIcon,
+  VisibilityOffIcon,
+} from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { usePostDeviceDetail, usePostLogin } from '@repo/api/queries';
+import { usePostLogin } from '@repo/api/queries';
 import { openConfirmDialog } from '@repo/feature/utils';
 import { setAccessToken, setRefreshToken } from '@repo/api/auth';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
@@ -26,7 +30,6 @@ export const LoginPage = () => {
 
   // API hooks
   const { mutateAsync: login } = usePostLogin();
-  const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
   const { refresh: refreshShopData } = useShopData({
     skipInitialRequest: true,
   });
@@ -176,7 +179,11 @@ export const LoginPage = () => {
 
   return (
     <S.Container>
-      <div>쉴더스 로고 이미지 영역</div>
+      <img
+        src={capsSmartOrderBlueGreyLogo}
+        alt="logo"
+        style={{ width: '200px' }}
+      />
 
       <S.LoginContainer role="main">
         <h1

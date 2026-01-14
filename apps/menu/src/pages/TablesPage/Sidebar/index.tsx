@@ -4,6 +4,7 @@ import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
+import { capsSmartOrderWhiteLogo } from '@repo/ui/icons';
 
 interface Props {
   tableGroups?: ITableGroup[];
@@ -28,7 +29,10 @@ export const Sidebar = ({
     <CommonStyles.SidebarContainer>
       <CommonStyles.Logo>
         <img
-          src={shopPageSettingData?.shopThemeData?.logoImagePath ?? ''}
+          src={
+            shopPageSettingData?.shopThemeData?.logoImagePath ??
+            capsSmartOrderWhiteLogo
+          }
           alt={t('매장 로고')}
         />
       </CommonStyles.Logo>
