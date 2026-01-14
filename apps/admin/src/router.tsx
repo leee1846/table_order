@@ -103,6 +103,11 @@ const NoticeDetailPage = lazy(() =>
     default: module.NoticeDetailPage,
   }))
 );
+const AdminManagePage = lazy(() =>
+  import('@/pages/webAdmin/AdminManagePage').then((module) => ({
+    default: module.AdminManagePage,
+  }))
+);
 
 const DailySalesPage = lazy(() =>
   import('@/pages/settings/DailySalesPage').then((module) => ({
@@ -322,6 +327,23 @@ const requireAdminWebLoader = () => {
   return null;
 };
 
+/**
+ * MASTER 권한만 접근 가능한 페이지를 위한 loader
+ */
+const requireMasterLoader = () => {
+  const payload = getTokenPayload();
+  if (!payload) {
+    return redirect(ROUTES.LOGIN.generate());
+  }
+
+  // MASTER 역할만 접근 가능
+  if (payload.role !== 'MASTER') {
+    return redirect(ROUTES.NOT_FOUND.generate());
+  }
+
+  return null;
+};
+
 // ============================================================================
 // Route Configuration Helpers
 // ============================================================================
@@ -418,6 +440,11 @@ const createAdminWebRoutes = () => [
     path: ROUTES.ADMIN_WEB.NOTICES_DETAIL.path,
     loader: requireAdminWebLoader,
     element: createLazyRoute(NoticeDetailPage),
+  },
+  {
+    path: ROUTES.ADMIN_WEB.ADMIN_MANAGE.path,
+    loader: requireMasterLoader,
+    element: createLazyRoute(AdminManagePage),
   },
 ];
 

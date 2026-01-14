@@ -1,4 +1,4 @@
-export type TMemberRole = 'ADMIN' | 'SHOP' | 'DEVELOPER' | 'MASTER';
+export type TMemberRole = 'ADMIN' | 'SHOP' | 'MASTER';
 
 export interface IApiStatus {
   code: number;

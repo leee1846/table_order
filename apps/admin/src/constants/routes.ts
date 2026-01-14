@@ -61,6 +61,10 @@ export const ROUTES = {
       path: 'notices/:id',
       generate: (id: string | number) => `/admin/notices/${id}`,
     },
+    ADMIN_MANAGE: {
+      path: 'admin-manage',
+      generate: () => '/admin/admin-manage',
+    },
   },
 
   SETTINGS: {

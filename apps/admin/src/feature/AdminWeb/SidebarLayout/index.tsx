@@ -5,6 +5,7 @@ import * as S from './sidebarLayout.style';
 import { ChevronForwardIcon, bestOnIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { ROUTES } from '@/constants/routes';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 type TSubMenu = {
   id: string | number;
@@ -23,15 +24,30 @@ type TMenu = {
 export const StoresSidebarLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { tokenPayload } = useAuthStore();
   const [openedMenuIds, setOpenedMenuIds] = useState<Set<string>>(new Set());
 
-  const SIDEBAR_MENUS = useMemo<TMenu[]>(
-    () => [
+  const isMaster = tokenPayload?.role === 'MASTER';
+
+  const SIDEBAR_MENUS = useMemo<TMenu[]>(() => {
+    const menus: TMenu[] = [
       {
         id: 'mypage',
         label: '내 정보',
         path: ROUTES.ADMIN_WEB.MYPAGE.generate(),
       },
+    ];
+
+    // MASTER 권한일 때만 관리자 관리 메뉴 추가 (내 정보 아래)
+    if (isMaster) {
+      menus.push({
+        id: 'admin-manage',
+        label: '관리자 관리',
+        path: ROUTES.ADMIN_WEB.ADMIN_MANAGE.generate(),
+      });
+    }
+
+    menus.push(
       {
         id: 'stores',
         label: '매장 관리',
@@ -49,10 +65,11 @@ export const StoresSidebarLayout = () => {
         label: '앱 히스토리',
         path: ROUTES.ADMIN_WEB.APP_HISTORY.generate(),
         matchPattern: '/admin/app-history/*',
-      },
-    ],
-    []
-  );
+      }
+    );
+
+    return menus;
+  }, [isMaster]);
 
   const isPathActive = (path: string, matchPattern?: string) => {
     if (matchPattern) {
