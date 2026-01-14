@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Pagination, Input, BasicButton } from '@repo/ui/components';
 import { createDebounce } from '@repo/util/function';
 import { useGetAppVersionList } from '@repo/api/queries';
@@ -12,9 +12,17 @@ const PAGE_SIZE = 10;
 
 export const AppHistoryPage = () => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [inputValue, setInputValue] = useState<string>('');
   const [searchKeyword, setSearchKeyword] = useState<string>('');
+  const prevSearchKeywordRef = useRef<string | null>(null);
+
+  // URL에서 page 파라미터 읽기
+  const currentPage = useMemo(() => {
+    const page = searchParams.get('page');
+    return page ? parseInt(page, 10) : 1;
+  }, [searchParams]);
 
   const { debouncedFn, cleanup } = createDebounce(
     ((value: string) => {
@@ -28,7 +36,18 @@ export const AppHistoryPage = () => {
   }, [cleanup]);
 
   useEffect(() => {
-    setCurrentPage(1);
+    // 검색어가 실제로 변경되었을 때만 페이지를 1로 리셋 (replace 사용)
+    // 초기 마운트 시(prevSearchKeywordRef.current === null)에는 실행하지 않음
+    if (
+      prevSearchKeywordRef.current !== null &&
+      prevSearchKeywordRef.current !== searchKeyword
+    ) {
+      const newParams = new URLSearchParams(location.search);
+      newParams.set('page', '1');
+      navigate({ search: newParams.toString() }, { replace: true });
+    }
+    prevSearchKeywordRef.current = searchKeyword;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchKeyword]);
 
   // API 호출
@@ -52,7 +71,10 @@ export const AppHistoryPage = () => {
   const totalPages = data?.data?.totalPageNumber ?? 1;
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    // 페이지 변경 시 URL 쿼리 파라미터에 저장 (replace 사용)
+    const newParams = new URLSearchParams(location.search);
+    newParams.set('page', page.toString());
+    navigate({ search: newParams.toString() }, { replace: true });
   };
 
   const handleCreate = () => {

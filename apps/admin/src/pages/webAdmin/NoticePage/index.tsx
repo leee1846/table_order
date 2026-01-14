@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Pagination, BasicButton } from '@repo/ui/components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import * as UIStyles from '@repo/ui/styles';
 import { Table } from './Table';
 import * as S from './noticePage.style';
@@ -11,7 +11,14 @@ const PAGE_SIZE = 10;
 
 export const AdminNoticesPage = () => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  // URL에서 page 파라미터 읽기
+  const currentPage = useMemo(() => {
+    const page = searchParams.get('page');
+    return page ? parseInt(page, 10) : 1;
+  }, [searchParams]);
 
   const { data: noticeList } = useGetNoticeList({
     page: currentPage,
@@ -19,7 +26,10 @@ export const AdminNoticesPage = () => {
   });
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    // 페이지 변경 시 URL 쿼리 파라미터에 저장 (replace 사용)
+    const newParams = new URLSearchParams(location.search);
+    newParams.set('page', page.toString());
+    navigate({ search: newParams.toString() }, { replace: true });
   };
 
   const handleCreate = () => {
