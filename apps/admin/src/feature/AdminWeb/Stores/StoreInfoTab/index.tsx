@@ -1,5 +1,5 @@
 import { Input, CheckButton } from '@repo/ui/components';
-import { allowOnlyNumbers } from '@repo/util/string';
+import { allowOnlyNumbers, isValidEmail } from '@repo/util/string';
 import * as S from './storeInfoTab.style';
 import type { IGetAdminShopDetail } from '@repo/api/types';
 

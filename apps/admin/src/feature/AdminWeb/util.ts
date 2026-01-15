@@ -34,6 +34,14 @@ export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
     return false;
   }
 
+  // 이메일이 입력된 경우 형식 검증
+  if (shopData.shopEmail && shopData.shopEmail.trim()) {
+    if (!isValidEmail(shopData.shopEmail)) {
+      toast('매장정보 > 올바른 이메일 형식을 입력해주세요.');
+      return false;
+    }
+  }
+
   return true;
 };
 

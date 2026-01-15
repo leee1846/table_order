@@ -7,6 +7,7 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface DeviceDataResult {
   data: Partial<IDevice> | null;
+  isInitialized: boolean;
   error: AxiosError | null;
   clearData: () => void;
   setDataAsync: (data: Partial<IDevice>) => void;
@@ -36,6 +37,7 @@ export const useAdminAccessControl = (
 
   const {
     data: deviceData,
+    isInitialized: isDeviceDataInitialized,
     error: deviceDataError,
     clearData: clearDeviceData,
     setDataAsync: setDeviceDataAsync,
@@ -45,6 +47,11 @@ export const useAdminAccessControl = (
   const prevTableNumberRef = useRef<string | null | undefined>(undefined);
 
   useEffect(() => {
+    // API가 초기화되기 전까지는 모달을 표시하지 않음 (깜빡임 방지)
+    if (!isDeviceDataInitialized) {
+      return;
+    }
+
     // 선택한 테이블이 존재하지 않을 경우 모달 노출
     if (deviceDataError?.response?.status === 404) {
       clearDeviceData();
@@ -94,6 +101,7 @@ export const useAdminAccessControl = (
     setShowAdminAccessPasswordModal(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    isDeviceDataInitialized,
     deviceData?.tableNumber,
     deviceDataError,
     clearDeviceData,

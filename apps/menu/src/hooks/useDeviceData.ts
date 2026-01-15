@@ -99,6 +99,7 @@ export const useDeviceData = (options?: Props) => {
 
   return {
     data: storeData,
+    isInitialized: isInitializedStoreData,
     setDataAsync,
     clearData,
     refresh,
