@@ -31,8 +31,7 @@ export const Title = styled.div`
 
 export const FilterBar = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: space-between;
   margin-bottom: 12px;
   width: 100%;
 `;
@@ -186,7 +185,6 @@ export const TableWrapper = styled.div`
 export const FixedHeader = styled.div`
   overflow: visible;
   flex-shrink: 0;
-
   table {
     overflow: visible;
 

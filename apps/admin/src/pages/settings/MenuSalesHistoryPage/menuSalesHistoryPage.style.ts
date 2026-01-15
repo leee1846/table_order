@@ -4,7 +4,6 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
   padding: 40px 24px 24px 30px;
   flex: 1;
 `;
@@ -15,6 +14,7 @@ export const Title = styled.div`
   gap: 11px;
   color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.MT_1}
+  margin-bottom: 20px;
 
   & > div {
     width: 0.125rem;
@@ -32,27 +32,26 @@ export const FilterBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 12px;
 `;
 
 export const DateRange = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  margin-right: 20px;
 `;
 
 export const DateButton = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border-radius: 12px;
   border: 0.5px solid ${theme.colors.grey[300]};
   background-color: ${theme.colors.white};
   cursor: pointer;
-  margin-left: 20px;
 `;
 
 export const DateText = styled.span`
@@ -94,6 +93,7 @@ export const CategoryFilter = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border: 1px solid red;
 `;
 
 export const CategoryHeader = styled.div`
@@ -121,7 +121,7 @@ export const Chip = styled.button<{ selected: boolean }>`
     ${({ selected }) =>
       selected ? theme.colors.primary[500] : theme.colors.grey[300]};
   background-color: ${({ selected }) =>
-    selected ? theme.colors.primary[50] : theme.colors.grey[50]};
+    selected ? theme.colors.primary[100] : theme.colors.grey[50]};
   color: ${({ selected }) =>
     selected ? theme.colors.primary[700] : theme.colors.grey[700]};
   ${TYPOGRAPHY.CT_2}
@@ -143,10 +143,7 @@ export const SelectAll = styled.label`
 `;
 
 export const TableCard = styled.div`
-  background-color: ${theme.colors.grey[50]};
   border-radius: 12px;
-  border: 1px solid ${theme.colors.grey[200]};
-  padding: 12px;
 `;
 
 export const HeaderLabel = styled.div`
@@ -173,4 +170,42 @@ export const SummaryRow = styled.tr`
     font-weight: 700;
     color: ${theme.colors.grey[800]};
   }
+`;
+
+export const IconWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+`;
+
+export const Tooltip = styled.div`
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: ${theme.zIndex.tooltip};
+  background-color: ${theme.colors.grey[800]};
+  color: ${theme.colors.white};
+  padding: 8px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  ${TYPOGRAPHY.ST_4}
+  pointer-events: none;
+`;
+
+export const TooltipText = styled.span`
+  display: block;
+`;
+
+export const TooltipArrow = styled.div`
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid ${theme.colors.grey[800]};
 `;

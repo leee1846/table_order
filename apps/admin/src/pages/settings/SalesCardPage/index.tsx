@@ -121,6 +121,15 @@ export const SalesCardPage = () => {
     setCurrentPage(1);
   };
 
+  const formatCalendarText = (date: string) => {
+    if (!date) return t('날짜 선택');
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
+  };
+
   return (
     <>
       <UIStyles.setting.TablePageContainer>
@@ -140,22 +149,33 @@ export const SalesCardPage = () => {
             />
 
             <S.FiltersRight>
-              <S.CalendarButton
-                type="button"
-                onClick={() => setShowCalender(true)}
-              >
-                <CalendarMonthIcon
-                  width={25}
-                  height={25}
-                  color={theme.colors.grey[700]}
-                />
+              <S.DateRange>
+                <S.DateButton
+                  type="button"
+                  onClick={() => setShowCalender(true)}
+                >
+                  <CalendarMonthIcon
+                    width={25}
+                    height={25}
+                    color={theme.colors.grey[700]}
+                  />
+                  <S.DateText>{formatCalendarText(startDate)}</S.DateText>
+                </S.DateButton>
 
-                <S.CalendarText>
-                  {startDate && endDate
-                    ? `${startDate} ~ ${endDate}`
-                    : t('날짜 선택')}
-                </S.CalendarText>
-              </S.CalendarButton>
+                <S.RangeDivider>~</S.RangeDivider>
+
+                <S.DateButton
+                  type="button"
+                  onClick={() => setShowCalender(true)}
+                >
+                  <CalendarMonthIcon
+                    width={25}
+                    height={25}
+                    color={theme.colors.grey[700]}
+                  />
+                  <S.DateText>{formatCalendarText(endDate)}</S.DateText>
+                </S.DateButton>
+              </S.DateRange>
               <Dropdown
                 options={dateRangeOptions}
                 value={selectedPreset}

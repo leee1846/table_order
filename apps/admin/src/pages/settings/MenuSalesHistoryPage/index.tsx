@@ -5,11 +5,7 @@ import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
-import {
-  formatDateTime,
-  getDateRangeByPreset,
-  toYYYYMMDDRange,
-} from '@repo/util/date';
+import { getDateRangeByPreset, toYYYYMMDDRange } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetMenuSalesHistory } from '@repo/api/queries';
 import { MenuSalesHistoryTable } from './Table';
@@ -82,9 +78,9 @@ export const MenuSalesHistoryPage = () => {
     setAppliedRange({ startDate, endDate });
   };
 
-  const handleDownload = () => {
-    toast(t('내역 다운로드 준비 중입니다.'));
-  };
+  // const handleDownload = () => {
+  //   toast(t('내역 다운로드 준비 중입니다.'));
+  // };
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -100,7 +96,11 @@ export const MenuSalesHistoryPage = () => {
 
   const formatCalendarText = (date: string) => {
     if (!date) return t('날짜 선택');
-    return formatDateTime(date, 'YYYY년 MM월 DD일');
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
   };
 
   const allSelected =
@@ -116,11 +116,20 @@ export const MenuSalesHistoryPage = () => {
           </S.Title>
 
           <S.FilterBar>
+            <S.Actions>
+              {/* <BasicButton
+                variant="Solid_Navy_M"
+                onClick={handleDownload}
+                disabled={!shopCode}
+              >
+                {t('내역 다운로드')}
+              </BasicButton> */}
+            </S.Actions>
             <S.DateRange>
               <S.DateButton type="button" onClick={() => setShowCalendar(true)}>
                 <CalendarMonthIcon
-                  width={28}
-                  height={28}
+                  width={25}
+                  height={25}
                   color={theme.colors.grey[700]}
                 />
                 <S.DateText>{formatCalendarText(startDate)}</S.DateText>
@@ -130,31 +139,21 @@ export const MenuSalesHistoryPage = () => {
 
               <S.DateButton type="button" onClick={() => setShowCalendar(true)}>
                 <CalendarMonthIcon
-                  width={28}
-                  height={28}
+                  width={25}
+                  height={25}
                   color={theme.colors.grey[700]}
                 />
                 <S.DateText>{formatCalendarText(endDate)}</S.DateText>
               </S.DateButton>
-
-              <S.SearchButton
-                type="button"
-                onClick={handleSearch}
-                disabled={!startDate || !endDate}
-              >
-                {t('조회')}
-              </S.SearchButton>
             </S.DateRange>
 
-            <S.Actions>
-              <BasicButton
-                variant="Solid_Navy_M"
-                onClick={handleDownload}
-                disabled={!shopCode}
-              >
-                {t('내역 다운로드')}
-              </BasicButton>
-            </S.Actions>
+            <BasicButton
+              variant="Solid_Navy_L"
+              onClick={handleSearch}
+              disabled={!startDate || !endDate}
+            >
+              {t('조회')}
+            </BasicButton>
           </S.FilterBar>
 
           <S.CategoryFilter>
@@ -169,16 +168,19 @@ export const MenuSalesHistoryPage = () => {
               </S.SelectAll>
             </S.CategoryHeader>
             <S.CategoryChips>
-              {categories.map((category) => (
-                <S.Chip
-                  key={category}
-                  type="button"
-                  selected={selectedCategories.includes(category)}
-                  onClick={() => toggleCategory(category)}
-                >
-                  {category}
-                </S.Chip>
-              ))}
+              {categories.map((category) => {
+                console.log(category);
+                return (
+                  <S.Chip
+                    key={category}
+                    type="button"
+                    selected={selectedCategories.includes(category)}
+                    onClick={() => toggleCategory(category)}
+                  >
+                    {category}
+                  </S.Chip>
+                );
+              })}
             </S.CategoryChips>
           </S.CategoryFilter>
 

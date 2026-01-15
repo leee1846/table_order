@@ -110,11 +110,22 @@ export const DailySalesHistoryPage = () => {
           </S.Title>
 
           <S.FilterBar>
+            <S.Actions>
+              {/* {!CapacitorApp.isNative() && (
+                <BasicButton
+                  variant="Solid_Navy_L"
+                  onClick={handleDownload}
+                  disabled={!shopCode}
+                >
+                  {t('내역 다운로드')}
+                </BasicButton>
+              )} */}
+            </S.Actions>
             <S.DateRange>
               <S.DateButton type="button" onClick={() => setShowCalendar(true)}>
                 <CalendarMonthIcon
-                  width={28}
-                  height={28}
+                  width={25}
+                  height={25}
                   color={theme.colors.grey[700]}
                 />
                 <S.DateText>{formatCalendarText(startDate)}</S.DateText>
@@ -124,8 +135,8 @@ export const DailySalesHistoryPage = () => {
 
               <S.DateButton type="button" onClick={() => setShowCalendar(true)}>
                 <CalendarMonthIcon
-                  width={28}
-                  height={28}
+                  width={25}
+                  height={25}
                   color={theme.colors.grey[700]}
                 />
                 <S.DateText>{formatCalendarText(endDate)}</S.DateText>
@@ -138,17 +149,6 @@ export const DailySalesHistoryPage = () => {
             >
               {t('조회')}
             </BasicButton>
-            <S.Actions>
-              {/* {!CapacitorApp.isNative() && (
-                <BasicButton
-                  variant="Solid_Navy_L"
-                  onClick={handleDownload}
-                  disabled={!shopCode}
-                >
-                  {t('내역 다운로드')}
-                </BasicButton>
-              )} */}
-            </S.Actions>
           </S.FilterBar>
 
           <S.TableCard>

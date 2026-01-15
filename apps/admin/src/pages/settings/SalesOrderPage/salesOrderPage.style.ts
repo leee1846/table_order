@@ -36,10 +36,15 @@ export const Filters = styled.div`
   margin-bottom: 12px;
 `;
 
-export const CalendarButton = styled.button`
+export const DateRange = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+`;
+
+export const DateButton = styled.button`
+  display: flex;
+  align-items: center;
   gap: 8px;
   padding: 8px 15px;
   border-radius: 12px;
@@ -48,7 +53,12 @@ export const CalendarButton = styled.button`
   cursor: pointer;
 `;
 
-export const CalendarText = styled.span`
+export const DateText = styled.span`
   ${TYPOGRAPHY.ST_5}
   color: ${theme.colors.grey[900]};
+`;
+
+export const RangeDivider = styled.span`
+  ${TYPOGRAPHY.ST_3}
+  color: ${theme.colors.grey[500]};
 `;

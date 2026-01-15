@@ -46,7 +46,7 @@ export const CalendarButton = styled.button`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border-radius: 12px;
   border: 0.5px solid ${theme.colors.grey[300]};
   background-color: ${theme.colors.white};
@@ -65,6 +65,7 @@ export const Filters = styled.div`
   justify-content: space-between;
   gap: 8px;
   flex-wrap: wrap;
+  padding: 0 12px;
 `;
 
 export const Tabs = styled.div`

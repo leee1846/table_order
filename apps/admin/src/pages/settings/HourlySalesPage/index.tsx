@@ -77,11 +77,20 @@ export const HourlySalesPage = () => {
           </S.Title>
 
           <S.FilterBar>
+            <S.Actions>
+              {/* <BasicButton
+                variant="Solid_Navy_M"
+                onClick={handleDownload}
+                disabled={!shopCode}
+              >
+                {t('내역 다운로드')}
+              </BasicButton> */}
+            </S.Actions>
             <S.DateRange>
               <S.DateButton type="button" onClick={() => setShowCalendar(true)}>
                 <CalendarMonthIcon
-                  width={28}
-                  height={28}
+                  width={25}
+                  height={25}
                   color={theme.colors.grey[700]}
                 />
                 <S.DateText>{formatCalendarText(startDate)}</S.DateText>
@@ -105,15 +114,6 @@ export const HourlySalesPage = () => {
             >
               {t('조회')}
             </BasicButton>
-            <S.Actions>
-              {/* <BasicButton
-                variant="Solid_Navy_M"
-                onClick={handleDownload}
-                disabled={!shopCode}
-              >
-                {t('내역 다운로드')}
-              </BasicButton> */}
-            </S.Actions>
           </S.FilterBar>
 
           <S.TableCard>
