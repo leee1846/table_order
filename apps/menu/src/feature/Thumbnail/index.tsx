@@ -4,7 +4,6 @@ import {
   chiliOnIcon,
   EmptedImageIcon,
   newOnIcon,
-  PhotoIcon,
 } from '@repo/ui/icons';
 import * as S from '@/feature/Thumbnail/thumbnail.style';
 import type { IMenu, IMenuImage } from '@repo/api/types';
@@ -17,6 +16,10 @@ interface Props {
   image?: IMenuImage;
   width?: string;
 }
+
+/**
+ * 메뉴 썸네일 이미지 UI
+ */
 export const Thumbnail = ({ menu, image, width = '100%' }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();

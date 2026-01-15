@@ -8,8 +8,8 @@ import { useModalStore } from '@/stores/useModalStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 /**
- * 현금 결제 유도 전체 화면 컴포넌트
- * UI 없이 화면 전체를 가리는 컴포넌트
+ * 현금 결제 유도 UI
+ * SSE "PAYMENT" type 메시지 수신 시 조건 충족 시 모달 창 닫음
  */
 export const CashPaymentInducement = () => {
   const { t } = useCustomerTranslation();

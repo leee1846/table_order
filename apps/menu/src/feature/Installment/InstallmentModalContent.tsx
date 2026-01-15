@@ -14,6 +14,10 @@ interface InstallmentModalContentProps {
   onConfirm: () => void;
 }
 
+/**
+ * 할부 선택 모달 컴포넌트
+ * 카드 결제, 선불 > 분할 결제시 사용
+ */
 export const InstallmentModalContent = ({
   totalPrice,
   selectedInstallmentMonths,
