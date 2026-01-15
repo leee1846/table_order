@@ -6,3 +6,4 @@ export * from './useGetAdminMemberList';
 export * from './usePostAdminMember';
 export * from './usePutAdminMember';
 export * from './useDeleteAdminMember';
+export * from './usePostAdminMemberPWReset';

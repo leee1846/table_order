@@ -11,10 +11,18 @@ interface Props {
   initialData?: MembersFormData;
   onSave?: (data: MembersFormData) => Promise<void>;
   onDelete?: () => Promise<void>;
+  onResetPassword?: () => Promise<void>;
 }
 
-export const Members = ({ mode, initialData, onSave, onDelete }: Props) => {
-  const [formData, setFormData] = useState<MembersFormData>(DEFAULT_MEMBERS_DATA);
+export const Members = ({
+  mode,
+  initialData,
+  onSave,
+  onDelete,
+  onResetPassword,
+}: Props) => {
+  const [formData, setFormData] =
+    useState<MembersFormData>(DEFAULT_MEMBERS_DATA);
 
   useEffect(() => {
     if (initialData) {
@@ -54,6 +62,11 @@ export const Members = ({ mode, initialData, onSave, onDelete }: Props) => {
         </S.Titles>
         {mode !== 'detail' && (
           <div style={{ display: 'flex', gap: '8px' }}>
+            {mode === 'edit' && onResetPassword && (
+              <BasicButton variant="Outline_Blue_M" onClick={onResetPassword}>
+                비밀번호 초기화
+              </BasicButton>
+            )}
             {mode === 'edit' && onDelete && (
               <BasicButton variant="Outline_Grey_M" onClick={onDelete}>
                 삭제

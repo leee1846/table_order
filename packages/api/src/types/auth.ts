@@ -9,6 +9,7 @@ export interface ILoginData {
   loginResult: boolean;
   accessToken: string;
   refreshToken: string;
+  isPasswordChangeRequired: boolean;
 }
 
 export type TLoginResponse = IApiResponse<ILoginData>;

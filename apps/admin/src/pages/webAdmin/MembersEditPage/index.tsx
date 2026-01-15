@@ -12,6 +12,7 @@ import {
   useGetAdminMember,
   usePutAdminMember,
   useDeleteAdminMember,
+  usePostAdminMemberPWReset,
 } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import { AxiosError } from '@repo/api/axios';
@@ -61,6 +62,7 @@ export const MembersEditPage = () => {
 
   const updateAdminMutation = usePutAdminMember();
   const deleteAdminMutation = useDeleteAdminMember();
+  const resetPasswordMutation = usePostAdminMemberPWReset();
 
   // 404 에러 처리
   useEffect(() => {
@@ -124,12 +126,32 @@ export const MembersEditPage = () => {
     navigate(ROUTES.ADMIN_WEB.MEMBERS.generate());
   };
 
+  const handleResetPassword = async () => {
+    if (!memberId) {
+      toast('관리자 ID가 없습니다.');
+      return;
+    }
+
+    openDualActionDialog({
+      title: '비밀번호 초기화',
+      content: '비밀번호를 초기화하시겠습니까?',
+      primaryText: '확인',
+      secondaryText: '취소',
+      onConfirm: async () => {
+        await resetPasswordMutation.mutateAsync({ memberId });
+        toast('비밀번호가 초기화되었습니다.');
+        navigate(-1);
+      },
+    });
+  };
+
   return (
     <Members
       mode="edit"
       initialData={initialData}
       onSave={handleSave}
       onDelete={handleDelete}
+      onResetPassword={handleResetPassword}
     />
   );
 };
