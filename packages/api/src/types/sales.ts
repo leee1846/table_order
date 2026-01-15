@@ -84,8 +84,9 @@ export interface IGetMenuSalesHistoryParams {
    */
   endDate: string;
 }
-export type TGetMenuSalesHistoryResponse =
-  IApiResponse<IMenuSalesHistoryItem[]>;
+export type TGetMenuSalesHistoryResponse = IApiResponse<
+  IMenuSalesHistoryItem[]
+>;
 
 export interface IGetCalendarSalesParams {
   shopCode: string;
@@ -95,8 +96,9 @@ export interface IGetCalendarSalesParams {
   yearMonth: string;
 }
 
-export type TGetCalendarSalesResponse =
-  IApiResponse<ICalendarSalesHistoryItem[]>;
+export type TGetCalendarSalesResponse = IApiResponse<
+  ICalendarSalesHistoryItem[]
+>;
 
 export type TPaymentType = 'CASH' | 'CARD' | 'PARTIAL' | null;
 
@@ -258,21 +260,27 @@ export interface ISalesMetric {
 }
 
 export interface IDailySalesHistoryItem {
-  date: string;
-  totalSales?: ISalesMetric;
-  actualSales?: ISalesMetric;
-  totalCancel?: ISalesMetric;
-  totalGuests?: number;
-  averageGuestPrice?: number;
-  usedPoint?: number;
-  card?: ISalesMetric;
-  cardCancel?: ISalesMetric;
-  cash?: ISalesMetric;
-  cashCancel?: ISalesMetric;
-  cashReceipt?: ISalesMetric;
-  cashReceiptCancel?: ISalesMetric;
-  discount?: ISalesMetric;
-  service?: ISalesMetric;
+  saleDate: string;
+  totalSalesCount: number;
+  totalSalesAmount: number;
+  actualSalesCount: number;
+  actualSalesAmount: number;
+  cancelCount: number;
+  cancelAmount: number;
+  customerCount: number;
+  pricePerCustomer: number;
+  cardSalesCount: number;
+  cardSalesAmount: number;
+  cardCancelCount: number;
+  cardCancelAmount: number;
+  cashSalesCount: number;
+  cashSalesAmount: number;
+  cashCancelCount: number;
+  cashCancelAmount: number;
+  discountCount: number;
+  discountAmount: number;
+  serviceCount: number;
+  serviceAmount: number;
 }
 
 export interface IGetDailySalesParams {

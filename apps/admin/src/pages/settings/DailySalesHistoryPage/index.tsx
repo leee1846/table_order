@@ -22,8 +22,8 @@ const formatWithWeekday = (date: string, t: TFunction) => {
   const weekdayLabels = getDays(t).map((day) => day.label);
   const suffix = weekdayLabels[weekday] ?? '';
 
-  const formattedDate = formatDateTime(date, 'YY-MM-DD');
-  return suffix ? `${formattedDate}(${suffix})` : formattedDate;
+  const formattedDate = formatDateTime(date, 'YY.MM.DD');
+  return suffix ? `${formattedDate} (${suffix})` : formattedDate;
 };
 
 export const DailySalesHistoryPage = () => {
@@ -36,7 +36,7 @@ export const DailySalesHistoryPage = () => {
   const [appliedRange, setAppliedRange] = useState(defaultRange);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
 
-  const { data, isLoading } = useGetDailySales(
+  const { data } = useGetDailySales(
     {
       shopCode: shopCode ?? '',
       startDate: formatDateToYYYYMMDD(appliedRange.startDate),
@@ -50,24 +50,30 @@ export const DailySalesHistoryPage = () => {
   const rows = useMemo<TDailySalesHistoryRow[]>(
     () =>
       (data?.data ?? []).map((item) => ({
-        date: item.date,
-        displayDate: formatWithWeekday(item.date, t),
-        totalSales: item.totalSales ?? { count: 0, amount: 0 },
-        actualSales: item.actualSales ?? { count: 0, amount: 0 },
-        totalCancel: item.totalCancel ?? { count: 0, amount: 0 },
-        totalGuests: item.totalGuests ?? 0,
-        averageGuestPrice: item.averageGuestPrice ?? 0,
-        usedPoint: item.usedPoint ?? 0,
-        card: item.card ?? { count: 0, amount: 0 },
-        cardCancel: item.cardCancel ?? { count: 0, amount: 0 },
-        cash: item.cash ?? { count: 0, amount: 0 },
-        cashCancel: item.cashCancel ?? { count: 0, amount: 0 },
-        cashReceipt: item.cashReceipt ?? { count: 0, amount: 0 },
-        cashReceiptCancel: item.cashReceiptCancel ?? { count: 0, amount: 0 },
-        discount: item.discount ?? { count: 0, amount: 0 },
-        service: item.service ?? { count: 0, amount: 0 },
+        saleDate: item.saleDate,
+        displayDate: formatWithWeekday(item.saleDate, t),
+        totalSalesCount: item.totalSalesCount ?? 0,
+        totalSalesAmount: item.totalSalesAmount ?? 0,
+        actualSalesCount: item.actualSalesCount ?? 0,
+        actualSalesAmount: item.actualSalesAmount ?? 0,
+        cancelCount: item.cancelCount ?? 0,
+        cancelAmount: item.cancelAmount ?? 0,
+        customerCount: item.customerCount ?? 0,
+        pricePerCustomer: item.pricePerCustomer ?? 0,
+        cardSalesCount: item.cardSalesCount ?? 0,
+        cardSalesAmount: item.cardSalesAmount ?? 0,
+        cardCancelCount: item.cardCancelCount ?? 0,
+        cardCancelAmount: item.cardCancelAmount ?? 0,
+        cashSalesCount: item.cashSalesCount ?? 0,
+        cashSalesAmount: item.cashSalesAmount ?? 0,
+        cashCancelCount: item.cashCancelCount ?? 0,
+        cashCancelAmount: item.cashCancelAmount ?? 0,
+        discountCount: item.discountCount ?? 0,
+        discountAmount: item.discountAmount ?? 0,
+        serviceCount: item.serviceCount ?? 0,
+        serviceAmount: item.serviceAmount ?? 0,
       })),
-    [data]
+    [data, t]
   );
 
   const handleSelectDate = (start: string, end: string) => {
@@ -121,28 +127,30 @@ export const DailySalesHistoryPage = () => {
                 <S.DateText>{formatCalendarText(endDate)}</S.DateText>
               </S.DateButton>
 
-              <S.SearchButton
-                type="button"
+              <BasicButton
+                variant="Solid_Navy_L"
                 onClick={handleSearch}
                 disabled={!startDate || !endDate}
               >
                 {t('조회')}
-              </S.SearchButton>
+              </BasicButton>
             </S.DateRange>
 
             <S.Actions>
-              <BasicButton
-                variant="Solid_Navy_M"
-                onClick={handleDownload}
-                disabled={!shopCode}
-              >
-                {t('내역 다운로드')}
-              </BasicButton>
+              {/* {!CapacitorApp.isNative() && (
+                <BasicButton
+                  variant="Solid_Navy_L"
+                  onClick={handleDownload}
+                  disabled={!shopCode}
+                >
+                  {t('내역 다운로드')}
+                </BasicButton>
+              )} */}
             </S.Actions>
           </S.FilterBar>
 
           <S.TableCard>
-            <DailySalesHistoryTable rows={rows} isLoading={isLoading} />
+            <DailySalesHistoryTable rows={rows} />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

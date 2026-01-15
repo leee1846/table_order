@@ -37,17 +37,16 @@ export const Filters = styled.div`
 export const CalendarButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 0.5px solid ${theme.colors.grey[300]};
+  background-color: ${theme.colors.white};
   cursor: pointer;
+  margin-left: 20px;
 `;
 
-export const CalendarText = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 0.5px solid ${theme.colors.grey[400]};
-  ${TYPOGRAPHY.BD_2}
+export const CalendarText = styled.span`
+  ${TYPOGRAPHY.ST_5}
   color: ${theme.colors.grey[900]};
 `;

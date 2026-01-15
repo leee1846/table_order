@@ -84,41 +84,46 @@ export const SalesReportPage = () => {
   const mappedDailyRows: TDailySalesHistoryRow[] = useMemo(
     () =>
       dailyRows.map((row) => ({
-        date: row.date,
-        displayDate: row.date,
-        totalSales: row.totalSales ?? { count: 0, amount: 0 },
-        actualSales: row.actualSales ?? { count: 0, amount: 0 },
-        totalCancel: row.totalCancel ?? { count: 0, amount: 0 },
-        totalGuests: row.totalGuests ?? 0,
-        averageGuestPrice: row.averageGuestPrice ?? 0,
-        usedPoint: row.usedPoint ?? 0,
-        card: row.card ?? { count: 0, amount: 0 },
-        cardCancel: row.cardCancel ?? { count: 0, amount: 0 },
-        cash: row.cash ?? { count: 0, amount: 0 },
-        cashCancel: row.cashCancel ?? { count: 0, amount: 0 },
-        cashReceipt: row.cashReceipt ?? { count: 0, amount: 0 },
-        cashReceiptCancel: row.cashReceiptCancel ?? { count: 0, amount: 0 },
-        discount: row.discount ?? { count: 0, amount: 0 },
-        service: row.service ?? { count: 0, amount: 0 },
+        saleDate: row.saleDate,
+        displayDate: row.saleDate,
+        totalSalesCount: row.totalSalesCount ?? 0,
+        totalSalesAmount: row.totalSalesAmount ?? 0,
+        actualSalesCount: row.actualSalesCount ?? 0,
+        actualSalesAmount: row.actualSalesAmount ?? 0,
+        cancelCount: row.cancelCount ?? 0,
+        cancelAmount: row.cancelAmount ?? 0,
+        customerCount: row.customerCount ?? 0,
+        pricePerCustomer: row.pricePerCustomer ?? 0,
+        cardSalesCount: row.cardSalesCount ?? 0,
+        cardSalesAmount: row.cardSalesAmount ?? 0,
+        cardCancelCount: row.cardCancelCount ?? 0,
+        cardCancelAmount: row.cardCancelAmount ?? 0,
+        cashSalesCount: row.cashSalesCount ?? 0,
+        cashSalesAmount: row.cashSalesAmount ?? 0,
+        cashCancelCount: row.cashCancelCount ?? 0,
+        cashCancelAmount: row.cashCancelAmount ?? 0,
+        discountCount: row.discountCount ?? 0,
+        discountAmount: row.discountAmount ?? 0,
+        serviceCount: row.serviceCount ?? 0,
+        serviceAmount: row.serviceAmount ?? 0,
       })),
     [dailyRows]
   );
 
   const totalPayment = dailyRows.reduce(
-    (acc, cur) =>
-      acc + (cur.actualSales?.amount ?? cur.totalSales?.amount ?? 0),
+    (acc, cur) => acc + (cur.actualSalesAmount ?? cur.totalSalesAmount ?? 0),
     0
   );
   const totalCount = dailyRows.reduce(
-    (acc, cur) => acc + (cur.totalSales?.count ?? 0),
+    (acc, cur) => acc + (cur.totalSalesCount ?? 0),
     0
   );
   const totalGuests = dailyRows.reduce(
-    (acc, cur) => acc + (cur.totalGuests ?? 0),
+    (acc, cur) => acc + (cur.customerCount ?? 0),
     0
   );
   const operatingDays = dailyRows.filter(
-    (row) => (row.totalSales?.count ?? 0) > 0
+    (row) => (row.totalSalesCount ?? 0) > 0
   ).length;
   const averageTicket =
     totalGuests > 0 ? Math.round(totalPayment / totalGuests) : 0;

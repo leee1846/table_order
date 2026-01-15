@@ -46,17 +46,17 @@ export const DateRange = styled.div`
 export const DateButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 8px;
+  padding: 10px 20px;
   border-radius: 12px;
   border: 0.5px solid ${theme.colors.grey[300]};
   background-color: ${theme.colors.white};
   cursor: pointer;
-  min-width: 200px;
+  margin-left: 20px;
 `;
 
 export const DateText = styled.span`
-  ${TYPOGRAPHY.ST_2}
+  ${TYPOGRAPHY.ST_5}
   color: ${theme.colors.grey[900]};
 `;
 

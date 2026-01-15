@@ -15,7 +15,7 @@ export const Header = styled.div`
   align-items: flex-start;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 `;
 
 export const Title = styled.div`
@@ -57,7 +57,7 @@ export const CalendarButton = styled.button`
 `;
 
 export const CalendarText = styled.span`
-  ${TYPOGRAPHY.ST_2}
+  ${TYPOGRAPHY.ST_5}
   color: ${theme.colors.grey[900]};
 `;
 
@@ -116,12 +116,6 @@ export const SummaryRow = styled.tr`
   }
 `;
 
-export const StatusText = styled.span<{ cancel?: boolean }>`
-  ${TYPOGRAPHY.ST_4}
-  color: ${({ cancel }) =>
-    cancel ? theme.colors.semantic[500] : theme.colors.grey[700]};
-`;
-
 export const PaymentMethod = styled.span`
   ${TYPOGRAPHY.ST_4}
   color: ${theme.colors.grey[700]};
@@ -166,6 +160,8 @@ export const TooltipArrow = styled.div`
 `;
 
 export const TableRow = styled.tr<{ isCancel?: boolean }>`
+  white-space: nowrap;
+
   ${({ isCancel }) =>
     isCancel &&
     `

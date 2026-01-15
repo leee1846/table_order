@@ -18,3 +18,5 @@ export const TABLE_GROUP_STORAGE_KEY = 'selectedTableGroupSeq';
 
 /** 모달 행 크기 */
 export const PAZE_SIZE = 6;
+
+export const SALES_PAGE_SIZE = 7;

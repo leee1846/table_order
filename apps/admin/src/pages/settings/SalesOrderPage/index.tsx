@@ -17,8 +17,9 @@ import { OrderDetailModal } from '@/feature/dialogs/SalesListDialog/OrderDetailM
 import { Table } from '@/pages/settings/SalesOrderPage/Table';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from './salesOrderPage.style';
+import { SALES_PAGE_SIZE } from '@/constants/keys';
 
-const PAGE_SIZE = 7;
+const PAGE_SIZE = SALES_PAGE_SIZE;
 
 export const SalesOrderPage = () => {
   const { t } = useAdminTranslation();
@@ -56,7 +57,7 @@ export const SalesOrderPage = () => {
     [startDate, endDate]
   );
 
-  const { data: orderHistoryResponse, isFetching } = useGetOrderHistory(
+  const { data: orderHistoryResponse } = useGetOrderHistory(
     {
       shopCode: shopCode ?? '',
       startDate: apiStartDate,
@@ -116,8 +117,8 @@ export const SalesOrderPage = () => {
               onClick={() => setShowCalender(true)}
             >
               <CalendarMonthIcon
-                width={32}
-                height={32}
+                width={25}
+                height={25}
                 color={theme.colors.grey[700]}
               />
 
@@ -136,7 +137,6 @@ export const SalesOrderPage = () => {
 
           <Table
             orders={orders}
-            isLoading={isFetching}
             onSelectOrder={(order) => setSelectedOrder(order)}
             pageSize={PAGE_SIZE}
           />

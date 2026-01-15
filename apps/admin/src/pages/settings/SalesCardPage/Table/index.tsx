@@ -1,14 +1,15 @@
 import { t } from '@/config/i18n';
 import * as S from '@/pages/settings/SalesCardPage/Table/table.style';
 import { theme } from '@repo/ui';
-import { BasicButton } from '@repo/ui/components';
+// import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency } from '@repo/util/string';
-import { openDualActionDialog } from '@repo/feature/utils';
+// import { openDualActionDialog } from '@repo/feature/utils';
 import type { ICardApprovalHistoryItem } from '@repo/api/types';
 
 interface Props {
   items: ICardApprovalHistoryItem[];
+  pageSize?: number;
 }
 
 const toNumber = (value?: number | string | null) => {
@@ -38,7 +39,7 @@ const formatTransactionDate = (raw?: string | null) => {
   return raw;
 };
 
-export const Table = ({ items }: Props) => {
+export const Table = ({ items, pageSize }: Props) => {
   const getTextColor = (isCancel: boolean, isApproval?: boolean) => {
     if (isApproval) {
       return isCancel ? theme.colors.semantic[400] : theme.colors.primary[500];
@@ -47,22 +48,22 @@ export const Table = ({ items }: Props) => {
     return isCancel ? theme.colors.semantic[400] : theme.colors.grey[700];
   };
 
-  const onClickCancel = () => {
-    openDualActionDialog({
-      title: t('정말 취소하시겠습니까?'),
-      primaryText: t('확인'),
-      secondaryText: t('취소'),
-      onConfirm: () => {
-        // TODO: 취소 로직 추가
-      },
-    });
-  };
+  // const onClickCancel = () => {
+  //   openDualActionDialog({
+  //     title: t('정말 취소하시겠습니까?'),
+  //     primaryText: t('확인'),
+  //     secondaryText: t('취소'),
+  //     onConfirm: () => {
+  //       // TODO: 취소 로직 추가
+  //     },
+  //   });
+  // };
 
   const renderRows = () => {
     if (!items || items.length === 0) {
       return (
-        <tr>
-          <td colSpan={9}>{t('카드 승인 내역이 없습니다.')}</td>
+        <tr style={{ height: '100%', borderBottom: 'none' }}>
+          <td colSpan={8}>{t('카드 승인 내역이 없습니다.')}</td>
         </tr>
       );
     }
@@ -104,7 +105,7 @@ export const Table = ({ items }: Props) => {
             {formatCurrency(vat)}
           </S.ColorTd>
           <td>-</td>
-          <td>
+          {/* <td>
             <BasicButton
               variant="Outline_Navy_M"
               onClick={onClickCancel}
@@ -113,7 +114,7 @@ export const Table = ({ items }: Props) => {
             >
               {t('취소')}
             </BasicButton>
-          </td>
+          </td> */}
         </tr>
       );
     });
@@ -121,7 +122,7 @@ export const Table = ({ items }: Props) => {
 
   return (
     <UIStyles.setting.Table>
-      <UIStyles.setting.Thead>
+      <S.Thead>
         <tr>
           <th>
             {t('승인')}
@@ -156,44 +157,12 @@ export const Table = ({ items }: Props) => {
             {t('부가세')}
           </th>
           <th>{t('영수증')}</th>
-          <th>{t('거래취소')}</th>
+          {/* <th>{t('거래취소')}</th> */}
         </tr>
-      </UIStyles.setting.Thead>
-      <UIStyles.setting.Tbody>{renderRows()}</UIStyles.setting.Tbody>
-      {/* {shopSetting?.isSalesTotalVisible !== false && (
-        <UIStyles.setting.Footer>
-          <UIStyles.setting.FooterContents>
-            <p>
-              <span>{t('총 매출:')}</span> {formatCurrency(totalSalesAmount)}
-              <span>
-                {totalSalesCount}
-                {t('건')}
-              </span>
-            </p>
-            <p>
-              <span>{t('결제 전 매출:')}</span>
-              {formatCurrency(prePaymentAmount)}
-              <span>
-                {prePaymentCount}
-                {t('건')}
-              </span>
-            </p>
-            <p>
-              <span>{t('총 예상 매출:')}</span>
-              {formatCurrency(estimatedTotalAmount)}
-              <span>
-                {estimatedTotalCount}
-                {t('건')}
-              </span>
-            </p>
-          </UIStyles.setting.FooterContents>
-          <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        </UIStyles.setting.Footer>
-      )} */}
+      </S.Thead>
+      <S.Tbody pageSize={pageSize} itemLength={items.length}>
+        {renderRows()}
+      </S.Tbody>
     </UIStyles.setting.Table>
   );
 };

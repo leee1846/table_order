@@ -15,8 +15,9 @@ import {
 } from '@repo/util/date';
 import { formatCurrency } from '@repo/util/string';
 import { useGetCardApprovalHistory } from '@repo/api/queries';
+import { SALES_PAGE_SIZE } from '@/constants/keys';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = SALES_PAGE_SIZE;
 
 export const SalesCardPage = () => {
   const { t } = useAdminTranslation();
@@ -144,8 +145,8 @@ export const SalesCardPage = () => {
                 onClick={() => setShowCalender(true)}
               >
                 <CalendarMonthIcon
-                  width={32}
-                  height={32}
+                  width={25}
+                  height={25}
                   color={theme.colors.grey[700]}
                 />
 
@@ -163,27 +164,29 @@ export const SalesCardPage = () => {
             </S.FiltersRight>
           </S.Filters>
 
-          <Table items={cardApprovalHistory} />
+          <Table items={cardApprovalHistory} pageSize={PAGE_SIZE} />
         </S.Container>
 
-        {shopSetting?.isSalesTotalVisible !== false && (
-          <UIStyles.setting.Footer>
+        <UIStyles.setting.Footer>
+          {shopSetting?.isSalesTotalVisible !== false ? (
             <UIStyles.setting.FooterContents>
               <p>
                 <span>{t('총 매출:')}</span> {formatCurrency(totalSalesAmount)}
-                <span>
-                  {totalCount}
-                  {t('건')}
-                </span>
+              </p>
+              <p>
+                <span>{`${t('건 수')}: `}</span>
+                {totalCount}
               </p>
             </UIStyles.setting.FooterContents>
-            <Pagination
-              totalPages={totalPages}
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-            />
-          </UIStyles.setting.Footer>
-        )}
+          ) : (
+            <div />
+          )}
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </UIStyles.setting.Footer>
       </UIStyles.setting.TablePageContainer>
 
       {showCalender && (

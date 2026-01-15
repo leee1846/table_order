@@ -9,17 +9,11 @@ import type { IOrderHistoryItem } from '@repo/api/types';
 
 interface Props {
   orders: IOrderHistoryItem[];
-  isLoading?: boolean;
   onSelectOrder: (order: IOrderHistoryItem) => void;
   pageSize?: number;
 }
 
-export const Table = ({
-  orders,
-  isLoading,
-  onSelectOrder,
-  pageSize,
-}: Props) => {
+export const Table = ({ orders, onSelectOrder, pageSize }: Props) => {
   const getTextColor = (isCancel: boolean, isPayment?: boolean) => {
     if (isPayment) {
       return isCancel ? theme.colors.semantic[400] : theme.colors.primary[500];
@@ -47,17 +41,9 @@ export const Table = ({
   };
 
   const renderRows = () => {
-    if (isLoading) {
-      return (
-        <tr>
-          <td colSpan={7}>{t('주문 내역을 불러오는 중입니다.')}</td>
-        </tr>
-      );
-    }
-
     if (!orders || orders.length === 0) {
       return (
-        <tr>
+        <tr style={{ height: '100%', borderBottom: 'none' }}>
           <td colSpan={7}>{t('주문 내역이 없습니다.')}</td>
         </tr>
       );
@@ -112,7 +98,9 @@ export const Table = ({
           <th>{t('상세 내역')}</th>
         </tr>
       </UIStyles.setting.Thead>
-      <S.Tbody pageSize={pageSize} ordersLength={orders.length}>{renderRows()}</S.Tbody>
+      <S.Tbody pageSize={pageSize} ordersLength={orders.length}>
+        {renderRows()}
+      </S.Tbody>
     </UIStyles.setting.Table>
   );
 };

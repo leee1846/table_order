@@ -4,8 +4,10 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 40px 24px 40px 30px;
+  padding: 40px 24px 0 30px;
+  height: 89.4%;
+  flex: 1;
+  overflow: hidden;
 `;
 
 export const Title = styled.div`
@@ -14,6 +16,7 @@ export const Title = styled.div`
   gap: 11px;
   color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.MT_1}
+  margin-bottom: 20px;
 
   & > div {
     width: 0.125rem;
@@ -31,6 +34,7 @@ export const Filters = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 12px;
 `;
 
 export const FiltersRight = styled.div`
@@ -39,27 +43,19 @@ export const FiltersRight = styled.div`
   gap: 12px;
 `;
 
-export const BottomButtonContainer = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-`;
-
 export const CalendarButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 12px;
+  border: 0.5px solid ${theme.colors.grey[300]};
+  background-color: ${theme.colors.white};
   cursor: pointer;
 `;
 
-export const CalendarText = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 0.5px solid ${theme.colors.grey[400]};
-  ${TYPOGRAPHY.BD_2}
+export const CalendarText = styled.span`
+  ${TYPOGRAPHY.ST_5}
   color: ${theme.colors.grey[900]};
 `;

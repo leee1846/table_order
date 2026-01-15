@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { InfoIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
@@ -31,35 +31,8 @@ export const DailySalesTable = ({ rows }: Props) => {
   const { t } = useAdminTranslation();
   const [showTotalSalesTooltip, setShowTotalSalesTooltip] = useState(false);
   const [showActualSalesTooltip, setShowActualSalesTooltip] = useState(false);
-  const totalSalesIconRef = useRef<HTMLDivElement>(null);
-  const actualSalesIconRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      if (
-        totalSalesIconRef.current &&
-        !totalSalesIconRef.current.contains(event.target as Node)
-      ) {
-        setShowTotalSalesTooltip(false);
-      }
-      if (
-        actualSalesIconRef.current &&
-        !actualSalesIconRef.current.contains(event.target as Node)
-      ) {
-        setShowActualSalesTooltip(false);
-      }
-    };
-
-    if (showTotalSalesTooltip || showActualSalesTooltip) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('touchstart', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, [showTotalSalesTooltip, showActualSalesTooltip]);
+  const totalSalesIconWrapperRef = useRef<HTMLDivElement>(null);
+  const actualSalesIconWrapperRef = useRef<HTMLDivElement>(null);
 
   const handleTotalSalesIconClick = () => {
     setShowTotalSalesTooltip(!showTotalSalesTooltip);
@@ -68,6 +41,33 @@ export const DailySalesTable = ({ rows }: Props) => {
   const handleActualSalesIconClick = () => {
     setShowActualSalesTooltip(!showActualSalesTooltip);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showTotalSalesTooltip &&
+        totalSalesIconWrapperRef.current &&
+        !totalSalesIconWrapperRef.current.contains(event.target as Node)
+      ) {
+        setShowTotalSalesTooltip(false);
+      }
+      if (
+        showActualSalesTooltip &&
+        actualSalesIconWrapperRef.current &&
+        !actualSalesIconWrapperRef.current.contains(event.target as Node)
+      ) {
+        setShowActualSalesTooltip(false);
+      }
+    };
+
+    if (showTotalSalesTooltip || showActualSalesTooltip) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTotalSalesTooltip, showActualSalesTooltip]);
 
   const formatStatusLabel = (status: string): string => {
     switch (status) {
@@ -120,11 +120,7 @@ export const DailySalesTable = ({ rows }: Props) => {
         <td>{formatCurrency(row.actualSales ?? 0)}</td>
         <td>{formatCurrency(row.discountAmount ?? 0)}</td>
         <td>{formatCurrency(row.cancelAmount ?? 0)}</td>
-        <td>
-          <S.StatusText cancel={row.isCanceled}>
-            {formatStatusLabel(row.status)}
-          </S.StatusText>
-        </td>
+        <td>{t(formatStatusLabel(row.status))}</td>
         <td>
           <S.PaymentMethod>
             {formatPaymentMethodLabelWithTranslation(row.paymentMethod)}
@@ -145,7 +141,7 @@ export const DailySalesTable = ({ rows }: Props) => {
               <S.HeaderLabel>
                 {t('총 매출')}
                 <S.IconWrapper
-                  ref={totalSalesIconRef}
+                  ref={totalSalesIconWrapperRef}
                   onClick={handleTotalSalesIconClick}
                   onTouchEnd={(e) => {
                     e.preventDefault();
@@ -172,7 +168,7 @@ export const DailySalesTable = ({ rows }: Props) => {
               <S.HeaderLabel>
                 {t('실 매출')}
                 <S.IconWrapper
-                  ref={actualSalesIconRef}
+                  ref={actualSalesIconWrapperRef}
                   onClick={handleActualSalesIconClick}
                   onTouchEnd={(e) => {
                     e.preventDefault();
