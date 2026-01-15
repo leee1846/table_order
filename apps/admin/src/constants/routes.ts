@@ -65,6 +65,14 @@ export const ROUTES = {
       path: 'admin-manage',
       generate: () => '/admin/admin-manage',
     },
+    ADMIN_NEW: {
+      path: 'admin-manage/new',
+      generate: () => '/admin/admin-manage/new',
+    },
+    ADMIN_EDIT: {
+      path: 'admin-manage/:memberUuid/edit',
+      generate: (memberUuid: string) => `/admin/admin-manage/${memberUuid}/edit`,
+    },
   },
 
   SETTINGS: {

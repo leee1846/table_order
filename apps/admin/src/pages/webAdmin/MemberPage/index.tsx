@@ -26,7 +26,7 @@ export const AdminManagePage = () => {
   });
 
   const handleCreate = () => {
-    navigate(ROUTES.ADMIN_WEB.ADMIN_NEW.generate());
+    navigate(ROUTES.ADMIN_WEB.ADMIN_MANAGE_NEW.generate());
   };
 
   return (

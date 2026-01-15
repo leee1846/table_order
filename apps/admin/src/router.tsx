@@ -108,6 +108,16 @@ const AdminManagePage = lazy(() =>
     default: module.AdminManagePage,
   }))
 );
+const AdminNewPage = lazy(() =>
+  import('@/pages/webAdmin/MemberNewPage').then((module) => ({
+    default: module.AdminNewPage,
+  }))
+);
+const AdminEditPage = lazy(() =>
+  import('@/pages/webAdmin/MemberEditPage').then((module) => ({
+    default: module.AdminEditPage,
+  }))
+);
 
 const DailySalesPage = lazy(() =>
   import('@/pages/settings/DailySalesPage').then((module) => ({
@@ -472,6 +482,16 @@ const createAdminWebRoutes = () => [
     path: ROUTES.ADMIN_WEB.ADMIN_MANAGE.path,
     loader: requireMasterLoader,
     element: createLazyRoute(AdminManagePage),
+  },
+  {
+    path: ROUTES.ADMIN_WEB.ADMIN_NEW.path,
+    loader: requireMasterLoader,
+    element: createLazyRoute(AdminNewPage),
+  },
+  {
+    path: ROUTES.ADMIN_WEB.ADMIN_EDIT.path,
+    loader: requireMasterLoader,
+    element: createLazyRoute(AdminEditPage),
   },
 ];
 

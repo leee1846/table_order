@@ -21,7 +21,7 @@ export const Table = ({ admins }: Props) => {
   const navigate = useNavigate();
 
   const handleEdit = (memberUuid: string) => {
-    navigate(ROUTES.ADMIN_WEB.ADMIN_EDIT.generate(memberUuid));
+    navigate(ROUTES.ADMIN_WEB.ADMIN_MANAGE_EDIT.generate(memberUuid));
   };
 
   const renderRows = () => {

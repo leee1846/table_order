@@ -82,11 +82,13 @@ export type TGetAdminMemberResponse = IApiResponse<IGetAdminMember>;
 
 export interface ICreateAdminMemberRequest {
   memberId: string;
-  shopSeq: number;
+  shopSeq: number | null;
   memberRole: TMemberRole;
   memberName: string;
   isAgreed: boolean;
   memberTel: string;
+  memberEmail: string;
+  memberDepartment: string;
 }
 
 export type TGetAdminMemberListResponse = IApiResponse<{

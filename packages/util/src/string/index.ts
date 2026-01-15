@@ -124,6 +124,32 @@ export const normalizeNumberString = (value: string): string => {
 };
 
 /**
+ * 이메일 형식이 유효한지 검증합니다.
+ * 기본적인 이메일 형식 검증을 수행합니다 (로컬파트@도메인.최상위도메인).
+ *
+ * @param email - 검증할 이메일 주소
+ * @returns 유효한 이메일 형식이면 true, 아니면 false
+ *
+ * @example
+ * ```ts
+ * isValidEmail('user@example.com') // true
+ * isValidEmail('test.email@domain.co.kr') // true
+ * isValidEmail('invalid.email') // false
+ * isValidEmail('@example.com') // false
+ * isValidEmail('user@') // false
+ * ```
+ */
+export const isValidEmail = (email: string): boolean => {
+  if (!email || !email.trim()) {
+    return false;
+  }
+
+  // 기본적인 이메일 형식 검증: 로컬파트@도메인.최상위도메인
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email.trim());
+};
+
+/**
  * 결제 수단 코드를 i18n 키로 변환합니다. (키는 한국어 문자열)
  *
  * @param method - 결제 수단 코드 (예: 'CARD', 'CASH', 'CANCELED_ALL')

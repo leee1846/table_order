@@ -1,10 +1,12 @@
 import { toast } from '@repo/feature/utils';
+import { isValidEmail } from '@repo/util/string';
 import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
 } from '@repo/api/types';
 import type { AppHistoryFormData } from './AppHistoryManage/constants';
 import type { NoticeFormData } from './NoticeManage/constants';
+import type { AdminFormData } from './MemberManage/constants';
 
 export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
   if (!shopData.shopName || !shopData.shopName.trim()) {
@@ -107,6 +109,40 @@ export const validateNoticeData = (noticeData: NoticeFormData): boolean => {
 
   if (!noticeData.content || !noticeData.content.trim()) {
     toast('내용을 입력해주세요.');
+    return false;
+  }
+
+  return true;
+};
+
+export const validateAdminData = (adminData: AdminFormData): boolean => {
+  if (!adminData.memberName || !adminData.memberName.trim()) {
+    toast('이름을 입력해주세요.');
+    return false;
+  }
+
+  if (!adminData.memberEmail || !adminData.memberEmail.trim()) {
+    toast('이메일을 입력해주세요.');
+    return false;
+  }
+
+  if (!isValidEmail(adminData.memberEmail)) {
+    toast('올바른 이메일 형식을 입력해주세요.');
+    return false;
+  }
+
+  if (!adminData.memberTel || !adminData.memberTel.trim()) {
+    toast('핸드폰번호를 입력해주세요.');
+    return false;
+  }
+
+  if (!adminData.memberDepartment || !adminData.memberDepartment.trim()) {
+    toast('소속을 입력해주세요.');
+    return false;
+  }
+
+  if (!adminData.memberRole) {
+    toast('권한을 선택해주세요.');
     return false;
   }
 
