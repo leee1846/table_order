@@ -5,16 +5,13 @@ import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { useGetOneDaySales } from '@repo/api/queries';
 import type { TPaymentType } from '@repo/api/types';
-import {
-  formatDateToYYYYMMDD,
-  formatDateTime,
-  getTodayDateString,
-} from '@repo/util/date';
+import { formatDateToYYYYMMDD, getTodayDateString } from '@repo/util/date';
 import { toast } from '@repo/feature/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
 import { DailySalesTable, type TDailySaleRow } from './Table';
 import * as S from './dailySalesPage.style';
+import { CapacitorApp } from '@repo/util/app';
 
 type TPaymentTab = null | 'CARD' | 'CASH' | 'PARTIAL';
 
@@ -92,7 +89,7 @@ export const DailySalesPage = () => {
     return activeTab === null ? undefined : (activeTab as TPaymentType);
   }, [activeTab]);
 
-  const { data: oneDaySalesResponse, isFetching } = useGetOneDaySales(
+  const { data: oneDaySalesResponse } = useGetOneDaySales(
     {
       shopCode: shopCode ?? '',
       saleDate: apiDate,
@@ -109,10 +106,13 @@ export const DailySalesPage = () => {
     [oneDaySales, apiDate]
   );
 
-  const displayDate = useMemo(
-    () => formatDateTime(selectedDate, 'YYYY년 MM월 DD일'),
-    [selectedDate]
-  );
+  const displayDate = useMemo(() => {
+    const date = new Date(selectedDate);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
+  }, [selectedDate, t]);
 
   const handleSelectDate = (startDate: string, endDate: string) => {
     const nextDate = startDate || endDate || selectedDate;
@@ -136,25 +136,15 @@ export const DailySalesPage = () => {
             </S.Title>
 
             <S.Controls>
-              <S.CalendarButton
-                type="button"
-                onClick={() => setShowCalendar(true)}
-              >
-                <CalendarMonthIcon
-                  width={28}
-                  height={28}
-                  color={theme.colors.grey[700]}
-                />
-                <S.CalendarText>{displayDate}</S.CalendarText>
-              </S.CalendarButton>
-
-              <BasicButton
-                variant="Solid_Navy_M"
-                onClick={handleDownload}
-                disabled={!shopCode}
-              >
-                {t('내역 다운로드')}
-              </BasicButton>
+              {/* {!CapacitorApp.isNative() && (
+                <BasicButton
+                  variant="Solid_Navy_XL"
+                  onClick={handleDownload}
+                  disabled={!shopCode}
+                >
+                  {t('내역 다운로드')}
+                </BasicButton>
+              )} */}
             </S.Controls>
           </S.Header>
 
@@ -171,15 +161,21 @@ export const DailySalesPage = () => {
                 </S.TabButton>
               ))}
             </S.Tabs>
-            {!shopCode && (
-              <S.FooterNote>
-                {t('매장 정보가 확인되면 당일 매출 내역을 불러옵니다.')}
-              </S.FooterNote>
-            )}
+            <S.CalendarButton
+              type="button"
+              onClick={() => setShowCalendar(true)}
+            >
+              <CalendarMonthIcon
+                width={28}
+                height={28}
+                color={theme.colors.grey[700]}
+              />
+              <S.CalendarText>{displayDate}</S.CalendarText>
+            </S.CalendarButton>
           </S.Filters>
 
           <S.TableCard>
-            <DailySalesTable rows={paymentRows} isLoading={isFetching} />
+            <DailySalesTable rows={paymentRows} />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>
