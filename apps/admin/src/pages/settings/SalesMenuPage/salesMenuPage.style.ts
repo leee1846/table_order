@@ -36,6 +36,33 @@ export const Filters = styled.div`
   margin-bottom: 12px;
 `;
 
+export const DateRange = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const DateButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 12px;
+  border: 0.5px solid ${theme.colors.grey[300]};
+  background-color: ${theme.colors.white};
+  cursor: pointer;
+`;
+
+export const DateText = styled.span`
+  ${TYPOGRAPHY.ST_5}
+  color: ${theme.colors.grey[900]};
+`;
+
+export const RangeDivider = styled.span`
+  ${TYPOGRAPHY.ST_3}
+  color: ${theme.colors.grey[500]};
+`;
+
 export const CalendarButton = styled.button`
   display: flex;
   align-items: center;
