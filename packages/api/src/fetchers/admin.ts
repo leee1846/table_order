@@ -118,3 +118,16 @@ export const deleteAdminMember = async (
   });
   return response.data;
 };
+
+export const resetAdminMemberPassword = async (
+  memberId: string
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.ADMIN.MEMBER_PASSWORD_RESET,
+    data: { memberId },
+  });
+
+  return response.data;
+};

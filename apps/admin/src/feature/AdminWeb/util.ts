@@ -79,7 +79,10 @@ export const validateAppHistoriesData = (
     return false;
   }
 
-  if (!appHistoriesData.deployDateTime || !appHistoriesData.deployDateTime.trim()) {
+  if (
+    !appHistoriesData.deployDateTime ||
+    !appHistoriesData.deployDateTime.trim()
+  ) {
     toast('배포일시를 선택해주세요.');
     return false;
   }
