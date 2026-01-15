@@ -5,11 +5,7 @@ import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
-import {
-  formatDateTime,
-  getDateRangeByPreset,
-  toYYYYMMDDRange,
-} from '@repo/util/date';
+import { getDateRangeByPreset, toYYYYMMDDRange } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetHourlySales } from '@repo/api/queries';
 import { HourlySalesTable } from './Table';
@@ -34,7 +30,7 @@ export const HourlySalesPage = () => {
     [appliedRange]
   );
 
-  const { data: hourlySalesResponse, isFetching } = useGetHourlySales(
+  const { data: hourlySalesResponse } = useGetHourlySales(
     {
       shopCode: shopCode ?? '',
       startDate: apiStartDate,
@@ -64,7 +60,11 @@ export const HourlySalesPage = () => {
 
   const formatCalendarText = (date: string) => {
     if (!date) return t('날짜 선택');
-    return formatDateTime(date, 'YYYY년 MM월 DD일');
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
   };
 
   return (
@@ -91,35 +91,33 @@ export const HourlySalesPage = () => {
 
               <S.DateButton type="button" onClick={() => setShowCalendar(true)}>
                 <CalendarMonthIcon
-                  width={28}
-                  height={28}
+                  width={25}
+                  height={25}
                   color={theme.colors.grey[700]}
                 />
                 <S.DateText>{formatCalendarText(endDate)}</S.DateText>
               </S.DateButton>
-
-              <S.SearchButton
-                type="button"
-                onClick={handleSearch}
-                disabled={!startDate || !endDate}
-              >
-                {t('조회')}
-              </S.SearchButton>
             </S.DateRange>
-
+            <BasicButton
+              variant="Solid_Navy_L"
+              onClick={handleSearch}
+              disabled={!startDate || !endDate}
+            >
+              {t('조회')}
+            </BasicButton>
             <S.Actions>
-              <BasicButton
+              {/* <BasicButton
                 variant="Solid_Navy_M"
                 onClick={handleDownload}
                 disabled={!shopCode}
               >
                 {t('내역 다운로드')}
-              </BasicButton>
+              </BasicButton> */}
             </S.Actions>
           </S.FilterBar>
 
           <S.TableCard>
-            <HourlySalesTable rows={hourlySales} isLoading={isFetching} />
+            <HourlySalesTable rows={hourlySales} />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

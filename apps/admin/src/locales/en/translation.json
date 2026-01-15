@@ -619,5 +619,6 @@
   "메뉴별 매출내역": "Menu Sales History",
   "시간별 매출내역": "Hourly Sales History",
   "카테고리 전체선택": "Select All Categories",
-  "매출/객수(*객수 미사용 시, 매출/테이블 수)": "Sales/Guest count (*If guest count is not used, Sales/Table count)"
+  "매출/객수(*객수 미사용 시, 매출/테이블 수)": "Sales/Guest count (*If guest count is not used, Sales/Table count)",
+  "총 테이블 수": "Total Tables"
 }
