@@ -120,7 +120,7 @@ export const PriceSelector = ({
       if (nextCount > currentUnpaidCount) {
         // 1인당 분배 가능한 금액 계산 (전체 금액 / 변경할 인원 수)
         const amountPerPerson = Math.floor(totalPrice / nextCount);
-        
+
         // 최소 금액(10원) 미만이면 인원 증가 불가
         if (amountPerPerson < MIN_AMOUNT_PER_PERSON) {
           return prevPersons;

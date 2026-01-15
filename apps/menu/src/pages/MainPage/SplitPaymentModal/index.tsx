@@ -84,7 +84,7 @@ const calculateTotalMenusPrice = (menus: ICartMenu[]): number => {
  * @param allPersons - 전체 인원 목록
  * @param remainingTotal - 남은 총 금액
  * @returns 계산된 분담 금액
- * 
+ *
  * 계산 로직:
  * 1. 커스텀 금액이 설정된 경우: 해당 금액 반환
  * 2. 커스텀 금액이 없는 경우: 남은 금액을 균등 분배
@@ -459,7 +459,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * 카드 결제 실행
    * @param paymentAmount - 결제할 금액
    * @param onSuccess - 결제 성공 시 실행할 콜백
-   * 
+   *
    * 실행 순서:
    * 1. 카드 결제 진행 모달 표시
    * 2. 할부 개월 수 결정 (5만원 미만은 일시불)
@@ -536,7 +536,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   /**
    * 결제 성공 처리
    * @param isAllPaid - 전체 결제 완료 여부
-   * 
+   *
    * - 부분 결제 시: 성공 메시지만 표시
    * - 전체 결제 완료 시: 주문 완료 모달 표시, 장바구니 비우기
    */
@@ -609,7 +609,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   /**
    * 메뉴별 결제 핸들러
    * 선택된 메뉴들의 금액을 결제하고 결제 완료 상태 업데이트
-   * 
+   *
    * 결제 완료 조건:
    * - 남은 메뉴를 모두 선택했거나
    * - 결제 후 남은 금액이 0원 이하
@@ -626,9 +626,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
     const selectedMenuIds = selectedMenus.map((menu) => menu.id);
     const paymentAmount = selectedMenuPrice;
-    
+
     // 전체 결제 완료 여부 판단
-    const isAllPaid = 
+    const isAllPaid =
       remainingMenus.length === selectedMenus.length ||
       remainingMenuPrice - paymentAmount <= 0;
 
@@ -643,7 +643,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   /**
    * 인원별 결제 핸들러
    * 선택된 인원들의 금액을 결제하고 결제 완료 상태 업데이트
-   * 
+   *
    * 결제 완료 조건:
    * - 남은 인원을 모두 선택했거나
    * - 결제 후 남은 금액이 0원 이하
@@ -668,9 +668,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       price: getPersonPrice(person, remainingPersons),
     }));
     const paymentAmount = selectedPersonPrice;
-    
+
     // 전체 결제 완료 여부 판단
-    const isAllPaid = 
+    const isAllPaid =
       remainingPersons.length === selectedPersons.length ||
       remainingPersonTotal - paymentAmount <= 0;
 
@@ -678,7 +678,8 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     await executePayment(paymentAmount, () => {
       // 결제 완료된 인원 ID 저장
       setPaidPersonIds(
-        (prevIds) => new Set([...prevIds, ...selectedPersonsData.map((p) => p.id)])
+        (prevIds) =>
+          new Set([...prevIds, ...selectedPersonsData.map((p) => p.id)])
       );
 
       // 결제 완료된 인원의 paidAmount 저장 (합계 계산용)
@@ -734,7 +735,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const handleInstallmentModalConfirm = (selectedMonths: number): void => {
     setSelectedInstallmentMonths(selectedMonths);
     setIsInstallmentModalOpen(false);
-    
+
     if (isPaymentByMenu) {
       handleMenuPayment();
     } else {

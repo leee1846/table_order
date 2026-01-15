@@ -48,6 +48,9 @@ interface IModalStore {
 
   /** 모든 모달 닫기 */
   closeAllModals: () => void;
+
+  /** 모든 모달이 닫혀있는지 확인 */
+  isAllModalsClosed: () => boolean;
 }
 
 const initialData = {
@@ -71,7 +74,7 @@ const initialData = {
 /**
  * 모달 상태를 중앙에서 관리하는 스토어
  */
-export const useModalStore = create<IModalStore>((set) => ({
+export const useModalStore = create<IModalStore>((set, get) => ({
   // 초기 상태
   data: initialData,
 
@@ -93,4 +96,23 @@ export const useModalStore = create<IModalStore>((set) => ({
     set({
       data: initialData,
     }),
+
+  // 모든 모달이 닫혀있는지 확인
+  isAllModalsClosed: () => {
+    const { data } = get();
+    return (
+      !data.isCartListOpened &&
+      !data.isCartMenuDetailModalOpened &&
+      !data.isOrderHistoryModalOpened &&
+      !data.isStaffCallModalOpened &&
+      !data.isLanguageSelectorModalOpened &&
+      data.openedMenuDetailSeq === null &&
+      !data.isPaymentsModalOpened &&
+      !data.isSplitPaymentModalOpened &&
+      !data.isCardPaymentInstallmentModalOpened &&
+      !data.isCardPaymentProgressModalOpened &&
+      !data.isOrderCompleteModalOpened &&
+      !data.isCashPaymentInducementModalOpened
+    );
+  },
 }));

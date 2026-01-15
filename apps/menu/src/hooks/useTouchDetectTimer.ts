@@ -11,6 +11,7 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useDeviceData } from '@/hooks/useDeviceData';
+import { useModalStore } from '@/stores/useModalStore';
 
 export const useTouchDetectTimer = () => {
   const { refresh: refreshShopDetailData } = useShopDetailData();
@@ -25,6 +26,7 @@ export const useTouchDetectTimer = () => {
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { showInitialPage } = useInitialPageStore();
   const { showCartReminder } = useCartReminderStore();
+  const { isAllModalsClosed } = useModalStore();
 
   useEffect(() => {
     const timerCallback = async () => {
@@ -76,6 +78,11 @@ export const useTouchDetectTimer = () => {
         return;
       }
 
+      // 모든 modal이 닫혀있는지 확인
+      if (!isAllModalsClosed()) {
+        return;
+      }
+
       globalTimerManager.clear(TIMER_KEYS.CART_ORDER_REMINDER);
 
       globalTimerManager.setTimeout(
@@ -104,6 +111,7 @@ export const useTouchDetectTimer = () => {
     };
   }, [
     cartData,
+    isAllModalsClosed,
     showCartReminder,
     showInitialPage,
     clearCart,
