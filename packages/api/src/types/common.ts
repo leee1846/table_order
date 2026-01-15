@@ -26,3 +26,9 @@ export interface ITokenPayload {
 }
 
 export type TVoidApiResponse = IApiResponse<null>;
+
+export interface IPaginationParams {
+  pageNumber: number;
+  pageSize: number;
+  searchWord: string;
+}

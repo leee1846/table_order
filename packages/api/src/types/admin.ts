@@ -1,11 +1,5 @@
 import { IApiResponse, TMemberRole } from './common';
 
-export interface IGetAdminShopListParams {
-  pageNumber: number;
-  pageSize: number;
-  searchWord: string;
-}
-
 export interface IGetAdminShopItem {
   memberId: string;
   shopSeq: number;
@@ -70,7 +64,7 @@ export type TGetAdminShopDetailResponse = IApiResponse<IGetAdminShopDetail>;
 export interface IGetAdminMember {
   memberUuid: string;
   memberId: string;
-  shopSeq: number;
+  shopSeq: number | null; // null인경우 점주가 아닌 관리자
   memberRole: TMemberRole;
   memberName: string;
   isDeleted: boolean;
@@ -80,6 +74,8 @@ export interface IGetAdminMember {
   createMemberUuid: string;
   updateDate: string;
   updateMemberUuid: string;
+  memberEmail: string;
+  memberDepartment: string;
 }
 
 export type TGetAdminMemberResponse = IApiResponse<IGetAdminMember>;
@@ -92,3 +88,9 @@ export interface ICreateAdminMemberRequest {
   isAgreed: boolean;
   memberTel: string;
 }
+
+export type TGetAdminMemberListResponse = IApiResponse<{
+  currentPageNumber: number;
+  totalPageNumber: number;
+  memberList: IGetAdminMember[];
+}>;

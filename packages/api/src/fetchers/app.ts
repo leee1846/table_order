@@ -3,12 +3,11 @@ import { ENDPOINTS } from '../cores/endpoints';
 import type {
   TAppType,
   TGetLatestAppVersionResponse,
-  IGetAppVersionListParams,
   TGetAppVersionListResponse,
   ICreateAppVersionParams,
   TGetAppVersionResponse,
 } from '../types/app';
-import type { TVoidApiResponse } from '../types/common';
+import type { IPaginationParams, TVoidApiResponse } from '../types/common';
 
 export const getLatestAppVersion = async (
   appType: TAppType
@@ -23,7 +22,7 @@ export const getLatestAppVersion = async (
 };
 
 export const getAppVersionList = async (
-  params: IGetAppVersionListParams
+  params: IPaginationParams
 ): Promise<TGetAppVersionListResponse> => {
   const axiosInstance = getAxiosInstance('private');
 

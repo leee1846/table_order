@@ -121,8 +121,7 @@ export const ENDPOINTS = {
     ONE_DAY_SALES: (shopCode: string) => `/sales/one-day-sales/${shopCode}`,
     DAILY_SALES: (shopCode: string) => `/sales/daily-sales/${shopCode}`,
     HOURLY_SALES: (shopCode: string) => `/sales/hourly-sales/${shopCode}`,
-    CALENDAR_SALES: (shopCode: string) =>
-      `/sales/calendar-sales/${shopCode}`,
+    CALENDAR_SALES: (shopCode: string) => `/sales/calendar-sales/${shopCode}`,
   },
 
   PAYMENT: {
@@ -136,5 +135,6 @@ export const ENDPOINTS = {
     SHOP_LIST: '/admin/shop/list',
     SHOP_DETAIL: (shopCode: string) => `/admin/shop/${shopCode}`,
     MEMBER: '/admin/member',
+    MEMBER_LIST: '/admin/member/list',
   },
 } as const;

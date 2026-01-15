@@ -20,12 +20,6 @@ export interface IAppVersion {
 
 export type TGetLatestAppVersionResponse = IApiResponse<IAppVersion>;
 
-export interface IGetAppVersionListParams {
-  pageNumber: number;
-  pageSize: number;
-  searchWord: string;
-}
-
 export interface IGetAppVersionListData {
   currentPageNumber: number;
   totalPageNumber: number;

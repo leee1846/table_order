@@ -252,5 +252,13 @@ export const queryKeys = {
       [...queryKeys.admin.all, 'shopDetail', shopCode] as const,
     member: (memberId: string) =>
       [...queryKeys.admin.all, 'member', memberId] as const,
+    memberList: (pageNumber: number, pageSize: number, searchWord: string) =>
+      [
+        ...queryKeys.admin.all,
+        'memberList',
+        pageNumber,
+        pageSize,
+        searchWord,
+      ] as const,
   },
 } as const;

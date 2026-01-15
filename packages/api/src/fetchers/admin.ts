@@ -1,17 +1,17 @@
 import { getAxiosInstance } from '../cores/axios';
 import { ENDPOINTS } from '../cores/endpoints';
 import type {
-  IGetAdminShopListParams,
   TGetAdminShopDetailResponse,
   TGetAdminShopListResponse,
   IGetAdminShopDetail,
   TGetAdminMemberResponse,
   ICreateAdminMemberRequest,
+  TGetAdminMemberListResponse,
 } from '../types/admin';
-import { TVoidApiResponse } from '../types/common';
+import { IPaginationParams, TVoidApiResponse } from '../types/common';
 
 export const getAdminShopList = async (
-  params: IGetAdminShopListParams
+  params: IPaginationParams
 ): Promise<TGetAdminShopListResponse> => {
   const axiosInstance = getAxiosInstance('private');
 
@@ -89,6 +89,19 @@ export const updateAdminMember = async (
     method: 'PUT',
     url: ENDPOINTS.ADMIN.MEMBER,
     data,
+  });
+
+  return response.data;
+};
+
+export const getAdminMemberList = async (
+  params: IPaginationParams
+): Promise<TGetAdminMemberListResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetAdminMemberListResponse>({
+    method: 'GET',
+    url: ENDPOINTS.ADMIN.MEMBER_LIST,
+    params,
   });
 
   return response.data;

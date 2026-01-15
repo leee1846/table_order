@@ -1,15 +1,12 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { getAdminShopList } from '../../fetchers/admin';
 import { queryKeys } from '../queryKeys';
-import {
-  IGetAdminShopListParams,
-  TGetAdminShopListResponse,
-} from '../../types/admin';
+import { TGetAdminShopListResponse } from '../../types/admin';
 import { AxiosError } from 'axios';
-import { IApiError } from '../../types/common';
+import { IApiError, IPaginationParams } from '../../types/common';
 
 export const useGetAdminShopList = (
-  params: IGetAdminShopListParams,
+  params: IPaginationParams,
   options?: Omit<
     UseQueryOptions<TGetAdminShopListResponse, AxiosError<IApiError>>,
     'queryKey' | 'queryFn'
