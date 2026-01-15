@@ -37,7 +37,7 @@ export const SplitPaymentInstallmentModal = ({
   };
 
   return (
-    <ModalBackground position="center" onClick={onClose}>
+    <ModalBackground position="center">
       <DialogContainer onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose} aria-label={t('닫기')}>
           <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />

@@ -20,7 +20,7 @@ export const CardPaymentProgressDialog = ({
   }
 
   return (
-    <ModalBackground position="center" onClick={onClose}>
+    <ModalBackground position="center">
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
         <S.CloseButton onClick={onClose} aria-label="닫기">
           <CloseIcon width={32} height={32} color={colors.grey[700]} />
