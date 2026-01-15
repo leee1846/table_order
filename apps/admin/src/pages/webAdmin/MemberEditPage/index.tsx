@@ -97,6 +97,8 @@ export const AdminEditPage = () => {
       memberName: formData.memberName,
       isAgreed: true,
       memberTel: formData.memberTel,
+      memberEmail: formData.memberEmail,
+      memberDepartment: formData.memberDepartment,
     };
 
     await updateAdminMutation.mutateAsync(params);
