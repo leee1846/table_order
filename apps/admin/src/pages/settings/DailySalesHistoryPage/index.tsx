@@ -93,7 +93,11 @@ export const DailySalesHistoryPage = () => {
 
   const formatCalendarText = (date: string) => {
     if (!date) return t('날짜 선택');
-    return formatDateTime(date, 'YYYY년 MM월 DD일');
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
   };
 
   return (
