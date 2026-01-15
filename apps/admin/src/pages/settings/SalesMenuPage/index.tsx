@@ -91,8 +91,8 @@ export const SalesMenuPage = () => {
               onClick={() => setShowCalender(true)}
             >
               <CalendarMonthIcon
-                width={32}
-                height={32}
+                width={25}
+                height={25}
                 color={theme.colors.grey[700]}
               />
 
@@ -110,9 +110,9 @@ export const SalesMenuPage = () => {
           </S.Filters>
 
           <S.TableWrapper>
-            <Summary summary={menuSalesSummary} isLoading={isFetching} />
+            <Summary summary={menuSalesSummary} />
 
-            <Table items={menuSalesList} isLoading={isFetching} />
+            <Table items={menuSalesList} />
           </S.TableWrapper>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

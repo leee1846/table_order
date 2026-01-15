@@ -4,10 +4,8 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 40px 24px 40px 30px;
+  padding: 40px 24px 0 30px;
   flex: 1;
-  min-height: 0;
 `;
 
 export const Title = styled.div`
@@ -16,6 +14,7 @@ export const Title = styled.div`
   gap: 11px;
   color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.MT_1}
+  margin-bottom: 20px;
 
   & > div {
     width: 0.125rem;
@@ -34,18 +33,19 @@ export const Filters = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
+  margin-bottom: 12px;
 `;
 
 export const CalendarButton = styled.button`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border-radius: 12px;
   border: 0.5px solid ${theme.colors.grey[300]};
   background-color: ${theme.colors.white};
   cursor: pointer;
-  margin-left: 20px;
 `;
 
 export const CalendarText = styled.span`

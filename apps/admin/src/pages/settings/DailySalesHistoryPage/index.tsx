@@ -126,16 +126,14 @@ export const DailySalesHistoryPage = () => {
                 />
                 <S.DateText>{formatCalendarText(endDate)}</S.DateText>
               </S.DateButton>
-
-              <BasicButton
-                variant="Solid_Navy_L"
-                onClick={handleSearch}
-                disabled={!startDate || !endDate}
-              >
-                {t('조회')}
-              </BasicButton>
             </S.DateRange>
-
+            <BasicButton
+              variant="Solid_Navy_L"
+              onClick={handleSearch}
+              disabled={!startDate || !endDate}
+            >
+              {t('조회')}
+            </BasicButton>
             <S.Actions>
               {/* {!CapacitorApp.isNative() && (
                 <BasicButton

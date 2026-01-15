@@ -166,8 +166,8 @@ export const DailySalesPage = () => {
               onClick={() => setShowCalendar(true)}
             >
               <CalendarMonthIcon
-                width={28}
-                height={28}
+                width={25}
+                height={25}
                 color={theme.colors.grey[700]}
               />
               <S.CalendarText>{displayDate}</S.CalendarText>

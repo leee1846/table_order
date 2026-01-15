@@ -4,7 +4,6 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
   padding: 40px 24px 24px 30px;
   flex: 1;
 `;
@@ -13,9 +12,8 @@ export const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 `;
 
 export const Title = styled.div`
@@ -53,7 +51,6 @@ export const CalendarButton = styled.button`
   border: 0.5px solid ${theme.colors.grey[300]};
   background-color: ${theme.colors.white};
   cursor: pointer;
-  margin-left: 20px;
 `;
 
 export const CalendarText = styled.span`

@@ -4,8 +4,8 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 export const Container = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 40px;
+  gap: 12px;
+  margin-bottom: 20px;
 `;
 
 export const BestMenu = styled.div`
@@ -62,7 +62,6 @@ export const TotalMenuInfo = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   & > p:first-of-type {
     ${TYPOGRAPHY.ST_4}
     color: ${theme.colors.grey[600]};

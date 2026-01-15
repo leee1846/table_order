@@ -35,7 +35,7 @@ const getBestMenu = (menuSalesList: IMenuSalesSummaryItem[] | undefined) => {
   }, null);
 };
 
-export const Summary = ({ summary, isLoading }: Props) => {
+export const Summary = ({ summary }: Props) => {
   const totalMenuItemsSold = summary?.totalMenuItemsSold ?? 0;
   const totalSalesAmount = summary?.totalSalesAmount ?? 0;
   const bestMenu = getBestMenu(summary?.menuSalesList);
@@ -44,24 +44,13 @@ export const Summary = ({ summary, isLoading }: Props) => {
     <S.Container>
       <S.BestMenu>
         <img src={bestOnIcon} alt={t('베스트')} />
-        <S.BestMenuTitle>
-          {t('판매 1위 메뉴')}
-        </S.BestMenuTitle>
+        <S.BestMenuTitle>{t('판매 1위 메뉴')}</S.BestMenuTitle>
         <S.BestMenuInfo>
+          <p>{bestMenu?.menuName ?? t('데이터가 없습니다.')}</p>
           <p>
-            {isLoading
-              ? t('집계 중...')
-              : (bestMenu?.menuName ??
-                t(
-                  '데이터가 없습니다.'
-                ))}
-          </p>
-          <p>
-            {isLoading
-              ? '-'
-              : bestMenu
-                ? `${formatCurrency(bestMenu.totalPrice)}원 / ${formatCurrency(bestMenu.quantity)}건`
-                : '-'}
+            {bestMenu
+              ? `${formatCurrency(bestMenu.totalPrice)}원 / ${formatCurrency(bestMenu.quantity)}건`
+              : '-'}
           </p>
         </S.BestMenuInfo>
       </S.BestMenu>
@@ -70,13 +59,13 @@ export const Summary = ({ summary, isLoading }: Props) => {
         <S.TotalMenuInfo>
           <p>{t('총 판매 메뉴')}</p>
           <S.TotalMenuPrice color={theme.colors.grey[600]}>
-            {isLoading ? '-' : `${formatCurrency(totalMenuItemsSold)}건`}
+            {`${formatCurrency(totalMenuItemsSold)}건`}
           </S.TotalMenuPrice>
         </S.TotalMenuInfo>
         <S.TotalMenuInfo>
           <p>{t('총 판매 금액')}</p>
           <S.TotalMenuPrice color={theme.colors.grey[800]}>
-            {isLoading ? '-' : `${formatCurrency(totalSalesAmount)}원`}
+            {`${formatCurrency(totalSalesAmount)}원`}
           </S.TotalMenuPrice>
         </S.TotalMenuInfo>
       </S.TotalMenu>
