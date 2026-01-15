@@ -5,3 +5,4 @@ export * from './useGetAdminMember';
 export * from './useGetAdminMemberList';
 export * from './usePostAdminMember';
 export * from './usePutAdminMember';
+export * from './useDeleteAdminMember';

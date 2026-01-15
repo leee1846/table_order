@@ -8,7 +8,11 @@ import {
   openConfirmDialog,
 } from '@repo/feature/utils';
 import { ROUTES } from '@/constants/routes';
-import { useGetAdminMember, usePutAdminMember } from '@repo/api/queries';
+import {
+  useGetAdminMember,
+  usePutAdminMember,
+  useDeleteAdminMember,
+} from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import { AxiosError } from '@repo/api/axios';
 import type { MembersFormData } from '@/feature/AdminWeb/Members/constants';
@@ -56,6 +60,7 @@ export const MembersEditPage = () => {
   });
 
   const updateAdminMutation = usePutAdminMember();
+  const deleteAdminMutation = useDeleteAdminMember();
 
   // 404 에러 처리
   useEffect(() => {
@@ -79,7 +84,7 @@ export const MembersEditPage = () => {
   }, [data]);
 
   const handleDelete = async () => {
-    if (!initialData?.id) {
+    if (!memberId) {
       toast('관리자 ID가 없습니다.');
       return;
     }
@@ -90,8 +95,9 @@ export const MembersEditPage = () => {
       primaryText: '확인',
       secondaryText: '취소',
       onConfirm: async () => {
-        // TODO: 삭제 API가 없으므로 추후 구현
-        toast('삭제 기능은 아직 구현되지 않았습니다.');
+        await deleteAdminMutation.mutateAsync(memberId);
+        toast('삭제가 완료되었습니다.');
+        navigate(ROUTES.ADMIN_WEB.MEMBERS.generate());
       },
     });
   };

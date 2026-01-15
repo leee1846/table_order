@@ -106,3 +106,15 @@ export const getAdminMemberList = async (
 
   return response.data;
 };
+
+export const deleteAdminMember = async (
+  memberId: string
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'DELETE',
+    url: ENDPOINTS.ADMIN.MEMBER,
+    params: { memberId },
+  });
+  return response.data;
+};

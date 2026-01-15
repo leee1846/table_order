@@ -1,5 +1,6 @@
 import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
+import { theme } from '@repo/ui';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import type { IGetAdminMember } from '@repo/api/types';
@@ -40,7 +41,13 @@ export const Table = ({ admins }: Props) => {
         <td>{admin.memberTel ?? '_'}</td>
         <td>{admin.memberDepartment ?? '_'}</td>
         <td>{getRoleLabel(admin.memberRole)}</td>
-        <td>{admin.isDeleted ? 'Y' : 'N'}</td>
+        <td
+          style={{
+            color: admin.isDeleted ? theme.colors.semantic[500] : 'inherit',
+          }}
+        >
+          {admin.isDeleted ? 'O' : 'X'}
+        </td>
         <td>
           <div
             style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
