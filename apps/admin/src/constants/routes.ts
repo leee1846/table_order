@@ -29,21 +29,21 @@ export const ROUTES = {
       path: 'mypage',
       generate: () => '/admin/mypage',
     },
-    APP_HISTORY: {
-      path: 'app-history',
-      generate: () => '/admin/app-history',
+    APP_HISTORIES: {
+      path: 'app-histories',
+      generate: () => '/admin/app-histories',
     },
-    APP_HISTORY_NEW: {
-      path: 'app-history/new',
-      generate: () => '/admin/app-history/new',
+    APP_HISTORIES_NEW: {
+      path: 'app-histories/new',
+      generate: () => '/admin/app-histories/new',
     },
-    APP_HISTORY_EDIT: {
-      path: 'app-history/:id/edit',
-      generate: (id: string | number) => `/admin/app-history/${id}/edit`,
+    APP_HISTORIES_EDIT: {
+      path: 'app-histories/:id/edit',
+      generate: (id: string | number) => `/admin/app-histories/${id}/edit`,
     },
-    APP_HISTORY_DETAIL: {
-      path: 'app-history/:id',
-      generate: (id: string | number) => `/admin/app-history/${id}`,
+    APP_HISTORIES_DETAIL: {
+      path: 'app-histories/:id',
+      generate: (id: string | number) => `/admin/app-histories/${id}`,
     },
     NOTICES: {
       path: 'notices',
@@ -61,17 +61,17 @@ export const ROUTES = {
       path: 'notices/:id',
       generate: (id: string | number) => `/admin/notices/${id}`,
     },
-    ADMIN_MANAGE: {
-      path: 'admin-manage',
-      generate: () => '/admin/admin-manage',
+    MEMBERS: {
+      path: 'members',
+      generate: () => '/admin/members',
     },
-    ADMIN_NEW: {
-      path: 'admin-manage/new',
-      generate: () => '/admin/admin-manage/new',
+    MEMBERS_NEW: {
+      path: 'members/new',
+      generate: () => '/admin/members/new',
     },
-    ADMIN_EDIT: {
-      path: 'admin-manage/:memberUuid/edit',
-      generate: (memberUuid: string) => `/admin/admin-manage/${memberUuid}/edit`,
+    MEMBERS_EDIT: {
+      path: 'members/:memberId/edit',
+      generate: (memberId: string) => `/admin/members/${memberId}/edit`,
     },
   },
 

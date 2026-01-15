@@ -43,7 +43,7 @@ export const StoresSidebarLayout = () => {
       menus.push({
         id: 'admin-manage',
         label: '관리자 관리',
-        path: ROUTES.ADMIN_WEB.ADMIN_MANAGE.generate(),
+        path: ROUTES.ADMIN_WEB.MEMBERS.generate(),
       });
     }
 
@@ -61,10 +61,10 @@ export const StoresSidebarLayout = () => {
         matchPattern: '/admin/notices/*',
       },
       {
-        id: 'app-history',
+        id: 'app-histories',
         label: '앱 히스토리',
-        path: ROUTES.ADMIN_WEB.APP_HISTORY.generate(),
-        matchPattern: '/admin/app-history/*',
+        path: ROUTES.ADMIN_WEB.APP_HISTORIES.generate(),
+        matchPattern: '/admin/app-histories/*',
       }
     );
 

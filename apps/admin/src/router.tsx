@@ -48,14 +48,14 @@ const NotFoundPage = lazy(() =>
 // ============================================================================
 // Lazy Loaded Components - Admin Web Pages
 // ============================================================================
-const StoreNewPage = lazy(() =>
-  import('@/pages/webAdmin/StoreNewPage').then((module) => ({
-    default: module.StoreNewPage,
+const StoresNewPage = lazy(() =>
+  import('@/pages/webAdmin/StoresNewPage').then((module) => ({
+    default: module.StoresNewPage,
   }))
 );
-const StoreEditPage = lazy(() =>
-  import('@/pages/webAdmin/StoreEditPage').then((module) => ({
-    default: module.StoreEditPage,
+const StoresEditPage = lazy(() =>
+  import('@/pages/webAdmin/StoresEditPage').then((module) => ({
+    default: module.StoresEditPage,
   }))
 );
 const AdminMyPage = lazy(() =>
@@ -63,59 +63,59 @@ const AdminMyPage = lazy(() =>
     default: module.AdminMyPage,
   }))
 );
-const AppHistoryPage = lazy(() =>
-  import('@/pages/webAdmin/AppHistoryPage').then((module) => ({
-    default: module.AppHistoryPage,
+const AppHistoriesPage = lazy(() =>
+  import('@/pages/webAdmin/AppHistoriesPage').then((module) => ({
+    default: module.AppHistoriesPage,
   }))
 );
-const AppHistoryNewPage = lazy(() =>
-  import('@/pages/webAdmin/AppHistoryNewPage').then((module) => ({
-    default: module.AppHistoryNewPage,
+const AppHistoriesNewPage = lazy(() =>
+  import('@/pages/webAdmin/AppHistoriesNewPage').then((module) => ({
+    default: module.AppHistoriesNewPage,
   }))
 );
-const AppHistoryEditPage = lazy(() =>
-  import('@/pages/webAdmin/AppHistoryEditPage').then((module) => ({
-    default: module.AppHistoryEditPage,
+const AppHistoriesEditPage = lazy(() =>
+  import('@/pages/webAdmin/AppHistoriesEditPage').then((module) => ({
+    default: module.AppHistoriesEditPage,
   }))
 );
-const AppHistoryDetailPage = lazy(() =>
-  import('@/pages/webAdmin/AppHistoryDetailPage').then((module) => ({
-    default: module.AppHistoryDetailPage,
+const AppHistoriesDetailPage = lazy(() =>
+  import('@/pages/webAdmin/AppHistoriesDetailPage').then((module) => ({
+    default: module.AppHistoriesDetailPage,
   }))
 );
 const AdminNoticesPage = lazy(() =>
-  import('@/pages/webAdmin/NoticePage').then((module) => ({
-    default: module.AdminNoticesPage,
+  import('@/pages/webAdmin/NoticesPage').then((module) => ({
+    default: module.NoticesPage,
   }))
 );
-const NoticeNewPage = lazy(() =>
-  import('@/pages/webAdmin/NoticeNewPage').then((module) => ({
-    default: module.NoticeNewPage,
+const NoticesNewPage = lazy(() =>
+  import('@/pages/webAdmin/NoticesNewPage').then((module) => ({
+    default: module.NoticesNewPage,
   }))
 );
-const NoticeEditPage = lazy(() =>
-  import('@/pages/webAdmin/NoticeEditPage').then((module) => ({
-    default: module.NoticeEditPage,
+const NoticesEditPage = lazy(() =>
+  import('@/pages/webAdmin/NoticesEditPage').then((module) => ({
+    default: module.NoticesEditPage,
   }))
 );
-const NoticeDetailPage = lazy(() =>
-  import('@/pages/webAdmin/NoticeDetailPage').then((module) => ({
-    default: module.NoticeDetailPage,
+const NoticesDetailPage = lazy(() =>
+  import('@/pages/webAdmin/NoticesDetailPage').then((module) => ({
+    default: module.NoticesDetailPage,
   }))
 );
-const AdminManagePage = lazy(() =>
-  import('@/pages/webAdmin/AdminManagePage').then((module) => ({
-    default: module.AdminManagePage,
+const MembersPage = lazy(() =>
+  import('@/pages/webAdmin/MembersPage').then((module) => ({
+    default: module.MembersPage,
   }))
 );
-const AdminNewPage = lazy(() =>
-  import('@/pages/webAdmin/MemberNewPage').then((module) => ({
-    default: module.AdminNewPage,
+const MembersNewPage = lazy(() =>
+  import('@/pages/webAdmin/MembersNewPage').then((module) => ({
+    default: module.MembersNewPage,
   }))
 );
-const AdminEditPage = lazy(() =>
-  import('@/pages/webAdmin/MemberEditPage').then((module) => ({
-    default: module.AdminEditPage,
+const MembersEditPage = lazy(() =>
+  import('@/pages/webAdmin/MembersEditPage').then((module) => ({
+    default: module.MembersEditPage,
   }))
 );
 
@@ -426,12 +426,12 @@ const createAdminWebRoutes = () => [
   {
     path: ROUTES.ADMIN_WEB.STORES_NEW.path,
     loader: requireAdminWebLoader,
-    element: createLazyRoute(StoreNewPage),
+    element: createLazyRoute(StoresNewPage),
   },
   {
     path: ROUTES.ADMIN_WEB.STORES_EDIT.path,
     loader: requireAdminWebLoader,
-    element: createLazyRoute(StoreEditPage),
+    element: createLazyRoute(StoresEditPage),
   },
   {
     path: ROUTES.ADMIN_WEB.MYPAGE.path,
@@ -439,24 +439,24 @@ const createAdminWebRoutes = () => [
     element: createLazyRoute(AdminMyPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.APP_HISTORY.path,
+    path: ROUTES.ADMIN_WEB.APP_HISTORIES.path,
     loader: requireAdminWebLoader,
-    element: createLazyRoute(AppHistoryPage),
+    element: createLazyRoute(AppHistoriesPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.APP_HISTORY_NEW.path,
+    path: ROUTES.ADMIN_WEB.APP_HISTORIES_NEW.path,
     loader: requireAdminWebLoader,
-    element: createLazyRoute(AppHistoryNewPage),
+    element: createLazyRoute(AppHistoriesNewPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.APP_HISTORY_EDIT.path,
+    path: ROUTES.ADMIN_WEB.APP_HISTORIES_EDIT.path,
     loader: requireAdminWebLoader,
-    element: createLazyRoute(AppHistoryEditPage),
+    element: createLazyRoute(AppHistoriesEditPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.APP_HISTORY_DETAIL.path,
+    path: ROUTES.ADMIN_WEB.APP_HISTORIES_DETAIL.path,
     loader: requireAdminWebLoader,
-    element: createLazyRoute(AppHistoryDetailPage),
+    element: createLazyRoute(AppHistoriesDetailPage),
   },
   {
     path: ROUTES.ADMIN_WEB.NOTICES.path,
@@ -466,32 +466,32 @@ const createAdminWebRoutes = () => [
   {
     path: ROUTES.ADMIN_WEB.NOTICES_NEW.path,
     loader: requireAdminWebLoader,
-    element: createLazyRoute(NoticeNewPage),
+    element: createLazyRoute(NoticesNewPage),
   },
   {
     path: ROUTES.ADMIN_WEB.NOTICES_EDIT.path,
     loader: requireAdminWebLoader,
-    element: createLazyRoute(NoticeEditPage),
+    element: createLazyRoute(NoticesEditPage),
   },
   {
     path: ROUTES.ADMIN_WEB.NOTICES_DETAIL.path,
     loader: requireAdminWebLoader,
-    element: createLazyRoute(NoticeDetailPage),
+    element: createLazyRoute(NoticesDetailPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.ADMIN_MANAGE.path,
+    path: ROUTES.ADMIN_WEB.MEMBERS.path,
     loader: requireMasterLoader,
-    element: createLazyRoute(AdminManagePage),
+    element: createLazyRoute(MembersPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.ADMIN_NEW.path,
+    path: ROUTES.ADMIN_WEB.MEMBERS_NEW.path,
     loader: requireMasterLoader,
-    element: createLazyRoute(AdminNewPage),
+    element: createLazyRoute(MembersNewPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.ADMIN_EDIT.path,
+    path: ROUTES.ADMIN_WEB.MEMBERS_EDIT.path,
     loader: requireMasterLoader,
-    element: createLazyRoute(AdminEditPage),
+    element: createLazyRoute(MembersEditPage),
   },
 ];
 

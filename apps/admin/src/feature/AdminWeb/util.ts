@@ -4,9 +4,9 @@ import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
 } from '@repo/api/types';
-import type { AppHistoryFormData } from './AppHistoryManage/constants';
-import type { NoticeFormData } from './NoticeManage/constants';
-import type { AdminFormData } from './MemberManage/constants';
+import type { AppHistoriesFormData } from './AppHistories/constants';
+import type { NoticesFormData } from './Notices/constants';
+import type { MembersFormData } from './Members/constants';
 
 export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
   if (!shopData.shopName || !shopData.shopName.trim()) {
@@ -58,37 +58,37 @@ export const validateMemberData = (
   return true;
 };
 
-export const validateAppHistoryData = (
-  appHistoryData: AppHistoryFormData
+export const validateAppHistoriesData = (
+  appHistoriesData: AppHistoriesFormData
 ): boolean => {
-  if (!appHistoryData.type || !appHistoryData.type.trim()) {
+  if (!appHistoriesData.type || !appHistoriesData.type.trim()) {
     toast('app 구분을 선택해주세요.');
     return false;
   }
 
-  if (!appHistoryData.title || !appHistoryData.title.trim()) {
+  if (!appHistoriesData.title || !appHistoriesData.title.trim()) {
     toast('제목을 입력해주세요.');
     return false;
   }
 
-  if (!appHistoryData.deployDateTime || !appHistoryData.deployDateTime.trim()) {
+  if (!appHistoriesData.deployDateTime || !appHistoriesData.deployDateTime.trim()) {
     toast('배포일시를 선택해주세요.');
     return false;
   }
 
   // 배포일시에 시간이 포함되어 있는지 확인 (YYYY-MM-DD HH:mm:ss 형식)
-  const dateTimeParts = appHistoryData.deployDateTime.trim().split(' ');
+  const dateTimeParts = appHistoriesData.deployDateTime.trim().split(' ');
   if (dateTimeParts.length < 2 || !dateTimeParts[1]) {
     toast('배포 시간을 선택해주세요.');
     return false;
   }
 
-  if (!appHistoryData.version || !appHistoryData.version.trim()) {
+  if (!appHistoriesData.version || !appHistoriesData.version.trim()) {
     toast('버전을 입력해주세요.');
     return false;
   }
 
-  if (!appHistoryData.content || !appHistoryData.content.trim()) {
+  if (!appHistoriesData.content || !appHistoriesData.content.trim()) {
     toast('내용을 입력해주세요.');
     return false;
   }
@@ -96,18 +96,18 @@ export const validateAppHistoryData = (
   return true;
 };
 
-export const validateNoticeData = (noticeData: NoticeFormData): boolean => {
-  if (!noticeData.boardType || !noticeData.boardType.trim()) {
+export const validateNoticesData = (noticesData: NoticesFormData): boolean => {
+  if (!noticesData.boardType || !noticesData.boardType.trim()) {
     toast('유형을 선택해주세요.');
     return false;
   }
 
-  if (!noticeData.title || !noticeData.title.trim()) {
+  if (!noticesData.title || !noticesData.title.trim()) {
     toast('제목을 입력해주세요.');
     return false;
   }
 
-  if (!noticeData.content || !noticeData.content.trim()) {
+  if (!noticesData.content || !noticesData.content.trim()) {
     toast('내용을 입력해주세요.');
     return false;
   }
@@ -115,33 +115,33 @@ export const validateNoticeData = (noticeData: NoticeFormData): boolean => {
   return true;
 };
 
-export const validateAdminData = (adminData: AdminFormData): boolean => {
-  if (!adminData.memberName || !adminData.memberName.trim()) {
+export const validateMembersData = (membersData: MembersFormData): boolean => {
+  if (!membersData.memberName || !membersData.memberName.trim()) {
     toast('이름을 입력해주세요.');
     return false;
   }
 
-  if (!adminData.memberEmail || !adminData.memberEmail.trim()) {
+  if (!membersData.memberEmail || !membersData.memberEmail.trim()) {
     toast('이메일을 입력해주세요.');
     return false;
   }
 
-  if (!isValidEmail(adminData.memberEmail)) {
+  if (!isValidEmail(membersData.memberEmail)) {
     toast('올바른 이메일 형식을 입력해주세요.');
     return false;
   }
 
-  if (!adminData.memberTel || !adminData.memberTel.trim()) {
+  if (!membersData.memberTel || !membersData.memberTel.trim()) {
     toast('핸드폰번호를 입력해주세요.');
     return false;
   }
 
-  if (!adminData.memberDepartment || !adminData.memberDepartment.trim()) {
+  if (!membersData.memberDepartment || !membersData.memberDepartment.trim()) {
     toast('소속을 입력해주세요.');
     return false;
   }
 
-  if (!adminData.memberRole) {
+  if (!membersData.memberRole) {
     toast('권한을 선택해주세요.');
     return false;
   }
