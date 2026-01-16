@@ -30,7 +30,7 @@ const SettingSidebar = lazy(() =>
   }))
 );
 const SettingsAccessGuard = lazy(() =>
-  import('@/pages/settings/SettingsAccessGuard').then((module) => ({
+  import('@/feature/SettingsAccessGuard').then((module) => ({
     default: module.SettingsAccessGuard,
   }))
 );

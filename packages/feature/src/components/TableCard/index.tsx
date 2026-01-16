@@ -36,15 +36,15 @@ export const TableCard = ({
     table.batteryLevel !== null && table.batteryLevel !== undefined;
   const batteryLevel = table.batteryLevel ?? 0;
 
-  const batteryIcon = hasBatteryInfo ? (
-    batteryLevel > 51 ? (
-      <FullBatteryIcon color={colors.grey[800]} />
-    ) : batteryLevel <= 50 && batteryLevel > 20 ? (
-      <HalfBatteryIcon color={colors.grey[800]} />
-    ) : batteryLevel <= 20 && batteryLevel > 0 ? (
-      <LowBatteryIcon color={colors.semantic[400]} />
-    ) : null
-  ) : null;
+  // const batteryIcon = hasBatteryInfo ? (
+  //   batteryLevel > 51 ? (
+  //     <FullBatteryIcon color={colors.grey[800]} />
+  //   ) : batteryLevel <= 50 && batteryLevel > 20 ? (
+  //     <HalfBatteryIcon color={colors.grey[800]} />
+  //   ) : batteryLevel <= 20 && batteryLevel > 0 ? (
+  //     <LowBatteryIcon color={colors.semantic[400]} />
+  //   ) : null
+  // ) : null;
 
   const displayAmount = table.remainingAmount ?? table.totalAmount;
 
@@ -69,7 +69,8 @@ export const TableCard = ({
       </S.CardContent>
 
       <S.CardFooter>
-        <div>{batteryIcon}</div>
+        {/* <div>{batteryIcon}</div> */}
+        <div></div>
         {!table.menuItems ? (
           <S.StatusText>{t('빈 테이블')}</S.StatusText>
         ) : (

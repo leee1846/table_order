@@ -5,7 +5,7 @@ import {
   BasicButton,
   CheckButton,
 } from '@repo/ui/components';
-import { CloseIcon, FullBatteryIcon } from '@repo/ui/icons';
+import { CloseIcon /* , FullBatteryIcon */ } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import {
@@ -271,7 +271,7 @@ export const DeviceListDialog = ({
                     </S.DeviceHeaderCell>
                   </th>
                   <th>{t('테이블')}</th>
-                  <th>{t('배터리')}</th>
+                  {/* <th>{t('배터리')}</th> */}
                   <th>{t('Wi-Fi 신호')}</th>
                   <th>{t('IP')}</th>
                   <th>{t('버전')}</th>
@@ -289,7 +289,7 @@ export const DeviceListDialog = ({
                 {isInitialLoading ? (
                   <tr style={{ height: '100%' }}>
                     <td
-                      colSpan={7}
+                      colSpan={6}
                       style={{
                         padding: '24px',
                         textAlign: 'center',
@@ -302,7 +302,7 @@ export const DeviceListDialog = ({
                 ) : deviceItems.length === 0 ? (
                   <tr style={{ height: '100%' }}>
                     <td
-                      colSpan={7}
+                      colSpan={6}
                       style={{
                         padding: '24px',
                         textAlign: 'center',
@@ -330,7 +330,7 @@ export const DeviceListDialog = ({
                         </S.DeviceCell>
                       </td>
                       <td>{device.table}</td>
-                      <td>
+                      {/* <td>
                         <S.BatteryColumn>
                           <FullBatteryIcon
                             width={24}
@@ -343,7 +343,7 @@ export const DeviceListDialog = ({
                               : '-'}
                           </span>
                         </S.BatteryColumn>
-                      </td>
+                      </td> */}
                       <td>{formatWifiSignal(device.wifiSignal)}</td>
                       <td style={{ color: colors.grey[500] }}>{device.ip}</td>
                       <td>
