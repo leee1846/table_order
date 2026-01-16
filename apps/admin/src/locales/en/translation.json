@@ -634,5 +634,6 @@
   "정렬 선택": "Select Sort",
   "단가": "Unit Price",
   "판매수": "Sales Count",
-  "시간대별 매출내역": "Sales History by Time Period"
+  "시간대별 매출내역": "Sales History by Time Period",
+  "메뉴 품절 자동 해제": "Auto-release sold-out menu"
 }

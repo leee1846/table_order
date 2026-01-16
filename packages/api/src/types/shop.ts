@@ -131,6 +131,7 @@ export interface IShopSetting {
   vanId: string;
   useLocale: boolean;
   isSalesDetailLocked: boolean;
+  useSoldOutAutoRestore: boolean;
 }
 
 export type TNetworkType = 'AUTO' | 'LAN' | 'WIFI';

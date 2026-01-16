@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { IShopSetting, TShopPosCode } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
-import { Dropdown } from '@repo/ui/components';
+import { Dropdown, ToggleButton } from '@repo/ui/components';
 import { ConnectionIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { MiscellaneousChange } from '../types';
@@ -23,6 +23,7 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
     [t]
   );
   const [shopPosCode, setShopPosCode] = useState('NONE');
+  const [useSoldOutAutoRestore, setUseSoldOutAutoRestore] = useState(false);
 
   useEffect(() => {
     if (!shopSetting) {
@@ -30,6 +31,7 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
     }
 
     setShopPosCode(shopSetting.shopPosCode ?? '');
+    setUseSoldOutAutoRestore(shopSetting.useSoldOutAutoRestore ?? false);
   }, [shopSetting]);
 
   useEffect(() => {
@@ -41,9 +43,11 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
       shopSetting: {
         shopSeq: shopSetting?.shopSeq,
         shopPosCode: shopPosCode as TShopPosCode,
+        useSoldOutAutoRestore:
+          shopPosCode === 'OKPOS' ? useSoldOutAutoRestore : false,
       },
     });
-  }, [onChange, shopPosCode, shopSetting?.shopSeq]);
+  }, [onChange, shopPosCode, useSoldOutAutoRestore, shopSetting?.shopSeq]);
 
   return (
     <SectionWrapper
@@ -66,6 +70,16 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
           }}
         />
       </UIStyles.setting.ContentLayout>
+      {shopPosCode === 'OKPOS' && (
+        <UIStyles.setting.ContentLayout>
+          <p>{t('메뉴 품절 자동 해제')}</p>
+          <ToggleButton
+            size="M"
+            isOn={useSoldOutAutoRestore}
+            onChange={() => setUseSoldOutAutoRestore(!useSoldOutAutoRestore)}
+          />
+        </UIStyles.setting.ContentLayout>
+      )}
     </SectionWrapper>
   );
 };
