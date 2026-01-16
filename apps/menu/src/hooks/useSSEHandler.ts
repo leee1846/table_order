@@ -245,7 +245,7 @@ export const useSSEHandler = () => {
   // 모든 handler 함수들을 ref로 관리하여 dependency 변경 방지
   // useEffect dependency에 포함하지 않고도 최신 핸들러 함수를 참조할 수 있도록 함
   const handlersRef = useRef({
-    handleOrderMessage: (shopCode: string, message: ISseMessage) => {
+    handleOrderMessage: async (shopCode: string, message: ISseMessage) => {
       // 현재 테이블 목록 먼저 새로고침
       handlersRef.current.refetchCurrentTableList(shopCode);
 
@@ -291,7 +291,31 @@ export const useSSEHandler = () => {
       }
 
       // 주문 내역 새로고침 (sseUpdatedAt 전달하여 서버에서 해당 시점 이후 데이터만 조회)
-      refreshTableOrderHistoriesData(sseUpdatedAt);
+      const refreshResult = await refreshTableOrderHistoriesData(sseUpdatedAt);
+
+      if (!refreshResult) {
+        return;
+      }
+
+      // 현금 결제 유도 모달이 열려있는지 확인
+      const isCashPaymentInducementModalOpened =
+        useModalStore.getState().data.isCashPaymentInducementModalOpened;
+      // 현금 결제 유도 모달이 열려있으면 주문 내역 새로고침
+      if (isCashPaymentInducementModalOpened) {
+        // totalAmount 계산 (null이면 0으로 처리)
+        const totalAmount = refreshResult.totalAmount ?? 0;
+
+        // paymentList에서 isCanceled가 false인 항목들의 transactionAmount 합계 계산
+        const paidAmount = refreshResult.paymentList
+          .filter((payment) => !payment.isCanceled)
+          .reduce((sum, payment) => sum + payment.transactionAmount, 0);
+
+        // 모든 주문금액 결제가 완료 되었을경우
+        if (totalAmount - paidAmount === 0) {
+          // 현금 결제 유도 모달 닫기
+          useModalStore.getState().closeAllModals();
+        }
+      }
     },
 
     // SHOP 메시지 핸들러: 매장 정보 업데이트 처리
@@ -429,79 +453,6 @@ export const useSSEHandler = () => {
       refreshShopThemePageData(); // 매장 테마 페이지 데이터 새로고침
     },
 
-    // PAYMENT 메시지 핸들러: 결제 정보 업데이트 처리
-    handlePaymentMessage: async (message: ISseMessage) => {
-      const { currentDeviceData } = dataRefs.current;
-
-      if (!message.data || !currentDeviceData?.tableNumber) {
-        return;
-      }
-
-      const currentTableNumber = currentDeviceData.tableNumber;
-      // 메시지 데이터: { [tableNumber]: sseUpdatedAt } 형태 (ORDER와 동일)
-      const paymentDataByTable = message.data as { [key: string]: number };
-
-      // 현재 테이블이 결제 목록에 없으면 무시
-      if (!(currentTableNumber in paymentDataByTable)) {
-        return;
-      }
-
-      // 현재 테이블의 결제 업데이트 시간
-      const sseUpdatedAt = paymentDataByTable[currentTableNumber];
-
-      // sseUpdatedAt이 없으면 처리하지 않음
-      if (sseUpdatedAt === undefined) {
-        return;
-      }
-
-      // AppStorage에서 저장된 sseUpdatedAt 가져오기
-      const storedData = await AppStorage.loadData<number>({
-        key: STORAGE_KEYS.PAYMENT_SSE_UPDATED_AT,
-      });
-      const storedSseUpdatedAt = storedData.value;
-
-      // 결제 정보가 변경되지 않았으면 (중복 처리 방지)
-      const isPaymentUnchanged = storedSseUpdatedAt === sseUpdatedAt;
-
-      if (isPaymentUnchanged) {
-        return;
-      }
-
-      // 현금 결제 유도 모달이 열려있는지 확인
-      const isCashPaymentInducementModalOpened =
-        useModalStore.getState().data.isCashPaymentInducementModalOpened;
-
-      // 현금 결제 유도 모달이 열려있으면 주문 내역 새로고침
-      if (isCashPaymentInducementModalOpened) {
-        const refreshResult = await refreshTableOrderHistoriesData();
-        // refresh 결과가 없거나 null이면 처리하지 않음
-        if (!refreshResult) {
-          return;
-        }
-
-        // AppStorage에 sseUpdatedAt 임시 저장 (앱 종료 시 삭제)
-        await AppStorage.saveData({
-          key: STORAGE_KEYS.PAYMENT_SSE_UPDATED_AT,
-          value: sseUpdatedAt,
-          isTemporary: true,
-        });
-
-        // totalAmount 계산 (null이면 0으로 처리)
-        const totalAmount = refreshResult.totalAmount ?? 0;
-
-        // paymentList에서 isCanceled가 false인 항목들의 transactionAmount 합계 계산
-        const paidAmount = refreshResult.paymentList
-          .filter((payment) => !payment.isCanceled)
-          .reduce((sum, payment) => sum + payment.transactionAmount, 0);
-
-        // 모든 주문금액 결제가 완료 되었을경우
-        if (totalAmount - paidAmount === 0) {
-          // 현금 결제 유도 모달 닫기
-          useModalStore.getState().closeAllModals();
-        }
-      }
-    },
-
     // LOGOUT 메시지 핸들러: 로그아웃 처리
     handleLogoutMessage: () => {
       openConfirmDialog({
@@ -613,10 +564,6 @@ export const useSSEHandler = () => {
       case 'SHOP_THEME_PAGE':
       case 'SHOP_THEME_MENU':
         handlersRef.current.handleShopThemeMessage();
-        break;
-
-      case 'PAYMENT':
-        handlersRef.current.handlePaymentMessage(sseMessage);
         break;
 
       case 'LOGOUT':
