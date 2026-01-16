@@ -113,7 +113,7 @@ export const MenuSalesHistoryTable = ({ rows }: Props) => {
   );
 
   return (
-    <UIStyles.setting.Table>
+    <S.StyledTable>
       <UIStyles.setting.Thead>
         <tr>
           <th>{t('메뉴명')}</th>
@@ -181,6 +181,6 @@ export const MenuSalesHistoryTable = ({ rows }: Props) => {
           <td>{formatCurrency(totalAmount)}</td>
         </S.SummaryRow>
       </UIStyles.setting.Tbody>
-    </UIStyles.setting.Table>
+    </S.StyledTable>
   );
 };

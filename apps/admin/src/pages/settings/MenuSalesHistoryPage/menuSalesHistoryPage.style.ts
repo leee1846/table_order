@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
+import * as UIStyles from '@repo/ui/styles';
 
 export const Container = styled.div`
   display: flex;
@@ -160,7 +161,7 @@ export const HeaderLabel = styled.div`
 export const EmptyRow = styled.tr`
   td {
     padding: 16px 0;
-    text-align: center;
+    text-align: center !important;
     ${TYPOGRAPHY.ST_3}
     color: ${theme.colors.grey[500]};
   }
@@ -179,22 +180,19 @@ export const TableRow = styled.tr<{ isOption?: boolean }>`
   ${({ isOption }) =>
     isOption &&
     `
-    background-color: ${theme.colors.grey[50]};
-
     & > td {
       color: ${theme.colors.grey[700]};
+
     }
   `}
 
   & > td:first-of-type {
-    padding-left: ${({ isOption }) => (isOption ? '16px' : '0')};
+    padding-left: ${({ isOption }) => (isOption ? '5px' : '0')};
   }
 `;
 
 export const MenuName = styled.span<{ isOption?: boolean }>`
-  ${TYPOGRAPHY.ST_3}
-  color: ${({ isOption }) =>
-    isOption ? theme.colors.grey[700] : theme.colors.grey[900]};
+  ${({ isOption }) => (isOption ? TYPOGRAPHY.ST_5 : TYPOGRAPHY.ST_4)}
 `;
 
 export const IconWrapper = styled.div`
@@ -233,4 +231,28 @@ export const TooltipArrow = styled.div`
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-top: 6px solid ${theme.colors.grey[800]};
+`;
+
+export const StyledTable = styled(UIStyles.setting.Table)`
+  thead {
+    & > tr > th:first-of-type {
+      flex: 2;
+      text-align: left;
+      padding-left: 20px;
+    }
+    & > tr > th:not(:first-of-type) {
+      flex: 1;
+    }
+  }
+
+  tbody {
+    & > tr > td:first-of-type {
+      flex: 2;
+      padding-left: 20px;
+      text-align: left;
+    }
+    & > tr > td:not(:first-of-type) {
+      flex: 1;
+    }
+  }
 `;
