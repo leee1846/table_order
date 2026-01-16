@@ -62,14 +62,12 @@ export const Cards = styled.div`
 `;
 
 export const Card = styled.div`
-  border: 1px solid ${theme.colors.grey[200]};
   border-radius: 12px;
   padding: 14px;
   background-color: ${theme.colors.grey[50]};
   display: flex;
   flex-direction: column;
   gap: 6px;
-  border: 1px solid red;
 `;
 
 export const CardLabel = styled.span`
@@ -83,5 +81,5 @@ export const CardValue = styled.span`
 `;
 
 export const TableWrapper = styled.div`
-  border: 1px solid ${theme.colors.grey[200]};
+  broder-left: 1px solid ${theme.colors.grey[200]};
 `;
