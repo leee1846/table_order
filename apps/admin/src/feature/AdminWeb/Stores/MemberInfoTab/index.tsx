@@ -1,5 +1,7 @@
-import { Input } from '@repo/ui/components';
+import { Input, BasicButton } from '@repo/ui/components';
 import { allowOnlyNumbers } from '@repo/util/string';
+import { usePostAdminMemberPWReset } from '@repo/api/queries';
+import { toast, openDualActionDialog } from '@repo/feature/utils';
 import * as S from '../StoreInfoTab/storeInfoTab.style';
 import type { ICreateAdminMemberRequest } from '@repo/api/types';
 
@@ -10,6 +12,27 @@ interface Props {
 
 export const MemberInfoTab = ({ formData, updateFormData }: Props) => {
   const hasMember = !!formData.memberId;
+  const resetPasswordMutation = usePostAdminMemberPWReset();
+
+  const handleResetPassword = async () => {
+    if (!formData.memberId) {
+      toast('관리자 ID가 없습니다.');
+      return;
+    }
+
+    openDualActionDialog({
+      title: '비밀번호 초기화',
+      content: '비밀번호를 초기화하시겠습니까?',
+      primaryText: '확인',
+      secondaryText: '취소',
+      onConfirm: async () => {
+        await resetPasswordMutation.mutateAsync({
+          memberId: formData.memberId!,
+        });
+        toast('비밀번호가 초기화되었습니다.');
+      },
+    });
+  };
 
   return (
     <S.Container>
@@ -64,6 +87,16 @@ export const MemberInfoTab = ({ formData, updateFormData }: Props) => {
           </S.FieldGroup>
         </S.HorizontalLayout>
       </S.Section>
+
+      {hasMember && (
+        <S.Section>
+          <S.ButtonContainer>
+            <BasicButton variant="Outline_Navy_M" onClick={handleResetPassword}>
+              비밀번호 초기화
+            </BasicButton>
+          </S.ButtonContainer>
+        </S.Section>
+      )}
     </S.Container>
   );
 };
