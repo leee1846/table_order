@@ -27,6 +27,7 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
     useShopDetailData();
   const { shopSetting } = shopDetailData ?? {};
 
+  // 관리자 인증 완료 여부 (인증 성공 시 true로 설정되어 페이지 접근 허용)
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -43,15 +44,21 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
 
   useEffect(() => {
     refreshShopDetailData();
-  }, [refreshShopDetailData]);
+  }, []); // 초기 마운트 시 한 번만 실행
 
   useEffect(() => {
     if (!requireAuth) {
       setIsUnlocked(true);
       return;
     }
+
+    // 이미 인증 완료된 경우 모달을 다시 띄우지 않음
+    if (isUnlocked) {
+      return;
+    }
+
     setIsModalOpen(true);
-  }, [requireAuth]);
+  }, [requireAuth, isUnlocked]);
 
   const handleAdminAuthSubmit = useCallback(
     async (password: string) => {
