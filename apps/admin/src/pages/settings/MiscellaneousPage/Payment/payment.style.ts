@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
@@ -17,4 +18,10 @@ export const ServiceChargeInputWrapper = styled.div`
     text-align: right;
     ${TYPOGRAPHY.ST_2}
   }
+`;
+
+export const getNativeToggleButtonStyle = (isOn: boolean) => css`
+  background-color: ${isOn
+    ? theme.colors.primary[400]
+    : theme.colors.grey[300]} !important;
 `;

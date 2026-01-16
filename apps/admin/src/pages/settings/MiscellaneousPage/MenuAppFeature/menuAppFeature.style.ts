@@ -212,3 +212,9 @@ export const ClickableText = styled.div`
     }
   }
 `;
+
+export const getNativeToggleButtonStyle = (isOn: boolean) => css`
+  background-color: ${isOn
+    ? theme.colors.primary[400]
+    : theme.colors.grey[300]} !important;
+`;

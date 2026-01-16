@@ -9,6 +9,7 @@ import { theme } from '@repo/ui';
 import type { MiscellaneousChange } from '../types';
 import { CapacitorApp } from '@repo/util/app';
 import { toast } from '@repo/feature/utils';
+import * as S from './payment.style';
 
 type PaymentTypeOption = 'prepayment' | 'postpayment';
 
@@ -207,12 +208,23 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            {/* TODO: 선불 VAN ID 추가해주시기로 함  */}
             <p>{t('선불 VAN ID')}</p>
             <input
               type="text"
               value={vanId}
               onChange={(event) => setVanId(event.target.value)}
+              readOnly={CapacitorApp.isNative()}
+              onClick={() => {
+                if (CapacitorApp.isNative()) {
+                  toast(t('관리자 웹에서 변경해주세요.'));
+                }
+              }}
+              onFocus={(e) => {
+                if (CapacitorApp.isNative()) {
+                  e.target.blur();
+                  toast(t('관리자 웹에서 변경해주세요.'));
+                }
+              }}
             />
           </UIStyles.setting.ContentLayout>
 
@@ -297,6 +309,11 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             }
             setIsSalesTotalVisible(!isSalesTotalVisible);
           }}
+          customStyle={
+            CapacitorApp.isNative()
+              ? S.getNativeToggleButtonStyle(isSalesTotalVisible)
+              : undefined
+          }
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
@@ -306,12 +323,21 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           maxLength={4}
           value={salesPassword}
           placeholder="****"
+          readOnly={CapacitorApp.isNative()}
           onChange={(event) => {
+            const value = event.target.value.replace(/\D/g, '').slice(0, 4);
+            setSalesPassword(value);
+          }}
+          onClick={() => {
             if (CapacitorApp.isNative()) {
               toast(t('관리자 웹에서 변경해주세요.'));
-              return;
             }
-            setSalesPassword(event.target.value);
+          }}
+          onFocus={(e) => {
+            if (CapacitorApp.isNative()) {
+              e.target.blur();
+              toast(t('관리자 웹에서 변경해주세요.'));
+            }
           }}
         />
       </UIStyles.setting.ContentLayout>
@@ -328,6 +354,11 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
               }
               setIsSalesDetailLocked(!isSalesDetailLocked);
             }}
+            customStyle={
+              CapacitorApp.isNative()
+                ? S.getNativeToggleButtonStyle(isSalesDetailLocked)
+                : undefined
+            }
           />
         </UIStyles.setting.ContentLayout>
       )}

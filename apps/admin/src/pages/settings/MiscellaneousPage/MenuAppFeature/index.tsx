@@ -20,6 +20,7 @@ import { generateTimeOptions, calculateTimeBefore } from '@repo/util/time';
 import { MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 import type { MiscellaneousChange } from '../types';
 import { CapacitorApp } from '@repo/util/app';
+import { toast } from '@repo/feature/utils';
 
 interface MenuAppFeatureProps {
   shopSetting?: IShopSetting;
@@ -451,7 +452,18 @@ export const MenuAppFeature = ({
             const value = event.target.value.replace(/\D/g, '').slice(0, 4);
             setMenuboardAdminPassword(value);
           }}
-          disabled={CapacitorApp.isNative()}
+          readOnly={CapacitorApp.isNative()}
+          onClick={() => {
+            if (CapacitorApp.isNative()) {
+              toast(t('관리자 웹에서 변경해주세요.'));
+            }
+          }}
+          onFocus={(e) => {
+            if (CapacitorApp.isNative()) {
+              e.target.blur();
+              toast(t('관리자 웹에서 변경해주세요.'));
+            }
+          }}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
@@ -459,8 +471,19 @@ export const MenuAppFeature = ({
         <ToggleButton
           size="M"
           isOn={isAdminLocked}
-          onChange={() => setIsAdminLocked(!isAdminLocked)}
-          disabled={CapacitorApp.isNative()}
+          onChange={() => {
+            if (CapacitorApp.isNative()) {
+              toast(t('관리자 웹에서 변경해주세요.'));
+              return;
+            }
+
+            setIsAdminLocked(!isAdminLocked);
+          }}
+          customStyle={
+            CapacitorApp.isNative()
+              ? S.getNativeToggleButtonStyle(isAdminLocked)
+              : undefined
+          }
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
