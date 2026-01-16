@@ -674,16 +674,22 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<FullscreenLoadingSpinner />}>
             <SettingsAccessGuard>
-              <SettingSidebar />
+              <Outlet />
             </SettingsAccessGuard>
           </Suspense>
         ),
-        children: createSettingsRoutes(),
-      },
-      {
-        path: ROUTES.SETTINGS.TABLES.generate(),
-        loader: requireNativeLoader,
-        element: createLazyRoute(SettingsTablesPage),
+        children: [
+          {
+            path: '',
+            element: <SettingSidebar />,
+            children: createSettingsRoutes(),
+          },
+          {
+            path: ROUTES.SETTINGS.TABLES.path,
+            loader: requireNativeLoader,
+            element: createLazyRoute(SettingsTablesPage),
+          },
+        ],
       },
       {
         path: ROUTES.NOT_FOUND.path,

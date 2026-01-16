@@ -30,7 +30,7 @@ export const TablesPage = () => {
   const isPosLinked = useIsPosLinked();
 
   // 테이블 그룹 리스트 조회
-  const { data: tableGroupListResponse, error } = useGetTableGroupList(
+  const { data: tableGroupListResponse } = useGetTableGroupList(
     { shopCode: shopCode ?? '' },
     { enabled: !!shopCode } // shopCode가 있을 때만 쿼리 실행
   );
@@ -101,15 +101,6 @@ export const TablesPage = () => {
   // shopCode가 없을 때
   if (!shopCode) {
     return null;
-  }
-
-  // 에러 발생 시
-  if (error) {
-    return (
-      <S.TablePageContainer>
-        <div>{t('테이블 그룹을 불러오는 중 오류가 발생했습니다.')}</div>
-      </S.TablePageContainer>
-    );
   }
 
   return (
