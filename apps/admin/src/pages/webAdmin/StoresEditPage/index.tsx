@@ -1,11 +1,10 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Stores } from '@/feature/AdminWeb/Stores';
 import { validateShopData, validateMemberData } from '@/feature/AdminWeb/util';
 import {
   useGetAdminShopDetail,
   useGetAdminMember,
   usePutAdminShop,
-  usePostAdminMember,
   usePutAdminMember,
 } from '@repo/api/queries';
 import { toast } from '@repo/feature/utils';
@@ -13,63 +12,88 @@ import { ROUTES } from '@/constants/routes';
 import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
+  IGetAdminMember,
 } from '@repo/api/types';
 
+/**
+ * 멤버 데이터를 폼에서 사용할 수 있는 형태로 변환합니다.
+ */
+const transformMemberDataToFormData = (
+  memberData: IGetAdminMember
+): ICreateAdminMemberRequest => {
+  return {
+    memberId: memberData.memberId,
+    memberName: memberData.memberName,
+    memberTel: memberData.memberTel,
+    shopSeq: memberData.shopSeq,
+    memberRole: memberData.memberRole,
+    isAgreed: true,
+    memberEmail: memberData.memberEmail,
+    memberDepartment: memberData.memberDepartment,
+  };
+};
+
+/**
+ * 매장 수정 페이지
+ */
 export const StoresEditPage = () => {
   const navigate = useNavigate();
   const { shopCode } = useParams<{ shopCode: string }>();
-  const { data: shopDetailDataResponse } = useGetAdminShopDetail(
-    shopCode ?? '',
-    {
-      enabled: !!shopCode,
-    }
-  );
+  const [searchParams] = useSearchParams();
+  const memberIdFromQuery = searchParams.get('memberId');
 
-  const { data: memberDetailDataResponse } = useGetAdminMember({
-    memberId: shopDetailDataResponse?.data?.shopCode ?? '',
-    options: {
-      enabled: !!shopDetailDataResponse?.data?.shopCode,
-    },
-    ignoreGlobalErrors: [404],
+  // 매장 상세 정보 조회
+  const { data: shopDetailResponse } = useGetAdminShopDetail(shopCode ?? '', {
+    enabled: !!shopCode,
   });
 
-  const { mutateAsync: updateAdminShop } = usePutAdminShop();
-  const { mutateAsync: updateMember } = usePutAdminMember();
-  const { mutateAsync: createMember } = usePostAdminMember();
+  // 멤버 정보 조회 (memberId가 있을 때만)
+  const { data: memberDetailResponse } = useGetAdminMember({
+    memberId: memberIdFromQuery ?? '',
+    options: {
+      enabled: !!memberIdFromQuery,
+    },
+  });
 
+  // API mutation hooks
+  const { mutateAsync: updateShop } = usePutAdminShop();
+  const { mutateAsync: updateMember } = usePutAdminMember();
+
+  // 멤버 초기 데이터 변환
   const memberInitialData: ICreateAdminMemberRequest | undefined =
-    memberDetailDataResponse?.data
-      ? {
-          memberId: memberDetailDataResponse?.data?.memberId,
-          memberName: memberDetailDataResponse?.data?.memberName,
-          memberTel: memberDetailDataResponse?.data?.memberTel,
-          shopSeq: memberDetailDataResponse?.data?.shopSeq,
-          memberRole: memberDetailDataResponse?.data?.memberRole,
-          isAgreed: true,
-          memberEmail: memberDetailDataResponse?.data?.memberEmail,
-          memberDepartment: memberDetailDataResponse?.data?.memberDepartment,
-        }
+    memberDetailResponse?.data
+      ? transformMemberDataToFormData(memberDetailResponse.data)
       : undefined;
 
-  const handleSave = async (
+  /**
+   * 매장 정보와 멤버 정보를 저장합니다.
+   */
+  const handleSaveShopAndMember = async (
     shopData: IGetAdminShopDetail,
     memberData: ICreateAdminMemberRequest
-  ) => {
-    if (!validateShopData(shopData)) {
+  ): Promise<void> => {
+    // 매장 정보 유효성 검증
+    const isShopDataValid = validateShopData(shopData);
+    if (!isShopDataValid) {
       return;
     }
 
-    if (!validateMemberData(memberData)) {
-      return;
-    }
+    // 매장 정보 업데이트
+    await updateShop(shopData);
 
-    await updateAdminShop(shopData);
-    if (memberInitialData) {
+    // 멤버 정보가 존재하는 경우에만 업데이트
+    const hasExistingMember = !!memberInitialData?.memberId;
+    if (hasExistingMember) {
+      // 멤버 정보 유효성 검증
+      const isMemberDataValid = validateMemberData(memberData);
+      if (!isMemberDataValid) {
+        return;
+      }
+
       await updateMember(memberData);
-    } else {
-      await createMember(memberData);
     }
 
+    // 성공 메시지 및 페이지 이동
     toast('매장 정보가 수정되었습니다.');
     navigate(ROUTES.ADMIN_WEB.STORES.generate());
   };
@@ -77,9 +101,9 @@ export const StoresEditPage = () => {
   return (
     <Stores
       mode="edit"
-      initialData={shopDetailDataResponse?.data}
+      initialData={shopDetailResponse?.data}
       memberInitialData={memberInitialData}
-      onSave={handleSave}
+      onSave={handleSaveShopAndMember}
     />
   );
 };

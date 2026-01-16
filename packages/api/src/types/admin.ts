@@ -22,6 +22,25 @@ export type TGetAdminShopListResponse = IApiResponse<{
   shopList: IGetAdminShopItem[];
 }>;
 
+export type TPosLinkType = 'NONE' | 'OKPOS';
+export interface IGetAdminShopSettingInfo {
+  shopSeq: number;
+  vanId: string;
+  usePrepayment: boolean;
+  ipAddress: string;
+  useOnlinePosMode: boolean;
+  routerId: string;
+  routerPw: string;
+  wifiSsid: string;
+  wifiPw: string;
+  windowAspId: string;
+  windowAspPw: string;
+  chargerType: string;
+  posLinkType: TPosLinkType;
+  updateDate: string;
+  updateMemberUuid: string;
+}
+
 export interface IGetAdminShopDetail {
   shopSeq: number;
   shopName: string;
@@ -57,14 +76,15 @@ export interface IGetAdminShopDetail {
   createMemberUuid: string;
   updateDate: string;
   updateMemberUuid: string;
+  settingInfo: IGetAdminShopSettingInfo;
 }
 
 export type TGetAdminShopDetailResponse = IApiResponse<IGetAdminShopDetail>;
 
 export interface IGetAdminMember {
+  shopSeq: number | null; // null인경우 점주가 아닌 관리자
   memberUuid: string;
   memberId: string;
-  shopSeq: number | null; // null인경우 점주가 아닌 관리자
   memberRole: TMemberRole;
   memberName: string;
   isDeleted: boolean;

@@ -19,8 +19,8 @@ export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
     return false;
   }
 
-  if (!shopData.businessNumber || !shopData.businessNumber.trim()) {
-    toast('매장정보 > 사업자등록번호를 입력해주세요.');
+  if (!shopData.ownerPhoneNumber || !shopData.ownerPhoneNumber.trim()) {
+    toast('매장정보 > 대표자 연락처를 입력해주세요.');
     return false;
   }
 

@@ -38,6 +38,23 @@ export const DEFAULT_SHOP_DATA: IGetAdminShopDetail = {
   etcNote: '',
   shopCode: '',
   ownerPhoneNumber: '',
+  settingInfo: {
+    shopSeq: 0,
+    vanId: '',
+    usePrepayment: false,
+    ipAddress: '',
+    useOnlinePosMode: false,
+    routerId: '',
+    routerPw: '',
+    wifiSsid: '',
+    wifiPw: '',
+    windowAspId: '',
+    windowAspPw: '',
+    chargerType: '',
+    posLinkType: 'NONE',
+    updateDate: '',
+    updateMemberUuid: '',
+  },
 };
 
 export const DEFAULT_MEMBER_DATA: ICreateAdminMemberRequest = {
@@ -47,4 +64,6 @@ export const DEFAULT_MEMBER_DATA: ICreateAdminMemberRequest = {
   memberName: '',
   isAgreed: true,
   memberTel: '',
+  memberEmail: '',
+  memberDepartment: '',
 };

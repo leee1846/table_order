@@ -134,13 +134,15 @@ export const Stores = ({
         >
           세팅 정보
         </S.TabButton>
-        <S.TabButton
-          type="button"
-          isActive={activeTab === 'memberInfo'}
-          onClick={() => setActiveTab('memberInfo')}
-        >
-          계정 정보
-        </S.TabButton>
+        {mode === 'edit' && (
+          <S.TabButton
+            type="button"
+            isActive={activeTab === 'memberInfo'}
+            onClick={() => setActiveTab('memberInfo')}
+          >
+            계정 정보
+          </S.TabButton>
+        )}
       </S.TabContainer>
 
       <S.TabContent>
@@ -152,20 +154,16 @@ export const Stores = ({
           />
         )}
 
+        {activeTab === 'settingInfo' && (
+          <SettingInfoTab formData={formData} updateFormData={updateFormData} />
+        )}
+
         {activeTab === 'memberInfo' && mode === 'edit' && (
           <MemberInfoTab
             formData={memberFormData}
             updateFormData={(updates) =>
               setMemberFormData((prev) => ({ ...prev, ...updates }))
             }
-          />
-        )}
-
-        {activeTab === 'settingInfo' && (
-          <SettingInfoTab
-            mode={mode}
-            formData={formData}
-            updateFormData={updateFormData}
           />
         )}
       </S.TabContent>

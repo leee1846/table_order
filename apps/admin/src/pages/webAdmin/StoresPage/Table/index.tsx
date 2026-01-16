@@ -30,7 +30,6 @@ export const Table = ({ stores }: Props) => {
     return stores.map((store) => (
       <tr key={store.memberId}>
         <td>{store.shopName}</td>
-        <td>{store.memberId ?? '_'}</td>
         <td>{store.businessNumber}</td>
         <td>{store.address1}</td>
         <td>{store.managerPhoneNumber}</td>
@@ -41,7 +40,9 @@ export const Table = ({ stores }: Props) => {
             <BasicButton
               variant="Outline_Blue_S"
               onClick={() =>
-                navigate(ROUTES.ADMIN_WEB.STORES_EDIT.generate(store.shopCode))
+                navigate(
+                  `${ROUTES.ADMIN_WEB.STORES_EDIT.generate(store.shopCode)}?memberId=${store.memberId}`
+                )
               }
             >
               수정
@@ -66,7 +67,6 @@ export const Table = ({ stores }: Props) => {
         <UIStyles.setting.Thead>
           <tr>
             <th>매장명</th>
-            <th>계정</th>
             <th>사업자등록번호</th>
             <th>기본 주소</th>
             <th>대표자 연락처</th>

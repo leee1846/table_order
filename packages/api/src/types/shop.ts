@@ -1,4 +1,5 @@
 import { IApiResponse, TVoidApiResponse } from './common';
+import { IGetAdminShopSettingInfo } from './admin';
 
 // TODO: 타입이 정의되자않아 정의되면 변경 필요
 type TShopType = string;
@@ -245,4 +246,5 @@ export interface ICreateShopRequest {
   isDeleted: boolean;
   useLocale: boolean;
   useDatadog: boolean;
+  settingInfo: IGetAdminShopSettingInfo;
 }

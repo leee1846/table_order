@@ -1,5 +1,5 @@
 import { Input, CheckButton } from '@repo/ui/components';
-import { allowOnlyNumbers, isValidEmail } from '@repo/util/string';
+import { allowOnlyNumbers } from '@repo/util/string';
 import * as S from './storeInfoTab.style';
 import type { IGetAdminShopDetail } from '@repo/api/types';
 
@@ -60,9 +60,7 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
 
       <S.Section>
         <S.FieldGroup>
-          <S.Label>
-            사업자등록번호 <span>*</span>
-          </S.Label>
+          <S.Label>사업자등록번호</S.Label>
           <S.BusinessNumberContainer>
             <Input
               placeholder="사업자등록번호를 입력하세요"
@@ -117,6 +115,20 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
       </S.Section>
 
       <S.Section>
+        <S.FieldGroup>
+          <S.Label>매장 전화번호</S.Label>
+          <Input
+            placeholder="매장 전화번호를 입력하세요"
+            value={formData.shopPhoneNumber}
+            onChange={(value) =>
+              updateFormData({ shopPhoneNumber: allowOnlyNumbers(value) })
+            }
+            type="tel"
+          />
+        </S.FieldGroup>
+      </S.Section>
+
+      <S.Section>
         <S.HorizontalLayout>
           <S.FieldGroup>
             <S.Label>
@@ -130,7 +142,9 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
           </S.FieldGroup>
 
           <S.FieldGroup>
-            <S.Label>대표자 연락처</S.Label>
+            <S.Label>
+              대표자 연락처 <span>*</span>
+            </S.Label>
             <Input
               placeholder="대표자 연락처를 입력하세요"
               value={formData.ownerPhoneNumber}
