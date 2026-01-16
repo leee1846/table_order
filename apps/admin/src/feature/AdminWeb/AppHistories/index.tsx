@@ -3,7 +3,10 @@ import { BasicButton } from '@repo/ui/components';
 import { AppHistoryForm } from './AppHistoryForm';
 import { AppHistoryHistoryDialog } from './AppHistoryHistoryDialog';
 import * as S from './appHistories.style';
-import { type AppHistoriesFormData, DEFAULT_APP_HISTORIES_DATA } from './constants';
+import {
+  type AppHistoriesFormData,
+  DEFAULT_APP_HISTORIES_DATA,
+} from './constants';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -65,7 +68,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
         </S.Titles>
         {mode === 'detail' ? (
           <BasicButton variant="Outline_Navy_M" onClick={handleHistory}>
-            히스토리
+            변경 이력
           </BasicButton>
         ) : (
           <BasicButton variant="Solid_Navy_M" onClick={handleSave}>

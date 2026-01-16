@@ -1,3 +1,5 @@
+import type { THistoryCode } from '../types/admin';
+
 /**
  * API 엔드포인트 상수들을 정의합니다.
  */
@@ -137,5 +139,7 @@ export const ENDPOINTS = {
     MEMBER: '/admin/member',
     MEMBER_LIST: '/admin/member/list',
     MEMBER_PASSWORD_RESET: `/admin/member/password/reset`,
+    CHANGE_HISTORY_LIST: (historyCode: THistoryCode) =>
+      `/admin/history/${historyCode}`,
   },
 } as const;

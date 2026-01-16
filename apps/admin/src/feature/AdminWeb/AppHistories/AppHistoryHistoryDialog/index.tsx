@@ -2,10 +2,13 @@ import { ModalBackground } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
+import { useGetAdminHistoryList } from '@repo/api/queries';
+import { formatDateTime } from '@repo/util/date';
 import * as S from './appHistoryHistoryDialog.styles';
 
 export interface HistoryItem {
   id: number;
+  userId: number;
   updateDateTime: string; // 업데이트 일시
   user: string; // 사용자
   action: string; // 액션
@@ -17,77 +20,29 @@ interface Props {
   historyId?: number;
 }
 
-// MockData - 실제로는 API에서 가져와야 함
-const MOCK_HISTORY_DATA: HistoryItem[] = [
-  {
-    id: 1,
-    updateDateTime: '2024-01-15 14:30:00',
-    user: 'admin@example.com',
-    action: '생성',
-  },
-  {
-    id: 2,
-    updateDateTime: '2024-01-16 10:15:00',
-    user: 'admin@example.com',
-    action: '수정',
-  },
-  {
-    id: 3,
-    updateDateTime: '2024-01-17 16:45:00',
-    user: 'user@example.com',
-    action: '수정',
-  },
-  {
-    id: 4,
-    updateDateTime: '2024-01-18 09:20:00',
-    user: 'admin@example.com',
-    action: '수정',
-  },
-  {
-    id: 5,
-    updateDateTime: '2024-01-19 13:00:00',
-    user: 'user@example.com',
-    action: '수정',
-  },
-  {
-    id: 1,
-    updateDateTime: '2024-01-15 14:30:00',
-    user: 'admin@example.com',
-    action: '생성',
-  },
-  {
-    id: 2,
-    updateDateTime: '2024-01-16 10:15:00',
-    user: 'admin@example.com',
-    action: '수정',
-  },
-  {
-    id: 3,
-    updateDateTime: '2024-01-17 16:45:00',
-    user: 'user@example.com',
-    action: '수정',
-  },
-  {
-    id: 4,
-    updateDateTime: '2024-01-18 09:20:00',
-    user: 'admin@example.com',
-    action: '수정',
-  },
-  {
-    id: 5,
-    updateDateTime: '2024-01-19 13:00:00',
-    user: 'user@example.com',
-    action: '수정',
-  },
-];
-
 export const AppHistoryHistoryDialog = ({
   isOpen,
   onClose,
   historyId,
 }: Props) => {
-  // TODO: 실제로는 historyId를 사용해서 API로 히스토리 데이터를 가져와야 함
-  const historyData = MOCK_HISTORY_DATA;
+  // API에서 변경 이력 데이터 가져오기
+  const { data } = useGetAdminHistoryList(
+    'APP_VERSION',
+    historyId?.toString() || '',
+    {
+      enabled: isOpen && !!historyId, // 다이얼로그가 열려있고 historyId가 있을 때만 조회
+    }
+  );
+
+  // API 응답을 컴포넌트에서 사용하는 형식으로 변환
+  const historyData: HistoryItem[] =
+    data?.data?.map((item) => ({
+      id: item.updateDate,
+      userId: item.updateMemberId, // updateDate는 타임스탬프이므로 고유함
+      user: item.updateMemberName || '-',
+      updateDateTime: formatDateTime(item.updateDate, 'YYYY-MM-DD HH:mm:ss'),
+      action: item.updateLog || '-',
+    })) || [];
 
   if (!isOpen) {
     return null;
@@ -98,7 +53,7 @@ export const AppHistoryHistoryDialog = ({
       return (
         <tr>
           <td colSpan={3} style={{ textAlign: 'center', padding: '40px' }}>
-            히스토리 내역이 없습니다.
+            변경 이력이 없습니다.
           </td>
         </tr>
       );
@@ -106,8 +61,9 @@ export const AppHistoryHistoryDialog = ({
 
     return historyData.map((item) => (
       <tr key={item.id}>
-        <td>{item.updateDateTime}</td>
+        <td>{item.userId}</td>
         <td>{item.user}</td>
+        <td>{item.updateDateTime}</td>
         <td>{item.action}</td>
       </tr>
     ));
@@ -122,15 +78,16 @@ export const AppHistoryHistoryDialog = ({
 
         <S.Container>
           <S.Header>
-            <S.Title>히스토리</S.Title>
+            <S.Title>변경 이력</S.Title>
           </S.Header>
 
           <S.TableContainer>
             <UIStyles.setting.Table>
               <UIStyles.setting.Thead>
                 <tr>
+                  <th>계정</th>
+                  <th>이름</th>
                   <th>업데이트 일시</th>
-                  <th>사용자</th>
                   <th>액션</th>
                 </tr>
               </UIStyles.setting.Thead>

@@ -1,4 +1,5 @@
 import { TAppType } from '../types/app';
+import type { THistoryCode } from '../types/admin';
 
 export const queryKeys = {
   common: {
@@ -260,5 +261,7 @@ export const queryKeys = {
         pageSize,
         searchWord,
       ] as const,
+    changeHistoryList: (historyCode: THistoryCode, key: string) =>
+      [...queryKeys.admin.all, 'changeHistoryList', historyCode, key] as const,
   },
 } as const;

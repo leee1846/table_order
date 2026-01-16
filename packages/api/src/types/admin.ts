@@ -96,3 +96,16 @@ export type TGetAdminMemberListResponse = IApiResponse<{
   totalPageNumber: number;
   memberList: IGetAdminMember[];
 }>;
+
+export type THistoryCode = 'MEMBER' | 'SHOP' | 'NOTICE' | 'APP_VERSION';
+
+export interface IGetAdminChangeHistoryItem {
+  updateDate: number;
+  updateMemberId: number;
+  updateMemberName: string;
+  updateLog: string;
+}
+
+export type TGetAdminChangeHistoryListResponse = IApiResponse<
+  IGetAdminChangeHistoryItem[]
+>;

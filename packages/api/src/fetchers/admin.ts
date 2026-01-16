@@ -7,6 +7,8 @@ import type {
   TGetAdminMemberResponse,
   ICreateAdminMemberRequest,
   TGetAdminMemberListResponse,
+  THistoryCode,
+  TGetAdminChangeHistoryListResponse,
 } from '../types/admin';
 import { IPaginationParams, TVoidApiResponse } from '../types/common';
 
@@ -129,5 +131,27 @@ export const resetAdminMemberPassword = async (
     data: { memberId },
   });
 
+  return response.data;
+};
+
+/**
+ * 관리자 변경 이력 조회
+ * @param historyCode 변경 이력 코드
+ * @param key 검색 키
+ * (MEMBER : memberId / SHOP : shopCode / NOTICE : noticeSeq / APP_VERSION : appVersionSeq)
+ * @returns 변경 이력 목록
+ */
+export const getAdminChangeHistoryList = async (
+  historyCode: THistoryCode,
+  key: string
+): Promise<TGetAdminChangeHistoryListResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetAdminChangeHistoryListResponse>({
+    method: 'GET',
+    url: ENDPOINTS.ADMIN.CHANGE_HISTORY_LIST(historyCode),
+    params: {
+      key,
+    },
+  });
   return response.data;
 };
