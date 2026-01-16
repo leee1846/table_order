@@ -36,8 +36,6 @@ export const Stores = ({
   const [memberFormData, setMemberFormData] =
     useState<ICreateAdminMemberRequest>(DEFAULT_MEMBER_DATA);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
-  const [isMemberHistoryDialogOpen, setIsMemberHistoryDialogOpen] =
-    useState(false);
 
   useEffect(() => {
     if (memberInitialData) {
@@ -77,14 +75,6 @@ export const Stores = ({
     setIsHistoryDialogOpen(false);
   };
 
-  const handleMemberHistory = () => {
-    setIsMemberHistoryDialogOpen(true);
-  };
-
-  const handleCloseMemberHistoryDialog = () => {
-    setIsMemberHistoryDialogOpen(false);
-  };
-
   const title = mode === 'create' ? '매장 생성' : '매장 수정';
 
   return (
@@ -99,19 +89,9 @@ export const Stores = ({
         </S.Titles>
         <div style={{ display: 'flex', gap: '8px' }}>
           {mode === 'edit' && (
-            <>
-              <BasicButton variant="Outline_Navy_M" onClick={handleHistory}>
-                매장 변경 이력
-              </BasicButton>
-              {memberInitialData?.memberId && (
-                <BasicButton
-                  variant="Outline_Navy_M"
-                  onClick={handleMemberHistory}
-                >
-                  계정 변경 이력
-                </BasicButton>
-              )}
-            </>
+            <BasicButton variant="Outline_Navy_M" onClick={handleHistory}>
+              변경 이력
+            </BasicButton>
           )}
           <BasicButton variant="Solid_Navy_M" onClick={handleSave}>
             저장
@@ -168,24 +148,26 @@ export const Stores = ({
         )}
       </S.TabContent>
       {mode === 'edit' && (
-        <>
-          <ChangeHistoryDialog
-            isOpen={isHistoryDialogOpen}
-            onClose={handleCloseHistoryDialog}
-            historyCode="SHOP"
-            historyId={initialData?.shopCode}
-          />
-          {memberInitialData?.memberId && (
-            <ChangeHistoryDialog
-              isOpen={isMemberHistoryDialogOpen}
-              onClose={handleCloseMemberHistoryDialog}
-              historyCode="MEMBER"
-              historyId={
-                memberFormData?.memberId || memberInitialData?.memberId
-              }
-            />
-          )}
-        </>
+        <ChangeHistoryDialog
+          isOpen={isHistoryDialogOpen}
+          onClose={handleCloseHistoryDialog}
+          histories={[
+            {
+              code: 'SHOP',
+              id: initialData?.shopCode ?? '',
+              label: '매장 변경 이력',
+            },
+            ...(memberInitialData?.memberId
+              ? [
+                  {
+                    code: 'MEMBER' as const,
+                    id: memberFormData?.memberId || memberInitialData?.memberId,
+                    label: '계정 변경 이력',
+                  },
+                ]
+              : []),
+          ]}
+        />
       )}
     </S.Container>
   );

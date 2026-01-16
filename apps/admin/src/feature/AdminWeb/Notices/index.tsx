@@ -14,13 +14,9 @@ interface Props {
   onDelete?: () => Promise<void>;
 }
 
-export const Notices = ({
-  mode,
-  initialData,
-  onSave,
-  onDelete,
-}: Props) => {
-  const [formData, setFormData] = useState<NoticesFormData>(DEFAULT_NOTICES_DATA);
+export const Notices = ({ mode, initialData, onSave, onDelete }: Props) => {
+  const [formData, setFormData] =
+    useState<NoticesFormData>(DEFAULT_NOTICES_DATA);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -95,8 +91,13 @@ export const Notices = ({
       <ChangeHistoryDialog
         isOpen={isHistoryDialogOpen}
         onClose={handleCloseHistoryDialog}
-        historyCode="NOTICE"
-        historyId={initialData?.id}
+        histories={[
+          {
+            code: 'NOTICE',
+            id: initialData?.id ?? '',
+            label: '공지사항 변경 이력',
+          },
+        ]}
       />
     </S.Container>
   );

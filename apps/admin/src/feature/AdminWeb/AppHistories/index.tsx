@@ -87,8 +87,13 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
       <ChangeHistoryDialog
         isOpen={isHistoryDialogOpen}
         onClose={handleCloseHistoryDialog}
-        historyCode="APP_VERSION"
-        historyId={initialData?.id}
+        histories={[
+          {
+            code: 'APP_VERSION',
+            id: initialData?.id ?? '',
+            label: '앱 버전 변경 이력',
+          },
+        ]}
       />
     </S.Container>
   );

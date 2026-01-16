@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ModalBackground } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -15,29 +16,31 @@ export interface HistoryItem {
   action: string; // 액션
 }
 
+export interface HistoryConfig {
+  code: THistoryCode;
+  id: number | string;
+  label: string;
+}
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  historyCode: THistoryCode;
-  historyId?: number | string;
+  histories: HistoryConfig[];
 }
 
-export const ChangeHistoryDialog = ({
-  isOpen,
-  onClose,
-  historyCode,
-  historyId,
-}: Props) => {
-  // API에서 변경 이력 데이터 가져오기
-  const { data, isLoading, isError } = useGetAdminHistoryList(
-    historyCode,
-    historyId?.toString() || '',
+export const ChangeHistoryDialog = ({ isOpen, onClose, histories }: Props) => {
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
+
+  const currentHistory = histories[activeTabIndex] as HistoryConfig;
+
+  const { data } = useGetAdminHistoryList(
+    currentHistory.code,
+    currentHistory.id.toString(),
     {
-      enabled: isOpen && !!historyId, // 다이얼로그가 열려있고 historyId가 있을 때만 조회
+      enabled: isOpen && !!currentHistory.id && !!currentHistory.code,
     }
   );
 
-  // API 응답을 컴포넌트에서 사용하는 형식으로 변환
   const historyData: HistoryItem[] =
     data?.data?.map((item) => ({
       id: item.updateDate,
@@ -52,26 +55,6 @@ export const ChangeHistoryDialog = ({
   }
 
   const renderRows = () => {
-    if (isLoading) {
-      return (
-        <tr>
-          <td colSpan={4} style={{ textAlign: 'center', padding: '40px' }}>
-            로딩 중...
-          </td>
-        </tr>
-      );
-    }
-
-    if (isError) {
-      return (
-        <tr>
-          <td colSpan={4} style={{ textAlign: 'center', padding: '40px' }}>
-            히스토리를 불러오는 중 오류가 발생했습니다.
-          </td>
-        </tr>
-      );
-    }
-
     if (!historyData || historyData.length === 0) {
       return (
         <tr>
@@ -103,6 +86,21 @@ export const ChangeHistoryDialog = ({
           <S.Header>
             <S.Title>변경 이력</S.Title>
           </S.Header>
+
+          {histories.length > 1 && (
+            <S.TabContainer>
+              {histories.map((history, index) => (
+                <S.TabButton
+                  key={history.code}
+                  type="button"
+                  isActive={activeTabIndex === index}
+                  onClick={() => setActiveTabIndex(index)}
+                >
+                  {history.label}
+                </S.TabButton>
+              ))}
+            </S.TabContainer>
+          )}
 
           <S.TableContainer>
             <UIStyles.setting.Table>
