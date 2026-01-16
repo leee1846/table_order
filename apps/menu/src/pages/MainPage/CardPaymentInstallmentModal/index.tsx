@@ -103,7 +103,7 @@ export const CardPaymentInstallmentModal = ({
     null
   );
 
-  const shouldShowInstallmentSection = totalPrice > INSTALLMENT_MINIMUM_AMOUNT;
+  const shouldShowInstallmentSection = totalPrice >= INSTALLMENT_MINIMUM_AMOUNT;
   const isPaymentProgressModalOpen =
     modalStore.data.isCardPaymentProgressModalOpened;
 
