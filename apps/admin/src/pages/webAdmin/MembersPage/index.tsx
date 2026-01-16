@@ -33,7 +33,7 @@ export const MembersPage = () => {
     <UIStyles.setting.TablePageContainer>
       <S.Container>
         <S.Title>
-          관리자 관리
+          회원 관리
           <div />
           <span>목록</span>
         </S.Title>
@@ -47,7 +47,7 @@ export const MembersPage = () => {
             />
           </S.SearchInputWrapper>
           <BasicButton variant="Solid_Navy_M" onClick={handleCreate}>
-            관리자 생성
+            회원 생성
           </BasicButton>
         </S.SearchContainer>
 

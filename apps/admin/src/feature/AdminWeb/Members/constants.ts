@@ -23,7 +23,7 @@ export const DEFAULT_MEMBERS_DATA: MembersFormData = {
 
 // 권한 옵션
 export const MEMBER_ROLE_OPTIONS: Array<{ value: TMemberRole; label: string }> =
-  [{ value: 'ADMIN', label: '관리자' }];
+  [{ value: 'ADMIN', label: 'ADMIN' }];
 
 /**
  * memberRole 값을 한글 라벨로 변환합니다.

@@ -38,11 +38,10 @@ export const StoresSidebarLayout = () => {
       },
     ];
 
-    // MASTER 권한일 때만 관리자 관리 메뉴 추가 (내 정보 아래)
     if (isMaster) {
       menus.push({
-        id: 'admin-manage',
-        label: '관리자 관리',
+        id: 'members',
+        label: '회원 관리',
         path: ROUTES.ADMIN_WEB.MEMBERS.generate(),
       });
     }

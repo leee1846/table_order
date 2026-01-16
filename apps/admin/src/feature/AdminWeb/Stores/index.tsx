@@ -36,7 +36,8 @@ export const Stores = ({
   const [memberFormData, setMemberFormData] =
     useState<ICreateAdminMemberRequest>(DEFAULT_MEMBER_DATA);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
-  const [isMemberHistoryDialogOpen, setIsMemberHistoryDialogOpen] = useState(false);
+  const [isMemberHistoryDialogOpen, setIsMemberHistoryDialogOpen] =
+    useState(false);
 
   useEffect(() => {
     if (memberInitialData) {
@@ -103,7 +104,10 @@ export const Stores = ({
                 매장 변경 이력
               </BasicButton>
               {memberInitialData?.memberId && (
-                <BasicButton variant="Outline_Navy_M" onClick={handleMemberHistory}>
+                <BasicButton
+                  variant="Outline_Navy_M"
+                  onClick={handleMemberHistory}
+                >
                   계정 변경 이력
                 </BasicButton>
               )}
@@ -180,7 +184,9 @@ export const Stores = ({
               isOpen={isMemberHistoryDialogOpen}
               onClose={handleCloseMemberHistoryDialog}
               historyCode="MEMBER"
-              historyId={memberFormData?.memberId || memberInitialData?.memberId}
+              historyId={
+                memberFormData?.memberId || memberInitialData?.memberId
+              }
             />
           )}
         </>

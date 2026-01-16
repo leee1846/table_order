@@ -46,6 +46,8 @@ export const StoresEditPage = () => {
           shopSeq: memberDetailDataResponse?.data?.shopSeq,
           memberRole: memberDetailDataResponse?.data?.memberRole,
           isAgreed: true,
+          memberEmail: memberDetailDataResponse?.data?.memberEmail,
+          memberDepartment: memberDetailDataResponse?.data?.memberDepartment,
         }
       : undefined;
 

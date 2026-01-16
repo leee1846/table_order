@@ -54,7 +54,7 @@ export const Members = ({
     <S.Container>
       <S.Header>
         <S.Titles>
-          <p>관리자 관리</p>
+          <p>회원 관리</p>
           <span />
           <div>
             <p>{getTitle()}</p>
