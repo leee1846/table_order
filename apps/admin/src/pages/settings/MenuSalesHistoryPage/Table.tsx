@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { InfoIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
@@ -17,6 +17,32 @@ export const MenuSalesHistoryTable = ({ rows }: Props) => {
   const [showTotalSalesTooltip, setShowTotalSalesTooltip] = useState(false);
   const salesCountIconWrapperRef = useRef<HTMLDivElement>(null);
   const totalSalesIconWrapperRef = useRef<HTMLDivElement>(null);
+  const orderedRows = useMemo(() => {
+    if (!rows.length) return [];
+
+    const optionMap = rows
+      .filter((row) => row.isOption === 1)
+      .reduce<Record<number, IMenuSalesHistoryItem[]>>((acc, option) => {
+        const key = option.parentMenuSeq ?? option.menuSeq;
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(option);
+        return acc;
+      }, {});
+
+    const usedOptionSeqs = new Set<number>();
+    const parentRows = rows.filter((row) => row.isOption !== 1);
+    const flattenedRows = parentRows.flatMap((parent) => {
+      const options = optionMap[parent.menuSeq] ?? [];
+      options.forEach((option) => usedOptionSeqs.add(option.menuSeq));
+      return [parent, ...options];
+    });
+
+    const orphanOptions = rows.filter(
+      (row) => row.isOption === 1 && !usedOptionSeqs.has(row.menuSeq)
+    );
+
+    return [...flattenedRows, ...orphanOptions];
+  }, [rows]);
 
   const handleSalesCountIconClick = () => {
     setShowSalesCountTooltip(!showSalesCountTooltip);
@@ -54,7 +80,7 @@ export const MenuSalesHistoryTable = ({ rows }: Props) => {
   }, [showSalesCountTooltip, showTotalSalesTooltip]);
 
   const renderRows = () => {
-    if (!rows.length) {
+    if (!orderedRows.length) {
       return (
         <S.EmptyRow>
           <td>{t('표시할 매출 내역이 없습니다.')}</td>
@@ -62,18 +88,26 @@ export const MenuSalesHistoryTable = ({ rows }: Props) => {
       );
     }
 
-    return rows.map((row, index) => (
-      <tr key={`${row.menuName}-${index}`}>
-        <td>{row.menuName}</td>
+    return orderedRows.map((row) => (
+      <S.TableRow
+        key={`${row.menuSeq}-${row.isOption}-${row.parentMenuSeq}-${row.menuName}`}
+        isOption={row.isOption === 1}
+      >
+        <td>
+          <S.MenuName isOption={row.isOption === 1}>{row.menuName}</S.MenuName>
+        </td>
         <td>{formatCurrency(row.unitPrice ?? 0)}</td>
         <td>{`${row.salesCount ?? 0}개`}</td>
         <td>{formatCurrency(row.totalSalesAmount ?? 0)}</td>
-      </tr>
+      </S.TableRow>
     ));
   };
 
-  const totalCount = rows.reduce((acc, cur) => acc + (cur.salesCount ?? 0), 0);
-  const totalAmount = rows.reduce(
+  const totalCount = orderedRows.reduce(
+    (acc, cur) => acc + (cur.salesCount ?? 0),
+    0
+  );
+  const totalAmount = orderedRows.reduce(
     (acc, cur) => acc + (cur.totalSalesAmount ?? 0),
     0
   );
@@ -143,7 +177,7 @@ export const MenuSalesHistoryTable = ({ rows }: Props) => {
         <S.SummaryRow>
           <td>{t('총계')}</td>
           <td>-</td>
-          <td>{`${totalCount}개`}</td>
+          <td>{`${totalCount}`}</td>
           <td>{formatCurrency(totalAmount)}</td>
         </S.SummaryRow>
       </UIStyles.setting.Tbody>

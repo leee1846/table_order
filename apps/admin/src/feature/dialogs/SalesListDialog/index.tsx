@@ -16,7 +16,7 @@ import {
   type TDateRangePreset,
 } from '@repo/util/date';
 import * as UIStyles from '@repo/ui/styles';
-import { useAdminTranslation } from '@/config/i18n';
+import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { SalesAccessGuard } from '@/feature/SalesAccessGuard';
 import * as S from './salesListDialog.style';
@@ -228,6 +228,7 @@ export const SalesListDialog = ({
           onSelectDate={handleSelectDate}
           beforeYears={1}
           afterYears={1}
+          i18nInstance={adminI18n}
         />
       )}
 

@@ -30,8 +30,13 @@ export interface IMenuSalesSummary {
 }
 
 export interface IMenuSalesHistoryItem {
+  categorySeq: number;
   categoryName: string;
+  menuSeq: number;
   menuName: string;
+  parentMenuSeq: number;
+  parentMenuName: string;
+  isOption: 0 | 1;
   unitPrice: number;
   salesCount: number;
   totalSalesAmount: number;

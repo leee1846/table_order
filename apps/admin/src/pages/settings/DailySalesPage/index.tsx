@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { BasicButton, Calender } from '@repo/ui/components';
+import { Calender } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
@@ -9,8 +9,7 @@ import type { TPaymentType } from '@repo/api/types';
 import { formatDateToYYYYMMDD, getTodayDateString } from '@repo/util/date';
 import { toast } from '@repo/feature/utils';
 import { useAuth } from '@/hooks/useAuth';
-import { useAdminTranslation } from '@/config/i18n';
-import adminI18n from '@/config/i18n';
+import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { DailySalesTable, type TDailySaleRow } from './Table';
 import * as S from './dailySalesPage.style';
 import { CapacitorApp } from '@repo/util/app';

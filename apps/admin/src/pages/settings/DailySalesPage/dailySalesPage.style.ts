@@ -83,7 +83,7 @@ export const TabButton = styled.button<{ selected: boolean }>`
   border-radius: 999px;
   border: 1px solid
     ${({ selected }) =>
-      selected ? theme.colors.primary[500] : theme.colors.grey[300]};
+      selected ? theme.colors.primary[300] : theme.colors.grey[300]};
   background-color: ${({ selected }) =>
     selected ? theme.colors.primary[100] : theme.colors.grey[100]};
   color: ${({ selected }) =>

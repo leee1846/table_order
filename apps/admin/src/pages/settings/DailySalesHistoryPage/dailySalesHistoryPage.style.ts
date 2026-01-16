@@ -40,7 +40,7 @@ export const DateRange = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-right: 20px;
+  margin-right: 15px;
 `;
 
 export const DateButton = styled.button`

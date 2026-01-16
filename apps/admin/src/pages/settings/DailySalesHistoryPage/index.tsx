@@ -5,8 +5,7 @@ import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { toast } from '@repo/feature/utils';
-import { useAdminTranslation } from '@/config/i18n';
-import adminI18n from '@/config/i18n';
+import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import {
   formatDateTime,
   getDateRangeByPreset,
@@ -164,7 +163,7 @@ export const DailySalesHistoryPage = () => {
               </S.DateButton>
             </S.DateRange>
             <BasicButton
-              variant="Solid_Navy_L"
+              variant="Solid_Navy_M"
               onClick={handleSearch}
               disabled={!startDate || !endDate}
             >

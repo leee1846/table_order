@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Calender, BasicButton } from '@repo/ui/components';
+import {
+  Calender,
+  BasicButton,
+  CheckButton,
+  Dropdown,
+} from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
-import { useAdminTranslation } from '@/config/i18n';
-import adminI18n from '@/config/i18n';
+import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { getDateRangeByPreset, toYYYYMMDDRange } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetMenuSalesHistory, useGetCategoryList } from '@repo/api/queries';
@@ -21,6 +25,7 @@ export const MenuSalesHistoryPage = () => {
   const [appliedRange, setAppliedRange] = useState(defaultRange);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<string | null>(null);
 
   // 1단계: 카테고리 리스트 먼저 가져오기
   const { data: categoryListResponse } = useGetCategoryList(
@@ -69,11 +74,54 @@ export const MenuSalesHistoryPage = () => {
   const historyItems = menuSalesHistoryResponse?.data ?? [];
 
   const filteredItems = useMemo(() => {
-    if (!selectedCategories.length) return historyItems;
-    return historyItems.filter((item) =>
-      selectedCategories.includes(item.categoryName ?? '')
-    );
-  }, [historyItems, selectedCategories]);
+    let items = historyItems;
+
+    // 카테고리 필터링
+    if (selectedCategories.length) {
+      items = items.filter((item) =>
+        selectedCategories.includes(item.categoryName ?? '')
+      );
+    }
+
+    // 정렬 적용
+    if (sortBy) {
+      const sortedItems = [...items];
+      switch (sortBy) {
+        case 'totalSalesAmount_desc':
+          return sortedItems.sort(
+            (a, b) => (b.totalSalesAmount ?? 0) - (a.totalSalesAmount ?? 0)
+          );
+        case 'totalSalesAmount_asc':
+          return sortedItems.sort(
+            (a, b) => (a.totalSalesAmount ?? 0) - (b.totalSalesAmount ?? 0)
+          );
+        case 'salesCount_desc':
+          return sortedItems.sort(
+            (a, b) => (b.salesCount ?? 0) - (a.salesCount ?? 0)
+          );
+        case 'salesCount_asc':
+          return sortedItems.sort(
+            (a, b) => (a.salesCount ?? 0) - (b.salesCount ?? 0)
+          );
+        case 'unitPrice_desc':
+          return sortedItems.sort(
+            (a, b) => (b.unitPrice ?? 0) - (a.unitPrice ?? 0)
+          );
+        case 'unitPrice_asc':
+          return sortedItems.sort(
+            (a, b) => (a.unitPrice ?? 0) - (b.unitPrice ?? 0)
+          );
+        case 'menuName_asc':
+          return sortedItems.sort((a, b) =>
+            (a.menuName ?? '').localeCompare(b.menuName ?? '', 'ko')
+          );
+        default:
+          return items;
+      }
+    }
+
+    return items;
+  }, [historyItems, selectedCategories, sortBy]);
 
   const handleSelectDate = (start: string, end: string) => {
     setStartDate(start);
@@ -114,6 +162,19 @@ export const MenuSalesHistoryPage = () => {
   const allSelected =
     categories.length > 0 && selectedCategories.length === categories.length;
 
+  const sortOptions = useMemo(
+    () => [
+      { value: 'totalSalesAmount_desc', label: t('매출액 높은 순') },
+      { value: 'totalSalesAmount_asc', label: t('매출액 낮은 순') },
+      { value: 'salesCount_desc', label: t('판매수 높은 순') },
+      { value: 'salesCount_asc', label: t('판매수 낮은 순') },
+      { value: 'unitPrice_desc', label: t('단가 높은 순') },
+      { value: 'unitPrice_asc', label: t('단가 낮은 순') },
+      { value: 'menuName_asc', label: t('메뉴명 가나다 순') },
+    ],
+    [t]
+  );
+
   return (
     <>
       <UIStyles.setting.TablePageContainer>
@@ -124,6 +185,12 @@ export const MenuSalesHistoryPage = () => {
           </S.Title>
 
           <S.FilterBar>
+            <Dropdown
+              options={sortOptions}
+              value={sortBy}
+              onChange={(value) => setSortBy(value as string)}
+              placeholder={t('정렬 선택')}
+            />
             <S.Actions>
               {/* <BasicButton
                 variant="Solid_Navy_M"
@@ -156,7 +223,7 @@ export const MenuSalesHistoryPage = () => {
             </S.DateRange>
 
             <BasicButton
-              variant="Solid_Navy_L"
+              variant="Solid_Navy_M"
               onClick={handleSearch}
               disabled={!startDate || !endDate}
             >
@@ -166,14 +233,13 @@ export const MenuSalesHistoryPage = () => {
 
           <S.CategoryFilter>
             <S.CategoryHeader>
-              <S.SelectAll>
-                <input
-                  type="checkbox"
-                  checked={allSelected}
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                />
-                {t('카테고리 전체선택')}
-              </S.SelectAll>
+              <CheckButton
+                checked={allSelected}
+                onChange={(checked) => handleSelectAll(checked)}
+                customStyle={S.SelectAll}
+              >
+                <p>{t('카테고리 전체선택')}</p>
+              </CheckButton>
             </S.CategoryHeader>
             <S.CategoryChips>
               {categories.map((category) => (

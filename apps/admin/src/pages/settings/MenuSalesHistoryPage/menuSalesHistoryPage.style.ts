@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
@@ -40,7 +41,7 @@ export const DateRange = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-right: 20px;
+  margin-right: 15px;
 `;
 
 export const DateButton = styled.button`
@@ -93,7 +94,10 @@ export const CategoryFilter = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border: 1px solid red;
+  border: 1px solid ${theme.colors.grey[200]};
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 12px;
 `;
 
 export const CategoryHeader = styled.div`
@@ -102,43 +106,42 @@ export const CategoryHeader = styled.div`
   gap: 8px;
   ${TYPOGRAPHY.ST_3}
   color: ${theme.colors.grey[700]};
+  border-bottom: 1px solid ${theme.colors.grey[200]};
+  padding-bottom: 15px;
 `;
 
 export const CategoryChips = styled.div`
+  padding-top: 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 15px;
 `;
 
 export const Chip = styled.button<{ selected: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
   padding: 8px 12px;
   border-radius: 999px;
   border: 1px solid
     ${({ selected }) =>
-      selected ? theme.colors.primary[500] : theme.colors.grey[300]};
+      selected ? theme.colors.primary[300] : theme.colors.grey[300]};
   background-color: ${({ selected }) =>
     selected ? theme.colors.primary[100] : theme.colors.grey[50]};
   color: ${({ selected }) =>
     selected ? theme.colors.primary[700] : theme.colors.grey[700]};
-  ${TYPOGRAPHY.CT_2}
+  ${TYPOGRAPHY.ST_5}
   cursor: pointer;
 `;
 
-export const SelectAll = styled.label`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  ${TYPOGRAPHY.ST_3}
+export const SelectAll = css`
+  ${TYPOGRAPHY.MT_7}
   color: ${theme.colors.grey[800]};
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  input {
-    width: 16px;
-    height: 16px;
+  > div {
+    width: 22px;
+    height: 22px;
   }
 `;
 
@@ -170,6 +173,28 @@ export const SummaryRow = styled.tr`
     font-weight: 700;
     color: ${theme.colors.grey[800]};
   }
+`;
+
+export const TableRow = styled.tr<{ isOption?: boolean }>`
+  ${({ isOption }) =>
+    isOption &&
+    `
+    background-color: ${theme.colors.grey[50]};
+
+    & > td {
+      color: ${theme.colors.grey[700]};
+    }
+  `}
+
+  & > td:first-of-type {
+    padding-left: ${({ isOption }) => (isOption ? '16px' : '0')};
+  }
+`;
+
+export const MenuName = styled.span<{ isOption?: boolean }>`
+  ${TYPOGRAPHY.ST_3}
+  color: ${({ isOption }) =>
+    isOption ? theme.colors.grey[700] : theme.colors.grey[900]};
 `;
 
 export const IconWrapper = styled.div`
