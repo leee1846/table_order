@@ -127,21 +127,19 @@ export const Stores = ({
         >
           매장 정보
         </S.TabButton>
-        {mode === 'edit' && (
-          <S.TabButton
-            type="button"
-            isActive={activeTab === 'memberInfo'}
-            onClick={() => setActiveTab('memberInfo')}
-          >
-            계정 정보
-          </S.TabButton>
-        )}
         <S.TabButton
           type="button"
           isActive={activeTab === 'settingInfo'}
           onClick={() => setActiveTab('settingInfo')}
         >
           세팅 정보
+        </S.TabButton>
+        <S.TabButton
+          type="button"
+          isActive={activeTab === 'memberInfo'}
+          onClick={() => setActiveTab('memberInfo')}
+        >
+          계정 정보
         </S.TabButton>
       </S.TabContainer>
 

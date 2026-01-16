@@ -4,21 +4,23 @@ import { useState } from 'react';
 import * as S from '@/pages/LoginPage/loginPage.style';
 import {
   capsSmartOrderBlueGreyLogo,
-  capsSmartOrderWhiteLogo,
   VisibilityIcon,
   VisibilityOffIcon,
 } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { usePostLogin } from '@repo/api/queries';
-import { openConfirmDialog } from '@repo/feature/utils';
+import { usePostLogin, usePutMemberPassword } from '@repo/api/queries';
+import { openConfirmDialog, toast } from '@repo/feature/utils';
 import { setAccessToken, setRefreshToken } from '@repo/api/auth';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { initializeSseConnection } from '@/utils/sseConnection';
+import { CapacitorApp } from '@repo/util/app';
+import { LoginPasswordChangeModal } from './LoginPasswordChangeModal';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const { clearAuth } = useAuthStore();
 
   // 상태 관리: 입력값 및 에러 메시지
   const [id, setId] = useState('');
@@ -30,6 +32,12 @@ export const LoginPage = () => {
   const [passwordInputType, setPasswordInputType] = useState<
     'password' | 'text'
   >('password');
+
+  // 비밀번호 변경 모달 상태
+  const [isPasswordChangeModalOpen, setIsPasswordChangeModalOpen] =
+    useState(false);
+  const [loginUserId, setLoginUserId] = useState('');
+  const [loginUserPassword, setLoginUserPassword] = useState('');
 
   // 아이디 입력 핸들러: 실시간 유효성 검사
   const handleIdChange = (value: string) => {
@@ -55,6 +63,7 @@ export const LoginPage = () => {
 
   // 로그인 API 훅
   const { mutateAsync: login } = usePostLogin();
+  const { mutateAsync: updatePassword } = usePutMemberPassword();
 
   // 로그인 처리 함수
   const handleLogin = async () => {
@@ -89,6 +98,17 @@ export const LoginPage = () => {
       return;
     }
 
+    if (response.data.isPasswordChangeRequired && !CapacitorApp.isNative()) {
+      setAccessToken(response.data.accessToken);
+      setRefreshToken(response.data.refreshToken);
+      useAuthStore.getState().refreshTokenInfo();
+      toast('비밀번호를 변경해주세요.');
+      setLoginUserId(id);
+      setLoginUserPassword(password);
+      setIsPasswordChangeModalOpen(true);
+      return;
+    }
+
     // 5단계: 로그인 성공 - 토큰 저장 및 페이지 이동
     setAccessToken(response.data.accessToken);
     setRefreshToken(response.data.refreshToken);
@@ -96,7 +116,46 @@ export const LoginPage = () => {
     useAuthStore.getState().refreshTokenInfo();
     // sse 연결
     initializeSseConnection();
-    navigate(ROUTES.ROOT.generate()); // 루트 경로로 이동 (router에서 /tables로 리디렉트됨)
+    navigate(ROUTES.ROOT.generate()); // 루트 경로로 이동 (router에서 리디렉트됨)
+  };
+
+  // 비밀번호 변경 처리
+  const handlePasswordChangeSubmit = async (newPassword: string) => {
+    // 비밀번호 변경 API 호출
+    await updatePassword({
+      memberId: loginUserId,
+      memberPassword: newPassword,
+      existingMemberPassword: loginUserPassword,
+    });
+
+    // 변경된 비밀번호로 재로그인
+    const response = await login({
+      id: loginUserId,
+      pw: newPassword,
+    });
+
+    if (!response.data.loginResult) {
+      openConfirmDialog({
+        title: t('로그인 실패'),
+        content: response.status.userMessage,
+      });
+      clearAuth();
+      setIsPasswordChangeModalOpen(false);
+      return;
+    }
+
+    // 로그인 성공 처리
+    setAccessToken(response.data.accessToken);
+    setRefreshToken(response.data.refreshToken);
+    useAuthStore.getState().refreshTokenInfo();
+    initializeSseConnection();
+
+    // 모달 닫기
+    setIsPasswordChangeModalOpen(false);
+
+    toast('비밀번호가 변경되었습니다.');
+    // 페이지 이동
+    navigate(ROUTES.ROOT.generate());
   };
 
   // 비밀번호 표시/숨김 토글 컴포넌트
@@ -126,42 +185,51 @@ export const LoginPage = () => {
   };
 
   return (
-    <S.Container>
-      <img
-        src={capsSmartOrderBlueGreyLogo}
-        alt="logo"
-        style={{ width: '200px' }}
-      />
+    <>
+      <S.Container>
+        <img
+          src={capsSmartOrderBlueGreyLogo}
+          alt="logo"
+          style={{ width: '200px' }}
+        />
 
-      <S.LoginContainer>
-        <div>
-          <S.InputTitle>{t('아이디')}</S.InputTitle>
-          <Input
-            placeholder={t('아이디를 입력해주세요.')}
-            onChange={handleIdChange}
-            value={id}
-            errorMessage={idErrorMessage}
-          />
-        </div>
-        <div>
-          <S.InputTitle>{t('비밀번호')}</S.InputTitle>
-          <Input
-            type={passwordInputType}
-            placeholder={t('비밀번호를 입력해주세요.')}
-            onChange={handlePasswordChange}
-            value={password}
-            rightComponent={passwordInputTextVisibilityComponent()}
-            errorMessage={passwordErrorMessage}
-          />
-        </div>
-        <BasicButton
-          variant="Solid_Navy_XL"
-          customStyle={S.buttonCss}
-          onClick={handleLogin}
-        >
-          {t('로그인')}
-        </BasicButton>
-      </S.LoginContainer>
-    </S.Container>
+        <S.LoginContainer>
+          <div>
+            <S.InputTitle>{t('아이디')}</S.InputTitle>
+            <Input
+              placeholder={t('아이디를 입력해주세요.')}
+              onChange={handleIdChange}
+              value={id}
+              errorMessage={idErrorMessage}
+            />
+          </div>
+          <div>
+            <S.InputTitle>{t('비밀번호')}</S.InputTitle>
+            <Input
+              type={passwordInputType}
+              placeholder={t('비밀번호를 입력해주세요.')}
+              onChange={handlePasswordChange}
+              value={password}
+              rightComponent={passwordInputTextVisibilityComponent()}
+              errorMessage={passwordErrorMessage}
+            />
+          </div>
+          <BasicButton
+            variant="Solid_Navy_XL"
+            customStyle={S.buttonCss}
+            onClick={handleLogin}
+          >
+            {t('로그인')}
+          </BasicButton>
+        </S.LoginContainer>
+      </S.Container>
+
+      <LoginPasswordChangeModal
+        isOpen={isPasswordChangeModalOpen}
+        onClose={() => setIsPasswordChangeModalOpen(false)}
+        onConfirm={handlePasswordChangeSubmit}
+        existingPassword={loginUserPassword}
+      />
+    </>
   );
 };
