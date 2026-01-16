@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -39,6 +40,7 @@ export const SalesAccessGuard = ({
 
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const prevPathnameRef = useRef(location.pathname);
 
   const hasContent = Boolean(children);
   const isNative = CapacitorApp.isNative();
@@ -66,8 +68,13 @@ export const SalesAccessGuard = ({
      * 네이티브 환경에서 매출 상세 잠금 설정이 활성화되어 있으면 비밀번호 인증 모달을 표시
      */
     const checkAccess = async () => {
-      // 보안을 위해 먼저 잠금 상태로 설정
-      setIsUnlocked(false);
+      // 페이지가 변경되었는지 확인
+      const isPageChanged = prevPathnameRef.current !== location.pathname;
+      if (isPageChanged) {
+        prevPathnameRef.current = location.pathname;
+        // 페이지 이동 시마다 인증 상태 초기화 (보안)
+        setIsUnlocked(false);
+      }
 
       // 웹 환경이면 인증 없이 바로 접근 허용
       if (!isNative) {
@@ -96,6 +103,11 @@ export const SalesAccessGuard = ({
         return;
       }
 
+      // 페이지가 변경되지 않았고 이미 인증되었으면 모달을 다시 띄우지 않음
+      if (!isPageChanged && isUnlocked) {
+        return;
+      }
+
       // 인증이 필요하면 비밀번호 입력 모달 표시
       setIsModalOpen(true);
     };
@@ -106,14 +118,8 @@ export const SalesAccessGuard = ({
     return () => {
       isCancelled = true;
     };
-  }, [
-    hasContent,
-    isNative,
-    refresh,
-    shopDetailData,
-    location.pathname,
-    revalidateKey,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasContent, isNative, location.pathname, revalidateKey]);
 
   const handleSalesAuthSubmit = useCallback(
     async (password: string) => {
