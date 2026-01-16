@@ -60,6 +60,13 @@ export const NavButton = styled.button`
   cursor: pointer;
 `;
 
+export const CalendarDate = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: ${theme.colors.grey[700]};
+`;
+
 export const CalendarGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -92,7 +99,7 @@ export const DayNumber = styled.span<{ dimmed?: boolean }>`
     dimmed ? theme.colors.grey[400] : theme.colors.grey[800]};
 `;
 
-export const Event = styled.div`
+export const Event = styled.button`
   margin-top: 4px;
   padding: 8px 10px;
   border-radius: 10px;
@@ -103,6 +110,9 @@ export const Event = styled.div`
   gap: 4px;
   ${TYPOGRAPHY.ST_3}
   width: fit-content;
+  border: none;
+  cursor: pointer;
+  text-align: left;
 `;
 
 export const EmptyState = styled.div`
@@ -111,4 +121,76 @@ export const EmptyState = styled.div`
   text-align: center;
   ${TYPOGRAPHY.ST_3}
   color: ${theme.colors.grey[500]};
+`;
+
+export const ModalCard = styled.div`
+  background-color: ${theme.colors.white};
+  border-radius: 18px;
+  padding: 28px 28px 24px;
+  min-width: 420px;
+  max-width: 520px;
+  box-shadow: 0px 8px 28px rgba(0, 0, 0, 0.16);
+  border: 1px solid ${theme.colors.grey[200]};
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+export const ModalHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+`;
+
+export const ModalTitle = styled.h2`
+  ${TYPOGRAPHY.MT_2}
+  color: ${theme.colors.grey[800]};
+  margin: 0;
+`;
+
+export const CloseButton = styled.button`
+  cursor: pointer;
+  position: fixed;
+  right: 24px;
+`;
+
+export const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: ${theme.colors.grey[200]};
+`;
+
+export const StatGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  row-gap: 18px;
+  column-gap: 24px;
+`;
+
+export const StatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+`;
+
+export const StatLabel = styled.span`
+  ${TYPOGRAPHY.ST_3}
+  color: ${theme.colors.grey[600]};
+`;
+
+export const StatValue = styled.span`
+  ${TYPOGRAPHY.MT_4}
+  color: ${theme.colors.grey[800]};
+`;
+
+export const CancelValue = styled(StatValue)`
+  color: ${theme.colors.semantic[500]};
+`;
+
+export const ButtonRow = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 `;

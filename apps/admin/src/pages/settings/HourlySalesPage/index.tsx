@@ -5,6 +5,7 @@ import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
+import adminI18n from '@/config/i18n';
 import { getDateRangeByPreset, toYYYYMMDDRange } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetHourlySales } from '@repo/api/queries';
@@ -131,6 +132,7 @@ export const HourlySalesPage = () => {
           onSelectDate={handleSelectDate}
           beforeYears={1}
           afterYears={1}
+          i18nInstance={adminI18n}
         />
       )}
     </>

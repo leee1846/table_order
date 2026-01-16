@@ -9,12 +9,9 @@ import * as S from './menuSalesHistoryPage.style';
 
 interface Props {
   rows: IMenuSalesHistoryItem[];
-  isLoading?: boolean;
 }
 
-const COLUMN_LENGTH = 4;
-
-export const MenuSalesHistoryTable = ({ rows, isLoading }: Props) => {
+export const MenuSalesHistoryTable = ({ rows }: Props) => {
   const { t } = useAdminTranslation();
   const [showSalesCountTooltip, setShowSalesCountTooltip] = useState(false);
   const [showTotalSalesTooltip, setShowTotalSalesTooltip] = useState(false);
@@ -57,20 +54,10 @@ export const MenuSalesHistoryTable = ({ rows, isLoading }: Props) => {
   }, [showSalesCountTooltip, showTotalSalesTooltip]);
 
   const renderRows = () => {
-    if (isLoading) {
-      return (
-        <S.EmptyRow>
-          <td colSpan={COLUMN_LENGTH}>
-            {t('메뉴별 매출 내역을 불러오는 중입니다.')}
-          </td>
-        </S.EmptyRow>
-      );
-    }
-
     if (!rows.length) {
       return (
         <S.EmptyRow>
-          <td colSpan={COLUMN_LENGTH}>{t('표시할 매출 내역이 없습니다.')}</td>
+          <td>{t('표시할 매출 내역이 없습니다.')}</td>
         </S.EmptyRow>
       );
     }
@@ -142,9 +129,7 @@ export const MenuSalesHistoryTable = ({ rows, isLoading }: Props) => {
                 />
                 {showTotalSalesTooltip && (
                   <S.Tooltip>
-                    <S.TooltipText>
-                      {t('할인액 미반영')}
-                    </S.TooltipText>
+                    <S.TooltipText>{t('할인액 미반영')}</S.TooltipText>
                     <S.TooltipArrow />
                   </S.Tooltip>
                 )}

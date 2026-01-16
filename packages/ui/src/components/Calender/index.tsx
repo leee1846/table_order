@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import type { i18n as I18nInstance } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../index';
 import {
   ArrowDropDownIcon,
@@ -29,10 +31,26 @@ interface Props {
   startDate: string; // 'YYYY-MM-DD'
   endDate: string; // 'YYYY-MM-DD'
   onSelectDate: (startDate: string, endDate: string) => void;
+  i18nInstance?: I18nInstance; // i18n 인스턴스
+}
+
+interface CalenderTranslations {
+  days: {
+    sunday: string;
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+  };
+  year: string;
+  month: string;
+  complete: string;
+  selectedDays: (count: number) => string;
 }
 
 // 상수 정의
-const DAYS = ['일', '월', '화', '수', '목', '금', '토'] as const;
 const getCurrentYear = () => new Date().getFullYear();
 
 export const Calender = ({
@@ -43,10 +61,49 @@ export const Calender = ({
   startDate,
   endDate,
   onSelectDate,
+  i18nInstance,
 }: Props) => {
+  const { t } = useTranslation('admin', {
+    i18n: i18nInstance as I18nInstance,
+  });
+
   const currentYear = getCurrentYear();
   const MIN_YEAR = beforeYears !== undefined ? currentYear - beforeYears : null;
   const MAX_YEAR = afterYears !== undefined ? currentYear + afterYears : null;
+
+  // 번역 데이터 생성
+  const translationsData: CalenderTranslations = {
+    days: {
+      sunday: t('일'),
+      monday: t('월'),
+      tuesday: t('화'),
+      wednesday: t('수'),
+      thursday: t('목'),
+      friday: t('금'),
+      saturday: t('토'),
+    },
+    year: t('년도'),
+    month: t('월_날짜'),
+    complete: t('선택 완료'),
+    selectedDays: (count: number) => {
+      const template = t('총 {{count}}일 선택완료', { count });
+      if (template === '총 {{count}}일 선택완료') {
+        return `총 ${count}일 선택완료`;
+      }
+      return template;
+    },
+  };
+
+  // 번역에서 요일 배열 생성
+  const DAYS = [
+    translationsData.days.sunday,
+    translationsData.days.monday,
+    translationsData.days.tuesday,
+    translationsData.days.wednesday,
+    translationsData.days.thursday,
+    translationsData.days.friday,
+    translationsData.days.saturday,
+  ] as const;
 
   // 초기 년/월: startDate가 있으면 startDate 기준, 없으면 현재 날짜 기준
   const initialYearMonth = getYearMonthFromDate(startDate);
@@ -311,7 +368,7 @@ export const Calender = ({
   }, [year]);
 
   return (
-    <ModalBackground onClick={onClose} position="top">
+    <ModalBackground onClick={onClose} position="center">
       <S.Container>
         <S.CloseButton type="button" onClick={onClose}>
           <CloseIcon width={32} height={32} color={theme.colors.grey[700]} />
@@ -335,13 +392,14 @@ export const Calender = ({
               max={MAX_YEAR ?? undefined}
               width={yearInput.length}
             />
-            년
+            {translationsData.year}
             <ArrowDropDownIcon
               width={28}
               height={28}
               color={theme.colors.grey[500]}
             />
-            {month}월
+            {month}
+            {translationsData.month}
           </p>
           <button type="button" onClick={onClickNext}>
             <ChevronForwardIcon
@@ -385,8 +443,8 @@ export const Calender = ({
           customStyle={S.buttonCss}
         >
           {getSelectedDaysCount() > 0
-            ? `총 ${getSelectedDaysCount()}일 선택완료`
-            : '선택완료'}
+            ? translationsData.selectedDays(getSelectedDaysCount())
+            : translationsData.complete}
         </BasicButton>
       </S.Container>
     </ModalBackground>

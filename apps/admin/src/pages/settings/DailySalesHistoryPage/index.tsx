@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Calender, BasicButton } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
+import adminI18n from '@/config/i18n';
 import {
   formatDateTime,
   getDateRangeByPreset,
@@ -29,11 +31,30 @@ const formatWithWeekday = (date: string, t: TFunction) => {
 export const DailySalesHistoryPage = () => {
   const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
+  const location = useLocation();
   const defaultRange = useMemo(() => getDateRangeByPreset('thisWeek'), []);
+  const queryRange = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const start = params.get('startDate') ?? '';
+    const end = params.get('endDate') ?? '';
+    if (start || end) {
+      return {
+        startDate: start || end,
+        endDate: end || start,
+      };
+    }
+    return null;
+  }, [location.search]);
 
-  const [startDate, setStartDate] = useState<string>(defaultRange.startDate);
-  const [endDate, setEndDate] = useState<string>(defaultRange.endDate);
-  const [appliedRange, setAppliedRange] = useState(defaultRange);
+  const initialStartDate = queryRange?.startDate || defaultRange.startDate;
+  const initialEndDate = queryRange?.endDate || defaultRange.endDate;
+
+  const [startDate, setStartDate] = useState<string>(initialStartDate);
+  const [endDate, setEndDate] = useState<string>(initialEndDate);
+  const [appliedRange, setAppliedRange] = useState({
+    startDate: initialStartDate,
+    endDate: initialEndDate,
+  });
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
 
   const { data } = useGetDailySales(
@@ -166,6 +187,7 @@ export const DailySalesHistoryPage = () => {
           onSelectDate={handleSelectDate}
           beforeYears={1}
           afterYears={1}
+          i18nInstance={adminI18n}
         />
       )}
     </>

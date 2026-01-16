@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useAdminTranslation } from '@/config/i18n';
+import adminI18n from '@/config/i18n';
 import { theme } from '@repo/ui';
 import { Calender, Dropdown } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
@@ -140,6 +141,7 @@ export const SalesMenuPage = () => {
           onSelectDate={handleSelectDate}
           beforeYears={1}
           afterYears={1}
+          i18nInstance={adminI18n}
         />
       )}
     </>

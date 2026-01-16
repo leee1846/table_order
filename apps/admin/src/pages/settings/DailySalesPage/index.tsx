@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { BasicButton, Calender } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -9,6 +10,7 @@ import { formatDateToYYYYMMDD, getTodayDateString } from '@repo/util/date';
 import { toast } from '@repo/feature/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
+import adminI18n from '@/config/i18n';
 import { DailySalesTable, type TDailySaleRow } from './Table';
 import * as S from './dailySalesPage.style';
 import { CapacitorApp } from '@repo/util/app';
@@ -75,8 +77,14 @@ const buildPaymentRows = (
 export const DailySalesPage = () => {
   const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
-  const [selectedDate, setSelectedDate] =
-    useState<string>(getTodayDateString());
+  const location = useLocation();
+  const queryDate = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('date') || '';
+  }, [location.search]);
+  const [selectedDate, setSelectedDate] = useState<string>(
+    queryDate || getTodayDateString()
+  );
   const [activeTab, setActiveTab] = useState<TPaymentTab>(null);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
 
@@ -189,6 +197,7 @@ export const DailySalesPage = () => {
           onSelectDate={handleSelectDate}
           beforeYears={1}
           afterYears={1}
+          i18nInstance={adminI18n}
         />
       )}
     </>

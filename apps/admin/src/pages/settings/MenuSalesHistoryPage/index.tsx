@@ -3,17 +3,17 @@ import { Calender, BasicButton } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
-import { toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
+import adminI18n from '@/config/i18n';
 import { getDateRangeByPreset, toYYYYMMDDRange } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
-import { useGetMenuSalesHistory } from '@repo/api/queries';
+import { useGetMenuSalesHistory, useGetCategoryList } from '@repo/api/queries';
 import { MenuSalesHistoryTable } from './Table';
 import * as S from './menuSalesHistoryPage.style';
 
 export const MenuSalesHistoryPage = () => {
   const { t } = useAdminTranslation();
-  const { shopCode } = useAuth();
+  const { shopCode, shopSeq } = useAuth();
   const defaultRange = useMemo(() => getDateRangeByPreset('today'), []);
 
   const [startDate, setStartDate] = useState<string>(defaultRange.startDate);
@@ -22,6 +22,29 @@ export const MenuSalesHistoryPage = () => {
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
+  // 1단계: 카테고리 리스트 먼저 가져오기
+  const { data: categoryListResponse } = useGetCategoryList(
+    {
+      shopSeq: shopSeq ?? 0,
+    },
+    {
+      enabled: !!shopSeq,
+    }
+  );
+
+  const categories = useMemo(() => {
+    const categoryList = categoryListResponse?.data ?? [];
+    return categoryList.map((category) => category.categoryName);
+  }, [categoryListResponse]);
+
+  // 처음 카테고리 로드 시 전체 선택
+  useEffect(() => {
+    if (categories.length > 0 && selectedCategories.length === 0) {
+      setSelectedCategories(categories);
+    }
+  }, [categories, selectedCategories.length]);
+
+  // 2단계: 카테고리 로드 후 매출 데이터 가져오기
   const { startDate: apiStartDate, endDate: apiEndDate } = useMemo(
     () =>
       toYYYYMMDDRange({
@@ -31,34 +54,19 @@ export const MenuSalesHistoryPage = () => {
     [appliedRange]
   );
 
-  const { data: menuSalesHistoryResponse, isFetching } = useGetMenuSalesHistory(
+  const { data: menuSalesHistoryResponse } = useGetMenuSalesHistory(
     {
       shopCode: shopCode ?? '',
       startDate: apiStartDate,
       endDate: apiEndDate,
     },
     {
-      enabled: !!shopCode && !!apiStartDate && !!apiEndDate,
+      enabled:
+        !!shopCode && !!apiStartDate && !!apiEndDate && categories.length > 0,
     }
   );
 
   const historyItems = menuSalesHistoryResponse?.data ?? [];
-
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    historyItems.forEach((item) => {
-      if (item.categoryName) {
-        set.add(item.categoryName);
-      }
-    });
-    return Array.from(set);
-  }, [historyItems]);
-
-  useEffect(() => {
-    if (categories.length && selectedCategories.length === 0) {
-      setSelectedCategories(categories);
-    }
-  }, [categories, selectedCategories.length]);
 
   const filteredItems = useMemo(() => {
     if (!selectedCategories.length) return historyItems;
@@ -168,27 +176,21 @@ export const MenuSalesHistoryPage = () => {
               </S.SelectAll>
             </S.CategoryHeader>
             <S.CategoryChips>
-              {categories.map((category) => {
-                console.log(category);
-                return (
-                  <S.Chip
-                    key={category}
-                    type="button"
-                    selected={selectedCategories.includes(category)}
-                    onClick={() => toggleCategory(category)}
-                  >
-                    {category}
-                  </S.Chip>
-                );
-              })}
+              {categories.map((category) => (
+                <S.Chip
+                  key={category}
+                  type="button"
+                  selected={selectedCategories.includes(category)}
+                  onClick={() => toggleCategory(category)}
+                >
+                  {category}
+                </S.Chip>
+              ))}
             </S.CategoryChips>
           </S.CategoryFilter>
 
           <S.TableCard>
-            <MenuSalesHistoryTable
-              rows={filteredItems}
-              isLoading={isFetching}
-            />
+            <MenuSalesHistoryTable rows={filteredItems} />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>
@@ -202,6 +204,7 @@ export const MenuSalesHistoryPage = () => {
           onSelectDate={handleSelectDate}
           beforeYears={1}
           afterYears={1}
+          i18nInstance={adminI18n}
         />
       )}
     </>

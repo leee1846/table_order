@@ -563,6 +563,7 @@
   "등록된 이미지가 없습니다.": "No images registered.",
   "이미지를 선택해주세요.": "Please select an image.",
   "선택 완료": "selected",
+  "총 {{count}}일 선택완료": "{{count}} day selected",
   "추천 이미지": "Recommended images",
   "이 카테고리에 이미지가 없습니다.": "No images in this category.",
   "이미지를 불러올 수 없습니다.": "Unable to load image.",

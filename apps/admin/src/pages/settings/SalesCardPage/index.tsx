@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useAdminTranslation } from '@/config/i18n';
+import adminI18n from '@/config/i18n';
 import { Calender, Dropdown, Pagination } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from './salesCardPage.style';
@@ -218,6 +219,7 @@ export const SalesCardPage = () => {
           onSelectDate={onSelectDate}
           beforeYears={1}
           afterYears={1}
+          i18nInstance={adminI18n}
         />
       )}
     </>

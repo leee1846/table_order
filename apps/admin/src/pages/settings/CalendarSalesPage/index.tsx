@@ -3,6 +3,7 @@ import {
   CalendarMonthIcon,
   ChevronBackwardIcon,
   ChevronForwardIcon,
+  CloseIcon,
 } from '@repo/ui/icons';
 import * as UIStyles from '@repo/ui/styles';
 import { theme } from '@repo/ui';
@@ -11,6 +12,8 @@ import {
   getMonthDays,
   formatDateTime,
   formatDateToYYYYMMDD,
+  formatDateString,
+  formatDateToDash,
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
@@ -18,6 +21,9 @@ import { useGetCalendarSales } from '@repo/api/queries';
 import type { ICalendarSalesHistoryItem } from '@repo/api/types';
 import { getDays } from '@/constants/days';
 import type { TFunction } from 'i18next';
+import { BasicButton, ModalBackground } from '@repo/ui/components';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes';
 import * as S from './calendarSalesPage.style';
 
 const getWeekLabels = (t: TFunction) => getDays(t).map((day) => day.label);
@@ -25,8 +31,12 @@ const getWeekLabels = (t: TFunction) => getDays(t).map((day) => day.label);
 export const CalendarSalesPage = () => {
   const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
+  const navigate = useNavigate();
 
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedEntry, setSelectedEntry] =
+    useState<ICalendarSalesHistoryItem | null>(null);
 
   const year = useMemo(() => currentDate.getFullYear(), [currentDate]);
   const month = useMemo(() => currentDate.getMonth() + 1, [currentDate]);
@@ -35,7 +45,7 @@ export const CalendarSalesPage = () => {
     [currentDate]
   );
 
-  const { data: calendarSalesResponse, isFetching } = useGetCalendarSales(
+  const { data: calendarSalesResponse } = useGetCalendarSales(
     {
       shopCode: shopCode ?? '',
       yearMonth: currentYearMonth,
@@ -48,12 +58,16 @@ export const CalendarSalesPage = () => {
   const salesMap = useMemo(() => {
     const map = new Map<string, ICalendarSalesHistoryItem>();
     (calendarSalesResponse?.data ?? []).forEach((item) => {
-      map.set(item.saleDate, item);
+      // API에서 오는 saleDate를 'YYYY-MM-DD' 형식으로 통일
+      const formattedDate = formatDateToDash(item.saleDate);
+      if (formattedDate) {
+        map.set(formattedDate, item);
+      }
     });
     return map;
   }, [calendarSalesResponse?.data]);
 
-  const monthDays = useMemo(() => getMonthDays(year, month), [year, month]);
+  const { weeks } = useMemo(() => getMonthDays(year, month), [year, month]);
 
   const handlePrevMonth = () => {
     const newDate = new Date(year, month - 2, 1);
@@ -65,16 +79,67 @@ export const CalendarSalesPage = () => {
     setCurrentDate(newDate);
   };
 
-  const renderEvent = (date: Date) => {
-    const key = formatDateToYYYYMMDD(date);
-    const entry = salesMap.get(key);
+  /**
+   * 달력의 날짜(prev/current/next)를 실제 날짜 문자열로 변환합니다.
+   * Calender 컴포넌트의 convertToDateString 로직을 참고했습니다.
+   */
+  const convertToDateString = (
+    date: number,
+    dateType: 'prev' | 'current' | 'next'
+  ): string => {
+    if (dateType === 'current') {
+      return formatDateString(year, month, date);
+    }
+
+    if (dateType === 'prev') {
+      const prevMonth = month === 1 ? 12 : month - 1;
+      const prevYear = month === 1 ? year - 1 : year;
+      return formatDateString(prevYear, prevMonth, date);
+    }
+
+    // dateType === 'next'
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear = month === 12 ? year + 1 : year;
+    return formatDateString(nextYear, nextMonth, date);
+  };
+
+  const handleOpenModal = (dateString: string) => {
+    const entry = salesMap.get(dateString);
+    if (!entry) return;
+    setSelectedDate(dateString);
+    setSelectedEntry(entry);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedDate('');
+    setSelectedEntry(null);
+  };
+
+  const formatModalDate = () => {
+    if (!selectedDate) return '';
+    return formatDateTime(
+      selectedDate,
+      `YYYY${t('년도')} MM${t('월_날짜')} DD${t('일_날짜')}`
+    );
+  };
+
+  const handleViewDetails = () => {
+    if (!selectedDate) return;
+    navigate(
+      `${ROUTES.SETTINGS.SALES.SALES_DAILY.generate()}?date=${selectedDate}`
+    );
+    handleCloseModal();
+  };
+
+  const renderEvent = (dateString: string) => {
+    const entry = salesMap.get(dateString);
 
     if (!entry) {
       return null;
     }
 
     return (
-      <S.Event>
+      <S.Event type="button" onClick={() => handleOpenModal(dateString)}>
         <span>{`${entry.salesCount ?? 0}${t('건')}`}</span>
         <span>
           {formatCurrency(
@@ -86,19 +151,6 @@ export const CalendarSalesPage = () => {
   };
 
   const renderCalendar = () => {
-    if (isFetching && !calendarSalesResponse?.data) {
-      return (
-        <S.EmptyState>{t('달력 매출 내역을 불러오는 중입니다.')}</S.EmptyState>
-      );
-    }
-
-    if (!monthDays?.weeks?.length) {
-      return <S.EmptyState>{t('표시할 달력 정보가 없습니다.')}</S.EmptyState>;
-    }
-
-    const startOfMonth = new Date(year, month - 1, 1);
-    const prevMonthDate = new Date(year, month - 2, 1);
-    const nextMonthDate = new Date(year, month, 1);
     const weekLabels = getWeekLabels(t);
 
     return (
@@ -107,35 +159,14 @@ export const CalendarSalesPage = () => {
           <S.Weekday key={label}>{label}</S.Weekday>
         ))}
 
-        {monthDays.weeks.map((week, weekIndex) =>
+        {weeks.map((week, weekIndex) =>
           week.map((day, dayIndex) => {
-            const date =
-              day.type === 'prev'
-                ? new Date(
-                    prevMonthDate.getFullYear(),
-                    prevMonthDate.getMonth(),
-                    day.date
-                  )
-                : day.type === 'next'
-                  ? new Date(
-                      nextMonthDate.getFullYear(),
-                      nextMonthDate.getMonth(),
-                      day.date
-                    )
-                  : new Date(
-                      startOfMonth.getFullYear(),
-                      startOfMonth.getMonth(),
-                      day.date
-                    );
-
             const isOtherMonth = day.type !== 'current';
-
+            const dateString = convertToDateString(day.date, day.type);
             return (
               <S.DayCell key={`${weekIndex}-${dayIndex}`} dimmed={isOtherMonth}>
-                <S.DayNumber dimmed={isOtherMonth}>
-                  {date.getDate()}
-                </S.DayNumber>
-                {renderEvent(date)}
+                <S.DayNumber dimmed={isOtherMonth}>{day.date}</S.DayNumber>
+                {renderEvent(dateString)}
               </S.DayCell>
             );
           })
@@ -145,42 +176,100 @@ export const CalendarSalesPage = () => {
   };
 
   return (
-    <UIStyles.setting.TablePageContainer>
-      <S.Container>
-        <S.Title>
-          {t('매출 관리')}
-          <div /> <span>{t('달력 매출내역')}</span>
-        </S.Title>
+    <>
+      <UIStyles.setting.TablePageContainer>
+        <S.Container>
+          <S.Title>
+            {t('매출 관리')}
+            <div /> <span>{t('달력 매출내역')}</span>
+          </S.Title>
 
-        <S.CalendarCard>
-          <S.CalendarHeader>
-            <S.NavButton type="button" onClick={handlePrevMonth}>
-              <ChevronBackwardIcon
-                width={18}
-                height={18}
-                color={theme.colors.grey[700]}
-              />
-            </S.NavButton>
-            <div>
-              <CalendarMonthIcon
-                width={22}
-                height={22}
-                color={theme.colors.grey[800]}
-              />{' '}
-              {formatDateTime(currentDate, 'YYYY년 MM월')}
-            </div>
-            <S.NavButton type="button" onClick={handleNextMonth}>
-              <ChevronForwardIcon
-                width={18}
-                height={18}
-                color={theme.colors.grey[700]}
-              />
-            </S.NavButton>
-          </S.CalendarHeader>
+          <S.CalendarCard>
+            <S.CalendarHeader>
+              <S.NavButton type="button" onClick={handlePrevMonth}>
+                <ChevronBackwardIcon
+                  width={18}
+                  height={18}
+                  color={theme.colors.grey[700]}
+                />
+              </S.NavButton>
+              <S.CalendarDate>
+                <CalendarMonthIcon
+                  width={30}
+                  height={30}
+                  color={theme.colors.grey[800]}
+                />
+                {`${year}${t('년도')} ${month}${t('월_날짜')}`}
+              </S.CalendarDate>
+              <S.NavButton type="button" onClick={handleNextMonth}>
+                <ChevronForwardIcon
+                  width={18}
+                  height={18}
+                  color={theme.colors.grey[700]}
+                />
+              </S.NavButton>
+            </S.CalendarHeader>
 
-          {renderCalendar()}
-        </S.CalendarCard>
-      </S.Container>
-    </UIStyles.setting.TablePageContainer>
+            {renderCalendar()}
+          </S.CalendarCard>
+        </S.Container>
+      </UIStyles.setting.TablePageContainer>
+
+      {selectedEntry && (
+        <ModalBackground onClick={handleCloseModal}>
+          <S.ModalCard>
+            <S.ModalHeader>
+              <S.ModalTitle>{formatModalDate()}</S.ModalTitle>
+              <S.CloseButton type="button" onClick={handleCloseModal}>
+                <CloseIcon
+                  width={32}
+                  height={32}
+                  color={theme.colors.grey[600]}
+                />
+              </S.CloseButton>
+            </S.ModalHeader>
+
+            <S.Divider />
+
+            <S.StatGrid>
+              <S.StatItem>
+                <S.StatLabel>{t('총 매출')}</S.StatLabel>
+                <S.StatValue>
+                  {formatCurrency(selectedEntry.totalSalesAmount ?? 0)}
+                </S.StatValue>
+              </S.StatItem>
+              <S.StatItem>
+                <S.StatLabel>{t('총 결제금액')}</S.StatLabel>
+                <S.StatValue>
+                  {formatCurrency(selectedEntry.totalPaymentAmount ?? 0)}
+                </S.StatValue>
+              </S.StatItem>
+              <S.StatItem>
+                <S.StatLabel>{t('총 취소')}</S.StatLabel>
+                <S.CancelValue>
+                  {formatCurrency(selectedEntry.totalCancelAmount ?? 0)}
+                </S.CancelValue>
+              </S.StatItem>
+              <S.StatItem>
+                <S.StatLabel>{t('총 객수')}</S.StatLabel>
+                <S.StatValue>{`${selectedEntry.customerCount ?? 0}${t('명')}`}</S.StatValue>
+              </S.StatItem>
+            </S.StatGrid>
+
+            <S.ButtonRow>
+              <BasicButton
+                variant="Outline_Grey_2XL"
+                onClick={handleCloseModal}
+              >
+                {t('닫기')}
+              </BasicButton>
+              <BasicButton variant="Solid_Navy_2XL" onClick={handleViewDetails}>
+                {t('상세 내역')}
+              </BasicButton>
+            </S.ButtonRow>
+          </S.ModalCard>
+        </ModalBackground>
+      )}
+    </>
   );
 };
