@@ -12,12 +12,7 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
-import {
-  CapacitorApp,
-  SystemControl,
-  AndroidInfo,
-  AppStorage,
-} from '@repo/util/app';
+import { SystemControl, AppStorage } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -30,6 +25,7 @@ import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useShopThemePage } from './useShopThemePage';
 import { useDialogStore } from '@repo/feature/stores';
 import { clearAuthData } from '@/utils/auth';
+import { getDeviceInfo } from '@/utils/deviceInfo';
 
 /**
  * SSE(Server-Sent Events) 연결 및 실시간 메시지 처리를 담당하는 커스텀 훅
@@ -85,35 +81,7 @@ export const useSSEHandler = () => {
 
     const getDeviceData = async () => {
       // AndroidInfo에서 기기 정보 가져오기 (androidId가 필요하므로 먼저 실행)
-      let ipAddress: string | null = null;
-      let androidId: string | null = null;
-      let appInfo: Awaited<ReturnType<typeof CapacitorApp.getInfo>> | null =
-        null;
-
-      // 모두 성공할 때까지 반복
-      while (!ipAddress || !androidId || !appInfo) {
-        // 3개 모두 병렬 요청: IP 주소, Android ID, 앱 정보
-        [ipAddress, androidId, appInfo] = await Promise.all([
-          AndroidInfo.getIp(), // Android 기기 IP 주소 조회
-          AndroidInfo.getId(), // Android 기기 고유 ID 조회
-          CapacitorApp.getInfo(), // Capacitor 앱 정보 조회 (버전, 빌드 번호 등)
-        ]);
-
-        // 1개라도 실패하면 다이얼로그 표시 후 재시도
-        if (!ipAddress || !androidId || !appInfo) {
-          await new Promise<void>((resolve) => {
-            // 확인 다이얼로그 표시 (사용자가 확인 버튼을 누를 때까지 대기)
-            openConfirmDialog({
-              title: t('오류'),
-              content: t(
-                '디바이스 정보를 가져오는데 실패했습니다. 다시 시도해주세요.'
-              ),
-              confirmText: t('확인'),
-              onConfirm: resolve,
-            });
-          });
-        }
-      }
+      const { ipAddress, androidId, appInfo } = await getDeviceInfo({ t });
 
       // androidId를 얻었으므로, 먼저 GET 요청을 통해 서버에서 최신 device 데이터를 가져옴
       let fetchedDeviceData = null;
@@ -143,10 +111,10 @@ export const useSSEHandler = () => {
 
       const baseDeviceDetail = {
         ...(currentDeviceStoreData ?? {}),
-        ipAddress: ipAddress ?? '',
-        androidId: androidId ?? '',
-        version: appInfo.version ?? '',
-        buildNumber: appInfo.build ?? '',
+        ipAddress,
+        androidId,
+        version: appInfo.version,
+        buildNumber: appInfo.build,
       };
 
       await setDataAsync(baseDeviceDetail);

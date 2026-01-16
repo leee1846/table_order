@@ -4,6 +4,8 @@ import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
 import { usePostDeviceDetail } from '@repo/api/queries';
 import { useDeviceStore } from '@/stores/useDeviceStore';
+import { getDeviceInfo } from '@/utils/deviceInfo';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 
 /**
  * 시스템 상태(배터리, WiFi 신호) 모니터링 및 동기화를 담당하는 커스텀 훅
@@ -17,6 +19,7 @@ import { useDeviceStore } from '@/stores/useDeviceStore';
  * 2. 배터리 및 WiFi 신호 변경 감지 및 업데이트
  */
 export const useSystemStatusMonitor = () => {
+  const { t } = useAdminTranslation();
   const { data: deviceData, setDataAsync } = useDeviceData({
     skipInitialRequest: true,
   });
@@ -92,9 +95,27 @@ export const useSystemStatusMonitor = () => {
 
       // 상태 값이 변경된 경우에만 업데이트 수행
       if (shouldUpdateDeviceData) {
+        let deviceDataToUpdate = currentDeviceData;
+
+        // 🔒 deviceData가 없거나 필수 정보가 없으면 새로 가져오기
+        if (
+          !deviceDataToUpdate ||
+          !deviceDataToUpdate.androidId ||
+          !deviceDataToUpdate.ipAddress
+        ) {
+          const freshDeviceInfo = await getDeviceInfo({ t });
+          deviceDataToUpdate = {
+            ...(deviceDataToUpdate || {}),
+            androidId: freshDeviceInfo.androidId,
+            ipAddress: freshDeviceInfo.ipAddress,
+            version: freshDeviceInfo.appInfo.version,
+            buildNumber: freshDeviceInfo.appInfo.build,
+          };
+        }
+
         // 기존 디바이스 데이터와 새로운 배터리/WiFi 값을 병합
         const updatedDeviceData = {
-          ...(currentDeviceData || {}),
+          ...deviceDataToUpdate,
           ...(newBattery !== undefined && { battery: newBattery }),
           ...(newWifi !== undefined && { wifiSignal: String(newWifi) }),
         };
@@ -148,5 +169,5 @@ export const useSystemStatusMonitor = () => {
     return () => {
       SystemControl.stopMonitoring();
     };
-  }, [setDataAsync, postDeviceDetail]);
+  }, [setDataAsync, postDeviceDetail, t]);
 };

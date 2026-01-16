@@ -37,6 +37,7 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { Sidebar } from '@/pages/TablesPage/Sidebar';
+import { getDeviceInfo } from '@/utils/deviceInfo';
 
 // 헬퍼 함수: 주문 시간 포맷팅
 const formatOrderTime = (
@@ -85,7 +86,11 @@ export const TablesPage = () => {
 
   const { shopData } = useShopData();
   const { data: shopDetailData } = useShopDetailData();
-  const { data: deviceData, refresh: refreshDeviceData } = useDeviceData();
+  const {
+    data: deviceData,
+    refresh: refreshDeviceData,
+    setDataAsync: setDeviceData,
+  } = useDeviceData();
   const { data: tableGroupsData } = useTableGroupData();
   const { shopSetting } = shopDetailData ?? {};
 
@@ -289,17 +294,33 @@ export const TablesPage = () => {
 
   // 테이블 선택 처리
   const selectTable = async (table: TableWithStatus) => {
+    let currentDeviceData = deviceData;
+
+    // 🔒 필수 디바이스 정보가 없으면 새로 가져오기
+    if (!currentDeviceData?.androidId || !currentDeviceData?.ipAddress) {
+      const freshDeviceInfo = await getDeviceInfo({ t });
+      const updatedDeviceData = {
+        ...currentDeviceData,
+        androidId: freshDeviceInfo.androidId,
+        ipAddress: freshDeviceInfo.ipAddress,
+        version: freshDeviceInfo.appInfo.version,
+        buildNumber: freshDeviceInfo.appInfo.build,
+      };
+      await setDeviceData(updatedDeviceData);
+      currentDeviceData = updatedDeviceData;
+    }
+
     await createDeviceDetail({
       tableNumber: table.tableNumber,
       shopCode: shopData?.shopCode ?? '',
       deviceType: 'MENU',
       orderPosNumber: null,
-      androidId: deviceData?.androidId ?? '',
-      battery: deviceData?.battery ?? 0,
-      wifiSignal: deviceData?.wifiSignal ?? '',
-      ipAddress: deviceData?.ipAddress ?? '',
-      version: deviceData?.version ?? '',
-      buildNumber: deviceData?.buildNumber ?? '',
+      androidId: currentDeviceData.androidId!,
+      battery: currentDeviceData?.battery ?? 0,
+      wifiSignal: currentDeviceData?.wifiSignal ?? '',
+      ipAddress: currentDeviceData.ipAddress!,
+      version: currentDeviceData?.version ?? '',
+      buildNumber: currentDeviceData?.buildNumber ?? '',
     });
 
     await refreshDeviceData();

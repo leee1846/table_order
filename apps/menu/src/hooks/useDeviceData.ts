@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { useGetDeviceDetail } from '@repo/api/queries';
 import { useShopData } from './useShopData';
 import type { TDeviceType } from '@repo/api/types';
+import { getDeviceInfo } from '@/utils/deviceInfo';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 
 interface Props {
   /**
@@ -15,6 +17,7 @@ interface Props {
 export const useDeviceData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
+  const { t } = useAdminTranslation();
   const { shopData } = useShopData({ skipInitialRequest: true });
   const {
     data: storeData,
@@ -91,7 +94,21 @@ export const useDeviceData = (options?: Props) => {
     }
 
     if (result.data) {
-      setDataAsync(result.data.data);
+      let mergedData = result.data.data;
+
+      // 🔒 서버 응답에 androidId나 ipAddress가 없으면 새로 가져오기
+      if (!result.data.data.androidId || !result.data.data.ipAddress) {
+        const freshDeviceInfo = await getDeviceInfo({ t });
+        mergedData = {
+          ...result.data.data,
+          androidId: freshDeviceInfo.androidId,
+          ipAddress: freshDeviceInfo.ipAddress,
+          version: freshDeviceInfo.appInfo.version,
+          buildNumber: freshDeviceInfo.appInfo.build,
+        };
+      }
+
+      setDataAsync(mergedData);
     }
 
     return result.data?.data;
