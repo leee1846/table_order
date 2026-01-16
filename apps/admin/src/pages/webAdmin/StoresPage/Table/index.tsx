@@ -2,7 +2,7 @@ import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
-import type { IGetAdminShopItem } from 'node_modules/@repo/api/src/types/admin';
+import type { IGetAdminShopItem } from '@repo/api/types';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {

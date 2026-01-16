@@ -3,6 +3,7 @@ import { BasicButton } from '@repo/ui/components';
 import { StoreInfoTab } from '@/feature/AdminWeb/Stores/StoreInfoTab';
 import { MemberInfoTab } from '@/feature/AdminWeb/Stores/MemberInfoTab';
 import { SettingInfoTab } from '@/feature/AdminWeb/Stores/SettingInfoTab';
+import { ChangeHistoryDialog } from '../ChangeHistoryDialog';
 import * as S from './stores.style';
 import type {
   ICreateAdminMemberRequest,
@@ -34,6 +35,8 @@ export const Stores = ({
     useState<IGetAdminShopDetail>(DEFAULT_SHOP_DATA);
   const [memberFormData, setMemberFormData] =
     useState<ICreateAdminMemberRequest>(DEFAULT_MEMBER_DATA);
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  const [isMemberHistoryDialogOpen, setIsMemberHistoryDialogOpen] = useState(false);
 
   useEffect(() => {
     if (memberInitialData) {
@@ -65,6 +68,22 @@ export const Stores = ({
     await onSave(formData, memberFormData);
   };
 
+  const handleHistory = () => {
+    setIsHistoryDialogOpen(true);
+  };
+
+  const handleCloseHistoryDialog = () => {
+    setIsHistoryDialogOpen(false);
+  };
+
+  const handleMemberHistory = () => {
+    setIsMemberHistoryDialogOpen(true);
+  };
+
+  const handleCloseMemberHistoryDialog = () => {
+    setIsMemberHistoryDialogOpen(false);
+  };
+
   const title = mode === 'create' ? '매장 생성' : '매장 수정';
 
   return (
@@ -77,9 +96,23 @@ export const Stores = ({
             <p>{title}</p>
           </div>
         </S.Titles>
-        <BasicButton variant="Solid_Navy_M" onClick={handleSave}>
-          저장
-        </BasicButton>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {mode === 'edit' && (
+            <>
+              <BasicButton variant="Outline_Navy_M" onClick={handleHistory}>
+                매장 변경 이력
+              </BasicButton>
+              {memberInitialData?.memberId && (
+                <BasicButton variant="Outline_Navy_M" onClick={handleMemberHistory}>
+                  계정 변경 이력
+                </BasicButton>
+              )}
+            </>
+          )}
+          <BasicButton variant="Solid_Navy_M" onClick={handleSave}>
+            저장
+          </BasicButton>
+        </div>
       </S.Header>
 
       <S.TabContainer>
@@ -134,6 +167,24 @@ export const Stores = ({
           />
         )}
       </S.TabContent>
+      {mode === 'edit' && (
+        <>
+          <ChangeHistoryDialog
+            isOpen={isHistoryDialogOpen}
+            onClose={handleCloseHistoryDialog}
+            historyCode="SHOP"
+            historyId={initialData?.shopCode}
+          />
+          {memberInitialData?.memberId && (
+            <ChangeHistoryDialog
+              isOpen={isMemberHistoryDialogOpen}
+              onClose={handleCloseMemberHistoryDialog}
+              historyCode="MEMBER"
+              historyId={memberFormData?.memberId || memberInitialData?.memberId}
+            />
+          )}
+        </>
+      )}
     </S.Container>
   );
 };
