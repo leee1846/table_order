@@ -19,6 +19,9 @@ type TSSEConnectionState<T> = {
   isProcessingQueue: boolean;
   url: string | null;
   isReconnecting: boolean;
+  setIsReconnectingCallbacks: Set<
+    React.Dispatch<React.SetStateAction<boolean>>
+  >;
 };
 
 /**
@@ -59,13 +62,17 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       isProcessingQueue: false,
       url: null,
       isReconnecting: false,
+      setIsReconnectingCallbacks: new Set(),
     };
     sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
   }
 
-  // URL 저장 및 재연결 플래그 초기화
+  // URL 저장
   state.url = url;
-  state.isReconnecting = false;
+  // 재연결 시도 중이 아닐 때만 플래그 초기화
+  if (!state.isReconnecting) {
+    state.isReconnecting = false;
+  }
 
   // EventSource 생성 및 연결
   const eventSource = new EventSource(url);
@@ -73,9 +80,9 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 
   eventSource.onopen = () => {
     state.isConnected = true;
-    state.isReconnecting = false; // 재연결 성공 시 플래그 해제
-    // 모든 콜백 호출 (state.setIsConnected는 no-op일 수 있으므로 제거)
+    state.isReconnecting = false;
     state.setIsConnectedCallbacks.forEach((callback) => callback(true));
+    state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
   };
 
   // 메시지 큐 처리 함수
@@ -149,6 +156,9 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
           onConfirm: () => {
             if (state.url) {
               state.isReconnecting = true;
+              state.setIsReconnectingCallbacks.forEach((callback) =>
+                callback(true)
+              );
               connectSSE(key, state.url);
             }
           },
@@ -214,6 +224,7 @@ export const useSSEData = <T = unknown>(key: string) => {
         isProcessingQueue: false,
         url: null,
         isReconnecting: false,
+        setIsReconnectingCallbacks: new Set(),
       };
       sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
     }
@@ -249,4 +260,46 @@ export const useSSEData = <T = unknown>(key: string) => {
   }, [key, setData, setError, setIsConnected]);
 
   return { data, error, isConnected };
+};
+
+/**
+ * 모든 SSE 연결의 재연결 상태를 구독하는 Hook
+ * @returns 재연결 중인 SSE 연결이 하나라도 있으면 true
+ */
+export const useSSEReconnecting = (): boolean => {
+  const [isReconnecting, setIsReconnecting] = useState(false);
+
+  useEffect(() => {
+    // 하나라도 재연결 중이면 true 반환
+    const checkAnyReconnecting = () => {
+      for (const state of sseConnectionMap.values()) {
+        if (state.isReconnecting) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // 재연결 상태 변경 시 호출될 콜백
+    const updateReconnectingState = () => {
+      setIsReconnecting(checkAnyReconnecting());
+    };
+
+    // 초기 상태 설정
+    setIsReconnecting(checkAnyReconnecting());
+
+    // 모든 연결에 콜백 등록
+    for (const state of sseConnectionMap.values()) {
+      state.setIsReconnectingCallbacks.add(updateReconnectingState);
+    }
+
+    // cleanup: 모든 콜백 제거
+    return () => {
+      for (const state of sseConnectionMap.values()) {
+        state.setIsReconnectingCallbacks.delete(updateReconnectingState);
+      }
+    };
+  }, []);
+
+  return isReconnecting;
 };

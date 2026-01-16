@@ -5,6 +5,7 @@ import {
   useIsMutating,
 } from '@repo/api/tanstack-query';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
+import { useSSEReconnecting } from '@repo/feature/hooks';
 import { useState, type ReactNode } from 'react';
 
 interface Props {
@@ -15,12 +16,10 @@ interface Props {
  * QueryClientProvider 내부에서 전역 loading 상태를 감지하는 컴포넌트
  */
 function GlobalLoadingIndicator() {
-  // 전역 query fetching 상태 확인
-  const isFetching = useIsFetching(); //get 중이거나
-  // 전역 mutation 상태 확인
-  const isMutating = useIsMutating(); //post, put, delete 중이거나
-  // query 또는 mutation 중 하나라도 진행 중이면 loading 표시
-  const isLoading = isFetching > 0 || isMutating > 0;
+  const isFetching = useIsFetching();
+  const isMutating = useIsMutating();
+  const isSSEReconnecting = useSSEReconnecting();
+  const isLoading = isFetching > 0 || isMutating > 0 || isSSEReconnecting;
 
   if (!isLoading) {
     return null;
