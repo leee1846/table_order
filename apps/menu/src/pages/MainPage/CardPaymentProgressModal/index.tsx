@@ -25,7 +25,7 @@ export const CardPaymentProgressModal = ({ onClose, message }: Props) => {
           </S.Header>
 
           <S.InstructionText>
-            {message || t('카드를 투입구에 넣어주세요')}
+            {message || t('잠시만 기다려주세요')}
           </S.InstructionText>
 
           <S.CardImageWrapper>
