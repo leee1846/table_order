@@ -145,6 +145,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       // 재연결 시도 중이었다면 재연결 실패로 간주하여 플래그 해제
       if (state.isReconnecting) {
         state.isReconnecting = false;
+        state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
       }
 
       // 다이얼로그 표시 및 재연결 시도

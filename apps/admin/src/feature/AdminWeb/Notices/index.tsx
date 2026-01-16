@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BasicButton } from '@repo/ui/components';
 import { NoticesForm } from './NoticesForm';
+import { ChangeHistoryDialog } from '../ChangeHistoryDialog';
 import * as S from './notices.style';
 import { type NoticesFormData, DEFAULT_NOTICES_DATA } from './constants';
 
@@ -20,6 +21,7 @@ export const Notices = ({
   onDelete,
 }: Props) => {
   const [formData, setFormData] = useState<NoticesFormData>(DEFAULT_NOTICES_DATA);
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -35,6 +37,14 @@ export const Notices = ({
     if (onSave) {
       await onSave(formData);
     }
+  };
+
+  const handleHistory = () => {
+    setIsHistoryDialogOpen(true);
+  };
+
+  const handleCloseHistoryDialog = () => {
+    setIsHistoryDialogOpen(false);
   };
 
   const getTitle = () => {
@@ -57,7 +67,11 @@ export const Notices = ({
             <p>{getTitle()}</p>
           </div>
         </S.Titles>
-        {mode !== 'detail' && (
+        {mode === 'detail' ? (
+          <BasicButton variant="Outline_Navy_M" onClick={handleHistory}>
+            변경 이력
+          </BasicButton>
+        ) : (
           <div style={{ display: 'flex', gap: '8px' }}>
             {mode === 'edit' && onDelete && (
               <BasicButton variant="Outline_Grey_M" onClick={onDelete}>
@@ -78,6 +92,12 @@ export const Notices = ({
           updateFormData={updateFormData}
         />
       </S.Content>
+      <ChangeHistoryDialog
+        isOpen={isHistoryDialogOpen}
+        onClose={handleCloseHistoryDialog}
+        historyCode="NOTICE"
+        historyId={initialData?.id}
+      />
     </S.Container>
   );
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BasicButton } from '@repo/ui/components';
 import { AppHistoryForm } from './AppHistoryForm';
-import { AppHistoryHistoryDialog } from './AppHistoryHistoryDialog';
+import { ChangeHistoryDialog } from '../ChangeHistoryDialog';
 import * as S from './appHistories.style';
 import {
   type AppHistoriesFormData,
@@ -84,9 +84,10 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
           updateFormData={updateFormData}
         />
       </S.Content>
-      <AppHistoryHistoryDialog
+      <ChangeHistoryDialog
         isOpen={isHistoryDialogOpen}
         onClose={handleCloseHistoryDialog}
+        historyCode="APP_VERSION"
         historyId={initialData?.id}
       />
     </S.Container>
