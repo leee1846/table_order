@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
@@ -31,14 +32,15 @@ export const Title = styled.div`
 export const Filters = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 5px;
+`;
+
+export const FilterBtn = css`
+  margin-left: 10px;
 `;
 
 export const Section = styled.section`
-  background-color: ${theme.colors.white};
-  border-radius: 12px;
-  border: 1px solid ${theme.colors.grey[200]};
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -49,7 +51,7 @@ export const SectionHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  ${TYPOGRAPHY.ST_3}
+  ${TYPOGRAPHY.MT_5}
   color: ${theme.colors.grey[900]};
 `;
 
@@ -67,6 +69,7 @@ export const Card = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
+  border: 1px solid red;
 `;
 
 export const CardLabel = styled.span`
@@ -81,7 +84,4 @@ export const CardValue = styled.span`
 
 export const TableWrapper = styled.div`
   border: 1px solid ${theme.colors.grey[200]};
-  border-radius: 12px;
-  padding: 8px;
-  background-color: ${theme.colors.grey[50]};
 `;

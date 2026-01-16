@@ -549,19 +549,27 @@ const createSettingsRoutes = () => [
     children: [
       {
         index: true,
-        loader: () => redirect(ROUTES.SETTINGS.SALES.SUMMARY.generate()),
+        loader: () => {
+          if (CapacitorApp.isNative()) {
+            return redirect(ROUTES.SETTINGS.SALES.SUMMARY.generate());
+          }
+          return redirect(ROUTES.SETTINGS.SALES.SALES_DAILY.generate());
+        },
       },
       {
         path: ROUTES.SETTINGS.SALES.SUMMARY.path, //매출요약(앱)
         element: <SalesSummaryPage />,
+        loader: requireNativeLoader,
       },
       {
         path: ROUTES.SETTINGS.SALES.ORDER.path, //주문내역 (앱)
         element: <SalesOrderPage />,
+        loader: requireNativeLoader,
       },
       {
         path: ROUTES.SETTINGS.SALES.CARD.path, // 카드승인내역 (앱)
         element: <SalesCardPage />,
+        loader: requireNativeLoader,
       },
       // {
       //   path: ROUTES.SETTINGS.SALES.CASH.path,
@@ -570,30 +578,37 @@ const createSettingsRoutes = () => [
       {
         path: ROUTES.SETTINGS.SALES.MENU.path, //메뉴판매집계(앱)
         element: <SalesMenuPage />,
+        loader: requireNativeLoader,
       },
       {
         path: ROUTES.SETTINGS.SALES.SALES_DAILY.path, //당일매출 (웹)
         element: <DailySalesPage />,
+        loader: requireWebLoader,
       },
       {
         path: ROUTES.SETTINGS.SALES.SALES_DAILY_HISTORY.path, //일별매출내역 (웹)
         element: <DailySalesHistoryPage />,
+        loader: requireWebLoader,
       },
       {
         path: ROUTES.SETTINGS.SALES.SALES_HOURLY.path, //시간대별매출내역 (웹)
         element: <HourlySalesPage />,
+        loader: requireWebLoader,
       },
       {
         path: ROUTES.SETTINGS.SALES.MENU_HISTORY.path, //메뉴별매출내역 (웹)
         element: <MenuSalesHistoryPage />,
+        loader: requireWebLoader,
       },
       {
         path: ROUTES.SETTINGS.SALES.SALES_CALENDAR.path, //달력매출내역 (웹)
         element: <CalendarSalesPage />,
+        loader: requireWebLoader,
       },
       {
         path: ROUTES.SETTINGS.SALES.SALES_REPORT.path, //매출 리포트 (웹)
         element: <SalesReportPage />,
+        loader: requireWebLoader,
       },
     ],
   },

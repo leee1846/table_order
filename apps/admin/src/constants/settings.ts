@@ -28,63 +28,68 @@ export const createSidebarMenus = (
       id: 'sales',
       label: translate('매출 관리'),
       matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.SALES.path}`,
-      subMenus: [
-        {
-          id: 'summary',
-          label: translate('매출요약'),
-          path: ROUTES.SETTINGS.SALES.SUMMARY.generate(),
-        },
-        {
-          id: 'order',
-          label: translate('주문내역'),
-          path: ROUTES.SETTINGS.SALES.ORDER.generate(),
-        },
-        {
-          id: 'card',
-          label: translate('카드승인내역'),
-          path: ROUTES.SETTINGS.SALES.CARD.generate(),
-        },
-        // {
-        //   id: 'cash',
-        //   label: '단순현금결제내역',
-        //   path: ROUTES.SETTINGS.SALES.CASH.generate(),
-        // },
-        {
-          id: 'menu',
-          label: translate('메뉴판매집계'),
-          path: ROUTES.SETTINGS.SALES.MENU.generate(),
-        },
-        {
-          id: 'daily',
-          label: translate('당일 매출내역'),
-          path: ROUTES.SETTINGS.SALES.SALES_DAILY.generate(),
-        },
-        {
-          id: 'daily-history',
-          label: translate('일별 매출내역'),
-          path: ROUTES.SETTINGS.SALES.SALES_DAILY_HISTORY.generate(),
-        },
-        {
-          id: 'hourly',
-          label: translate('시간별 매출내역'),
-          path: ROUTES.SETTINGS.SALES.SALES_HOURLY.generate(),
-        },
-        {
-          id: 'menu-history',
-          label: translate('메뉴별 매출내역'),
-          path: ROUTES.SETTINGS.SALES.MENU_HISTORY.generate(),
-        },
-        {
-          id: 'calendar',
-          label: translate('달력 매출내역'),
-          path: ROUTES.SETTINGS.SALES.SALES_CALENDAR.generate(),
-        },
-        {
-          id: 'report',
-          label: translate('매출 리포트'),
-          path: ROUTES.SETTINGS.SALES.SALES_REPORT.generate(),
-        },
-      ],
+      subMenus: CapacitorApp.isNative()
+        ? [
+            // 앱 전용 메뉴
+            {
+              id: 'summary',
+              label: translate('매출요약'),
+              path: ROUTES.SETTINGS.SALES.SUMMARY.generate(),
+            },
+            {
+              id: 'order',
+              label: translate('주문내역'),
+              path: ROUTES.SETTINGS.SALES.ORDER.generate(),
+            },
+            {
+              id: 'card',
+              label: translate('카드승인내역'),
+              path: ROUTES.SETTINGS.SALES.CARD.generate(),
+            },
+            // {
+            //   id: 'cash',
+            //   label: '단순현금결제내역',
+            //   path: ROUTES.SETTINGS.SALES.CASH.generate(),
+            // },
+            {
+              id: 'menu',
+              label: translate('메뉴판매집계'),
+              path: ROUTES.SETTINGS.SALES.MENU.generate(),
+            },
+          ]
+        : [
+            // 웹 전용 메뉴
+            {
+              id: 'daily',
+              label: translate('당일 매출내역'),
+              path: ROUTES.SETTINGS.SALES.SALES_DAILY.generate(),
+            },
+            {
+              id: 'daily-history',
+              label: translate('일별 매출내역'),
+              path: ROUTES.SETTINGS.SALES.SALES_DAILY_HISTORY.generate(),
+            },
+            {
+              id: 'hourly',
+              label: translate('시간별 매출내역'),
+              path: ROUTES.SETTINGS.SALES.SALES_HOURLY.generate(),
+            },
+            {
+              id: 'menu-history',
+              label: translate('메뉴별 매출내역'),
+              path: ROUTES.SETTINGS.SALES.MENU_HISTORY.generate(),
+            },
+            {
+              id: 'calendar',
+              label: translate('달력 매출내역'),
+              path: ROUTES.SETTINGS.SALES.SALES_CALENDAR.generate(),
+            },
+            {
+              id: 'report',
+              label: translate('매출 리포트'),
+              path: ROUTES.SETTINGS.SALES.SALES_REPORT.generate(),
+            },
+          ],
     },
     {
       id: 'theme',

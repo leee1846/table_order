@@ -48,7 +48,7 @@ export const SalesReportPage = () => {
     [appliedYearMonth]
   );
 
-  const { data: dailySalesRes, isFetching: isDailyLoading } = useGetDailySales(
+  const { data: dailySalesRes } = useGetDailySales(
     {
       shopCode: shopCode ?? '',
       startDate: startDate.replace(/-/g, ''),
@@ -57,25 +57,23 @@ export const SalesReportPage = () => {
     { enabled: !!shopCode }
   );
 
-  const { data: menuSalesRes, isFetching: isMenuLoading } =
-    useGetMenuSalesHistory(
-      {
-        shopCode: shopCode ?? '',
-        startDate: startDate.replace(/-/g, ''),
-        endDate: endDate.replace(/-/g, ''),
-      },
-      { enabled: !!shopCode }
-    );
+  const { data: menuSalesRes } = useGetMenuSalesHistory(
+    {
+      shopCode: shopCode ?? '',
+      startDate: startDate.replace(/-/g, ''),
+      endDate: endDate.replace(/-/g, ''),
+    },
+    { enabled: !!shopCode }
+  );
 
-  const { data: hourlySalesRes, isFetching: isHourlyLoading } =
-    useGetHourlySales(
-      {
-        shopCode: shopCode ?? '',
-        startDate: startDate.replace(/-/g, ''),
-        endDate: endDate.replace(/-/g, ''),
-      },
-      { enabled: !!shopCode }
-    );
+  const { data: hourlySalesRes } = useGetHourlySales(
+    {
+      shopCode: shopCode ?? '',
+      startDate: startDate.replace(/-/g, ''),
+      endDate: endDate.replace(/-/g, ''),
+    },
+    { enabled: !!shopCode }
+  );
 
   const dailyRows: IDailySalesHistoryItem[] = dailySalesRes?.data ?? [];
   const menuRows: IMenuSalesHistoryItem[] = menuSalesRes?.data ?? [];
@@ -110,23 +108,23 @@ export const SalesReportPage = () => {
     [dailyRows]
   );
 
-  const totalPayment = dailyRows.reduce(
-    (acc, cur) => acc + (cur.actualSalesAmount ?? cur.totalSalesAmount ?? 0),
-    0
-  );
-  const totalCount = dailyRows.reduce(
-    (acc, cur) => acc + (cur.totalSalesCount ?? 0),
-    0
-  );
-  const totalGuests = dailyRows.reduce(
-    (acc, cur) => acc + (cur.customerCount ?? 0),
-    0
-  );
-  const operatingDays = dailyRows.filter(
-    (row) => (row.totalSalesCount ?? 0) > 0
-  ).length;
-  const averageTicket =
-    totalGuests > 0 ? Math.round(totalPayment / totalGuests) : 0;
+  // const totalPayment = dailyRows.reduce(
+  //   (acc, cur) => acc + (cur.actualSalesAmount ?? cur.totalSalesAmount ?? 0),
+  //   0
+  // );
+  // const totalCount = dailyRows.reduce(
+  //   (acc, cur) => acc + (cur.totalSalesCount ?? 0),
+  //   0
+  // );
+  // const totalGuests = dailyRows.reduce(
+  //   (acc, cur) => acc + (cur.customerCount ?? 0),
+  //   0
+  // );
+  // const operatingDays = dailyRows.filter(
+  //   (row) => (row.totalSalesCount ?? 0) > 0
+  // ).length;
+  // const averageTicket =
+  //   totalGuests > 0 ? Math.round(totalPayment / totalGuests) : 0;
 
   const handleApply = () => {
     setAppliedYearMonth({ year, month });
@@ -142,25 +140,31 @@ export const SalesReportPage = () => {
 
         <S.Filters>
           <Dropdown
-            options={years.map((y) => ({ value: y, label: `${y}${t('년')}` }))}
+            options={years.map((y) => ({
+              value: y,
+              label: `${y}${t('년도')}`,
+            }))}
             value={year}
             onChange={(v) => setYear(Number(v))}
           />
           <Dropdown
-            options={months.map((m) => ({ value: m, label: `${m}${t('월')}` }))}
+            options={months.map((m) => ({
+              value: m,
+              label: `${m}${t('월_날짜')}`,
+            }))}
             value={month}
             onChange={(v) => setMonth(Number(v))}
           />
           <BasicButton
-            variant="Outline_Navy_M"
+            variant="Solid_Navy_M"
             onClick={handleApply}
-            disabled={!shopCode}
+            customStyle={S.FilterBtn}
           >
             {t('조회')}
           </BasicButton>
         </S.Filters>
 
-        <S.Section>
+        {/* <S.Section>
           <S.SectionHeader>{t('요약')}</S.SectionHeader>
           <S.Cards>
             <S.Card>
@@ -180,29 +184,26 @@ export const SalesReportPage = () => {
               <S.CardValue>{operatingDays}</S.CardValue>
             </S.Card>
           </S.Cards>
-        </S.Section>
+        </S.Section> */}
 
         <S.Section>
           <S.SectionHeader>{t('일별 매출내역')}</S.SectionHeader>
           <S.TableWrapper>
-            <DailySalesHistoryTable
-              rows={mappedDailyRows}
-              isLoading={isDailyLoading}
-            />
+            <DailySalesHistoryTable rows={mappedDailyRows} />
           </S.TableWrapper>
         </S.Section>
 
         <S.Section>
           <S.SectionHeader>{t('메뉴별 매출내역')}</S.SectionHeader>
           <S.TableWrapper>
-            <MenuSalesHistoryTable rows={menuRows} isLoading={isMenuLoading} />
+            <MenuSalesHistoryTable rows={menuRows} />
           </S.TableWrapper>
         </S.Section>
 
         <S.Section>
           <S.SectionHeader>{t('시간대별 매출내역')}</S.SectionHeader>
           <S.TableWrapper>
-            <HourlySalesTable rows={hourlyRows} isLoading={isHourlyLoading} />
+            <HourlySalesTable rows={hourlyRows} />
           </S.TableWrapper>
         </S.Section>
       </S.Container>
