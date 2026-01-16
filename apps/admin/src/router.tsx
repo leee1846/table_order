@@ -674,6 +674,11 @@ export const router = createBrowserRouter([
         path: ROUTES.NOT_FOUND.path,
         element: createLazyRoute(NotFoundPage),
       },
+      {
+        // 존재하지 않는 모든 경로를 404 페이지로 리디렉트
+        path: '*',
+        element: createLazyRoute(NotFoundPage),
+      },
     ],
   },
 ]);
