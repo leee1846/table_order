@@ -7,7 +7,7 @@ export const TableDetailContainer = styled.div<{ isReady: boolean }>`
   width: 100%;
   height: 100vh;
   opacity: ${({ isReady }) => (isReady ? 1 : 0)};
-  transition: opacity 0.001s ease-in;
+  transition: opacity 0.01s ease-in;
 `;
 
 export const Layout = styled.div`

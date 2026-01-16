@@ -98,6 +98,7 @@ export const resetStyles = css`
     -ms-user-select: none; /* IE10+ */
     user-select: none;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
   /* HTML5 display-role reset for older browsers */
   article,
