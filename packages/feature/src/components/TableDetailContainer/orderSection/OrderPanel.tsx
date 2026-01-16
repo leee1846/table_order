@@ -12,6 +12,7 @@ export type OrderPanelProps = {
   // onPayCard?: () => void;
   // onPayCash?: () => void;
   // onSplitPay?: () => void;
+  shouldShowClearButton: boolean;
   onClearTable?: () => void;
   onItemClick?: (item: OrderItem) => void;
   useCustomerCount?: boolean;
@@ -27,6 +28,7 @@ export function OrderPanel({
   // onPayCard,
   // onPayCash,
   // onSplitPay,
+  shouldShowClearButton,
   onItemClick,
   onClearTable,
   useCustomerCount,
@@ -66,7 +68,7 @@ export function OrderPanel({
         // onPayCard={onPayCard}
         // onPayCash={onPayCash}
         // onSplitPay={onSplitPay}
-        order={order}
+        shouldShowClearButton={shouldShowClearButton}
         onClearTable={onClearTable}
         i18nInstance={i18nInstance}
       />

@@ -3,9 +3,11 @@ import { theme } from '@repo/ui';
 
 const { colors } = theme;
 
-export const TableDetailContainer = styled.div`
+export const TableDetailContainer = styled.div<{ isReady: boolean }>`
   width: 100%;
   height: 100vh;
+  opacity: ${({ isReady }) => (isReady ? 1 : 0)};
+  transition: opacity 0.001s ease-in;
 `;
 
 export const Layout = styled.div`

@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import type { i18n as I18nInstance } from 'i18next';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as S from './tableDetailContainer.styles';
 import { OrderPanel } from './orderSection/OrderPanel';
@@ -35,7 +35,6 @@ import {
   useGetShopDetail,
 } from '@repo/api/queries';
 import type { ICurrentTable, ISseMessage, TOrderType } from '@repo/api/types';
-import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSE } from '@repo/feature/hooks';
 import type { Order, OrderItem } from './orderSection/types';
 import { useTranslation } from 'react-i18next';
@@ -59,6 +58,16 @@ export const TableDetailContainer = ({
   const { t } = useTranslation('admin', { i18n: i18nInstance as I18nInstance });
 
   const navigate = useNavigate();
+
+  // 렌더링 완료 상태 관리
+  const [isReady, setIsReady] = useState(false);
+
+  useLayoutEffect(() => {
+    // 다음 프레임에 렌더링 완료 후 표시
+    requestAnimationFrame(() => {
+      setIsReady(true);
+    });
+  }, []);
   //메뉴 추가 모달
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
   //선택 취소 모달
@@ -173,8 +182,7 @@ export const TableDetailContainer = ({
   const { mutateAsync: cancelOrderAll, isPending: isCancelAllPending } =
     usePutCancelOrderAll();
 
-  const { mutateAsync: clearOrder, isPending: isClearOrderPending } =
-    usePutClearOrder();
+  const { mutateAsync: clearOrder } = usePutClearOrder();
 
   const order: Order | null = useMemo(() => {
     const calculatedNumberOfPeople =
@@ -243,11 +251,6 @@ export const TableDetailContainer = ({
     };
   }, [orderHistoriesResponse, tableNumber]);
 
-  // 데이터가 없을 때
-  if (!order) {
-    return null;
-  }
-
   const handleAllCancel = () => {
     if (order.items.length === 0) {
       toast(t('취소할 메뉴가 없어요.'));
@@ -289,6 +292,14 @@ export const TableDetailContainer = ({
     setIsServiceAmountDialogOpen(true);
   };
 
+  const shouldShowClearButton = useMemo(() => {
+    const remainingAmount = isOrderFullyPaid(
+      order.paymentList,
+      order.totalPrice
+    );
+    return remainingAmount === 0;
+  }, [order.paymentList, order.totalPrice]);
+
   const handleClearTable = async () => {
     await refetchOrderHistories();
 
@@ -308,8 +319,13 @@ export const TableDetailContainer = ({
     await refetchOrderHistories();
   };
 
+  // 데이터가 없을 때
+  if (!order) {
+    return null;
+  }
+
   return (
-    <S.TableDetailContainer>
+    <S.TableDetailContainer isReady={isReady}>
       <S.Layout>
         <S.Left>
           <OrderPanel
@@ -317,6 +333,7 @@ export const TableDetailContainer = ({
             // onPayCard={() => setIsCardPaymentDialogOpen(true)}
             // onPayCash={() => setIsCashPaymentDialogOpen(true)}
             // onSplitPay={() => setIsSplitPaymentDialogOpen(true)}
+            shouldShowClearButton={shouldShowClearButton}
             onClearTable={handleClearTable}
             onItemClick={handleItemClick}
             useCustomerCount={useCustomerCount}

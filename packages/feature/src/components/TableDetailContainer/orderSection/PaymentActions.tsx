@@ -2,16 +2,13 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { BasicButton } from '@repo/ui/components';
 import { useTranslation } from 'react-i18next';
-import { useMemo } from 'react';
 import type { i18n as I18nInstance } from 'i18next';
-import { isOrderFullyPaid } from '@repo/feature/utils';
-import type { Order } from './types';
 
 export type PaymentActionsProps = {
   // onPayCard?: () => void;
   // onPayCash?: () => void;
   // onSplitPay?: () => void;
-  order: Order;
+  shouldShowClearButton: boolean;
   onClearTable?: () => void;
   i18nInstance?: I18nInstance;
 };
@@ -20,19 +17,11 @@ export function PaymentActions({
   // onPayCard,
   // onPayCash,
   // onSplitPay,
-  order,
+  shouldShowClearButton,
   onClearTable,
   i18nInstance,
 }: PaymentActionsProps) {
   const { t } = useTranslation('admin', { i18n: i18nInstance });
-
-  const shouldShowClearButton = useMemo(() => {
-    const remainingAmount = isOrderFullyPaid(
-      order.paymentList,
-      order.totalPrice
-    );
-    return remainingAmount === 0;
-  }, [order]);
 
   return (
     <Wrap>
