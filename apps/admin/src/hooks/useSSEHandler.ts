@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { initializeSseConnection, disconnectSse } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
 import { SSE_KEYS } from '@/constants/keys';
@@ -54,17 +54,8 @@ export const useSSEHandler = () => {
       return;
     }
 
-    // if (sseMessage?.type === 'PAYMENT') {
-    //   queryClient.invalidateQueries({
-    //     queryKey: queryKeys.orders.currentTableList(shopCode),
-    //   });
-    //   return;
-    // }
-
-    if (sseMessage?.type === 'DEVICE') {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.device.list(shopCode),
-      });
+    if (sseMessage?.type === 'RING_BELL') {
+      SystemControl.playSound({ type: 'dingdong' });
       return;
     }
 

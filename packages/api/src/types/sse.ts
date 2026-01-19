@@ -17,7 +17,7 @@ export interface ISseMessage {
     | 'LOGOUT'
     | 'SHOP_THEME_PAGE'
     | 'SHOP_THEME_MENU'
-    | 'PAYMENT';
+    | 'RING_BELL';
   data:
     | {
         [key: string]: number | string;
