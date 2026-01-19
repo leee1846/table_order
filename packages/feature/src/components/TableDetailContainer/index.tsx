@@ -106,6 +106,8 @@ export const TableDetailContainer = ({
   //분할 결제 내역
   const [splitPayments, setSplitPayments] = useState<SplitPayment[]>([]);
 
+  const [orderTime, setOrderTime] = useState<string>('');
+
   // API 데이터 가져오기
   const { data: orderHistoriesResponse, refetch: refetchOrderHistories } =
     useGetTableOrderHistories(
@@ -117,6 +119,21 @@ export const TableDetailContainer = ({
         enabled: !!shopCode && !!tableNumber,
       }
     );
+
+  useEffect(() => {
+    if (orderHistoriesResponse?.data?.createDate) {
+      setOrderTime(
+        new Date(orderHistoriesResponse.data.createDate).toLocaleTimeString(
+          'ko-KR',
+          {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }
+        ) as string
+      );
+    }
+  }, [orderHistoriesResponse?.data]);
 
   const { data: menuboardResponse, refetch: refetchMenuboard } =
     useGetCategoriesWithMenus(
@@ -198,7 +215,6 @@ export const TableDetailContainer = ({
         paymentList: [],
         totalCount: 0,
         totalPrice: 0,
-        orderTime: '',
       };
     }
     const data: ICurrentTable = orderHistoriesResponse.data;
@@ -228,15 +244,6 @@ export const TableDetailContainer = ({
         };
       }) || [];
 
-    // updateDate에서 시간만 추출 (HH:mm 형식)
-    const orderTime = data.updateDate
-      ? new Date(data.updateDate).toLocaleTimeString('ko-KR', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false,
-        })
-      : '';
-
     return {
       tableName: data.tableName ?? '',
       discountRate: data.discountRate || 0,
@@ -246,7 +253,6 @@ export const TableDetailContainer = ({
         .filter((item) => item.menuSeq !== 0)
         .reduce((sum, item) => sum + item.qty, 0),
       totalPrice: data.totalAmount || 0,
-      orderTime,
       paymentList: data.paymentList ?? [],
     };
   }, [orderHistoriesResponse, tableNumber]);
@@ -342,6 +348,7 @@ export const TableDetailContainer = ({
             tableNumber={tableNumber}
             pickupAlertMessage={pickupAlertMessage}
             i18nInstance={i18nInstance}
+            orderTime={orderTime}
           />
         </S.Left>
         <S.Right>

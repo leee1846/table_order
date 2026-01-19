@@ -111,7 +111,7 @@ const TableWrap = styled.div`
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 1fr 8rem 9rem;
+  grid-template-columns: 1fr 5rem 8rem;
   cursor: pointer;
 
   &.no-click {
@@ -158,5 +158,9 @@ const Cell = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  &.price {
+    text-align: right;
   }
 `;

@@ -123,7 +123,7 @@ export function OrderHeader({
           )}
         </RightBox>
         <LeftBox>
-          {usePickupAlert && (
+          {usePickupAlert ? (
             <BasicButton
               variant="Outline_Navy_L"
               onClick={handlePickupClick}
@@ -131,6 +131,8 @@ export function OrderHeader({
             >
               {t('픽업알림')}
             </BasicButton>
+          ) : (
+            <div style={{ width: 30, height: 30 }}></div>
           )}
           <OrderTime>
             <p>{orderTime}</p>
@@ -152,7 +154,7 @@ export function OrderHeader({
 
 const Header = styled.div`
   display: flex;
-  align-items: center;
+  align-items: space-between;
   justify-content: space-between;
   padding-bottom: 29px;
   border-bottom: 1px solid ${colors.grey[200]};
@@ -196,6 +198,7 @@ const LeftBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: end;
+  justify-content: space-between;
   gap: 14px;
 `;
 

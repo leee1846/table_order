@@ -21,6 +21,7 @@ export type OrderPanelProps = {
   tableNumber: string;
   pickupAlertMessage?: string;
   i18nInstance?: I18nInstance;
+  orderTime: string | undefined;
 };
 
 export function OrderPanel({
@@ -37,13 +38,14 @@ export function OrderPanel({
   tableNumber,
   pickupAlertMessage,
   i18nInstance,
+  orderTime,
 }: OrderPanelProps) {
   return (
     <Wrap>
       <OrderHeader
         title={order.tableName}
         numberOfPeople={order.numberOfPeople ?? 0}
-        orderTime={order.orderTime}
+        orderTime={orderTime ?? ''}
         useCustomerCount={useCustomerCount}
         usePickupAlert={usePickupAlert}
         shopCode={shopCode}

@@ -26,5 +26,4 @@ export interface Order {
   paymentList: IPayment[];
   totalCount: number;
   totalPrice: number;
-  orderTime: string;
 }
