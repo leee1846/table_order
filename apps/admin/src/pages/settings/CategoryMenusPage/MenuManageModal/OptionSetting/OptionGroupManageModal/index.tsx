@@ -581,6 +581,7 @@ export const OptionGroupManageModal = ({
                         value={formatCurrency(option.optionPrice)}
                         onChange={(value) => handlePriceChange(index, value)}
                         disabled={isPosLinked}
+                        inputMode="numeric"
                       />
 
                       <Input
