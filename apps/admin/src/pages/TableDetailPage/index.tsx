@@ -9,7 +9,7 @@ export const TableDetailPage = () => {
   const { tableNum } = useParams();
   const { shopCode } = useAuth();
 
-  const orderType: TOrderType = 'ORDER_POS';
+  const orderType: TOrderType = 'POS_APP';
 
   if (!shopCode || !tableNum) {
     return null;
