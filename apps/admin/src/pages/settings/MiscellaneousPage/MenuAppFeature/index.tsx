@@ -110,14 +110,10 @@ export const MenuAppFeature = ({
       ? `${hour.padStart(2, '0')}${minute.padStart(2, '0')}`
       : undefined;
 
-  // 문자열을 숫자로 변환, 빈 문자열이거나 숫자가 아니면 undefined 반환
+  // 문자열을 숫자로 변환, 빈 문자열이거나 숫자가 아니면 0 반환
   const toNumberOrUndefined = (value: string) => {
-    if (value === '') {
-      return undefined;
-    }
-
     const parsed = Number(value);
-    return Number.isNaN(parsed) ? undefined : parsed;
+    return Number.isNaN(parsed) ? 0 : parsed;
   };
 
   useEffect(() => {
@@ -268,9 +264,11 @@ export const MenuAppFeature = ({
     };
 
     const firstOrderMinAmountValue = toNumberOrUndefined(firstOrderMinAmount);
+
     if (firstOrderMinAmountValue !== undefined) {
       shopSettingChanges.firstOrderMinAmount = firstOrderMinAmountValue;
     }
+
     if (menuboardAdminPassword !== '') {
       shopSettingChanges.menuboardAdminPassword = menuboardAdminPassword;
     }
@@ -393,16 +391,8 @@ export const MenuAppFeature = ({
         <p>{t('첫주문 금액')}</p>
         <input
           type="text"
-          inputMode="numeric"
-          value={
-            firstOrderMinAmount
-              ? Number(firstOrderMinAmount).toLocaleString('ko-KR')
-              : ''
-          }
-          onChange={(event) => {
-            const value = event.target.value.replace(/[^0-9]/g, '');
-            setFirstOrderMinAmount(value);
-          }}
+          value={firstOrderMinAmount}
+          onChange={(event) => setFirstOrderMinAmount(event.target.value)}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
