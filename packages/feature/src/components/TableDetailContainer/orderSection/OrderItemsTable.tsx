@@ -50,9 +50,15 @@ export function OrderItemsTable({
     <TableWrap>
       {items.map((it, index) => (
         <React.Fragment key={`${it.id}-${index}`}>
-          <Row data-item-id={it.id} onClick={() => handleRowClick(it)}>
+          <Row
+            data-item-id={it.id}
+            onClick={() => handleRowClick(it)}
+            className={it.name === '금액변경' ? 'no-click' : ''}
+          >
             <Cell className="name" title={it.localeMenuName?.[currentLanguage]}>
-              {it.localeMenuName?.[currentLanguage]}
+              {it.name === '금액변경'
+                ? t('금액 변경')
+                : it.localeMenuName?.[currentLanguage]}
             </Cell>
             <Cell className="qty">{it.qty}</Cell>
             <Cell className="price">
@@ -107,6 +113,11 @@ const Row = styled.div`
   display: grid;
   grid-template-columns: 1fr 8rem 9rem;
   cursor: pointer;
+
+  &.no-click {
+    cursor: default;
+    pointer-events: none;
+  }
 
   &:not(.option-row) {
     ${TYPOGRAPHY.MT_7}
