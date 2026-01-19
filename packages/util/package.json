@@ -1,6 +1,6 @@
 {
   "name": "@repo/util",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -10,7 +10,6 @@
     "./calculation": "./src/calculation/index.ts",
     "./constants": "./src/constants/index.ts",
     "./date": "./src/date/index.ts",
-    "./device": "./src/device/index.ts",
     "./function": "./src/function/index.ts",
     "./string": "./src/string/index.ts",
     "./time": "./src/time/index.ts",

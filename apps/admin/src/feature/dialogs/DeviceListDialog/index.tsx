@@ -18,7 +18,7 @@ import type {
   TDeviceType,
 } from '@repo/api/types';
 import { toast } from '@repo/feature/utils';
-import { getDeviceTypeLabel } from '@repo/util/device';
+import { getDeviceTypeLabel } from '@repo/util/constants';
 import { useAdminTranslation } from '@/config/i18n';
 import { PAZE_SIZE } from '@/constants/keys';
 import * as S from './deviceListDialog.style';
