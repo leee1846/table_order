@@ -176,6 +176,31 @@ export const CategoryManageModal = ({
     );
   };
 
+  // 직원호출 체크 시 검증 함수
+  const handleStaffCallChange = (checked: boolean) => {
+    if (checked) {
+      // 체크를 활성화하려고 할 때만 검증
+      const categoryListData = queryClient.getQueryData(
+        queryKeys.category.list()
+      ) as { data: ICategory[] };
+
+      if (categoryListData?.data) {
+        // 현재 편집 중인 카테고리를 제외한 다른 카테고리 중 isStaffCall이 true인 것이 있는지 확인
+        const hasStaffCallCategory = categoryListData.data.some(
+          (category) =>
+            category.categorySeq !== categoryData?.categorySeq &&
+            category.isStaffCall === true
+        );
+
+        if (hasStaffCallCategory) {
+          toast(t('이미 직원 호출 카테고리가 있습니다'));
+          return; // 체크 안 함
+        }
+      }
+    }
+    setIsStaffCall(checked);
+  };
+
   // 완료 버튼 핸들러
   const handleSubmit = async () => {
     if (categoryName === '') {
@@ -346,7 +371,7 @@ export const CategoryManageModal = ({
                 </CheckButton>
                 <CheckButton
                   checked={isStaffCall}
-                  onChange={(checked) => setIsStaffCall(checked)}
+                  onChange={handleStaffCallChange}
                   customStyle={S.checkButtonCss}
                 >
                   <p>{t('직원호출 사용')}</p>

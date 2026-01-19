@@ -635,5 +635,6 @@
   "단가": "Unit Price",
   "판매수": "Sales Count",
   "시간대별 매출내역": "Sales History by Time Period",
-  "메뉴 품절 자동 해제": "Auto-release sold-out menu"
+  "메뉴 품절 자동 해제": "Auto-release sold-out menu",
+  "이미 직원 호출 카테고리가 있습니다": "A staff call category already exists"
 }
