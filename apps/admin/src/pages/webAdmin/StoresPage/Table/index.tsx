@@ -31,9 +31,8 @@ export const Table = ({ stores }: Props) => {
       <tr key={store.memberId}>
         <td>{store.shopCode}</td>
         <td>{store.shopName}</td>
-        <td>{store.businessNumber ?? '-'}</td>
-        <td>{store.address1 ?? '-'}</td>
-        <td>{store.managerPhoneNumber ?? '-'}</td>
+        <td>{store.businessNumber || '-'}</td>
+        <td>{store.address1 || '-'}</td>
         <td>
           <div
             style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
@@ -71,7 +70,6 @@ export const Table = ({ stores }: Props) => {
             <th>매장명</th>
             <th>사업자등록번호</th>
             <th>기본 주소</th>
-            <th>대표자 연락처</th>
             <th>작업</th>
           </tr>
         </UIStyles.setting.Thead>

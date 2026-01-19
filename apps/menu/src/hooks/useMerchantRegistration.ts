@@ -20,15 +20,11 @@ export const useMerchantRegistration = (options?: Props) => {
 
   const hasCheckedRef = useRef(false);
 
-  const { data: shopDetailData } = useShopDetailData({
+  const { data: shopDetailData, refresh: refreshShopDetailData } = useShopDetailData({
     skipInitialRequest: true,
   });
 
-  const checkAndRegisterMerchant = useCallback(async ( newShopDetailData: IGetShop ) => {
-    if (!newShopDetailData) {
-      return;
-    }
-
+  const checkAndRegisterMerchant = useCallback(async ( newShopDetailData?: IGetShop ) => {
     let inquiryResult: unknown = null;
 
     try {
@@ -46,22 +42,29 @@ export const useMerchantRegistration = (options?: Props) => {
       return;
     }
 
-    if (!newShopDetailData.areaCode || !newShopDetailData.shopPhoneNumber || !newShopDetailData.shopSetting?.vanId || !newShopDetailData.businessNumber) {
+    // shouldDownload 판단 이후에 shopDetailData 요청
+    const shopData = newShopDetailData || await refreshShopDetailData();
+
+    if (!shopData) {
+      return;
+    }
+
+    if (!shopData.areaCode || !shopData.shopPhoneNumber || !shopData.shopSetting?.vanId || !shopData.businessNumber) {
       return;
     }
 
     try {
       await Payment.downloadMerchant({
-        bizNo: newShopDetailData.businessNumber,
-        tid: newShopDetailData.shopSetting?.vanId,
-        zoneCode: newShopDetailData.areaCode,
-        phone: newShopDetailData.shopPhoneNumber,
+        bizNo: shopData.businessNumber,
+        tid: shopData.shopSetting?.vanId,
+        zoneCode: shopData.areaCode,
+        phone: shopData.shopPhoneNumber,
         initYn: 'N',
       });
     } finally {
       hasCheckedRef.current = true;
     }
-  }, []);
+  }, [refreshShopDetailData]);
 
   useEffect(() => {
     if (hasCheckedRef.current || enabled === false || !shopDetailData) {

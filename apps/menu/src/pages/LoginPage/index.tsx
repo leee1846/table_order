@@ -17,6 +17,7 @@ import { useShopData } from '@/hooks/useShopData';
 import { initializeSseConnection } from '@/utils/sseConnection';
 import * as S from '@/pages/LoginPage/loginPage.style';
 import { getDeviceInfo } from '@/utils/deviceInfo';
+import { useMerchantRegistration } from '@/hooks/useMerchantRegistration';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -57,6 +58,10 @@ export const LoginPage = () => {
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
   };
+
+  const { checkAndRegisterMerchant } = useMerchantRegistration({
+    enabled: false,
+  });
 
   // Login handler
   const handleLogin = async () => {
@@ -123,6 +128,7 @@ export const LoginPage = () => {
 
     await setDeviceData(deviceData);
     initializeSseConnection();
+    checkAndRegisterMerchant();
     navigate(ROUTES.ROOT.generate());
   };
 
