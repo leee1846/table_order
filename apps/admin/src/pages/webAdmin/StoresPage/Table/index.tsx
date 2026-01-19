@@ -31,9 +31,9 @@ export const Table = ({ stores }: Props) => {
       <tr key={store.memberId}>
         <td>{store.shopCode}</td>
         <td>{store.shopName}</td>
-        <td>{store.businessNumber}</td>
-        <td>{store.address1}</td>
-        <td>{store.managerPhoneNumber}</td>
+        <td>{store.businessNumber ?? '-'}</td>
+        <td>{store.address1 ?? '-'}</td>
+        <td>{store.managerPhoneNumber ?? '-'}</td>
         <td>
           <div
             style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
