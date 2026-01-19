@@ -12,7 +12,7 @@ import {
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
 import { ImageSection } from './ImageSection';
 import { useMenuForm } from '../context/MenuManageModalContext';
-import { formatCurrency } from '@repo/util/string';
+import { formatCurrency, allowOnlyNumbers } from '@repo/util/string';
 import { MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 
 const SPICE_LEVELS = [1, 2, 3] as const;
@@ -37,14 +37,11 @@ export const BasicSetting = ({ isPosLinked }: Props) => {
 
   const handlePriceChange = useCallback(
     (value: string) => {
-      const numericString = value.replace(/[^0-9]/g, '');
-      // 약 15-16자리 이상의 정수는 정밀도 손실이 발생해서 숫자 이상해짐, 16자리로 제한함
-      if (numericString.length <= 16) {
-        updateFormValues({
-          menuPrice:
-            numericString.length > 0 ? Number(numericString) : undefined,
-        });
-      }
+      // 콤마를 제거한 숫자만 추출
+      const numericValue = allowOnlyNumbers(value);
+      updateFormValues({
+        menuPrice: numericValue.length > 0 ? Number(numericValue) : 0,
+      });
     },
     [updateFormValues]
   );
@@ -134,9 +131,13 @@ export const BasicSetting = ({ isPosLinked }: Props) => {
             </S.PriceTitleContainer>
             <Input
               placeholder={t('가격을 입력해 주세요.')}
+              type="text"
+              inputMode="numeric"
               customStyle={S.inputCss}
               value={
-                formValues.menuPrice ? formatCurrency(formValues.menuPrice) : ''
+                formValues.menuPrice != null
+                  ? formatCurrency(formValues.menuPrice)
+                  : ''
               }
               onChange={handlePriceChange}
               disabled={isPosLinked}

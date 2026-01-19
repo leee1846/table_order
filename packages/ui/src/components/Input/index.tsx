@@ -14,6 +14,7 @@ interface InputProps {
   type?: string; // input type('text', 'password', etc), 부모가 제어
   rightComponent?: React.ReactNode; // 오른쪽 영역 자유롭게
   errorMessage?: string;
+  inputMode?: 'text' | 'numeric';
 }
 
 const InputComponent = ({
@@ -26,6 +27,7 @@ const InputComponent = ({
   type = 'text',
   rightComponent,
   errorMessage,
+  inputMode = 'text',
 }: InputProps) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,6 +73,7 @@ const InputComponent = ({
             type={type}
             value={value}
             onChange={handleChange}
+            inputMode={inputMode}
             placeholder={placeholder}
             disabled={disabled}
             $isPassword={isPassword}
