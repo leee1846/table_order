@@ -1,4 +1,3 @@
-import { BasicButton } from '@repo/ui/components';
 import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
 import { formatDateTime } from '@repo/util/date';
 import { useAdminTranslation } from '@/config/i18n';
@@ -19,11 +18,6 @@ export const OrderSection = ({ order }: Props) => {
     (sum, menu) => sum + (menu.menuQuantity ?? 0),
     0
   );
-
-  const totalAmount = menus.reduce((sum, menu) => {
-    const unitPrice = menu.finalPrice;
-    return sum + unitPrice;
-  }, 0);
 
   const paymentLabel = formatPaymentMethodLabel(order.paymentMethod);
 
@@ -111,7 +105,7 @@ export const OrderSection = ({ order }: Props) => {
       <S.Total>
         <p>{t('합계 금액')}</p>
         <p>{totalQuantity}</p>
-        <p>{formatCurrency(totalAmount)}</p>
+        <p>{formatCurrency(order.paidAmount)}</p>
       </S.Total>
     </S.Container>
   );

@@ -77,14 +77,14 @@ export const PaymentSection = ({ order }: Props) => {
               <th>{t('거래금액')}</th>
               <th>{t('현금영수증')}</th>
               <th>{t('현금영수증 발행')}</th>
-              <th>{t('거래취소')}</th>
+              {/* <th>{t('거래취소')}</th> */}
             </tr>
           </UIStyles.setting.Thead>
 
           <UIStyles.setting.Tbody>
             {cashPayments.length === 0 && (
               <tr>
-                <td colSpan={6}>{t('현금 결제 내역이 없습니다.')}</td>
+                <td colSpan={5}>{t('현금 결제 내역이 없습니다.')}</td>
               </tr>
             )}
             {cashPayments.map((payment, index) => (
@@ -101,7 +101,7 @@ export const PaymentSection = ({ order }: Props) => {
                 <td>{formatCurrency(payment.transactionAmount ?? 0)}</td>
                 <td>-</td>
                 <td>-</td>
-                <td>
+                {/* <td>
                   <BasicButton
                     variant="Outline_Navy_M"
                     onClick={() => {}}
@@ -109,7 +109,7 @@ export const PaymentSection = ({ order }: Props) => {
                   >
                     {t('취소')}
                   </BasicButton>
-                </td>
+                </td> */}
               </tr>
             ))}
           </UIStyles.setting.Tbody>
@@ -138,14 +138,14 @@ export const PaymentSection = ({ order }: Props) => {
                 <br />
                 {t('부가세')}
               </th>
-              <th>{t('거래취소')}</th>
+              {/* <th>{t('거래취소')}</th> */}
             </tr>
           </UIStyles.setting.Thead>
 
           <UIStyles.setting.Tbody>
             {cardPayments.length === 0 && (
               <tr>
-                <td colSpan={7}>{t('카드 결제 내역이 없습니다.')}</td>
+                <td colSpan={6}>{t('카드 결제 내역이 없습니다.')}</td>
               </tr>
             )}
             {cardPayments.map((payment, index) => (
@@ -174,7 +174,7 @@ export const PaymentSection = ({ order }: Props) => {
                   {t('원')}
                   <br />-
                 </td>
-                <td>
+                {/* <td>
                   <BasicButton
                     variant="Outline_Navy_M"
                     onClick={() => {}}
@@ -182,7 +182,7 @@ export const PaymentSection = ({ order }: Props) => {
                   >
                     {t('취소')}
                   </BasicButton>
-                </td>
+                </td> */}
               </tr>
             ))}
           </UIStyles.setting.Tbody>
