@@ -1,60 +1,39 @@
 import { useAdminTranslation } from '@/config/i18n';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { BasicButton, ToggleButton } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoriesPage/Categories/Category/category.style';
 import { ChevronForwardIcon, DeleteIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { CategoryManageModal } from '@/pages/settings/CategoriesPage/CategoryManageModal';
-import { CategoryTableAssignModal } from '@/pages/settings/CategoriesPage/CategoryTableAssignModal';
 import type { ICategory, TShopLanguage } from '@repo/api/types';
 import {
   queryKeys,
   useDeleteCategory,
   usePutUpdateCategoryHidden,
-  usePostSaveCategoryExceptTable,
-  useGetCategoryExceptTableList,
 } from '@repo/api/queries';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { getDays } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { useAuth } from '@/hooks/useAuth';
 
 interface Props {
   category: ICategory;
-  shopSeq: number;
   isPosLinked: boolean;
+  onEditCategory: (category: ICategory) => void;
+  onOpenTableAssign: (category: ICategory) => void;
 }
 
-export const Category = ({ category, shopSeq, isPosLinked }: Props) => {
+export const Category = ({
+  category,
+  isPosLinked,
+  onEditCategory,
+  onOpenTableAssign,
+}: Props) => {
   const { t, i18n } = useAdminTranslation();
 
   const days = useMemo(() => getDays(t), [t]);
   const queryClient = useQueryClient();
-  const { shopCode } = useAuth();
-  const [isCategoryManageModalOpen, setIsCategoryManageModalOpen] =
-    useState(false);
-  const [isTableAssignModalOpen, setIsTableAssignModalOpen] = useState(false);
-  const [assignedTableNumbers, setAssignedTableNumbers] = useState<string[]>(
-    []
-  );
   const deleteCategoryMutation = useDeleteCategory();
   const { mutateAsync: updateCategoryHidden } = usePutUpdateCategoryHidden();
-  const { mutateAsync: saveCategoryExceptTable } =
-    usePostSaveCategoryExceptTable();
-
-  const {
-    data: categoryExceptTableResponse,
-    isLoading: isCategoryExceptTableLoading,
-  } = useGetCategoryExceptTableList(
-    {
-      shopCode: shopCode ?? '',
-      categorySeq: category.categorySeq,
-    },
-    {
-      enabled: !!shopCode && isTableAssignModalOpen,
-    }
-  );
 
   // 판매 요일 표시 텍스트 생성
   const getSaleDayDisplay = (): string | null => {
@@ -174,124 +153,84 @@ export const Category = ({ category, shopSeq, isPosLinked }: Props) => {
     [category.localeCategoryName, category.categoryName, currentLanguage]
   );
 
-  const handleSaveTableAssign = async (tableNumbers: string[]) => {
-    if (!shopCode) {
-      toast(t('매장 정보를 불러오는 중입니다.'));
-      throw new Error('shopCode is not available');
-    }
-
-    await saveCategoryExceptTable({
-      shopCode,
-      categorySeq: category.categorySeq,
-      tableNumberList: tableNumbers,
-    });
-    await queryClient.invalidateQueries({
-      queryKey: queryKeys.category.exceptTable(shopCode, category.categorySeq),
-    });
-    setAssignedTableNumbers(tableNumbers);
-    toast(t('카테고리 테이블 지정이 저장되었습니다.'));
-  };
-
   return (
-    <>
-      <S.Container>
-        <S.Header>
-          <div>
-            <span>{displayCategoryName}</span>
-            <button type="button" onClick={() => {}}>
-              <ChevronForwardIcon
-                width={30}
-                height={30}
-                color={theme.colors.grey[400]}
-              />
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              handleDeleteCategory(category.categorySeq);
-            }}
-            disabled={isPosLinked}
-            style={{
-              opacity: isPosLinked ? 0.5 : 1,
-              cursor: isPosLinked ? 'not-allowed' : 'pointer',
-            }}
-          >
-            <DeleteIcon width={14} height={14} color={theme.colors.grey[600]} />
-          </button>
-        </S.Header>
-        <S.Badges>
-          <li>
-            <p>{t('판매시간')}</p>
-            <p>{saleTimeDisplay}</p>
-          </li>
-
-          {saleDayDisplay && (
-            <li>
-              <p>{t('판매 요일')}</p>
-              <p>{saleDayDisplay}</p>
-            </li>
-          )}
-
-          {category.isQuantitySelectable && (
-            <li>
-              <p>{t('수량 선택')}</p>
-              <p>{t('가능')}</p>
-            </li>
-          )}
-          {category.useTwoColumnLayout && (
-            <li>
-              <p>{t('보기 옵션')}</p>
-              <p>{t('2열')}</p>
-            </li>
-          )}
-        </S.Badges>
-        <S.Footer>
-          <S.HiddenContainer>
-            <p>{t('메뉴판에서 숨기기')}</p>
-            <ToggleButton
-              size="S"
-              isOn={category.isHidden}
-              onChange={handleToggleHidden}
+    <S.Container>
+      <S.Header>
+        <div>
+          <span>{displayCategoryName}</span>
+          <button type="button" onClick={() => {}}>
+            <ChevronForwardIcon
+              width={30}
+              height={30}
+              color={theme.colors.grey[400]}
             />
-          </S.HiddenContainer>
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            handleDeleteCategory(category.categorySeq);
+          }}
+          disabled={isPosLinked}
+          style={{
+            opacity: isPosLinked ? 0.5 : 1,
+            cursor: isPosLinked ? 'not-allowed' : 'pointer',
+          }}
+        >
+          <DeleteIcon width={14} height={14} color={theme.colors.grey[600]} />
+        </button>
+      </S.Header>
+      <S.Badges>
+        <li>
+          <p>{t('판매시간')}</p>
+          <p>{saleTimeDisplay}</p>
+        </li>
 
-          <S.ButtonContainer>
-            <BasicButton
-              variant="Solid_Navy_L"
-              onClick={() => {
-                setIsTableAssignModalOpen(true);
-              }}
-            >
-              {t('테이블 지정')}
-            </BasicButton>
-            <BasicButton
-              variant="Solid_Sky_Blue_L"
-              onClick={() => setIsCategoryManageModalOpen(true)}
-            >
-              {t('수정하기')}
-            </BasicButton>
-          </S.ButtonContainer>
-        </S.Footer>
-      </S.Container>
+        {saleDayDisplay && (
+          <li>
+            <p>{t('판매 요일')}</p>
+            <p>{saleDayDisplay}</p>
+          </li>
+        )}
 
-      {isCategoryManageModalOpen && (
-        <CategoryManageModal
-          onClose={() => setIsCategoryManageModalOpen(false)}
-          categoryData={category}
-          shopSeq={shopSeq}
-        />
-      )}
-      {isTableAssignModalOpen && (
-        <CategoryTableAssignModal
-          categorySeq={category.categorySeq}
-          initialSelectedTableNumbers={assignedTableNumbers}
-          onClose={() => setIsTableAssignModalOpen(false)}
-          onSave={handleSaveTableAssign}
-          categoryExceptTableResponse={categoryExceptTableResponse}
-          isCategoryExceptTableLoading={isCategoryExceptTableLoading}
-        />
-      )}
-    </>
+        {category.isQuantitySelectable && (
+          <li>
+            <p>{t('수량 선택')}</p>
+            <p>{t('가능')}</p>
+          </li>
+        )}
+        {category.useTwoColumnLayout && (
+          <li>
+            <p>{t('보기 옵션')}</p>
+            <p>{t('2열')}</p>
+          </li>
+        )}
+      </S.Badges>
+      <S.Footer>
+        <S.HiddenContainer>
+          <p>{t('메뉴판에서 숨기기')}</p>
+          <ToggleButton
+            size="S"
+            isOn={category.isHidden}
+            onChange={handleToggleHidden}
+          />
+        </S.HiddenContainer>
+
+        <S.ButtonContainer>
+          <BasicButton
+            variant="Solid_Navy_L"
+            onClick={() => onOpenTableAssign(category)}
+          >
+            {t('테이블 지정')}
+          </BasicButton>
+          <BasicButton
+            variant="Solid_Sky_Blue_L"
+            onClick={() => onEditCategory(category)}
+          >
+            {t('수정하기')}
+          </BasicButton>
+        </S.ButtonContainer>
+      </S.Footer>
+    </S.Container>
   );
 };

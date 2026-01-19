@@ -9,14 +9,16 @@ import { toast } from '@repo/feature/utils';
 
 interface CategoriesProps {
   categories: ICategory[] | undefined;
-  shopSeq: number;
   isPosLinked: boolean;
+  onEditCategory: (category: ICategory) => void;
+  onOpenTableAssign: (category: ICategory) => void;
 }
 
 export const Categories = ({
   categories,
-  shopSeq,
   isPosLinked,
+  onEditCategory,
+  onOpenTableAssign,
 }: CategoriesProps) => {
   const queryClient = useQueryClient();
   const [localCategories, setLocalCategories] = useState<ICategory[]>([]); //드래그 중 UI 반영
@@ -77,8 +79,9 @@ export const Categories = ({
       renderItem={(category) => (
         <Category
           category={category}
-          shopSeq={shopSeq}
           isPosLinked={isPosLinked}
+          onEditCategory={onEditCategory}
+          onOpenTableAssign={onOpenTableAssign}
         />
       )}
     />
