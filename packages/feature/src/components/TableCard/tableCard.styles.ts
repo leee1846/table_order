@@ -68,6 +68,10 @@ export const MenuItemQuantity = styled.span`
 export const MenuItemName = styled.span`
   ${TYPOGRAPHY.BD_2}
   color: ${colors.grey[600]};
+  white-space: nowrap;
+  width: 90%;
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
 
 export const CardFooter = styled.div`
