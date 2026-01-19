@@ -114,6 +114,7 @@ export const VersionColumn = styled.div`
   align-items: center;
   justify-content: center;
   gap: 8px;
+  color: ${colors.grey[800]};
 `;
 
 export const Tbody = styled(UIStyles.setting.Tbody)<{

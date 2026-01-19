@@ -345,7 +345,7 @@ export const DeviceListDialog = ({
                         </S.BatteryColumn>
                       </td> */}
                       <td>{formatWifiSignal(device.wifiSignal)}</td>
-                      <td style={{ color: colors.grey[500] }}>{device.ip}</td>
+                      <td>{device.ip}</td>
                       <td>
                         <S.VersionColumn>
                           <span>{device.version || '-'}</span>
