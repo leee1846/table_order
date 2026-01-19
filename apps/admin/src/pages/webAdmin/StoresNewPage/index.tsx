@@ -17,6 +17,7 @@ const transformShopDetailToCreateRequest = (
   shopData: IGetAdminShopDetail
 ): ICreateShopRequest => {
   return {
+    areaCode: shopData.areaCode,
     shopName: shopData.shopName,
     isActive: shopData.isActive,
     address1: shopData.address1,
@@ -40,7 +41,10 @@ const transformShopDetailToCreateRequest = (
     isDeleted: shopData.isDeleted,
     useLocale: shopData.useLocale,
     useDatadog: shopData.useDatadog,
-    settingInfo: shopData.settingInfo,
+    settingInfo: {
+      ...shopData.settingInfo,
+      posLinkType: shopData.settingInfo.posLinkType || 'NONE',
+    },
   };
 };
 

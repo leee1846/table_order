@@ -9,6 +9,7 @@ import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
 import { Account } from '@/pages/settings/MiscellaneousPage/Account';
 import { Detail } from '@/pages/settings/MiscellaneousPage/Detail';
+import { Payment } from '@/pages/settings/MiscellaneousPage/Payment';
 import * as S from '@/pages/settings/MiscellaneousPage/MiscellaneousPage.style';
 
 const MAX_ORDER_POS_NUMBER = 999;
@@ -100,6 +101,7 @@ export const MiscellaneousPage = () => {
           orderPosNumber={orderPosNumber}
           handleOrderPosNumberChange={handleOrderPosNumberChange}
         />
+        <Payment />
       </S.Sections>
     </S.Container>
   );

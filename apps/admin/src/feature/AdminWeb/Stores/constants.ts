@@ -51,7 +51,7 @@ export const DEFAULT_SHOP_DATA: IGetAdminShopDetail = {
     windowAspId: '',
     windowAspPw: '',
     chargerType: '',
-    posLinkType: 'NONE',
+    posLinkType: 'NONE' as const,
     updateDate: '',
     updateMemberUuid: '',
   },

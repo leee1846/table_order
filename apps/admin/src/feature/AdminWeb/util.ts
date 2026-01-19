@@ -19,18 +19,23 @@ export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
     return false;
   }
 
-  if (!shopData.ownerPhoneNumber || !shopData.ownerPhoneNumber.trim()) {
-    toast('매장정보 > 대표자 연락처를 입력해주세요.');
-    return false;
-  }
-
   if (!shopData.address1 || !shopData.address1.trim()) {
     toast('매장정보 > 기본 주소를 입력해주세요.');
     return false;
   }
 
+  if (!shopData.shopPhoneNumber || !shopData.shopPhoneNumber.trim()) {
+    toast('매장정보 > 매장 전화번호를 입력해주세요.');
+    return false;
+  }
+
   if (!shopData.ownerName || !shopData.ownerName.trim()) {
     toast('매장정보 > 대표자명을 입력해주세요.');
+    return false;
+  }
+
+  if (!shopData.ownerPhoneNumber || !shopData.ownerPhoneNumber.trim()) {
+    toast('매장정보 > 대표자 연락처를 입력해주세요.');
     return false;
   }
 

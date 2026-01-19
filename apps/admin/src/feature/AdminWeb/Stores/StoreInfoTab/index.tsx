@@ -1,4 +1,4 @@
-import { Input, CheckButton } from '@repo/ui/components';
+import { Input, CheckButton, Dropdown } from '@repo/ui/components';
 import { allowOnlyNumbers } from '@repo/util/string';
 import * as S from './storeInfoTab.style';
 import type { IGetAdminShopDetail } from '@repo/api/types';
@@ -10,6 +10,26 @@ interface Props {
   formData: IGetAdminShopDetail;
   updateFormData: (updates: Partial<IGetAdminShopDetail>) => void;
 }
+
+const AREA_CODE_OPTIONS = [
+  { value: '02', label: '02 (서울)' },
+  { value: '031', label: '031 (경기)' },
+  { value: '032', label: '032 (인천)' },
+  { value: '033', label: '033 (강원)' },
+  { value: '041', label: '041 (충남)' },
+  { value: '042', label: '042 (대전)' },
+  { value: '043', label: '043 (충북)' },
+  { value: '044', label: '044 (세종)' },
+  { value: '051', label: '051 (부산)' },
+  { value: '052', label: '052 (울산)' },
+  { value: '053', label: '053 (대구)' },
+  { value: '054', label: '054 (경북)' },
+  { value: '055', label: '055 (경남)' },
+  { value: '061', label: '061 (전남)' },
+  { value: '062', label: '062 (광주)' },
+  { value: '063', label: '063 (전북)' },
+  { value: '064', label: '064 (제주)' },
+];
 
 export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
   return (
@@ -101,6 +121,16 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
             onChange={(value) => updateFormData({ address2: value })}
           />
         </S.FieldGroup>
+
+        <S.FieldGroup>
+          <S.Label>지역 코드</S.Label>
+          <Dropdown
+            options={AREA_CODE_OPTIONS}
+            value={formData.areaCode || null}
+            onChange={(value) => updateFormData({ areaCode: String(value) })}
+            placeholder="지역 코드를 선택하세요"
+          />
+        </S.FieldGroup>
       </S.Section>
 
       <S.Section>
@@ -116,7 +146,9 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
 
       <S.Section>
         <S.FieldGroup>
-          <S.Label>매장 전화번호</S.Label>
+          <S.Label>
+            매장 전화번호 <span>*</span>
+          </S.Label>
           <Input
             placeholder="매장 전화번호를 입력하세요"
             value={formData.shopPhoneNumber}

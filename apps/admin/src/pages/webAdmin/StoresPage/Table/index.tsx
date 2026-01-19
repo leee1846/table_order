@@ -14,7 +14,7 @@ export const Table = ({ stores }: Props) => {
 
   const redirectToStoreDetail = (shopCode: string, shopSeq: number) => {
     useAuthStore.getState().setShopDataForAdminWeb(shopCode, shopSeq);
-    const url = `${window.location.origin}${ROUTES.SETTINGS.SALES.SUMMARY.generate()}`;
+    const url = `${window.location.origin}${ROUTES.SETTINGS.NOTICES.generate()}`;
     window.open(url, '_blank');
   };
 
@@ -29,6 +29,7 @@ export const Table = ({ stores }: Props) => {
 
     return stores.map((store) => (
       <tr key={store.memberId}>
+        <td>{store.shopCode}</td>
         <td>{store.shopName}</td>
         <td>{store.businessNumber}</td>
         <td>{store.address1}</td>
@@ -66,6 +67,7 @@ export const Table = ({ stores }: Props) => {
       <UIStyles.setting.Table>
         <UIStyles.setting.Thead>
           <tr>
+            <th>SID</th>
             <th>매장명</th>
             <th>사업자등록번호</th>
             <th>기본 주소</th>

@@ -78,8 +78,17 @@ export const StoresEditPage = () => {
       return;
     }
 
+    // posLinkType이 null인 경우 'NONE'으로 설정
+    const normalizedShopData = {
+      ...shopData,
+      settingInfo: {
+        ...shopData.settingInfo,
+        posLinkType: shopData.settingInfo.posLinkType || 'NONE',
+      },
+    };
+
     // 매장 정보 업데이트
-    await updateShop(shopData);
+    await updateShop(normalizedShopData);
 
     // 멤버 정보가 존재하는 경우에만 업데이트
     const hasExistingMember = !!memberInitialData?.memberId;

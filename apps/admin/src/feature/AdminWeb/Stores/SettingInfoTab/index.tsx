@@ -26,7 +26,7 @@ export const SettingInfoTab = ({ formData, updateFormData }: Props) => {
     windowAspId: '',
     windowAspPw: '',
     chargerType: '',
-    posLinkType: 'NONE',
+    posLinkType: 'NONE' as const,
     updateDate: '',
     updateMemberUuid: '',
   };

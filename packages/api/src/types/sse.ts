@@ -2,7 +2,6 @@ export interface ISseMessage {
   shopCode: string;
   type:
     | 'ORDER'
-    | 'PAYMENT'
     | 'SHOP'
     | 'MENU'
     | 'TABLE'
@@ -19,9 +18,9 @@ export interface ISseMessage {
     | 'SHOP_THEME_MENU'
     | 'RING_BELL';
   data:
-    | {
-        [key: string]: number | string;
-      }
-    | null
-    | string[];
+  | {
+    [key: string]: number | string;
+  }
+  | null
+  | string[];
 }

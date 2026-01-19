@@ -32,7 +32,7 @@ export const Detail = ({
           </p>
           <div />
           <p>
-            {t('최신 버전')} <span>{latestVersionData?.data.version}</span>
+            {t('최신 버전')} <span>{latestVersionData?.data?.version ?? '-'}</span>
           </p>
         </S.Versions>
       </UIStyles.setting.Header>
@@ -69,7 +69,7 @@ export const Detail = ({
             disabled={true}
           />
         </UIStyles.setting.ContentLayout>
-        <UIStyles.setting.ContentLayout>
+        {/* <UIStyles.setting.ContentLayout>
           <p>{t('KDS 모드 사용')}</p>
           <ToggleButton
             size="M"
@@ -90,7 +90,7 @@ export const Detail = ({
               // noop
             }}
           />
-        </UIStyles.setting.ContentLayout>
+        </UIStyles.setting.ContentLayout> */}
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>
   );

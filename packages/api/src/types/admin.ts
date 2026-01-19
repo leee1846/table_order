@@ -36,7 +36,7 @@ export interface IGetAdminShopSettingInfo {
   windowAspId: string;
   windowAspPw: string;
   chargerType: string;
-  posLinkType: TPosLinkType;
+  posLinkType: TPosLinkType | null;
   updateDate: string;
   updateMemberUuid: string;
 }
@@ -47,6 +47,7 @@ export interface IGetAdminShopDetail {
   isActive: boolean;
   address1: string;
   address2: string;
+  areaCode: string;
   businessNumber: string;
   shopType: string;
   shopCode: string;

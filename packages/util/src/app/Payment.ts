@@ -31,6 +31,22 @@ export interface IPaymentCancelOptions {
 }
 
 /**
+ * 가맹점 등록 정보 다운로드 옵션
+ */
+export interface IDownloadMerchantOptions {
+  /** 사업자 번호 (10자리) */
+  bizNo: string;
+  /** 단말기 ID (8자리) */
+  tid: string;
+  /** 지역 번호 (예: 02) */
+  zoneCode: string;
+  /** 전화번호 */
+  phone: string;
+  /** "Y": 초기화 후 다운로드, "N": 갱신 (기본값: "N") */
+  initYn?: 'Y' | 'N';
+}
+
+/**
  * 결제 요청 파라미터 (네이티브로 전달되는 형식)
  */
 interface IPaymentRequestParams {
@@ -70,6 +86,17 @@ export interface IPaymentResponse {
 }
 
 /**
+ * 가맹점 다운로드 요청 파라미터 (네이티브로 전달되는 형식)
+ */
+interface IMerchantDownloadParams {
+  biz_no: string;
+  tid: string;
+  zone_code: string;
+  phone: string;
+  init_yn: 'Y' | 'N';
+}
+
+/**
  * 네이티브 Payment 플러그인 인터페이스
  */
 interface IPaymentPlugin extends Plugin {
@@ -88,6 +115,16 @@ interface IPaymentPlugin extends Plugin {
    * 결제 중단 (네이티브 메서드)
    */
   stopPayment(): Promise<void>;
+  /**
+   * 가맹점 정보 다운로드 (네이티브 메서드)
+   */
+  requestMerchantDownload(
+    params: IMerchantDownloadParams
+  ): Promise<unknown>;
+  /**
+   * 가맹점 정보 조회 (네이티브 메서드)
+   */
+  requestMerchantInquiry(): Promise<unknown>;
 }
 
 const NativePayment = registerPlugin<IPaymentPlugin>('Payment');
@@ -136,6 +173,26 @@ export interface IPayment {
    * @returns Promise<void>
    */
   stop(): Promise<void>;
+
+  /**
+   * [가맹점 등록] 정보 다운로드 (F3)
+   * - KICC 서버로부터 가맹점 정보를 받아 단말기를 개통/갱신합니다.
+   * @param options - 가맹점 등록 옵션
+   * @param options.bizNo - 사업자 번호 (10자리)
+   * @param options.tid - 단말기 ID (8자리)
+   * @param options.zoneCode - 지역 번호 (예: 02)
+   * @param options.phone - 전화번호
+   * @param options.initYn - "Y": 초기화 후 다운로드, "N": 갱신 (기본값: "N")
+   * @returns Promise<unknown>
+   */
+  downloadMerchant(options: IDownloadMerchantOptions): Promise<unknown>;
+
+  /**
+   * [가맹점 조회] 등록 정보 확인 (SL)
+   * - 단말기가 정상적으로 등록되어 있는지 확인합니다.
+   * @returns Promise<unknown>
+   */
+  inquiryMerchant(): Promise<unknown>;
 }
 
 export const Payment: IPayment = {
@@ -169,5 +226,19 @@ export const Payment: IPayment = {
 
   stop: async () => {
     return NativePayment.stopPayment();
+  },
+
+  downloadMerchant: async (options) => {
+    return NativePayment.requestMerchantDownload({
+      biz_no: options.bizNo,
+      tid: options.tid,
+      zone_code: options.zoneCode,
+      phone: options.phone,
+      init_yn: options.initYn || 'N',
+    });
+  },
+
+  inquiryMerchant: async () => {
+    return NativePayment.requestMerchantInquiry();
   },
 };

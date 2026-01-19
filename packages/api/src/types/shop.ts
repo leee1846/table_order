@@ -11,6 +11,7 @@ export interface IGetShopItem {
   address1: string;
   address2: string;
   businessNumber: string;
+  areaCode: string;
   shopType: TShopType;
   shopCode: string;
   ownerName: string;
@@ -227,6 +228,7 @@ export interface ICreateShopRequest {
   isActive: boolean;
   address1: string;
   address2: string;
+  areaCode: string;
   businessNumber: string;
   shopType: TShopType;
   ownerName: string;

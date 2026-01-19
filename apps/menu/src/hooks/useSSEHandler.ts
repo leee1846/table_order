@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
-import { SSE_KEYS, STORAGE_KEYS } from '@/constants/keys';
+import { SSE_KEYS } from '@/constants/keys';
 import type { ISseMessage, ITableGroup, ITableInfo } from '@repo/api/types';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
@@ -12,7 +12,7 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
-import { SystemControl, AppStorage } from '@repo/util/app';
+import { SystemControl } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -543,7 +543,8 @@ export const useSSEHandler = () => {
       case 'DEVICE_APP_UPDATE':
         // 앱 업데이트 제어 (TODO: 구현 필요)
         handlersRef.current.handleDeviceControlMessage(() => {
-          // TODO: 앱 업데이트 브릿지 호출 필요
+          window.alert('앱 업데이트 url을 입력해야합니다. 개발중...')
+          // SystemControl.goToUrl({ url: 'https://www.google.com' });
         }, sseMessage);
         break;
 

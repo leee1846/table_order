@@ -39,6 +39,7 @@ export const useShopDetailData = (options?: Props) => {
     if (result.data?.data) {
       await setShopDetailData(result.data.data);
     }
+    return result.data?.data;
   };
 
   return {

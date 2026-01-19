@@ -51,7 +51,15 @@ export const Stores = ({
 
   useEffect(() => {
     if (initialData) {
-      setFormData({ ...initialData });
+      // posLinkType이 null인 경우 'NONE'으로 설정
+      const normalizedData = {
+        ...initialData,
+        settingInfo: {
+          ...initialData.settingInfo,
+          posLinkType: initialData.settingInfo?.posLinkType || 'NONE',
+        },
+      };
+      setFormData(normalizedData);
       setMemberFormData((prev) => ({
         ...prev,
         shopSeq: initialData?.shopSeq ?? 0,
