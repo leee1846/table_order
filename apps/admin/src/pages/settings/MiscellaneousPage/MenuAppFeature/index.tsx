@@ -393,8 +393,16 @@ export const MenuAppFeature = ({
         <p>{t('첫주문 금액')}</p>
         <input
           type="text"
-          value={firstOrderMinAmount}
-          onChange={(event) => setFirstOrderMinAmount(event.target.value)}
+          inputMode="numeric"
+          value={
+            firstOrderMinAmount
+              ? Number(firstOrderMinAmount).toLocaleString('ko-KR')
+              : ''
+          }
+          onChange={(event) => {
+            const value = event.target.value.replace(/[^0-9]/g, '');
+            setFirstOrderMinAmount(value);
+          }}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>

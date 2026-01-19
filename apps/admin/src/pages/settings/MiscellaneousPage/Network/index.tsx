@@ -181,6 +181,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
           <UIStyles.setting.ContentLayout>
             <p>IP Address</p>
             <input
+              inputMode="numeric"
               type="text"
               value={ipAddress}
               onChange={(event) => setIpAddress(event.target.value)}
