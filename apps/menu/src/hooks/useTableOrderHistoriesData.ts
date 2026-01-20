@@ -6,12 +6,23 @@ import { useDeviceData } from '@/hooks/useDeviceData';
 
 interface Props {
   /**
-   * useEffect 실행을 건너뛸지 여부
-   * 초기 api요청 건너뛰기 여부
+   * 초기 API 요청을 건너뛸지 여부
    * @default false
    */
   skipInitialRequest?: boolean;
 }
+
+/**
+ * 테이블 주문 내역 데이터를 로드하고 관리하는 커스텀 훅
+ *
+ * @description
+ * - 매장 코드와 테이블 번호를 기반으로 주문 내역을 로드합니다
+ * - 테이블이 점유되지 않은 경우 'isEmptyTable' 상태로 저장합니다
+ * - SSE 업데이트 시간을 전달하여 변경된 데이터만 조회할 수 있습니다
+ *
+ * @param options - 옵션 설정
+ * @returns 주문 내역 데이터 및 제어 함수
+ */
 export const useTableOrderHistoriesData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 

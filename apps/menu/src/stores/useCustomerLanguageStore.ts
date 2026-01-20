@@ -16,7 +16,12 @@ export interface ICustomerLanguageStore {
 }
 
 /**
- * 선택한 언어 상태 저장 스토어
+ * 고객 메뉴판 언어 설정을 관리하는 Zustand 스토어
+ *
+ * @description
+ * - 사용자가 선택한 언어를 저장하고 관리합니다
+ * - 언어 변경 시 i18n 설정을 자동으로 업데이트합니다
+ * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
 export const useCustomerLanguageStore = create<ICustomerLanguageStore>(
   (set, get) => {

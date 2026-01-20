@@ -14,6 +14,14 @@ interface IShopThemeStore {
   clearShopThemeData: () => void;
 }
 
+/**
+ * 매장 테마 정보를 관리하는 Zustand 스토어
+ *
+ * @description
+ * - 매장 테마 페이지 데이터와 메뉴 테마 데이터를 저장하고 관리합니다
+ * - 다크 모드 설정, 로고 이미지 등 테마 관련 정보를 관리합니다
+ * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
+ */
 export const useShopThemeStore = create<IShopThemeStore>((set, get) => {
   // 초기 데이터 로드 (비동기)
   Promise.all([

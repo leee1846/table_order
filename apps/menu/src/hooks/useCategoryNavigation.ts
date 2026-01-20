@@ -24,8 +24,17 @@ interface IReturn {
 }
 
 /**
- * 카테고리 네비게이션 통합 관리 훅
- * Sidebar, ScrollContent, TabContent 간 상태 동기화 및 이벤트 처리
+ * 카테고리 네비게이션을 통합 관리하는 커스텀 훅
+ *
+ * @description
+ * - Sidebar, ScrollContent, TabContent 간 상태를 동기화합니다
+ * - 스크롤 모드: IntersectionObserver를 사용하여 화면에 보이는 카테고리를 자동으로 선택합니다
+ * - 탭 모드: 카테고리 클릭 시 스크롤 컨테이너를 상단으로 이동합니다
+ * - 사용자 클릭 시 IntersectionObserver를 일시적으로 비활성화하여 의도하지 않은 카테고리 변경을 방지합니다
+ *
+ * @param categories - 카테고리 목록
+ * @param useSinglePageMenuboard - 단일 페이지 메뉴판 사용 여부 (탭 모드)
+ * @returns 선택된 카테고리 정보 및 핸들러 함수
  */
 export function useCategoryNavigation({
   categories,

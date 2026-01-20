@@ -11,8 +11,11 @@ export interface IDisableStaffCallStore {
 }
 
 /**
- * 직원 호출 비활성화 상태 저장 스토어
- * 직원호출 후 5초간 직원 호출 버튼 비활성화
+ * 직원 호출 버튼 비활성화 상태를 관리하는 Zustand 스토어
+ *
+ * @description
+ * - 직원 호출 후 5초간 버튼을 비활성화하여 중복 호출을 방지합니다
+ * - 타이머를 사용하여 자동으로 비활성화 상태를 해제합니다
  */
 export const useDisableStaffCallStore = create<IDisableStaffCallStore>(
   (set) => ({

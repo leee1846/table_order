@@ -8,10 +8,14 @@ interface UseCustomerCountSettingsReturn {
 }
 
 /**
- * 고객 객수 선택 설정을 관리함
- * - 객수 선택 화면 노출 여부
+ * 고객 객수 선택 화면 노출 여부를 관리하는 커스텀 훅
  *
- * @param shopDetailData - 상점 상세 데이터
+ * @description
+ * - 매장 설정에서 객수 선택 기능이 활성화되어 있고, 테이블이 점유되지 않았으며, 객수가 선택되지 않은 경우에만 화면을 표시합니다
+ * - 테이블에 주문이 있거나 객수가 이미 선택된 경우 화면을 숨깁니다
+ *
+ * @param shopDetailData - 매장 상세 데이터
+ * @param tableOrderHistoriesData - 테이블 주문 내역 데이터
  * @returns 객수 선택 화면 노출 여부
  */
 export const useCustomerCountSettings = (

@@ -11,12 +11,9 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
  * 시스템 상태(배터리, WiFi 신호) 모니터링 및 동기화를 담당하는 커스텀 훅
  *
  * @description
- * 이 훅은 Android 네이티브 브릿지를 통해 시스템 상태를 실시간으로 모니터링하며, 다음과 같은 주요 기능을 제공합니다:
- *
- * ## 주요 기능
- *
- * 1. 시스템 상태 모니터링 시작 및 종료
- * 2. 배터리 및 WiFi 신호 변경 감지 및 업데이트
+ * - Android 네이티브 브릿지를 통해 배터리 및 WiFi 신호를 실시간으로 모니터링합니다
+ * - 상태 변경 시 로컬 Store와 서버에 자동으로 동기화합니다
+ * - 디바이스 초기화가 완료된 후에만 서버 동기화를 수행합니다
  */
 export const useSystemStatusMonitor = () => {
   const { t } = useAdminTranslation();

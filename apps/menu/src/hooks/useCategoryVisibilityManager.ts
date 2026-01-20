@@ -7,12 +7,14 @@ import { useGetHolidays } from '@repo/api/queries';
 import type { ICategoryWithMenus } from '@repo/api/types';
 
 /**
- * 카테고리 판매 시간/요일에 따른 노출/비노출 상태를 자동으로 관리함
- * - 타이머 기반 자동 업데이트
- * - 다음 상태 변경 시간 추적
- * - 공휴일 정보를 반영하여 판매 가능 여부 결정
+ * 카테고리 판매 시간 및 요일에 따른 노출/비노출 상태를 자동으로 관리하는 커스텀 훅
  *
- * @param categories - 카테고리 스토어 데이터
+ * @description
+ * - 판매 시간, 요일, 공휴일 정보를 기반으로 카테고리 노출 여부를 결정합니다
+ * - 다음 상태 변경 시간을 추적하여 타이머를 설정합니다
+ * - 상태 변경 시 자동으로 visibility를 업데이트합니다
+ *
+ * @param categories - 카테고리 목록
  */
 export const useCategoryVisibilityManager = (
   categories: ICategoryWithMenus[] | null

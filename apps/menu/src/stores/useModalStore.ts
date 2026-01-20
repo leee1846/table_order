@@ -72,7 +72,12 @@ const initialData = {
 };
 
 /**
- * 모달 상태를 중앙에서 관리하는 스토어
+ * 모든 모달의 열림/닫힘 상태를 중앙에서 관리하는 Zustand 스토어
+ *
+ * @description
+ * - 앱 내 모든 모달의 상태를 통합 관리합니다
+ * - 장바구니, 주문 내역, 결제, 직원 호출 등 다양한 모달을 관리합니다
+ * - 모든 모달이 닫혀있는지 확인하는 유틸리티 함수를 제공합니다
  */
 export const useModalStore = create<IModalStore>((set, get) => ({
   // 초기 상태

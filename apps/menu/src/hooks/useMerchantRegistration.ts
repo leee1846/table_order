@@ -11,9 +11,12 @@ interface Props {
  * 가맹점 등록 확인 및 다운로드를 처리하는 커스텀 훅
  *
  * @description
- * - inquiryMerchant를 통해 가맹점 등록 여부를 확인합니다.
- * - 등록되어 있지 않으면 downloadMerchant를 실행하여 가맹점 정보를 다운로드합니다.
- * @returns registerMerchant - 가맹점 등록 확인 및 다운로드를 실행하는 함수
+ * - 선결제 사용 시 가맹점 등록 여부를 확인합니다
+ * - 등록되어 있지 않으면 매장 정보를 기반으로 가맹점 정보를 다운로드합니다
+ * - 한 번 확인한 후에는 자동으로 재실행되지 않습니다
+ *
+ * @param options - 옵션 설정
+ * @returns 가맹점 등록 확인 및 다운로드 함수
  */
 export const useMerchantRegistration = (options?: Props) => {
   const { enabled = true } = options || {};

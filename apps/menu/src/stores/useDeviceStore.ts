@@ -14,8 +14,12 @@ interface IDeviceStore {
 }
 
 /**
- * 현재 태블릿 디바이스 데이터를 관리하는 스토어
- * - API 응답을 받아 스토리지에 저장
+ * 디바이스 정보를 관리하는 Zustand 스토어
+ *
+ * @description
+ * - 태블릿 디바이스의 정보(테이블 번호, Android ID 등)를 관리합니다
+ * - 초기화 상태를 추적하여 API 호출 여부를 결정합니다
+ * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
 export const useDeviceStore = create<IDeviceStore>((set) => {
   // 초기 데이터 로드 (비동기)

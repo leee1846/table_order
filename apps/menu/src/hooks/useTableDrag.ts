@@ -28,11 +28,14 @@ interface UseTableDragReturn {
 
 /**
  * 테이블 드래그 앤 드롭 기능을 관리하는 커스텀 훅
- * - 드래그 시작/취소/종료 이벤트 처리
- * - 주문 이동 및 합석 기능
+ *
+ * @description
+ * - 드래그 시작/취소/종료 이벤트를 처리합니다
+ * - 대상 테이블에 주문이 없으면 주문을 이동하고, 있으면 합석합니다
+ * - 작업 성공 시 테이블 목록을 자동으로 새로고침합니다
  *
  * @param props - 테이블 맵과 매장 코드
- * @returns 드래그 상태 및 핸들러 함수들
+ * @returns 드래그 상태 및 핸들러 함수
  */
 export const useTableDrag = ({
   tableMap,

@@ -19,9 +19,14 @@ export interface UseShopClosureReturn {
 }
 
 /**
- * 영업마감 상태를 관리하는 커스텀 훅
+ * 영업마감 상태를 실시간으로 관리하는 커스텀 훅
  *
- * @returns 영업마감 상태 정보
+ * @description
+ * - 매장의 영업마감 설정을 기반으로 현재 시간의 영업마감 상태를 감지합니다
+ * - 다음 상태 변경 시점에 타이머를 설정하여 자동으로 상태를 업데이트합니다
+ * - 라스트오더 시간 및 알림 시간을 감지하고 모달을 표시합니다
+ *
+ * @returns 영업마감 상태 정보 및 제어 함수
  */
 export const useShopClosure = (): UseShopClosureReturn => {
   const { data: shopDetailData } = useShopDetailData();

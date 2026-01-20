@@ -60,9 +60,13 @@ const initialData = {
 };
 
 /**
- * 카테고리 데이터를 관리하는 스토어
- * - API 응답을 받아 스토리지에 저장
- * - 판매 가능 여부에 따른 visibility 관리
+ * 카테고리 데이터를 관리하는 Zustand 스토어
+ *
+ * @description
+ * - 카테고리 목록과 메뉴 정보를 저장하고 관리합니다
+ * - 판매 시간/요일에 따른 카테고리 노출 여부를 visibilityMap으로 관리합니다
+ * - isHidden과 visibilityMap을 기반으로 visibleCategories를 자동 계산합니다
+ * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
 export const useCategoryStore = create<ICategoryStore>((set) => {
   // 초기 데이터 로드 (비동기)

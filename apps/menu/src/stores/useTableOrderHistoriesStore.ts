@@ -23,8 +23,13 @@ export interface ITableOrderHistoriesStore {
 }
 
 /**
- * 테이블 주문 내역 데이터를 관리하는 스토어
- * - API 응답을 받아 스토리지에 저장
+ * 테이블 주문 내역 데이터를 관리하는 Zustand 스토어
+ *
+ * @description
+ * - 현재 테이블의 주문 내역 정보를 저장하고 관리합니다
+ * - 테이블이 점유되지 않은 경우 'isEmptyTable' 상태로 저장됩니다
+ * - SSE 업데이트 시간을 추적하여 변경된 데이터만 조회할 수 있습니다
+ * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
 export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
   (set) => {

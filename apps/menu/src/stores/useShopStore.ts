@@ -11,8 +11,11 @@ export interface IShopStore {
 }
 
 /**
- * 상점 데이터를 관리하는 스토어
- * - API 응답을 받아 스토리지에 저장
+ * 매장 기본 정보를 관리하는 Zustand 스토어
+ *
+ * @description
+ * - 매장의 기본 정보(매장 코드, 이름 등)를 저장하고 관리합니다
+ * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
 export const useShopStore = create<IShopStore>((set) => {
   // 초기 데이터 로드 (비동기)

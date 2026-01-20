@@ -15,16 +15,15 @@ interface Props {
 }
 
 /**
- * 카테고리 데이터 로딩 및 모든 카테고리 선택자를 제공하는 훅
+ * 카테고리 데이터를 로드하고 분류하여 제공하는 커스텀 훅
  *
- * @returns {object} 카테고리 관련 모든 데이터와 유틸리티
- * - categories: 원본 카테고리 목록
- * - visibleCategories: 보이는 카테고리 목록 (isHidden, visibility 필터링)
- * - staffCallCategory: 직원 호출 카테고리
- * - nonStaffCallCategories: 일반 카테고리 (직원 호출 제외)
- * - firstOrderRequiredCategories: 첫 주문 필수 카테고리 목록
- * - getVisibleMenus: 카테고리의 보이는 메뉴 목록 반환 함수
- * - refreshCategories: 카테고리 데이터 새로고침
+ * @description
+ * - 매장 코드와 테이블 번호를 기반으로 카테고리 데이터를 로드합니다
+ * - Store에 데이터가 있으면 API 호출을 건너뜁니다
+ * - 직원 호출 카테고리, 첫 주문 필수 카테고리 등을 분류하여 제공합니다
+ *
+ * @param options - 옵션 설정
+ * @returns 카테고리 데이터, 분류된 카테고리 목록 및 유틸리티 함수
  */
 export const useCategoriesData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};

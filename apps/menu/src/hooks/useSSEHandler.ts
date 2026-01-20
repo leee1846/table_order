@@ -31,19 +31,14 @@ import { getDeviceInfo } from '@/utils/deviceInfo';
  * SSE(Server-Sent Events) 연결 및 실시간 메시지 처리를 담당하는 커스텀 훅
  *
  * @description
- * 이 훅은 메뉴 앱에서 서버와의 실시간 통신을 관리하며, 다음과 같은 주요 기능을 제공합니다:
- *
- * ## 주요 기능
- *
- * 1. 디바이스 정보 초기화 및 SSE 연결 설정
- * 2. 실시간 메시지 타입별 처리
- * 3. `useRef`를 활용한 데이터 참조 관리로 불필요한 리렌더링 방지
- * 4. 컴포넌트 언마운트 시 SSE 연결 자동 해제
+ * - 디바이스 정보를 초기화하고 서버와 SSE 연결을 설정합니다
+ * - 서버로부터 수신된 실시간 메시지를 타입별로 처리합니다 (ORDER, SHOP, MENU, TABLE, DEVICE, PICKUP 등)
+ * - useRef를 활용하여 불필요한 리렌더링을 방지합니다
+ * - 컴포넌트 언마운트 시 SSE 연결을 자동으로 해제합니다
  *
  * @remarks
- * - 이 훅은 `currentShopData.shopCode`가 존재할 때만 SSE 연결을 초기화합니다.
- * - 모든 메시지 처리는 현재 매장의 shopCode와 일치하는 경우에만 수행됩니다.
- * - 디바이스 정보 수집 실패 시 사용자에게 재시도 다이얼로그를 표시합니다.
+ * - 매장 코드가 존재할 때만 SSE 연결을 초기화합니다
+ * - 모든 메시지 처리는 현재 매장의 shopCode와 일치하는 경우에만 수행됩니다
  */
 export const useSSEHandler = () => {
   const navigate = useNavigate();

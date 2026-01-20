@@ -41,7 +41,13 @@ const initialData: ICart = {
 };
 
 /**
- * 장바구니 상태 저장 스토어
+ * 장바구니 상태를 관리하는 Zustand 스토어
+ *
+ * @description
+ * - 장바구니에 담긴 메뉴 목록과 옵션을 관리합니다
+ * - 동일한 메뉴와 옵션 조합이면 수량을 증가시키고, 아니면 새 항목으로 추가합니다
+ * - 첫 주문 필수 항목 존재 여부를 옵션으로 관리합니다
+ * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
 export const useCartStore = create<ICartStore>((set, get) => {
   // 초기 데이터 로드 (비동기)

@@ -8,12 +8,23 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 
 interface Props {
   /**
-   * useEffect 실행을 건너뛸지 여부
-   * 초기 api요청 건너뛰기 여부
+   * 초기 API 요청을 건너뛸지 여부
    * @default false
    */
   skipInitialRequest?: boolean;
 }
+
+/**
+ * 디바이스 정보를 로드하고 관리하는 커스텀 훅
+ *
+ * @description
+ * - 매장 코드와 Android ID를 기반으로 디바이스 상세 정보를 로드합니다
+ * - 초기화가 완료되지 않은 경우에만 API 호출을 수행합니다
+ * - 서버 응답에 필수 정보가 없으면 로컬 디바이스 정보를 병합합니다
+ *
+ * @param options - 옵션 설정
+ * @returns 디바이스 데이터, 초기화 상태 및 제어 함수
+ */
 export const useDeviceData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 

@@ -5,17 +5,22 @@ import { getAccessToken } from '@repo/api/auth';
 
 interface Props {
   /**
-   * useEffect 실행을 건너뛸지 여부
-   * 초기 api요청 건너뛰기 여부
+   * 초기 API 요청을 건너뛸지 여부
    * @default false
    */
   skipInitialRequest?: boolean;
 }
 
 /**
- * Shop 데이터를 로드하는 커스텀 훅
- * - Store에 데이터가 있으면 API 호출하지 않음
- * - API 응답을 받으면 Store에 자동 저장 (Storage에도 저장됨)
+ * 매장 데이터를 로드하고 관리하는 커스텀 훅
+ *
+ * @description
+ * - Store에 데이터가 있으면 API 호출을 건너뜁니다
+ * - API 응답을 받으면 Store에 자동 저장됩니다 (Storage에도 저장됨)
+ * - 첫 번째 매장을 기본값으로 선택합니다
+ *
+ * @param options - 옵션 설정
+ * @returns 매장 데이터 및 새로고침 함수
  */
 export const useShopData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};

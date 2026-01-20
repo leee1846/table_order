@@ -13,7 +13,11 @@ interface IInitialPageStore {
 }
 
 /**
- * 초기 화면 노출 상태 저장 스토어
+ * 초기 화면 노출 여부를 관리하는 Zustand 스토어
+ *
+ * @description
+ * - 테이블이 점유되지 않았을 때 표시되는 초기 화면의 노출 여부를 관리합니다
+ * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
 export const useInitialPageStore = create<IInitialPageStore>((set) => {
   // 초기 데이터 로드 (비동기)
