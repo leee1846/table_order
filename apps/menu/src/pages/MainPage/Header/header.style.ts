@@ -27,6 +27,10 @@ export const LeftContent = styled.div`
 
   & > button {
     width: 6.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
 
     & > img {
       width: 100%;

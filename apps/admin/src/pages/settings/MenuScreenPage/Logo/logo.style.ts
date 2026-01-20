@@ -40,7 +40,7 @@ export const ImageSection = styled.button`
 `;
 
 export const ImagePreview = styled.img`
-  width: 100%;
+  width: 200px;
   height: 100%;
   object-fit: contain;
   background-color: ${theme.colors.primary[100]};

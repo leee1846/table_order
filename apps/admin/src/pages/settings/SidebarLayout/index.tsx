@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { SettingsSidebar, useTranslation } from '@repo/feature/components';
 import { createSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
-import { useGetCategoryList, useGetShopThemePage } from '@repo/api/queries';
+import { useGetCategoryList, useGetShopThemeMenu } from '@repo/api/queries';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
@@ -19,20 +19,9 @@ export const SidebarLayout = () => {
     shopSeq: shopSeq ?? 0,
   });
 
-  const { data: shopThemePageResponse } = useGetShopThemePage(shopCode ?? '', {
+  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
     enabled: !!shopCode,
   });
-
-  const initLightImage = useMemo(() => {
-    const shopPageDetailList = shopThemePageResponse?.data?.shopPageDetailList;
-    if (!shopPageDetailList) {
-      return null;
-    }
-    const initLightItem = shopPageDetailList.find(
-      (item) => item.pageDetailType === 'INIT_LIGHT'
-    );
-    return initLightItem?.pageDetailImagePath || null;
-  }, [shopThemePageResponse?.data?.shopPageDetailList]);
 
   const categoryMenuSubMenus = useMemo(() => {
     if (!categoryListResponse?.data) {
@@ -64,14 +53,12 @@ export const SidebarLayout = () => {
       useTranslation={useTranslation}
       menus={SIDEBAR_MENUS}
       logoElement={
-        <button type="button" onClick={onClickLogo}>
-          {initLightImage && (
-            <img
-              src={initLightImage ?? capsSmartOrderWhiteLogo}
-              alt={t('매장 로고')}
-              style={{ width: '100%' }}
-            />
-          )}
+        <button type="button" onClick={onClickLogo}>        
+          <img
+            src={shopThemeMenuResponse?.data?.logoImagePath ?? capsSmartOrderWhiteLogo}
+            alt={t('매장 로고')}
+            style={{ width: '100%' }}
+          />
         </button>
       }
       onClickHomeButton={onClickLogo}
