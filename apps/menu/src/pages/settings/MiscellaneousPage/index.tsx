@@ -47,7 +47,7 @@ export const MiscellaneousPage = () => {
       return;
     }
 
-    setOrderPosNumber(parsedNumber);
+    setOrderPosNumber(parsedNumber || null);
   };
 
   const handleToggleOrderPosMode = () => {

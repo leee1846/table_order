@@ -5,6 +5,7 @@ export const Container = styled.div`
   height: 100%;
   padding: 40px 24px 40px 30px;
   background-color: ${theme.colors.grey[50]};
+  overflow-y: auto;
 
   & > header {
     display: flex;

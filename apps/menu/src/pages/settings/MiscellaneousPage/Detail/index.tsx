@@ -68,8 +68,8 @@ export const Detail = ({
             }}
             disabled={true}
           />
-        </UIStyles.setting.ContentLayout> */}
-        {/* <UIStyles.setting.ContentLayout>
+        </UIStyles.setting.ContentLayout>
+        <UIStyles.setting.ContentLayout>
           <p>{t('KDS 모드 사용')}</p>
           <ToggleButton
             size="M"

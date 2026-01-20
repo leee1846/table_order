@@ -1,4 +1,3 @@
-import styled from '@emotion/styled';
 import { BasicButton, FullscreenLoadingSpinner } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
@@ -6,10 +5,6 @@ import { useMerchantRegistration } from '@/hooks/useMerchantRegistration';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
 import { useState } from 'react';
-
-const PaymentContainer = styled(UIStyles.setting.Container)`
-  padding-bottom: 40px;
-`;
 
 export const Payment = () => {
   const { t } = useAdminTranslation();
@@ -81,7 +76,7 @@ export const Payment = () => {
 
   return (
     <>
-    <PaymentContainer>
+    <UIStyles.setting.Container>
       <UIStyles.setting.Header>
         <UIStyles.setting.Title>{t('결제 단말기 관리')}</UIStyles.setting.Title>
       </UIStyles.setting.Header>
@@ -97,7 +92,7 @@ export const Payment = () => {
           </BasicButton>
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>
-    </PaymentContainer>
+    </UIStyles.setting.Container>
 
     {isDownloading && <FullscreenLoadingSpinner />}
     </>
