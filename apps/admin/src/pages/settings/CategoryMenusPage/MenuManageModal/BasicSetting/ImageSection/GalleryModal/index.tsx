@@ -89,18 +89,18 @@ export const GalleryModal = ({
           ) : (
             <S.ImageGrid ref={gridRef} onScroll={handleGridScroll}>
               {items.map((item) => {
-                const isSelected = selected.has(item.originalUri);
-                const order = getSelectionOrder(item.originalUri);
+                const isSelected = selected.has(item.path);
+                const order = getSelectionOrder(item.path);
 
                 return (
                   <S.ImageButton
                     type="button"
                     selected={isSelected}
                     aria-pressed={isSelected}
-                    key={item.originalUri}
-                    onClick={() => onToggleSelect(item.originalUri)}
+                    key={item.path}
+                    onClick={() => onToggleSelect(item.path)}
                   >
-                    <S.Image src={item.thumbUrl} alt={t('갤러리 이미지')} />
+                    <S.Image src={item.thumbPath} alt={t('갤러리 이미지')} />
                     <S.SelectionOverlay selected={isSelected} />
                     {order !== null && (
                       <S.SelectionIndicator selected={isSelected}>

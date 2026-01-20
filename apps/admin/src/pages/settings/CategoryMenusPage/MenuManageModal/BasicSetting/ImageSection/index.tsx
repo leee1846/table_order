@@ -246,12 +246,12 @@ export const ImageSection = () => {
         // 가져온 이미지들을 기존 목록에 추가 (중복 방지)
         setAlbumItems((prev) => {
           // 기존 목록의 모든 originalUri를 Set으로 만들어 중복 체크용으로 사용
-          const existing = new Set(prev.map((item) => item.originalUri));
+          const existing = new Set(prev.map((item) => item.path));
           // 첫 페이지(page === 0)면 기존 목록을 초기화하고, 아니면 기존 목록을 유지
           const base = page === 0 ? [] : [...prev];
           // 새로 가져온 이미지들 중에서 중복되지 않은 것만 추가
           newItems.forEach((item) => {
-            if (!existing.has(item.originalUri)) {
+            if (!existing.has(item.path)) {
               base.push(item);
             }
           });
@@ -326,6 +326,8 @@ export const ImageSection = () => {
     setIsAlbumUploading(true);
     try {
       const uris = Array.from(selectedAlbumUris);
+
+      if(uris.length > 0) {
       // 원본 파일 준비(getOriginalFile)는 최종 확인 시에만 호출해 네이티브 호출을 최소화한다.
       const preparedPaths = await Promise.all(
         uris.map(async (uri) => {
@@ -351,6 +353,9 @@ export const ImageSection = () => {
       applyGalleryFiles(files, target);
       setIsGalleryModalOpen(false);
       resetGalleryState();
+        
+       }
+
       try {
         await CameraManager.clearCache();
       } catch (error) {
