@@ -83,7 +83,7 @@ export const Stores = ({
     setIsHistoryDialogOpen(false);
   };
 
-  const title = mode === 'create' ? '매장 생성' : '매장 수정';
+  const title = mode === 'create' ? '생성' : '수정';
 
   return (
     <S.Container>

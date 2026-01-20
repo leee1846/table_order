@@ -35,7 +35,7 @@ export const StoresPage = () => {
         <S.Title>
           매장 관리
           <div />
-          <span>매장 목록</span>
+          <span>목록</span>
         </S.Title>
 
         <S.SearchContainer>
