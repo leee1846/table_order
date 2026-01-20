@@ -20,6 +20,12 @@ export const ThumbnailContainer = styled.div`
   border-radius: 1rem;
   overflow: hidden;
   background-color: ${theme.colors.grey[100]};
+
+  & > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 export const ImagesContainer = styled.div`
