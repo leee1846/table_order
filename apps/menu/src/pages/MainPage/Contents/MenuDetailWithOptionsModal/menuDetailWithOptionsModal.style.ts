@@ -29,8 +29,9 @@ export const MenuInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 35%;
-  padding: 24px 24px 40px;
+  padding: 24px;
   min-height: 0;
+  background-color: ${({ theme }) => theme.mode.grey[50]};
 `;
 
 export const SwiperContainer = styled.div`
@@ -38,45 +39,6 @@ export const SwiperContainer = styled.div`
   width: 100%;
   border-radius: 0.5rem;
   overflow: hidden;
-`;
-
-interface IImageWrapper {
-  hasImage: boolean;
-}
-
-export const ImageWrapper = styled.div<IImageWrapper>`
-  position: relative;
-  width: 100%;
-  flex-shrink: 0;
-  background-color: ${({ theme, hasImage }) =>
-    hasImage ? 'transparent' : theme.mode.grey[200]};
-  border-radius: 0.5rem;
-  overflow: hidden;
-  ${({ hasImage }) => !hasImage && 'aspect-ratio: 4 / 3;'}
-  ${({ hasImage }) => !hasImage && 'min-height: 200px;'}
-`;
-
-export const Image = styled.img`
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 0.5rem;
-`;
-
-export const BestIcon = styled.img`
-  position: absolute;
-  top: 0;
-  left: 20px;
-  width: 64px;
-  height: 43px;
-`;
-
-export const ChiliIcons = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  align-items: center;
 `;
 
 export const MenuName = styled.p`
@@ -99,12 +61,22 @@ export const Description = styled.p`
   min-height: 0;
 `;
 
-export const OptionsContainer = styled.div`
-  width: 35%;
+export const MenuQuantityContainer = styled.div`
+  padding-top: 12px;
+`;
+
+export const RightWrapper = styled.div`
+  width: 65%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const OptionsContainer = styled.div`
+  flex: 1;
   overflow-y: auto;
-  padding: 24px;
-  background-color: ${({ theme }) => theme.mode.grey[50]};
+  min-height: 1;
+  padding: 24px 54px 24px 24px;
 `;
 
 export const OptionsList = styled.ul`
@@ -129,15 +101,20 @@ export const OptionGroupName = styled.p`
 `;
 
 export const Options = styled.ul`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+
+  & > li {
+    min-width: 0;
+  }
 `;
 
 export const OptionText = styled.span<{ soldOut: boolean }>`
   ${TYPOGRAPHY.MT_7}
   color: ${({ soldOut, theme }) =>
     soldOut ? theme.mode.grey[400] : theme.mode.grey[700]};
+  word-break: break-word;
 `;
 
 export const NumberInputContainer = styled.li`
@@ -145,65 +122,34 @@ export const NumberInputContainer = styled.li`
   align-items: center;
   justify-content: space-between;
   gap: 4px;
-`;
+  min-width: 0;
 
-export const SelectedOptionsContainer = styled.div`
-  width: 30%;
-  display: flex;
-  flex-direction: column;
-  padding: 24px 24px 40px;
-  background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
-  min-height: 0;
-`;
-
-export const Title = styled.p`
-  ${TYPOGRAPHY.MT_1}
-  color: ${({ theme }) => theme.mode.grey[800]};
-  margin-bottom: 24px;
-`;
-
-export const SelectedOptionsList = styled.ul`
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-  ${TYPOGRAPHY.ST_4}
-  color: ${({ theme }) => theme.mode.grey[500]};
-
-  & > li {
-    display: flex;
-
-    & > span {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-left: 1.25px solid ${({ theme }) => theme.mode.grey[500]};
-      border-bottom: 1.25px solid ${({ theme }) => theme.mode.grey[500]};
-      margin-top: 6px;
-      margin-right: 4px;
-    }
+  & > span {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
   }
 `;
 
 export const TotalContainer = styled.div`
-  flex-shrink: 0;
-  padding-top: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-`;
-
-export const TotalInfo = styled.div`
   border-top: 1px solid ${({ theme }) => theme.mode.grey[200]};
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 8px 0;
+  padding: 24px;
+`;
 
-  & > p:first-of-type {
+export const TotalInfo = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap:12px;
+
+  & > h3 {
     color: ${({ theme }) => theme.mode.grey[800]};
     ${TYPOGRAPHY.MT_2}
   }
-  & > p:last-of-type {
+  & > p {
     color: ${({ theme }) => theme.mode.primary[500]};
     ${TYPOGRAPHY.MT_2}
   }

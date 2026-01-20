@@ -42,12 +42,6 @@ interface Props {
 
 type SelectedOptionsMap = Map<string, { option: IOption; quantity: number }>;
 
-interface SelectedOptionDisplay {
-  option: IOption;
-  quantity: number;
-  groupName: string;
-}
-
 // 옵션을 고유하게 식별하기 위한 키 생성
 const createOptionKey = (optionGroupSeq: number, optionSeq: number): string => {
   return `${optionGroupSeq}-${optionSeq}`;
@@ -365,27 +359,6 @@ export const MenuDetailWithOptionsModal = ({
     });
   };
 
-  // 선택된 옵션들을 화면 하단에 표시하기 위한 데이터 (그룹명 포함)
-  const selectedOptionsForDisplay = useMemo((): SelectedOptionDisplay[] => {
-    const displays: SelectedOptionDisplay[] = [];
-
-    selectedOptions.forEach((item) => {
-      const group = menu.optionGroupList.find(
-        (g) => g.optionGroupSeq === item.option.optionGroupSeq
-      );
-
-      displays.push({
-        option: item.option,
-        quantity: item.quantity,
-        groupName: group
-          ? getLocalizedGroupName(group, languageData.currentLanguage)
-          : '',
-      });
-    });
-
-    return displays;
-  }, [selectedOptions, menu.optionGroupList, languageData.currentLanguage]);
-
   const totalPrice = useMemo(() => {
     const options = Array.from(selectedOptions.values()).map((item) => ({
       optionPrice: item.option.optionPrice,
@@ -421,16 +394,6 @@ export const MenuDetailWithOptionsModal = ({
         )}
       </>
     );
-  };
-
-  const buildSelectedOptionText = (display: SelectedOptionDisplay): string => {
-    const name = getLocalizedOptionName(
-      display.option,
-      languageData.currentLanguage
-    );
-    const price = formatPriceText(display.option.optionPrice);
-    const quantity = display.quantity > 1 ? ` x${display.quantity}` : '';
-    return `${display.groupName} : ${name}${price}${quantity}`;
   };
 
   const validateMenuQuantity = (): boolean => {
@@ -652,87 +615,60 @@ export const MenuDetailWithOptionsModal = ({
             {menu.localeMenuDescription?.[languageData.currentLanguage] ??
               menu.menuDescription}
           </S.Description>
-        </S.MenuInfoContainer>
-
-        {/* Options */}
-        <S.OptionsContainer>
-          {!hasOptionGroups && (
-            <NoContent paddingTop="10%">
-              {t('옵션이 존재하지 않습니다.')}
-            </NoContent>
-          )}
-
-          {hasOptionGroups && (
-            <S.OptionsList role="list" aria-label={t('옵션')}>
-              {menu.optionGroupList.map((group) => {
-                const groupName = getLocalizedGroupName(
-                  group,
-                  languageData.currentLanguage
-                );
-                return (
-                  <li key={group.optionGroupSeq} role="listitem">
-                    <S.OptionGroupName as="h3">
-                      {buildOptionGroupTitle(group)}
-                    </S.OptionGroupName>
-                    <S.Options
-                      role={group.isMultipleSelectable ? 'group' : 'radiogroup'}
-                      aria-label={groupName}
-                    >
-                      {group.optionList.map((option) =>
-                        renderOption(option, group)
-                      )}
-                    </S.Options>
-                  </li>
-                );
-              })}
-            </S.OptionsList>
-          )}
-        </S.OptionsContainer>
-
-        {/* Selected Options Summary */}
-        <S.SelectedOptionsContainer>
-          <S.Title as="h3">{t('선택한 옵션')}</S.Title>
-          <S.SelectedOptionsList
-            role="list"
-            aria-live="polite"
-            aria-label={t('선택한 옵션')}
-          >
-            {selectedOptionsForDisplay.length === 0 ? (
-              <li role="listitem">
-                <p>{t('선택한 옵션이 없습니다.')}</p>
-              </li>
-            ) : (
-              selectedOptionsForDisplay.map((display) => (
-                <li
-                  key={createOptionKey(
-                    display.option.optionGroupSeq,
-                    display.option.optionSeq
-                  )}
-                  role="listitem"
-                >
-                  <span />
-                  <p>{buildSelectedOptionText(display)}</p>
-                </li>
-              ))
-            )}
-          </S.SelectedOptionsList>
-
-          {/* Total and Add Button */}
-          <S.TotalContainer>
-            {category?.isQuantitySelectable && (
+          {category?.isQuantitySelectable && (
+            <S.MenuQuantityContainer>
               <NumberInput
                 variant="square"
                 value={menuQuantity}
                 onChange={handleMenuQuantityChange}
                 size="L"
                 min={1}
-                customStyle={css`
-                  min-width: 100%;
-                `}
+                customStyle={css`min-width: 100%;`}
                 aria-label={t('수량제한')}
                 disabled={disabledOrderable}
               />
+            </S.MenuQuantityContainer>
+          )}
+        </S.MenuInfoContainer>
+
+        <S.RightWrapper>
+        {/* Options */}
+          <S.OptionsContainer>
+            {!hasOptionGroups && (
+              <NoContent paddingTop="10%">
+                {t('옵션이 존재하지 않습니다.')}
+              </NoContent>
             )}
+
+            {hasOptionGroups && (
+              <S.OptionsList role="list" aria-label={t('옵션')}>
+                {menu.optionGroupList.map((group) => {
+                  const groupName = getLocalizedGroupName(
+                    group,
+                    languageData.currentLanguage
+                  );
+                  return (
+                    <li key={group.optionGroupSeq} role="listitem">
+                      <S.OptionGroupName as="h3">
+                        {buildOptionGroupTitle(group)}
+                      </S.OptionGroupName>
+                      <S.Options
+                        role={group.isMultipleSelectable ? 'group' : 'radiogroup'}
+                        aria-label={groupName}
+                      >
+                        {group.optionList.map((option) =>
+                          renderOption(option, group)
+                        )}
+                      </S.Options>
+                    </li>
+                  );
+                })}
+              </S.OptionsList>
+            )}
+          </S.OptionsContainer>
+
+          {/* Total and Add Button */}
+          <S.TotalContainer>
             <S.TotalInfo role="status" aria-live="polite">
               <h3>{t('합계')}</h3>
               <p>
@@ -744,7 +680,7 @@ export const MenuDetailWithOptionsModal = ({
               variant="Solid_Blue_2XL"
               onClick={handleAddToCart}
               customStyle={css`
-                width: 100%;
+                min-width: 240px;
               `}
               aria-label={t('추가하기')}
               disabled={disabledOrderable}
@@ -752,7 +688,7 @@ export const MenuDetailWithOptionsModal = ({
               {t('추가하기')}
             </BasicButton>
           </S.TotalContainer>
-        </S.SelectedOptionsContainer>
+        </S.RightWrapper>
       </S.Container>
     </ModalBackground>,
     document.body
