@@ -7,7 +7,7 @@ export const Container = styled.div`
   bottom: 0;
   left: 210px;
   width: calc(100% - 210px);
-  padding: 40px 0 0 40px;
+  padding: 40px 0 40px 40px;
   overflow-y: auto;
   background-color: ${({ theme }) => theme.mode.undefined_palette[900]};
 `;

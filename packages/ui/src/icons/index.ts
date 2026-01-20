@@ -76,3 +76,6 @@ export { default as smartOrderGreyLogo } from './smart_order_logo_grey.png';
 export { default as smartOrderWhiteLogo } from './smart_order_logo_white.png';
 export { default as capsSmartOrderBlueGreyLogo } from './caps_smart_order_logo_blue_grey.png';
 export { default as capsSmartOrderWhiteLogo } from './caps_smart_order_logo_white.png';
+export { default as spicyLevel1Icon } from './spicy_level_1.svg';
+export { default as spicyLevel2Icon } from './spicy_level_2.svg';
+export { default as spicyLevel3Icon } from './spicy_level_3.svg';

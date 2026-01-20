@@ -19,7 +19,8 @@ export const ImageWrapper = styled.div<IImageWrapper>`
   & > img {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     border-radius: 0.5rem;
     position: relative;
     z-index: ${({ theme }) => theme.zIndex.base};
@@ -41,21 +42,11 @@ export const OutOfStock = styled.div`
   z-index: ${({ theme }) => theme.zIndex.base + 2};
 `;
 
-export const IconWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-`;
-
 export const LeftBadges = styled.div`
   position: absolute;
   top: 0;
-  left: 20px;
+  left: 12px;
   display: flex;
-  gap: 4px;
 `;
 
 export const BestIcon = styled.img`
@@ -66,10 +57,15 @@ export const BestIcon = styled.img`
 
 export const ChiliIcons = styled.div`
   position: absolute;
-  top: 10px;
-  right: 10px;
+  bottom: 10px;
+  right: 12px;
   display: flex;
   align-items: center;
+  width: 83px;
+
+  & > img {
+    width: 100%;
+  }
 `;
 
 export const NoImagePlaceholder = styled.div`
