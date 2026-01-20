@@ -89,7 +89,7 @@ export const Stores = ({
     <S.Container>
       <S.Header>
         <S.Titles>
-          <p>매장관리</p>
+          <p>매장 관리</p>
           <span />
           <div>
             <p>{title}</p>

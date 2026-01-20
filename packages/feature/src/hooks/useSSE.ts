@@ -22,6 +22,7 @@ type TSSEConnectionState<T> = {
   setIsReconnectingCallbacks: Set<
     React.Dispatch<React.SetStateAction<boolean>>
   >;
+  reconnectAttempts: number;
 };
 
 /**
@@ -63,6 +64,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       url: null,
       isReconnecting: false,
       setIsReconnectingCallbacks: new Set(),
+      reconnectAttempts: 0,
     };
     sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
   }
@@ -81,6 +83,8 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
   eventSource.onopen = () => {
     state.isConnected = true;
     state.isReconnecting = false;
+    state.reconnectAttempts = 0;
+    
     state.setIsConnectedCallbacks.forEach((callback) => callback(true));
     state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
   };
@@ -142,14 +146,17 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       state.isConnected = false;
       state.setIsConnectedCallbacks.forEach((callback) => callback(false));
 
-      // 재연결 시도 중이었다면 재연결 실패로 간주하여 플래그 해제
-      if (state.isReconnecting) {
-        state.isReconnecting = false;
-        state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
-      }
+      // 재시도 횟수 증가
+      state.reconnectAttempts += 1;
 
-      // 다이얼로그 표시 및 재연결 시도
-      setTimeout(() => {
+      // 5번 이상 시도했으면 다이얼로그 표시
+      if (state.reconnectAttempts > 5) {
+        state.isReconnecting = false;
+        state.reconnectAttempts = 0;
+        state.setIsReconnectingCallbacks.forEach((callback) =>
+          callback(false)
+        );
+
         openConfirmDialog({
           title: '연결 오류',
           content: '네트워크가 끊어졌습니다. 다시 시도하시겠습니까?',
@@ -157,6 +164,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
           onConfirm: () => {
             if (state.url) {
               state.isReconnecting = true;
+              state.reconnectAttempts = 0;
               state.setIsReconnectingCallbacks.forEach((callback) =>
                 callback(true)
               );
@@ -164,7 +172,22 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
             }
           },
         });
-      }, 0);
+        return;
+      }
+
+      // 5번 이하면 재시도
+      if (state.url) {
+        // 첫 시도가 아니면 loading 표시
+        if (!state.isReconnecting) {
+          state.isReconnecting = true;
+          state.setIsReconnectingCallbacks.forEach((callback) =>
+            callback(true)
+          );
+        }
+
+        // 즉시 재연결 시도
+        connectSSE(key, state.url);
+      }
     } else {
       // 기존 로직 (OPEN 상태의 에러)
       const error = new Error(JSON.stringify(err));
@@ -181,12 +204,20 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
  */
 export const disconnectSSE = (key: string): void => {
   const state = sseConnectionMap.get(key);
-  if (state?.eventSource) {
-    state.eventSource.close();
-    state.eventSource = null;
+  if (state) {
+    // EventSource 종료
+    if (state.eventSource) {
+      state.eventSource.close();
+      state.eventSource = null;
+    }
+    
     state.isConnected = false;
-    // 모든 콜백 호출 (state.setIsConnected는 no-op일 수 있으므로 제거)
+    state.isReconnecting = false;
+    state.reconnectAttempts = 0;
+    
+    // 모든 콜백 호출
     state.setIsConnectedCallbacks.forEach((callback) => callback(false));
+    state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
   }
 
   sseConnectionMap.delete(key);
@@ -226,6 +257,7 @@ export const useSSEData = <T = unknown>(key: string) => {
         url: null,
         isReconnecting: false,
         setIsReconnectingCallbacks: new Set(),
+        reconnectAttempts: 0,
       };
       sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
     }
