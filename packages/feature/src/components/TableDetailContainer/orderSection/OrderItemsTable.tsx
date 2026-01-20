@@ -122,7 +122,7 @@ const Row = styled.div`
   &:not(.option-row) {
     ${TYPOGRAPHY.MT_7}
 
-    &:hover {
+    &:active {
       background-color: ${colors.grey[200]};
       color: ${colors.grey[800]};
       border-radius: 8px;
@@ -145,7 +145,7 @@ const Row = styled.div`
     color: ${colors.grey[700]};
     font-weight: 600;
 
-    &:hover {
+    &:active {
       background-color: transparent;
     }
   }

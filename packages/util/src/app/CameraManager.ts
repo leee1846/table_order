@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Capacitor, registerPlugin, type Plugin } from '@capacitor/core';
-//TODO 타입 확인해보기
 export interface AlbumPhoto {
-  thumbUrl: string;
-  [key: string]: any;
+  path: string; // 원본 파일 경로 (file://)
+  thumbPath: string; // 썸네일 파일 경로 (file://)
+  thumbUrl: string; // 썸네일 웹뷰 URL (http://)
+  originalUri: string; // 원본 파일 URI (업로드용)
 }
 
 //실제 네이티브 플러그인 인터페이스
@@ -52,6 +53,8 @@ export const CameraManager: ICameraManager = {
       // Native에서 resolve될 때까지 여기서 멈춰있습니다.
       const result = await NativeCamera.takePhoto();
 
+
+      console.log('여기', result);
       // Native가 { path: "file://..." } 형태의 응답을 줍니다.
       const webPath = Capacitor.convertFileSrc(result.path);
 
@@ -123,6 +126,7 @@ export const CameraManager: ICameraManager = {
       return (result.images || []).map((img: any) => ({
         ...img,
         thumbUrl: Capacitor.convertFileSrc(img.thumbPath),
+        originalUri: img.path, // 원본 경로를 originalUri로 명시적 매핑
       }));
     } catch (e) {
       console.error('앨범 로드 실패:', e);
@@ -136,7 +140,9 @@ export const CameraManager: ICameraManager = {
    */
   getOriginalFile: async (originalUri: string) => {
     try {
+      console.log('originalUri', originalUri);
       const res = await NativeCamera.prepareOriginalFile({ uri: originalUri });
+  
       return Capacitor.convertFileSrc(res.path);
     } catch (e) {
       console.error('원본 준비 실패:', e);

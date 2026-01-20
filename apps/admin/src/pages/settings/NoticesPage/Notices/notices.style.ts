@@ -9,10 +9,13 @@ export const Container = styled.ul`
 `;
 
 export const Message = styled.p`
-  ${TYPOGRAPHY.ST_4}
+  ${TYPOGRAPHY.MT_7}
   color: ${theme.colors.grey[600]};
   padding: 32px 16px;
-  text-align: center;
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const Notice = styled.li<{
