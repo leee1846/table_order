@@ -27,7 +27,6 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
   const { data: languageData } = useCustomerLanguageStore();
   const { disableStaffCall } = useDisableStaffCallStore();
 
-  const [selectedMenu, setSelectedMenu] = useState<IMenuBase | null>(null);
   const [selectedMenuList, setSelectedMenuList] = useState<ICartMenu[]>([]);
 
   // 선택된 메뉴의 현재 수량을 반환
@@ -41,7 +40,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
   // 수량 변경 핸들러: 수량 증가/감소 및 0일 때 제거 처리
   const handleQuantityChange = (menuSeq: number, newQuantity: number) => {
-    if (newQuantity < 0) {
+    if (newQuantity < 1) {
       return;
     }
 
@@ -52,10 +51,6 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
       // 이미 선택된 메뉴인 경우
       if (existingMenuIndex >= 0) {
-        if (newQuantity === 0) {
-          // 수량이 0이면 목록에서 제거
-          return currentList.filter((item) => item.menuSeq !== menuSeq);
-        }
         // 수량 업데이트
         const updatedList: ICartMenu[] = currentList.map((menu, index) =>
           index === existingMenuIndex
@@ -98,10 +93,15 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
   };
 
   const handleSelectMenu = (menu: IMenuBase) => {
-    if (selectedMenu?.menuSeq === menu.menuSeq) {
-      setSelectedMenu(null);
-    } else {
-      setSelectedMenu(menu);
+    const currentQuantity = getMenuQuantity(menu.menuSeq);
+    
+    // 이미 선택된 메뉴이고 수량이 1 이상이면 선택 해제
+    if (currentQuantity >= 1) {
+      return;
+    }
+    
+    if (currentQuantity === 0) {
+      handleQuantityChange(menu.menuSeq, 1);
     }
   };
 
@@ -174,7 +174,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
         </S.CloseButton>
 
         <S.LeftContainer>
-          <h2 id="staff-call-title">{t('어떤 도움이 필요하신가요?')} </h2>
+          <h2 id="staff-call-title">{category.categoryName} </h2>
           {category.menuInfoList.length < 1 && (
             <S.noContent>
               <p>{t('메뉴가 존재하지 않아요.')}</p>
@@ -188,18 +188,19 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
                 const menuName =
                   menu.localeMenuName?.[languageData.currentLanguage] ??
                   menu.menuName;
+                const isMenuSelected = currentQuantity >= 1;
 
                 return (
                   <li key={`menu-${index + 1}`} role="listitem">
                     <S.menuButton
                       type="button"
                       onClick={() => handleSelectMenu(menu)}
-                      isSelected={selectedMenu?.menuSeq === menu.menuSeq}
+                      isSelected={isMenuSelected}
                       aria-label={menuName}
-                      aria-pressed={selectedMenu?.menuSeq === menu.menuSeq}
+                      aria-pressed={isMenuSelected}
                     >
                       <p>{menuName}</p>
-                      {selectedMenu?.menuSeq === menu.menuSeq && (
+                      {isMenuSelected && (
                         <div>
                           <S.DeleteButton
                             onClick={(e) => {
@@ -240,40 +241,11 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
             </S.MenuList>
           )}
         </S.LeftContainer>
-
-        <S.RightContainer>
-          <h3> {t('선택한 요청사항')} </h3>
-
-          <S.ChosenMenuList
-            role="list"
-            aria-live="polite"
-            aria-label={t('선택된 항목')}
-          >
-            {selectedMenuList.length < 1 && (
-              <S.noContent>
-                <p>{t('선택한 요청사항이 없어요.')}</p>
-              </S.noContent>
-            )}
-
-            {selectedMenuList.map((menu, index) => (
-              <S.ChosenMenuItem
-                key={`chosen-menu-${index + 1}`}
-                role="listitem"
-              >
-                <p>
-                  <span />
-                  {menu.menuName} (+{menu.quantity})
-                </p>
-              </S.ChosenMenuItem>
-            ))}
-          </S.ChosenMenuList>
-
-          <S.OrderButton>
-            <BasicButton variant="Solid_Blue_2XL" onClick={requestOrder}>
-              {t('요청하기')}
-            </BasicButton>
-          </S.OrderButton>
-        </S.RightContainer>
+        <S.OrderButton>
+          <BasicButton variant="Solid_Blue_2XL" onClick={requestOrder}>
+            {t('요청하기')}
+          </BasicButton>
+        </S.OrderButton> 
       </S.Container>
     </ModalBackground>
   );

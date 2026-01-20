@@ -7,6 +7,7 @@ export const Container = styled.div`
   max-width: calc(100vw - 2rem);
   height: 40rem;
   display: flex;
+  flex-direction: column;
   border-radius: 1.25rem;
   overflow: hidden;
 `;
@@ -24,23 +25,28 @@ export const CloseButton = styled.button`
 `;
 
 export const LeftContainer = styled.div`
-  width: 75%;
-  background-color: ${({ theme }) => theme.mode.grey[50]};
+  width: 100%;
+  height: 100%;
+  background-color: ${({ theme }) => theme.mode.undefined_palette[1000]};
   padding: 24px;
 
   display: flex;
   flex-direction: column;
   gap: 40px;
 
-  & > p {
+  & > h2  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     ${TYPOGRAPHY.MT_1}
     color: ${({ theme }) => theme.mode.undefined_palette[400]};
+    padding-top: 26 px;
   }
 `;
 
 export const MenuList = styled.ul`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   grid-column-gap: 12px;
   grid-row-gap: 16px;
   overflow-y: auto;
@@ -54,7 +60,7 @@ export const menuButton = styled.button<{ isSelected: boolean }>`
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
-  background-color: ${({ theme }) => theme.mode.grey[200]};
+  background-color: ${({ isSelected, theme }) => isSelected ? theme.mode.undefined_palette[1000] : theme.mode.grey[200]};
   border-radius: 0.75rem;
   padding: 16px 13px;
   border: ${({ isSelected, theme }) =>
@@ -76,33 +82,6 @@ export const menuButton = styled.button<{ isSelected: boolean }>`
     align-items: center;
     justify-content: space-between;
   }
-`;
-
-export const RightContainer = styled.div`
-  width: 35%;
-  background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-
-  & > h3 {
-    color: ${({ theme }) => theme.mode.grey[800]};
-    ${TYPOGRAPHY.MT_1}
-    flex-shrink: 0;
-    margin-bottom: 24px;
-  }
-`;
-
-export const ChosenMenuList = styled.ul`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
 `;
 
 export const ChosenMenuItem = styled.li`
@@ -134,7 +113,8 @@ export const noContent = styled.li`
 
 export const OrderButton = styled.div`
   width: 100%;
-  padding-top: 10px;
+  padding: 24px;
+  background-color: ${({ theme }) => theme.mode.undefined_palette[1000]};
 
   & > button {
     width: 100%;
