@@ -259,7 +259,7 @@ export const ImageSection = () => {
         });
 
         // 현재 페이지 번호 업데이트
-        setAlbumPage(page);
+        setAlbumPage (page);
         // 가져온 이미지가 없거나 페이지 제한보다 적으면 더 이상 불러올 이미지가 없음
         if (!newItems.length) {
           setHasMoreAlbum(false);

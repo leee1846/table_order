@@ -59,7 +59,7 @@ export const CreateTableDialog = ({
           <S.InputWrapper>
             <S.Label>{t('테이블 ID')}</S.Label>
             <Input
-              value="S-XXXX"
+              value={''}
               onChange={() => {}}
               disabled
               errorMessage={t(

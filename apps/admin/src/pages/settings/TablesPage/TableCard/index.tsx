@@ -1,98 +1,22 @@
 'use client';
-import { t } from '@/config/i18n';
-
-import { BasicButton } from '@repo/ui/components';
-import { toast, openDualActionDialog } from '@repo/feature/utils';
 import * as S from './tableCard.styles';
 import { type ITableInfo } from '@repo/api/types';
-import { css } from '@emotion/react';
-import { theme } from '@repo/ui';
-import { useState } from 'react';
-import { EditTableDialog } from '../dialogs/EditTableDialog';
-import { useQueryClient } from '@repo/api/tanstack-query';
-import { useDeleteTable, queryKeys } from '@repo/api/queries';
-const { colors } = theme;
 
 interface Props {
   table: ITableInfo;
-  shopCode: string;
+  isSelected?: boolean;
+  onSelect?: () => void;
 }
 
-export const TableCard = ({ table, shopCode }: Props) => {
-  const queryClient = useQueryClient();
-  const { mutateAsync: deleteTable } = useDeleteTable();
-  const [isTableEditDialogOpen, setIsTableEditDialogOpen] = useState(false);
-  const handleEdit = () => {
-    setIsTableEditDialogOpen(true);
-  };
-  const handleDelete = () => {
-    openDualActionDialog({
-      title: t(
-        '정말 테이블을 삭제하시겠습니까?'
-      ),
-      content: `테이블 명 : ${table.tableName || table.tableNumber}`,
-      primaryText: t('확인'),
-      secondaryText: t('취소'),
-      size: 'xsmall',
-      onConfirm: async () => {
-        try {
-          await deleteTable({
-            shopSeq: table.shopSeq,
-            tableNumber: table.tableNumber,
-          });
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.table.groupList(shopCode),
-          });
-          toast(
-            t(
-              '테이블이 삭제되었습니다.'
-            )
-          );
-        } catch (error) {
-          toast(
-            t(
-              '테이블 삭제에 실패했습니다.'
-            )
-          );
-        }
-      },
-    });
-  };
-  const handleCloseDialog = () => {
-    setIsTableEditDialogOpen(false);
-  };
+export const TableCard = ({ table, isSelected, onSelect }: Props) => {
   return (
-    <>
-      <S.TableCard>
-        <S.TableContent>
-          <S.TableName>{table.tableName || table.tableNumber}</S.TableName>
-        </S.TableContent>
-        <S.ButtonWrapper>
-          <BasicButton
-            variant="Solid_Grey_L"
-            onClick={handleEdit}
-            customStyle={css`
-              ${S.Button}
-              border-right: 1px solid ${colors.grey[300]};
-            `}
-          >
-            {t('수정')}
-          </BasicButton>
-          <BasicButton
-            variant="Solid_Sky_Blue_L"
-            customStyle={S.Button}
-            onClick={handleDelete}
-          >
-            {t('삭제')}
-          </BasicButton>
-        </S.ButtonWrapper>
-      </S.TableCard>
-      <EditTableDialog
-        isOpen={isTableEditDialogOpen}
-        onClose={handleCloseDialog}
-        table={table}
-        shopCode={shopCode}
-      />
-    </>
+    <S.TableCard 
+      onClick={onSelect}
+      isSelected={isSelected}
+    >
+      <S.TableContent>
+        <S.TableName>{table.tableName || table.tableNumber}</S.TableName>
+      </S.TableContent>
+    </S.TableCard>
   );
 };

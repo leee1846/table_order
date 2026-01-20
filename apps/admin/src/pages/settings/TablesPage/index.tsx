@@ -24,6 +24,7 @@ export const TablesPage = () => {
     number | null
   >(null);
   const [isCreateTableDialogOpen, setIsCreateTableDialogOpen] = useState(false);
+  const [selectedTable, setSelectedTable] = useState<ITableInfo | null>(null);
 
   // shopCode 가져오기
   const { shopCode } = useAuth();
@@ -108,10 +109,20 @@ export const TablesPage = () => {
       <S.TableGridContainer>
         <S.GridContainer>
           {selectedGroup?.tableList?.map((table: ITableInfo) => (
-            <TableCard key={table.tableSeq} table={table} shopCode={shopCode} />
+            <TableCard 
+              key={table.tableSeq} 
+              table={table}
+              isSelected={selectedTable?.tableSeq === table.tableSeq}
+              onSelect={() => setSelectedTable(table)}
+            />
           ))}
         </S.GridContainer>
-        <BottomActions onAddTable={handleAddTable} isPosLinked={isPosLinked} />
+        <BottomActions 
+          onAddTable={handleAddTable} 
+          isPosLinked={isPosLinked} 
+          shopCode={shopCode}
+          table={selectedTable}
+        />
       </S.TableGridContainer>
       <Sidebar
         tableGroups={tableGroups}

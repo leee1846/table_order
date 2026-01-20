@@ -51,7 +51,7 @@ export const TableGroupItem = ({
 
   return (
     <S.TableGroupItemWrapper data-group-id={group.tableGroupSeq}>
-      <S.TableGroupItem {...longPressHandlers} isSelected={isSelected}>
+      <S.TableGroupItem {...(isPosLinked ? {} : longPressHandlers)} isSelected={isSelected}>
         {group.tableGroupName}
       </S.TableGroupItem>
       {isEditing && (

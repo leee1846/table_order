@@ -1,10 +1,14 @@
 ﻿import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
-import { css } from '@emotion/react';
 const { colors } = theme;
 
-export const TableCard = styled.div`
-  background-color: ${colors.white};
+interface TableCardProps {
+  isSelected?: boolean;
+}
+
+export const TableCard = styled.div<TableCardProps>`
+  background-color: ${({ isSelected }) => (isSelected ? colors.primary[500] : colors.grey[200])};
+  color: ${({ isSelected }) => (isSelected ? colors.white : colors.grey[400])};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -12,6 +16,7 @@ export const TableCard = styled.div`
   overflow: hidden;
   width: 190px;
   height: 154px;
+  cursor: pointer;
 `;
 
 export const TableContent = styled.div`
@@ -23,27 +28,16 @@ export const TableContent = styled.div`
 `;
 export const TableNumber = styled.h1`
   ${TYPOGRAPHY.ST_3}
-  color: ${colors.grey[800]};
 `;
 
 export const TableName = styled.h1`
   ${TYPOGRAPHY.ST_3}
-  color: ${colors.grey[800]};
 `;
 
 export const TableStatus = styled.h1`
   text-align: right;
   ${TYPOGRAPHY.ST_3}
-  color: ${colors.grey[400]};
 `;
 
-export const ButtonWrapper = styled.div`
-  display: flex;
-`;
 
-export const Button = css`
-  width: 100%;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-`;
+

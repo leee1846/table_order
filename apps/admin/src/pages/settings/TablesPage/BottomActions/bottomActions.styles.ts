@@ -32,7 +32,7 @@ export const BottomActionsContainer = styled.div`
     }
   }
 
-  button:first-of-type {
+  button:not(:last-of-type) {
     position: relative;
 
     &:after {

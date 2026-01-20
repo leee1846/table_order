@@ -1,5 +1,11 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
+import {
+  SidebarContainer as UISidebarContainer,
+  Logo as UILogo,
+  MenuList as UIMenuList,
+  MenuItem as UIMenuItem,
+} from '@repo/ui/components';
 
 const { zIndex, colors } = theme;
 
@@ -75,24 +81,24 @@ export const TableCard = styled.button<{ selected: boolean }>`
   justify-content: space-between;
   padding: 14px 12px;
   background: ${({ selected }) =>
-    !selected ? theme.colors.primary[600] : theme.colors.primary[500]};
-  color: ${theme.colors.white};
+    !selected ? theme.colors.primary[500] : theme.colors.grey[200]};
+  color:${({ selected }) =>
+    !selected ? theme.colors.white : theme.colors.grey[400]};
   border-radius: 12px;
-  border: 2px solid
-    ${({ selected }) => (!selected ? theme.colors.white : 'transparent')};
+
+
   cursor: pointer;
   text-align: left;
   min-height: 120px;
 `;
 
 export const TableNumber = styled.span`
-  ${TYPOGRAPHY.MT_6}
-  color: ${theme.colors.white};
+  ${TYPOGRAPHY.ST_3}
 `;
 
 export const TableStatus = styled.span`
-  ${TYPOGRAPHY.ST_2}
-  color: ${theme.colors.grey[100]};
+  ${TYPOGRAPHY.ST_3}
+  text-align: right;
 `;
 
 export const ActionBar = styled.div`
@@ -135,3 +141,15 @@ export const ActionBar = styled.div`
     }
   }
 `;
+
+export const SidebarContainer = styled(UISidebarContainer)`
+padding-bottom: 20px;`;
+
+export const Logo = styled(UILogo)``;
+
+export const MenuList = styled(UIMenuList)`
+ overflow: auto;
+`;
+
+export const MenuItem = styled(UIMenuItem)``;
+
