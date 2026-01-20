@@ -88,6 +88,7 @@ const Content = styled.div<{ isMenu: boolean }>`
   line-height: 1.6;
   overflow-y: auto;
   flex: 1;
+  white-space: pre-line;
 
   &::-webkit-scrollbar {
     width: 8px;

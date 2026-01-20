@@ -14,12 +14,20 @@ const PaymentContainer = styled(UIStyles.setting.Container)`
 export const Payment = () => {
   const { t } = useAdminTranslation();
   const [isDownloading, setIsDownloading] = useState(false);
-  const { checkAndRegisterMerchant } = useMerchantRegistration({
+  const { registerMerchant } = useMerchantRegistration({
     enabled: false,
   });
 
-  const { refresh: refreshShopDetailData} = useShopDetailData();
+  const { refresh: refreshShopDetailData, data: shopDetailData } = useShopDetailData();
   const handleCheckAndRegisterMerchant = async () => {
+    if (!shopDetailData?.shopSetting?.usePrepayment) {
+      toast(t('선불 결제 방식이 아닙니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
+      return;
+    }
+
     const result = await refreshShopDetailData();
     if (!result?.businessNumber) {
       toast(t('사업자번호가 없습니다. 관리자에게 문의해주세요.'), {
@@ -55,16 +63,16 @@ export const Payment = () => {
 
     setIsDownloading(true);
     try {
-      await checkAndRegisterMerchant(result);
+      await registerMerchant(result);
       toast(t('가맹점 다운로드가 완료되었습니다.'), {
         position: 'center-center',
         duration: 1500,
       });
     } catch (error) {
-      const data = (error as { data: { RESULT_CODE: string; RESULT_MSG: string } }).data
+      const data = (error as { data: { RESULT_CODE: string; RESULT_MSG: string; EVENT_MSG: string } }).data
       openConfirmDialog({
         title: '실패',
-        content: `${data.RESULT_CODE} ${data.RESULT_MSG}`,
+        content: `${data.RESULT_MSG ?? data.EVENT_MSG} \n 오류 코드: ${data.RESULT_CODE}`,
       });
     } finally {
       setIsDownloading(false);

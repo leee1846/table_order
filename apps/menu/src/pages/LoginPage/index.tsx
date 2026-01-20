@@ -59,7 +59,7 @@ export const LoginPage = () => {
     setIsPasswordVisible((prev) => !prev);
   };
 
-  const { checkAndRegisterMerchant } = useMerchantRegistration({
+  const { registerMerchant } = useMerchantRegistration({
     enabled: false,
   });
 
@@ -128,7 +128,7 @@ export const LoginPage = () => {
 
     await setDeviceData(deviceData);
     initializeSseConnection();
-    checkAndRegisterMerchant();
+    registerMerchant();
     navigate(ROUTES.ROOT.generate());
   };
 

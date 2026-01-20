@@ -101,7 +101,7 @@ privateApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 토큰 만료 or 토큰 존재하지 않을경우, 재요청하여 request interceptor에서 처리
+    // 토큰 만료
     if (error.response?.status === 401) {
       forceReLogin();
       throw new axios.Cancel('Invalid access token');

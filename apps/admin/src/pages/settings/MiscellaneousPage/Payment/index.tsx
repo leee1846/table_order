@@ -213,18 +213,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
               type="text"
               value={vanId}
               onChange={(event) => setVanId(event.target.value)}
-              readOnly={CapacitorApp.isNative()}
-              onClick={() => {
-                if (CapacitorApp.isNative()) {
-                  toast(t('관리자 웹에서 변경해주세요.'));
-                }
-              }}
-              onFocus={(e) => {
-                if (CapacitorApp.isNative()) {
-                  e.target.blur();
-                  toast(t('관리자 웹에서 변경해주세요.'));
-                }
-              }}
+              readOnly={true}
             />
           </UIStyles.setting.ContentLayout>
 
