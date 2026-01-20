@@ -203,7 +203,7 @@ export const CategoryTableAssignModal = ({
               {group.tableGroupName}
             </S.MenuItem>
           ))}
-        </S.MenuList>
+        </S.MenuList> 
       </S.SidebarContainer>
     </S.Container>
   );

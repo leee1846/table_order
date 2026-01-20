@@ -1,5 +1,5 @@
 import { t } from '@/config/i18n';
-import { AddIcon, HomeFilledIcon ,capsSmartOrderWhiteLogo} from '@repo/ui/icons';
+import { AddIcon, HomeFilledIcon, capsSmartOrderWhiteLogo } from '@repo/ui/icons';
 import * as S from './sidebar.styles';
 import { theme } from '@repo/ui';
 import { useNavigate } from 'react-router-dom';
@@ -9,12 +9,12 @@ import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, useDeleteTableGroup, useGetShopThemePage } from '@repo/api/queries';
 import { TableGroupItem } from './TableGroupItem';
-const { colors } = theme;
-
 import { ROUTES } from '@/constants/routes';
 import { useState, useRef, useLayoutEffect, useEffect, useMemo } from 'react';
 import type { ITableGroup } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
+
+const { colors } = theme;
 
 interface SidebarProps {
   tableGroups: ITableGroup[];

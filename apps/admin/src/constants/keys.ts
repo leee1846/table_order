@@ -16,7 +16,11 @@ export const ADMIN_LANGUAGE_STORAGE_KEY = 'adminLanguage';
 /** 테이블 그룹 선택 키 */
 export const TABLE_GROUP_STORAGE_KEY = 'selectedTableGroupSeq';
 
-/** 모달 행 크기 */
+/** 매출 모달, 주문 모달의 표 행 사이즈 */
 export const PAZE_SIZE = 6;
 
+/** 기기 모달의 표 행 사이즈 */ 
+export const DEVICE_LIST_PAGE_SIZE = 8;
+
+/** settings/sales 페이지들의 표 행 사이즈 */
 export const SALES_PAGE_SIZE = 7;

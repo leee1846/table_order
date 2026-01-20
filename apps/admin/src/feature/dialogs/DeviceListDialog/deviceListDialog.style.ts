@@ -1,156 +1,201 @@
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
-import * as UIStyles from '@repo/ui/styles';
 import {
-  BaseDialogContainer,
   BaseHeader,
   BaseTitle,
 } from '@repo/feature/components';
+import { css } from '@emotion/react';
 
 const { colors } = theme;
 
-export const DialogContainer = styled(BaseDialogContainer)`
-  width: 90vw;
-  height: 90vh;
-  padding: 0;
+export const DialogContainer = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-color: ${colors.grey[100]};
+  display: flex;
+  flex-direction: column;
+
 `;
 
 export const Container = styled.div`
-  padding: 24px 24px 0 24px;
-  height: 90%;
-  display: flex;
-  flex-direction: column;
+  padding: 40px 30px;
+  flex : 1;
 `;
 
 export const CloseButton = styled.button`
-  cursor: pointer;
-  text-align: right;
-  transform: translate(-24px, 24px);
+  width: 40px;
+  height: 40px;
 `;
 
 export const Header = styled(BaseHeader)`
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 44px;
 `;
 
-export const Title = BaseTitle;
-
-export const TableContainer = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-
-  & > table {
-    height: 100%;
-  }
-
-  td:nth-of-type(1),
-  td:nth-of-type(2),
-  td:nth-of-type(3),
-  td:nth-of-type(4),
-  td:nth-of-type(6) {
-    ${TYPOGRAPHY.ST_4}
-    color: ${colors.grey[700]};
-  }
-  td:nth-of-type(5) {
-    ${TYPOGRAPHY.ST_5}
-    color: ${colors.grey[500]};
-  }
-  td:nth-of-type(7) {
-    ${TYPOGRAPHY.BD_3}
-    color: ${colors.grey[400]};
-  }
+export const Title = styled(BaseTitle)`
 `;
 
 export const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
 `;
 
 export const LeftButtons = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 8px;
+  align-items: center;
 `;
 
 export const RightButtons = styled.div`
   display: flex;
-  gap: 12px;
-`;
-
-export const DeviceHeaderCell = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
-`;
-
-export const DeviceCell = styled.div`
-  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
 `;
 
-export const DeviceTypeCell = styled.div`
-  width: 100%;
-  transform: translateX(25%);
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-`;
-
-export const BatteryColumn = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-`;
-
-export const VersionColumn = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: ${colors.grey[800]};
-`;
-
-export const Tbody = styled(UIStyles.setting.Tbody)<{
-  pageSize?: number;
-  devicesLength?: number;
-}>`
+export const DeviceGridWrapper = styled.div`
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: visible;
+ `;
+
+export const EmptyState = styled.div`
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${colors.grey[600]};
+  font-size: 14px;
+  text-align: center;
+`;
 
-  & > tr {
-    align-items: center;
-    height: calc(100% / ${({ pageSize }) => pageSize});
-  }
+export const DeviceGrid = styled.div`
+  display: grid;  
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+`;
 
-  ${({ pageSize, devicesLength }) =>
-    pageSize && devicesLength && pageSize === devicesLength
+export const DeviceCard = styled.div<{ selected?: boolean }>`
+  position: relative;
+  background: ${colors.white};
+  border-radius: 16px;
+  border: 2px solid transparent;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+  display: flex; 
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  
+
+  ${({ selected }) =>
+    selected
       ? `
-    & > tr:last-child {
-      border-bottom: none;
-    }
+    border: solid 2px ${colors.primary[500]};
   `
       : ''}
+
+
 `;
 
-export const StyledFooter = styled(UIStyles.setting.Footer)`
-  position: sticky;
-  bottom: 0;
-  padding: 16px 40px 24px;
-  background-color: ${theme.colors.white};
+
+export const CardHeader = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-top: auto;
-  border-top: 1px solid ${theme.colors.grey[200]};
-  height: 13%;
+  gap: 8px;
 `;
+
+export const DeviceTitle = styled.div`
+  ${TYPOGRAPHY.MT_8}
+  color: ${colors.grey[900]};
+`;
+ 
+export const DeviceCode = styled.div`
+  ${TYPOGRAPHY.BD_2} 
+  color: ${colors.grey[600]};
+`;
+
+export const CardSection = styled.div`
+
+  background: ${colors.grey[100]};
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const SectionLabel = styled.div`
+  color: ${colors.grey[500]};
+  ${TYPOGRAPHY.CT_2}
+`;
+
+export const SectionValue = styled.div<{
+  tone?: 4 | 3 | 2 | 1 | 0;
+}>`
+  ${TYPOGRAPHY.ST_3}
+  color: ${({ tone }) => {
+    if (tone === 4 || tone === 3) return theme.colors.secondary[600];
+    if (tone === 2) return theme.colors.primary[500];
+    if (tone === 1) return theme.colors.semantic[400];
+    return theme.colors.grey[800];
+  }};
+`;
+
+export const CardSectionWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const CardFooter = styled.div`
+display: flex;
+flex-direction: column;
+gap: 8px;
+`;
+
+export const FooterItem = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  ${TYPOGRAPHY.BD_2}
+`;
+
+export const FooterLabel = styled.span`
+  color: ${colors.grey[500]};
+
+`;
+
+export const FooterValue = styled.span`
+  color: ${colors.grey[600]};
+`;
+
+export const StyledFooter = styled.div`
+  padding: 16px 40px 24px 40px;
+  background-color: ${colors.white};
+  border-top: 1px solid ${colors.grey[200]};
+`;
+
+
+export const PaginationStyle = css`
+  > div {
+     > button { 
+        border-radius: 50% !important;
+        padding: 7px 12px!important;
+      }
+    }
+  }
+`
+
+export const ScreenOnButton = css`
+  background-color: ${colors.grey[800]};
+  color: ${colors.grey[50]}
+`
+
+export const ScreenOffButton = css`
+  background-color: ${colors.grey[600]};
+  color: ${colors.grey[50]};
+`

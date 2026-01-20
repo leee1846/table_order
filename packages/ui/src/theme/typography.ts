@@ -10,9 +10,11 @@ export const typography = {
     md: '1rem', // 16px
     lg: '1.125rem', // 18px
     xl: '1.25rem', // 20px
+    xl2: '1.375rem', // 22px
     xxl: '1.5rem', // 24px
     xxxl: '1.625rem', // 26px
     xxxxl: '1.75rem', // 28px
+    xxxxxl: '1.875rem', // 30px
   },
   fontWeight: {
     regular: 400,
@@ -36,6 +38,12 @@ export const typography = {
 } as const;
 
 export const TYPOGRAPHY = {
+  MT_0: {
+    fontSize: typography.fontSize.xxxxxl,
+    fontWeight: typography.fontWeight.bold,
+    letterSpacing: typography.letterSpacing.tight,
+    lineHeight: typography.lineHeight.xxxxl,
+  },
   MT_1: {
     fontSize: typography.fontSize.xxxxl,
     fontWeight: typography.fontWeight.bold,
@@ -67,16 +75,28 @@ export const TYPOGRAPHY = {
     lineHeight: typography.lineHeight.xxl,
   },
   MT_6: {
-    fontSize: typography.fontSize.xl,
+    fontSize: typography.fontSize.xl2,
     fontWeight: typography.fontWeight.bold,
     letterSpacing: typography.letterSpacing.tight,
     lineHeight: typography.lineHeight.xl,
   },
   MT_7: {
-    fontSize: typography.fontSize.xl,
+    fontSize: typography.fontSize.xl2,
     fontWeight: typography.fontWeight.medium,
     letterSpacing: typography.letterSpacing.tight,
     lineHeight: typography.lineHeight.xl,
+  },
+  MT_8: {
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
+    letterSpacing: typography.letterSpacing.tight,
+    lineHeight: typography.lineHeight.lg,
+  },
+  MT_9: {
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.medium,
+    letterSpacing: typography.letterSpacing.tight,
+    lineHeight: typography.lineHeight.lg,
   },
   ST_1: {
     fontSize: typography.fontSize.lg,

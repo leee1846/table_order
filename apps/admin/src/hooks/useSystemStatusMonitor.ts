@@ -149,7 +149,6 @@ export const useSystemStatusMonitor = () => {
       SystemControl.startMonitoring(handleStatusUpdate);
       isMonitoringRef.current = true;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('시스템 상태 모니터링 시작 실패:', error);
     }
   }, [handleStatusUpdate]);

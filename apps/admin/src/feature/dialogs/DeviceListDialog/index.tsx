@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  ModalBackground,
-  Pagination,
-  BasicButton,
-  CheckButton,
-} from '@repo/ui/components';
+import { ModalBackground, Pagination, BasicButton } from '@repo/ui/components';
 import { CloseIcon /* , FullBatteryIcon */ } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import * as UIStyles from '@repo/ui/styles';
 import {
   useGetDeviceListWithPagination,
   usePostDeviceControl,
@@ -20,7 +14,7 @@ import type {
 import { toast } from '@repo/feature/utils';
 import { getDeviceTypeLabel } from '@repo/util/constants';
 import { useAdminTranslation } from '@/config/i18n';
-import { PAZE_SIZE } from '@/constants/keys';
+import { DEVICE_LIST_PAGE_SIZE } from '@/constants/keys';
 import * as S from './deviceListDialog.style';
 
 const { colors } = theme;
@@ -43,17 +37,35 @@ export type DeviceListDialogProps = {
   shopCode?: string;
 };
 
-const formatWifiSignal = (signal: DeviceItem['wifiSignal']) => {
+const formatWifiSignal = (
+  signal: DeviceItem['wifiSignal'],
+  t: (key: string) => string
+) => {
   if (signal === null || signal === undefined || signal === '') {
-    return '-';
+    return t('없음');
   }
 
   const numericSignal = Number(signal);
-  if (!Number.isNaN(numericSignal)) {
-    return `${numericSignal}%`;
+  if (Number.isNaN(numericSignal)) {
+    return String(signal);
   }
 
-  return String(signal);
+  if (numericSignal === 4) {
+    return t('최상');
+  }
+  if (numericSignal === 3) {
+    return t('좋음');
+  }
+  if (numericSignal === 2) {
+    return t('양호');
+  }
+  if (numericSignal === 1) {
+    return t('낮음');
+  }
+  if (numericSignal === 0) {
+    return t('없음');
+  }
+  return t('없음');
 };
 
 export const DeviceListDialog = ({
@@ -63,9 +75,7 @@ export const DeviceListDialog = ({
 }: DeviceListDialogProps) => {
   const { t } = useAdminTranslation();
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedDevices, setSelectedDevices] = useState<Set<string>>(
-    new Set()
-  );
+  const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
 
   const DEVICE_CONTROL_MESSAGES: Record<TDeviceControlType, string> = {
     DEVICE_APP_UPDATE: t('기기 업데이트 요청을 보냈어요.'),
@@ -78,9 +88,9 @@ export const DeviceListDialog = ({
   useEffect(() => {
     if (!isOpen) {
       setCurrentPage(1);
-      setSelectedDevices(new Set());
+      setSelectedDevice(null);
     }
-  }, [isOpen, shopCode, PAZE_SIZE]);
+  }, [isOpen, shopCode, DEVICE_LIST_PAGE_SIZE]);
 
   const {
     data: deviceListResponse,
@@ -89,7 +99,7 @@ export const DeviceListDialog = ({
   } = useGetDeviceListWithPagination({
     shopCode: shopCode ?? '',
     pageNumber: currentPage - 1,
-    pageSize: PAZE_SIZE,
+    pageSize: DEVICE_LIST_PAGE_SIZE,
   });
 
   const { mutateAsync: postDeviceControl, isPending: isDeviceControlLoading } =
@@ -101,7 +111,7 @@ export const DeviceListDialog = ({
     }
 
     refetch();
-  }, [isOpen, shopCode, currentPage, PAZE_SIZE, refetch]);
+  }, [isOpen, shopCode, currentPage, DEVICE_LIST_PAGE_SIZE, refetch]);
 
   // API 응답이 배열로 오는 경우 처리
   const paginationData = useMemo(() => {
@@ -158,19 +168,50 @@ export const DeviceListDialog = ({
   };
 
   const handleSelectDevice = (deviceId: string) => {
-    setSelectedDevices((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(deviceId)) {
-        newSet.delete(deviceId);
-      } else {
-        newSet.add(deviceId);
+    setSelectedDevice((prev) => {
+      if (prev === deviceId) {
+        return null; // 이미 선택된 경우 해제
       }
-      return newSet;
+      return deviceId; // 새로운 디바이스 선택
     });
   };
 
+  const getTargetDevices = (targetId?: string) => {
+    const targetDeviceId = targetId ?? selectedDevice;
+    if (!targetDeviceId) {
+      return {
+        validDevices: [],
+        hasInvalidSelection: false,
+        hasSelection: false,
+      };
+    }
+
+    const targetDevice = deviceItems.find((device) => device.id === targetDeviceId);
+    if (!targetDevice) {
+      return {
+        validDevices: [],
+        hasInvalidSelection: false,
+        hasSelection: false,
+      };
+    }
+
+    const hasInvalidSelection = !targetDevice.androidId;
+    const validDevices: IDeviceControlItem[] = targetDevice.androidId
+      ? [{ androidId: targetDevice.androidId }]
+      : [];
+
+    return {
+      validDevices,
+      hasInvalidSelection,
+      hasSelection: true,
+    };
+  };
+
   // 기기 제어 요청
-  const handleDeviceControl = async (controlType: TDeviceControlType) => {
+  const handleDeviceControl = async (
+    controlType: TDeviceControlType,
+    targetId?: string
+  ) => {
     if (isDeviceControlLoading) {
       return;
     }
@@ -180,15 +221,10 @@ export const DeviceListDialog = ({
       return;
     }
 
-    const targetDevices: IDeviceControlItem[] = deviceItems
-      .filter((device) => selectedDevices.has(device.id) && device.androidId)
-      .map((device) => ({ androidId: device.androidId! }));
+    const { validDevices, hasInvalidSelection, hasSelection } =
+      getTargetDevices(targetId);
 
-    if (targetDevices.length === 0) {
-      const hasInvalidSelection = deviceItems.some(
-        (device) => selectedDevices.has(device.id) && !device.androidId
-      );
-
+    if (!hasSelection || validDevices.length === 0) {
       toast(
         hasInvalidSelection
           ? t('선택한 기기에 안드로이드 ID가 없어 제어할 수 없어요.')
@@ -200,59 +236,62 @@ export const DeviceListDialog = ({
     await postDeviceControl({
       shopCode,
       deviceControlType: controlType,
-      deviceList: targetDevices,
+      deviceList: validDevices,
     });
     toast(DEVICE_CONTROL_MESSAGES[controlType]);
     await refetch();
-    setSelectedDevices(new Set());
+    setSelectedDevice(null);
   };
 
   return (
     <ModalBackground position="center" onClick={onClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
-        <S.CloseButton onClick={onClose} aria-label={t('닫기')}>
-          <CloseIcon width={32} height={32} color={colors.grey[700]} />
-        </S.CloseButton>
+      
 
         <S.Container>
           <S.Header>
             <S.Title>{t('기기관리')}</S.Title>
+            <S.CloseButton onClick={onClose} aria-label={t('닫기')}>
+              <CloseIcon width={32} height={32} color={colors.grey[700]} />
+            </S.CloseButton>
           </S.Header>
 
           <S.ButtonContainer>
             <S.LeftButtons>
               <BasicButton
-                variant="Solid_Navy_XL"
+                variant="Outline_Grey_L"
+                disabled={isDeviceControlLoading}
+                onClick={() => handleDeviceControl('DEVICE_SCREEN_ON')}
+                customStyle={S.ScreenOnButton}
+              >
+                {t('화면 ON')}
+              </BasicButton>
+              <BasicButton
+                variant="Outline_Grey_L"
+                disabled={isDeviceControlLoading}
+                onClick={() => handleDeviceControl('DEVICE_SCREEN_OFF')}
+                customStyle={S.ScreenOffButton}
+              >
+                {t('화면 OFF')}
+              </BasicButton>
+            </S.LeftButtons>
+            <S.RightButtons>
+              <BasicButton
+                variant="Solid_Sky_Blue_L"
                 disabled={isDeviceControlLoading}
                 onClick={() => handleDeviceControl('DEVICE_APP_UPDATE')}
               >
                 {t('업데이트')}
               </BasicButton>
               <BasicButton
-                variant="Solid_Sky_Blue_XL"
-                disabled={isDeviceControlLoading}
-                onClick={() => handleDeviceControl('DEVICE_SCREEN_ON')}
-              >
-                {t('화면 켜기')}
-              </BasicButton>
-              <BasicButton
-                variant="Outline_Navy_XL"
-                disabled={isDeviceControlLoading}
-                onClick={() => handleDeviceControl('DEVICE_SCREEN_OFF')}
-              >
-                {t('화면 끄기')}
-              </BasicButton>
-            </S.LeftButtons>
-            <S.RightButtons>
-              <BasicButton
-                variant="Outline_Grey_XL"
+                variant="Outline_Grey_L"
                 disabled={isDeviceControlLoading}
                 onClick={() => handleDeviceControl('DEVICE_OFF')}
               >
                 {t('종료')}
               </BasicButton>
               <BasicButton
-                variant="Outline_Grey_XL"
+                variant="Outline_Grey_L"
                 disabled={isDeviceControlLoading}
                 onClick={() => handleDeviceControl('DEVICE_RESTART')}
               >
@@ -261,119 +300,72 @@ export const DeviceListDialog = ({
             </S.RightButtons>
           </S.ButtonContainer>
 
-          <S.TableContainer>
-            <UIStyles.setting.Table>
-              <UIStyles.setting.Thead>
-                <tr>
-                  <th>
-                    <S.DeviceHeaderCell>
-                      <span>{t('기기')}</span>
-                    </S.DeviceHeaderCell>
-                  </th>
-                  <th>{t('테이블')}</th>
-                  {/* <th>{t('배터리')}</th> */}
-                  <th>{t('Wi-Fi 신호')}</th>
-                  <th>{t('IP')}</th>
-                  <th>{t('버전')}</th>
-                  <th>{t('빌드번호')}</th>
-                </tr>
-              </UIStyles.setting.Thead>
-              <S.Tbody
-                pageSize={PAZE_SIZE}
-                devicesLength={
-                  !isInitialLoading && deviceItems.length > 0
-                    ? deviceItems.length
-                    : undefined
-                }
-              >
-                {isInitialLoading ? (
-                  <tr style={{ height: '100%' }}>
-                    <td
-                      colSpan={6}
-                      style={{
-                        padding: '24px',
-                        textAlign: 'center',
-                        color: colors.grey[600],
-                      }}
+          <S.DeviceGridWrapper>
+            {isInitialLoading ? (
+              <S.EmptyState>{t('기기 목록을 불러오는 중입니다.')}</S.EmptyState>
+            ) : deviceItems.length === 0 ? (
+              <S.EmptyState>{t('표시할 기기가 없어요.')}</S.EmptyState>
+            ) : (
+              <S.DeviceGrid>
+                {deviceItems.map((device) => {
+                  const isSelected = selectedDevice === device.id;
+                  const numericSignal = device.wifiSignal != null ? Number(device.wifiSignal) : 0;
+                  const wifiTone: 4 | 3 | 2 | 1 | 0 = 
+                    (numericSignal >= 0 && numericSignal <= 4 && Number.isInteger(numericSignal))
+                      ? (numericSignal as 4 | 3 | 2 | 1 | 0)
+                      : 0;
+
+                  return (
+                    <S.DeviceCard
+                      key={device.id}
+                      onClick={() => handleSelectDevice(device.id)}
+                      selected={isSelected}
                     >
-                      {t('기기 목록을 불러오는 중입니다.')}
-                    </td>
-                  </tr>
-                ) : deviceItems.length === 0 ? (
-                  <tr style={{ height: '100%' }}>
-                    <td
-                      colSpan={6}
-                      style={{
-                        padding: '24px',
-                        textAlign: 'center',
-                        color: colors.grey[600],
-                      }}
-                    >
-                      {t('표시할 기기가 없어요.')}
-                    </td>
-                  </tr>
-                ) : (
-                  deviceItems.map((device) => (
-                    <tr key={device.id}>
-                      <td>
-                        <S.DeviceCell>
-                          <S.DeviceTypeCell>
-                            <CheckButton
-                              checked={selectedDevices.has(device.id)}
-                              onChange={() => handleSelectDevice(device.id)}
-                            >
-                              <span>
-                                {t(getDeviceTypeLabel(device.deviceType))}
-                              </span>
-                            </CheckButton>
-                          </S.DeviceTypeCell>
-                        </S.DeviceCell>
-                      </td>
-                      <td>{device.table}</td>
-                      {/* <td>
-                        <S.BatteryColumn>
-                          <FullBatteryIcon
-                            width={24}
-                            height={24}
-                            color={colors.grey[800]}
-                          />
-                          <span>
-                            {device.battery !== null
-                              ? `${device.battery}%`
-                              : '-'}
-                          </span>
-                        </S.BatteryColumn>
-                      </td> */}
-                      <td>{formatWifiSignal(device.wifiSignal)}</td>
-                      <td>{device.ip}</td>
-                      <td>
-                        <S.VersionColumn>
-                          <span>{device.version || '-'}</span>
-                          {/* TODO : 최신 버전임을 알 값이 생길 때까지 보ㅓ류 */}
-                          {/* {device.version && (
-                            <ChipButton variant="darkgrey" size="S">
-                              최신
-                            </ChipButton>
-                          )} */}
-                        </S.VersionColumn>
-                      </td>
-                      <td style={{ color: colors.grey[400] }}>
-                        {device.buildNumber || '-'}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </S.Tbody>
-            </UIStyles.setting.Table>
-          </S.TableContainer>
+                      <S.CardHeader>
+                        <S.DeviceTitle>
+                          {t(getDeviceTypeLabel(device.deviceType))}
+                        </S.DeviceTitle>
+                        <S.DeviceCode>{device.id}</S.DeviceCode>
+                      </S.CardHeader>
+
+
+                    <S.CardSectionWrapper>
+                      <S.CardSection>
+                        <S.SectionLabel>{t('와이파이 신호')}</S.SectionLabel>
+                        <S.SectionValue tone={wifiTone}>
+                          {formatWifiSignal(device.wifiSignal, t)}
+                        </S.SectionValue>
+                      </S.CardSection>
+
+                      <S.CardSection>
+                        <S.SectionLabel>{t('기기 버전')}</S.SectionLabel>
+                          <S.SectionValue>{device.version ? `v.${device.version }` : '-'}</S.SectionValue>  
+                      </S.CardSection>
+                      </S.CardSectionWrapper>
+                      <S.CardFooter>
+                        <S.FooterItem>
+                          <S.FooterLabel>{t('IP주소')}</S.FooterLabel>
+                          <S.FooterValue>{device.ip}</S.FooterValue>
+                        </S.FooterItem>
+                        <S.FooterItem>
+                          <S.FooterLabel>{t('빌드 번호')}</S.FooterLabel>
+                          <S.FooterValue>{device.buildNumber || '-'}</S.FooterValue>
+                        </S.FooterItem>
+                      </S.CardFooter>
+                    </S.DeviceCard>
+                  );
+                })}
+              </S.DeviceGrid>
+            )}
+          </S.DeviceGridWrapper>
         </S.Container>
 
         <S.StyledFooter>
-          <div />
           <Pagination
             totalPages={totalPages}
             currentPage={currentPage}
             onPageChange={handlePageChange}
+            customStyle={S.PaginationStyle}
           />
         </S.StyledFooter>
       </S.DialogContainer>

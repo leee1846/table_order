@@ -636,5 +636,10 @@
   "판매수": "Sales Count",
   "시간대별 매출내역": "Sales History by Time Period",
   "메뉴 품절 자동 해제": "Auto-release sold-out menu",
-  "이미 직원 호출 카테고리가 있습니다": "A staff call category already exists"
+  "이미 직원 호출 카테고리가 있습니다": "A staff call category already exists",
+  "최상": "Excellent",
+  "좋음": "Good",
+  "양호": "Fair",
+  "낮음": "Low",
+  "없음": "None"
 }
