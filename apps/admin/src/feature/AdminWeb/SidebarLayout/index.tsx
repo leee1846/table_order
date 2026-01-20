@@ -195,6 +195,10 @@ export const StoresSidebarLayout = () => {
             );
           })}
         </S.List>
+
+        <S.DownloadLink href="/app-download.html" target="_blank" rel="noopener noreferrer">
+          앱 다운로드
+        </S.DownloadLink>
       </S.Section>
 
       <S.Content>

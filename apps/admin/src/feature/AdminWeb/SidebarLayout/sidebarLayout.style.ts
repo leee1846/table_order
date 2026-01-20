@@ -122,6 +122,19 @@ export const FloatingHomeButton = styled.button`
   }
 `;
 
+export const DownloadLink = styled.a`
+  ${TYPOGRAPHY.ST_4}
+  color: ${theme.colors.grey[500]};
+  text-decoration: none;
+  padding: 12px;
+  transition: color 0.2s;
+
+  &:hover {
+    color: ${theme.colors.grey[300]};
+    text-decoration: underline;
+  }
+`;
+
 export const Content = styled.main`
   display: flex;
   flex-direction: column;
