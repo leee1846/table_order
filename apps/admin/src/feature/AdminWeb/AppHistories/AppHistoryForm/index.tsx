@@ -17,9 +17,9 @@ interface Props {
 }
 
 const TYPE_OPTIONS: Array<{ value: TAppType; label: string }> = [
-  { value: 'MENU', label: '메뉴판' },
-  { value: 'POS_APP', label: '포스앱' },
-  { value: 'AGENT', label: '에이전트' },
+  { value: 'MENU', label: 'MENU' },
+  { value: 'POS_APP', label: 'POS_APP' },
+  { value: 'AGENT', label: 'AGENT' },
 ];
 
 // 0-23시 옵션 생성
