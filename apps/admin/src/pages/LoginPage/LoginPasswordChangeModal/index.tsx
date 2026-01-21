@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BasicButton, Input, ModalBackground } from '@repo/ui/components';
-import { CloseIcon, VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
+import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './loginPasswordChangeModal.styles';
 
@@ -13,7 +13,6 @@ interface Props {
 
 export const LoginPasswordChangeModal = ({
   isOpen,
-  onClose,
   onConfirm,
   existingPassword,
 }: Props) => {
@@ -113,12 +112,8 @@ export const LoginPasswordChangeModal = ({
   }
 
   return (
-    <ModalBackground position="center" onClick={onClose}>
+    <ModalBackground position="center">
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
-        <S.CloseButton onClick={onClose} aria-label="닫기">
-          <CloseIcon width={32} height={32} color={theme.colors.grey[700]} />
-        </S.CloseButton>
-
         <S.Container>
           <S.Header>
             <S.Title>비밀번호 변경</S.Title>

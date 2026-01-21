@@ -21,19 +21,6 @@ export const Container = styled.div`
   gap: 24px;
 `;
 
-export const CloseButton = styled.button`
-  cursor: pointer;
-  text-align: right;
-  transform: translate(-24px, 24px);
-  background: none;
-  border: none;
-  padding: 0;
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1;
-`;
-
 export const Header = styled(BaseHeader)`
   flex-direction: column;
   align-items: flex-start;

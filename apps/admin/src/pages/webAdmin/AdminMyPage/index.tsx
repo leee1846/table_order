@@ -169,6 +169,19 @@ export const AdminMyPage = () => {
           </BasicButton>
         </S.TitleContainer>
 
+        <S.TokenInfoCard>
+          <S.TokenInfoGrid>
+            <S.TokenInfoItem>
+              <S.TokenInfoKey>아이디</S.TokenInfoKey>
+              <S.TokenInfoValue>{tokenPayload?.sub ?? '-'}</S.TokenInfoValue>
+            </S.TokenInfoItem>
+            <S.TokenInfoItem>
+              <S.TokenInfoKey>권한</S.TokenInfoKey>
+              <S.TokenInfoValue>{tokenPayload?.role ?? '-'}</S.TokenInfoValue>
+            </S.TokenInfoItem>
+          </S.TokenInfoGrid>
+        </S.TokenInfoCard>
+
         <S.Section>
           <S.SectionTitle>비밀번호 변경</S.SectionTitle>
           <S.PasswordForm>

@@ -33,6 +33,40 @@ export const Title = styled.div`
   }
 `;
 
+export const TokenInfoCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid ${theme.colors.grey[200]};
+  border-radius: 12px;
+  background: ${theme.colors.grey[50]};
+`;
+
+export const TokenInfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+`;
+
+export const TokenInfoItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+`;
+
+export const TokenInfoKey = styled.div`
+  ${TYPOGRAPHY.ST_2}
+  color: ${theme.colors.grey[600]};
+`;
+
+export const TokenInfoValue = styled.div`
+  ${TYPOGRAPHY.ST_1}
+  color: ${theme.colors.grey[800]};
+  word-break: break-word;
+`;
+
 export const Section = styled.div`
   display: flex;
   flex-direction: column;
