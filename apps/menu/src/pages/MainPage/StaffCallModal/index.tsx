@@ -94,12 +94,12 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
   const handleSelectMenu = (menu: IMenuBase) => {
     const currentQuantity = getMenuQuantity(menu.menuSeq);
-    
+
     // 이미 선택된 메뉴이고 수량이 1 이상이면 선택 해제
     if (currentQuantity >= 1) {
       return;
     }
-    
+
     if (currentQuantity === 0) {
       handleQuantityChange(menu.menuSeq, 1);
     }
@@ -183,61 +183,63 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
           {category.menuInfoList.length > 0 && (
             <S.MenuList role="list">
-              {category.menuInfoList.map((menu, index) => {
-                const currentQuantity = getMenuQuantity(menu.menuSeq);
-                const menuName =
-                  menu.localeMenuName?.[languageData.currentLanguage] ??
-                  menu.menuName;
-                const isMenuSelected = currentQuantity >= 1;
+              {category.menuInfoList
+                .filter((menu) => !menu.isHidden && !menu.isOutOfStock)
+                .map((menu, index) => {
+                  const currentQuantity = getMenuQuantity(menu.menuSeq);
+                  const menuName =
+                    menu.localeMenuName?.[languageData.currentLanguage] ??
+                    menu.menuName;
+                  const isMenuSelected = currentQuantity >= 1;
 
-                return (
-                  <li key={`menu-${index + 1}`} role="listitem">
-                    <S.menuButton
-                      type="button"
-                      onClick={() => handleSelectMenu(menu)}
-                      isSelected={isMenuSelected}
-                      aria-label={menuName}
-                      aria-pressed={isMenuSelected}
-                    >
-                      <p>{menuName}</p>
-                      {isMenuSelected && (
-                        <div>
-                          <S.DeleteButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteMenu(menu.menuSeq);
-                            }}
-                            aria-label={t('메뉴 삭제')}
-                          >
-                            <DeleteIcon
-                              width={20}
-                              height={20}
-                              color={theme.mode.grey[600]}
+                  return (
+                    <li key={`menu-${index + 1}`} role="listitem">
+                      <S.menuButton
+                        type="button"
+                        onClick={() => handleSelectMenu(menu)}
+                        isSelected={isMenuSelected}
+                        aria-label={menuName}
+                        aria-pressed={isMenuSelected}
+                      >
+                        <p>{menuName}</p>
+                        {isMenuSelected && (
+                          <div>
+                            <S.DeleteButton
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteMenu(menu.menuSeq);
+                              }}
+                              aria-label={t('메뉴 삭제')}
+                            >
+                              <DeleteIcon
+                                width={20}
+                                height={20}
+                                color={theme.mode.grey[600]}
+                              />
+                            </S.DeleteButton>
+                            <NumberInput
+                              variant="square"
+                              size="M"
+                              min={0}
+                              value={currentQuantity}
+                              onChange={(newValue) => {
+                                handleQuantityChange(menu.menuSeq, newValue);
+                              }}
+                              customStyle={css`
+                                min-width: 116px;
+                                width: 116px;
+                                & > input {
+                                  min-width: 34px;
+                                  ${TYPOGRAPHY.ST_3}
+                                }
+                              `}
                             />
-                          </S.DeleteButton>
-                          <NumberInput
-                            variant="square"
-                            size="M"
-                            min={0}
-                            value={currentQuantity}
-                            onChange={(newValue) => {
-                              handleQuantityChange(menu.menuSeq, newValue);
-                            }}
-                            customStyle={css`
-                              min-width: 116px;
-                              width: 116px;
-                              & > input {
-                                min-width: 34px;
-                                ${TYPOGRAPHY.ST_3}
-                              }
-                            `}
-                          />
-                        </div>
-                      )}
-                    </S.menuButton>
-                  </li>
-                );
-              })}
+                          </div>
+                        )}
+                      </S.menuButton>
+                    </li>
+                  );
+                })}
             </S.MenuList>
           )}
         </S.LeftContainer>
@@ -245,7 +247,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
           <BasicButton variant="Solid_Blue_2XL" onClick={requestOrder}>
             {t('요청하기')}
           </BasicButton>
-        </S.OrderButton> 
+        </S.OrderButton>
       </S.Container>
     </ModalBackground>
   );
