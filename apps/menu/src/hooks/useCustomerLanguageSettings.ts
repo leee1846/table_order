@@ -50,6 +50,16 @@ export const useCustomerLanguageSettings = (
       return;
     }
 
+    if (!shopDetailData.shopSetting.useLocaleBeforeOrder) {
+      setShowLanguageSelector(false);
+      return;
+    }
+
+    if (shopDetailData.shopSetting.shopLocaleMapList.length < 2) {
+      setShowLanguageSelector(false);
+      return;
+    }
+
     if (languageData.isSelected) {
       setShowLanguageSelector(false);
       return;

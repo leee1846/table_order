@@ -89,20 +89,21 @@ export const Sidebar = ({
               </button>
             </S.StaffCall>
           )}
-          {shopDetailData?.shopSetting?.useLocale && (
-            <S.Language>
-              <button
-                type="button"
-                onClick={() =>
-                  setModalData('isLanguageSelectorModalOpened', true)
-                }
-                aria-label={t('언어 선택하기')}
-              >
-                <img src={currentLanguageIcon} alt={t('국기 아이콘')} />
-                LANGUAGE
-              </button>
-            </S.Language>
-          )}
+          {shopDetailData?.shopSetting?.useLocale &&
+            shopDetailData?.shopSetting?.shopLocaleMapList.length > 1 && (
+              <S.Language>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setModalData('isLanguageSelectorModalOpened', true)
+                  }
+                  aria-label={t('언어 선택하기')}
+                >
+                  <img src={currentLanguageIcon} alt={t('국기 아이콘')} />
+                  LANGUAGE
+                </button>
+              </S.Language>
+            )}
         </S.FloatingContainer>
       </S.Container>
 
