@@ -125,7 +125,9 @@ export const StartScreenLogoPage = () => {
 
     if (currentLogoFile) {
       const imageId = generateId();
-      const fileName = `${imageId}.jpg`;
+      // 파일명에서 확장자 추출 (없으면 기본값 .jpg)
+      const fileExtension = currentLogoFile.name.match(/\.([^.]+)$/)?.[0];
+      const fileName = `${imageId}${fileExtension}`;
       const fileData = { file: currentLogoFile, fileName };
 
       // LIGHT 또는 IMAGE 레이아웃일 때는 initLightFile 사용

@@ -1,14 +1,13 @@
 import { useAdminTranslation } from '@/config/i18n';
 import { useMemo, useState } from 'react';
-import { BasicButton, ToggleButton } from '@repo/ui/components';
+import {
+  BasicButton,
+  ToggleButton,
+  ModalBackground,
+} from '@repo/ui/components';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import * as S from '@/pages/settings/CategoryMenusPage/Menus/Menu/menu.style';
-import {
-  bestOnIcon,
-  chiliOffIcon,
-  chiliOnIcon,
-  newOnIcon,
-} from '@repo/ui/icons';
+import { CloseIcon, PhotoIcon } from '@repo/ui/icons';
 import { formatCurrency } from '@repo/util/string';
 import { MenuCopyModal } from '@/pages/settings/CategoryMenusPage/MenuCopyModal';
 import type { IMenu } from '@repo/api/types';
@@ -19,7 +18,7 @@ import {
   usePutUpdateMenuOutOfStock,
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { css } from '@emotion/react';
+import { theme } from '@repo/ui';
 
 interface Props {
   menu: IMenu;
@@ -30,30 +29,24 @@ interface Props {
 export const Menu = ({ menu, onEditMenu, isPosLinked }: Props) => {
   const { t, i18n } = useAdminTranslation();
   const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewIndex, setPreviewIndex] = useState(0);
   const queryClient = useQueryClient();
   const deleteMenuMutation = useDeleteMenu();
   const { mutateAsync: updateMenuHidden } = usePutUpdateMenuHidden();
   const { mutateAsync: updateMenuOutOfStock } = usePutUpdateMenuOutOfStock();
-  const thumbnailSrc = useMemo(() => {
-    if (!menu.menuImageList || menu.menuImageList.length === 0) {
-      return null;
-    }
+  const availableImages = useMemo(
+    () =>
+      (menu.menuImageList ?? []).filter(
+        (image) => !image.isDeleted && image.imagePath
+      ),
+    [menu.menuImageList]
+  );
 
-    const availableImages = menu.menuImageList.filter(
-      (image) => !image.isDeleted && image.imagePath
-    );
-
-    if (availableImages.length === 0) {
-      return null;
-    }
-
-    const mainImage =
-      availableImages.find((image) => image.isMainImage) ?? availableImages[0];
-
-    return mainImage?.imagePath ?? null;
-  }, [menu.menuImageList]);
-
-  const spiceLevel = menu.spiceLevel ?? 0;
+  const mainImageIndex = useMemo(() => {
+    const index = availableImages.findIndex((image) => image.isMainImage);
+    return index >= 0 ? index : 0;
+  }, [availableImages]);
 
   const handleDeleteMenu = () => {
     if (isPosLinked) {
@@ -124,81 +117,79 @@ export const Menu = ({ menu, onEditMenu, isPosLinked }: Props) => {
     );
   };
 
+  const handleOpenPreview = () => {
+    if (availableImages.length === 0) {
+      return;
+    }
+    setPreviewIndex(mainImageIndex);
+    setIsPreviewOpen(true);
+  };
+
+  const handleClosePreview = () => {
+    setIsPreviewOpen(false);
+  };
+
+  const handleSelectPreview = (index: number) => {
+    setPreviewIndex(index);
+  };
+
   return (
     <>
       <S.Container>
-        <S.LeftContainer>
-          <S.ThumbnailContainer>
-            {thumbnailSrc && <img src={thumbnailSrc} alt={menu.menuName} />}
-          </S.ThumbnailContainer>
-          <S.ImagesContainer>
-            {menu.isBest && <img src={bestOnIcon} alt={t('베스트')} />}
-            {menu.isNew && <img src={newOnIcon} alt={t('신규')} />}
-          </S.ImagesContainer>
-          {spiceLevel > 0 && (
-            <S.ChiliContainer>
-              <img src={chiliOnIcon} alt={t('매운맛')} />
-              <img
-                src={spiceLevel > 1 ? chiliOnIcon : chiliOffIcon}
-                alt={t('매운맛')}
-              />
-
-              <img
-                src={spiceLevel > 2 ? chiliOnIcon : chiliOffIcon}
-                alt={t('매운맛')}
-              />
-            </S.ChiliContainer>
-          )}
-        </S.LeftContainer>
-
         <S.InfoContainer>
-          <div>
-            <S.TitleContainer>
+          <S.TitleContainer>
+            <S.TitleContent>
               <span>{menu.localeMenuName?.[i18n.language?.toUpperCase()]}</span>
-              <div>
-                <BasicButton
-                  variant="Outline_Grey_L"
-                  onClick={() => setIsMenuCopyModalOpen(true)}
-                  customStyle={css`
-                    display: none;
-                  `}
-                >
-                  {t('복사/이동')}
-                </BasicButton>
-                <BasicButton
-                  variant="Outline_Grey_L"
-                  onClick={handleDeleteMenu}
-                  disabled={isPosLinked}
-                >
-                  {t('삭제')}
-                </BasicButton>
-                <BasicButton
-                  variant="Solid_Sky_Blue_L"
-                  onClick={() => onEditMenu(menu)}
-                >
-                  {t('수정')}
-                </BasicButton>
-              </div>
-            </S.TitleContainer>
-            <S.Price>{formatCurrency(menu.menuPrice)}</S.Price>
-            <S.Description>
-              {menu.localeMenuDescription?.[i18n.language?.toUpperCase()] ?? ''}
-            </S.Description>
-          </div>
+              {availableImages.length > 0 && (
+                <S.PreviewButton type="button" onClick={handleOpenPreview}>
+                  <S.IconContainer>
+                    <PhotoIcon
+                      width={15}
+                      height={15}
+                      color={theme.colors.grey[600]}
+                    />
+                  </S.IconContainer>
+                  {t('미리보기')}
+                </S.PreviewButton>
+              )}
+            </S.TitleContent>
+
+            <S.ActionGroup>
+              <BasicButton
+                variant="Outline_Grey_M"
+                onClick={handleDeleteMenu}
+                disabled={isPosLinked}
+                customStyle={S.DeleteButton}
+              >
+                {t('삭제')}
+              </BasicButton>
+              <BasicButton
+                variant="Solid_Sky_Blue_M"
+                onClick={() => onEditMenu(menu)}
+                customStyle={S.EditButton}
+              >
+                {t('수정')}
+              </BasicButton>
+            </S.ActionGroup>
+          </S.TitleContainer>
+          <S.Price>{`₩${formatCurrency(menu.menuPrice)}`}</S.Price>
+          <S.Description>
+            {menu.localeMenuDescription?.[i18n.language?.toUpperCase()] ?? ''}
+          </S.Description>
 
           <S.ToggleContainer>
             <div>
-              <span>{t('숨김')}</span>
+              <span>{t('숨기기')}</span>
               <ToggleButton
-                size="M"
+                size="S"
                 isOn={menu.isHidden}
                 onChange={handleToggleHidden}
               />
             </div>
             <div>
-              <span>{t('품절')}</span>
+              <span>{t('품절처리')}</span>
               <ToggleButton
-                size="M"
+                size="S"
                 isOn={menu.isOutOfStock}
                 onChange={handleToggleOutOfStock}
               />
@@ -209,6 +200,33 @@ export const Menu = ({ menu, onEditMenu, isPosLinked }: Props) => {
 
       {isMenuCopyModalOpen && (
         <MenuCopyModal onClose={() => setIsMenuCopyModalOpen(false)} />
+      )}
+
+      {isPreviewOpen && availableImages[previewIndex] && (
+        <ModalBackground onClick={handleClosePreview}>
+          <S.PreviewModal>
+            <S.CloseButton type="button" onClick={handleClosePreview}>
+              <CloseIcon width={32} height={32} color={theme.colors.white} />
+            </S.CloseButton>
+            <S.PreviewImage
+              src={availableImages[previewIndex].imagePath ?? undefined}
+              alt={`${menu.menuName}-${previewIndex + 1}`}
+            />
+            {availableImages.length > 1 && (
+              <S.DotGroup>
+                {availableImages.map((_, index) => (
+                  <S.DotButton
+                    key={availableImages[index]?.imageSeq ?? index}
+                    type="button"
+                    aria-label={t('이미지 미리보기')}
+                    data-active={previewIndex === index}
+                    onClick={() => handleSelectPreview(index)}
+                  />
+                ))}
+              </S.DotGroup>
+            )}
+          </S.PreviewModal>
+        </ModalBackground>
       )}
     </>
   );

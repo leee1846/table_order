@@ -136,6 +136,7 @@ export const SectionValue = styled.div<{ tone?: 4 | 3 | 2 | 1 | 0 }>`
     if (tone === 4 || tone === 3) return theme.colors.secondary[600];
     if (tone === 2) return theme.colors.primary[500];
     if (tone === 1) return theme.colors.semantic[400];
+    if (tone === 0) return theme.colors.semantic[400];
     return theme.colors.grey[800];
   }};
 `;

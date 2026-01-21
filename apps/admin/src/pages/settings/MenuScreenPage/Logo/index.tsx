@@ -121,10 +121,7 @@ export const Logo = ({ imageUrl, onChange }: LogoProps) => {
                 {t('삭제')}
               </BasicButton>
             </S.ButtonContainer>
-            <S.ImagePreview
-              src={imagePreview}
-              alt={t('로고 미리보기')}
-            />
+            <S.ImagePreview src={imagePreview} alt={t('로고 미리보기')} />
           </>
         ) : (
           // 이미지가 선택되지 않은 경우: 기본 안내 UI 표시
@@ -135,16 +132,8 @@ export const Logo = ({ imageUrl, onChange }: LogoProps) => {
               color={theme.colors.primary[400]}
             />
 
-            <p>
-              {t(
-                '메뉴판 상단에 보이는 로고를 추가할 수 있어요.'
-              )}
-            </p>
-            <span>
-              {t(
-                '400*144 px 이상의 가로가 긴 로고 권장'
-              )}
-            </span>
+            <p>{t('메뉴판 상단에 보이는 로고를 추가할 수 있어요.')}</p>
+            <span>{t('400*144 px 이상의 가로가 긴 로고 권장')}</span>
           </>
         )}
       </S.ImageSection>

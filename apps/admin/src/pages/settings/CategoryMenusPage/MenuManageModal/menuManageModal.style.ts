@@ -10,19 +10,67 @@ export const Container = styled.div`
   left: 13.125rem;
   right: 0;
   height: 100%;
-  padding: 40px 24px 40px 30px;
-  overflow-y: auto;
+  padding: 40px 32px 40px 36px;
+  overflow: hidden;
   background-color: ${theme.colors.white};
+  box-sizing: border-box;
+`;
+
+export const ContentLayout = styled.div`
+  display: grid;
+  grid-template-columns: minmax(22rem, 25rem) 1fr;
+  gap: 32px;
+  height: 100%;
 `;
 
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 
   & > div {
     display: flex;
     align-items: center;
   }
+`;
+
+export const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+`;
+
+export const LeftContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+export const RightColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+`;
+
+export const RightScrollable = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+  padding-bottom: 16px;
 `;
 
 export const Titles = styled.div`
@@ -62,18 +110,33 @@ export const Titles = styled.div`
 `;
 
 export const SubmitButton = css`
+  width: 100%;
+  z-index: ${theme.zIndex.modal};
+`;
+
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 32px;
+  right: 32px;
+`;
+
+export const Footer = styled.div`
   position: sticky;
   bottom: 0;
-  width: 100%;
-  margin-top: 40px;
-  z-index: ${theme.zIndex.modal};
+  padding-top: 16px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    ${colors.white} 40%,
+    ${colors.white} 100%
+  );
 `;
 
 export const LanguageSelector = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 24px;
+  margin-top: 0;
 `;
 
 export const LanguageTitleButton = styled.button`

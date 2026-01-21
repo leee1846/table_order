@@ -11,7 +11,7 @@ export const optionButtonCss = css`
 `;
 
 export const Container = styled.div`
-  margin-bottom: 24px;
+  margin-bottom: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;

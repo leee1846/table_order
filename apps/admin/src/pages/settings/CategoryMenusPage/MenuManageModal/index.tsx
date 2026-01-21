@@ -13,6 +13,7 @@ import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/menuManag
 import { BasicSetting } from './BasicSetting';
 import { OptionSetting } from './OptionSetting';
 import { AdditionalSetting } from './AdditionalSetting';
+import { ImageSection } from './BasicSetting/ImageSection';
 import {
   MenuManageModalProvider,
   useMenuManageModal,
@@ -69,102 +70,116 @@ const MenuManageModalContent = ({
 
   return (
     <S.Container>
-      <S.Header>
-        <S.Titles>
-          <p>{t('메뉴 관리')}</p>
-          <span />
-          <div>
+      <S.ContentLayout>
+        <S.LeftColumn>
+          <S.Header>
+            <S.Titles>
+              <p>{t('메뉴 관리')}</p>
+              <span />
+              <div>
+                {mode === 'edit' && (
+                  <>
+                    <p>{menu?.menuName}</p>
+                    <ChevronForwardIcon
+                      color={theme.colors.grey[600]}
+                      width={24}
+                      height={24}
+                    />
+                  </>
+                )}
+                <p>{modalTitle}</p>
+              </div>
+            </S.Titles>
+            <S.CloseButton type="button" onClick={onClose}>
+              <CloseIcon width={42} height={42} color={theme.colors.grey[500]} />
+            </S.CloseButton>
+          </S.Header>
+
+          <S.LeftContent>
+            <ImageSection />
+          </S.LeftContent>
+        </S.LeftColumn>
+
+        <S.RightColumn>
+          <S.RightScrollable>
             {mode === 'edit' && (
-              <>
-                <p>{menu?.menuName}</p>
-                <ChevronForwardIcon
-                  color={theme.colors.grey[600]}
-                  width={24}
-                  height={24}
-                />
-              </>
-            )}
-            <p>{modalTitle}</p>
-          </div>
-        </S.Titles>
-        <button type="button" onClick={onClose}>
-          <CloseIcon width={42} height={42} color={theme.colors.grey[500]} />
-        </button>
-      </S.Header>
+              <S.LanguageSelector>
+                {isExpanded ? (
+                  <>
+                    <S.SelectedLanguageText>
+                      <LanguageIcon
+                        width={20}
+                        height={20}
+                        color={theme.colors.grey[600]}
+                      />
 
-      {mode === 'edit' && (
-        <S.LanguageSelector>
-          {isExpanded ? (
-            <>
-              <S.SelectedLanguageText>
-                <LanguageIcon
-                  width={20}
-                  height={20}
-                  color={theme.colors.grey[600]}
-                />
-
-                {selectedLanguage.label}
-              </S.SelectedLanguageText>
-              <S.LanguageTabs>
-                {languageOptions.map((option) => (
-                  <S.LanguageTab
-                    key={option.value}
+                      {selectedLanguage.label}
+                    </S.SelectedLanguageText>
+                    <S.LanguageTabs>
+                      {languageOptions.map((option) => (
+                        <S.LanguageTab
+                          key={option.value}
+                          type="button"
+                          isSelected={selectedLanguageCode === option.value}
+                          onClick={() => handleLanguageChange(option.value)}
+                        >
+                          {option.label}
+                        </S.LanguageTab>
+                      ))}
+                    </S.LanguageTabs>
+                  </>
+                ) : (
+                  <S.LanguageTitleButton
                     type="button"
-                    isSelected={selectedLanguageCode === option.value}
-                    onClick={() => handleLanguageChange(option.value)}
+                    onClick={() => setIsExpanded(true)}
                   >
-                    {option.label}
-                  </S.LanguageTab>
-                ))}
-              </S.LanguageTabs>
-            </>
-          ) : (
-            <S.LanguageTitleButton
-              type="button"
-              onClick={() => setIsExpanded(true)}
-            >
-              <LanguageIcon
-                width={20}
-                height={20}
-                color={theme.colors.grey[600]}
-              />
+                    <LanguageIcon
+                      width={20}
+                      height={20}
+                      color={theme.colors.grey[600]}
+                    />
 
-              {selectedLanguage.label}
-            </S.LanguageTitleButton>
-          )}
-          <S.ToggleButton
-            type="button"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {isExpanded ? (
-              <ChevronBackwardIcon
-                color={theme.colors.grey[400]}
-                width={20}
-                height={20}
-              />
-            ) : (
-              <ChevronForwardIcon
-                color={theme.colors.grey[400]}
-                width={20}
-                height={20}
-              />
+                    {selectedLanguage.label}
+                  </S.LanguageTitleButton>
+                )}
+                <S.ToggleButton
+                  type="button"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                >
+                  {isExpanded ? (
+                    <ChevronBackwardIcon
+                      color={theme.colors.grey[400]}
+                      width={20}
+                      height={20}
+                    />
+                  ) : (
+                    <ChevronForwardIcon
+                      color={theme.colors.grey[400]}
+                      width={20}
+                      height={20}
+                    />
+                  )}
+                </S.ToggleButton>
+              </S.LanguageSelector>
             )}
-          </S.ToggleButton>
-        </S.LanguageSelector>
-      )}
 
-      <BasicSetting isPosLinked={isPosLinked} />
-      <OptionSetting isPosLinked={isPosLinked} />
-      <AdditionalSetting />
+            <BasicSetting isPosLinked={isPosLinked} hideImageSection />
+            <OptionSetting isPosLinked={isPosLinked} />
+            <AdditionalSetting />
+          </S.RightScrollable>
 
-      <BasicButton
-        variant="Solid_Navy_2XL"
-        customStyle={S.SubmitButton}
-        onClick={handleSubmit}
-        disabled={isSaving}
-      >
-        {t('저장')}
-      </BasicButton>
+          <S.Footer>
+            <BasicButton
+              variant="Solid_Navy_2XL"
+              customStyle={S.SubmitButton}
+              onClick={handleSubmit}
+              disabled={isSaving}
+            >
+              {t('저장')}
+            </BasicButton>
+          </S.Footer>
+        </S.RightColumn>
+      </S.ContentLayout>
     </S.Container>
   );
 };

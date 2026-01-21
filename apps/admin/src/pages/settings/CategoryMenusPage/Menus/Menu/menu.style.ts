@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 
@@ -5,60 +6,15 @@ export const Container = styled.div`
   width: 100%;
   padding: 24px;
   display: flex;
-  gap: 30px;
   background-color: ${theme.colors.white};
-  border-radius: 1.25rem;
-`;
-
-export const LeftContainer = styled.div`
-  position: relative;
-`;
-
-export const ThumbnailContainer = styled.div`
-  width: 21.625rem;
-  height: 15.4375rem;
   border-radius: 1rem;
-  overflow: hidden;
-  background-color: ${theme.colors.grey[100]};
-
-  & > img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-`;
-
-export const ImagesContainer = styled.div`
-  position: absolute;
-  top: 0;
-  left: 20px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  gap: 4px;
-
-  & > img {
-    width: 4rem;
-    height: 2.6875rem;
-  }
-`;
-
-export const ChiliContainer = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-
-  & > img {
-    width: 2.25rem;
-    height: 2.25rem;
-  }
 `;
 
 export const InfoContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
+  gap: 10px;
+  width: 100%;
 `;
 
 export const TitleContainer = styled.div`
@@ -66,27 +22,57 @@ export const TitleContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+`;
+
+export const TitleContent = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
 
   & > span {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: ${theme.colors.grey[700]};
-    ${TYPOGRAPHY.MT_1}
-    width: 100%;
-  }
-
-  & > div {
-    display: flex;
-    gap: 9px;
+    color: ${theme.colors.grey[600]};
+    ${TYPOGRAPHY.MT_5}
   }
 `;
 
+export const ActionGroup = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+export const PreviewButton = styled.button`
+  ${TYPOGRAPHY.BD_2}
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: ${theme.colors.grey[600]};
+  border: 1px solid ${theme.colors.grey[300]};
+  border-radius: 30px;
+  padding: 4px 8px;
+`;
+
+export const IconContainer = styled.span`
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 export const Price = styled.p`
-  ${TYPOGRAPHY.MT_3}
+  ${TYPOGRAPHY.MT_5}
   color: ${theme.colors.grey[800]};
+`;
+
+export const DeleteButton = css`
+  border: 1px solid ${theme.colors.grey[400]};
+  color: ${theme.colors.grey[700]};
+`;
+
+export const EditButton = css`
+  color: ${theme.colors.white} !important;
+  background-color: ${theme.colors.grey[600]} !important;
 `;
 
 export const Description = styled.p`
@@ -103,6 +89,8 @@ export const ToggleContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+  justify-content: flex-end;
+  align-self: flex-end;
 
   & > div {
     display: flex;
@@ -110,8 +98,69 @@ export const ToggleContainer = styled.div`
     gap: 8px;
 
     & > span {
-      ${TYPOGRAPHY.MT_7}
+      ${TYPOGRAPHY.MT_9}
       color: ${theme.colors.grey[500]};
     }
+  }
+`;
+
+export const PreviewOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1300;
+`;
+
+export const PreviewModal = styled.div`
+  position: relative;
+  width: 30rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid red;
+`;
+
+export const PreviewImage = styled.img`
+  width: 100%;
+  max-height: 20rem;
+  object-fit: cover;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+`;
+
+export const CloseButton = styled.button`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const DotGroup = styled.div`
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+`;
+
+export const DotButton = styled.button`
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid ${theme.colors.white};
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+
+  &[data-active='true'] {
+    background: ${theme.colors.white};
+    opacity: 1;
   }
 `;

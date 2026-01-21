@@ -3,11 +3,12 @@ import { useId, useCallback } from 'react';
 import { Input } from '@repo/ui/components';
 import {
   bestOnIcon,
-  chiliOffIcon,
-  chiliOnIcon,
   bestOffIcon,
   newOffIcon,
   newOnIcon,
+  spicyLevel1Icon,
+  spicyLevel2Icon,
+  spicyLevel3Icon,
 } from '@repo/ui/icons';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
 import { ImageSection } from './ImageSection';
@@ -19,9 +20,16 @@ const SPICE_LEVELS = [1, 2, 3] as const;
 
 interface Props {
   isPosLinked: boolean;
+  hideImageSection?: boolean;
 }
 
-export const BasicSetting = ({ isPosLinked }: Props) => {
+const SPICE_LEVEL_ICONS: Record<number, string> = {
+  1: spicyLevel1Icon,
+  2: spicyLevel2Icon,
+  3: spicyLevel3Icon,
+};
+
+export const BasicSetting = ({ isPosLinked, hideImageSection }: Props) => {
   const descriptionInputId = useId();
   const { formValues, updateFormValues } = useMenuForm();
   const currentSpiceLevel = formValues.spiceLevel ?? 0;
@@ -66,8 +74,8 @@ export const BasicSetting = ({ isPosLinked }: Props) => {
   );
 
   return (
-    <S.Container>
-      <ImageSection />
+    <S.Container contentOnly={hideImageSection}>
+      {!hideImageSection && <ImageSection />}
 
       <S.ContentsSection>
         <S.HorizontalLayout>
@@ -146,22 +154,24 @@ export const BasicSetting = ({ isPosLinked }: Props) => {
 
           <S.VerticalLayout>
             <S.Title>{t('매운맛정도')}</S.Title>
-            <S.BadgeContainer>
-              {SPICE_LEVELS.map((level) => (
-                <S.ChiliLevelButton
-                  key={level}
-                  type="button"
-                  onClick={() => handleSpiceLevelClick(level)}
-                >
-                  <img
-                    src={
-                      currentSpiceLevel >= level ? chiliOnIcon : chiliOffIcon
-                    }
-                    alt={`매운맛 ${level}단계`}
-                  />
-                </S.ChiliLevelButton>
-              ))}
-            </S.BadgeContainer>
+            <S.SpiceLevelContainer>
+              <S.SpiceLevelButtons>
+                {SPICE_LEVELS.map((level) => (
+                  <S.ChiliLevelButton
+                    key={level}
+                    type="button"
+                    onClick={() => handleSpiceLevelClick(level)}
+                    selected={currentSpiceLevel >= level}
+                    aria-pressed={currentSpiceLevel >= level}
+                  >
+                    <img
+                      src={SPICE_LEVEL_ICONS[level]}
+                      alt={`매운맛 ${level}단계`}
+                    />
+                  </S.ChiliLevelButton>
+                ))}
+              </S.SpiceLevelButtons>
+            </S.SpiceLevelContainer>
           </S.VerticalLayout>
         </S.HorizontalLayout>
 

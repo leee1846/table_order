@@ -6,11 +6,13 @@ export const inputCss = css`
   height: 3.5rem;
 `;
 
-export const Container = styled.div`
+export const Container = styled.div<{ contentOnly?: boolean }>`
   display: flex;
+  flex-direction: ${({ contentOnly }) => (contentOnly ? 'column' : 'row')};
   align-items: flex-start;
-  gap: 20px;
-  margin: 41px 0;
+  gap: ${({ contentOnly }) => (contentOnly ? '16px' : '20px')};
+  margin: ${({ contentOnly }) => (contentOnly ? '0' : '41px 0')};
+  width: 100%;
 `;
 
 export const ContentsSection = styled.div`
@@ -18,9 +20,7 @@ export const ContentsSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 19px;
-  height: calc(15.4375rem + 10px + 6.25rem);
   min-height: 0;
-  overflow: hidden;
 `;
 
 export const HorizontalLayout = styled.div`
@@ -92,10 +92,11 @@ export const TaxFreeCss = css`
 export const BadgeContainer = styled.div<{ gap?: number }>`
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 100%;
+  justify-content: flex-start;
+  height: auto;
   background-color: ${theme.colors.grey[100]};
   border-radius: 0.75rem;
+  padding: 12px 14px;
   gap: ${({ gap }) => (gap ? `${gap}px` : 0)};
 `;
 
@@ -109,13 +110,40 @@ export const BadgeButton = styled.button`
   }
 `;
 
-export const ChiliLevelButton = styled.button`
-  width: 50px;
-  height: 50px;
+export const SpiceLevelContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: ${theme.colors.grey[100]};
+  border-radius: 0.75rem;
+  padding: 12px 14px;
+`;
+
+export const SpiceLevelButtons = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const ChiliLevelButton = styled.button<{ selected: boolean }>`
+  width: 52px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid
+    ${({ selected }) =>
+      selected ? theme.colors.primary[500] : theme.colors.grey[300]};
+  background-color: ${theme.colors.white};
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: ${({ selected }) => (selected ? 1 : 0.4)};
+  transition: all 0.2s ease;
 
   & > img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
   }
 `;
 

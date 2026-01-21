@@ -18,7 +18,7 @@ import type { ICurrentTable, ITableGroup } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
 import { TableGroupList } from './sidebar.styles';
 import { SystemControl } from '@repo/util/app';
-import { useGetShopThemePage } from '@repo/api/queries';
+import { useGetShopThemeMenu } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { capsSmartOrderWhiteLogo } from '@repo/ui/icons';
 
@@ -53,18 +53,9 @@ export const Sidebar = ({
 
   const { shopCode } = useAuth();
 
-  const { data: shopThemePageResponse } = useGetShopThemePage(shopCode ?? '', {
+  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
     enabled: !!shopCode,
   });
-
-  const initLightImage = useMemo(() => {
-    const shopPageDetailList = shopThemePageResponse?.data?.shopPageDetailList;
-    if (!shopPageDetailList) return null;
-    const initLightItem = shopPageDetailList.find(
-      (item) => item.pageDetailType === 'INIT_LIGHT'
-    );
-    return initLightItem?.pageDetailImagePath || null;
-  }, [shopThemePageResponse?.data?.shopPageDetailList]);
 
   const [selectedMenu, setSelectedMenu] = useState<string>('');
   //주문 모달
@@ -105,7 +96,10 @@ export const Sidebar = ({
     <SidebarContainer>
       <Logo>
         <img
-          src={initLightImage ?? capsSmartOrderWhiteLogo}
+          src={
+            shopThemeMenuResponse?.data?.logoImagePath ??
+            capsSmartOrderWhiteLogo
+          }
           alt={t('매장 로고')}
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         />

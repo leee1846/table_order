@@ -192,7 +192,8 @@ export const StartScreenImageRegistrationPage = () => {
         const file = initCommonFiles[item.id];
         if (file) {
           const imageId = generateId();
-          const fileName = `${imageId}`;
+          const fileExtension = file.name.match(/\.([^.]+)$/)?.[0];
+          const fileName = `${imageId}${fileExtension}`;
           initCommonFilesToSend.push({ file, fileName });
 
           return [
