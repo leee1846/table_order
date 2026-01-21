@@ -2,6 +2,7 @@ import { create } from '@repo/feature/zustand';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
 import type { ICartMenu } from '@/types/cart';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 
 export interface ICartOptions {
   /** 첫 주문 필수 항목이 있는지 여부 */
@@ -196,12 +197,24 @@ export const useCartStore = create<ICartStore>((set, get) => {
 
     // 장바구니 비우기
     clearCart: () => {
+      // 현재 visibleCategories를 확인하여 hasFirstOrderRequiredItems 계산
+      const categoryStore = useCategoryStore.getState();
+      const visibleCategories = categoryStore.data.visibleCategories;
+      const hasFirstOrderRequiredItems = visibleCategories.some(
+        (c) => c.isFirstOrderRequired
+      );
+
+      const clearedData = {
+        menus: [],
+        hasFirstOrderRequiredItems,
+      };
+
       AppStorage.saveData({
         key: STORAGE_KEYS.CART,
-        value: { ...initialData, menus: [] },
+        value: clearedData,
         isTemporary: true,
       });
-      set({ data: { ...initialData, menus: [] } });
+      set({ data: clearedData });
     },
   };
 });
