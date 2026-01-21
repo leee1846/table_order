@@ -12,6 +12,7 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
@@ -42,6 +43,7 @@ export const CartList = ({
   const { theme } = useThemeMode();
   const { data: modalData, setModalData } = useModalStore();
   const { data: shopDetailData } = useShopDetailData();
+  const { firstOrderRequiredCategories } = useCategoriesData();
   const {
     data: cartData,
     removeFromCart,
@@ -121,6 +123,28 @@ export const CartList = ({
     if (cartData.menus.length < 1) {
       toast(t('현재 담긴 메뉴가 없어요.'), TOAST_OPTIONS);
       return;
+    }
+
+    // 첫 주문 필수 항목이 있는 경우
+    if (cartData.hasFirstOrderRequiredItems) {
+      const menusInCart = cartData.menus;
+      const hasFirstOrderRequiredMenu = firstOrderRequiredCategories.some((c) =>
+        menusInCart.some((m) => m.categorySeq === c.categorySeq)
+      );
+
+      // 카트에 첫 주문 필수 항목이 없는 경우
+      if (!hasFirstOrderRequiredMenu) {
+        const categoryName = firstOrderRequiredCategories
+          .map((c) => c.categoryName)
+          .join(', ');
+        toast(
+          t('[{{categoryName}}]\n 메뉴 중 1개 이상 주문해주세요.', {
+            categoryName,
+          }),
+          { position: 'center-center', duration: 3000 }
+        );
+        return;
+      }
     }
 
     const totalMenuAmount = calculateTotalPrice();
