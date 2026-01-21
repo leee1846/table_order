@@ -92,19 +92,29 @@ export const createSidebarMenus = (
           ],
     },
     {
-      id: 'theme',
-      label: translate('테마 설정'),
-      matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.THEME.path}`,
+      id: 'menu-screen',
+      label: translate('메뉴 화면'),
+      path: ROUTES.SETTINGS.MENU_SCREEN.generate(),
+    },
+    {
+      id: 'start-screen',
+      label: translate('시작 화면'),
+      matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.START_SCREEN.path}`,
       subMenus: [
         {
-          id: 'start-screen',
-          label: translate('시작 화면'),
-          path: ROUTES.SETTINGS.THEME.START_SCREEN.generate(),
+          id: 'theme',
+          label: translate('테마 설정'),
+          path: ROUTES.SETTINGS.START_SCREEN.THEME.generate(),
         },
         {
-          id: 'menu-screen',
-          label: translate('메뉴 화면'),
-          path: ROUTES.SETTINGS.THEME.MENU_SCREEN.generate(),
+          id: 'logo',
+          label: translate('로고 설정'),
+          path: ROUTES.SETTINGS.START_SCREEN.LOGO.generate(),
+        },
+        {
+          id: 'image-registration',
+          label: translate('이미지 등록'),
+          path: ROUTES.SETTINGS.START_SCREEN.IMAGE_REGISTRATION.generate(),
         },
       ],
     },

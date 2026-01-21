@@ -161,7 +161,6 @@ export type TPageDetailType =
 
 export interface IShopPageDetail {
   shopSeq: number;
-  pageSeq: number;
   pageDetailType: TPageDetailType;
   pageDetailImagePath: string | null;
   pageDetailDescription: string;

@@ -1,7 +1,8 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
+import * as UIStyles from '@repo/ui/styles';
 
-export const Container = styled.div`
+export const Container = styled(UIStyles.setting.TablePageContainer)`
   padding: 40px 24px 40px 30px;
   background-color: ${theme.colors.grey[50]};
   flex: 1;
@@ -30,17 +31,6 @@ export const Title = styled.div`
   & > span {
     ${TYPOGRAPHY.ST_1}
     color: ${theme.colors.grey[600]};
-  }
-`;
-
-export const FieldGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
-
-  & > label {
-    color: ${theme.colors.grey[800]};
-    ${TYPOGRAPHY.MT_6}
+    boorder: 1px solid red;
   }
 `;

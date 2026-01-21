@@ -36,7 +36,9 @@ export const ImageRegistration = ({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
     onChangeImage(id, file);
     event.target.value = '';
   };
@@ -47,9 +49,6 @@ export const ImageRegistration = ({
 
   return (
     <S.Container>
-      <S.Header>
-        <p>{t('이미지 등록')}</p>
-      </S.Header>
       {sortedItems.map((item) => (
         <S.ContentContainer key={item.id}>
           <input

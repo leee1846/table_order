@@ -147,16 +147,24 @@ export const ROUTES = {
       path: 'tables',
       generate: () => '/settings/tables',
     },
-    THEME: {
-      path: 'theme',
+    MENU_SCREEN: {
+      path: 'menu-screen',
+      generate: () => '/settings/menu-screen',
+    },
+    START_SCREEN: {
+      path: 'start-screen',
 
-      START_SCREEN: {
-        path: 'start-screen',
-        generate: () => '/settings/theme/start-screen',
+      THEME: {
+        path: 'theme',
+        generate: () => '/settings/start-screen/theme',
       },
-      MENU_SCREEN: {
-        path: 'menu-screen',
-        generate: () => '/settings/theme/menu-screen',
+      LOGO: {
+        path: 'logo',
+        generate: () => '/settings/start-screen/logo',
+      },
+      IMAGE_REGISTRATION: {
+        path: 'image-registration',
+        generate: () => '/settings/start-screen/image-registration',
       },
     },
     MISCELLANEOUS: {

@@ -59,7 +59,7 @@ export const CategoryButton = styled.button<ICategoryButton>`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    ${TYPOGRAPHY.MT_6}
+    ${TYPOGRAPHY.MT_8}
     color: ${({ isSelected }) =>
       isSelected ? theme.colors.white : theme.colors.grey[500]};
   }

@@ -70,5 +70,5 @@ export const ThemeColor = styled.div<{ backgroundColors: string }>`
 `;
 
 export const RadioButtonStyle = css`
-  ${TYPOGRAPHY.MT_7}
+  ${TYPOGRAPHY.MT_9}
 `;

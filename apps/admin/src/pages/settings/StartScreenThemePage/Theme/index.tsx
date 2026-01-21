@@ -1,8 +1,8 @@
 import { t } from '@/config/i18n';
 import { RadioButton } from '@repo/ui/components';
 import type { TInitPageLayout } from '@repo/api/types';
-import * as S from '@/pages/settings/StartScreenPage/Theme/theme.style';
 import { theme } from '@repo/ui';
+import * as S from './theme.style';
 
 interface ThemeProps {
   value: TInitPageLayout;
@@ -15,7 +15,7 @@ export const Theme = ({ value, onChange }: ThemeProps) => {
       <S.Themes>
         <button type="button" onClick={() => onChange('LIGHT')}>
           <S.ThemeColor backgroundColors={theme.colors.white}>
-            <div></div>
+            <div />
             <div>IMAGE</div>
           </S.ThemeColor>
           <RadioButton
@@ -29,7 +29,7 @@ export const Theme = ({ value, onChange }: ThemeProps) => {
         </button>
         <button type="button" onClick={() => onChange('DARK')}>
           <S.ThemeColor backgroundColors={theme.colors.black}>
-            <div></div>
+            <div />
             <div> IMAGE</div>
           </S.ThemeColor>
           <RadioButton

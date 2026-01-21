@@ -53,9 +53,12 @@ export const SidebarLayout = () => {
       useTranslation={useTranslation}
       menus={SIDEBAR_MENUS}
       logoElement={
-        <button type="button" onClick={onClickLogo}>        
+        <button type="button" onClick={onClickLogo}>
           <img
-            src={shopThemeMenuResponse?.data?.logoImagePath ?? capsSmartOrderWhiteLogo}
+            src={
+              shopThemeMenuResponse?.data?.logoImagePath ??
+              capsSmartOrderWhiteLogo
+            }
             alt={t('매장 로고')}
             style={{ width: '100%' }}
           />

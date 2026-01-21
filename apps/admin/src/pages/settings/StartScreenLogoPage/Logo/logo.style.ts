@@ -4,9 +4,7 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
   margin-bottom: 16px;
-
   & > p {
     color: ${theme.colors.grey[800]};
     ${TYPOGRAPHY.MT_6}
@@ -16,7 +14,7 @@ export const Container = styled.div`
 export const ImageSection = styled.button`
   position: relative;
   width: 100%;
-  height: 190px;
+  height: 240px;
   border-radius: 1rem;
   background-color: ${theme.colors.primary[100]};
   display: flex;

@@ -230,15 +230,27 @@ const MiscellaneousPage = lazy(() =>
     default: module.MiscellaneousPage,
   }))
 );
-const StartScreenPage = lazy(() =>
-  import('@/pages/settings/StartScreenPage').then((module) => ({
-    default: module.StartScreenPage,
-  }))
-);
 const MenuScreenPage = lazy(() =>
   import('@/pages/settings/MenuScreenPage').then((module) => ({
     default: module.MenuScreenPage,
   }))
+);
+const StartScreenThemePage = lazy(() =>
+  import('@/pages/settings/StartScreenThemePage').then((module) => ({
+    default: module.StartScreenThemePage,
+  }))
+);
+const StartScreenLogoPage = lazy(() =>
+  import('@/pages/settings/StartScreenLogoPage').then((module) => ({
+    default: module.StartScreenLogoPage,
+  }))
+);
+const StartScreenImageRegistrationPage = lazy(() =>
+  import('@/pages/settings/StartScreenImageRegistrationPage').then(
+    (module) => ({
+      default: module.StartScreenImageRegistrationPage,
+    })
+  )
 );
 
 // ============================================================================
@@ -613,20 +625,28 @@ const createSettingsRoutes = () => [
     ],
   },
   {
-    path: ROUTES.SETTINGS.THEME.path,
+    path: ROUTES.SETTINGS.MENU_SCREEN.path,
+    element: <MenuScreenPage />,
+  },
+  {
+    path: ROUTES.SETTINGS.START_SCREEN.path,
     element: <Outlet />,
     children: [
       {
         index: true,
-        loader: () => redirect(ROUTES.SETTINGS.THEME.START_SCREEN.generate()),
+        loader: () => redirect(ROUTES.SETTINGS.START_SCREEN.THEME.generate()),
       },
       {
-        path: ROUTES.SETTINGS.THEME.START_SCREEN.path,
-        element: <StartScreenPage />,
+        path: ROUTES.SETTINGS.START_SCREEN.THEME.path,
+        element: <StartScreenThemePage />,
       },
       {
-        path: ROUTES.SETTINGS.THEME.MENU_SCREEN.path,
-        element: <MenuScreenPage />,
+        path: ROUTES.SETTINGS.START_SCREEN.LOGO.path,
+        element: <StartScreenLogoPage />,
+      },
+      {
+        path: ROUTES.SETTINGS.START_SCREEN.IMAGE_REGISTRATION.path,
+        element: <StartScreenImageRegistrationPage />,
       },
     ],
   },
