@@ -51,12 +51,24 @@ export const Language = ({
       return;
     }
 
+    // 메인 언어를 shopLocaleMapList에 항상 포함
+    const mainLanguageLocale: IShopLocaleMap = {
+      localeShopMapSeq: 0,
+      shopSeq: shopSetting?.shopSeq ?? 0,
+      localeCode: mainLanguage,
+    };
+
+    const allLanguages = [
+      mainLanguageLocale,
+      ...selectedLanguages.filter((lang) => lang.localeCode !== mainLanguage),
+    ];
+
     onChange({
       shopSetting: {
         shopSeq: shopSetting?.shopSeq,
         shopLanguage: mainLanguage,
         useLocaleBeforeOrder,
-        shopLocaleMapList: selectedLanguages,
+        shopLocaleMapList: allLanguages,
         useLocale: locale,
       } as Partial<IShopSetting>,
     });
@@ -123,36 +135,50 @@ export const Language = ({
         </UIStyles.setting.ContentLayout>
         <S.CheckboxWrapper>
           <div>
-            {languageOptions.map((option) => (
-              <CheckButton
-                key={option.value}
-                checked={selectedLanguages.some(
+            {languageOptions.map((option) => {
+              const isMainLanguage = option.value === mainLanguage;
+              const isChecked =
+                isMainLanguage ||
+                selectedLanguages.some(
                   (lang) => lang.localeCode === option.value
-                )}
-                onChange={() => {
-                  const isSelected = selectedLanguages.some(
-                    (lang) => lang.localeCode === option.value
-                  );
-                  if (isSelected) {
-                    setSelectedLanguages((prev) =>
-                      prev.filter((lang) => lang.localeCode !== option.value)
+                );
+
+              return (
+                <CheckButton
+                  key={option.value}
+                  checked={isChecked}
+                  onChange={() => {
+                    // 메인 언어는 변경 불가
+                    if (isMainLanguage) {
+                      return;
+                    }
+
+                    const isSelected = selectedLanguages.some(
+                      (lang) => lang.localeCode === option.value
                     );
-                  } else {
-                    setSelectedLanguages((prev) => [
-                      ...prev,
-                      {
-                        localeShopMapSeq: 0,
-                        shopSeq: shopSetting?.shopSeq ?? 0,
-                        localeCode: option.value,
-                      },
-                    ]);
+                    if (isSelected) {
+                      setSelectedLanguages((prev) =>
+                        prev.filter((lang) => lang.localeCode !== option.value)
+                      );
+                    } else {
+                      setSelectedLanguages((prev) => [
+                        ...prev,
+                        {
+                          localeShopMapSeq: 0,
+                          shopSeq: shopSetting?.shopSeq ?? 0,
+                          localeCode: option.value,
+                        },
+                      ]);
+                    }
+                  }}
+                  customStyle={
+                    isMainLanguage ? S.mainLanguageCheckboxCss : S.checkboxCss
                   }
-                }}
-                customStyle={S.checkboxCss}
-              >
-                <S.CheckboxText>{option.label}</S.CheckboxText>
-              </CheckButton>
-            ))}
+                >
+                  <S.CheckboxText>{option.label}</S.CheckboxText>
+                </CheckButton>
+              );
+            })}
           </div>
           <CheckButton
             checked={useLocaleBeforeOrder}

@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ModalBackground, Pagination, BasicButton } from '@repo/ui/components';
+import { ModalBackground, BasicButton } from '@repo/ui/components';
 import { CloseIcon /* , FullBatteryIcon */ } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import {
-  useGetDeviceListWithPagination,
-  usePostDeviceControl,
-} from '@repo/api/queries';
+import { useGetDeviceList, usePostDeviceControl } from '@repo/api/queries';
 import type {
   IDeviceControlItem,
   TDeviceControlType,
@@ -14,7 +11,6 @@ import type {
 import { toast } from '@repo/feature/utils';
 import { getDeviceTypeLabel } from '@repo/util/constants';
 import { useAdminTranslation } from '@/config/i18n';
-import { DEVICE_LIST_PAGE_SIZE } from '@/constants/keys';
 import * as S from './deviceListDialog.style';
 
 const { colors } = theme;
@@ -74,7 +70,6 @@ export const DeviceListDialog = ({
   shopCode,
 }: DeviceListDialogProps) => {
   const { t } = useAdminTranslation();
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
 
   const DEVICE_CONTROL_MESSAGES: Record<TDeviceControlType, string> = {
@@ -87,56 +82,35 @@ export const DeviceListDialog = ({
 
   useEffect(() => {
     if (!isOpen) {
-      setCurrentPage(1);
       setSelectedDevice(null);
     }
-  }, [isOpen, shopCode, DEVICE_LIST_PAGE_SIZE]);
+  }, [isOpen]);
+
+  useEffect(() => {
+    setSelectedDevice(null);
+  }, [shopCode]);
 
   const {
     data: deviceListResponse,
     isFetching,
     refetch,
-  } = useGetDeviceListWithPagination({
+  } = useGetDeviceList({
     shopCode: shopCode ?? '',
-    pageNumber: currentPage - 1,
-    pageSize: DEVICE_LIST_PAGE_SIZE,
+    options: {
+      enabled: isOpen && !!shopCode,
+    },
   });
 
   const { mutateAsync: postDeviceControl, isPending: isDeviceControlLoading } =
     usePostDeviceControl();
 
-  useEffect(() => {
-    if (!isOpen || !shopCode) {
-      return;
-    }
-
-    refetch();
-  }, [isOpen, shopCode, currentPage, DEVICE_LIST_PAGE_SIZE, refetch]);
-
-  // API 응답이 배열로 오는 경우 처리
-  const paginationData = useMemo(() => {
-    const data = deviceListResponse?.data;
-    return Array.isArray(data) ? data[0] : data;
-  }, [deviceListResponse]);
-
-  const currentPageFromApi = paginationData?.currentPageNumber;
-
-  useEffect(() => {
-    if (
-      typeof currentPageFromApi === 'number' &&
-      currentPageFromApi + 1 !== currentPage
-    ) {
-      setCurrentPage(currentPageFromApi + 1);
-    }
-  }, [currentPageFromApi, currentPage]);
-
   const deviceItems = useMemo<DeviceItem[]>(() => {
-    const deviceList = paginationData?.deviceList;
+    const deviceList = deviceListResponse?.data;
 
     if (!deviceList || !Array.isArray(deviceList)) {
       return [];
     }
-    return deviceList.map((device, index) => ({
+    const items = deviceList.map((device, index) => ({
       androidId: device.androidId ?? null,
       deviceType: device.deviceType,
       id:
@@ -151,21 +125,41 @@ export const DeviceListDialog = ({
       version: device.version ?? '-',
       buildNumber: device.buildNumber ?? '-',
     }));
-  }, [paginationData]);
+
+    // 테이블 번호로 정렬
+    return items.sort((a, b) => {
+      const tableA = a.table;
+      const tableB = b.table;
+
+      // '-'는 맨 뒤로
+      if (tableA === '-' && tableB !== '-') {
+        return 1;
+      }
+      if (tableA !== '-' && tableB === '-') {
+        return -1;
+      }
+      if (tableA === '-' && tableB === '-') {
+        return 0;
+      }
+
+      // 숫자로 변환 가능한 경우 숫자로 비교
+      const numA = Number(tableA);
+      const numB = Number(tableB);
+
+      if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
+        return numA - numB;
+      }
+
+      // 그 외는 문자열로 비교
+      return String(tableA).localeCompare(String(tableB));
+    });
+  }, [deviceListResponse]);
 
   if (!isOpen) {
     return null;
   }
 
-  const totalPages =
-    paginationData?.totalPageNumber && paginationData.totalPageNumber > 0
-      ? paginationData.totalPageNumber
-      : 1;
   const isInitialLoading = isFetching && !deviceListResponse;
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
 
   const handleSelectDevice = (deviceId: string) => {
     setSelectedDevice((prev) => {
@@ -186,7 +180,9 @@ export const DeviceListDialog = ({
       };
     }
 
-    const targetDevice = deviceItems.find((device) => device.id === targetDeviceId);
+    const targetDevice = deviceItems.find(
+      (device) => device.id === targetDeviceId
+    );
     if (!targetDevice) {
       return {
         validDevices: [],
@@ -246,8 +242,6 @@ export const DeviceListDialog = ({
   return (
     <ModalBackground position="center" onClick={onClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
-      
-
         <S.Container>
           <S.Header>
             <S.Title>{t('기기관리')}</S.Title>
@@ -309,9 +303,12 @@ export const DeviceListDialog = ({
               <S.DeviceGrid>
                 {deviceItems.map((device) => {
                   const isSelected = selectedDevice === device.id;
-                  const numericSignal = device.wifiSignal != null ? Number(device.wifiSignal) : 0;
-                  const wifiTone: 4 | 3 | 2 | 1 | 0 = 
-                    (numericSignal >= 0 && numericSignal <= 4 && Number.isInteger(numericSignal))
+                  const numericSignal =
+                    device.wifiSignal != null ? Number(device.wifiSignal) : 0;
+                  const wifiTone: 4 | 3 | 2 | 1 | 0 =
+                    numericSignal >= 0 &&
+                    numericSignal <= 4 &&
+                    Number.isInteger(numericSignal)
                       ? (numericSignal as 4 | 3 | 2 | 1 | 0)
                       : 0;
 
@@ -328,19 +325,20 @@ export const DeviceListDialog = ({
                         <S.DeviceCode>{device.id}</S.DeviceCode>
                       </S.CardHeader>
 
+                      <S.CardSectionWrapper>
+                        <S.CardSection>
+                          <S.SectionLabel>{t('와이파이 신호')}</S.SectionLabel>
+                          <S.SectionValue tone={wifiTone}>
+                            {formatWifiSignal(device.wifiSignal, t)}
+                          </S.SectionValue>
+                        </S.CardSection>
 
-                    <S.CardSectionWrapper>
-                      <S.CardSection>
-                        <S.SectionLabel>{t('와이파이 신호')}</S.SectionLabel>
-                        <S.SectionValue tone={wifiTone}>
-                          {formatWifiSignal(device.wifiSignal, t)}
-                        </S.SectionValue>
-                      </S.CardSection>
-
-                      <S.CardSection>
-                        <S.SectionLabel>{t('기기 버전')}</S.SectionLabel>
-                          <S.SectionValue>{device.version ? `v.${device.version }` : '-'}</S.SectionValue>  
-                      </S.CardSection>
+                        <S.CardSection>
+                          <S.SectionLabel>{t('기기 버전')}</S.SectionLabel>
+                          <S.SectionValue>
+                            {device.version ? `v.${device.version}` : '-'}
+                          </S.SectionValue>
+                        </S.CardSection>
                       </S.CardSectionWrapper>
                       <S.CardFooter>
                         <S.FooterItem>
@@ -349,7 +347,9 @@ export const DeviceListDialog = ({
                         </S.FooterItem>
                         <S.FooterItem>
                           <S.FooterLabel>{t('빌드 번호')}</S.FooterLabel>
-                          <S.FooterValue>{device.buildNumber || '-'}</S.FooterValue>
+                          <S.FooterValue>
+                            {device.buildNumber || '-'}
+                          </S.FooterValue>
                         </S.FooterItem>
                       </S.CardFooter>
                     </S.DeviceCard>
@@ -359,15 +359,6 @@ export const DeviceListDialog = ({
             )}
           </S.DeviceGridWrapper>
         </S.Container>
-
-        <S.StyledFooter>
-          <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            customStyle={S.PaginationStyle}
-          />
-        </S.StyledFooter>
       </S.DialogContainer>
     </ModalBackground>
   );

@@ -26,6 +26,16 @@ export const checkboxCss = css`
   }
 `;
 
+export const mainLanguageCheckboxCss = css`
+  & > div {
+    width: 26px;
+    height: 26px;
+    background-color: ${theme.colors.primary[400]};
+    cursor: default;
+    border-color: ${theme.colors.primary[400]};
+  }
+`;
+
 export const CheckboxText = styled.span`
   ${TYPOGRAPHY.ST_2}
   color: ${theme.colors.grey[800]};

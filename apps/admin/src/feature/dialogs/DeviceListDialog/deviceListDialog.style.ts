@@ -1,9 +1,6 @@
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
-import {
-  BaseHeader,
-  BaseTitle,
-} from '@repo/feature/components';
+import { BaseHeader, BaseTitle } from '@repo/feature/components';
 import { css } from '@emotion/react';
 
 const { colors } = theme;
@@ -14,12 +11,14 @@ export const DialogContainer = styled.div`
   background-color: ${colors.grey[100]};
   display: flex;
   flex-direction: column;
-
 `;
 
 export const Container = styled.div`
-  padding: 40px 30px;
-  flex : 1;
+  padding: 40px 30px 0 30px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 `;
 
 export const CloseButton = styled.button`
@@ -32,8 +31,7 @@ export const Header = styled(BaseHeader)`
   margin-bottom: 44px;
 `;
 
-export const Title = styled(BaseTitle)`
-`;
+export const Title = styled(BaseTitle)``;
 
 export const ButtonContainer = styled.div`
   display: flex;
@@ -58,7 +56,10 @@ export const RightButtons = styled.div`
 
 export const DeviceGridWrapper = styled.div`
   flex: 1;
- `;
+  overflow-y: auto;
+  padding-bottom: 40px;
+  scroll-behavior: smooth;
+`;
 
 export const EmptyState = styled.div`
   height: 100%;
@@ -71,7 +72,7 @@ export const EmptyState = styled.div`
 `;
 
 export const DeviceGrid = styled.div`
-  display: grid;  
+  display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 `;
@@ -83,11 +84,10 @@ export const DeviceCard = styled.div<{ selected?: boolean }>`
   border: 2px solid transparent;
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.06);
   padding: 16px;
-  display: flex; 
+  display: flex;
   flex-direction: column;
   gap: 12px;
   cursor: pointer;
-  
 
   ${({ selected }) =>
     selected
@@ -95,10 +95,7 @@ export const DeviceCard = styled.div<{ selected?: boolean }>`
     border: solid 2px ${colors.primary[500]};
   `
       : ''}
-
-
 `;
-
 
 export const CardHeader = styled.div`
   display: flex;
@@ -111,21 +108,21 @@ export const DeviceTitle = styled.div`
   ${TYPOGRAPHY.MT_8}
   color: ${colors.grey[900]};
 `;
- 
+
 export const DeviceCode = styled.div`
-  ${TYPOGRAPHY.BD_2} 
+  ${TYPOGRAPHY.BD_2}
   color: ${colors.grey[600]};
 `;
 
 export const CardSection = styled.div`
-
   background: ${colors.grey[100]};
   border-radius: 8px;
   padding: 10px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  gap: 6px;
+  align-items: start;
 `;
 
 export const SectionLabel = styled.div`
@@ -133,9 +130,7 @@ export const SectionLabel = styled.div`
   ${TYPOGRAPHY.CT_2}
 `;
 
-export const SectionValue = styled.div<{
-  tone?: 4 | 3 | 2 | 1 | 0;
-}>`
+export const SectionValue = styled.div<{ tone?: 4 | 3 | 2 | 1 | 0 }>`
   ${TYPOGRAPHY.ST_3}
   color: ${({ tone }) => {
     if (tone === 4 || tone === 3) return theme.colors.secondary[600];
@@ -152,9 +147,9 @@ export const CardSectionWrapper = styled.div`
 `;
 
 export const CardFooter = styled.div`
-display: flex;
-flex-direction: column;
-gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 export const FooterItem = styled.div`
@@ -166,36 +161,18 @@ export const FooterItem = styled.div`
 
 export const FooterLabel = styled.span`
   color: ${colors.grey[500]};
-
 `;
 
 export const FooterValue = styled.span`
   color: ${colors.grey[600]};
 `;
 
-export const StyledFooter = styled.div`
-  padding: 16px 40px 24px 40px;
-  background-color: ${colors.white};
-  border-top: 1px solid ${colors.grey[200]};
-`;
-
-
-export const PaginationStyle = css`
-  > div {
-     > button { 
-        border-radius: 50% !important;
-        padding: 7px 12px!important;
-      }
-    }
-  }
-`
-
 export const ScreenOnButton = css`
   background-color: ${colors.grey[800]};
-  color: ${colors.grey[50]}
-`
+  color: ${colors.grey[50]};
+`;
 
 export const ScreenOffButton = css`
   background-color: ${colors.grey[600]};
   color: ${colors.grey[50]};
-`
+`;

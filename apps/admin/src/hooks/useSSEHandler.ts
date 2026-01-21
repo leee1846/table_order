@@ -59,6 +59,12 @@ export const useSSEHandler = () => {
       return;
     }
 
+    if (sseMessage?.type === 'DEVICE') {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.device.list(shopCode),
+      });
+    }
+
     // 도난방지 팝업 테스트 필요
     // if (sseMessage?.type === 'DEVICE_THEFT') {
     //   // data는 DeviceVo 객체
