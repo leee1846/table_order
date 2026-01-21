@@ -120,10 +120,8 @@ export const PreviewModal = styled.div`
   position: relative;
   width: 30rem;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-
-  border: 1px solid red;
 `;
 
 export const PreviewImage = styled.img`
@@ -131,20 +129,23 @@ export const PreviewImage = styled.img`
   max-height: 20rem;
   object-fit: cover;
   box-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+  touch-action: pan-x;
+  user-select: none;
+  -webkit-user-drag: none;
 `;
 
 export const CloseButton = styled.button`
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute;
+  bottom: 100%;
+  left: 100%;
 `;
 
 export const DotGroup = styled.div`
   position: absolute;
-  bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
+  bottom: 20px;
   display: flex;
   gap: 8px;
 `;
@@ -153,14 +154,15 @@ export const DotButton = styled.button`
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 1px solid ${theme.colors.white};
   background: transparent;
   cursor: pointer;
-  opacity: 0.7;
-  transition: all 0.2s ease;
 
   &[data-active='true'] {
     background: ${theme.colors.white};
     opacity: 1;
+  }
+
+  &[data-active='false'] {
+    background: rgba(248, 249, 250, 0.5);
   }
 `;

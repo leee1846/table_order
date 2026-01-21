@@ -1,5 +1,5 @@
 import { useAdminTranslation } from '@/config/i18n';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import {
   BasicButton,
   ToggleButton,
@@ -31,15 +31,17 @@ export const Menu = ({ menu, onEditMenu, isPosLinked }: Props) => {
   const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
   const queryClient = useQueryClient();
   const deleteMenuMutation = useDeleteMenu();
   const { mutateAsync: updateMenuHidden } = usePutUpdateMenuHidden();
   const { mutateAsync: updateMenuOutOfStock } = usePutUpdateMenuOutOfStock();
   const availableImages = useMemo(
     () =>
-      (menu.menuImageList ?? []).filter(
-        (image) => !image.isDeleted && image.imagePath
-      ),
+      (menu.menuImageList ?? [])
+        .filter((image) => !image.isDeleted && image.imagePath)
+        .sort((a, b) => (a.imageIndex ?? 0) - (b.imageIndex ?? 0)),
     [menu.menuImageList]
   );
 
@@ -133,6 +135,35 @@ export const Menu = ({ menu, onEditMenu, isPosLinked }: Props) => {
     setPreviewIndex(index);
   };
 
+  // 터치 시작 위치 저장
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0]?.clientX ?? 0;
+  };
+
+  // 터치 이동 중 위치 업데이트
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0]?.clientX ?? 0;
+  };
+
+  // 터치 종료 시 스와이프 거리 계산하여 이미지 변경
+  const handleTouchEnd = () => {
+    const swipeDistance = touchStartX.current - touchEndX.current;
+
+    if (swipeDistance > 50) {
+      // 왼쪽으로 스와이프 -> 다음 이미지
+      setPreviewIndex((prev) =>
+        prev < availableImages.length - 1 ? prev + 1 : 0
+      );
+    }
+
+    if (swipeDistance < -50) {
+      // 오른쪽으로 스와이프 -> 이전 이미지
+      setPreviewIndex((prev) =>
+        prev > 0 ? prev - 1 : availableImages.length - 1
+      );
+    }
+  };
+
   return (
     <>
       <S.Container>
@@ -211,6 +242,9 @@ export const Menu = ({ menu, onEditMenu, isPosLinked }: Props) => {
             <S.PreviewImage
               src={availableImages[previewIndex].imagePath ?? undefined}
               alt={`${menu.menuName}-${previewIndex + 1}`}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             />
             {availableImages.length > 1 && (
               <S.DotGroup>
