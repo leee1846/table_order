@@ -427,3 +427,11 @@ export interface IUpdateMenuOutOfStockParams {
   menuSeq: number;
   isOutOfStock: boolean;
 }
+
+// ============================================================================
+// PUT /menu/translation
+// ============================================================================
+
+export interface IUpdateMenuTranslationParams {
+  shopCode: string;
+}

@@ -8,6 +8,7 @@ import type {
   IUpdateMenuIndexRequest,
   IUpdateMenuHiddenParams,
   IUpdateMenuOutOfStockParams,
+  IUpdateMenuTranslationParams,
   TGetExistingMenuImageListResponse,
   TGetSampleMenuImageListResponse,
   TGetMenuListResponse,
@@ -209,6 +210,22 @@ export const updateMenuOutOfStock = async (
     method: 'PUT',
     url: ENDPOINTS.MENU.OUT_OF_STOCK,
     data: params,
+  });
+
+  return response.data;
+};
+
+/**
+ * 메뉴 다국어를 일괄 등록합니다.
+ * PUT /menu/translation
+ */
+export const updateMenuTranslation = async (
+  params: IUpdateMenuTranslationParams
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'PUT',
+    url: ENDPOINTS.MENU.TRANSLATION(params.shopCode),
   });
 
   return response.data;
