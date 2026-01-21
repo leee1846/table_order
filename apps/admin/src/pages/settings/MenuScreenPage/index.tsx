@@ -24,7 +24,6 @@ import * as S from './menuScreenPage.style';
 export const MenuScreenPage = () => {
   const queryClient = useQueryClient();
   const { shopCode, shopSeq: shopSeqFromAuth } = useAuth();
-  const [isInitialized, setIsInitialized] = useState(false);
   const [screenMode, setScreenMode] = useState<ScreenModeOption>('light');
   const [logoImageUrl, setLogoImageUrl] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -44,7 +43,6 @@ export const MenuScreenPage = () => {
   const themeMenu = themeMenuResponse?.data;
 
   useEffect(() => {
-    setIsInitialized(false);
     setScreenMode('light');
     setLogoImageUrl(null);
     setLogoFile(null);
@@ -53,7 +51,7 @@ export const MenuScreenPage = () => {
   }, [shopCode]);
 
   useEffect(() => {
-    if (!themeMenu || isInitialized) {
+    if (!themeMenu) {
       return;
     }
 
@@ -62,8 +60,7 @@ export const MenuScreenPage = () => {
     setLogoFile(null);
     setIsMenuThreeColumnLayout(themeMenu.isMenuThreeColumnLayout);
     setTemplateType(themeMenu.menuboardTemplateType);
-    setIsInitialized(true);
-  }, [isInitialized, themeMenu]);
+  }, [themeMenu]);
 
   const handleLogoChange = useCallback(
     (file: File | null, previewUrl: string | null) => {
@@ -106,7 +103,6 @@ export const MenuScreenPage = () => {
     await queryClient.invalidateQueries({
       queryKey: queryKeys.shop.themeMenu(shopCode),
     });
-    setIsInitialized(false);
     await refetch();
     toast(t('메뉴 화면 설정을 저장했습니다.'));
   };

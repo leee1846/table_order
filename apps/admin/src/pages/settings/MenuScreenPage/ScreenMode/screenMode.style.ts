@@ -15,15 +15,14 @@ export const Container = styled.div`
 
 export const Modes = styled.div`
   display: flex;
-  align-items: center;
-  gap: 20px;
+  align-items: start;
+  justify-content: start;
+  gap: 24px;
 
   & > button {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
     cursor: pointer;
     background: none;
     border: none;
@@ -32,7 +31,6 @@ export const Modes = styled.div`
 `;
 
 export const ModePreview = styled.div`
-  width: 100%;
   border-radius: 0.75rem;
   overflow: hidden;
 `;
