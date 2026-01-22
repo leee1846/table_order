@@ -144,7 +144,7 @@ const checkSaleDay = (
 
   // saleDayOfWeek가 null이거나 빈 배열이면 매일 판매
   if (!saleDayOfWeek || saleDayOfWeek.length === 0) {
-    return true;
+    return false;
   }
 
   const currentDayOfWeek = getCurrentDayOfWeek(currentTime);
