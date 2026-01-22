@@ -37,7 +37,11 @@ const MiscellaneousPage = lazy(() =>
     default: module.MiscellaneousPage,
   }))
 );
-
+const PaymentsCardsPage = lazy(() =>
+  import('@/pages/settings/PaymentsCardsPage').then((module) => ({
+    default: module.PaymentsCardsPage,
+  }))
+);
 const TableDetailPage = lazy(() =>
   import('@/pages/TableDetailPage').then((module) => ({
     default: module.TableDetailPage,
@@ -145,6 +149,14 @@ export const router = createBrowserRouter([
                     element: (
                       <Suspense fallback={<FullscreenLoadingSpinner />}>
                         <MiscellaneousPage />
+                      </Suspense>
+                    ),
+                  },
+                  {
+                    path: ROUTES.SETTINGS.PAYMENTS_CARDS.path,
+                    element: (
+                      <Suspense fallback={<FullscreenLoadingSpinner />}>
+                        <PaymentsCardsPage />
                       </Suspense>
                     ),
                   },

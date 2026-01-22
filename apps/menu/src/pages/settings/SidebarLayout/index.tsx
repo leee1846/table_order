@@ -34,7 +34,7 @@ export const SidebarLayout = () => {
   return (
     <SettingsSidebar
       useTranslation={useAdminTranslation}
-      menus={getSidebarMenus(t)}
+      menus={getSidebarMenus(t, deviceData?.deviceType)}
       logoElement={
         <button type="button" onClick={onClickLogo} style={{ width: '100%' }}>
           <img

@@ -26,5 +26,9 @@ export const ROUTES = {
       path: 'misc',
       generate: () => '/settings/misc',
     },
+    PAYMENTS_CARDS: {
+      path: 'payments/cards',
+      generate: () => '/settings/payments/cards',
+    },
   },
 } as const;
