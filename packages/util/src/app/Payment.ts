@@ -28,6 +28,8 @@ export interface IPaymentCancelOptions {
   orgApprNum: string;
   /** 원승인일자 YYMMDD 형식 (필수) */
   orgApprDate: string;
+  /** 원 거래번호 (필수) */
+  tranNo: string;
 }
 
 /**
@@ -118,9 +120,7 @@ interface IPaymentPlugin extends Plugin {
   /**
    * 가맹점 정보 다운로드 (네이티브 메서드)
    */
-  requestMerchantDownload(
-    params: IMerchantDownloadParams
-  ): Promise<unknown>;
+  requestMerchantDownload(params: IMerchantDownloadParams): Promise<unknown>;
   /**
    * 가맹점 정보 조회 (네이티브 메서드)
    */
@@ -217,10 +217,9 @@ export const Payment: IPayment = {
       tran_type: 'D4',
       amount: options.amount.toString(),
       approval_num: options.orgApprNum,
-      // YYMMDD 형식
-      approval_date: options.orgApprDate,
+      approval_date: options.orgApprDate, // YYMMDD 형식
       installment: '00', // 취소는 항상 일시불 처리
-      tran_no: Date.now().toString(),
+      tran_no: options.tranNo,
     });
   },
 

@@ -23,9 +23,11 @@ export const postPayment = async (
 export const postPaymentApproval = async ({
   params,
   data,
+  ignoreGlobalErrors,
 }: {
   params: IPostPaymentApprovalRequestParams;
   data: IPaymentResponse;
+  ignoreGlobalErrors?: number[];
 }): Promise<TVoidApiResponse> => {
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TVoidApiResponse>({
@@ -36,6 +38,7 @@ export const postPaymentApproval = async ({
       orderUuid: params.orderUuid,
     },
     data,
+    ignoreGlobalErrors,
   });
 
   return response.data;
