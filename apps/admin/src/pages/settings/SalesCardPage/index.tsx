@@ -16,6 +16,7 @@ import {
 import { formatCurrency } from '@repo/util/string';
 import { useGetCardApprovalHistory } from '@repo/api/queries';
 import { SALES_PAGE_SIZE } from '@/constants/keys';
+import { toast } from '@repo/feature/utils';
 
 const PAGE_SIZE = SALES_PAGE_SIZE;
 
@@ -54,7 +55,8 @@ export const SalesCardPage = () => {
     [t]
   );
 
-  const [showCalender, setShowCalender] = useState<boolean>(false);
+  const [showStartCalender, setShowStartCalender] = useState<boolean>(false);
+  const [showEndCalender, setShowEndCalender] = useState<boolean>(false);
   const [selectedPreset, setSelectedPreset] = useState<TDateRangePreset | null>(
     'today'
   );
@@ -95,9 +97,22 @@ export const SalesCardPage = () => {
   const totalSalesAmount = cardApprovalData?.totalSalesAmount ?? 0;
   const totalCount = cardApprovalData?.totalCount ?? 0;
 
-  const onSelectDate = (startDate: string, endDate: string) => {
-    setStartDate(startDate);
-    setEndDate(endDate);
+  const onSelectStartDate = (date: string) => {
+    if (new Date(date) > new Date(endDate)) {
+      toast(t('시작 날짜는 종료 날짜보다 늦을 수 없습니다.'));
+      return;
+    }
+    setStartDate(date);
+    setSelectedPreset(null);
+    setCurrentPage(1);
+  };
+
+  const onSelectEndDate = (date: string) => {
+    if (new Date(date) < new Date(startDate)) {
+      toast(t('종료 날짜는 시작 날짜보다 이를 수 없습니다.'));
+      return;
+    }
+    setEndDate(date);
     setSelectedPreset(null);
     setCurrentPage(1);
   };
@@ -152,7 +167,7 @@ export const SalesCardPage = () => {
               <S.DateRange>
                 <S.DateButton
                   type="button"
-                  onClick={() => setShowCalender(true)}
+                  onClick={() => setShowStartCalender(true)}
                 >
                   <CalendarMonthIcon
                     width={25}
@@ -166,7 +181,7 @@ export const SalesCardPage = () => {
 
                 <S.DateButton
                   type="button"
-                  onClick={() => setShowCalender(true)}
+                  onClick={() => setShowEndCalender(true)}
                 >
                   <CalendarMonthIcon
                     width={25}
@@ -209,13 +224,26 @@ export const SalesCardPage = () => {
         </UIStyles.setting.Footer>
       </UIStyles.setting.TablePageContainer>
 
-      {showCalender && (
+      {showStartCalender && (
         <Calender
-          type="range"
-          onClose={() => setShowCalender(false)}
+          type="single"
+          onClose={() => setShowStartCalender(false)}
           startDate={startDate}
+          endDate={startDate}
+          onSelectDate={(date) => onSelectStartDate(date)}
+          beforeYears={1}
+          afterYears={1}
+          i18nInstance={adminI18n}
+        />
+      )}
+
+      {showEndCalender && (
+        <Calender
+          type="single"
+          onClose={() => setShowEndCalender(false)}
+          startDate={endDate}
           endDate={endDate}
-          onSelectDate={onSelectDate}
+          onSelectDate={(date) => onSelectEndDate(date)}
           beforeYears={1}
           afterYears={1}
           i18nInstance={adminI18n}

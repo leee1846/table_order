@@ -18,12 +18,13 @@ export const BestMenu = styled.div`
   background-color: ${theme.colors.grey[100]};
   border-radius: 1rem;
 
-  & > img {
+  > div:first-of-type {
+    text-align: right;
     position: absolute;
-    top: 0;
     right: 24px;
-    width: 52px;
-    height: 35px;
+    top: 0;
+    & > img {
+    }
   }
 `;
 

@@ -6,8 +6,6 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 16px;
-  padding-bottom: 30px;
 `;
 
 export const Header = styled.div`

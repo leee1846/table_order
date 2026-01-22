@@ -55,9 +55,7 @@ export const SalesSummaryPage = () => {
       </S.Title>
       <S.List>
         <S.Item>
-          <S.SubTitle>
-            {t('매출(결제완료)')}
-          </S.SubTitle>
+          <S.SubTitle>{t('매출(결제완료)')}</S.SubTitle>
           <S.Price>
             {formatCurrency(paidSales)}
             <span>{t('원')}</span>
@@ -70,18 +68,14 @@ export const SalesSummaryPage = () => {
           </S.Description>
         </S.Item>
         <S.Item>
-          <S.SubTitle>
-            {t('매출(결제 전)')}
-          </S.SubTitle>
+          <S.SubTitle>{t('매출(결제 전)')}</S.SubTitle>
           <S.Price>
             {formatCurrency(unpaidSales)}
             <span>{t('원')}</span>
           </S.Price>
         </S.Item>
         <S.Item>
-          <S.SubTitle>
-            {t('테이블 수(결제완료)')}
-          </S.SubTitle>
+          <S.SubTitle>{t('테이블 수(결제완료)')}</S.SubTitle>
           <S.Price>
             {formatCurrency(paidTableCount)}
             <span>{t('개')}</span>

@@ -1,18 +1,10 @@
 'use client';
 
-import {
-  FullBatteryIcon,
-  HalfBatteryIcon,
-  LowBatteryIcon,
-} from '@repo/ui/icons';
 import * as S from './tableCard.styles';
-import { theme } from '@repo/ui';
 import { formatCurrency } from '@repo/util/string';
 import type { i18n as I18nInstance } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { TableWithStatus } from '../TablesPageContainer';
-
-const { colors } = theme;
 
 interface Props {
   id: number;

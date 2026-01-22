@@ -8,6 +8,7 @@ import {
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
+import { toast } from '@repo/feature/utils';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { getDateRangeByPreset, toYYYYMMDDRange } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
@@ -23,7 +24,8 @@ export const MenuSalesHistoryPage = () => {
   const [startDate, setStartDate] = useState<string>(defaultRange.startDate);
   const [endDate, setEndDate] = useState<string>(defaultRange.endDate);
   const [appliedRange, setAppliedRange] = useState(defaultRange);
-  const [showCalendar, setShowCalendar] = useState<boolean>(false);
+  const [showStartCalendar, setShowStartCalendar] = useState<boolean>(false);
+  const [showEndCalendar, setShowEndCalendar] = useState<boolean>(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<string | null>(null);
 
@@ -123,14 +125,34 @@ export const MenuSalesHistoryPage = () => {
     return items;
   }, [historyItems, selectedCategories, sortBy]);
 
-  const handleSelectDate = (start: string, end: string) => {
-    setStartDate(start);
-    setEndDate(end);
-    setShowCalendar(false);
+  const handleSelectStartDate = (date: string) => {
+    if (endDate && new Date(date) > new Date(endDate)) {
+      toast(t('시작 날짜는 종료 날짜보다 이후일 수 없습니다.'));
+      return;
+    }
+    setStartDate(date);
+    setShowStartCalendar(false);
+  };
+
+  const handleSelectEndDate = (date: string) => {
+    if (startDate && new Date(date) < new Date(startDate)) {
+      toast(t('종료 날짜는 시작 날짜보다 이전일 수 없습니다.'));
+      return;
+    }
+    setEndDate(date);
+    setShowEndCalendar(false);
   };
 
   const handleSearch = () => {
-    if (!startDate || !endDate) return;
+    if (!startDate || !endDate) {
+      return;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+      toast(t('시작 날짜는 종료 날짜보다 이후일 수 없습니다.'));
+      return;
+    }
+
     setAppliedRange({ startDate, endDate });
   };
 
@@ -151,7 +173,9 @@ export const MenuSalesHistoryPage = () => {
   };
 
   const formatCalendarText = (date: string) => {
-    if (!date) return t('날짜 선택');
+    if (!date) {
+      return t('날짜 선택');
+    }
     const dateObj = new Date(date);
     const year = dateObj.getFullYear();
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -201,7 +225,10 @@ export const MenuSalesHistoryPage = () => {
               </BasicButton> */}
             </S.Actions>
             <S.DateRange>
-              <S.DateButton type="button" onClick={() => setShowCalendar(true)}>
+              <S.DateButton
+                type="button"
+                onClick={() => setShowStartCalendar(true)}
+              >
                 <CalendarMonthIcon
                   width={25}
                   height={25}
@@ -212,7 +239,10 @@ export const MenuSalesHistoryPage = () => {
 
               <S.RangeDivider>~</S.RangeDivider>
 
-              <S.DateButton type="button" onClick={() => setShowCalendar(true)}>
+              <S.DateButton
+                type="button"
+                onClick={() => setShowEndCalendar(true)}
+              >
                 <CalendarMonthIcon
                   width={25}
                   height={25}
@@ -261,13 +291,26 @@ export const MenuSalesHistoryPage = () => {
         </S.Container>
       </UIStyles.setting.TablePageContainer>
 
-      {showCalendar && (
+      {showStartCalendar && (
         <Calender
-          type="range"
-          onClose={() => setShowCalendar(false)}
+          type="single"
+          onClose={() => setShowStartCalendar(false)}
           startDate={startDate}
+          endDate={startDate}
+          onSelectDate={handleSelectStartDate}
+          beforeYears={1}
+          afterYears={1}
+          i18nInstance={adminI18n}
+        />
+      )}
+
+      {showEndCalendar && (
+        <Calender
+          type="single"
+          onClose={() => setShowEndCalendar(false)}
+          startDate={endDate}
           endDate={endDate}
-          onSelectDate={handleSelectDate}
+          onSelectDate={handleSelectEndDate}
           beforeYears={1}
           afterYears={1}
           i18nInstance={adminI18n}

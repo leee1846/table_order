@@ -34,10 +34,21 @@ export const DraggableCard = styled.div<{
       & > div,
       & > div:active {
         background: ${colors.secondary[400]};
+        color: ${colors.white};
+
+        & h1,
+        & span,
+        & div {
+          color: ${colors.white} !important;
+        }
       }
     `}
 
-  ${({ isOverTarget }) => isOverTarget && css``}
+  ${({ isOverTarget }) =>
+    isOverTarget &&
+    css`
+      color: ${colors.white} !important;
+    `}
 
   ${({ isActive }) =>
     isActive &&
@@ -45,7 +56,13 @@ export const DraggableCard = styled.div<{
       & > div,
       & > div:active {
         background: ${colors.secondary[400]};
+        color: ${colors.white};
+
+        & h1,
+        & span,
+        & div {
+          color: ${colors.white} !important;
+        }
       }
     `}
 `;
-

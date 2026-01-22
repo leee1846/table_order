@@ -10,6 +10,7 @@ import {
   toYYYYMMDDRange,
   type TDateRangePreset,
 } from '@repo/util/date';
+import { toast } from '@repo/feature/utils';
 import { useAuth } from '@/hooks/useAuth';
 import * as S from '@/pages/settings/SalesMenuPage/salesMenuPage.style';
 import { Summary } from '@/pages/settings/SalesMenuPage/Summary';
@@ -36,7 +37,8 @@ export const SalesMenuPage = () => {
   const [selectedPreset, setSelectedPreset] = useState<TDateRangePreset | null>(
     'today'
   );
-  const [showCalendar, setShowCalendar] = useState<boolean>(false);
+  const [showStartCalendar, setShowStartCalendar] = useState<boolean>(false);
+  const [showEndCalendar, setShowEndCalendar] = useState<boolean>(false);
 
   const { startDate: apiStartDate, endDate: apiEndDate } = useMemo(
     () => toYYYYMMDDRange({ startDate, endDate }),
@@ -57,11 +59,24 @@ export const SalesMenuPage = () => {
   const menuSalesSummary = menuSalesSummaryResponse?.data;
   const menuSalesList = menuSalesSummary?.menuSalesList ?? [];
 
-  const handleSelectDate = (start: string, end: string) => {
-    setStartDate(start);
-    setEndDate(end);
+  const handleSelectStartDate = (date: string) => {
+    if (new Date(date) > new Date(endDate)) {
+      toast(t('시작 날짜는 종료 날짜보다 늦을 수 없습니다.'));
+      return;
+    }
+    setStartDate(date);
     setSelectedPreset(null);
-    setShowCalendar(false);
+    setShowStartCalendar(false);
+  };
+
+  const handleSelectEndDate = (date: string) => {
+    if (new Date(date) < new Date(startDate)) {
+      toast(t('종료 날짜는 시작 날짜보다 이를 수 없습니다.'));
+      return;
+    }
+    setEndDate(date);
+    setSelectedPreset(null);
+    setShowEndCalendar(false);
   };
 
   const handlePresetChange = (value: string | number) => {
@@ -74,7 +89,9 @@ export const SalesMenuPage = () => {
   };
 
   const formatCalendarText = (date: string) => {
-    if (!date) return t('날짜 선택');
+    if (!date) {
+      return t('날짜 선택');
+    }
     const dateObj = new Date(date);
     const year = dateObj.getFullYear();
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -95,7 +112,10 @@ export const SalesMenuPage = () => {
 
           <S.Filters>
             <S.DateRange>
-              <S.DateButton type="button" onClick={() => setShowCalendar(true)}>
+              <S.DateButton
+                type="button"
+                onClick={() => setShowStartCalendar(true)}
+              >
                 <CalendarMonthIcon
                   width={25}
                   height={25}
@@ -106,7 +126,10 @@ export const SalesMenuPage = () => {
 
               <S.RangeDivider>~</S.RangeDivider>
 
-              <S.DateButton type="button" onClick={() => setShowCalendar(true)}>
+              <S.DateButton
+                type="button"
+                onClick={() => setShowEndCalendar(true)}
+              >
                 <CalendarMonthIcon
                   width={25}
                   height={25}
@@ -131,13 +154,26 @@ export const SalesMenuPage = () => {
         </S.Container>
       </UIStyles.setting.TablePageContainer>
 
-      {showCalendar && (
+      {showStartCalendar && (
         <Calender
-          type="range"
-          onClose={() => setShowCalendar(false)}
+          type="single"
+          onClose={() => setShowStartCalendar(false)}
           startDate={startDate}
+          endDate={startDate}
+          onSelectDate={handleSelectStartDate}
+          beforeYears={1}
+          afterYears={1}
+          i18nInstance={adminI18n}
+        />
+      )}
+
+      {showEndCalendar && (
+        <Calender
+          type="single"
+          onClose={() => setShowEndCalendar(false)}
+          startDate={endDate}
           endDate={endDate}
-          onSelectDate={handleSelectDate}
+          onSelectDate={handleSelectEndDate}
           beforeYears={1}
           afterYears={1}
           i18nInstance={adminI18n}

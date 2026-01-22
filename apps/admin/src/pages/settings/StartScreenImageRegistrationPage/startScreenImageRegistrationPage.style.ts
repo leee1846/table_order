@@ -32,4 +32,3 @@ export const Title = styled.div`
     color: ${theme.colors.grey[600]};
   }
 `;
-

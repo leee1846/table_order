@@ -43,7 +43,9 @@ export const Summary = ({ summary }: Props) => {
   return (
     <S.Container>
       <S.BestMenu>
-        <img src={bestOnIcon} alt={t('베스트')} />
+        <div>
+          <img src={bestOnIcon} alt={t('베스트')} />
+        </div>
         <S.BestMenuTitle>{t('판매 1위 메뉴')}</S.BestMenuTitle>
         <S.BestMenuInfo>
           <p>{bestMenu?.menuName ?? t('데이터가 없습니다.')}</p>
