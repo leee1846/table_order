@@ -12,6 +12,7 @@ export interface IDeviceBase {
   ipAddress: string;
   version: string;
   buildNumber: string;
+  tableName: string | null;
 }
 
 export interface IDevice extends IDeviceBase {

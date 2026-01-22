@@ -6,7 +6,7 @@ import { useGetDeviceList, usePostDeviceControl } from '@repo/api/queries';
 import type {
   IDeviceControlItem,
   TDeviceControlType,
-  TDeviceType,
+  IGetDeviceListItem,
 } from '@repo/api/types';
 import { toast } from '@repo/feature/utils';
 import { getDeviceTypeLabel } from '@repo/util/constants';
@@ -15,18 +15,6 @@ import * as S from './deviceListDialog.style';
 
 const { colors } = theme;
 
-export type DeviceItem = {
-  androidId: string | null;
-  id: string;
-  table: string;
-  battery: number | null;
-  wifiSignal: string | number | null;
-  ip: string;
-  version: string;
-  buildNumber: string;
-  deviceType: TDeviceType;
-};
-
 export type DeviceListDialogProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -34,7 +22,7 @@ export type DeviceListDialogProps = {
 };
 
 const formatWifiSignal = (
-  signal: DeviceItem['wifiSignal'],
+  signal: IGetDeviceListItem['wifiSignal'],
   t: (key: string) => string
 ) => {
   if (signal === null || signal === undefined || signal === '') {
@@ -104,32 +92,32 @@ export const DeviceListDialog = ({
   const { mutateAsync: postDeviceControl, isPending: isDeviceControlLoading } =
     usePostDeviceControl();
 
-  const deviceItems = useMemo<DeviceItem[]>(() => {
+  const deviceItems = useMemo<IGetDeviceListItem[]>(() => {
     const deviceList = deviceListResponse?.data;
 
     if (!deviceList || !Array.isArray(deviceList)) {
       return [];
     }
-    const items = deviceList.map((device, index) => ({
+    const items = deviceList.map((device) => ({
       androidId: device.androidId ?? null,
       deviceType: device.deviceType,
-      id:
-        device.androidId ??
-        (device.deviceSeq !== undefined && device.deviceSeq !== null
-          ? String(device.deviceSeq)
-          : `device-${index}`),
-      table: device.tableNumber ?? '-',
+      tableNumber: device.tableNumber ?? '-',
       battery: device.battery ?? null,
       wifiSignal: device.wifiSignal ?? null,
-      ip: device.ipAddress ?? '-',
+      ipAddress: device.ipAddress ?? '-',
       version: device.version ?? '-',
       buildNumber: device.buildNumber ?? '-',
+      tableName: device.tableName ?? '-',
+      updateDate: device.updateDate ?? '-',
+      deviceSeq: device.deviceSeq ?? null,
+      shopSeq: device.shopSeq ?? null,
+      orderPosNumber: device.orderPosNumber ?? null,
     }));
 
     // 테이블 번호로 정렬
     return items.sort((a, b) => {
-      const tableA = a.table;
-      const tableB = b.table;
+      const tableA = a.tableNumber;
+      const tableB = b.tableNumber;
 
       // '-'는 맨 뒤로
       if (tableA === '-' && tableB !== '-') {
@@ -170,8 +158,8 @@ export const DeviceListDialog = ({
     });
   };
 
-  const getTargetDevices = (targetId?: string) => {
-    const targetDeviceId = targetId ?? selectedDevice;
+  const getTargetDevices = (targetAndroidId?: string) => {
+    const targetDeviceId = targetAndroidId ?? selectedDevice;
     if (!targetDeviceId) {
       return {
         validDevices: [],
@@ -181,7 +169,7 @@ export const DeviceListDialog = ({
     }
 
     const targetDevice = deviceItems.find(
-      (device) => device.id === targetDeviceId
+      (device) => device.androidId === targetDeviceId
     );
     if (!targetDevice) {
       return {
@@ -206,7 +194,7 @@ export const DeviceListDialog = ({
   // 기기 제어 요청
   const handleDeviceControl = async (
     controlType: TDeviceControlType,
-    targetId?: string
+    targetAndroidId?: string
   ) => {
     if (isDeviceControlLoading) {
       return;
@@ -218,7 +206,7 @@ export const DeviceListDialog = ({
     }
 
     const { validDevices, hasInvalidSelection, hasSelection } =
-      getTargetDevices(targetId);
+      getTargetDevices(targetAndroidId);
 
     if (!hasSelection || validDevices.length === 0) {
       toast(
@@ -301,60 +289,66 @@ export const DeviceListDialog = ({
               <S.EmptyState>{t('표시할 기기가 없어요.')}</S.EmptyState>
             ) : (
               <S.DeviceGrid>
-                {deviceItems.map((device) => {
-                  const isSelected = selectedDevice === device.id;
-                  const numericSignal =
-                    device.wifiSignal != null ? Number(device.wifiSignal) : 0;
-                  const wifiTone: 4 | 3 | 2 | 1 | 0 =
-                    numericSignal >= 0 &&
-                    numericSignal <= 4 &&
-                    Number.isInteger(numericSignal)
-                      ? (numericSignal as 4 | 3 | 2 | 1 | 0)
-                      : 0;
+                {deviceItems
+                  .filter((device) => device.deviceType !== 'POS_APP')
+                  .map((device) => {
+                    const isSelected = selectedDevice === device.androidId;
+                    const numericSignal =
+                      device.wifiSignal != null ? Number(device.wifiSignal) : 0;
+                    const wifiTone: 4 | 3 | 2 | 1 | 0 =
+                      numericSignal >= 0 &&
+                      numericSignal <= 4 &&
+                      Number.isInteger(numericSignal)
+                        ? (numericSignal as 4 | 3 | 2 | 1 | 0)
+                        : 0;
 
-                  return (
-                    <S.DeviceCard
-                      key={device.id}
-                      onClick={() => handleSelectDevice(device.id)}
-                      selected={isSelected}
-                    >
-                      <S.CardHeader>
-                        <S.DeviceTitle>
-                          {t(getDeviceTypeLabel(device.deviceType))}
-                        </S.DeviceTitle>
-                        <S.DeviceCode>{device.id}</S.DeviceCode>
-                      </S.CardHeader>
+                    return (
+                      <S.DeviceCard
+                        key={device.androidId}
+                        onClick={() => handleSelectDevice(device.androidId)}
+                        selected={isSelected}
+                      >
+                        <S.CardHeader>
+                          <S.DeviceTitle>
+                            {device.tableName ?? '-'}
+                          </S.DeviceTitle>
+                          <S.DeviceCode>
+                            {t(getDeviceTypeLabel(device.deviceType))}
+                          </S.DeviceCode>
+                        </S.CardHeader>
 
-                      <S.CardSectionWrapper>
-                        <S.CardSection>
-                          <S.SectionLabel>{t('와이파이 신호')}</S.SectionLabel>
-                          <S.SectionValue tone={wifiTone}>
-                            {formatWifiSignal(device.wifiSignal, t)}
-                          </S.SectionValue>
-                        </S.CardSection>
+                        <S.CardSectionWrapper>
+                          <S.CardSection>
+                            <S.SectionLabel>
+                              {t('와이파이 신호')}
+                            </S.SectionLabel>
+                            <S.SectionValue tone={wifiTone}>
+                              {formatWifiSignal(device.wifiSignal, t)}
+                            </S.SectionValue>
+                          </S.CardSection>
 
-                        <S.CardSection>
-                          <S.SectionLabel>{t('기기 버전')}</S.SectionLabel>
-                          <S.SectionValue>
-                            {device.version ? `v.${device.version}` : '-'}
-                          </S.SectionValue>
-                        </S.CardSection>
-                      </S.CardSectionWrapper>
-                      <S.CardFooter>
-                        <S.FooterItem>
-                          <S.FooterLabel>{t('IP주소')}</S.FooterLabel>
-                          <S.FooterValue>{device.ip}</S.FooterValue>
-                        </S.FooterItem>
-                        <S.FooterItem>
-                          <S.FooterLabel>{t('빌드 번호')}</S.FooterLabel>
-                          <S.FooterValue>
-                            {device.buildNumber || '-'}
-                          </S.FooterValue>
-                        </S.FooterItem>
-                      </S.CardFooter>
-                    </S.DeviceCard>
-                  );
-                })}
+                          <S.CardSection>
+                            <S.SectionLabel>{t('기기 버전')}</S.SectionLabel>
+                            <S.SectionValue>
+                              {device.version ? `v.${device.version}` : '-'}
+                            </S.SectionValue>
+                          </S.CardSection>
+                        </S.CardSectionWrapper>
+                        <S.CardFooter>
+                          <S.FooterItem>
+                            <S.FooterLabel>{t('IP주소')}</S.FooterLabel>
+                            <S.FooterValue>{device.ipAddress}</S.FooterValue>
+                          </S.FooterItem>
+                          <S.FooterItem>
+                            <S.FooterLabel>{t('빌드 번호')}</S.FooterLabel>
+                            <S.FooterValue>
+                              {device.buildNumber || '-'}
+                            </S.FooterValue>
+                          </S.FooterItem>
+                        </S.CardFooter>
+                      </S.DeviceCard>
+                    );
+                  })}
               </S.DeviceGrid>
             )}
           </S.DeviceGridWrapper>
