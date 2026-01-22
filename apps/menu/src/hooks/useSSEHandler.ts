@@ -12,7 +12,7 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
-import { SystemControl, Updater } from '@repo/util/app';
+import { SystemControl, Installer } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -546,7 +546,7 @@ export const useSSEHandler = () => {
       case 'DEVICE_APP_UPDATE':
         // 앱 업데이트 제어
         handlersRef.current.handleDeviceControlMessage(() => {
-          Updater.startUpdate(import.meta.env.VITE_APP_UPDATE_URL);
+          Installer.startUpdate(import.meta.env.VITE_APP_UPDATE_URL);
         }, sseMessage);
         break;
 
