@@ -1,6 +1,6 @@
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Detail/detail.style';
-import { Dropdown, ToggleButton } from '@repo/ui/components';
+import { ToggleButton } from '@repo/ui/components';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useGetLatestAppVersion } from '@repo/api/queries';
@@ -32,7 +32,8 @@ export const Detail = ({
           </p>
           <div />
           <p>
-            {t('최신 버전')} <span>{latestVersionData?.data?.version ?? '-'}</span>
+            {t('최신 버전')}{' '}
+            <span>{latestVersionData?.data?.version ?? '-'}</span>
           </p>
         </S.Versions>
       </UIStyles.setting.Header>

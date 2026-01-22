@@ -4,9 +4,11 @@ import { BasicButton } from '@repo/ui/components';
 import { SettingsIcon } from '@repo/ui/icons';
 import { toast } from '@repo/feature/utils';
 import { usePostDeviceDetail } from '@repo/api/queries';
+import type { IPostDeviceDetailRequest, TDeviceType } from '@repo/api/types';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
+import { getDeviceInfo } from '@/utils/deviceInfo';
 import { Account } from '@/pages/settings/MiscellaneousPage/Account';
 import { Detail } from '@/pages/settings/MiscellaneousPage/Detail';
 import { Payment } from '@/pages/settings/MiscellaneousPage/Payment';
@@ -21,7 +23,7 @@ const TOAST_OPTIONS = {
 export const MiscellaneousPage = () => {
   const { t } = useAdminTranslation();
 
-  const { data: deviceData, refresh: refreshDeviceData } = useDeviceData();
+  const { data: deviceData } = useDeviceData();
   const { shopData } = useShopData({ skipInitialRequest: true });
   const { mutateAsync: saveDeviceDetail } = usePostDeviceDetail();
 
@@ -60,24 +62,27 @@ export const MiscellaneousPage = () => {
       return;
     }
 
+    // 🔒 최신 디바이스 정보 가져오기
+    const freshDeviceInfo = await getDeviceInfo({ t });
+
     const baseDeviceDetail = {
       shopCode: shopData?.shopCode ?? '',
-      androidId: deviceData?.androidId ?? '',
+      androidId: freshDeviceInfo.androidId,
       battery: deviceData?.battery ?? 0,
       wifiSignal: deviceData?.wifiSignal ?? '',
-      ipAddress: deviceData?.ipAddress ?? '',
-      version: deviceData?.version ?? '',
-      buildNumber: deviceData?.buildNumber ?? '',
+      ipAddress: freshDeviceInfo.ipAddress,
+      version: freshDeviceInfo.appInfo.version,
+      buildNumber: freshDeviceInfo.appInfo.build,
     };
 
-    await saveDeviceDetail({
+    const deviceDetail: IPostDeviceDetailRequest = {
       ...baseDeviceDetail,
-      deviceType: isOrderPosMode ? 'ORDER_POS' : 'MENU',
+      deviceType: (isOrderPosMode ? 'ORDER_POS' : 'MENU') as TDeviceType,
       tableNumber: isOrderPosMode ? null : (deviceData?.tableNumber ?? ''),
       orderPosNumber: isOrderPosMode ? orderPosNumber : null,
-    });
+    };
 
-    await refreshDeviceData();
+    await saveDeviceDetail(deviceDetail);
     showToast('설정이 저장되었습니다.');
   };
 

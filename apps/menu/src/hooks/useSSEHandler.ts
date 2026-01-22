@@ -115,12 +115,14 @@ export const useSSEHandler = () => {
       await setDataAsync(baseDeviceDetail);
 
       // 서버에 디바이스 정보 동기화 (기본값 설정 포함)
+      const deviceType = baseDeviceDetail.deviceType ?? 'MENU';
       await postDeviceDetail({
         shopCode: currentShopData.shopCode,
         ...baseDeviceDetail,
-        deviceType: baseDeviceDetail.deviceType ?? 'MENU',
-        orderPosNumber: baseDeviceDetail.orderPosNumber ?? null,
-        tableNumber: baseDeviceDetail.tableNumber ?? null,
+        deviceType,
+        // deviceType에 따라 올바른 필드만 설정
+        orderPosNumber: deviceType === 'ORDER_POS' ? (baseDeviceDetail.orderPosNumber ?? null) : null,
+        tableNumber: deviceType === 'ORDER_POS' ? null : (baseDeviceDetail.tableNumber ?? null),
         battery: baseDeviceDetail.battery ?? 0,
         wifiSignal: baseDeviceDetail.wifiSignal ?? '',
       });

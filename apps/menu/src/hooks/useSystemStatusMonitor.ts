@@ -137,18 +137,20 @@ export const useSystemStatusMonitor = () => {
             currentDeviceData?.wifiSignal
           ) {
             // 서버에 디바이스 정보 동기화 (새로운 값이 있으면 사용, 없으면 기존 값 사용)
+            const deviceType = currentDeviceData.deviceType ?? 'MENU';
             await postDeviceDetail({
               shopCode: currentShopData.shopCode,
               androidId: currentDeviceData.androidId,
               ipAddress: currentDeviceData.ipAddress,
-              deviceType: currentDeviceData.deviceType ?? 'MENU',
+              deviceType,
               wifiSignal:
                 newWifi !== null && newWifi !== undefined
                   ? String(newWifi)
                   : (currentDeviceData?.wifiSignal ?? null),
-              tableNumber,
+              // deviceType에 따라 올바른 필드만 설정
+              tableNumber: deviceType === 'ORDER_POS' ? null : tableNumber,
               battery: newBattery ?? currentDeviceData.battery ?? 0,
-              orderPosNumber: currentDeviceData.orderPosNumber ?? null,
+              orderPosNumber: deviceType === 'ORDER_POS' ? (currentDeviceData.orderPosNumber ?? null) : null,
               // TODO: 아래 2개의 data도 app에서 값을 가져와야함.
               version: currentDeviceData.version ?? '',
               buildNumber: currentDeviceData.buildNumber ?? '',
