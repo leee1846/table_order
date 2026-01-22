@@ -60,24 +60,22 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
             </S.SID>
           </S.Content>
 
-          {payload && payload.role === 'SHOP' && (
-            <div>
-              {!CapacitorApp.isNative() && (
-                <BasicButton
-                  variant="Outline_Grey_M"
-                  onClick={() => navigate(ROUTES.SETTINGS.MYPAGE.generate())}
-                  customStyle={css`
-                    margin-right: 12px;
-                  `}
-                >
-                  {t('내 정보')}
-                </BasicButton>
-              )}
-              <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
-                {t('로그아웃')}
+          <div>
+            {payload && payload.role === 'SHOP' && !CapacitorApp.isNative() && (
+              <BasicButton
+                variant="Outline_Grey_M"
+                onClick={() => navigate(ROUTES.SETTINGS.MYPAGE.generate())}
+                customStyle={css`
+                  margin-right: 12px;
+                `}
+              >
+                {t('내 정보')}
               </BasicButton>
-            </div>
-          )}
+            )}
+            <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
+              {t('로그아웃')}
+            </BasicButton>
+          </div>
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>
