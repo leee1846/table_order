@@ -58,7 +58,7 @@ export const GuestCountDialog = ({
   }
 
   // 성인만 사용: 성인이 0이면 비활성화
-  const isButtonDisabled = useKidsCustomerCount && customerCount === 0;
+  const isButtonDisabled = customerCount === 0;
 
   /** 확인 버튼 핸들러 - 입력값 전달 */
   const handleConfirm = () => {
@@ -146,6 +146,7 @@ export const GuestCountDialog = ({
               variant="Solid_Navy_2XL"
               onClick={handleConfirm}
               fullWidth
+              disabled={isButtonDisabled}
             >
               {t('완료')}
             </BasicButton>
