@@ -20,6 +20,7 @@ interface Props {
   isPosLinked: boolean;
   onEditCategory: (category: ICategory) => void;
   onOpenTableAssign: (category: ICategory) => void;
+  isDragging?: boolean;
 }
 
 export const Category = ({
@@ -27,6 +28,7 @@ export const Category = ({
   isPosLinked,
   onEditCategory,
   onOpenTableAssign,
+  isDragging = false,
 }: Props) => {
   const { t, i18n } = useAdminTranslation();
 
@@ -154,7 +156,7 @@ export const Category = ({
   );
 
   return (
-    <S.Container>
+    <S.Container isDragging={isDragging}>
       <S.Header>
         <div>
           <span>{displayCategoryName}</span>

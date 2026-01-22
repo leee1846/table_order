@@ -76,12 +76,13 @@ export const Categories = ({
       items={displayCategories ?? []}
       onReorder={handleReorder}
       getId={(category) => category.categorySeq}
-      renderItem={(category) => (
+      renderItem={(category, isDragging) => (
         <Category
           category={category}
           isPosLinked={isPosLinked}
           onEditCategory={onEditCategory}
           onOpenTableAssign={onOpenTableAssign}
+          isDragging={isDragging}
         />
       )}
     />

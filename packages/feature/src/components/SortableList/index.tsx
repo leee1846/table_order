@@ -26,7 +26,7 @@ export interface SortableListProps<T> {
   /** 순서가 변경되었을 때 호출되는 콜백 함수 */
   onReorder: (newOrder: T[], draggedItemId: string | number) => void;
   /** 각 아이템을 렌더링하는 함수 */
-  renderItem: (item: T) => ReactNode;
+  renderItem: (item: T, isDragging: boolean) => ReactNode;
   /** 아이템의 고유 ID를 추출하는 함수 */
   getId: (item: T) => string | number;
 }
@@ -112,9 +112,12 @@ export function SortableList<T>({
         {/* 정렬 가능한 컨텍스트: 세로 방향 리스트 정렬 옵션 */}
         <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
           {items.map((item) => (
-            <SortableItem key={getId(item)} id={getId(item)}>
-              {renderItem(item)}
-            </SortableItem>
+            <SortableItem
+              key={getId(item)}
+              id={getId(item)}
+              renderItem={renderItem}
+              item={item}
+            />
           ))}
         </SortableContext>
       </DndContext>
@@ -125,18 +128,20 @@ export function SortableList<T>({
 /**
  * SortableItem 컴포넌트의 Props 타입
  */
-interface SortableItemProps {
+interface SortableItemProps<T> {
   /** 아이템의 고유 ID */
   id: string | number;
-  /** 아이템의 내용 */
-  children: ReactNode;
+  /** 아이템 데이터 */
+  item: T;
+  /** 각 아이템을 렌더링하는 함수 */
+  renderItem: (item: T, isDragging: boolean) => ReactNode;
 }
 
 /**
  * 드래그 가능한 개별 아이템 컴포넌트
  * useSortable 훅을 사용하여 드래그 기능을 제공합니다.
  */
-function SortableItem({ id, children }: SortableItemProps) {
+function SortableItem<T>({ id, item, renderItem }: SortableItemProps<T>) {
   const {
     attributes, // 접근성을 위한 속성
     listeners, // 드래그 이벤트 리스너
@@ -167,7 +172,7 @@ function SortableItem({ id, children }: SortableItemProps) {
       {...attributes} // 접근성 속성 적용
       {...listeners} // 드래그 이벤트 리스너 적용
     >
-      {children}
+      {renderItem(item, isDragging)}
     </S.SortableItem>
   );
 }

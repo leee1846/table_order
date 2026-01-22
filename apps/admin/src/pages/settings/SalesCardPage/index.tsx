@@ -11,6 +11,8 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import {
   getDateRangeByPreset,
   toYYYYMMDDRange,
+  isStartDateAfterEndDate,
+  isEndDateBeforeStartDate,
   type TDateRangePreset,
 } from '@repo/util/date';
 import { formatCurrency } from '@repo/util/string';
@@ -98,7 +100,7 @@ export const SalesCardPage = () => {
   const totalCount = cardApprovalData?.totalCount ?? 0;
 
   const onSelectStartDate = (date: string) => {
-    if (new Date(date) > new Date(endDate)) {
+    if (isStartDateAfterEndDate(date, endDate)) {
       toast(t('시작 날짜는 종료 날짜보다 늦을 수 없습니다.'));
       return;
     }
@@ -108,7 +110,7 @@ export const SalesCardPage = () => {
   };
 
   const onSelectEndDate = (date: string) => {
-    if (new Date(date) < new Date(startDate)) {
+    if (isEndDateBeforeStartDate(date, startDate)) {
       toast(t('종료 날짜는 시작 날짜보다 이를 수 없습니다.'));
       return;
     }

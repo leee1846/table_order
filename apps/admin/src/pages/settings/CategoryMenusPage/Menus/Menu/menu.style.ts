@@ -2,12 +2,14 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 
-export const Container = styled.div`
+export const Container = styled.div<{ isDragging?: boolean }>`
   width: 100%;
   padding: 24px;
   display: flex;
   background-color: ${theme.colors.white};
   border-radius: 1rem;
+  opacity: ${({ isDragging }) => (isDragging ? 0.6 : 1)};
+  transition: opacity 0.2s ease;
 `;
 
 export const InfoContainer = styled.div`

@@ -16,7 +16,7 @@ export const Container = styled.div`
 export const ImageSection = styled.button`
   position: relative;
   width: 100%;
-  height: 190px;
+  height: 200px;
   border-radius: 1rem;
   background-color: ${theme.colors.primary[100]};
   display: flex;
@@ -39,7 +39,7 @@ export const ImageSection = styled.button`
 `;
 
 export const ImagePreview = styled.img`
-  width: 100%;
+  width: 200px;
   height: 100%;
   object-fit: contain;
   background-color: ${theme.colors.primary[100]};

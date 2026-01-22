@@ -77,11 +77,12 @@ export const Menus = ({ menus, onClickEditMenu, isPosLinked }: MenusProps) => {
       items={displayMenus ?? []}
       onReorder={handleReorder}
       getId={(menu) => menu.menuSeq}
-      renderItem={(menu) => (
+      renderItem={(menu, isDragging) => (
         <Menu
           menu={menu}
           onEditMenu={onClickEditMenu}
           isPosLinked={isPosLinked}
+          isDragging={isDragging}
         />
       )}
     />

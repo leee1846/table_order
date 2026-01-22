@@ -5,7 +5,12 @@ import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { toast } from '@repo/feature/utils';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
-import { getDateRangeByPreset, toYYYYMMDDRange } from '@repo/util/date';
+import {
+  getDateRangeByPreset,
+  toYYYYMMDDRange,
+  isStartDateAfterEndDate,
+  isEndDateBeforeStartDate,
+} from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetHourlySales } from '@repo/api/queries';
 import { HourlySalesTable } from './Table';
@@ -45,7 +50,7 @@ export const HourlySalesPage = () => {
   const hourlySales = hourlySalesResponse?.data ?? [];
 
   const handleSelectStartDate = (date: string) => {
-    if (endDate && new Date(date) > new Date(endDate)) {
+    if (isStartDateAfterEndDate(date, endDate)) {
       toast(t('시작 날짜는 종료 날짜보다 이후일 수 없습니다.'));
       return;
     }
@@ -54,7 +59,7 @@ export const HourlySalesPage = () => {
   };
 
   const handleSelectEndDate = (date: string) => {
-    if (startDate && new Date(date) < new Date(startDate)) {
+    if (isEndDateBeforeStartDate(date, startDate)) {
       toast(t('종료 날짜는 시작 날짜보다 이전일 수 없습니다.'));
       return;
     }
@@ -67,7 +72,7 @@ export const HourlySalesPage = () => {
       return;
     }
 
-    if (new Date(startDate) > new Date(endDate)) {
+    if (isStartDateAfterEndDate(startDate, endDate)) {
       toast(t('시작 날짜는 종료 날짜보다 이후일 수 없습니다.'));
       return;
     }

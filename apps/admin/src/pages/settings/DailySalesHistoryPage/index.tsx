@@ -10,6 +10,8 @@ import {
   formatDateTime,
   getDateRangeByPreset,
   formatDateToYYYYMMDD,
+  isStartDateAfterEndDate,
+  isEndDateBeforeStartDate,
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetDailySales } from '@repo/api/queries';
@@ -98,7 +100,7 @@ export const DailySalesHistoryPage = () => {
   );
 
   const handleSelectStartDate = (date: string) => {
-    if (endDate && new Date(date) > new Date(endDate)) {
+    if (isStartDateAfterEndDate(date, endDate)) {
       toast(t('시작 날짜는 종료 날짜보다 이후일 수 없습니다.'));
       return;
     }
@@ -107,7 +109,7 @@ export const DailySalesHistoryPage = () => {
   };
 
   const handleSelectEndDate = (date: string) => {
-    if (startDate && new Date(date) < new Date(startDate)) {
+    if (isEndDateBeforeStartDate(date, startDate)) {
       toast(t('종료 날짜는 시작 날짜보다 이전일 수 없습니다.'));
       return;
     }
@@ -120,7 +122,7 @@ export const DailySalesHistoryPage = () => {
       return;
     }
 
-    if (new Date(startDate) > new Date(endDate)) {
+    if (isStartDateAfterEndDate(startDate, endDate)) {
       toast(t('시작 날짜는 종료 날짜보다 이후일 수 없습니다.'));
       return;
     }

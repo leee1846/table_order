@@ -10,7 +10,12 @@ import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { toast } from '@repo/feature/utils';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
-import { getDateRangeByPreset, toYYYYMMDDRange } from '@repo/util/date';
+import {
+  getDateRangeByPreset,
+  toYYYYMMDDRange,
+  isStartDateAfterEndDate,
+  isEndDateBeforeStartDate,
+} from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetMenuSalesHistory, useGetCategoryList } from '@repo/api/queries';
 import { MenuSalesHistoryTable } from './Table';
@@ -126,7 +131,7 @@ export const MenuSalesHistoryPage = () => {
   }, [historyItems, selectedCategories, sortBy]);
 
   const handleSelectStartDate = (date: string) => {
-    if (endDate && new Date(date) > new Date(endDate)) {
+    if (isStartDateAfterEndDate(date, endDate)) {
       toast(t('시작 날짜는 종료 날짜보다 이후일 수 없습니다.'));
       return;
     }
@@ -135,7 +140,7 @@ export const MenuSalesHistoryPage = () => {
   };
 
   const handleSelectEndDate = (date: string) => {
-    if (startDate && new Date(date) < new Date(startDate)) {
+    if (isEndDateBeforeStartDate(date, startDate)) {
       toast(t('종료 날짜는 시작 날짜보다 이전일 수 없습니다.'));
       return;
     }
@@ -148,7 +153,7 @@ export const MenuSalesHistoryPage = () => {
       return;
     }
 
-    if (new Date(startDate) > new Date(endDate)) {
+    if (isStartDateAfterEndDate(startDate, endDate)) {
       toast(t('시작 날짜는 종료 날짜보다 이후일 수 없습니다.'));
       return;
     }

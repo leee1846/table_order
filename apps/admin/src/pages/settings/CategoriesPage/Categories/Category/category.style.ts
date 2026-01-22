@@ -1,13 +1,15 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
-export const Container = styled.div`
+export const Container = styled.div<{ isDragging?: boolean }>`
   display: flex;
   flex-direction: column;
   padding: 24px 20px;
   background-color: ${theme.colors.white};
   border-radius: 1rem;
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
+  opacity: ${({ isDragging }) => (isDragging ? 0.6 : 1)};
+  transition: opacity 0.2s ease;
 `;
 
 export const Header = styled.div`
@@ -15,7 +17,6 @@ export const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
-
   & > div {
     display: flex;
     align-items: center;

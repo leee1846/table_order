@@ -24,9 +24,10 @@ interface Props {
   menu: IMenu;
   onEditMenu: (menu: IMenu) => void;
   isPosLinked: boolean;
+  isDragging?: boolean;
 }
 
-export const Menu = ({ menu, onEditMenu, isPosLinked }: Props) => {
+export const Menu = ({ menu, onEditMenu, isPosLinked, isDragging = false }: Props) => {
   const { t, i18n } = useAdminTranslation();
   const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -166,7 +167,7 @@ export const Menu = ({ menu, onEditMenu, isPosLinked }: Props) => {
 
   return (
     <>
-      <S.Container>
+      <S.Container isDragging={isDragging}>
         <S.InfoContainer>
           <S.TitleContainer>
             <S.TitleContent>

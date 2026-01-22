@@ -547,3 +547,61 @@ export const getMonthDateRange = (
   const end = dayjs(start).endOf('month').format('YYYY-MM-DD');
   return { start, end };
 };
+
+/**
+ * 선택한 시작 날짜가 종료 날짜보다 이후인지 검증합니다.
+ *
+ * @param selectedStartDate - 선택한 시작 날짜
+ * @param currentEndDate - 현재 종료 날짜
+ * @returns 시작 날짜가 종료 날짜보다 이후이면 `true`
+ *
+ * @example
+ * ```ts
+ * isStartDateAfterEndDate('2025-01-15', '2025-01-10'); // true
+ * isStartDateAfterEndDate('2025-01-10', '2025-01-15'); // false
+ * ```
+ */
+export const isStartDateAfterEndDate = (
+  selectedStartDate: string,
+  currentEndDate: string
+): boolean => {
+  if (!currentEndDate) return false;
+
+  const start = dayjs(selectedStartDate);
+  const end = dayjs(currentEndDate);
+
+  if (!start.isValid() || !end.isValid()) {
+    return false;
+  }
+
+  return start.isAfter(end, 'day');
+};
+
+/**
+ * 선택한 종료 날짜가 시작 날짜보다 이전인지 검증합니다.
+ *
+ * @param selectedEndDate - 선택한 종료 날짜
+ * @param currentStartDate - 현재 시작 날짜
+ * @returns 종료 날짜가 시작 날짜보다 이전이면 `true`
+ *
+ * @example
+ * ```ts
+ * isEndDateBeforeStartDate('2025-01-10', '2025-01-15'); // true
+ * isEndDateBeforeStartDate('2025-01-15', '2025-01-10'); // false
+ * ```
+ */
+export const isEndDateBeforeStartDate = (
+  selectedEndDate: string,
+  currentStartDate: string
+): boolean => {
+  if (!currentStartDate) return false;
+
+  const end = dayjs(selectedEndDate);
+  const start = dayjs(currentStartDate);
+
+  if (!start.isValid() || !end.isValid()) {
+    return false;
+  }
+
+  return end.isBefore(start, 'day');
+};

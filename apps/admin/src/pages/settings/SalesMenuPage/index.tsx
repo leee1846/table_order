@@ -8,6 +8,8 @@ import { useGetMenuSalesSummary } from '@repo/api/queries';
 import {
   getDateRangeByPreset,
   toYYYYMMDDRange,
+  isStartDateAfterEndDate,
+  isEndDateBeforeStartDate,
   type TDateRangePreset,
 } from '@repo/util/date';
 import { toast } from '@repo/feature/utils';
@@ -60,7 +62,7 @@ export const SalesMenuPage = () => {
   const menuSalesList = menuSalesSummary?.menuSalesList ?? [];
 
   const handleSelectStartDate = (date: string) => {
-    if (new Date(date) > new Date(endDate)) {
+    if (isStartDateAfterEndDate(date, endDate)) {
       toast(t('시작 날짜는 종료 날짜보다 늦을 수 없습니다.'));
       return;
     }
@@ -70,7 +72,7 @@ export const SalesMenuPage = () => {
   };
 
   const handleSelectEndDate = (date: string) => {
-    if (new Date(date) < new Date(startDate)) {
+    if (isEndDateBeforeStartDate(date, startDate)) {
       toast(t('종료 날짜는 시작 날짜보다 이를 수 없습니다.'));
       return;
     }
