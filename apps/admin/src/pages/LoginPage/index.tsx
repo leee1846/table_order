@@ -1,6 +1,6 @@
 import { t } from '@/config/i18n';
 import { BasicButton, Input } from '@repo/ui/components';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import * as S from '@/pages/LoginPage/loginPage.style';
 import {
   capsSmartOrderBlueGreyLogo,
@@ -8,15 +8,23 @@ import {
   VisibilityOffIcon,
 } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { usePostLogin, usePutMemberPassword } from '@repo/api/queries';
+import { usePostLogin } from '@repo/api/queries';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
-import { setAccessToken, setRefreshToken } from '@repo/api/auth';
+import {
+  setAccessToken,
+  setRefreshToken,
+  getAccessToken,
+  getRefreshToken,
+} from '@repo/api/auth';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { initializeSseConnection } from '@/utils/sseConnection';
 import { CapacitorApp } from '@repo/util/app';
 import { LoginPasswordChangeModal } from './LoginPasswordChangeModal';
+import { rawApi } from '@/config/rawApi';
+import type { IApiError } from '@repo/api/types';
+import type { AxiosError } from '@repo/api/axios';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -38,6 +46,8 @@ export const LoginPage = () => {
     useState(false);
   const [loginUserId, setLoginUserId] = useState('');
   const [loginUserPassword, setLoginUserPassword] = useState('');
+
+  const tempAccessToken = useRef<string>('');
 
   // 아이디 입력 핸들러: 실시간 유효성 검사
   const handleIdChange = (value: string) => {
@@ -63,7 +73,6 @@ export const LoginPage = () => {
 
   // 로그인 API 훅
   const { mutateAsync: login } = usePostLogin();
-  const { mutateAsync: updatePassword } = usePutMemberPassword();
 
   // 로그인 처리 함수
   const handleLogin = async () => {
@@ -99,8 +108,7 @@ export const LoginPage = () => {
     }
 
     if (response.data.isPasswordChangeRequired && !CapacitorApp.isNative()) {
-      setAccessToken(response.data.accessToken);
-      setRefreshToken(response.data.refreshToken);
+      tempAccessToken.current = response.data.accessToken;
       useAuthStore.getState().refreshTokenInfo();
       toast('비밀번호를 변경해주세요.');
       setLoginUserId(id);
@@ -121,12 +129,30 @@ export const LoginPage = () => {
 
   // 비밀번호 변경 처리
   const handlePasswordChangeSubmit = async (newPassword: string) => {
-    // 비밀번호 변경 API 호출
-    await updatePassword({
-      memberId: loginUserId,
-      memberPassword: newPassword,
-      existingMemberPassword: loginUserPassword,
-    });
+    try {
+      await rawApi({
+        method: 'PUT',
+        url: '/member/password',
+        headers: {
+          Authorization: `Bearer ${tempAccessToken.current}`,
+        },
+        data: {
+          memberId: loginUserId,
+          memberPassword: newPassword,
+          existingMemberPassword: loginUserPassword,
+        },
+      });
+    } catch (error: unknown) {
+      openConfirmDialog({
+        title: '비밀번호 변경 실패',
+        content:
+          (error as AxiosError<IApiError>).response?.data?.status
+            ?.userMessage || '비밀번호 변경 실패',
+      });
+      clearAuth();
+      setIsPasswordChangeModalOpen(false);
+      return;
+    }
 
     // 변경된 비밀번호로 재로그인
     const response = await login({
@@ -226,7 +252,6 @@ export const LoginPage = () => {
 
       <LoginPasswordChangeModal
         isOpen={isPasswordChangeModalOpen}
-        onClose={() => setIsPasswordChangeModalOpen(false)}
         onConfirm={handlePasswordChangeSubmit}
         existingPassword={loginUserPassword}
       />

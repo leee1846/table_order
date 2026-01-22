@@ -6,7 +6,6 @@ import * as S from './loginPasswordChangeModal.styles';
 
 interface Props {
   isOpen: boolean;
-  onClose: () => void;
   onConfirm: (newPassword: string) => Promise<void>;
   existingPassword: string;
 }
