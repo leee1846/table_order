@@ -29,6 +29,12 @@ const SPICE_LEVEL_ICONS: Record<number, string> = {
   3: spicyLevel3Icon,
 };
 
+const SPICE_LEVEL_LABELS: Record<(typeof SPICE_LEVELS)[number], string> = {
+  1: '약간 매움',
+  2: '매움',
+  3: '많이 매움',
+};
+
 export const BasicSetting = ({ isPosLinked, hideImageSection }: Props) => {
   const descriptionInputId = useId();
   const { formValues, updateFormValues } = useMenuForm();
@@ -93,85 +99,19 @@ export const BasicSetting = ({ isPosLinked, hideImageSection }: Props) => {
           </S.VerticalLayout>
 
           <S.VerticalLayout>
-            <S.Title>{t('뱃지 선택')}</S.Title>
-            <S.BadgeContainer gap={10}>
-              <S.BadgeButton
-                type="button"
-                onClick={() =>
-                  updateFormValues({ isBest: !(formValues.isBest ?? false) })
-                }
-              >
-                <img
-                  src={formValues.isBest ? bestOnIcon : bestOffIcon}
-                  alt={t('베스트')}
-                />
-              </S.BadgeButton>
-              <S.BadgeButton
-                type="button"
-                onClick={() =>
-                  updateFormValues({ isNew: !(formValues.isNew ?? false) })
-                }
-              >
-                <img
-                  src={formValues.isNew ? newOnIcon : newOffIcon}
-                  alt={t('신규')}
-                />
-              </S.BadgeButton>
-            </S.BadgeContainer>
-          </S.VerticalLayout>
-        </S.HorizontalLayout>
-
-        <S.HorizontalLayout>
-          <S.VerticalLayout>
             <S.PriceTitleContainer>
               <S.Title>
                 {t('가격')}
                 <span>*</span>
               </S.Title>
-              {/* <CheckButton
-                checked={formValues.isTaxFree ?? false}
-                onChange={(checked) => updateFormValues({ isTaxFree: checked })}
-                customStyle={S.TaxFreeCss}
-                disabled={true}
-              >
-                <span>{t('면세')}</span>
-              </CheckButton> */}
             </S.PriceTitleContainer>
             <Input
-              placeholder={t('가격을 입력해 주세요.')}
-              type="text"
-              inputMode="numeric"
+              placeholder="0"
               customStyle={S.inputCss}
-              value={
-                formValues.menuPrice != null
-                  ? formatCurrency(formValues.menuPrice)
-                  : ''
-              }
+              value={formatCurrency(formValues.menuPrice ?? 0)}
               onChange={handlePriceChange}
               disabled={isPosLinked}
             />
-          </S.VerticalLayout>
-
-          <S.VerticalLayout>
-            <S.Title>{t('매운맛정도')}</S.Title>
-            <S.SpiceLevelContainer>
-              <S.SpiceLevelButtons>
-                {SPICE_LEVELS.map((level) => (
-                  <S.ChiliLevelButton
-                    key={level}
-                    type="button"
-                    onClick={() => handleSpiceLevelClick(level)}
-                    selected={currentSpiceLevel >= level}
-                    aria-pressed={currentSpiceLevel >= level}
-                  >
-                    <img
-                      src={SPICE_LEVEL_ICONS[level]}
-                      alt={`매운맛 ${level}단계`}
-                    />
-                  </S.ChiliLevelButton>
-                ))}
-              </S.SpiceLevelButtons>
-            </S.SpiceLevelContainer>
           </S.VerticalLayout>
         </S.HorizontalLayout>
 
@@ -184,6 +124,62 @@ export const BasicSetting = ({ isPosLinked, hideImageSection }: Props) => {
             onChange={handleMenuDescriptionChange}
             maxLength={MAX_DESCRIPTION_LENGTH}
           />
+        </S.VerticalLayout>
+
+        <S.VerticalLayout>
+          <S.Title>{t('스티커 추가')}</S.Title>
+
+          <S.SubTitle>{t('매운맛 선택')}</S.SubTitle>
+          <S.SpiceLevelContainer>
+            <S.SpiceLevelButtons>
+              {SPICE_LEVELS.map((level) => (
+                <S.ChiliLevelButton
+                  key={level}
+                  type="button"
+                  onClick={() => handleSpiceLevelClick(level)}
+                  selected={currentSpiceLevel >= level}
+                  aria-pressed={currentSpiceLevel >= level}
+                >
+                  <img
+                    src={SPICE_LEVEL_ICONS[level]}
+                    alt={`매운맛 ${level}단계`}
+                  />
+                  <span>{`${t(`${level}단계`)} (${t(SPICE_LEVEL_LABELS[level] ?? '')})`}</span>
+                </S.ChiliLevelButton>
+              ))}
+            </S.SpiceLevelButtons>
+          </S.SpiceLevelContainer>
+
+          <S.SubTitle>{t('특별 메뉴(최대 2개)')}</S.SubTitle>
+          <S.BadgeContainer gap={10}>
+            <div>
+              <S.BadgeButton
+                type="button"
+                onClick={() =>
+                  updateFormValues({ isNew: !(formValues.isNew ?? false) })
+                }
+              >
+                <img
+                  src={formValues.isNew ? newOnIcon : newOffIcon}
+                  alt={t('신규')}
+                />
+              </S.BadgeButton>
+            </div>
+
+            <div>
+              <S.BadgeButton
+                type="button"
+                onClick={() =>
+                  updateFormValues({ isBest: !(formValues.isBest ?? false) })
+                }
+              >
+                <img
+                  src={formValues.isBest ? bestOnIcon : bestOffIcon}
+                  alt={t('베스트')}
+                />
+              </S.BadgeButton>
+            </div>
+          </S.BadgeContainer>
         </S.VerticalLayout>
       </S.ContentsSection>
     </S.Container>

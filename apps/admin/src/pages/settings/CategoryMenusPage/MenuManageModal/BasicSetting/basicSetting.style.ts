@@ -40,9 +40,10 @@ export const HorizontalLayout = styled.div`
 export const VerticalLayout = styled.div<{ flex?: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
   ${({ flex }) => flex && 'flex: 1; min-height: 0;'}
+  margin-bottom: 8 px;
 `;
 
 export const PriceTitleContainer = styled.div`
@@ -62,6 +63,11 @@ export const Title = styled.p`
     color: ${theme.colors.semantic[500]};
     ${TYPOGRAPHY.MT_6}
   }
+`;
+
+export const SubTitle = styled.p`
+  ${TYPOGRAPHY.BD_3}
+  color: ${theme.colors.grey[500]};
 `;
 
 export const TaxFreeCss = css`
@@ -98,12 +104,15 @@ export const BadgeContainer = styled.div<{ gap?: number }>`
   border-radius: 0.75rem;
   padding: 12px 14px;
   gap: ${({ gap }) => (gap ? `${gap}px` : 0)};
+
+  > div {
+    height: 100%;
+  }
 `;
 
 export const BadgeButton = styled.button`
-  width: 52px;
-  height: 35px;
-
+  width: 100%;
+  height: 100%;
   & > img {
     width: 100%;
     height: 100%;
@@ -122,28 +131,29 @@ export const SpiceLevelContainer = styled.div`
 export const SpiceLevelButtons = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 15px;
 `;
 
 export const ChiliLevelButton = styled.button<{ selected: boolean }>`
-  width: 52px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid
-    ${({ selected }) =>
-      selected ? theme.colors.primary[500] : theme.colors.grey[300]};
-  background-color: ${theme.colors.white};
-  padding: 6px 10px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: ${({ selected }) => (selected ? 1 : 0.4)};
-  transition: all 0.2s ease;
+  flex-direction: column;
+  width: 100px;
+  cursor: pointer;
 
   & > img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    filter: ${({ selected }) => (selected ? 'none' : 'grayscale(100%)')};
+    opacity: ${({ selected }) => (selected ? 1 : 0.4)};
+    transition: all 0.2s ease;
+  }
+
+  > span {
+    ${TYPOGRAPHY.CT_2}
+    color: ${({ selected }) =>
+      selected ? theme.colors.grey[800] : theme.colors.grey[400]};
+    transition: color 0.2s ease;
   }
 `;
 

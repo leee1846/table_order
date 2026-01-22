@@ -10,7 +10,6 @@ export const Container = styled.div`
   left: 13.125rem;
   right: 0;
   height: 100%;
-  padding: 40px 32px 40px 36px;
   overflow: hidden;
   background-color: ${theme.colors.white};
   box-sizing: border-box;
@@ -19,7 +18,6 @@ export const Container = styled.div`
 export const ContentLayout = styled.div`
   display: grid;
   grid-template-columns: minmax(22rem, 25rem) 1fr;
-  gap: 32px;
   height: 100%;
 `;
 
@@ -45,6 +43,8 @@ export const LeftColumn = styled.div`
   min-height: 0;
   overflow-y: auto;
   padding-right: 6px;
+  background-color: ${theme.colors.grey[50]};
+  padding: 40px 30px;
 `;
 
 export const LeftContent = styled.div`
@@ -58,8 +58,8 @@ export const RightColumn = styled.div`
   flex-direction: column;
   gap: 16px;
   height: 100%;
-  min-width: 0;
-  min-height: 0;
+  padding: 80px 30px;
+  overflow: auto;
 `;
 
 export const RightScrollable = styled.div`
@@ -67,8 +67,6 @@ export const RightScrollable = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  min-height: 0;
-  overflow-y: auto;
   padding-right: 6px;
   padding-bottom: 16px;
 `;

@@ -86,6 +86,7 @@ export const CategoryMenusPage = () => {
           categorySeq={categorySeq}
           onClose={handleCloseMenuModal}
           isPosLinked={isPosLinked}
+          categoryName={categoryName}
         />
       )}
     </S.Container>

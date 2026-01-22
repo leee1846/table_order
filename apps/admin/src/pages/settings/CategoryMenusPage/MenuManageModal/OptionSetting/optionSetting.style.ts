@@ -11,27 +11,25 @@ export const optionButtonCss = css`
 `;
 
 export const Container = styled.div`
-  margin-bottom: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 8 px;
+  flex: 1;
 `;
 
 export const Header = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 10px;
 
-  & > p {
-    ${TYPOGRAPHY.ST_1}
-    color: ${theme.colors.grey[800]};
-  }
+  color: ${theme.colors.grey[800]};
+  ${TYPOGRAPHY.MT_6}
 `;
 
 export const AddOptionGroupButton = styled.button`
   width: 100%;
-  height: 4rem;
+  height: 60px;
   background-color: ${theme.colors.grey[50]};
   border-radius: 1rem;
   border: 1px dashed ${theme.colors.grey[400]};
@@ -48,7 +46,6 @@ export const AddOptionGroupButton = styled.button`
 `;
 
 export const OptionGroups = styled.ul`
-  height: 100%;
   max-height: 13rem;
   overflow-y: auto;
   background-color: ${theme.colors.grey[100]};

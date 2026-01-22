@@ -6,8 +6,12 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 100%;
-  max-width: 21.255rem;
+  margin-top: 24px;
+`;
+
+export const MainImageTitle = styled.p`
+  ${TYPOGRAPHY.ST_4}
+  color: ${theme.colors.grey[800]};
 `;
 
 export const Thumbnail = styled.div`
@@ -19,16 +23,17 @@ export const Thumbnail = styled.div`
   gap: 4px;
   width: 100%;
   height: 15.4375rem;
-  background-color: ${theme.colors.primary[100]};
+  background-color: ${theme.colors.grey[100]};
+  border: 1px dashed ${theme.colors.grey[400]};
   border-radius: 1rem;
   overflow: hidden;
   cursor: pointer;
-
   & > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
+  margin-bottom: 24px;
 `;
 
 export const BadgesContainer = styled.div`
@@ -36,12 +41,13 @@ export const BadgesContainer = styled.div`
   top: 0;
   left: 20px;
   display: flex;
-  gap: 4px;
   z-index: 1;
 
   & > img {
-    width: 64px;
-    height: 43px;
+    width: 50%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid red;
   }
 `;
 
@@ -71,12 +77,16 @@ export const ImagesContainer = styled.div`
   height: 6.25rem;
 `;
 
+export const AdditionalImagesTitle = styled.p`
+  ${TYPOGRAPHY.ST_4}
+  color: ${theme.colors.grey[800]};
+`;
+
 export const ScrollableContent = styled.div`
   display: flex;
   gap: 8px;
   height: 100%;
   overflow-x: auto;
-
   & > ul {
     display: flex;
     gap: 8px;
@@ -118,7 +128,11 @@ export const Gradient = styled.div`
   right: 0;
   width: 60px;
   height: 6.25rem;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #fff 90%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    ${theme.colors.grey[50]} 90%
+  );
   z-index: ${theme.zIndex.dropdown};
   pointer-events: none;
 `;
@@ -140,5 +154,26 @@ export const ImageAddButton = styled.button`
   & > span {
     ${TYPOGRAPHY.CT_2}
     color: ${theme.colors.grey[500]};
+  }
+`;
+
+export const SpiceLevelIndicator = styled.div<{ isVisible: boolean }>`
+  display: ${({ isVisible }) => (isVisible ? 'flex' : 'none')};
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  z-index: 1;
+`;
+
+export const SpiceIconWrapper = styled.div`
+  display: flex;
+  width: 90px;
+  & > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 `;

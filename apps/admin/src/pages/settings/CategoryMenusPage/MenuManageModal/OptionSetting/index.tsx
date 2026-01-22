@@ -105,7 +105,7 @@ export const OptionSetting = ({ isPosLinked }: Props) => {
   return (
     <S.Container>
       <S.Header>
-        <p>{t('옵션 그룹 설정')}</p>
+        <span>{t('옵션 그룹 설정')}</span>
       </S.Header>
       <S.AddOptionGroupButton onClick={() => handleOpenModal(null)}>
         <AddIcon width={22} height={22} color={theme.colors.grey[600]} />

@@ -3,7 +3,6 @@ import { BasicButton } from '@repo/ui/components';
 import { AddIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from '@/pages/settings/CategoriesPage/Header/header.style';
-import { toast } from '@repo/feature/utils';
 
 interface Props {
   onClickAddCategory: () => void;

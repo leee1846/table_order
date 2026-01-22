@@ -48,7 +48,6 @@ export const Container = styled.div`
   height: 50rem;
   background-color: ${theme.colors.white};
   padding: 24px 24px 0;
-  border-radius: 1rem;
   overflow-y: auto;
 
   & > h1 {

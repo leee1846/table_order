@@ -23,7 +23,6 @@ export const ImageSection = styled.button`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   cursor: pointer;
   border: none;
   overflow: hidden;
@@ -40,8 +39,8 @@ export const ImageSection = styled.button`
 `;
 
 export const ImagePreview = styled.img`
-  width: 200px;
-  height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
   background-color: ${theme.colors.primary[100]};
 `;

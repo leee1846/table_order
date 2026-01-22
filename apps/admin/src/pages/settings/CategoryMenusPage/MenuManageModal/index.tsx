@@ -24,14 +24,17 @@ interface Props {
   categorySeq: number;
   onClose: () => void;
   isPosLinked: boolean;
+  categoryName?: string;
 }
 
 interface MenuManageModalContentProps {
   isPosLinked: boolean;
+  categoryName?: string;
 }
 
 const MenuManageModalContent = ({
   isPosLinked,
+  categoryName,
 }: MenuManageModalContentProps) => {
   const { t } = useAdminTranslation();
   const languageOptions: { value: TShopLanguage; label: string }[] = useMemo(
@@ -46,13 +49,13 @@ const MenuManageModalContent = ({
   );
   const {
     mode,
-    menu,
     onClose,
     handleSubmit,
     formValues,
     updateFormValues,
     isSaving,
   } = useMenuManageModal();
+
   const [isExpanded, setIsExpanded] = useState(false);
 
   const modalTitle = mode === 'create' ? t('메뉴 추가') : t('메뉴 수정');
@@ -77,21 +80,21 @@ const MenuManageModalContent = ({
               <p>{t('메뉴 관리')}</p>
               <span />
               <div>
-                {mode === 'edit' && (
-                  <>
-                    <p>{menu?.menuName}</p>
-                    <ChevronForwardIcon
-                      color={theme.colors.grey[600]}
-                      width={24}
-                      height={24}
-                    />
-                  </>
-                )}
+                <p>{categoryName}</p>
+                <ChevronForwardIcon
+                  color={theme.colors.grey[600]}
+                  width={24}
+                  height={24}
+                />
                 <p>{modalTitle}</p>
               </div>
             </S.Titles>
             <S.CloseButton type="button" onClick={onClose}>
-              <CloseIcon width={42} height={42} color={theme.colors.grey[500]} />
+              <CloseIcon
+                width={32}
+                height={32}
+                color={theme.colors.grey[500]}
+              />
             </S.CloseButton>
           </S.Header>
 
@@ -102,7 +105,7 @@ const MenuManageModalContent = ({
 
         <S.RightColumn>
           <S.RightScrollable>
-            {mode === 'edit' && (
+            {mode === 'edit' ? (
               <S.LanguageSelector>
                 {isExpanded ? (
                   <>
@@ -161,6 +164,8 @@ const MenuManageModalContent = ({
                   )}
                 </S.ToggleButton>
               </S.LanguageSelector>
+            ) : (
+              <div />
             )}
 
             <BasicSetting isPosLinked={isPosLinked} hideImageSection />
@@ -189,6 +194,7 @@ export const MenuManageModal = ({
   categorySeq,
   onClose,
   isPosLinked,
+  categoryName,
 }: Props) => {
   return (
     <MenuManageModalProvider
@@ -196,7 +202,10 @@ export const MenuManageModal = ({
       categorySeq={categorySeq}
       onClose={onClose}
     >
-      <MenuManageModalContent isPosLinked={isPosLinked} />
+      <MenuManageModalContent
+        isPosLinked={isPosLinked}
+        categoryName={categoryName}
+      />
     </MenuManageModalProvider>
   );
 };

@@ -24,6 +24,7 @@ export const AdditionalSetting = () => {
         <Input
           value={formValues.minQuantity?.toString() ?? ''}
           onChange={handleChangeMinQuantity}
+          inputMode="numeric"
         />
       </S.SectionContainer>
     </S.Container>

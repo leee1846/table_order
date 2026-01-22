@@ -7,6 +7,9 @@ import {
   PhotoIcon,
   bestOnIcon,
   newOnIcon,
+  spicyLevel1Icon,
+  spicyLevel2Icon,
+  spicyLevel3Icon,
 } from '@repo/ui/icons';
 import { CameraManager, CapacitorApp, type AlbumPhoto } from '@repo/util/app';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection/imageSection.style';
@@ -40,6 +43,12 @@ type CaptureTarget = {
 };
 
 const GALLERY_PAGE_LIMIT = 21;
+
+const SPICE_LEVEL_ICONS: Record<number, string> = {
+  1: spicyLevel1Icon,
+  2: spicyLevel2Icon,
+  3: spicyLevel3Icon,
+};
 
 export const ImageSection = () => {
   // 파일 입력 요소 참조
@@ -259,7 +268,7 @@ export const ImageSection = () => {
         });
 
         // 현재 페이지 번호 업데이트
-        setAlbumPage (page);
+        setAlbumPage(page);
         // 가져온 이미지가 없거나 페이지 제한보다 적으면 더 이상 불러올 이미지가 없음
         if (!newItems.length) {
           setHasMoreAlbum(false);
@@ -327,34 +336,33 @@ export const ImageSection = () => {
     try {
       const uris = Array.from(selectedAlbumUris);
 
-      if(uris.length > 0) {
-      // 원본 파일 준비(getOriginalFile)는 최종 확인 시에만 호출해 네이티브 호출을 최소화한다.
-      const preparedPaths = await Promise.all(
-        uris.map(async (uri) => {
-          const result = await CameraManager.getOriginalFile(uri);
-          return result ?? null;
-        })
-      );
+      if (uris.length > 0) {
+        // 원본 파일 준비(getOriginalFile)는 최종 확인 시에만 호출해 네이티브 호출을 최소화한다.
+        const preparedPaths = await Promise.all(
+          uris.map(async (uri) => {
+            const result = await CameraManager.getOriginalFile(uri);
+            return result ?? null;
+          })
+        );
 
-      const files: File[] = [];
-      for (const path of preparedPaths) {
-        if (!path) continue;
-        const file = await toCameraFile(path);
-        if (file) {
-          files.push(file);
+        const files: File[] = [];
+        for (const path of preparedPaths) {
+          if (!path) continue;
+          const file = await toCameraFile(path);
+          if (file) {
+            files.push(file);
+          }
         }
-      }
 
-      if (files.length === 0) {
-        toast(t('선택한 이미지를 불러오지 못했습니다.'));
-        return;
-      }
+        if (files.length === 0) {
+          toast(t('선택한 이미지를 불러오지 못했습니다.'));
+          return;
+        }
 
-      applyGalleryFiles(files, target);
-      setIsGalleryModalOpen(false);
-      resetGalleryState();
-        
-       }
+        applyGalleryFiles(files, target);
+        setIsGalleryModalOpen(false);
+        resetGalleryState();
+      }
 
       try {
         await CameraManager.clearCache();
@@ -540,11 +548,34 @@ export const ImageSection = () => {
         onChange={handleFileChange}
       />
 
+      <S.MainImageTitle>{t('대표 이미지')}</S.MainImageTitle>
       <S.Thumbnail onClick={() => !mainImage && openModal('main')}>
-        <S.BadgesContainer>
-          {formValues.isBest && <img src={bestOnIcon} alt={t('베스트')} />}
-          {formValues.isNew && <img src={newOnIcon} alt={t('신규')} />}
-        </S.BadgesContainer>
+        {(formValues.isBest || formValues.isNew) && (
+          <S.BadgesContainer>
+            <div>
+              {formValues.isNew && <img src={newOnIcon} alt={t('신규')} />}
+            </div>
+            <div>
+              {formValues.isBest && <img src={bestOnIcon} alt={t('베스트')} />}
+            </div>
+          </S.BadgesContainer>
+        )}
+
+        <S.SpiceLevelIndicator
+          isVisible={
+            !!mainImage &&
+            !!mainImageUrl &&
+            !!formValues.spiceLevel &&
+            formValues.spiceLevel > 0
+          }
+        >
+          <S.SpiceIconWrapper>
+            <img
+              src={SPICE_LEVEL_ICONS[formValues.spiceLevel || 0]}
+              alt={t('매운맛')}
+            />
+          </S.SpiceIconWrapper>
+        </S.SpiceLevelIndicator>
 
         {mainImage && mainImageUrl ? (
           <>
@@ -568,11 +599,7 @@ export const ImageSection = () => {
           </>
         ) : (
           <>
-            <PhotoIcon
-              width={36}
-              height={36}
-              color={theme.colors.primary[400]}
-            />
+            <PhotoIcon width={36} height={36} color={theme.colors.grey[400]} />
 
             <S.Text>{t('메인 사진 (1장) 을 선택해 주세요')}</S.Text>
             <S.SubText>{t('(700*500 px 권장)')}</S.SubText>
@@ -580,6 +607,7 @@ export const ImageSection = () => {
         )}
       </S.Thumbnail>
 
+      <S.AdditionalImagesTitle>{t('서브 이미지')}</S.AdditionalImagesTitle>
       {additionalImages.length > 0 ? (
         <S.ImagesContainer>
           <S.Gradient />
