@@ -12,8 +12,10 @@ export const usePostPaymentApproval = () => {
     {
       params: IPostPaymentApprovalRequestParams;
       data: IPaymentResponse;
+      ignoreGlobalErrors?: number[];
     }
   >({
-    mutationFn: ({ params, data }) => postPaymentApproval({ params, data }),
+    mutationFn: ({ params, data, ignoreGlobalErrors }) =>
+      postPaymentApproval({ params, data, ignoreGlobalErrors }),
   });
 };

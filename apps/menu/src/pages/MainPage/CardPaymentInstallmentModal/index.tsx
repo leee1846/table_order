@@ -33,6 +33,8 @@ import {
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 const PAYMENT_EVENT_NAME = 'paymentEvent';
 const HTTP_STATUS_BAD_REQUEST = 400;
+const HTTP_STATUS_SERVER_ERROR = 500;
+const HTTP_STATUS_NOT_FOUND = 404;
 
 interface CardPaymentInstallmentModalProps {
   onClose: () => void;
@@ -183,14 +185,31 @@ export const CardPaymentInstallmentModal = ({
 
     const { orderGroupUuid, orderUuid } = await createOrder();
 
-    await postPaymentApproval({
-      params: {
-        paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
-        orderGroupUuid,
-        orderUuid,
-      },
-      data: paymentResult,
-    });
+    try {
+      await postPaymentApproval({
+        params: {
+          paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
+          orderGroupUuid,
+          orderUuid,
+        },
+        data: paymentResult,
+        ignoreGlobalErrors: [
+          HTTP_STATUS_BAD_REQUEST,
+          HTTP_STATUS_SERVER_ERROR,
+          HTTP_STATUS_NOT_FOUND,
+        ],
+      });
+    } catch {
+      // postPaymentApproval 실패 시 앱 결제 취소 요청
+      await Payment.cancel({
+        amount: totalPrice,
+        orgApprNum: paymentResult.APPROVAL_NUM,
+        orgApprDate: paymentResult.APPROVAL_DATE.substring(0, 6),
+        tranNo: paymentResult.TRAN_NO,
+      });
+
+      throw new Error('결제 처리 중 오류가 발생했습니다.');
+    }
 
     return paymentResult;
   };
