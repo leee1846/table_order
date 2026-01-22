@@ -1,5 +1,9 @@
 import { t } from '@/config/i18n';
-import { AddIcon, HomeFilledIcon, capsSmartOrderWhiteLogo } from '@repo/ui/icons';
+import {
+  AddIcon,
+  HomeFilledIcon,
+  capsSmartOrderWhiteLogo,
+} from '@repo/ui/icons';
 import * as S from './sidebar.styles';
 import { theme } from '@repo/ui';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +11,12 @@ import { AddTableGroupDialog } from '../dialogs/AddTableGroupDialog';
 import { EditTableGroupDialog } from '../dialogs/EditTableGroupDialog';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys, useDeleteTableGroup, useGetShopThemePage } from '@repo/api/queries';
+import {
+  queryKeys,
+  useDeleteTableGroup,
+  useGetShopThemeMenu,
+  useGetShopThemePage,
+} from '@repo/api/queries';
 import { TableGroupItem } from './TableGroupItem';
 import { ROUTES } from '@/constants/routes';
 import { useState, useRef, useLayoutEffect, useEffect, useMemo } from 'react';
@@ -35,18 +44,9 @@ export const Sidebar = ({
 
   const { shopCode, shopSeq } = useAuth();
 
-  const { data: shopThemePageResponse } = useGetShopThemePage(shopCode ?? '', {
+  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
     enabled: !!shopCode,
   });
-
-  const initLightImage = useMemo(() => {
-    const shopPageDetailList = shopThemePageResponse?.data?.shopPageDetailList;
-    if (!shopPageDetailList) return null;
-    const initLightItem = shopPageDetailList.find(
-      (item) => item.pageDetailType === 'INIT_LIGHT'
-    );
-    return initLightItem?.pageDetailImagePath || null;
-  }, [shopThemePageResponse?.data?.shopPageDetailList]);
 
   const [isAddTableGroupDialogOpen, setIsAddTableGroupDialogOpen] =
     useState(false);
@@ -223,7 +223,10 @@ export const Sidebar = ({
     <S.Sidebar>
       <S.SidebarLogo>
         <img
-          src={initLightImage ?? capsSmartOrderWhiteLogo}
+          src={
+            shopThemeMenuResponse?.data?.logoImagePath ??
+            capsSmartOrderWhiteLogo
+          }
           alt={t('매장 로고')}
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         />

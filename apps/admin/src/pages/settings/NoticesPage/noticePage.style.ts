@@ -35,7 +35,6 @@ export const QRModalHeader = styled.div`
   justify-content: space-between;
   margin-bottom: 24px;
 
-
   & > h2 {
     ${TYPOGRAPHY.MT_2}
     color: ${theme.colors.grey[800]};
@@ -78,17 +77,14 @@ export const QRModalContent = styled.div`
     text-align: center;
   }
 
-  div{
-    border: 1px solid red;
+  div {
     width: 100px;
     height: 100%;
 
-
-    >img{
-    border: 1px solid blue;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    > img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
   }
 `;

@@ -18,7 +18,12 @@ interface Props {
   shopCode: string;
 }
 
-export const BottomActions = ({ onAddTable, isPosLinked, table, shopCode }: Props) => {
+export const BottomActions = ({
+  onAddTable,
+  isPosLinked,
+  table,
+  shopCode,
+}: Props) => {
   const navigate = useNavigate();
 
   const queryClient = useQueryClient();
@@ -35,7 +40,6 @@ export const BottomActions = ({ onAddTable, isPosLinked, table, shopCode }: Prop
     setIsTableEditDialogOpen(true);
   };
 
-
   const handleCloseDialog = () => {
     setIsTableEditDialogOpen(false);
   };
@@ -43,58 +47,46 @@ export const BottomActions = ({ onAddTable, isPosLinked, table, shopCode }: Prop
   // 테이블 삭제
   const handleDelete = () => {
     if (!table) return;
-    
+
     openDualActionDialog({
-      title: t(
-        '정말 테이블을 삭제하시겠습니까?'
-      ),
+      title: t('정말 테이블을 삭제하시겠습니까?'),
       content: `테이블 명 : ${table?.tableName || table?.tableNumber}`,
       primaryText: t('확인'),
       secondaryText: t('취소'),
       size: 'xsmall',
       onConfirm: async () => {
-        try {
-          await deleteTable({
-            shopSeq: table?.shopSeq ?? 0,
-            tableNumber: table?.tableNumber ?? '',
-          });
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.table.groupList(shopCode),
-          });
-          toast(
-            t(
-              '테이블이 삭제되었습니다.'
-            )
-          );
-        } catch (error) {
-          toast(
-            t(
-              '테이블 삭제에 실패했습니다.'
-            )
-          );
-        }
+        await deleteTable({
+          shopSeq: table?.shopSeq ?? 0,
+          tableNumber: table?.tableNumber ?? '',
+        });
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.table.groupList(shopCode),
+        });
+        toast(t('테이블이 삭제되었습니다.'));
       },
     });
   };
 
   return (
     <>
-    <S.BottomActionsContainer>
-      <button onClick={handleExit}>{t('나가기')}</button>
-      <button onClick={handleEdit} >{t('수정')}</button>
-      <button onClick={handleDelete} disabled={ isPosLinked}>{t('삭제')}</button>
-      <button onClick={onAddTable} disabled={isPosLinked}>
-        {t('테이블 추가')}
-      </button>
-    </S.BottomActionsContainer>
-          {table && (
-            <EditTableDialog
-              isOpen={isTableEditDialogOpen}
-              onClose={handleCloseDialog}
-              table={table}
-              shopCode={shopCode}
-            />
-          )}
-        </>
+      <S.BottomActionsContainer>
+        <button onClick={handleExit}>{t('나가기')}</button>
+        <button onClick={handleEdit}>{t('수정')}</button>
+        <button onClick={handleDelete} disabled={isPosLinked}>
+          {t('삭제')}
+        </button>
+        <button onClick={onAddTable} disabled={isPosLinked}>
+          {t('테이블 추가')}
+        </button>
+      </S.BottomActionsContainer>
+      {table && (
+        <EditTableDialog
+          isOpen={isTableEditDialogOpen}
+          onClose={handleCloseDialog}
+          table={table}
+          shopCode={shopCode}
+        />
+      )}
+    </>
   );
 };

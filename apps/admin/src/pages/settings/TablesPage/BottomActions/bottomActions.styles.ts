@@ -20,7 +20,6 @@ export const BottomActionsContainer = styled.div`
     padding: 20px 40px;
     white-space: nowrap;
     flex: 1;
-    min-width: 0;
     display: flex;
     justify-content: center;
     align-items: center;
