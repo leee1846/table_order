@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { css } from '@emotion/react';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
 const { colors } = theme;

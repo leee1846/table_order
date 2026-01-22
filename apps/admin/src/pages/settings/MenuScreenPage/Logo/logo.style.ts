@@ -39,8 +39,8 @@ export const ImageSection = styled.button`
 `;
 
 export const ImagePreview = styled.img`
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   background-color: ${theme.colors.primary[100]};
 `;

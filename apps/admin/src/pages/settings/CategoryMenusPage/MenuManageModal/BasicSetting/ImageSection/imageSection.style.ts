@@ -21,13 +21,13 @@ export const Thumbnail = styled.div`
   align-items: center;
   justify-content: center;
   gap: 4px;
-  width: 100%;
   height: 15.4375rem;
   background-color: ${theme.colors.grey[100]};
   border: 1px dashed ${theme.colors.grey[400]};
   border-radius: 1rem;
   overflow: hidden;
   cursor: pointer;
+
   & > img {
     width: 100%;
     height: 100%;
