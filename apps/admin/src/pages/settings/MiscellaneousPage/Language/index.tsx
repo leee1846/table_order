@@ -133,61 +133,65 @@ export const Language = ({
             onChange={(value) => setLocale(value)}
           />
         </UIStyles.setting.ContentLayout>
-        <S.CheckboxWrapper>
-          <div>
-            {languageOptions.map((option) => {
-              const isMainLanguage = option.value === mainLanguage;
-              const isChecked =
-                isMainLanguage ||
-                selectedLanguages.some(
-                  (lang) => lang.localeCode === option.value
-                );
+        {locale && (
+          <S.CheckboxWrapper>
+            <div>
+              {languageOptions.map((option) => {
+                const isMainLanguage = option.value === mainLanguage;
+                const isChecked =
+                  isMainLanguage ||
+                  selectedLanguages.some(
+                    (lang) => lang.localeCode === option.value
+                  );
 
-              return (
-                <CheckButton
-                  key={option.value}
-                  checked={isChecked}
-                  onChange={() => {
-                    // 메인 언어는 변경 불가
-                    if (isMainLanguage) {
-                      return;
-                    }
+                return (
+                  <CheckButton
+                    key={option.value}
+                    checked={isChecked}
+                    onChange={() => {
+                      // 메인 언어는 변경 불가
+                      if (isMainLanguage) {
+                        return;
+                      }
 
-                    const isSelected = selectedLanguages.some(
-                      (lang) => lang.localeCode === option.value
-                    );
-                    if (isSelected) {
-                      setSelectedLanguages((prev) =>
-                        prev.filter((lang) => lang.localeCode !== option.value)
+                      const isSelected = selectedLanguages.some(
+                        (lang) => lang.localeCode === option.value
                       );
-                    } else {
-                      setSelectedLanguages((prev) => [
-                        ...prev,
-                        {
-                          localeShopMapSeq: 0,
-                          shopSeq: shopSetting?.shopSeq ?? 0,
-                          localeCode: option.value,
-                        },
-                      ]);
+                      if (isSelected) {
+                        setSelectedLanguages((prev) =>
+                          prev.filter(
+                            (lang) => lang.localeCode !== option.value
+                          )
+                        );
+                      } else {
+                        setSelectedLanguages((prev) => [
+                          ...prev,
+                          {
+                            localeShopMapSeq: 0,
+                            shopSeq: shopSetting?.shopSeq ?? 0,
+                            localeCode: option.value,
+                          },
+                        ]);
+                      }
+                    }}
+                    customStyle={
+                      isMainLanguage ? S.mainLanguageCheckboxCss : S.checkboxCss
                     }
-                  }}
-                  customStyle={
-                    isMainLanguage ? S.mainLanguageCheckboxCss : S.checkboxCss
-                  }
-                >
-                  <S.CheckboxText>{option.label}</S.CheckboxText>
-                </CheckButton>
-              );
-            })}
-          </div>
-          <CheckButton
-            checked={useLocaleBeforeOrder}
-            onChange={() => setUseLocaleBeforeOrder(!useLocaleBeforeOrder)}
-            customStyle={S.checkboxCss}
-          >
-            <S.CheckboxText>{t('주문 전 언어 선택')}</S.CheckboxText>
-          </CheckButton>
-        </S.CheckboxWrapper>
+                  >
+                    <S.CheckboxText>{option.label}</S.CheckboxText>
+                  </CheckButton>
+                );
+              })}
+            </div>
+            <CheckButton
+              checked={useLocaleBeforeOrder}
+              onChange={() => setUseLocaleBeforeOrder(!useLocaleBeforeOrder)}
+              customStyle={S.checkboxCss}
+            >
+              <S.CheckboxText>{t('주문 전 언어 선택')}</S.CheckboxText>
+            </CheckButton>
+          </S.CheckboxWrapper>
+        )}
       </div>
     </SectionWrapper>
   );
