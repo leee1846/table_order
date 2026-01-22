@@ -30,6 +30,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.1))(@types/react@19.2.7)(react@19.2.1)
+      '@lglab/react-qr-code':
+        specifier: ^1.4.9
+        version: 1.4.9(react@19.2.1)
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
@@ -824,6 +827,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lglab/react-qr-code@1.4.9':
+    resolution: {integrity: sha512-THnysK9hv9Sa7SOunCwt9Ba0VNmTBCf8pLivsCdfKOoYUjb2WQBD37sg1brxWFT0aO7cVI1bXJsY+R3pOkFxTQ==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@next/eslint-plugin-next@15.5.7':
     resolution: {integrity: sha512-DtRU2N7BkGr8r+pExfuWHwMEPX5SD57FeA6pxdgCHODo+b/UgIgjE+rgWKtJAbEbGhVZ2jtHn4g3wNhWFoNBQQ==}
@@ -2705,6 +2713,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lglab/react-qr-code@1.4.9(react@19.2.1)':
+    dependencies:
+      react: 19.2.1
 
   '@next/eslint-plugin-next@15.5.7':
     dependencies:

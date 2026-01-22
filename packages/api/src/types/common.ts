@@ -18,6 +18,7 @@ export interface IApiError {
 
 export interface ITokenPayload {
   sub: string;
+  memberUuid: string;
   role: TMemberRole;
   shopSeq: number;
   token_type: 'access_token' | 'refresh_token';

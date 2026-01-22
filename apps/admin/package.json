@@ -16,9 +16,10 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@lglab/react-qr-code": "^1.4.9",
     "@repo/api": "workspace:*",
-    "@repo/ui": "workspace:*",
     "@repo/feature": "workspace:*",
+    "@repo/ui": "workspace:*",
     "@repo/util": "workspace:*",
     "i18next": "^25.6.3",
     "react": "^19.1.1",

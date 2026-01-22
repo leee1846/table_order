@@ -14,6 +14,8 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { CapacitorApp } from '@repo/util/app';
 import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { QRCodeModal } from './QRCodeModal';
 
 interface AccountProps {
   shopName?: string;
@@ -24,6 +26,7 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
   const { t } = useAdminTranslation();
   const { clearAuth } = useAuthStore();
   const navigate = useNavigate();
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
 
   const handleLogout = () => {
     // sse 연결 끊기
@@ -34,6 +37,14 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
 
     // 로그인 페이지로 이동
     window.location.replace(ROUTES.LOGIN.generate());
+  };
+
+  const handleQRCodeClick = () => {
+    setIsQRModalOpen(true);
+  };
+
+  const handleCloseQRModal = () => {
+    setIsQRModalOpen(false);
   };
 
   const token = getAccessToken();
@@ -72,12 +83,19 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
                 {t('내 정보')}
               </BasicButton>
             )}
-            <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
-              {t('로그아웃')}
-            </BasicButton>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <BasicButton variant="Outline_Grey_M" onClick={handleQRCodeClick}>
+                {t('로그인 QR 생성')}
+              </BasicButton>
+              <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
+                {t('로그아웃')}
+              </BasicButton>
+            </div>
           </div>
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>
+
+      {isQRModalOpen && <QRCodeModal onClose={handleCloseQRModal} />}
     </UIStyles.setting.Container>
   );
 };
