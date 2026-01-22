@@ -23,52 +23,83 @@ export const useMerchantRegistration = (options?: Props) => {
 
   const hasCheckedRef = useRef(false);
 
-  const { data: shopDetailData, refresh: refreshShopDetailData } = useShopDetailData({
-    skipInitialRequest: true,
-  });
-  
-  const registerMerchant = useCallback(async ( newShopDetailData?: IGetShop ) => {
-  
-    // shouldDownload 판단 이후에 shopDetailData 요청
-    const shopData = newShopDetailData || await refreshShopDetailData();
+  const { data: shopDetailData, refresh: refreshShopDetailData } =
+    useShopDetailData({
+      skipInitialRequest: true,
+    });
 
-    if (!shopData) {
-      return;
-    }
+  const registerMerchant = useCallback(
+    async (newShopDetailData?: IGetShop) => {
+      // shouldDownload 판단 이후에 shopDetailData 요청
+      const shopData = newShopDetailData || (await refreshShopDetailData());
 
-    if (!shopData.shopSetting?.usePrepayment) {
-      return;
-    }
-
-    try{
-      await Payment.inquiryMerchant();
-    }catch(error){
-      if((error as { data: { RESULT_CODE: string } })?.data?.RESULT_CODE === '9970'){
-        // 가맹점 등록 필요 error
-      }else{
-        throw error;
+      if (!shopData) {
+        throw new Error('매장 정보를 가져올 수 없습니다.');
       }
-    }
 
-    if (!shopData.areaCode || !shopData.shopPhoneNumber || !shopData.shopSetting?.vanId || !shopData.businessNumber) {
-      return;
-    }
+      if (!shopData.shopSetting?.usePrepayment) {
+        throw new Error('선불 결제 방식이 아닙니다.');
+      }
 
-    try {
-      await Payment.downloadMerchant({
-        bizNo: shopData.businessNumber,
-        tid: shopData.shopSetting?.vanId,
-        zoneCode: shopData.areaCode,
-        phone: shopData.shopPhoneNumber,
-        initYn: 'N',
-      });
-    } finally {
-      hasCheckedRef.current = true;
-    }
-  }, [refreshShopDetailData]);
+      try {
+        await Payment.inquiryMerchant();
+      } catch (error) {
+        if (
+          (error as { data: { RESULT_CODE: string } })?.data?.RESULT_CODE ===
+          '9970'
+        ) {
+          // 가맹점 등록 필요 error (정상 플로우)
+        } else {
+          throw error;
+        }
+      }
+
+      if (
+        !shopData.areaCode ||
+        !shopData.shopPhoneNumber ||
+        !shopData.shopSetting?.vanId ||
+        !shopData.businessNumber
+      ) {
+        const missingFields = [];
+        if (!shopData.businessNumber) {
+          missingFields.push('사업자번호');
+        }
+        if (!shopData.shopSetting?.vanId) {
+          missingFields.push('가맹점 코드');
+        }
+        if (!shopData.areaCode) {
+          missingFields.push('지역 코드');
+        }
+        if (!shopData.shopPhoneNumber) {
+          missingFields.push('전화번호');
+        }
+        throw new Error(
+          `필수 정보가 누락되었습니다: ${missingFields.join(', ')}`
+        );
+      }
+
+      try {
+        await Payment.downloadMerchant({
+          bizNo: shopData.businessNumber,
+          tid: shopData.shopSetting?.vanId,
+          zoneCode: shopData.areaCode,
+          phone: shopData.shopPhoneNumber,
+          initYn: 'N',
+        });
+      } finally {
+        hasCheckedRef.current = true;
+      }
+    },
+    [refreshShopDetailData]
+  );
 
   useEffect(() => {
-    if (hasCheckedRef.current || enabled === false || !shopDetailData || !shopDetailData?.shopSetting?.usePrepayment) {
+    if (
+      hasCheckedRef.current ||
+      enabled === false ||
+      !shopDetailData ||
+      !shopDetailData?.shopSetting?.usePrepayment
+    ) {
       return;
     }
 

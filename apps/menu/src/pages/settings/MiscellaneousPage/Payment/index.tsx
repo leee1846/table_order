@@ -13,7 +13,8 @@ export const Payment = () => {
     enabled: false,
   });
 
-  const { refresh: refreshShopDetailData, data: shopDetailData } = useShopDetailData();
+  const { refresh: refreshShopDetailData, data: shopDetailData } =
+    useShopDetailData();
   const handleCheckAndRegisterMerchant = async () => {
     if (!shopDetailData?.shopSetting?.usePrepayment) {
       toast(t('선불 결제 방식이 아닙니다.'), {
@@ -64,10 +65,33 @@ export const Payment = () => {
         duration: 1500,
       });
     } catch (error) {
-      const data = (error as { data: { RESULT_CODE: string; RESULT_MSG: string; EVENT_MSG: string } }).data
+      // 에러 데이터 안전하게 추출
+      const errorData = (
+        error as {
+          data?: {
+            RESULT_CODE?: string;
+            RESULT_MSG?: string;
+            EVENT_MSG?: string;
+          };
+        }
+      )?.data;
+
+      let errorMessage = '가맹점 다운로드 중 오류가 발생했습니다.';
+      let errorCode = '';
+
+      if (errorData) {
+        errorMessage =
+          errorData.RESULT_MSG || errorData.EVENT_MSG || errorMessage;
+        errorCode = errorData.RESULT_CODE || '';
+      } else if (error instanceof Error) {
+        errorMessage = error.message || errorMessage;
+      }
+
       openConfirmDialog({
-        title: '실패',
-        content: `${data.RESULT_MSG ?? data.EVENT_MSG} \n 오류 코드: ${data.RESULT_CODE}`,
+        title: t('오류'),
+        content: errorCode
+          ? `${errorMessage}\n오류 코드: ${errorCode}`
+          : errorMessage,
       });
     } finally {
       setIsDownloading(false);
@@ -76,25 +100,27 @@ export const Payment = () => {
 
   return (
     <>
-    <UIStyles.setting.Container>
-      <UIStyles.setting.Header>
-        <UIStyles.setting.Title>{t('결제 단말기 관리')}</UIStyles.setting.Title>
-      </UIStyles.setting.Header>
+      <UIStyles.setting.Container>
+        <UIStyles.setting.Header>
+          <UIStyles.setting.Title>
+            {t('결제 단말기 관리')}
+          </UIStyles.setting.Title>
+        </UIStyles.setting.Header>
 
-      <UIStyles.setting.ContentsLayout>
-        <UIStyles.setting.ContentLayout>
-          <p>{t('가맹점 등록 확인 및 다운로드')}</p>
-          <BasicButton
-            variant="Outline_Grey_M"
-            onClick={handleCheckAndRegisterMerchant}
-          >
-            {t('다운로드')}
-          </BasicButton>
-        </UIStyles.setting.ContentLayout>
-      </UIStyles.setting.ContentsLayout>
-    </UIStyles.setting.Container>
+        <UIStyles.setting.ContentsLayout>
+          <UIStyles.setting.ContentLayout>
+            <p>{t('가맹점 등록 확인 및 다운로드')}</p>
+            <BasicButton
+              variant="Outline_Grey_M"
+              onClick={handleCheckAndRegisterMerchant}
+            >
+              {t('다운로드')}
+            </BasicButton>
+          </UIStyles.setting.ContentLayout>
+        </UIStyles.setting.ContentsLayout>
+      </UIStyles.setting.Container>
 
-    {isDownloading && <FullscreenLoadingSpinner />}
+      {isDownloading && <FullscreenLoadingSpinner />}
     </>
   );
 };
