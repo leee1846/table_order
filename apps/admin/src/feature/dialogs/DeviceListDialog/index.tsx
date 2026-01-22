@@ -64,7 +64,7 @@ export const DeviceListDialog = ({
     DEVICE_APP_UPDATE: t('기기 업데이트 요청을 보냈어요.'),
     DEVICE_SCREEN_ON: t('화면 켜기 요청을 보냈어요.'),
     DEVICE_SCREEN_OFF: t('화면 끄기 요청을 보냈어요.'),
-    DEVICE_OFF: t('기기 종료 요청을 보냈어요.'),
+    APP_OFF: t('기기 종료 요청을 보냈어요.'),
     DEVICE_RESTART: t('재부팅 요청을 보냈어요.'),
   };
 
@@ -268,7 +268,7 @@ export const DeviceListDialog = ({
               <BasicButton
                 variant="Outline_Grey_L"
                 disabled={isDeviceControlLoading}
-                onClick={() => handleDeviceControl('DEVICE_OFF')}
+                onClick={() => handleDeviceControl('APP_OFF')}
               >
                 {t('종료')}
               </BasicButton>

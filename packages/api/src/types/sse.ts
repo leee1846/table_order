@@ -8,7 +8,7 @@ export interface ISseMessage {
     | 'PICKUP'
     | 'DEVICE_THEFT'
     | 'DEVICE'
-    | 'DEVICE_OFF'
+    | 'APP_OFF'
     | 'DEVICE_RESTART'
     | 'DEVICE_SCREEN_OFF'
     | 'DEVICE_SCREEN_ON'
@@ -18,9 +18,9 @@ export interface ISseMessage {
     | 'SHOP_THEME_MENU'
     | 'RING_BELL';
   data:
-  | {
-    [key: string]: number | string;
-  }
-  | null
-  | string[];
+    | {
+        [key: string]: number | string;
+      }
+    | null
+    | string[];
 }

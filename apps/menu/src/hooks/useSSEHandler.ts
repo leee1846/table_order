@@ -121,8 +121,14 @@ export const useSSEHandler = () => {
         ...baseDeviceDetail,
         deviceType,
         // deviceType에 따라 올바른 필드만 설정
-        orderPosNumber: deviceType === 'ORDER_POS' ? (baseDeviceDetail.orderPosNumber ?? null) : null,
-        tableNumber: deviceType === 'ORDER_POS' ? null : (baseDeviceDetail.tableNumber ?? null),
+        orderPosNumber:
+          deviceType === 'ORDER_POS'
+            ? (baseDeviceDetail.orderPosNumber ?? null)
+            : null,
+        tableNumber:
+          deviceType === 'ORDER_POS'
+            ? null
+            : (baseDeviceDetail.tableNumber ?? null),
         battery: baseDeviceDetail.battery ?? 0,
         wifiSignal: baseDeviceDetail.wifiSignal ?? '',
       });
@@ -523,7 +529,7 @@ export const useSSEHandler = () => {
         handlersRef.current.handlePickupMessage(sseMessage);
         break;
 
-      case 'DEVICE_OFF':
+      case 'APP_OFF':
         // 앱 종료 제어
         handlersRef.current.handleDeviceControlMessage(() => {
           SystemControl.exitApp();

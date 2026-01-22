@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useAuth } from './useAuth';
 import { usePostDeviceDetail } from '@repo/api/queries';
-import type { IDeviceBase } from '@repo/api/types';
+import type { IPostDeviceDetailRequestBase } from '@repo/api/types';
 import {
   AndroidInfo,
   CapacitorApp,
@@ -13,7 +13,7 @@ export const useSystemStatusMonitor = () => {
   const { shopCode } = useAuth();
   const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
 
-  const deviceStateRef = useRef<IDeviceBase>({
+  const deviceStateRef = useRef<IPostDeviceDetailRequestBase>({
     androidId: '',
     deviceType: 'POS_APP',
     tableNumber: null,
@@ -108,7 +108,7 @@ export const useSystemStatusMonitor = () => {
       const currentState = deviceStateRef.current;
       let shouldPost = false;
 
-      const updatedState: IDeviceBase = {
+      const updatedState: IPostDeviceDetailRequestBase = {
         ...currentState,
       };
 

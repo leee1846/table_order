@@ -22,7 +22,18 @@ export interface IDevice extends IDeviceBase {
 
 export type TGetDeviceDetailResponse = IApiResponse<IDevice>;
 
-export interface IPostDeviceDetailRequest extends IDeviceBase {
+export interface IPostDeviceDetailRequestBase {
+  androidId: string;
+  deviceType: TDeviceType;
+  orderPosNumber: number | null;
+  tableNumber: string | null;
+  battery: number | null;
+  wifiSignal: string | null;
+  ipAddress: string;
+  version: string;
+  buildNumber: string;
+}
+export interface IPostDeviceDetailRequest extends IPostDeviceDetailRequestBase {
   shopCode: string;
 }
 
@@ -51,7 +62,7 @@ export type TGetDeviceListWithPaginationResponse =
   IApiResponse<IDeviceListWithPagination>;
 
 export type TDeviceControlType =
-  | 'DEVICE_OFF'
+  | 'APP_OFF'
   | 'DEVICE_RESTART'
   | 'DEVICE_APP_UPDATE'
   | 'DEVICE_SCREEN_OFF'
