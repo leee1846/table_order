@@ -246,5 +246,6 @@
   "가맹점 코드가 없습니다. 관리자에게 문의해주세요.": "Merchant code not found. Please contact the administrator.",
   "지역 코드가 없습니다. 관리자에게 문의해주세요.": "Area code not found. Please contact the administrator.",
   "전화번호가 없습니다. 관리자에게 문의해주세요.": "Phone number not found. Please contact the administrator.",
-  "선불 결제 방식이 아닙니다.": "This is not a prepayment method."
+  "선불 결제 방식이 아닙니다.": "This is not a prepayment method.",
+  "QR 코드를 스캔할 수 없습니다.": "Unable to scan QR code."
 }

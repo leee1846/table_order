@@ -10,12 +10,7 @@ import {
 import { theme } from '@repo/ui';
 import { usePostLogin } from '@repo/api/queries';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
-import {
-  setAccessToken,
-  setRefreshToken,
-  getAccessToken,
-  getRefreshToken,
-} from '@repo/api/auth';
+import { setAccessToken, setRefreshToken } from '@repo/api/auth';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/useAuthStore';

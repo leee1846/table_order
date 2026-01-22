@@ -19,6 +19,7 @@ export const ENDPOINTS = {
     TOKEN_REFRESH: '/token/refresh',
     LOGIN_MENUBOARD_ADMIN: '/login/menuboard',
     LOGIN_SALES: '/login/sales',
+    LOGIN_QR: '/login/qr',
   },
 
   MEMBER: {

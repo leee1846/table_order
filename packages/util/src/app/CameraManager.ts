@@ -17,6 +17,7 @@ interface INativeCamera {
   }): Promise<{ images: any[] }>;
   prepareOriginalFile(options: { uri: string }): Promise<{ path: string }>;
   clearImageCache(): Promise<void>;
+  scanQR(): Promise<{ content: string }>;
 }
 
 //커스텀
@@ -28,6 +29,7 @@ export interface ICameraManager {
   loadAlbum(page?: number, limit?: number): Promise<AlbumPhoto[]>;
   getOriginalFile(originalUri: string): Promise<string | null>;
   clearCache(): Promise<void>;
+  scanQR(): Promise<string | null>;
 }
 
 const NativeCamera = registerPlugin<INativeCamera & Plugin>('CameraManager');
@@ -50,7 +52,6 @@ export const CameraManager: ICameraManager = {
       // [변경] startCamera -> takePhoto (Promise 대기)
       // Native에서 resolve될 때까지 여기서 멈춰있습니다.
       const result = await NativeCamera.takePhoto();
-
 
       // Native가 { path: "file://..." } 형태의 응답을 줍니다.
       const webPath = Capacitor.convertFileSrc(result.path);
@@ -137,7 +138,7 @@ export const CameraManager: ICameraManager = {
   getOriginalFile: async (originalUri: string) => {
     try {
       const res = await NativeCamera.prepareOriginalFile({ uri: originalUri });
-  
+
       return Capacitor.convertFileSrc(res.path);
     } catch (e) {
       console.error('원본 준비 실패:', e);
@@ -150,5 +151,20 @@ export const CameraManager: ICameraManager = {
    */
   clearCache: async () => {
     return NativeCamera.clearImageCache();
+  },
+
+  /**
+   * QR 코드 스캔
+   * - 카메라를 켜고 QR 코드를 인식하면 내용을 반환하고 종료합니다.
+   * @returns {Promise<string | null>} QR 내용 (실패/취소 시 null)
+   */
+  scanQR: async (): Promise<string | null> => {
+    try {
+      // { content: "http://..." } 형태의 응답
+      const result = await NativeCamera.scanQR();
+      return result.content;
+    } catch {
+      return null;
+    }
   },
 };

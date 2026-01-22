@@ -70,3 +70,14 @@ export const loginSales = async ({
 
   return response.data;
 };
+
+export const loginQr = async ({ uuid }: { uuid: string }) => {
+  const axiosInstance = getAxiosInstance('public');
+  const response = await axiosInstance<TLoginResponse>({
+    method: 'POST',
+    url: ENDPOINTS.AUTH.LOGIN_QR,
+    params: { memberUuid: uuid },
+  });
+
+  return response.data;
+};

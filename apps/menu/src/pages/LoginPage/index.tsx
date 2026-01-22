@@ -7,7 +7,7 @@ import {
   VisibilityOffIcon,
 } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { usePostLogin } from '@repo/api/queries';
+import { usePostLogin, usePostLoginQr } from '@repo/api/queries';
 import { openConfirmDialog } from '@repo/feature/utils';
 import { setAccessToken, setRefreshToken } from '@repo/api/auth';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
@@ -18,6 +18,7 @@ import { initializeSseConnection } from '@/utils/sseConnection';
 import * as S from '@/pages/LoginPage/loginPage.style';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useMerchantRegistration } from '@/hooks/useMerchantRegistration';
+import { CameraManager, CapacitorApp } from '@repo/util/app';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -63,36 +64,13 @@ export const LoginPage = () => {
     enabled: false,
   });
 
-  // Login handler
-  const handleLogin = async () => {
-    if (!id) {
-      setIdErrorMessage(t('아이디를 입력해주세요.'));
-      return;
-    }
-    if (!password) {
-      setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
-      return;
-    }
-
-    setIdErrorMessage('');
-    setPasswordErrorMessage('');
-
-    const loginResponse = await login({
-      id,
-      pw: password,
-    });
-
-    // api는 성공 처리됨.
-    if (!loginResponse.data.loginResult) {
-      openConfirmDialog({
-        title: t('로그인 실패'),
-        content: loginResponse.status.userMessage,
-      });
-      return;
-    }
-
-    setAccessToken(loginResponse.data.accessToken);
-    setRefreshToken(loginResponse.data.refreshToken);
+  // 공통 로그인 성공 처리 함수
+  const handleLoginSuccess = async (
+    accessToken: string,
+    refreshToken: string
+  ) => {
+    setAccessToken(accessToken);
+    setRefreshToken(refreshToken);
 
     const { ipAddress, androidId, appInfo } = await getDeviceInfo({ t });
 
@@ -132,6 +110,40 @@ export const LoginPage = () => {
     navigate(ROUTES.ROOT.generate());
   };
 
+  // Login handler
+  const handleLogin = async () => {
+    if (!id) {
+      setIdErrorMessage(t('아이디를 입력해주세요.'));
+      return;
+    }
+    if (!password) {
+      setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
+      return;
+    }
+
+    setIdErrorMessage('');
+    setPasswordErrorMessage('');
+
+    const loginResponse = await login({
+      id,
+      pw: password,
+    });
+
+    // api는 성공 처리됨.
+    if (!loginResponse.data.loginResult) {
+      openConfirmDialog({
+        title: t('로그인 실패'),
+        content: loginResponse.status.userMessage,
+      });
+      return;
+    }
+
+    await handleLoginSuccess(
+      loginResponse.data.accessToken,
+      loginResponse.data.refreshToken
+    );
+  };
+
   // Render helpers
   const renderPasswordVisibilityToggle = () => {
     const iconProps = {
@@ -154,6 +166,43 @@ export const LoginPage = () => {
           <VisibilityIcon {...iconProps} />
         )}
       </button>
+    );
+  };
+
+  const { mutateAsync: loginQr } = usePostLoginQr();
+  const onClickQrLogin = async () => {
+    if (!CapacitorApp.isNative()) {
+      return;
+    }
+
+    let uuid: string | null = null;
+    try {
+      uuid = await CameraManager.scanQR();
+    } catch {
+      openConfirmDialog({
+        title: t('오류'),
+        content: t('QR 코드를 스캔할 수 없습니다.'),
+      });
+    }
+
+    if (!uuid) {
+      return;
+    }
+
+    const loginResponse = await loginQr({ uuid });
+
+    // api는 성공 처리됨.
+    if (!loginResponse.data.loginResult) {
+      openConfirmDialog({
+        title: t('로그인 실패'),
+        content: loginResponse.status.userMessage,
+      });
+      return;
+    }
+
+    await handleLoginSuccess(
+      loginResponse.data.accessToken,
+      loginResponse.data.refreshToken
     );
   };
 
@@ -202,14 +251,23 @@ export const LoginPage = () => {
             errorMessage={passwordErrorMessage}
           />
         </div>
-        <BasicButton
-          variant="Solid_Navy_XL"
-          customStyle={S.buttonCss}
-          onClick={handleLogin}
-          aria-label={t('로그인')}
-        >
-          {t('로그인')}
-        </BasicButton>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <BasicButton
+            variant="Solid_Navy_XL"
+            customStyle={S.buttonCss}
+            onClick={handleLogin}
+            aria-label={t('로그인')}
+          >
+            {t('로그인')}
+          </BasicButton>
+          <BasicButton
+            variant="Solid_Navy_XL"
+            onClick={onClickQrLogin}
+            aria-label={t('QR 로그인')}
+          >
+            {t('QR 로그인')}
+          </BasicButton>
+        </div>
       </S.LoginContainer>
     </S.Container>
   );
