@@ -23,7 +23,7 @@ const TOAST_OPTIONS = {
 export const MiscellaneousPage = () => {
   const { t } = useAdminTranslation();
 
-  const { data: deviceData } = useDeviceData();
+  const { data: deviceData, setDataAsync: setDeviceData } = useDeviceData();
   const { shopData } = useShopData({ skipInitialRequest: true });
   const { mutateAsync: saveDeviceDetail } = usePostDeviceDetail();
 
@@ -83,6 +83,7 @@ export const MiscellaneousPage = () => {
     };
 
     await saveDeviceDetail(deviceDetail);
+    setDeviceData(deviceDetail);
     showToast('설정이 저장되었습니다.');
   };
 
