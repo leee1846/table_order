@@ -23,6 +23,7 @@ type TSSEConnectionState<T> = {
     React.Dispatch<React.SetStateAction<boolean>>
   >;
   reconnectAttempts: number;
+  reconnectTimeoutId: ReturnType<typeof setTimeout> | null;
 };
 
 /**
@@ -65,6 +66,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       isReconnecting: false,
       setIsReconnectingCallbacks: new Set(),
       reconnectAttempts: 0,
+      reconnectTimeoutId: null,
     };
     sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
   }
@@ -81,6 +83,12 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
   state.eventSource = eventSource;
 
   eventSource.onopen = () => {
+    // 기존 재연결 타임아웃이 있으면 정리
+    if (state.reconnectTimeoutId) {
+      clearTimeout(state.reconnectTimeoutId);
+      state.reconnectTimeoutId = null;
+    }
+
     state.isConnected = true;
     state.isReconnecting = false;
     state.reconnectAttempts = 0;
@@ -151,6 +159,12 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 
       // 5번 이상 시도했으면 다이얼로그 표시
       if (state.reconnectAttempts > 5) {
+        // 기존 재연결 타임아웃이 있으면 정리
+        if (state.reconnectTimeoutId) {
+          clearTimeout(state.reconnectTimeoutId);
+          state.reconnectTimeoutId = null;
+        }
+
         state.isReconnecting = false;
         state.reconnectAttempts = 0;
         state.setIsReconnectingCallbacks.forEach((callback) =>
@@ -175,9 +189,9 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
         return;
       }
 
-      // 5번 이하면 재시도
+      // 5번 이하면 재시도 (2초 딜레이 후)
       if (state.url) {
-        // 첫 시도가 아니면 loading 표시
+        // 재연결 상태를 true로 설정 (loading 상태 유지)
         if (!state.isReconnecting) {
           state.isReconnecting = true;
           state.setIsReconnectingCallbacks.forEach((callback) =>
@@ -185,8 +199,20 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
           );
         }
 
-        // 즉시 재연결 시도
-        connectSSE(key, state.url);
+        // 기존 재연결 타임아웃이 있으면 정리
+        if (state.reconnectTimeoutId) {
+          clearTimeout(state.reconnectTimeoutId);
+          state.reconnectTimeoutId = null;
+        }
+
+        // 2초 딜레이 후 재연결 시도
+        const reconnectUrl = state.url;
+        state.reconnectTimeoutId = setTimeout(() => {
+          state.reconnectTimeoutId = null;
+          if (reconnectUrl) {
+            connectSSE(key, reconnectUrl);
+          }
+        }, 2000);
       }
     } else {
       // 기존 로직 (OPEN 상태의 에러)
@@ -205,6 +231,12 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 export const disconnectSSE = (key: string): void => {
   const state = sseConnectionMap.get(key);
   if (state) {
+    // 기존 재연결 타임아웃이 있으면 정리
+    if (state.reconnectTimeoutId) {
+      clearTimeout(state.reconnectTimeoutId);
+      state.reconnectTimeoutId = null;
+    }
+
     // EventSource 종료
     if (state.eventSource) {
       state.eventSource.close();
@@ -258,6 +290,7 @@ export const useSSEData = <T = unknown>(key: string) => {
         isReconnecting: false,
         setIsReconnectingCallbacks: new Set(),
         reconnectAttempts: 0,
+        reconnectTimeoutId: null,
       };
       sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
     }
