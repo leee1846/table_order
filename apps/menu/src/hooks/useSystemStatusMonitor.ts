@@ -49,7 +49,6 @@ export const useSystemStatusMonitor = () => {
   useEffect(() => {
     // 시스템 상태 업데이트 핸들러: 배터리 및 WiFi 신호 변경 시 호출됨
     const handleStatusUpdate = async (status: SystemStatus) => {
-      // TODO 브릿지가 계속 pending상태임 체크 필요.
       const currentDeviceData = deviceDataRef.current;
       const currentShopData = shopDataRef.current;
 
@@ -150,8 +149,10 @@ export const useSystemStatusMonitor = () => {
               // deviceType에 따라 올바른 필드만 설정
               tableNumber: deviceType === 'ORDER_POS' ? null : tableNumber,
               battery: newBattery ?? currentDeviceData.battery ?? 0,
-              orderPosNumber: deviceType === 'ORDER_POS' ? (currentDeviceData.orderPosNumber ?? null) : null,
-              // TODO: 아래 2개의 data도 app에서 값을 가져와야함.
+              orderPosNumber:
+                deviceType === 'ORDER_POS'
+                  ? (currentDeviceData.orderPosNumber ?? null)
+                  : null,
               version: currentDeviceData.version ?? '',
               buildNumber: currentDeviceData.buildNumber ?? '',
             });

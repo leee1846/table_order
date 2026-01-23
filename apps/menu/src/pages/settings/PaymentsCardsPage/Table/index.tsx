@@ -1,10 +1,8 @@
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import * as S from '@/pages/settings/PaymentsCardsPage/Table/table.style';
 import { theme } from '@repo/ui';
-// import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency } from '@repo/util/string';
-// import { openDualActionDialog } from '@repo/feature/utils';
 import type { ICardApprovalHistoryItem } from '@repo/api/types';
 
 interface Props {
@@ -13,7 +11,9 @@ interface Props {
 }
 
 const toNumber = (value?: number | string | null) => {
-  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : 0;
+  }
   if (typeof value === 'string') {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : 0;
@@ -22,7 +22,9 @@ const toNumber = (value?: number | string | null) => {
 };
 
 const formatTransactionDate = (raw?: string | null) => {
-  if (!raw) return '-';
+  if (!raw) {
+    return '-';
+  }
   const digits = raw.replace(/\D/g, '');
 
   if (digits.length >= 14) {
@@ -49,17 +51,6 @@ export const Table = ({ items, pageSize }: Props) => {
     return isCancel ? theme.colors.semantic[400] : theme.colors.grey[700];
   };
 
-  // const onClickCancel = () => {
-  //   openDualActionDialog({
-  //     title: t('정말 취소하시겠습니까?'),
-  //     primaryText: t('확인'),
-  //     secondaryText: t('취소'),
-  //     onConfirm: () => {
-  //       // TODO: 취소 로직 추가
-  //     },
-  //   });
-  // };
-
   const renderRows = () => {
     if (!items || items.length === 0) {
       return (
@@ -77,7 +68,7 @@ export const Table = ({ items, pageSize }: Props) => {
       const transactionDate = formatTransactionDate(item.transactionDate);
 
       return (
-        <tr key={`${index}-${item.approvalNumber}`}>
+        <tr key={`${index + 1}-${item.approvalNumber}`}>
           <S.ColorTd color={getTextColor(isCancel, true)}>
             {item.approvalType === 'APPROVAL' ? t('승인') : t('취소')}
           </S.ColorTd>
@@ -106,16 +97,6 @@ export const Table = ({ items, pageSize }: Props) => {
             {formatCurrency(vat)}
           </S.ColorTd>
           <td>-</td>
-          {/* <td>
-            <BasicButton
-              variant="Outline_Navy_M"
-              onClick={onClickCancel}
-              customStyle={S.cancelButtonCss}
-              disabled={isCancel}
-            >
-              {t('취소')}
-            </BasicButton>
-          </td> */}
         </tr>
       );
     });
