@@ -105,33 +105,24 @@ export const useSystemStatusMonitor = () => {
   //상태 업데이트 함수
   const handleStatusUpdate = useCallback(
     async (status: SystemStatus) => {
-      const currentState = deviceStateRef.current;
-      let shouldPost = false;
-
-      const updatedState: IPostDeviceDetailRequestBase = {
-        ...currentState,
-      };
-
-      if (status.battery !== undefined && status.battery !== null) {
-        if (currentState.battery !== status.battery) {
-          updatedState.battery = status.battery;
-          shouldPost = true;
-        }
-      }
-
-      if (status.wifi !== undefined && status.wifi !== null) {
-        const wifiSignal = String(status.wifi);
-        if (currentState.wifiSignal !== wifiSignal) {
-          updatedState.wifiSignal = wifiSignal;
-          shouldPost = true;
-        }
-      }
-
-      if (!shouldPost) {
+      // 배터리는 무시하고 WiFi만 처리
+      if (status.wifi === undefined || status.wifi === null) {
         return;
       }
 
-      deviceStateRef.current = updatedState;
+      const currentState = deviceStateRef.current;
+      const wifiSignal = String(status.wifi);
+
+      // WiFi 값이 변경되지 않았으면 종료
+      if (currentState.wifiSignal === wifiSignal) {
+        return;
+      }
+
+      // WiFi 값만 업데이트
+      deviceStateRef.current = {
+        ...currentState,
+        wifiSignal,
+      };
 
       await tryPostDeviceDetail();
     },
@@ -145,7 +136,8 @@ export const useSystemStatusMonitor = () => {
     }
 
     try {
-      //배터리, 와이파이 신호 감지 리스너 등록 네이티브에서 배터리랑 와이파이 값이 달라지면 handleStatusUpdate 함수 호출
+      // WiFi 신호 감지 리스너 등록 - 네이티브에서 WiFi 값이 달라지면 handleStatusUpdate 함수 호출
+      // 배터리 변경은 무시하고 처리하지 않음
       SystemControl.startMonitoring(handleStatusUpdate);
       isMonitoringRef.current = true;
     } catch (error) {
