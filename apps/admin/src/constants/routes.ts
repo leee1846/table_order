@@ -143,6 +143,10 @@ export const ROUTES = {
         generate: () => '/settings/sales/report',
       },
     },
+    DEVICE_MANAGEMENT: {
+      path: 'device-management',
+      generate: () => '/settings/device-management',
+    },
     TABLES: {
       path: 'tables',
       generate: () => '/settings/tables',

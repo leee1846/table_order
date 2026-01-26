@@ -83,12 +83,13 @@ const Title = styled.h2<{ isMenu: boolean }>`
 const Content = styled.div<{ isMenu: boolean }>`
   font-size: 0.875rem;
   color: ${({ theme, isMenu }) =>
-    isMenu ? theme.mode.grey[600] : theme.colors.grey[600]}s;
+    isMenu ? theme.mode.grey[600] : theme.colors.grey[600]};
   margin-bottom: 24px;
   line-height: 1.6;
   overflow-y: auto;
   flex: 1;
   white-space: pre-line;
+  text-align: center;
 
   &::-webkit-scrollbar {
     width: 8px;

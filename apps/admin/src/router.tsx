@@ -230,6 +230,11 @@ const MiscellaneousPage = lazy(() =>
     default: module.MiscellaneousPage,
   }))
 );
+const DeviceManagementPage = lazy(() =>
+  import('@/pages/settings/DeviceManagementPage').then((module) => ({
+    default: module.DeviceManagementPage,
+  }))
+);
 const MenuScreenPage = lazy(() =>
   import('@/pages/settings/MenuScreenPage').then((module) => ({
     default: module.MenuScreenPage,
@@ -653,6 +658,15 @@ const createSettingsRoutes = () => [
   {
     path: ROUTES.SETTINGS.MISCELLANEOUS.path,
     element: <MiscellaneousPage />,
+  },
+  {
+    path: ROUTES.SETTINGS.DEVICE_MANAGEMENT.path,
+    loader: requireWebLoader,
+    element: (
+      <Suspense fallback={<FullscreenLoadingSpinner />}>
+        <DeviceManagementPage />
+      </Suspense>
+    ),
   },
 ];
 

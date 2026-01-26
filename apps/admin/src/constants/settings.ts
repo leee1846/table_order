@@ -91,6 +91,15 @@ export const createSidebarMenus = (
             },
           ],
     },
+    ...(CapacitorApp.isNative()
+      ? []
+      : [
+          {
+            id: 'device-management',
+            label: translate('기기관리'),
+            path: ROUTES.SETTINGS.DEVICE_MANAGEMENT.generate(),
+          },
+        ]),
     {
       id: 'menu-screen',
       label: translate('메뉴 화면'),

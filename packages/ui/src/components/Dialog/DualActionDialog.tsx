@@ -99,6 +99,7 @@ const Content = styled.div<{ isMenu: boolean }>`
     isMenu ? theme.mode.grey[600] : theme.colors.grey[600]};
   margin-bottom: 40px;
   white-space: pre-line;
+  text-align: center;
 `;
 
 const ButtonGroup = styled.div`

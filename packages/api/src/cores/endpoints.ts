@@ -47,7 +47,7 @@ export const ENDPOINTS = {
     CUSTOM_AMOUNT: '/order/custom-amount',
     ORDER_LOG_LIST: (shopCode: string) => `/order/log/${shopCode}`,
     ORDER_ONBOARDING_TEST: (shopCode: string) =>
-      `/order/onboarding/test/${shopCode}`,
+      `/order/on-boarding/test/${shopCode}`,
   },
 
   CATEGORY: {
