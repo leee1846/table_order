@@ -63,7 +63,7 @@ export const Account = () => {
           </BasicButton>
         </S.TitleContainer>
         <S.SID>
-          SID <span>{shopCode}</span>
+          {t('매장 아이디')} <span>{shopCode}</span>
         </S.SID>
       </UIStyles.setting.Header>
 

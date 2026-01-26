@@ -285,5 +285,6 @@
   "(발급사)": "(Issuer)",
   "공급가": "Supply Price",
   "부가세": "VAT",
-  "영수증": "Receipt"
+  "영수증": "Receipt",
+  "매장 아이디": "Store ID"
 }
