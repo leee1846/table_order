@@ -44,6 +44,7 @@
   "{{minAmount}}원-{{maxAmount}}원 까지 적용할 수 있어요.": "You can apply between {{minAmount}} KRW and {{maxAmount}} KRW.",
   "등록된 메뉴가 없습니다.": "No menu items registered.",
   "최소 주문 수량은 {{minQuantity}}개 입니다.": "Minimum order quantity is {{minQuantity}} items.",
+  "{{menuName}}의 최소 주문 수량은 {{minQuantity}}개 입니다.": "The minimum order quantity for {{menuName}} is {{minQuantity}} items.",
   "메뉴가 품절되었습니다.": "Menu item is out of stock.",
   "메뉴가 담겼습니다.": "Item added to cart.",
   "메뉴를 주문할까요?": "Would you like to place an order?",

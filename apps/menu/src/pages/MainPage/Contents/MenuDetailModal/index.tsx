@@ -63,7 +63,8 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
       toast(
         t('최소 주문 수량은 {{minQuantity}}개 입니다.', {
           minQuantity: menu.minQuantity,
-        })
+        }),
+        { position: 'center-center', duration: 1500 }
       );
       return;
     }

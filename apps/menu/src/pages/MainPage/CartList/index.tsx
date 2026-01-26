@@ -147,6 +147,29 @@ export const CartList = ({
       }
     }
 
+    // 최소 주문 수량 검증
+    for (const cartMenu of cartData.menus) {
+      const originalMenu = categories
+        .find((category) => category.categorySeq === cartMenu.categorySeq)
+        ?.menuInfoList.find((menu) => menu.menuSeq === cartMenu.menuSeq);
+
+      if (
+        originalMenu &&
+        originalMenu.minQuantity &&
+        originalMenu.minQuantity > 0 &&
+        originalMenu.minQuantity > cartMenu.quantity
+      ) {
+        toast(
+          t('{{menuName}}의 최소 주문 수량은 {{minQuantity}}개 입니다.', {
+            menuName: cartMenu.menuName,
+            minQuantity: originalMenu.minQuantity,
+          }),
+          { position: 'center-center', duration: 1500 }
+        );
+        return;
+      }
+    }
+
     const totalMenuAmount = calculateTotalPrice();
     const firstOrderMinAmount =
       shopDetailData?.shopSetting?.firstOrderMinAmount;
