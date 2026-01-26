@@ -32,6 +32,7 @@ import {
   INSTALLMENT_LUMP_SUM,
   formatInstallmentMonthsToString,
 } from '@/feature/Installment';
+import { useTableGroupData } from '@/hooks/useTableGroupData';
 
 interface Props {
   onClose: () => void;
@@ -774,6 +775,14 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    */
   const hasAnyPayment = paidMenuIds.size > 0 || paidPersonIds.size > 0;
 
+  const { data: tableGroupsData } = useTableGroupData();
+  const tableName = tableGroupsData?.map((tableGroup) => {
+    const table = tableGroup.tableList?.find(
+      (table) => table.tableNumber === deviceData?.tableNumber
+    );
+    return table?.tableName ?? '';
+  });
+
   return (
     <>
       <ModalBackground>
@@ -860,8 +869,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
           <S.RightContainer>
             <h2>
-              {t('테이블')}
-              {deviceData?.tableNumber} {t('총 주문내역')}
+              {tableName} {t('총 주문내역')}
             </h2>
 
             <S.OrderList role="list" aria-label={t('총 주문내역')}>
