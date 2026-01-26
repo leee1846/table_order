@@ -8,7 +8,7 @@ export const MAX_NAME_LENGTH = 40;
  * 설명 필드 최대 길이 제한
  * DB VARCHAR(500) 기준으로 400자로 제한
  */
-export const MAX_DESCRIPTION_LENGTH = 400;
+export const MAX_DESCRIPTION_LENGTH = 300;
 
 /**
  * 기기 타입을 i18n 키(한국어)로 변환합니다.
@@ -37,4 +37,3 @@ export const getDeviceTypeLabel = (
       return deviceType;
   }
 };
-

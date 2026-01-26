@@ -8,6 +8,7 @@ import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
 import { usePostPickupMessage } from '@repo/api/queries';
 import * as S from './pickupNotificationDialog.style';
+import { MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 
 const { colors } = theme;
 
@@ -90,6 +91,7 @@ export const PickupNotificationDialog = ({
               placeholder={t('메시지를 입력하세요')}
               rows={4}
               disabled={!isCustomInput}
+              maxLength={MAX_DESCRIPTION_LENGTH}
             />
           </S.TextAreaWrapper>
         </S.InputSection>
