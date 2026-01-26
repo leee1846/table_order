@@ -15,13 +15,13 @@ import {
   queryKeys,
   useDeleteTableGroup,
   useGetShopThemeMenu,
-  useGetShopThemePage,
 } from '@repo/api/queries';
 import { TableGroupItem } from './TableGroupItem';
 import { ROUTES } from '@/constants/routes';
-import { useState, useRef, useLayoutEffect, useEffect, useMemo } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import type { ITableGroup } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
+import { CapacitorApp } from '@repo/util/app';
 
 const { colors } = theme;
 
@@ -274,7 +274,11 @@ export const Sidebar = ({
 
       <S.FloatingHomeButton
         type="button"
-        onClick={() => navigate(ROUTES.TABLES.generate())}
+        onClick={() =>
+          CapacitorApp.isNative()
+            ? navigate(ROUTES.TABLES.generate())
+            : navigate(ROUTES.SETTINGS.NOTICES.generate())
+        }
       >
         <HomeFilledIcon width={24} height={24} color={colors.grey[700]} />
         <span>{t('메인 홈')}</span>

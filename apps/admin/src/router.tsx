@@ -706,7 +706,6 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.SETTINGS.TABLES.path,
-            loader: requireNativeLoader,
             element: createLazyRoute(SettingsTablesPage),
           },
         ],

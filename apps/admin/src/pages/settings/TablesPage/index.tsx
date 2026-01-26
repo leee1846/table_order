@@ -53,7 +53,9 @@ export const TablesPage = () => {
 
   // 선택된 테이블 그룹 찾기
   const selectedGroup = useMemo(() => {
-    if (!selectedTableGroupId) return null;
+    if (!selectedTableGroupId) {
+      return null;
+    }
     return tableGroups.find(
       (group) => group.tableGroupSeq === selectedTableGroupId
     );
@@ -109,17 +111,17 @@ export const TablesPage = () => {
       <S.TableGridContainer>
         <S.GridContainer>
           {selectedGroup?.tableList?.map((table: ITableInfo) => (
-            <TableCard 
-              key={table.tableSeq} 
+            <TableCard
+              key={table.tableSeq}
               table={table}
               isSelected={selectedTable?.tableSeq === table.tableSeq}
               onSelect={() => setSelectedTable(table)}
             />
           ))}
         </S.GridContainer>
-        <BottomActions 
-          onAddTable={handleAddTable} 
-          isPosLinked={isPosLinked} 
+        <BottomActions
+          onAddTable={handleAddTable}
+          isPosLinked={isPosLinked}
           shopCode={shopCode}
           table={selectedTable}
         />

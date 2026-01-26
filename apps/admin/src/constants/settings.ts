@@ -125,15 +125,13 @@ export const createSidebarMenus = (
     },
   ];
 
-  // native일 때만 'tables' 메뉴 추가
-  if (CapacitorApp.isNative()) {
-    const tablesMenuIndex = menus.findIndex((menu) => menu.id === 'sales');
-    menus.splice(tablesMenuIndex + 1, 0, {
-      id: 'tables',
-      label: translate('테이블 설정'),
-      path: ROUTES.SETTINGS.TABLES.generate(),
-    });
-  }
+  // 'tables' 메뉴 추가 (웹과 앱 모두에서 표시)
+  const tablesMenuIndex = menus.findIndex((menu) => menu.id === 'sales');
+  menus.splice(tablesMenuIndex + 1, 0, {
+    id: 'tables',
+    label: translate('테이블 설정'),
+    path: ROUTES.SETTINGS.TABLES.generate(),
+  });
 
   return menus;
 };
