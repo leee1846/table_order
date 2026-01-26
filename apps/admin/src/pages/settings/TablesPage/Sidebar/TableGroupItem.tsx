@@ -34,24 +34,29 @@ export const TableGroupItem = ({
 }: TableGroupItemProps) => {
   const editDeleteButtonsRef = useRef<HTMLDivElement>(null);
 
+  const handleClick = () => {
+    // 다른 그룹을 클릭한 경우 수정/삭제 버튼 숨김
+    if (editingGroupId !== null && editingGroupId !== group.tableGroupSeq) {
+      onEditingChange(null);
+    }
+    onSelect(group.tableGroupSeq);
+  };
+
   const { handlers: longPressHandlers } = useLongPress({
     delay: 500,
     onLongPress: () => {
       onEditingChange(group.tableGroupSeq);
       onSelect(group.tableGroupSeq);
     },
-    onClick: () => {
-      // 다른 그룹을 클릭한 경우 수정/삭제 버튼 숨김
-      if (editingGroupId !== null && editingGroupId !== group.tableGroupSeq) {
-        onEditingChange(null);
-      }
-      onSelect(group.tableGroupSeq);
-    },
+    onClick: handleClick,
   });
 
   return (
     <S.TableGroupItemWrapper data-group-id={group.tableGroupSeq}>
-      <S.TableGroupItem {...(isPosLinked ? {} : longPressHandlers)} isSelected={isSelected}>
+      <S.TableGroupItem
+        {...(isPosLinked ? { onClick: handleClick } : longPressHandlers)}
+        isSelected={isSelected}
+      >
         {group.tableGroupName}
       </S.TableGroupItem>
       {isEditing && (
