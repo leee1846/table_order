@@ -1,9 +1,9 @@
-import { Input, BasicButton } from '@repo/ui/components';
 import { allowOnlyNumbers } from '@repo/util/string';
 import { usePostAdminMemberPWReset } from '@repo/api/queries';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import * as S from '../StoreInfoTab/storeInfoTab.style';
 import type { ICreateAdminMemberRequest } from '@repo/api/types';
+import { Input, Button } from '@/feature/AdminWeb/components';
 
 interface Props {
   formData: ICreateAdminMemberRequest;
@@ -36,67 +36,63 @@ export const MemberInfoTab = ({ formData, updateFormData }: Props) => {
 
   return (
     <S.Container>
-      {!hasMember && (
-        <S.Section>
-          <S.MessageText>
-            계정이 존재하지 않습니다. 계정을 생성하세요
-          </S.MessageText>
-        </S.Section>
-      )}
-
       <S.Section>
-        <S.FieldGroup>
-          <S.Label>
-            아이디 <span>*</span>
-          </S.Label>
-          <Input
-            placeholder="아이디"
-            value={formData.memberId ?? ''}
-            onChange={() => {
-              // readOnly
-            }}
-            disabled
-          />
-        </S.FieldGroup>
-      </S.Section>
+        <S.FormContent>
+          {!hasMember && (
+            <S.MessageText>
+              계정이 존재하지 않습니다. 계정을 생성하세요
+            </S.MessageText>
+          )}
 
-      <S.Section>
-        <S.HorizontalLayout>
           <S.FieldGroup>
             <S.Label>
-              회원 이름 <span>*</span>
+              아이디 <span>*</span>
             </S.Label>
             <Input
-              placeholder="회원 이름을 입력하세요"
-              value={formData.memberName || ''}
-              onChange={(value) => updateFormData({ memberName: value })}
+              placeholder="아이디"
+              value={formData.memberId ?? ''}
+              onChange={() => {
+                // readOnly
+              }}
+              disabled
             />
           </S.FieldGroup>
-          <S.FieldGroup>
-            <S.Label>
-              회원 전화번호 <span>*</span>
-            </S.Label>
-            <Input
-              placeholder="회원 전화번호를 입력하세요"
-              value={formData.memberTel || ''}
-              onChange={(value) =>
-                updateFormData({ memberTel: allowOnlyNumbers(value) })
-              }
-              type="tel"
-            />
-          </S.FieldGroup>
-        </S.HorizontalLayout>
-      </S.Section>
 
-      {hasMember && (
-        <S.Section>
-          <S.ButtonContainer>
-            <BasicButton variant="Outline_Navy_M" onClick={handleResetPassword}>
-              비밀번호 초기화
-            </BasicButton>
-          </S.ButtonContainer>
-        </S.Section>
-      )}
+          <S.HorizontalLayout>
+            <S.FieldGroup>
+              <S.Label>
+                회원 이름 <span>*</span>
+              </S.Label>
+              <Input
+                placeholder="회원 이름을 입력하세요"
+                value={formData.memberName || ''}
+                onChange={(value) => updateFormData({ memberName: value })}
+              />
+            </S.FieldGroup>
+            <S.FieldGroup>
+              <S.Label>
+                회원 전화번호 <span>*</span>
+              </S.Label>
+              <Input
+                placeholder="회원 전화번호를 입력하세요"
+                value={formData.memberTel || ''}
+                onChange={(value) =>
+                  updateFormData({ memberTel: allowOnlyNumbers(value) })
+                }
+                type="tel"
+              />
+            </S.FieldGroup>
+          </S.HorizontalLayout>
+
+          {hasMember && (
+            <S.ButtonContainer>
+              <Button variant="outline" onClick={handleResetPassword}>
+                비밀번호 초기화
+              </Button>
+            </S.ButtonContainer>
+          )}
+        </S.FormContent>
+      </S.Section>
     </S.Container>
   );
 };

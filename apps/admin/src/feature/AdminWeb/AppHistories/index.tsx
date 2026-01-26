@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { BasicButton } from '@repo/ui/components';
 import { AppHistoryForm } from './AppHistoryForm';
 import { ChangeHistoryDialog } from '../ChangeHistoryDialog';
 import * as S from './appHistories.style';
@@ -7,6 +6,7 @@ import {
   type AppHistoriesFormData,
   DEFAULT_APP_HISTORIES_DATA,
 } from './constants';
+import { Button } from '@/feature/AdminWeb/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -57,33 +57,30 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
   };
 
   return (
-    <S.Container>
-      <S.Header>
-        <S.Titles>
-          <p>앱 히스토리</p>
-          <span />
-          <div>
-            <p>{getTitle()}</p>
-          </div>
-        </S.Titles>
-        {mode === 'detail' ? (
-          <BasicButton variant="Outline_Navy_M" onClick={handleHistory}>
-            변경 이력
-          </BasicButton>
-        ) : (
-          <BasicButton variant="Solid_Navy_M" onClick={handleSave}>
-            저장
-          </BasicButton>
-        )}
-      </S.Header>
+    <S.PageWrapper>
+      <S.Container>
+        <S.TitleContainer>
+          <S.Title>
+            앱 히스토리
+            <div />
+            <span>{getTitle()}</span>
+          </S.Title>
+          {mode === 'detail' ? (
+            <Button variant="outline" onClick={handleHistory}>
+              변경 이력
+            </Button>
+          ) : (
+            <Button variant="default" onClick={handleSave}>
+              저장
+            </Button>
+          )}
+        </S.TitleContainer>
 
-      <S.Content>
         <AppHistoryForm
           mode={mode}
           formData={formData}
           updateFormData={updateFormData}
         />
-      </S.Content>
       <ChangeHistoryDialog
         isOpen={isHistoryDialogOpen}
         onClose={handleCloseHistoryDialog}
@@ -95,6 +92,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
           },
         ]}
       />
-    </S.Container>
+      </S.Container>
+    </S.PageWrapper>
   );
 };

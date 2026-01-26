@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Pagination, Input, BasicButton } from '@repo/ui/components';
 import { useGetAppVersionList } from '@repo/api/queries';
 import { Table } from './Table';
 import * as S from './appHistoriesPage.style';
-import * as UIStyles from '@repo/ui/styles';
 import { ROUTES } from '@/constants/routes';
 import { useTablePageState } from '@/feature/AdminWeb/hooks';
+import { Input, Button, Pagination } from '@/feature/AdminWeb/components';
 
 const PAGE_SIZE = 10;
 
@@ -43,7 +42,7 @@ export const AppHistoriesPage = () => {
   };
 
   return (
-    <UIStyles.setting.TablePageContainer>
+    <S.PageWrapper>
       <S.Container>
         <S.Title>
           앱 히스토리
@@ -59,22 +58,24 @@ export const AppHistoriesPage = () => {
               onChange={handleSearchInputChange}
             />
           </S.SearchInputWrapper>
-          <BasicButton variant="Solid_Navy_M" onClick={handleCreate}>
+          <Button variant="default" onClick={handleCreate}>
             앱 히스토리 생성
-          </BasicButton>
+          </Button>
         </S.SearchContainer>
 
-        <Table histories={histories} />
+        <S.TableWrapper>
+          <Table histories={histories} />
+        </S.TableWrapper>
       </S.Container>
 
-      <UIStyles.setting.Footer>
+      <S.Footer>
         <div />
         <Pagination
           totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={handlePageChange}
         />
-      </UIStyles.setting.Footer>
-    </UIStyles.setting.TablePageContainer>
+      </S.Footer>
+    </S.PageWrapper>
   );
 };

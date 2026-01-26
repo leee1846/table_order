@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { BasicButton } from '@repo/ui/components';
 import { NoticesForm } from './NoticesForm';
 import { ChangeHistoryDialog } from '../ChangeHistoryDialog';
 import * as S from './notices.style';
 import { type NoticesFormData, DEFAULT_NOTICES_DATA } from './constants';
+import { Button } from '@/feature/AdminWeb/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -54,40 +54,37 @@ export const Notices = ({ mode, initialData, onSave, onDelete }: Props) => {
   };
 
   return (
-    <S.Container>
-      <S.Header>
-        <S.Titles>
-          <p>공지사항</p>
-          <span />
-          <div>
-            <p>{getTitle()}</p>
-          </div>
-        </S.Titles>
-        {mode === 'detail' ? (
-          <BasicButton variant="Outline_Navy_M" onClick={handleHistory}>
-            변경 이력
-          </BasicButton>
-        ) : (
-          <div style={{ display: 'flex', gap: '8px' }}>
-            {mode === 'edit' && onDelete && (
-              <BasicButton variant="Outline_Grey_M" onClick={onDelete}>
-                삭제
-              </BasicButton>
-            )}
-            <BasicButton variant="Solid_Navy_M" onClick={handleSave}>
-              저장
-            </BasicButton>
-          </div>
-        )}
-      </S.Header>
+    <S.PageWrapper>
+      <S.Container>
+        <S.TitleContainer>
+          <S.Title>
+            공지사항
+            <div />
+            <span>{getTitle()}</span>
+          </S.Title>
+          {mode === 'detail' ? (
+            <Button variant="outline" onClick={handleHistory}>
+              변경 이력
+            </Button>
+          ) : (
+            <S.ButtonGroup>
+              {mode === 'edit' && onDelete && (
+                <Button variant="outline" onClick={onDelete}>
+                  삭제
+                </Button>
+              )}
+              <Button variant="default" onClick={handleSave}>
+                저장
+              </Button>
+            </S.ButtonGroup>
+          )}
+        </S.TitleContainer>
 
-      <S.Content>
         <NoticesForm
           mode={mode}
           formData={formData}
           updateFormData={updateFormData}
         />
-      </S.Content>
       <ChangeHistoryDialog
         isOpen={isHistoryDialogOpen}
         onClose={handleCloseHistoryDialog}
@@ -99,6 +96,7 @@ export const Notices = ({ mode, initialData, onSave, onDelete }: Props) => {
           },
         ]}
       />
-    </S.Container>
+      </S.Container>
+    </S.PageWrapper>
   );
 };

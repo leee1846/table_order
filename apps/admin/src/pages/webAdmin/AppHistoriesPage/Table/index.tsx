@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { BasicButton } from '@repo/ui/components';
 import { formatDateTime } from '@repo/util/date';
-import * as UIStyles from '@repo/ui/styles';
 import { ROUTES } from '@/constants/routes';
 import type { IAppVersion } from '@repo/api/types';
+import { theme } from '@repo/ui';
+import { EditIcon, InfoIcon } from '@repo/ui/icons';
+import { Button } from '@/feature/AdminWeb/components';
+import * as S from './table.style';
 
 interface Props {
   histories: IAppVersion[];
@@ -35,59 +37,59 @@ export const Table = ({ histories }: Props) => {
   const renderRows = () => {
     if (!histories || histories.length === 0) {
       return (
-        <tr>
-          <td colSpan={6}>앱 히스토리 목록이 없습니다.</td>
-        </tr>
+        <S.EmptyRow>
+          <S.EmptyCell colSpan={6}>앱 히스토리 목록이 없습니다.</S.EmptyCell>
+        </S.EmptyRow>
       );
     }
 
     return histories.map((history) => {
       const id = history.appVersionSeq ?? 0;
       return (
-        <tr key={id}>
-          <td>{history.appVersionSeq || '_'}</td>
-          <td>{history.type || '_'}</td>
-          <td>{formatDeployDate(history.deployDate) || '_'}</td>
-          <td>{history.version || '_'}</td>
-          <td>{history.title || '_'}</td>
-          <td>
-            <div
-              style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
-            >
-              <BasicButton
-                variant="Outline_Blue_S"
+        <S.Tr key={id}>
+          <S.Td>{history.appVersionSeq || '-'}</S.Td>
+          <S.Td>{history.type || '-'}</S.Td>
+          <S.Td>{formatDeployDate(history.deployDate) || '-'}</S.Td>
+          <S.Td>{history.version || '-'}</S.Td>
+          <S.Td>{history.title || '-'}</S.Td>
+          <S.ActionCell>
+            <S.ActionWrapper>
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => handleEdit(id)}
               >
-                수정
-              </BasicButton>
-              <BasicButton
-                variant="Outline_Grey_S"
-                onClick={() => handleDetail(id)}
-              >
+                <EditIcon
+                  width={16}
+                  height={16}
+                  color={theme.colors.grey[700]}
+                />
+              </Button>
+              <Button variant="ghost" onClick={() => handleDetail(id)}>
                 상세
-              </BasicButton>
-            </div>
-          </td>
-        </tr>
+              </Button>
+            </S.ActionWrapper>
+          </S.ActionCell>
+        </S.Tr>
       );
     });
   };
 
   return (
-    <div>
-      <UIStyles.setting.Table>
-        <UIStyles.setting.Thead>
-          <tr>
-            <th>ID</th>
-            <th>구분</th>
-            <th>배포일시</th>
-            <th>버전</th>
-            <th>제목</th>
-            <th>작업</th>
-          </tr>
-        </UIStyles.setting.Thead>
-        <UIStyles.setting.Tbody>{renderRows()}</UIStyles.setting.Tbody>
-      </UIStyles.setting.Table>
-    </div>
+    <S.TableContainer>
+      <S.TableElement>
+        <S.Thead>
+          <S.Tr>
+            <S.Th>ID</S.Th>
+            <S.Th>구분</S.Th>
+            <S.Th>배포일시</S.Th>
+            <S.Th>버전</S.Th>
+            <S.Th>제목</S.Th>
+            <S.Th>작업</S.Th>
+          </S.Tr>
+        </S.Thead>
+        <S.Tbody>{renderRows()}</S.Tbody>
+      </S.TableElement>
+    </S.TableContainer>
   );
 };

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Input, Dropdown, Calender } from '@repo/ui/components';
+import { Calender } from '@repo/ui/components';
 import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { toast } from '@repo/feature/utils';
@@ -7,6 +7,7 @@ import { formatDateTime } from '@repo/util/date';
 import type { TAppType } from '@repo/api/types';
 import * as S from './appHistoryForm.style';
 import type { AppHistoriesFormData } from '../constants';
+import { Input, Dropdown } from '@/feature/AdminWeb/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -174,141 +175,133 @@ export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
     <>
       <S.Container>
         <S.Section>
-          <S.FieldGroup>
-            <S.Label>
-              구분 <span>*</span>
-            </S.Label>
-            <Dropdown
-              options={TYPE_OPTIONS}
-              value={formData.type}
-              onChange={(value) => updateFormData({ type: value as TAppType })}
-              disabled={isReadOnly}
-            />
-          </S.FieldGroup>
-        </S.Section>
-
-        <S.Section>
-          <S.FieldGroup>
-            <S.Label>
-              제목 <span>*</span>
-            </S.Label>
-            <Input
-              placeholder="제목을 입력하세요"
-              value={formData.title}
-              onChange={(value) => updateFormData({ title: value })}
-              disabled={isReadOnly}
-            />
-          </S.FieldGroup>
-        </S.Section>
-
-        <S.Section>
-          <S.FieldGroup>
-            <S.Label>
-              배포일시 <span>*</span>
-            </S.Label>
-            {isReadOnly ? (
-              <Input
-                placeholder="배포일시"
-                value={formData.deployDateTime}
-                onChange={() => {
-                  // readOnly
-                }}
-                disabled
+          <S.FormContent>
+            <S.FieldGroup>
+              <S.Label>
+                구분 <span>*</span>
+              </S.Label>
+              <Dropdown
+                options={TYPE_OPTIONS}
+                value={formData.type}
+                onChange={(value) => updateFormData({ type: value as TAppType })}
+                disabled={isReadOnly}
               />
-            ) : (
-              <S.DateTimeContainer>
-                <S.CalendarButton
-                  type="button"
-                  onClick={() => setShowCalender(true)}
-                >
-                  <CalendarMonthIcon
-                    width={32}
-                    height={32}
-                    color={theme.colors.grey[700]}
+            </S.FieldGroup>
+
+            <S.FieldGroup>
+              <S.Label>
+                제목 <span>*</span>
+              </S.Label>
+              <Input
+                placeholder="제목을 입력하세요"
+                value={formData.title}
+                onChange={(value) => updateFormData({ title: value })}
+                disabled={isReadOnly}
+              />
+            </S.FieldGroup>
+
+            <S.FieldGroup>
+              <S.Label>
+                배포일시 <span>*</span>
+              </S.Label>
+              {isReadOnly ? (
+                <Input
+                  placeholder="배포일시"
+                  value={formData.deployDateTime}
+                  onChange={() => {
+                    // readOnly
+                  }}
+                  disabled
+                />
+              ) : (
+                <S.DateTimeContainer>
+                  <S.CalendarButton
+                    type="button"
+                    onClick={() => setShowCalender(true)}
+                  >
+                    <CalendarMonthIcon
+                      width={16}
+                      height={16}
+                      color={theme.colors.grey[700]}
+                    />
+                    <S.CalendarText>{displayDate || '날짜 선택'}</S.CalendarText>
+                  </S.CalendarButton>
+                  <S.HourDropdownWrapper onClick={handleHourDropdownClick}>
+                    <Dropdown
+                      options={HOUR_OPTIONS}
+                      value={selectedHour}
+                      onChange={handleHourChange}
+                      disabled={isReadOnly || !isDateSelected}
+                      placeholder="시간 선택"
+                    />
+                  </S.HourDropdownWrapper>
+                  <S.MinuteDropdownWrapper onClick={handleMinuteDropdownClick}>
+                    <Dropdown
+                      options={MINUTE_OPTIONS}
+                      value={selectedMinute}
+                      onChange={handleMinuteChange}
+                      disabled={isReadOnly || !isDateSelected || !isHourSelected}
+                      placeholder="분 선택"
+                    />
+                  </S.MinuteDropdownWrapper>
+                </S.DateTimeContainer>
+              )}
+            </S.FieldGroup>
+
+            <S.FieldGroup>
+              <S.Label>
+                버전 <span>*</span>
+              </S.Label>
+              <Input
+                placeholder="버전을 입력하세요 (예: 1.2.3)"
+                value={formData.version}
+                onChange={(value) => updateFormData({ version: value })}
+                disabled={isReadOnly}
+              />
+            </S.FieldGroup>
+
+            <S.FieldGroup>
+              <S.Label>
+                내용 <span>*</span>
+              </S.Label>
+              <S.TextArea
+                ref={textAreaRef}
+                placeholder="내용을 입력하세요"
+                value={formData.content}
+                onChange={(e) => updateFormData({ content: e.target.value })}
+                disabled={isReadOnly}
+                isDetail={isReadOnly}
+              />
+            </S.FieldGroup>
+
+            {(mode === 'edit' || mode === 'detail') && (
+              <S.HorizontalLayout>
+                <S.FieldGroup>
+                  <S.Label>최초 등록일시</S.Label>
+                  <Input
+                    placeholder="최초 등록일시"
+                    value={formData.createdAt || ''}
+                    onChange={() => {
+                      // readOnly
+                    }}
+                    disabled
                   />
-                  <S.CalendarText>{displayDate || '날짜 선택'}</S.CalendarText>
-                </S.CalendarButton>
-                <S.HourDropdownWrapper onClick={handleHourDropdownClick}>
-                  <Dropdown
-                    options={HOUR_OPTIONS}
-                    value={selectedHour}
-                    onChange={handleHourChange}
-                    disabled={isReadOnly || !isDateSelected}
-                    placeholder="시간 선택"
+                </S.FieldGroup>
+                <S.FieldGroup>
+                  <S.Label>마지막 수정일시</S.Label>
+                  <Input
+                    placeholder="마지막 수정일시"
+                    value={formData.updatedAt || ''}
+                    onChange={() => {
+                      // readOnly
+                    }}
+                    disabled
                   />
-                </S.HourDropdownWrapper>
-                <S.MinuteDropdownWrapper onClick={handleMinuteDropdownClick}>
-                  <Dropdown
-                    options={MINUTE_OPTIONS}
-                    value={selectedMinute}
-                    onChange={handleMinuteChange}
-                    disabled={isReadOnly || !isDateSelected || !isHourSelected}
-                    placeholder="분 선택"
-                  />
-                </S.MinuteDropdownWrapper>
-              </S.DateTimeContainer>
+                </S.FieldGroup>
+              </S.HorizontalLayout>
             )}
-          </S.FieldGroup>
+          </S.FormContent>
         </S.Section>
-
-        <S.Section>
-          <S.FieldGroup>
-            <S.Label>
-              버전 <span>*</span>
-            </S.Label>
-            <Input
-              placeholder="버전을 입력하세요 (예: 1.2.3)"
-              value={formData.version}
-              onChange={(value) => updateFormData({ version: value })}
-              disabled={isReadOnly}
-            />
-          </S.FieldGroup>
-        </S.Section>
-
-        <S.Section>
-          <S.FieldGroup>
-            <S.Label>
-              내용 <span>*</span>
-            </S.Label>
-            <S.TextArea
-              ref={textAreaRef}
-              placeholder="내용을 입력하세요"
-              value={formData.content}
-              onChange={(e) => updateFormData({ content: e.target.value })}
-              disabled={isReadOnly}
-              isDetail={isReadOnly}
-            />
-          </S.FieldGroup>
-        </S.Section>
-
-        {(mode === 'edit' || mode === 'detail') && (
-          <S.Section>
-            <S.HorizontalLayout>
-              <S.FieldGroup>
-                <S.Label>최초 등록일시</S.Label>
-                <Input
-                  placeholder="최초 등록일시"
-                  value={formData.createdAt || ''}
-                  onChange={() => {
-                    // readOnly
-                  }}
-                  disabled
-                />
-              </S.FieldGroup>
-              <S.FieldGroup>
-                <S.Label>마지막 수정일시</S.Label>
-                <Input
-                  placeholder="마지막 수정일시"
-                  value={formData.updatedAt || ''}
-                  onChange={() => {
-                    // readOnly
-                  }}
-                  disabled
-                />
-              </S.FieldGroup>
-            </S.HorizontalLayout>
-          </S.Section>
-        )}
       </S.Container>
 
       {showCalender && !isReadOnly && (

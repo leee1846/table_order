@@ -1,10 +1,12 @@
 import { ROUTES } from '@/constants/routes';
-import { BasicButton } from '@repo/ui/components';
-import * as UIStyles from '@repo/ui/styles';
 import { useNavigate } from 'react-router-dom';
 import type { INotice } from '@repo/api/types';
 import { formatDateTime } from '@repo/util/date';
+import { theme } from '@repo/ui';
+import { EditIcon } from '@repo/ui/icons';
 import { getBoardTypeLabel } from '@/feature/AdminWeb/Notices/constants';
+import { Button } from '@/feature/AdminWeb/components';
+import * as S from './table.style';
 
 interface Props {
   notices: INotice[];
@@ -24,58 +26,57 @@ export const Table = ({ notices }: Props) => {
   const renderRows = () => {
     if (!notices || notices.length === 0) {
       return (
-        <tr>
-          <td colSpan={5}>공지사항 목록이 없습니다.</td>
-        </tr>
+        <S.EmptyRow>
+          <S.EmptyCell colSpan={5}>공지사항 목록이 없습니다.</S.EmptyCell>
+        </S.EmptyRow>
       );
     }
 
     return notices.map((notice) => (
-      <tr key={notice.noticeSeq}>
-        <td>{notice.noticeSeq}</td>
-        <td>{getBoardTypeLabel(notice.boardType)}</td>
-        <td>{notice.noticeTitle}</td>
-        <td>
+      <S.Tr key={notice.noticeSeq}>
+        <S.Td>{notice.noticeSeq}</S.Td>
+        <S.Td>{getBoardTypeLabel(notice.boardType)}</S.Td>
+        <S.Td>{notice.noticeTitle}</S.Td>
+        <S.Td>
           {notice.createDate
             ? formatDateTime(notice.createDate, 'YYYY-MM-DD HH:mm:ss')
             : '-'}
-        </td>
-        <td>
-          <div
-            style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
-          >
-            <BasicButton
-              variant="Outline_Blue_S"
+        </S.Td>
+        <S.ActionCell>
+          <S.ActionWrapper>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => handleEdit(notice.noticeSeq)}
             >
-              수정
-            </BasicButton>
-            <BasicButton
-              variant="Outline_Grey_S"
+              <EditIcon width={16} height={16} color={theme.colors.grey[700]} />
+            </Button>
+            <Button
+              variant="ghost"
               onClick={() => handleDetail(notice.noticeSeq)}
             >
               상세
-            </BasicButton>
-          </div>
-        </td>
-      </tr>
+            </Button>
+          </S.ActionWrapper>
+        </S.ActionCell>
+      </S.Tr>
     ));
   };
 
   return (
-    <div>
-      <UIStyles.setting.Table>
-        <UIStyles.setting.Thead>
-          <tr>
-            <th>ID</th>
-            <th>유형</th>
-            <th>제목</th>
-            <th>생성일자</th>
-            <th>작업</th>
-          </tr>
-        </UIStyles.setting.Thead>
-        <UIStyles.setting.Tbody>{renderRows()}</UIStyles.setting.Tbody>
-      </UIStyles.setting.Table>
-    </div>
+    <S.TableContainer>
+      <S.TableElement>
+        <S.Thead>
+          <S.Tr>
+            <S.Th>ID</S.Th>
+            <S.Th>유형</S.Th>
+            <S.Th>제목</S.Th>
+            <S.Th>생성일자</S.Th>
+            <S.Th>작업</S.Th>
+          </S.Tr>
+        </S.Thead>
+        <S.Tbody>{renderRows()}</S.Tbody>
+      </S.TableElement>
+    </S.TableContainer>
   );
 };

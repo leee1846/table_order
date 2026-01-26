@@ -1,11 +1,10 @@
-import { Pagination, Input, BasicButton } from '@repo/ui/components';
 import { useNavigate } from 'react-router-dom';
-import * as UIStyles from '@repo/ui/styles';
 import { Table } from './Table';
 import * as S from './storesPage.style';
 import { ROUTES } from '@/constants/routes';
 import { useGetAdminShopList } from '@repo/api/queries';
 import { useTablePageState } from '@/feature/AdminWeb/hooks';
+import { Input, Button, Pagination } from '@/feature/AdminWeb/components';
 
 const PAGE_SIZE = 10;
 
@@ -30,7 +29,7 @@ export const StoresPage = () => {
   };
 
   return (
-    <UIStyles.setting.TablePageContainer>
+    <S.PageWrapper>
       <S.Container>
         <S.Title>
           매장 관리
@@ -46,22 +45,24 @@ export const StoresPage = () => {
               onChange={handleSearchInputChange}
             />
           </S.SearchInputWrapper>
-          <BasicButton variant="Solid_Navy_M" onClick={handleCreate}>
+          <Button variant="default" onClick={handleCreate}>
             매장 생성
-          </BasicButton>
+          </Button>
         </S.SearchContainer>
 
-        <Table stores={shopList?.data?.shopList ?? []} />
+        <S.TableWrapper>
+          <Table stores={shopList?.data?.shopList ?? []} />
+        </S.TableWrapper>
       </S.Container>
 
-      <UIStyles.setting.Footer>
+      <S.Footer>
         <div />
         <Pagination
           totalPages={shopList?.data?.totalPageNumber ?? 1}
           currentPage={currentPage}
           onPageChange={handlePageChange}
         />
-      </UIStyles.setting.Footer>
-    </UIStyles.setting.TablePageContainer>
+      </S.Footer>
+    </S.PageWrapper>
   );
 };

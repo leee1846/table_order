@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { BasicButton } from '@repo/ui/components';
 import { StoreInfoTab } from '@/feature/AdminWeb/Stores/StoreInfoTab';
 import { MemberInfoTab } from '@/feature/AdminWeb/Stores/MemberInfoTab';
 import { SettingInfoTab } from '@/feature/AdminWeb/Stores/SettingInfoTab';
@@ -10,6 +9,7 @@ import type {
   IGetAdminShopDetail,
 } from '@repo/api/types';
 import { DEFAULT_MEMBER_DATA, DEFAULT_SHOP_DATA } from './constants';
+import { Button } from '@/feature/AdminWeb/components';
 
 type TabType = 'storeInfo' | 'memberInfo' | 'settingInfo';
 type Mode = 'create' | 'edit';
@@ -86,26 +86,25 @@ export const Stores = ({
   const title = mode === 'create' ? '생성' : '수정';
 
   return (
-    <S.Container>
-      <S.Header>
-        <S.Titles>
-          <p>매장 관리</p>
-          <span />
-          <div>
-            <p>{title}</p>
-          </div>
-        </S.Titles>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {mode === 'edit' && (
-            <BasicButton variant="Outline_Navy_M" onClick={handleHistory}>
-              변경 이력
-            </BasicButton>
-          )}
-          <BasicButton variant="Solid_Navy_M" onClick={handleSave}>
-            저장
-          </BasicButton>
-        </div>
-      </S.Header>
+    <S.PageWrapper>
+      <S.Container>
+        <S.TitleContainer>
+          <S.Title>
+            매장 관리
+            <div />
+            <span>{title}</span>
+          </S.Title>
+          <S.ButtonGroup>
+            {mode === 'edit' && (
+              <Button variant="outline" onClick={handleHistory}>
+                변경 이력
+              </Button>
+            )}
+            <Button variant="default" onClick={handleSave}>
+              저장
+            </Button>
+          </S.ButtonGroup>
+        </S.TitleContainer>
 
       <S.TabContainer>
         <S.TabButton
@@ -177,6 +176,7 @@ export const Stores = ({
           ]}
         />
       )}
-    </S.Container>
+      </S.Container>
+    </S.PageWrapper>
   );
 };

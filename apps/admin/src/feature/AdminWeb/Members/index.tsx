@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { BasicButton } from '@repo/ui/components';
 import { MembersForm } from './MembersForm';
 import * as S from './members.style';
 import { type MembersFormData, DEFAULT_MEMBERS_DATA } from './constants';
+import { Button } from '@/feature/AdminWeb/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -51,41 +51,39 @@ export const Members = ({
   };
 
   return (
-    <S.Container>
-      <S.Header>
-        <S.Titles>
-          <p>회원 관리</p>
-          <span />
-          <div>
-            <p>{getTitle()}</p>
-          </div>
-        </S.Titles>
-        {mode !== 'detail' && (
-          <div style={{ display: 'flex', gap: '8px' }}>
-            {mode === 'edit' && onResetPassword && (
-              <BasicButton variant="Outline_Blue_M" onClick={onResetPassword}>
-                비밀번호 초기화
-              </BasicButton>
-            )}
-            {mode === 'edit' && onDelete && (
-              <BasicButton variant="Outline_Grey_M" onClick={onDelete}>
-                삭제
-              </BasicButton>
-            )}
-            <BasicButton variant="Solid_Navy_M" onClick={handleSave}>
-              저장
-            </BasicButton>
-          </div>
-        )}
-      </S.Header>
+    <S.PageWrapper>
+      <S.Container>
+        <S.TitleContainer>
+          <S.Title>
+            회원 관리
+            <div />
+            <span>{getTitle()}</span>
+          </S.Title>
+          {mode !== 'detail' && (
+            <S.ButtonGroup>
+              {mode === 'edit' && onResetPassword && (
+                <Button variant="outline" onClick={onResetPassword}>
+                  비밀번호 초기화
+                </Button>
+              )}
+              {mode === 'edit' && onDelete && (
+                <Button variant="outline" onClick={onDelete}>
+                  삭제
+                </Button>
+              )}
+              <Button variant="default" onClick={handleSave}>
+                저장
+              </Button>
+            </S.ButtonGroup>
+          )}
+        </S.TitleContainer>
 
-      <S.Content>
         <MembersForm
           mode={mode}
           formData={formData}
           updateFormData={updateFormData}
         />
-      </S.Content>
-    </S.Container>
+      </S.Container>
+    </S.PageWrapper>
   );
 };

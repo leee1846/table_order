@@ -2,7 +2,7 @@ import { Suspense, useState, useEffect, useMemo } from 'react';
 import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import * as S from './sidebarLayout.style';
-import { capsSmartOrderWhiteLogo, ChevronForwardIcon } from '@repo/ui/icons';
+import { capsSmartOrderBlueGreyLogo, ChevronForwardIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -142,64 +142,65 @@ export const StoresSidebarLayout = () => {
 
   return (
     <S.Layout>
-      <S.Section>
-        <S.Logo>
-          <button
-            type="button"
-            onClick={() => navigate(ROUTES.ADMIN_WEB.STORES.generate())}
-          >
-            <img src={capsSmartOrderWhiteLogo} alt="logo" />
-          </button>
-        </S.Logo>
+      <S.Navbar>
+        <S.NavbarContent>
+          <S.Logo>
+            <img src={capsSmartOrderBlueGreyLogo} alt="logo" />
+          </S.Logo>
 
-        <S.List>
-          {SIDEBAR_MENUS.map((menu) => {
-            const hasSubMenus = !!menu.subMenus?.length;
-            const isActive =
-              (menu.path && isPathActive(menu.path, menu.matchPattern)) ||
-              hasActiveSubMenu(menu);
-            const isOpened = hasSubMenus && isMenuOpened(menu.id);
+          <S.NavMenu>
+            {SIDEBAR_MENUS.map((menu) => {
+              const hasSubMenus = !!menu.subMenus?.length;
+              const isActive =
+                (menu.path && isPathActive(menu.path, menu.matchPattern)) ||
+                hasActiveSubMenu(menu);
+              const isOpened = hasSubMenus && isMenuOpened(menu.id);
 
-            return (
-              <li key={menu.id}>
-                <S.CategoryButton
-                  onClick={() => handleMenuClick(menu)}
-                  isSelected={isActive}
-                  isOpen={isOpened}
-                >
-                  <span>{menu.label}</span>
-                  {hasSubMenus && (
-                    <ChevronForwardIcon
-                      color={theme.colors.grey[500]}
-                      width={28}
-                      height={28}
-                    />
+              return (
+                <S.NavMenuItem key={menu.id}>
+                  <S.CategoryButton
+                    onClick={() => handleMenuClick(menu)}
+                    isSelected={isActive}
+                    isOpen={isOpened}
+                  >
+                    <span>{menu.label}</span>
+                    {hasSubMenus && (
+                      <ChevronForwardIcon
+                        color={theme.colors.grey[500]}
+                        width={16}
+                        height={16}
+                      />
+                    )}
+                  </S.CategoryButton>
+
+                  {hasSubMenus && isOpened && (
+                    <S.DropdownMenu>
+                      {menu.subMenus!.map((sub: TSubMenu) => (
+                        <S.DropdownMenuItem key={sub.id}>
+                          <S.DetailButton
+                            onClick={() => handleSubMenuClick(sub.path)}
+                            isSelected={isPathActive(sub.path)}
+                          >
+                            <span>{sub.label}</span>
+                          </S.DetailButton>
+                        </S.DropdownMenuItem>
+                      ))}
+                    </S.DropdownMenu>
                   )}
-                </S.CategoryButton>
+                </S.NavMenuItem>
+              );
+            })}
+          </S.NavMenu>
 
-                <S.SubMenuList>
-                  {hasSubMenus &&
-                    isOpened &&
-                    menu.subMenus!.map((sub: TSubMenu) => (
-                      <li key={sub.id}>
-                        <S.DetailButton
-                          onClick={() => handleSubMenuClick(sub.path)}
-                          isSelected={isPathActive(sub.path)}
-                        >
-                          <span>{sub.label}</span>
-                        </S.DetailButton>
-                      </li>
-                    ))}
-                </S.SubMenuList>
-              </li>
-            );
-          })}
-        </S.List>
-
-        <S.DownloadLink href="/app-download.html" target="_blank" rel="noopener noreferrer">
-          앱 다운로드
-        </S.DownloadLink>
-      </S.Section>
+          <S.DownloadLink
+            href="/app-download.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            자료실
+          </S.DownloadLink>
+        </S.NavbarContent>
+      </S.Navbar>
 
       <S.Content>
         <Suspense fallback={<FullscreenLoadingSpinner />}>

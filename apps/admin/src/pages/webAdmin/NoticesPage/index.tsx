@@ -1,11 +1,10 @@
-import { Pagination, BasicButton } from '@repo/ui/components';
 import { useNavigate } from 'react-router-dom';
-import * as UIStyles from '@repo/ui/styles';
 import { Table } from './Table';
 import * as S from './noticesPage.style';
 import { useGetNoticeList } from '@repo/api/queries';
 import { ROUTES } from '@/constants/routes';
 import { usePaginationState } from '@/feature/AdminWeb/hooks';
+import { Button, Pagination } from '@/feature/AdminWeb/components';
 
 const PAGE_SIZE = 10;
 
@@ -23,7 +22,7 @@ export const NoticesPage = () => {
   };
 
   return (
-    <UIStyles.setting.TablePageContainer>
+    <S.PageWrapper>
       <S.Container>
         <S.HeaderContainer>
           <S.Title>
@@ -31,22 +30,24 @@ export const NoticesPage = () => {
             <div />
             <span>목록</span>
           </S.Title>
-          <BasicButton variant="Solid_Navy_M" onClick={handleCreate}>
+          <Button variant="default" onClick={handleCreate}>
             공지사항 생성
-          </BasicButton>
+          </Button>
         </S.HeaderContainer>
 
-        <Table notices={noticeList?.data?.noticeList ?? []} />
+        <S.TableWrapper>
+          <Table notices={noticeList?.data?.noticeList ?? []} />
+        </S.TableWrapper>
       </S.Container>
 
-      <UIStyles.setting.Footer>
+      <S.Footer>
         <div />
         <Pagination
           totalPages={noticeList?.data?.totalPage ?? 1}
           currentPage={currentPage}
           onPageChange={handlePageChange}
         />
-      </UIStyles.setting.Footer>
-    </UIStyles.setting.TablePageContainer>
+      </S.Footer>
+    </S.PageWrapper>
   );
 };

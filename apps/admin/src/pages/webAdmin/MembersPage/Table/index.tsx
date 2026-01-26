@@ -1,9 +1,10 @@
-import { BasicButton } from '@repo/ui/components';
-import * as UIStyles from '@repo/ui/styles';
 import { theme } from '@repo/ui';
+import { EditIcon } from '@repo/ui/icons';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import type { IGetAdminMember } from '@repo/api/types';
+import { Button } from '@/feature/AdminWeb/components';
+import * as S from './table.style';
 
 interface Props {
   admins: IGetAdminMember[];
@@ -28,59 +29,68 @@ export const Table = ({ admins }: Props) => {
   const renderRows = () => {
     if (!admins || admins.length === 0) {
       return (
-        <tr>
-          <td colSpan={7}>관리자 목록이 없습니다.</td>
-        </tr>
+        <S.EmptyRow>
+          <S.EmptyCell colSpan={7}>관리자 목록이 없습니다.</S.EmptyCell>
+        </S.EmptyRow>
       );
     }
 
     return admins.map((admin) => (
-      <tr key={admin.memberUuid}>
-        <td>{admin.memberName}</td>
-        <td>{admin.memberEmail ?? '_'}</td>
-        <td>{admin.memberTel ?? '_'}</td>
-        <td>{admin.memberDepartment ?? '_'}</td>
-        <td>{getRoleLabel(admin.memberRole)}</td>
-        <td
+      <S.Tr key={admin.memberUuid}>
+        <S.Td>{admin.memberName}</S.Td>
+        <S.Td>{admin.memberEmail ?? '-'}</S.Td>
+        <S.Td>{admin.memberTel ?? '-'}</S.Td>
+        <S.Td>{admin.memberDepartment ?? '-'}</S.Td>
+        <S.Td>{getRoleLabel(admin.memberRole)}</S.Td>
+        <S.Td
           style={{
-            color: admin.isDeleted ? theme.colors.semantic[500] : 'inherit',
+            color: admin.isDeleted
+              ? theme.colors.semantic[500]
+              : theme.colors.grey[900],
           }}
         >
           {admin.isDeleted ? 'O' : 'X'}
-        </td>
-        <td>
-          <div
-            style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
-          >
-            <BasicButton
-              variant="Outline_Blue_S"
+        </S.Td>
+        <S.ActionCell>
+          <S.ActionWrapper>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => handleEdit(admin.memberId)}
               disabled={admin.isDeleted}
             >
-              수정
-            </BasicButton>
-          </div>
-        </td>
-      </tr>
+              <EditIcon
+                width={16}
+                height={16}
+                color={
+                  admin.isDeleted
+                    ? theme.colors.grey[400]
+                    : theme.colors.grey[700]
+                }
+              />
+            </Button>
+          </S.ActionWrapper>
+        </S.ActionCell>
+      </S.Tr>
     ));
   };
 
   return (
-    <div>
-      <UIStyles.setting.Table>
-        <UIStyles.setting.Thead>
-          <tr>
-            <th>이름</th>
-            <th>이메일</th>
-            <th>핸드폰번호</th>
-            <th>소속</th>
-            <th>권한</th>
-            <th>삭제 여부</th>
-            <th>작업</th>
-          </tr>
-        </UIStyles.setting.Thead>
-        <UIStyles.setting.Tbody>{renderRows()}</UIStyles.setting.Tbody>
-      </UIStyles.setting.Table>
-    </div>
+    <S.TableContainer>
+      <S.TableElement>
+        <S.Thead>
+          <S.Tr>
+            <S.Th>이름</S.Th>
+            <S.Th>이메일</S.Th>
+            <S.Th>핸드폰번호</S.Th>
+            <S.Th>소속</S.Th>
+            <S.Th>권한</S.Th>
+            <S.Th>삭제 여부</S.Th>
+            <S.Th>작업</S.Th>
+          </S.Tr>
+        </S.Thead>
+        <S.Tbody>{renderRows()}</S.Tbody>
+      </S.TableElement>
+    </S.TableContainer>
   );
 };

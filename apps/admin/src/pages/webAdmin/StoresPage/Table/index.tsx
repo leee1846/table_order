@@ -1,9 +1,11 @@
 import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { BasicButton } from '@repo/ui/components';
-import * as UIStyles from '@repo/ui/styles';
 import type { IGetAdminShopItem } from '@repo/api/types';
 import { useNavigate } from 'react-router-dom';
+import { theme } from '@repo/ui';
+import { EditIcon, SettingsIcon } from '@repo/ui/icons';
+import { Button } from '@/feature/AdminWeb/components';
+import * as S from './table.style';
 
 interface Props {
   stores: IGetAdminShopItem[];
@@ -21,60 +23,59 @@ export const Table = ({ stores }: Props) => {
   const renderRows = () => {
     if (!stores || stores.length === 0) {
       return (
-        <tr>
-          <td colSpan={9}>매장 목록이 없습니다.</td>
-        </tr>
+        <S.EmptyRow>
+          <S.EmptyCell colSpan={5}>매장 목록이 없습니다.</S.EmptyCell>
+        </S.EmptyRow>
       );
     }
 
     return stores.map((store) => (
-      <tr key={store.memberId}>
-        <td>{store.shopCode}</td>
-        <td>{store.shopName}</td>
-        <td>{store.businessNumber || '-'}</td>
-        <td>{store.address1 || '-'}</td>
-        <td>
-          <div
-            style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}
-          >
-            <BasicButton
-              variant="Outline_Blue_S"
+      <S.Tr key={store.memberId}>
+        <S.Td>{store.shopCode}</S.Td>
+        <S.Td>{store.shopName}</S.Td>
+        <S.Td>{store.businessNumber || '-'}</S.Td>
+        <S.Td>{store.address1 || '-'}</S.Td>
+        <S.ActionCell>
+          <S.ActionWrapper>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() =>
                 navigate(
                   `${ROUTES.ADMIN_WEB.STORES_EDIT.generate(store.shopCode)}?memberId=${store.memberId}`
                 )
               }
             >
-              수정
-            </BasicButton>
-            <BasicButton
-              variant="Outline_Grey_S"
+              <EditIcon width={16} height={16} color={theme.colors.grey[700]} />
+            </Button>
+            <Button
+              variant="ghost"
               onClick={() =>
                 redirectToStoreDetail(store.shopCode, store.shopSeq)
               }
             >
               매장 설정
-            </BasicButton>
-          </div>
-        </td>
-      </tr>
+            </Button>
+          </S.ActionWrapper>
+        </S.ActionCell>
+      </S.Tr>
     ));
   };
 
   return (
-    <div>
-      <UIStyles.setting.Table>
-        <UIStyles.setting.Thead>
-          <tr>
-            <th>SID</th>
-            <th>매장명</th>
-            <th>사업자등록번호</th>
-            <th>기본 주소</th>
-            <th>작업</th>
-          </tr>
-        </UIStyles.setting.Thead>
-        <UIStyles.setting.Tbody>{renderRows()}</UIStyles.setting.Tbody>
-      </UIStyles.setting.Table>
-    </div>
+    <S.TableContainer>
+      <S.TableElement>
+        <S.Thead>
+          <S.Tr>
+            <S.Th>SID</S.Th>
+            <S.Th>매장명</S.Th>
+            <S.Th>사업자등록번호</S.Th>
+            <S.Th>기본 주소</S.Th>
+            <S.Th>작업</S.Th>
+          </S.Tr>
+        </S.Thead>
+        <S.Tbody>{renderRows()}</S.Tbody>
+      </S.TableElement>
+    </S.TableContainer>
   );
 };

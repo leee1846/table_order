@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Input, BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from './adminMyPage.style';
 import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import { Input, Button } from '@/feature/AdminWeb/components';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -39,12 +39,24 @@ export const AdminMyPage = () => {
   ) => {
     const iconProps = {
       color: theme.colors.grey[500],
-      width: 20,
-      height: 20,
+      width: 18,
+      height: 18,
     };
 
     return (
-      <button type="button" onClick={onToggle}>
+      <button
+        type="button"
+        onClick={onToggle}
+        style={{
+          border: 'none',
+          background: 'transparent',
+          cursor: 'pointer',
+          padding: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         {isVisible ? (
           <VisibilityOffIcon {...iconProps} />
         ) : (
@@ -156,91 +168,86 @@ export const AdminMyPage = () => {
   };
 
   return (
-    <UIStyles.setting.TablePageContainer>
-      <S.Container>
-        <S.TitleContainer>
-          <S.Title>
-            내 정보
-            <div />
-            <span>계정 관리</span>
-          </S.Title>
-          <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
-            로그아웃
-          </BasicButton>
-        </S.TitleContainer>
+    <S.Container>
+      <S.TitleContainer>
+        <S.Title>
+          내 정보
+          <div />
+          <span>계정 관리</span>
+        </S.Title>
+        <Button variant="outline" onClick={handleLogout}>
+          로그아웃
+        </Button>
+      </S.TitleContainer>
 
-        <S.TokenInfoCard>
-          <S.TokenInfoGrid>
-            <S.TokenInfoItem>
-              <S.TokenInfoKey>아이디</S.TokenInfoKey>
-              <S.TokenInfoValue>{tokenPayload?.sub ?? '-'}</S.TokenInfoValue>
-            </S.TokenInfoItem>
-            <S.TokenInfoItem>
-              <S.TokenInfoKey>권한</S.TokenInfoKey>
-              <S.TokenInfoValue>{tokenPayload?.role ?? '-'}</S.TokenInfoValue>
-            </S.TokenInfoItem>
-          </S.TokenInfoGrid>
-        </S.TokenInfoCard>
+      <S.TokenInfoCard>
+        <S.TokenInfoGrid>
+          <S.TokenInfoItem>
+            <S.TokenInfoKey>아이디</S.TokenInfoKey>
+            <S.TokenInfoValue>{tokenPayload?.sub ?? '-'}</S.TokenInfoValue>
+          </S.TokenInfoItem>
+          <S.TokenInfoItem>
+            <S.TokenInfoKey>권한</S.TokenInfoKey>
+            <S.TokenInfoValue>{tokenPayload?.role ?? '-'}</S.TokenInfoValue>
+          </S.TokenInfoItem>
+        </S.TokenInfoGrid>
+      </S.TokenInfoCard>
 
-        <S.Section>
-          <S.SectionTitle>비밀번호 변경</S.SectionTitle>
-          <S.PasswordForm>
-            <S.InputWrapper>
-              <S.Label>기존 비밀번호</S.Label>
-              <Input
-                type={currentPasswordVisible ? 'text' : 'password'}
-                placeholder="기존 비밀번호를 입력해주세요"
-                value={currentPassword}
-                onChange={handleCurrentPasswordChange}
-                rightComponent={renderPasswordVisibilityToggle(
-                  currentPasswordVisible,
-                  () => setCurrentPasswordVisible(!currentPasswordVisible)
-                )}
-                errorMessage={currentPasswordError}
-              />
-            </S.InputWrapper>
+      <S.Section>
+        <S.SectionTitle>비밀번호 변경</S.SectionTitle>
+        <S.PasswordForm>
+          <S.InputWrapper>
+            <S.Label>기존 비밀번호</S.Label>
+            <Input
+              type={currentPasswordVisible ? 'text' : 'password'}
+              placeholder="기존 비밀번호를 입력해주세요"
+              value={currentPassword}
+              onChange={handleCurrentPasswordChange}
+              rightComponent={renderPasswordVisibilityToggle(
+                currentPasswordVisible,
+                () => setCurrentPasswordVisible(!currentPasswordVisible)
+              )}
+              errorMessage={currentPasswordError}
+            />
+          </S.InputWrapper>
 
-            <S.InputWrapper>
-              <S.Label>새 비밀번호</S.Label>
-              <Input
-                type={newPasswordVisible ? 'text' : 'password'}
-                placeholder="새 비밀번호를 입력해주세요"
-                value={newPassword}
-                onChange={handleNewPasswordChange}
-                rightComponent={renderPasswordVisibilityToggle(
-                  newPasswordVisible,
-                  () => setNewPasswordVisible(!newPasswordVisible)
-                )}
-                errorMessage={newPasswordError}
-              />
-            </S.InputWrapper>
+          <S.InputWrapper>
+            <S.Label>새 비밀번호</S.Label>
+            <Input
+              type={newPasswordVisible ? 'text' : 'password'}
+              placeholder="새 비밀번호를 입력해주세요"
+              value={newPassword}
+              onChange={handleNewPasswordChange}
+              rightComponent={renderPasswordVisibilityToggle(
+                newPasswordVisible,
+                () => setNewPasswordVisible(!newPasswordVisible)
+              )}
+              errorMessage={newPasswordError}
+            />
+          </S.InputWrapper>
 
-            <S.InputWrapper>
-              <S.Label>새 비밀번호 확인</S.Label>
-              <Input
-                type={confirmPasswordVisible ? 'text' : 'password'}
-                placeholder="새 비밀번호를 다시 입력해주세요"
-                value={confirmPassword}
-                onChange={handleConfirmPasswordChange}
-                rightComponent={renderPasswordVisibilityToggle(
-                  confirmPasswordVisible,
-                  () => setConfirmPasswordVisible(!confirmPasswordVisible)
-                )}
-                errorMessage={confirmPasswordError}
-              />
-            </S.InputWrapper>
+          <S.InputWrapper>
+            <S.Label>새 비밀번호 확인</S.Label>
+            <Input
+              type={confirmPasswordVisible ? 'text' : 'password'}
+              placeholder="새 비밀번호를 다시 입력해주세요"
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              rightComponent={renderPasswordVisibilityToggle(
+                confirmPasswordVisible,
+                () => setConfirmPasswordVisible(!confirmPasswordVisible)
+              )}
+              errorMessage={confirmPasswordError}
+            />
+          </S.InputWrapper>
 
-            <S.ButtonWrapper>
-              <BasicButton
-                variant="Solid_Navy_M"
-                onClick={handleChangePassword}
-              >
-                비밀번호 변경
-              </BasicButton>
-            </S.ButtonWrapper>
-          </S.PasswordForm>
-        </S.Section>
-      </S.Container>
-    </UIStyles.setting.TablePageContainer>
+          <S.ButtonWrapper>
+            <Button variant="default" onClick={handleChangePassword}>
+              비밀번호 변경
+            </Button>
+          </S.ButtonWrapper>
+        </S.PasswordForm>
+      </S.Section>
+    </S.Container>
   );
 };
