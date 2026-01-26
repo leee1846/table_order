@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import type { i18n as I18nInstance } from 'i18next';
 import { useState, useMemo, useEffect, useLayoutEffect } from 'react';
@@ -349,6 +349,8 @@ export const TableDetailContainer = ({
             pickupAlertMessage={pickupAlertMessage}
             i18nInstance={i18nInstance}
             orderTime={orderTime}
+            refetchOrderHistories={refetchOrderHistories}
+            onPress={handleActionPress}
           />
         </S.Left>
         <S.Right>
@@ -357,6 +359,10 @@ export const TableDetailContainer = ({
             i18nInstance={i18nInstance}
             paymentList={order.paymentList}
             refetchOrderHistories={refetchOrderHistories}
+            usePickupAlert={usePickupAlert}
+            shopCode={shopCode}
+            tableNumber={tableNumber}
+            pickupAlertMessage={pickupAlertMessage}
           />
         </S.Right>
       </S.Layout>

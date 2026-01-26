@@ -79,3 +79,5 @@ export { default as capsSmartOrderWhiteLogo } from './caps_smart_order_logo_whit
 export { default as spicyLevel1Icon } from './spicy_level_1.svg';
 export { default as spicyLevel2Icon } from './spicy_level_2.svg';
 export { default as spicyLevel3Icon } from './spicy_level_3.svg';
+export { default as DocumentIcon } from './document.svg';
+export { default as RingIcon } from './ring.svg';

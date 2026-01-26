@@ -48,13 +48,25 @@ const SummaryWrap = styled.div`
 `;
 
 const Row = styled.div`
-  ${TYPOGRAPHY.MT_2}
+  font-size: 23.999px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 31.998px; /* 133.333% */
+  letter-spacing: -0.6px;
   display: grid;
   grid-template-columns: 1fr 5rem 8rem;
 
-  .qty,
+  .name,
+  .qty {
+    color: ${colors.grey[600]};
+  }
   .price {
-    color: ${colors.primary[500]};
+    color: ${colors.grey[900]};
+    font-size: 25.999px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 35.998px; /* 138.462% */
+    letter-spacing: -0.65px;
   }
 `;
 

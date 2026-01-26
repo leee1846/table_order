@@ -57,7 +57,7 @@ export function PaymentActions({
         <BasicButton
           variant="Solid_Navy_2XL"
           customStyle={css`
-            height: 100px;
+            height: 70px;
             font-size: 25px;
           `}
           onClick={onClearTable}

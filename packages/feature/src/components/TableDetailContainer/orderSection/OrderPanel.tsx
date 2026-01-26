@@ -9,9 +9,6 @@ import type { Order, OrderItem } from './types';
 export type OrderPanelProps = {
   order: Order;
   selectedItemId?: string;
-  // onPayCard?: () => void;
-  // onPayCash?: () => void;
-  // onSplitPay?: () => void;
   shouldShowClearButton: boolean;
   onClearTable?: () => void;
   onItemClick?: (item: OrderItem) => void;
@@ -22,23 +19,20 @@ export type OrderPanelProps = {
   pickupAlertMessage?: string;
   i18nInstance?: I18nInstance;
   orderTime: string | undefined;
+  refetchOrderHistories?: () => void;
+  onPress?: (id: string) => void;
 };
 
 export function OrderPanel({
   order,
-  // onPayCard,
-  // onPayCash,
-  // onSplitPay,
   shouldShowClearButton,
   onItemClick,
   onClearTable,
   useCustomerCount,
-  usePickupAlert,
-  shopCode,
-  tableNumber,
-  pickupAlertMessage,
   i18nInstance,
   orderTime,
+  refetchOrderHistories,
+  onPress,
 }: OrderPanelProps) {
   return (
     <Wrap>
@@ -47,11 +41,10 @@ export function OrderPanel({
         numberOfPeople={order.numberOfPeople ?? 0}
         orderTime={orderTime ?? ''}
         useCustomerCount={useCustomerCount}
-        usePickupAlert={usePickupAlert}
-        shopCode={shopCode}
-        tableNumber={tableNumber}
-        pickupAlertMessage={pickupAlertMessage}
         i18nInstance={i18nInstance}
+        paymentList={order.paymentList ?? []}
+        refetchOrderHistories={refetchOrderHistories}
+        onPress={onPress}
       />
       <OrderItemsTable
         items={order.items}

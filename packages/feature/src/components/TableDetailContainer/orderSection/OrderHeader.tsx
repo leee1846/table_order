@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { i18n as I18nInstance } from 'i18next';
 import styled from '@emotion/styled';
-import { PersonIcon, PickupIcon } from '@repo/ui/icons';
 import { theme, TYPOGRAPHY } from '@repo/ui';
-import { BasicButton } from '@repo/ui/components';
-import { PickupNotificationDialog } from './dialogs/PickupNotificationDialog';
 import { useTranslation } from 'react-i18next';
+import { IPayment } from '@repo/api/types';
+import { toast } from '@repo/feature/utils';
 
 const { colors } = theme;
 
@@ -46,11 +45,10 @@ export type OrderHeaderProps = {
   numberOfPeople: number;
   orderTime: string;
   useCustomerCount?: boolean;
-  usePickupAlert?: boolean;
-  shopCode: string;
-  tableNumber: string;
-  pickupAlertMessage?: string;
   i18nInstance?: I18nInstance;
+  paymentList: IPayment[];
+  refetchOrderHistories?: () => void;
+  onPress?: (id: string) => void;
 };
 
 export function OrderHeader({
@@ -58,22 +56,33 @@ export function OrderHeader({
   numberOfPeople,
   orderTime,
   useCustomerCount = false,
-  usePickupAlert = false,
-  shopCode,
-  tableNumber,
-  pickupAlertMessage,
   i18nInstance,
+  paymentList,
+  refetchOrderHistories,
+  onPress,
 }: OrderHeaderProps) {
   const { t } = useTranslation('admin', { i18n: i18nInstance });
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [elapsedMinutes, setElapsedMinutes] = useState(0);
 
-  const handlePickupClick = () => {
-    setIsDialogOpen(true);
+  const handleSelectCancel = async () => {
+    await refetchOrderHistories?.();
+
+    if (paymentList.length > 0) {
+      toast(t('일부 결제 내역이 있어 취소할 수 없습니다.'));
+      return;
+    }
+
+    onPress?.('select-cancel');
   };
 
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
+  const handleAllCancel = async () => {
+    await refetchOrderHistories?.();
+
+    if (paymentList.length > 0) {
+      toast(t('일부 결제 내역이 있어 취소할 수 없습니다.'));
+      return;
+    }
+    onPress?.('all-cancel');
   };
 
   useEffect(() => {
@@ -108,98 +117,90 @@ export function OrderHeader({
   ).padStart(2, '0')}:${String(elapsedMinutes % 60).padStart(2, '0')}`;
 
   return (
-    <>
-      <Header>
-        <RightBox>
-          <Title>{title}</Title>
-          {useCustomerCount && (
-            <GuestCount>
-              <div>
-                <PersonIcon width={20} height={20} color={colors.grey[700]} />
-              </div>
-
-              <NumberOfPeople>{numberOfPeople}</NumberOfPeople>
-            </GuestCount>
-          )}
-        </RightBox>
-        <LeftBox>
-          {usePickupAlert ? (
-            <BasicButton
-              variant="Outline_Navy_L"
-              onClick={handlePickupClick}
-              icon={<PickupIcon width={30} height={30} />}
-            >
-              {t('픽업알림')}
-            </BasicButton>
-          ) : (
-            <div style={{ width: 30, height: 30 }}></div>
-          )}
-          <OrderTime>
-            <p>{orderTime}</p>
-            <p>{orderTime ? `(${formattedElapsedTime})` : '(-)'}</p>
-          </OrderTime>
-        </LeftBox>
-      </Header>
-      <PickupNotificationDialog
-        isOpen={isDialogOpen}
-        onClose={handleDialogClose}
-        shopCode={shopCode}
-        tableNumber={tableNumber}
-        defaultMessage={pickupAlertMessage}
-        i18nInstance={i18nInstance}
-      />
-    </>
+    <Header>
+      <LeftBox>
+        <Title>{title}</Title>
+        {useCustomerCount && <GuestCount>인원: {numberOfPeople}</GuestCount>}
+      </LeftBox>
+      <RightBox>
+        <OrderTime>
+          <p>{orderTime}</p>
+          <p>{orderTime ? `(${formattedElapsedTime})` : '(-)'}</p>
+        </OrderTime>
+        <ButtonBox>
+          <button type="button" onClick={handleSelectCancel}>
+            {t('선택 삭제')}
+          </button>
+          <button type="button" onClick={handleAllCancel}>
+            {t('전체 삭제')}
+          </button>
+        </ButtonBox>
+      </RightBox>
+    </Header>
   );
 }
 
 const Header = styled.div`
   display: flex;
-  align-items: space-between;
-  justify-content: space-between;
-  padding-bottom: 29px;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 24px;
   border-bottom: 1px solid ${colors.grey[200]};
 `;
 
 const RightBox = styled.div`
   display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: start;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const ButtonBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  & > button {
+    width: 79px;
+    height: 40px;
+    border-radius: 12px;
+    ${TYPOGRAPHY.BD_2}
+  }
+
+  & > button:first-of-type {
+    background-color: ${colors.grey[300]};
+    color: ${colors.grey[700]};
+  }
+
+  & > button:last-of-type {
+    background-color: ${colors.semantic[400]};
+    color: ${colors.white};
+  }
 `;
 
 const Title = styled.h1`
-  ${TYPOGRAPHY.MT_1}
-  font-size : 32px;
-  line-height: 42px;
-  letter-spacing: -0.1rem;
+  font-size: 31.998px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 41.998px; /* 131.25% */
+  letter-spacing: -0.8px;
 `;
 
 const GuestCount = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
-
-  > div:nth-of-type(1) {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-`;
-
-const NumberOfPeople = styled.div`
-  ${TYPOGRAPHY.MT_7}
-  color: ${colors.grey[700]};
+  justify-content: center;
+  padding: 6px 8px;
+  background-color: ${colors.grey[100]};
+  border-radius: 8px;
+  border: 1px solid ${colors.grey[300]};
+  ${TYPOGRAPHY.CT_1}
+  color: ${colors.grey[600]};
 `;
 
 const LeftBox = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: end;
-  justify-content: space-between;
-  gap: 14px;
+  align-items: center;
+  gap: 12px;
 `;
 
 const OrderTime = styled.div`

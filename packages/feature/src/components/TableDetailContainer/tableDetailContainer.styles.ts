@@ -18,12 +18,13 @@ export const Layout = styled.div`
 
 export const Left = styled.div`
   background: ${colors.white};
-  padding: 30px 24px;
+  padding: 50px 24px 30px 24px;
   height: 100%;
   overflow: hidden;
 `;
 
 export const Right = styled.div`
-  background: ${colors.grey[700]};
-  padding: 30px 50px;
+  background: ${colors.grey[200]};
+  padding: 100px 50px 30px;
+  position: relative;
 `;
