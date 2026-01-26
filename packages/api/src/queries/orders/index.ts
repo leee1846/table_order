@@ -11,3 +11,4 @@ export * from './usePutCancelOrderMenu';
 export * from './usePutCancelOrderAll';
 export * from './usePutClearOrder';
 export * from './usePostCustomAmount';
+export * from './usePostOrderOnboardingTest';

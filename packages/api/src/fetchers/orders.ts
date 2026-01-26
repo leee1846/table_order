@@ -195,7 +195,7 @@ export const cancelOrderMenu = async (
     data,
   });
 
- return response.data;
+  return response.data;
 };
 
 /**
@@ -263,6 +263,18 @@ export const postPickupMessage = async ({
     method: 'POST',
     url: ENDPOINTS.ORDER.PICKUP(shopCode, tableNumber),
     params: { message },
+  });
+
+  return response.data;
+};
+
+export const postOrderOnboardingTest = async (
+  shopCode: string
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.ORDER.ORDER_ONBOARDING_TEST(shopCode),
   });
 
   return response.data;
