@@ -133,7 +133,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
           <p>Android ID</p>
           <p>{androidId || '-'}</p>
         </UIStyles.setting.ContentLayout>
-        <UIStyles.setting.ContentLayout>
+        {/* <UIStyles.setting.ContentLayout>
           <p>{t('네트워크 설정')}</p>
           <Dropdown
             options={networkSettings}
@@ -142,19 +142,22 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
               handleNetworkSettingChange(value as TNetworkType)
             }
           />
-        </UIStyles.setting.ContentLayout>
-        <UIStyles.setting.ContentLayout>
+        </UIStyles.setting.ContentLayout> */}
+
+        {/* <UIStyles.setting.ContentLayout>
           <p>{t('네트워크 정보')}</p>
           {networkSetting === 'AUTO' && (
             <BasicButton variant="Solid_Sky_Blue_M" onClick={() => {}}>
               {t('재설정')}
             </BasicButton>
           )}
-        </UIStyles.setting.ContentLayout>
-        <UIStyles.setting.ContentLayout>
+        </UIStyles.setting.ContentLayout> */}
+
+        {/* <UIStyles.setting.ContentLayout>
           <p>SSID</p>
           <p>{ssid || '-'}</p>
-        </UIStyles.setting.ContentLayout>
+        </UIStyles.setting.ContentLayout> */}
+
         <UIStyles.setting.ContentLayout>
           <p>IP</p>
           <p>{ipAddress || '-'}</p>

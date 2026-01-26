@@ -9,6 +9,7 @@ import { ROUTES } from '@/constants/routes';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
 import { usePutMemberPassword } from '@repo/api/queries';
+import { disconnectSse } from '@/utils/sseConnection';
 
 export const MyPage = () => {
   const { t } = useAdminTranslation();
@@ -17,6 +18,7 @@ export const MyPage = () => {
   const memberId = tokenPayload?.sub ?? '';
 
   const performLogout = () => {
+    disconnectSse();
     clearAuth();
     window.location.replace(ROUTES.LOGIN.generate());
   };

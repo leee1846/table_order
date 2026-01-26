@@ -12,7 +12,6 @@ import { decodeJwtToken } from '@repo/util/function';
 import type { ITokenPayload } from '@repo/api/types';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { CapacitorApp } from '@repo/util/app';
-import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { QRCodeModal } from './QRCodeModal';
@@ -66,31 +65,28 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
             <S.UserId>{userId}</S.UserId>
             <S.SID>
               {/* SID =  shopCode*/}
-              <span>SID</span>
+              <span>매장 아이디</span>
               <span>{shopCode}</span>
             </S.SID>
           </S.Content>
 
-          <div>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <BasicButton variant="Outline_Grey_M" onClick={handleQRCodeClick}>
+              {t('로그인 QR 생성')}
+            </BasicButton>
+
             {payload && payload.role === 'SHOP' && !CapacitorApp.isNative() && (
               <BasicButton
                 variant="Outline_Grey_M"
                 onClick={() => navigate(ROUTES.SETTINGS.MYPAGE.generate())}
-                customStyle={css`
-                  margin-right: 12px;
-                `}
               >
                 {t('내 정보')}
               </BasicButton>
             )}
-            <div style={{ display: 'flex', gap: 10 }}>
-              <BasicButton variant="Outline_Grey_M" onClick={handleQRCodeClick}>
-                {t('로그인 QR 생성')}
-              </BasicButton>
-              <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
-                {t('로그아웃')}
-              </BasicButton>
-            </div>
+
+            <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
+              {t('로그아웃')}
+            </BasicButton>
           </div>
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>
