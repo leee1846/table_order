@@ -167,9 +167,8 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
     (id: string) => {
       if (isExistingImage(id)) {
         markAsDeleted(id);
-      } else {
-        setAdditionalImagesData((prev) => prev.filter((img) => img.id !== id));
       }
+      setAdditionalImagesData((prev) => prev.filter((img) => img.id !== id));
     },
     [markAsDeleted]
   );
@@ -204,9 +203,7 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
   const getMenuImageList = useCallback((): ICreateMenuImage[] => {
     return getAllActiveImages().map((img, index) => ({
       imageName:
-        img.file?.id ||
-        img.imageName ||
-        `existing-${img.imageSeq ?? index}`,
+        img.file?.id || img.imageName || `existing-${img.imageSeq ?? index}`,
       imageIndex: index,
       isMainImage: img.isMainImage,
       // imageSeq는 POST에서도 0으로 내려 보낸다(기존/추천 이미지는 파일 없이 사용).
@@ -238,9 +235,7 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
             img.imageName ||
             fallbackImageName,
           imageExtension:
-            originalImage?.imageExtension ??
-            img.imageExtension ??
-            null,
+            originalImage?.imageExtension ?? img.imageExtension ?? null,
           imageIndex: imageIndex++,
           isDeleted: false,
           isMainImage: img.isMainImage,
