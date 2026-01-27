@@ -106,76 +106,80 @@ export const Stores = ({
           </S.ButtonGroup>
         </S.TitleContainer>
 
-      <S.TabContainer>
-        <S.TabButton
-          type="button"
-          isActive={activeTab === 'storeInfo'}
-          onClick={() => setActiveTab('storeInfo')}
-        >
-          매장 정보
-        </S.TabButton>
-        <S.TabButton
-          type="button"
-          isActive={activeTab === 'settingInfo'}
-          onClick={() => setActiveTab('settingInfo')}
-        >
-          세팅 정보
-        </S.TabButton>
-        {mode === 'edit' && (
+        <S.TabContainer>
           <S.TabButton
             type="button"
-            isActive={activeTab === 'memberInfo'}
-            onClick={() => setActiveTab('memberInfo')}
+            isActive={activeTab === 'storeInfo'}
+            onClick={() => setActiveTab('storeInfo')}
           >
-            계정 정보
+            매장 정보
           </S.TabButton>
-        )}
-      </S.TabContainer>
+          <S.TabButton
+            type="button"
+            isActive={activeTab === 'settingInfo'}
+            onClick={() => setActiveTab('settingInfo')}
+          >
+            세팅 정보
+          </S.TabButton>
+          {mode === 'edit' && (
+            <S.TabButton
+              type="button"
+              isActive={activeTab === 'memberInfo'}
+              onClick={() => setActiveTab('memberInfo')}
+            >
+              계정 정보
+            </S.TabButton>
+          )}
+        </S.TabContainer>
 
-      <S.TabContent>
-        {activeTab === 'storeInfo' && (
-          <StoreInfoTab
-            mode={mode}
-            formData={formData}
-            updateFormData={updateFormData}
+        <S.TabContent>
+          {activeTab === 'storeInfo' && (
+            <StoreInfoTab
+              mode={mode}
+              formData={formData}
+              updateFormData={updateFormData}
+            />
+          )}
+
+          {activeTab === 'settingInfo' && (
+            <SettingInfoTab
+              formData={formData}
+              updateFormData={updateFormData}
+            />
+          )}
+
+          {activeTab === 'memberInfo' && mode === 'edit' && (
+            <MemberInfoTab
+              formData={memberFormData}
+              updateFormData={(updates) =>
+                setMemberFormData((prev) => ({ ...prev, ...updates }))
+              }
+            />
+          )}
+        </S.TabContent>
+        {mode === 'edit' && (
+          <ChangeHistoryDialog
+            isOpen={isHistoryDialogOpen}
+            onClose={handleCloseHistoryDialog}
+            histories={[
+              {
+                code: 'SHOP',
+                id: initialData?.shopCode ?? '',
+                label: '매장 변경 이력',
+              },
+              ...(memberInitialData?.memberId
+                ? [
+                    {
+                      code: 'MEMBER' as const,
+                      id:
+                        memberFormData?.memberId || memberInitialData?.memberId,
+                      label: '계정 변경 이력',
+                    },
+                  ]
+                : []),
+            ]}
           />
         )}
-
-        {activeTab === 'settingInfo' && (
-          <SettingInfoTab formData={formData} updateFormData={updateFormData} />
-        )}
-
-        {activeTab === 'memberInfo' && mode === 'edit' && (
-          <MemberInfoTab
-            formData={memberFormData}
-            updateFormData={(updates) =>
-              setMemberFormData((prev) => ({ ...prev, ...updates }))
-            }
-          />
-        )}
-      </S.TabContent>
-      {mode === 'edit' && (
-        <ChangeHistoryDialog
-          isOpen={isHistoryDialogOpen}
-          onClose={handleCloseHistoryDialog}
-          histories={[
-            {
-              code: 'SHOP',
-              id: initialData?.shopCode ?? '',
-              label: '매장 변경 이력',
-            },
-            ...(memberInitialData?.memberId
-              ? [
-                  {
-                    code: 'MEMBER' as const,
-                    id: memberFormData?.memberId || memberInitialData?.memberId,
-                    label: '계정 변경 이력',
-                  },
-                ]
-              : []),
-          ]}
-        />
-      )}
       </S.Container>
     </S.PageWrapper>
   );

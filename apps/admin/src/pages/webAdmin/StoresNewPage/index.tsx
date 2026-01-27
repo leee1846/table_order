@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { Stores } from '@/feature/AdminWeb/Stores';
 import { validateShopData } from '@/feature/AdminWeb/util';
-import { usePostShop } from '@repo/api/queries';
+import { usePostAdminShop } from '@repo/api/queries';
 import { toast } from '@repo/feature/utils';
 import type {
   ICreateAdminMemberRequest,
@@ -53,7 +53,7 @@ const transformShopDetailToCreateRequest = (
  */
 export const StoresNewPage = () => {
   const navigate = useNavigate();
-  const { mutateAsync: createShop } = usePostShop();
+  const { mutateAsync: createAdminShop } = usePostAdminShop();
 
   /**
    * 매장 정보를 생성합니다.
@@ -73,7 +73,7 @@ export const StoresNewPage = () => {
     const createRequest = transformShopDetailToCreateRequest(shopData);
 
     // 매장 생성 API 호출
-    await createShop(createRequest);
+    await createAdminShop(createRequest);
 
     // 성공 메시지 및 페이지 이동
     toast('매장 생성이 완료되었습니다.');

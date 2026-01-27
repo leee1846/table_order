@@ -11,6 +11,7 @@ import type {
   TGetAdminChangeHistoryListResponse,
 } from '../types/admin';
 import { IPaginationParams, TVoidApiResponse } from '../types/common';
+import { ICreateShopRequest } from '../types/shop';
 
 export const getAdminShopList = async (
   params: IPaginationParams
@@ -50,6 +51,18 @@ export const updateAdminShop = async (
     data: params,
   });
 
+  return response.data;
+};
+
+export const createAdminShop = async (
+  params: ICreateShopRequest
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.ADMIN.SHOP,
+    data: params,
+  });
   return response.data;
 };
 

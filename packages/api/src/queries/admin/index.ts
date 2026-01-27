@@ -8,3 +8,4 @@ export * from './usePutAdminMember';
 export * from './useDeleteAdminMember';
 export * from './usePostAdminMemberPWReset';
 export * from './useGetAdminHistoryList';
+export * from './usePostAdminShop';
