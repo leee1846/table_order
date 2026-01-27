@@ -14,17 +14,18 @@ export const TableGridContainer = styled.div`
   align-items: center;
   justify-content: center;
   background: ${colors.grey[600]};
-  overflow-y: auto;
-  padding: 100px;
+  overflow: hidden;
 `;
 
 export const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, 190px);
+  grid-template-columns: repeat(4, 190px);
   grid-auto-rows: 154px;
   gap: 12px;
-  justify-content: start;
+  justify-content: center;
   align-content: start;
+  padding: 100px 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  overflow-y: auto;
 `;
