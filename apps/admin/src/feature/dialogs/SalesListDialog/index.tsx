@@ -243,10 +243,10 @@ export const SalesListDialog = ({
 };
 
 export const SalesListDialogWithGuard = (props: SalesListDialogProps) => {
-  const { isOpen } = props;
+  const { isOpen, onClose } = props;
 
   return (
-    <SalesAccessGuard revalidateKey={isOpen}>
+    <SalesAccessGuard revalidateKey={isOpen} onClose={onClose}>
       {isOpen && <SalesListDialog {...props} />}
     </SalesAccessGuard>
   );

@@ -23,11 +23,17 @@ interface SalesAccessGuardProps {
    * 이 값이 변경되면 접근 권한 재검증이 트리거됩니다.
    */
   revalidateKey?: boolean | null;
+  /**
+   * 비밀번호 모달을 닫을 때 호출되는 콜백 함수.
+   * 부모 컴포넌트의 상태를 초기화하는데 사용됩니다.
+   */
+  onClose?: () => void;
 }
 
 export const SalesAccessGuard = ({
   children,
   revalidateKey = null,
+  onClose,
 }: SalesAccessGuardProps) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -157,10 +163,12 @@ export const SalesAccessGuard = ({
   const handleClose = useCallback(() => {
     setIsModalOpen(false);
     setIsUnlocked(false);
-    if (!location.pathname.startsWith(ROUTES.TABLES.path)) {
+    if (onClose) {
+      onClose();
+    } else if (!location.pathname.startsWith(ROUTES.TABLES.path)) {
       navigate(-1);
     }
-  }, [navigate, location.pathname]);
+  }, [navigate, location.pathname, onClose]);
 
   if (!hasContent) {
     return null;
