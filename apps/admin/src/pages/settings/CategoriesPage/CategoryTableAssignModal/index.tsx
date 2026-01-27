@@ -1,6 +1,6 @@
 import { t } from '@/config/i18n';
 import { useEffect, useMemo, useState } from 'react';
-import { useGetTableGroupList, useGetShopThemePage } from '@repo/api/queries';
+import { useGetTableGroupList, useGetShopThemeMenu } from '@repo/api/queries';
 import type {
   ITableInfo,
   TGetCategoryExceptTableResponse,
@@ -31,18 +31,9 @@ export const CategoryTableAssignModal = ({
     { enabled: !!shopCode }
   );
 
-  const { data: shopThemePageResponse } = useGetShopThemePage(shopCode ?? '', {
+  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
     enabled: !!shopCode,
   });
-
-  const initLightImage = useMemo(() => {
-    const shopPageDetailList = shopThemePageResponse?.data?.shopPageDetailList;
-    if (!shopPageDetailList) return null;
-    const initLightItem = shopPageDetailList.find(
-      (item) => item.pageDetailType === 'INIT_LIGHT'
-    );
-    return initLightItem?.pageDetailImagePath || null;
-  }, [shopThemePageResponse?.data?.shopPageDetailList]);
 
   const tableGroups = tableGroupResponse?.data ?? [];
 
@@ -148,7 +139,9 @@ export const CategoryTableAssignModal = ({
               onClick={() => handleToggleTable(table.tableNumber)}
             >
               <S.TableNumber>{tableName}</S.TableNumber>
-              <S.TableStatus>{isSelected ? t('미선택 상태') : t('선택됨')}</S.TableStatus>
+              <S.TableStatus>
+                {isSelected ? t('미선택 상태') : t('선택됨')}
+              </S.TableStatus>
             </S.TableCard>
           );
         })}
@@ -187,7 +180,10 @@ export const CategoryTableAssignModal = ({
       <S.SidebarContainer>
         <S.Logo>
           <img
-            src={initLightImage ?? capsSmartOrderWhiteLogo}
+            src={
+              shopThemeMenuResponse?.data?.logoImagePath ??
+              capsSmartOrderWhiteLogo
+            }
             alt={t('매장 로고')}
             style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
           />
@@ -203,7 +199,7 @@ export const CategoryTableAssignModal = ({
               {group.tableGroupName}
             </S.MenuItem>
           ))}
-        </S.MenuList> 
+        </S.MenuList>
       </S.SidebarContainer>
     </S.Container>
   );
