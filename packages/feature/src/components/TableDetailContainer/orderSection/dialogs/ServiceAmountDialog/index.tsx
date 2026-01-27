@@ -82,20 +82,16 @@ export const ServiceAmountDialog = ({
     // 메뉴 서비스의 경우 amount는 음수로 요청해야 함
     const serviceAmount = numericAmount <= 0 ? numericAmount : -numericAmount;
 
-    try {
-      await postCustomAmount({
-        orderGroupUuid,
-        amount: serviceAmount,
-        type: 'MENU_SERVICE',
-        orderDetailMenuSeq,
-      });
+    await postCustomAmount({
+      orderGroupUuid,
+      amount: serviceAmount,
+      type: 'MENU_SERVICE',
+      orderDetailMenuSeq,
+    });
 
-      toast(t('서비스 금액을 적용했어요.'));
-      onApplySuccess?.();
-      handleClose();
-    } catch (error) {
-      toast(t('서비스 금액 적용 중 오류가 발생했어요. 다시 시도해주세요.'));
-    }
+    toast(t('서비스 금액을 적용했어요.'));
+    onApplySuccess?.();
+    handleClose();
   };
 
   const handleClose = () => {
