@@ -694,14 +694,14 @@ export const OptionGroupManageModal = ({
                 placeholder={t('옵션 그룹 코드')}
                 disabled
                 customStyle={S.inputCss}
-                value={existingOptionGroup?.mappedOptionGroupCode ?? ''}
+                value={existingOptionGroup?.mappedHeadOptionGroupCode ?? ''}
               />
 
               <Input
                 placeholder={t('옵션 분류 코드')}
                 disabled
                 customStyle={S.inputCss}
-                value={existingOptionGroup?.mappedHeadOptionGroupCode ?? ''}
+                value={existingOptionGroup?.mappedOptionGroupCode ?? ''}
               />
             </S.CodeContainer>
           </S.TitleContainer>
