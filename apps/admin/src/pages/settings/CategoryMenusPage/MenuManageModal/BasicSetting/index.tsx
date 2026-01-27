@@ -106,6 +106,7 @@ export const BasicSetting = ({ isPosLinked, hideImageSection }: Props) => {
               </S.Title>
             </S.PriceTitleContainer>
             <Input
+              inputMode="numeric"
               placeholder="0"
               customStyle={S.inputCss}
               value={formatCurrency(formValues.menuPrice ?? 0)}

@@ -2,7 +2,12 @@ import { useEffect, useState, useMemo } from 'react';
 import { Header } from '@/pages/settings/CategoryMenusPage/Header';
 import { Menus } from '@/pages/settings/CategoryMenusPage/Menus';
 import { MenuManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal';
-import { useLocation, useParams } from 'react-router-dom';
+import {
+  useLocation,
+  useParams,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import * as S from '@/pages/settings/CategoryMenusPage/categoryMenusPage.style';
 import { useGetMenuList, queryKeys } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
@@ -12,7 +17,8 @@ import { useIsPosLinked } from '@/hooks/useIsPosLinked';
 
 export const CategoryMenusPage = () => {
   const { i18n } = useAdminTranslation();
-  const [isMenuManageModalOpen, setIsMenuManageModalOpen] = useState(false);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [selectedMenu, setSelectedMenu] = useState<IMenu | null>(null);
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
@@ -20,6 +26,9 @@ export const CategoryMenusPage = () => {
   const isValidCategorySeq = Number.isInteger(categorySeq);
 
   const queryClient = useQueryClient();
+
+  // URL 쿼리 파라미터로부터 모달 상태 제어
+  const isMenuManageModalOpen = searchParams.get('modal') === 'menu';
 
   // SidebarLayout에서 이미 가져온 카테고리 목록 캐시 데이터 재사용
   const categoryListResponse =
@@ -48,21 +57,31 @@ export const CategoryMenusPage = () => {
       return;
     }
     setSelectedMenu(null);
-    setIsMenuManageModalOpen(true);
+    // URL에 쿼리 파라미터 추가 (브라우저 히스토리에 쌓임)
+    navigate('?modal=menu', { replace: false });
   };
 
   const handleEditMenu = (menu: IMenu) => {
     setSelectedMenu(menu);
-    setIsMenuManageModalOpen(true);
+    // 수정할 메뉴 정보와 함께 URL에 쿼리 파라미터 추가
+    navigate(`?modal=menu&menuSeq=${menu.menuSeq}`, { replace: false });
   };
 
   const handleCloseMenuModal = () => {
-    setIsMenuManageModalOpen(false);
+    // 브라우저 히스토리에서 뒤로가기 (URL의 쿼리 파라미터 제거)
+    navigate(-1);
     setSelectedMenu(null);
   };
 
+  // URL이 변경되면 모달 상태 초기화
   useEffect(() => {
-    setIsMenuManageModalOpen(false);
+    if (!isMenuManageModalOpen) {
+      setSelectedMenu(null);
+    }
+  }, [isMenuManageModalOpen]);
+
+  // 경로가 완전히 변경되면 (다른 카테고리로 이동) 상태 초기화
+  useEffect(() => {
     setSelectedMenu(null);
   }, [location.pathname]);
 
