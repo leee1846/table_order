@@ -213,12 +213,12 @@ export const Calender = ({
     // 시작일이 없으면 시작일로 설정
     if (!tempStartDate) {
       setTempStartDate(clickedDate);
-      setTempEndDate('');
+      setTempEndDate(clickedDate);
       return;
     }
 
-    // 시작일만 있고 종료일이 없는 경우
-    if (!tempEndDate) {
+    // 시작일과 종료일이 같은 경우 (처음 한번만 선택했을경우를 의미함)
+    if (tempStartDate === tempEndDate) {
       // 같은 날짜 클릭 → 선택 해제
       if (isSameDate(clickedDate, tempStartDate)) {
         setTempStartDate('');
@@ -244,14 +244,14 @@ export const Calender = ({
     // 시작일 이전/동일 클릭 → 새로운 시작일로 설정
     if (isSameOrBefore(clickedDate, tempStartDate)) {
       setTempStartDate(clickedDate);
-      setTempEndDate('');
+      setTempEndDate(clickedDate);
       return;
     }
 
     // 종료일 이후/동일 클릭 → 새로운 시작일로 설정
     if (isSameOrAfter(clickedDate, tempEndDate)) {
       setTempStartDate(clickedDate);
-      setTempEndDate('');
+      setTempEndDate(clickedDate);
       return;
     }
 
