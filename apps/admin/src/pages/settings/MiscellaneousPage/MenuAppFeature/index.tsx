@@ -514,6 +514,7 @@ export const MenuAppFeature = ({
             <textarea
               value={pickupAlertMessage}
               maxLength={MAX_DESCRIPTION_LENGTH}
+              placeholder={t('메뉴가 나왔으니 가지고 가십시오.')}
               onChange={(event) => {
                 const value = event.target.value;
                 if (value.length <= MAX_DESCRIPTION_LENGTH) {

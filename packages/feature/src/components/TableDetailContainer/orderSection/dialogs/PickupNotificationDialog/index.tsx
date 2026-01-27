@@ -44,17 +44,13 @@ export const PickupNotificationDialog = ({
   }, [isOpen, defaultMessage]);
 
   const handleConfirm = async () => {
-    try {
-      await postPickupMessage({
-        shopCode,
-        tableNumber,
-        message: message || t('메뉴가 나왔으니 가지고 가십시오.'),
-      });
-      toast(t('픽업 알림이 전송되었습니다.'));
-      onClose();
-    } catch (error) {
-      toast(t('픽업 알림 전송 중 오류가 발생했습니다. 다시 시도해주세요.'));
-    }
+    await postPickupMessage({
+      shopCode,
+      tableNumber,
+      message: message || t('메뉴가 나왔으니 가지고 가십시오.'),
+    });
+    toast(t('픽업 알림이 전송되었습니다.'));
+    onClose();
   };
 
   const handleCustomInputClick = () => {
@@ -88,7 +84,7 @@ export const PickupNotificationDialog = ({
             <S.TextArea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder={t('메시지를 입력하세요')}
+              placeholder={t('메뉴가 나왔으니 가지고 가십시오.')}
               rows={4}
               disabled={!isCustomInput}
               maxLength={MAX_DESCRIPTION_LENGTH}
