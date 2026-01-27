@@ -635,6 +635,7 @@ export const OptionGroupManageModal = ({
                 {t('최소 수량')}
 
                 <input
+                  disabled={isPosLinked}
                   type="string"
                   inputMode="numeric"
                   value={settings.minQuantity.toString()}
@@ -652,6 +653,7 @@ export const OptionGroupManageModal = ({
                 {t('최대 수량')}
 
                 <input
+                  disabled={isPosLinked}
                   type="string"
                   inputMode="numeric"
                   value={settings.maxQuantity}
@@ -671,11 +673,13 @@ export const OptionGroupManageModal = ({
                   updateSettings({ isOptionQuantitySelectable: checked })
                 }
                 customStyle={S.checkButtonCss}
+                disabled={isPosLinked}
               >
                 <span>{t('옵션 수량 선택')}</span>
               </CheckButton>
 
               <CheckButton
+                disabled={isPosLinked}
                 checked={settings.isMultipleSelectable}
                 onChange={(checked) =>
                   updateSettings({ isMultipleSelectable: checked })

@@ -7,6 +7,8 @@ import {
   Dropdown,
 } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoriesPage/CategoryManageModal/categoryManageModal.style';
+import { useIsPosLinked } from '@/hooks/useIsPosLinked';
+
 import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
 import { useState, useEffect, useMemo } from 'react';
@@ -43,7 +45,7 @@ export const CategoryManageModal = ({
   const queryClient = useQueryClient();
   const createCategoryMutation = usePostCreateCategory();
   const updateCategoryMutation = usePutUpdateCategory();
-
+  const isPosLinked = useIsPosLinked();
   // 현재 언어 코드를 안전하게 가져오기
   const currentLanguage: TShopLanguage = useMemo(
     () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
@@ -365,6 +367,7 @@ export const CategoryManageModal = ({
                   checked={isQuantitySelectable}
                   onChange={(checked) => setIsQuantitySelectable(checked)}
                   customStyle={S.checkButtonCss}
+                  disabled={isPosLinked}
                 >
                   <p>{t('수량선택 사용')}</p>
                 </CheckButton>

@@ -74,7 +74,11 @@ export const Header = ({
         <BasicButton
           variant="Solid_Navy_2XL"
           onClick={handleClick}
-          icon={<AddIcon color={theme.colors.white} />}
+          icon={
+            <AddIcon
+              color={isPosLinked ? theme.colors.grey[500] : theme.colors.white}
+            />
+          }
           disabled={isPosLinked}
         >
           {t('메뉴 추가하기')}
