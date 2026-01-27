@@ -663,5 +663,6 @@
   "자동 번역": "Auto Translate",
   "미리보기": "Preview",
   "시작 날짜는 종료 날짜보다 늦을 수 없습니다.": "Start date cannot be later than end date.",
-  "종료 날짜는 시작 날짜보다 이를 수 없습니다.": "End date cannot be earlier than start date."
+  "종료 날짜는 시작 날짜보다 이를 수 없습니다.": "End date cannot be earlier than start date.",
+  "당일 객수 기능 미사용 시 0으로 계산": "If daily guest count feature is not used, it is calculated as 0"
 }

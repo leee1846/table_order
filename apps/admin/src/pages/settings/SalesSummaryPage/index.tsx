@@ -1,5 +1,5 @@
 import { t } from '@/config/i18n';
-import { useMemo } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { InfoIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { formatCurrency } from '@repo/util/string';
@@ -17,6 +17,14 @@ const formatDateToYYYYMMDD = (date: Date) => {
 
 export const SalesSummaryPage = () => {
   const { shopCode } = useAuth();
+  const [
+    showAveragePricePerCustomerTooltip,
+    setShowAveragePricePerCustomerTooltip,
+  ] = useState(false);
+  const [showPaidCustomerCountTooltip, setShowPaidCustomerCountTooltip] =
+    useState(false);
+  const averagePricePerCustomerIconWrapperRef = useRef<HTMLDivElement>(null);
+  const paidCustomerCountIconWrapperRef = useRef<HTMLDivElement>(null);
 
   const defaultDateRange = useMemo(() => {
     const today = new Date();
@@ -47,6 +55,43 @@ export const SalesSummaryPage = () => {
   const paidTableCount = salesSummary?.paidTableCount ?? 0;
   const paidCustomerCount = salesSummary?.paidCustomerCount ?? 0;
 
+  const handleAveragePricePerCustomerIconClick = () => {
+    setShowAveragePricePerCustomerTooltip(!showAveragePricePerCustomerTooltip);
+  };
+
+  const handlePaidCustomerCountIconClick = () => {
+    setShowPaidCustomerCountTooltip(!showPaidCustomerCountTooltip);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showAveragePricePerCustomerTooltip &&
+        averagePricePerCustomerIconWrapperRef.current &&
+        !averagePricePerCustomerIconWrapperRef.current.contains(
+          event.target as Node
+        )
+      ) {
+        setShowAveragePricePerCustomerTooltip(false);
+      }
+      if (
+        showPaidCustomerCountTooltip &&
+        paidCustomerCountIconWrapperRef.current &&
+        !paidCustomerCountIconWrapperRef.current.contains(event.target as Node)
+      ) {
+        setShowPaidCustomerCountTooltip(false);
+      }
+    };
+
+    if (showAveragePricePerCustomerTooltip || showPaidCustomerCountTooltip) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showAveragePricePerCustomerTooltip, showPaidCustomerCountTooltip]);
+
   return (
     <S.Container>
       <S.Title>
@@ -61,7 +106,24 @@ export const SalesSummaryPage = () => {
             <span>{t('원')}</span>
           </S.Price>
           <S.Description>
-            <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
+            <S.IconWrapper
+              ref={averagePricePerCustomerIconWrapperRef}
+              onClick={handleAveragePricePerCustomerIconClick}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                handleAveragePricePerCustomerIconClick();
+              }}
+            >
+              <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
+              {showAveragePricePerCustomerTooltip && (
+                <S.Tooltip>
+                  <S.TooltipText>
+                    {t('매출/객수(*객수 미사용 시, 매출/테이블 수)')}
+                  </S.TooltipText>
+                  <S.TooltipArrow />
+                </S.Tooltip>
+              )}
+            </S.IconWrapper>
             {t('객단가')}
             {formatCurrency(averagePricePerCustomer)}
             {t('원')}
@@ -81,7 +143,24 @@ export const SalesSummaryPage = () => {
             <span>{t('개')}</span>
           </S.Price>
           <S.Description>
-            <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
+            <S.IconWrapper
+              ref={paidCustomerCountIconWrapperRef}
+              onClick={handlePaidCustomerCountIconClick}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                handlePaidCustomerCountIconClick();
+              }}
+            >
+              <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
+              {showPaidCustomerCountTooltip && (
+                <S.Tooltip>
+                  <S.TooltipText>
+                    {t('당일 객수 기능 미사용 시 0으로 계산')}
+                  </S.TooltipText>
+                  <S.TooltipArrow />
+                </S.Tooltip>
+              )}
+            </S.IconWrapper>
             {t('결제 완료 객수')}
             {formatCurrency(paidCustomerCount)}
             {t('명')}
