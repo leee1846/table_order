@@ -292,8 +292,8 @@ export const TablesPage = () => {
     clearLanguageData,
   ]);
 
-  // 테이블 선택 처리
-  const selectTable = async (table: TableWithStatus) => {
+  // 디바이스 정보 업데이트 및 createDeviceDetail 호출
+  const updateDeviceDetail = async (tableNumber: string) => {
     let currentDeviceData = deviceData;
 
     // 🔒 필수 디바이스 정보가 없으면 새로 가져오기
@@ -311,7 +311,7 @@ export const TablesPage = () => {
     }
 
     await createDeviceDetail({
-      tableNumber: table.tableNumber,
+      tableNumber,
       shopCode: shopData?.shopCode ?? '',
       deviceType: 'MENU',
       orderPosNumber: null,
@@ -324,6 +324,11 @@ export const TablesPage = () => {
     });
 
     await refreshDeviceData();
+  };
+
+  // 테이블 선택 처리
+  const selectTable = async (table: TableWithStatus) => {
+    await updateDeviceDetail(table.tableNumber);
     await refreshMenuInitialData();
     clearAdminPasswordCache();
     navigate(ROUTES.ROOT.generate());
@@ -366,8 +371,9 @@ export const TablesPage = () => {
   };
 
   // 현재 선택된 테이블 클릭 처리
-  const handleCurrentTableClick = () => {
-    refreshMenuInitialData();
+  const handleCurrentTableClick = async () => {
+    await updateDeviceDetail(deviceData?.tableNumber ?? '');
+    await refreshMenuInitialData();
     clearAdminPasswordCache();
     navigate(ROUTES.ROOT.generate());
   };
@@ -386,7 +392,7 @@ export const TablesPage = () => {
     }
 
     if (isCurrentSelectedTable(table.tableNumber)) {
-      handleCurrentTableClick();
+      await handleCurrentTableClick();
       return;
     }
 
