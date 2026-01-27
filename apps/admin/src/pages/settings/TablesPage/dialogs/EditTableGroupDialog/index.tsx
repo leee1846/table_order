@@ -38,29 +38,17 @@ export const EditTableGroupDialog = forwardRef<
     }
 
     if (groupName.trim() !== '') {
-      try {
-        await updateTableGroup({
-          tableGroupSeq: tableGroup.tableGroupSeq,
-          tableGroupName: groupName,
-        });
+      await updateTableGroup({
+        tableGroupSeq: tableGroup.tableGroupSeq,
+        tableGroupName: groupName,
+      });
 
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.table.groupList(shopCode!),
-        });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.table.groupList(shopCode!),
+      });
 
-        toast(
-          t(
-            '테이블 그룹이 수정되었습니다.'
-          )
-        );
-        handleClose();
-      } catch (_error) {
-        toast(
-          t(
-            '테이블 그룹 수정에 실패했습니다.'
-          )
-        );
-      }
+      toast(t('테이블 그룹이 수정되었습니다.'));
+      handleClose();
     }
   };
 
@@ -76,21 +64,19 @@ export const EditTableGroupDialog = forwardRef<
   return (
     <ModalBackground onClick={handleClose}>
       <S.ModalContainer ref={ref}>
-        <S.CloseButton onClick={handleClose} type="button">
-          <CloseIcon width={32} height={32} color={colors.grey[600]} />
-        </S.CloseButton>
+        <S.ButtonWrapper>
+          <S.CloseButton onClick={handleClose} type="button">
+            <CloseIcon width={32} height={32} color={colors.grey[600]} />
+          </S.CloseButton>
+        </S.ButtonWrapper>
         <S.ModalHeader>
-          <S.ModalTitle>
-            {t('테이블 그룹 수정')}
-          </S.ModalTitle>
+          <S.ModalTitle>{t('테이블 그룹 수정')}</S.ModalTitle>
         </S.ModalHeader>
         <S.ModalBody>
           <Input
             value={groupName}
             onChange={setGroupName}
-            placeholder={t(
-              '테이블 그룹 이름을 입력하세요'
-            )}
+            placeholder={t('테이블 그룹 이름을 입력하세요')}
           />
         </S.ModalBody>
         <S.ModalFooter>

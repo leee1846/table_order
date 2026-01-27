@@ -20,9 +20,20 @@ export const ModalTitle = styled.h3`
   color: ${theme.colors.grey[800]};
 `;
 
+export const ButtonWrapper = styled.div`
+  width: 100%;
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+`;
+
 export const CloseButton = styled.button`
   cursor: pointer;
-  text-align: right;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const ModalBody = styled.div`

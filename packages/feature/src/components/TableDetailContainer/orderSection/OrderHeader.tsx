@@ -131,7 +131,10 @@ export function OrderHeader({
             <p>{orderTime ? `(${formattedElapsedTime})` : '(-)'}</p>
           </OrderTime>
         ) : (
-          <div />
+          <OrderTime>
+            <p>{orderTime}</p>
+            <p> (-)</p>
+          </OrderTime>
         )}
         <ButtonBox>
           <button type="button" onClick={handleSelectCancel}>

@@ -39,13 +39,13 @@ export const CreateTableDialog = ({
   return (
     <ModalBackground onClick={handleClose}>
       <S.ModalContainer>
-        <S.CloseButton onClick={handleClose} type="button">
-          <CloseIcon width={32} height={32} color={colors.grey[600]} />
-        </S.CloseButton>
+        <S.ButtonWrapper>
+          <S.CloseButton onClick={handleClose} type="button">
+            <CloseIcon width={32} height={32} color={colors.grey[600]} />
+          </S.CloseButton>
+        </S.ButtonWrapper>
         <S.ModalHeader>
-          <S.ModalTitle>
-            {t('테이블 추가')}
-          </S.ModalTitle>
+          <S.ModalTitle>{t('테이블 추가')}</S.ModalTitle>
         </S.ModalHeader>
         <S.ModalBody>
           <S.InputWrapper>
@@ -62,9 +62,7 @@ export const CreateTableDialog = ({
               value={''}
               onChange={() => {}}
               disabled
-              errorMessage={t(
-                '테이블 ID는 자동으로 생성돼요.'
-              )}
+              errorMessage={t('테이블 ID는 자동으로 생성돼요.')}
             />
           </S.InputWrapper>
         </S.ModalBody>

@@ -12,22 +12,28 @@ export const ModalContainer = styled(BaseDialogContainer)`
 `;
 
 export const ModalHeader = styled(BaseHeader)`
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 `;
 
 export const ModalTitle = BaseTitle;
 
+export const ButtonWrapper = styled.div`
+  width: 100%;
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+`;
+
 export const CloseButton = styled.button`
   cursor: pointer;
   text-align: right;
-  transform: translate(-6px, 6px);
 `;
 
 export const ModalBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 `;
 
 export const InputWrapper = styled.div`

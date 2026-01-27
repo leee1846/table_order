@@ -17,10 +17,15 @@ export const ModalHeader = styled(BaseHeader)`
 
 export const ModalTitle = BaseTitle;
 
+export const ButtonWrapper = styled.div`
+  width: 100%;
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+`;
 export const CloseButton = styled.button`
   cursor: pointer;
   text-align: right;
-  transform: translate(-6px, 6px);
 `;
 
 export const ModalBody = styled.div`

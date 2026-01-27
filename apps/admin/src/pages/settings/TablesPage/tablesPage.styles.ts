@@ -6,6 +6,7 @@ const { colors } = theme;
 export const TablePageContainer = styled.div`
   display: flex;
   width: 100%;
+  height: 100%;
 `;
 
 export const TableGridContainer = styled.div`
@@ -14,7 +15,6 @@ export const TableGridContainer = styled.div`
   align-items: center;
   justify-content: center;
   background: ${colors.grey[600]};
-  overflow: hidden;
 `;
 
 export const GridContainer = styled.div`
