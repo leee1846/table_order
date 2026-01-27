@@ -13,6 +13,7 @@ export type OrderPanelProps = {
   onClearTable?: () => void;
   onItemClick?: (item: OrderItem) => void;
   useCustomerCount?: boolean;
+  useTableOccupancyTime?: boolean;
   usePickupAlert?: boolean;
   shopCode: string;
   tableNumber: string;
@@ -29,6 +30,7 @@ export function OrderPanel({
   onItemClick,
   onClearTable,
   useCustomerCount,
+  useTableOccupancyTime,
   i18nInstance,
   orderTime,
   refetchOrderHistories,
@@ -41,6 +43,7 @@ export function OrderPanel({
         numberOfPeople={order.numberOfPeople ?? 0}
         orderTime={orderTime ?? ''}
         useCustomerCount={useCustomerCount}
+        useTableOccupancyTime={useTableOccupancyTime}
         i18nInstance={i18nInstance}
         paymentList={order.paymentList ?? []}
         refetchOrderHistories={refetchOrderHistories}

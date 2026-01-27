@@ -167,6 +167,11 @@ export const TableDetailContainer = ({
     return shopDetailResponse?.data?.shopSetting?.pickupAlertMessage;
   }, [shopDetailResponse]);
 
+  // 테이블 점유시간 표기 사용 여부 계산
+  const useTableOccupancyTime = useMemo(() => {
+    return !!shopDetailResponse?.data?.shopSetting?.useTableOccupancyTime;
+  }, [shopDetailResponse]);
+
   // SSE 메시지 구독
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
     'sse-main-connection'
@@ -343,6 +348,7 @@ export const TableDetailContainer = ({
             onClearTable={handleClearTable}
             onItemClick={handleItemClick}
             useCustomerCount={useCustomerCount}
+            useTableOccupancyTime={useTableOccupancyTime}
             usePickupAlert={usePickupAlert}
             shopCode={shopCode}
             tableNumber={tableNumber}

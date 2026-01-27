@@ -45,6 +45,7 @@ export type OrderHeaderProps = {
   numberOfPeople: number;
   orderTime: string;
   useCustomerCount?: boolean;
+  useTableOccupancyTime?: boolean;
   i18nInstance?: I18nInstance;
   paymentList: IPayment[];
   refetchOrderHistories?: () => void;
@@ -56,6 +57,7 @@ export function OrderHeader({
   numberOfPeople,
   orderTime,
   useCustomerCount = false,
+  useTableOccupancyTime = false,
   i18nInstance,
   paymentList,
   refetchOrderHistories,
@@ -123,10 +125,14 @@ export function OrderHeader({
         {useCustomerCount && <GuestCount>인원: {numberOfPeople}</GuestCount>}
       </LeftBox>
       <RightBox>
-        <OrderTime>
-          <p>{orderTime}</p>
-          <p>{orderTime ? `(${formattedElapsedTime})` : '(-)'}</p>
-        </OrderTime>
+        {useTableOccupancyTime ? (
+          <OrderTime>
+            <p>{orderTime}</p>
+            <p>{orderTime ? `(${formattedElapsedTime})` : '(-)'}</p>
+          </OrderTime>
+        ) : (
+          <div />
+        )}
         <ButtonBox>
           <button type="button" onClick={handleSelectCancel}>
             {t('선택 삭제')}
