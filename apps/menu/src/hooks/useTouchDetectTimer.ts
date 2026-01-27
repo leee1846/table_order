@@ -18,7 +18,7 @@ import { useModalStore } from '@/stores/useModalStore';
  *
  * @description
  * - 2분 30초 동안 터치가 없으면 모든 데이터를 새로고침하고 페이지를 리로드합니다
- * - 장바구니에 메뉴가 있고 모든 모달이 닫혀있으면 2분 후 주문 알림을 표시합니다
+ * - 장바구니에 메뉴가 있고 모든 모달이 닫혀있으면 1분 30초 후 주문 알림을 표시합니다
  * - 터치 이벤트 발생 시 타이머를 재시작합니다
  */
 export const useTouchDetectTimer = () => {
@@ -96,7 +96,7 @@ export const useTouchDetectTimer = () => {
       globalTimerManager.setTimeout(
         TIMER_KEYS.CART_ORDER_REMINDER,
         orderReminderTimerCallback,
-        120000 // 2분
+        90000 // 1분 30초
       );
     };
 

@@ -8,6 +8,7 @@ export interface IAppVersion {
   type?: TAppType;
   version?: string;
   downloadPath?: string;
+  checksum?: string;
   releaseNote?: string;
   // YYYYMMDDHHMMSS
   deployDate: string;

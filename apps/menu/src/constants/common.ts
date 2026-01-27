@@ -35,3 +35,10 @@ export const LANGUAGE_CONFIG = {
 } as const;
 
 export const MENU_MAX_QUANTITY = 999;
+
+export const URLS = {
+  MENU_APP_DOWNLOAD:
+    'https://nexa-test.handorder.co.kr/apk/MENU/nexa-menu-debug.apk',
+  ADMIN_APP_DOWNLOAD:
+    'https://nexa-test.handorder.co.kr/apk/POS_APP/nexa-admin-debug.apk',
+};

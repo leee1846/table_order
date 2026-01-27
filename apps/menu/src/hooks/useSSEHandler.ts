@@ -11,6 +11,7 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
+import { getLatestAppVersion } from '@repo/api/fetchers';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { SystemControl, Installer } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
@@ -545,9 +546,31 @@ export const useSSEHandler = () => {
 
       case 'DEVICE_APP_UPDATE':
         // 앱 업데이트 제어
-        handlersRef.current.handleDeviceControlMessage(() => {
-          Installer.startUpdate(import.meta.env.VITE_APP_UPDATE_URL);
-        }, sseMessage);
+        (async () => {
+          const { currentDeviceData } = dataRefs.current;
+
+          if (!sseMessage.data || !currentDeviceData?.androidId) {
+            return;
+          }
+
+          // 메시지 데이터: 대상 디바이스 ID 배열
+          const targetDeviceIds = sseMessage.data as string[];
+          const currentAndroidId = currentDeviceData.androidId;
+
+          // 현재 기기가 대상 목록에 포함되어 있으면 업데이트 실행
+          if (!targetDeviceIds.includes(currentAndroidId)) {
+            return;
+          }
+
+          const response = await getLatestAppVersion('MENU');
+          const { downloadPath, checksum } = response.data || {};
+
+          if (!downloadPath || !checksum) {
+            return;
+          }
+
+          await Installer.startUpdate(downloadPath, checksum);
+        })();
         break;
 
       case 'DEVICE_SCREEN_OFF':
