@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite --mode development --host",
     "dev:prod": "vite --mode production",
+    "dev:stage": "vite --mode stage --host",
     "build:dev": "tsc --noEmit && vite build --mode development",
     "build:prod": "tsc --noEmit && vite build --mode production",
+    "build:stage": "tsc --noEmit && vite build --mode stage",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
