@@ -210,15 +210,15 @@ export const Calender = ({
    * Range 타입 날짜 선택 처리
    */
   const handleRangeDateSelection = (clickedDate: string) => {
-    // 시작일이 없으면 시작일로 설정
+    // 시작일이 없으면 시작일과 종료일을 같은 값으로 설정 (단일 선택)
     if (!tempStartDate) {
       setTempStartDate(clickedDate);
       setTempEndDate(clickedDate);
       return;
     }
 
-    // 시작일과 종료일이 같은 경우 (처음 한번만 선택했을경우를 의미함)
-    if (tempStartDate === tempEndDate) {
+    // 단일 선택 상태 (시작일 === 종료일)
+    if (isSameDate(tempStartDate, tempEndDate)) {
       // 같은 날짜 클릭 → 선택 해제
       if (isSameDate(clickedDate, tempStartDate)) {
         setTempStartDate('');
@@ -226,29 +226,29 @@ export const Calender = ({
         return;
       }
 
-      // 시작일보다 이전 날짜 클릭 → 새로운 시작일로 설정
+      // 시작일보다 이전 날짜 클릭 → 새로운 단일 선택으로 설정
       if (
         isDateBeforeCurrent({ date: clickedDate, currentDate: tempStartDate })
       ) {
         setTempStartDate(clickedDate);
-        setTempEndDate('');
+        setTempEndDate(clickedDate);
         return;
       }
 
-      // 시작일보다 이후 날짜 클릭 → 종료일로 설정
+      // 시작일보다 이후 날짜 클릭 → 종료일만 변경 (범위 확장)
       setTempEndDate(clickedDate);
       return;
     }
 
-    // 시작일과 종료일이 모두 있는 경우
-    // 시작일 이전/동일 클릭 → 새로운 시작일로 설정
+    // 범위 선택 상태 (시작일 !== 종료일)
+    // 시작일 이전/동일 클릭 → 새로운 단일 선택으로 설정
     if (isSameOrBefore(clickedDate, tempStartDate)) {
       setTempStartDate(clickedDate);
       setTempEndDate(clickedDate);
       return;
     }
 
-    // 종료일 이후/동일 클릭 → 새로운 시작일로 설정
+    // 종료일 이후/동일 클릭 → 새로운 단일 선택으로 설정
     if (isSameOrAfter(clickedDate, tempEndDate)) {
       setTempStartDate(clickedDate);
       setTempEndDate(clickedDate);
