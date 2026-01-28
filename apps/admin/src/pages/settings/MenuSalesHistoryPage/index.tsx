@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Calender,
   BasicButton,
   CheckButton,
   Dropdown,
 } from '@repo/ui/components';
-import { CalendarMonthIcon } from '@repo/ui/icons';
+import { CalendarMonthIcon, InfoIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { toast } from '@repo/feature/utils';
@@ -17,7 +17,7 @@ import {
   isEndDateBeforeStartDate,
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
-import { useGetMenuSalesHistory, useGetCategoryList } from '@repo/api/queries';
+import { useGetCategoryList, useGetMenuSalesHistory } from '@repo/api/queries';
 import { MenuSalesHistoryTable } from './Table';
 import * as S from './menuSalesHistoryPage.style';
 
@@ -33,8 +33,11 @@ export const MenuSalesHistoryPage = () => {
   const [showEndCalendar, setShowEndCalendar] = useState<boolean>(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<string | null>(null);
+  const [showCategoryTooltip, setShowCategoryTooltip] =
+    useState<boolean>(false);
+  const hasInitializedCategories = useRef(false);
+  const categoryIconWrapperRef = useRef<HTMLDivElement>(null);
 
-  // 1단계: 카테고리 리스트 먼저 가져오기
   const { data: categoryListResponse } = useGetCategoryList(
     {
       shopSeq: shopSeq ?? 0,
@@ -46,15 +49,43 @@ export const MenuSalesHistoryPage = () => {
 
   const categories = useMemo(() => {
     const categoryList = categoryListResponse?.data ?? [];
-    return categoryList.map((category) => category.categoryName);
-  }, [categoryListResponse]);
+    const categoryNames = categoryList.map((category) => category.categoryName);
+    // 미분류 카테고리를 맨 마지막에 추가
+    return [...categoryNames, t('미분류')];
+  }, [categoryListResponse, t]);
 
-  // 처음 카테고리 로드 시 전체 선택
+  // 처음 카테고리 로드 시 전체 선택 (한 번만 실행)
   useEffect(() => {
-    if (categories.length > 0 && selectedCategories.length === 0) {
+    if (categories.length > 0 && !hasInitializedCategories.current) {
       setSelectedCategories(categories);
+      hasInitializedCategories.current = true;
     }
-  }, [categories, selectedCategories.length]);
+  }, [categories]);
+
+  // 툴팁 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showCategoryTooltip &&
+        categoryIconWrapperRef.current &&
+        !categoryIconWrapperRef.current.contains(event.target as Node)
+      ) {
+        setShowCategoryTooltip(false);
+      }
+    };
+
+    if (showCategoryTooltip) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCategoryTooltip]);
+
+  const handleCategoryIconClick = () => {
+    setShowCategoryTooltip(!showCategoryTooltip);
+  };
 
   // 2단계: 카테고리 로드 후 매출 데이터 가져오기
   const { startDate: apiStartDate, endDate: apiEndDate } = useMemo(
@@ -78,21 +109,21 @@ export const MenuSalesHistoryPage = () => {
     }
   );
 
-  const historyItems = menuSalesHistoryResponse?.data ?? [];
-
   const filteredItems = useMemo(() => {
-    let items = historyItems;
+    const items = menuSalesHistoryResponse?.data ?? [];
 
     // 카테고리 필터링
-    if (selectedCategories.length) {
-      items = items.filter((item) =>
-        selectedCategories.includes(item.categoryName ?? '')
-      );
+    if (selectedCategories.length === 0) {
+      return [];
     }
+    const filtered = items.filter((item) => {
+      const categoryName = item.categoryName || t('미분류');
+      return selectedCategories.includes(categoryName);
+    });
 
     // 정렬 적용
     if (sortBy) {
-      const sortedItems = [...items];
+      const sortedItems = [...filtered];
       switch (sortBy) {
         case 'totalSalesAmount_desc':
           return sortedItems.sort(
@@ -123,12 +154,12 @@ export const MenuSalesHistoryPage = () => {
             (a.menuName ?? '').localeCompare(b.menuName ?? '', 'ko')
           );
         default:
-          return items;
+          return filtered;
       }
     }
 
-    return items;
-  }, [historyItems, selectedCategories, sortBy]);
+    return filtered;
+  }, [menuSalesHistoryResponse, selectedCategories, sortBy, t]);
 
   const handleSelectStartDate = (date: string) => {
     if (isStartDateAfterEndDate(date, endDate)) {
@@ -275,6 +306,30 @@ export const MenuSalesHistoryPage = () => {
               >
                 <p>{t('카테고리 전체선택')}</p>
               </CheckButton>
+              <S.CategoryInfoWrapper
+                ref={categoryIconWrapperRef}
+                onClick={handleCategoryIconClick}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  handleCategoryIconClick();
+                }}
+              >
+                <InfoIcon
+                  width={18}
+                  height={18}
+                  color={theme.colors.grey[500]}
+                />
+                {showCategoryTooltip && (
+                  <S.CategoryTooltip>
+                    <S.CategoryTooltipText>
+                      {t(
+                        "메뉴의 상위 카테고리가 삭제된 경우, 해당 메뉴는 '미분류'로 분류됩니다"
+                      )}
+                    </S.CategoryTooltipText>
+                    <S.CategoryTooltipArrow />
+                  </S.CategoryTooltip>
+                )}
+              </S.CategoryInfoWrapper>
             </S.CategoryHeader>
             <S.CategoryChips>
               {categories.map((category) => (
