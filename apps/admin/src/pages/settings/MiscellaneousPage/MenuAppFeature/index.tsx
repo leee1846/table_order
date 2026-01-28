@@ -686,10 +686,10 @@ export const MenuAppFeature = ({
               <S.ClickableText>
                 <div>
                   <input
-                    type="number"
+                    inputMode="numeric"
                     onChange={(event) =>
                       setBreakTimeLastOrderAlertTimeBefore(
-                        normalizeNumberString(event.target.value)
+                        allowOnlyNumbers(event.target.value)
                       )
                     }
                     value={breakTimeLastOrderAlertTimeBefore}
@@ -705,11 +705,11 @@ export const MenuAppFeature = ({
               <S.ClickableText>
                 <div>
                   <input
-                    type="number"
+                    inputMode="numeric"
                     placeholder="0"
                     onChange={(event) =>
                       setBreakTimeLastOrderTimeBefore(
-                        normalizeNumberString(event.target.value)
+                        allowOnlyNumbers(event.target.value)
                       )
                     }
                     value={breakTimeLastOrderTimeBefore}
@@ -817,10 +817,10 @@ export const MenuAppFeature = ({
                 <div>
                   <input
                     placeholder="0"
-                    type="number"
+                    inputMode="numeric"
                     onChange={(event) =>
                       setClosureLastOrderTimeBefore(
-                        normalizeNumberString(event.target.value)
+                        allowOnlyNumbers(event.target.value)
                       )
                     }
                     value={closureLastOrderTimeBefore}
@@ -837,10 +837,10 @@ export const MenuAppFeature = ({
                 <div>
                   <input
                     placeholder="0"
-                    type="number"
+                    inputMode="numeric"
                     onChange={(event) =>
                       setClosureLastOrderMinutes(
-                        normalizeNumberString(event.target.value)
+                        allowOnlyNumbers(event.target.value)
                       )
                     }
                     value={closureLastOrderMinutes}
