@@ -15,7 +15,7 @@ import { theme } from '@repo/ui';
 import { DeleteIcon, MenuBookIcon } from '@repo/ui/icons';
 import { CategoryModal } from './CategoryModal';
 import { getDays } from '@/constants/days';
-import { normalizeNumberString } from '@repo/util/string';
+import { normalizeNumberString, allowOnlyNumbers } from '@repo/util/string';
 import { generateTimeOptions, calculateTimeBefore } from '@repo/util/time';
 import { MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 import type { MiscellaneousChange } from '../types';
@@ -390,9 +390,13 @@ export const MenuAppFeature = ({
       <UIStyles.setting.ContentLayout>
         <p>{t('첫주문 금액')}</p>
         <input
-          type="text"
+          type="number"
+          inputMode="numeric"
           value={firstOrderMinAmount}
-          onChange={(event) => setFirstOrderMinAmount(event.target.value)}
+          onChange={(event) => {
+            const numericValue = allowOnlyNumbers(event.target.value);
+            setFirstOrderMinAmount(numericValue);
+          }}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
