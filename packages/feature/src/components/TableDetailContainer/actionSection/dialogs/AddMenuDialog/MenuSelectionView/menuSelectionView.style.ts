@@ -72,7 +72,7 @@ export const SoldOutBadge = styled.div`
   top: 50%;
   right: 50%;
   transform: translate(70%, -15%);
-  color: ${colors.grey[700]};
+  color: ${colors.grey[800]};
   ${TYPOGRAPHY.MT_2}
   width: 100%;
   height: 100%;
