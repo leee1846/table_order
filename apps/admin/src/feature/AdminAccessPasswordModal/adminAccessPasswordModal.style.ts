@@ -57,6 +57,13 @@ export const Title = styled.p`
   margin: 16px 0 80px;
 `;
 
+export const ErrorMessage = styled.p`
+  ${TYPOGRAPHY.BD_3}
+  color: ${({ theme }) => theme.mode.semantic[400]};
+  margin: 0 0 24px;
+  text-align: center;
+`;
+
 export const PasswordContainer = styled.ul`
   display: flex;
   gap: 16px;

@@ -4,13 +4,13 @@ import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
 import { useAdminTranslation } from '@/config/i18n';
 import * as S from './adminAccessPasswordModal.style';
+import { toast } from '@repo/feature/utils';
 
 const PASSWORD_MAX_LENGTH = 4;
 
 export interface AdminAccessPasswordModalProps {
   onClose: () => void;
   onSubmit: (password: string) => Promise<void>;
-  onSubmitError?: (error: unknown) => void;
   onSuccess?: () => void;
   passwordMaxLength?: number;
 }
@@ -23,7 +23,6 @@ export const AdminAccessPasswordModal = (
   const {
     onClose,
     onSubmit,
-    onSubmitError,
     onSuccess,
     passwordMaxLength = PASSWORD_MAX_LENGTH,
   } = props;
@@ -36,11 +35,15 @@ export const AdminAccessPasswordModal = (
         await onSubmit(completedPassword);
         onSuccess?.();
       } catch (error) {
-        onSubmitError?.(error);
+        const status = (error as { response?: { status?: number } })?.response
+          ?.status;
+        if (status === 401) {
+          toast(t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'));
+        }
         setPassword(null);
       }
     },
-    [onSubmit, onSubmitError, onSuccess]
+    [onSubmit, onSuccess]
   );
 
   const handleNumberPress = useCallback(
