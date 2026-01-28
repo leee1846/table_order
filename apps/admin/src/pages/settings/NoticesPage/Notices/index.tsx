@@ -17,7 +17,7 @@ interface NoticesProps {
 
 const BOARD_TYPE_LABELS: Record<TNoticeBoardType, string> = {
   GENERAL: t('일반'),
-  EMERGENCY: t('응급'),
+  EMERGENCY: t('긴급'),
 };
 
 export const Notices = ({ notices, pageSize }: NoticesProps) => {
@@ -84,7 +84,7 @@ export const Notices = ({ notices, pageSize }: NoticesProps) => {
             >
               <S.LeftContainer>
                 <S.Num>{notice.noticeSeq}</S.Num>
-                <S.Status>
+                <S.Status boardType={notice.boardType as TNoticeBoardType}>
                   {notice.boardType
                     ? BOARD_TYPE_LABELS[notice.boardType]
                     : t('일반')}

@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import type { TNoticeBoardType } from '@repo/api/types';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.ul`
@@ -71,9 +72,12 @@ export const Num = styled.p`
   padding: 0 6px;
 `;
 
-export const Status = styled.p`
+export const Status = styled.p<{ boardType?: TNoticeBoardType }>`
   ${TYPOGRAPHY.ST_4}
-  color: ${theme.colors.grey[600]};
+  color: ${({ boardType }) =>
+    boardType === 'GENERAL'
+      ? theme.colors.grey[600]
+      : theme.colors.semantic[500]};
   width: 100%;
   max-width: 5rem;
   text-align: center;

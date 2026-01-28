@@ -8,6 +8,7 @@ import { ROUTES } from '@/constants/routes';
 import { ArrowBackIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { formatDateTime } from '@repo/util/date';
+import type { TNoticeBoardType } from '@repo/api/types';
 
 export const NoticeDetailPage = () => {
   const { noticeSeq } = useParams<{ noticeSeq: string }>();
@@ -62,10 +63,10 @@ export const NoticeDetailPage = () => {
         <S.DetailContainer>
           <S.HeaderSection>
             <S.TitleSection>
-              <S.Status>
+              <S.Status boardType={notice.boardType as TNoticeBoardType}>
                 {notice.boardType === 'GENERAL'
                   ? t('일반')
-                  : notice.boardType || t('일반')}
+                  : t('긴급') || t('일반')}
               </S.Status>
               <S.Title>{notice.noticeTitle}</S.Title>
             </S.TitleSection>
