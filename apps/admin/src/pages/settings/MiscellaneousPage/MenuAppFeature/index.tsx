@@ -390,7 +390,6 @@ export const MenuAppFeature = ({
       <UIStyles.setting.ContentLayout>
         <p>{t('첫주문 금액')}</p>
         <input
-          type="number"
           inputMode="numeric"
           value={firstOrderMinAmount}
           onChange={(event) => {
