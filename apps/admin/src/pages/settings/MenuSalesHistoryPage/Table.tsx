@@ -20,19 +20,12 @@ export const MenuSalesHistoryTable = ({ rows }: Props) => {
   const orderedRows = useMemo(() => {
     if (!rows.length) return [];
 
-    const optionMap = rows
-      .filter((row) => row.isOption === 1)
-      .reduce<Record<number, IMenuSalesHistoryItem[]>>((acc, option) => {
-        const key = option.parentMenuSeq ?? option.menuSeq;
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(option);
-        return acc;
-      }, {});
-
     const usedOptionSeqs = new Set<number>();
     const parentRows = rows.filter((row) => row.isOption !== 1);
     const flattenedRows = parentRows.flatMap((parent) => {
-      const options = optionMap[parent.menuSeq] ?? [];
+      const options = rows.filter(
+        (row) => row.isOption === 1 && row.parentMenuName === parent.menuName
+      );
       options.forEach((option) => usedOptionSeqs.add(option.menuSeq));
       return [parent, ...options];
     });
