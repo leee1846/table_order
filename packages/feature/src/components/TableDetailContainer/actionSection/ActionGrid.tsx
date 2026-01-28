@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
 import {
-  CurrencyExchangeIcon,
-  DiscountIcon,
+  TotalDiscountIcon,
+  AmountChangeIcon,
   CloseIcon,
   DocumentIcon,
   RingIcon,
@@ -74,24 +74,20 @@ export function ActionGrid({
         </ActionBtn>
         {usePickupAlert && (
           <ActionBtn onClick={handlePickupClick}>
-            <img src={RingIcon} alt={t('픽업알림')} />
-            <label>{t('픽업알림')}</label>
+            <img src={RingIcon} alt={t('알림 발송')} />
+            <label>{t('알림 발송 ')}</label>
           </ActionBtn>
         )}
         <ActionBtn onClick={() => onPress?.('amount-change')}>
-          <CurrencyExchangeIcon
-            width={24}
-            height={24}
-            color={colors.grey[300]}
-          />
+          <img src={AmountChangeIcon} alt={t('금액 변경')} />
           <label>{t('금액 변경')}</label>
         </ActionBtn>
         <ActionBtn onClick={handleAllDiscount}>
-          <DiscountIcon width={24} height={24} color={colors.grey[300]} />
+          <img src={TotalDiscountIcon} alt={t('전체 할인')} />
           <label>{t('전체 할인')}</label>
         </ActionBtn>
       </Grid>
- 
+
       <PickupNotificationDialog
         isOpen={isPickupDialogOpen}
         onClose={handlePickupDialogClose}
