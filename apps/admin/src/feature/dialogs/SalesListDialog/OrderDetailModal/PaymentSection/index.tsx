@@ -67,8 +67,13 @@ export const PaymentSection = ({ order }: Props) => {
             </tr>
           </UIStyles.setting.Tbody>
         </UIStyles.setting.Table>
+      </S.Tables>
 
-        {/* 현금일경우 */}
+      {/* 현금일경우 */}
+      <S.Title>
+        <p>{t('현금 상세 내역')}</p>
+      </S.Title>
+      <S.Tables>
         <UIStyles.setting.Table>
           <UIStyles.setting.Thead>
             <tr>
@@ -114,8 +119,13 @@ export const PaymentSection = ({ order }: Props) => {
             ))}
           </UIStyles.setting.Tbody>
         </UIStyles.setting.Table>
+      </S.Tables>
 
-        {/* 카드일경우 */}
+      {/* 카드일경우 */}
+      <S.Title>
+        <p>{t('카드 상세 내역')}</p>
+      </S.Title>
+      <S.Tables>
         <UIStyles.setting.Table>
           <UIStyles.setting.Thead>
             <tr>

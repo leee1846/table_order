@@ -38,3 +38,9 @@ export const Tables = styled.div`
   overflow-y: auto;
   flex: 1;
 `;
+
+export const Title = styled.div`
+  ${TYPOGRAPHY.MT_6}
+  color: ${theme.colors.grey[800]};
+  margin: 15px 0;
+`;

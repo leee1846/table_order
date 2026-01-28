@@ -265,9 +265,9 @@ export const StartScreenImageRegistrationPage = () => {
       <S.Container>
         <S.Header>
           <S.Title>
-            <h1>{t('이미지 등록')}</h1>
+            <h1>{t('시작 화면')}</h1>
             <div />
-            <span>{t('시작 화면')}</span>
+            <span>{t('이미지 등록')}</span>
           </S.Title>
           <BasicButton variant="Solid_Navy_XL" onClick={handleSave}>
             {t('저장하기')}

@@ -115,9 +115,9 @@ export const MenuScreenPage = () => {
     <S.Container>
       <S.Header>
         <S.Title>
-          <h1>{t('테마설정')}</h1>
+          <h1>{t('메뉴 화면')}</h1>
           <div />
-          <span>{t('메뉴 화면')}</span>
+          <span>{t('테마설정')}</span>
         </S.Title>
         <BasicButton variant="Solid_Navy_XL" onClick={handleSave}>
           {t('저장하기')}

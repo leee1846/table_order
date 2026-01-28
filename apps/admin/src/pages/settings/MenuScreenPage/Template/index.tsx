@@ -46,15 +46,14 @@ export const Template = ({
           />
         </S.OptionRow>
         <S.OptionRow>
-          <S.OptionLabel>
-            {t('템플릿 선택')}
-          </S.OptionLabel>
+          <S.OptionLabel>{t('템플릿 선택')}</S.OptionLabel>
           <Dropdown
             options={templateOptions}
             value={templateType}
             onChange={(value) =>
               onChangeTemplateType(value as TMenuboardTemplateType)
             }
+            disabled={true}
           />
         </S.OptionRow>
       </S.TemplateOptions>
