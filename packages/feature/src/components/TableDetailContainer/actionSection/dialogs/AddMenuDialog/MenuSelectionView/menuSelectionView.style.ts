@@ -47,23 +47,42 @@ export const MenuGridPlaceholder = styled.div`
   ${TYPOGRAPHY.MT_7}
 `;
 
-export const MenuCard = styled.div<{ isSelected: boolean }>`
-  background-color: ${colors.white};
+export const MenuCard = styled.div<{
+  isSelected: boolean;
+  isOutOfStock?: boolean;
+}>`
+  background-color: ${({ isOutOfStock }) =>
+    isOutOfStock ? colors.grey[200] : colors.white};
   border: 1px solid ${colors.grey[200]};
   border-radius: 12px;
   padding: 12px;
   display: flex;
   flex-direction: column;
-  cursor: pointer;
+  cursor: ${({ isOutOfStock }) => (isOutOfStock ? 'not-allowed' : 'pointer')};
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
   height: 154px;
   overflow: hidden;
   justify-content: space-between;
+  opacity: ${({ isOutOfStock }) => (isOutOfStock ? 0.5 : 1)};
+  position: relative;
 `;
 
-export const MenuTitle = styled.div`
+export const SoldOutBadge = styled.div`
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translate(70%, -15%);
+  color: ${colors.grey[700]};
+  ${TYPOGRAPHY.MT_2}
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+`;
+
+export const MenuTitle = styled.div<{ isOutOfStock?: boolean }>`
   ${TYPOGRAPHY.MT_7}
-  color: ${colors.grey[800]};
+  color: ${({ isOutOfStock }) =>
+    isOutOfStock ? colors.grey[400] : colors.grey[800]};
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -71,9 +90,10 @@ export const MenuTitle = styled.div`
   text-overflow: ellipsis;
 `;
 
-export const MenuPrice = styled.div`
+export const MenuPrice = styled.div<{ isOutOfStock?: boolean }>`
   ${TYPOGRAPHY.MT_7}
-  color: ${colors.grey[700]};
+  color: ${({ isOutOfStock }) =>
+    isOutOfStock ? colors.grey[400] : colors.grey[700]};
   text-align: right;
 `;
 

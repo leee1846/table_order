@@ -85,20 +85,24 @@ export const MenuSelectionView = ({
             {currentMenuList.length === 0 ? (
               <S.MenuGridPlaceholder></S.MenuGridPlaceholder>
             ) : (
-              currentMenuList
-                .filter((menu) => !menu.isOutOfStock && !menu.isHidden)
-                .map((menu) => (
-                  <S.MenuCard
-                    key={menu.menuSeq}
-                    onClick={() => onMenuClick(menu)}
-                    isSelected={false}
-                  >
-                    <S.MenuTitle>
-                      {menu.localeMenuName?.[currentLan]}
-                    </S.MenuTitle>
-                    <S.MenuPrice>{formatCurrency(menu.menuPrice)}</S.MenuPrice>
-                  </S.MenuCard>
-                ))
+              currentMenuList.map((menu) => (
+                <S.MenuCard
+                  key={menu.menuSeq}
+                  onClick={() => !menu.isOutOfStock && onMenuClick(menu)}
+                  isSelected={false}
+                  isOutOfStock={menu.isOutOfStock}
+                >
+                  {menu.isOutOfStock && (
+                    <S.SoldOutBadge>Sold Out</S.SoldOutBadge>
+                  )}
+                  <S.MenuTitle isOutOfStock={menu.isOutOfStock}>
+                    {menu.localeMenuName?.[currentLan]}
+                  </S.MenuTitle>
+                  <S.MenuPrice isOutOfStock={menu.isOutOfStock}>
+                    {formatCurrency(menu.menuPrice)}
+                  </S.MenuPrice>
+                </S.MenuCard>
+              ))
             )}
           </S.MenuGrid>
 
