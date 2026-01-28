@@ -99,19 +99,13 @@ export const StoreEnvironment = ({
       <UIStyles.setting.Header>
         <S.TitleContentContainer>
           <StoreIcon width={32} height={32} color={theme.colors.primary[500]} />
-          <UIStyles.setting.Title>
-            {t('매장 환경')}
-          </UIStyles.setting.Title>
+          <UIStyles.setting.Title>{t('매장 환경')}</UIStyles.setting.Title>
         </S.TitleContentContainer>
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
-          <p>
-            {t(
-              '정산 시간 (영업 시간)'
-            )}
-          </p>
+          <p>{t('정산 시간 (영업 시간)')}</p>
           <UIStyles.setting.TimeRangeInput>
             <input
               type="text"
@@ -159,25 +153,21 @@ export const StoreEnvironment = ({
           </UIStyles.setting.TimeRangeInput>
         </UIStyles.setting.ContentLayout>
         <UIStyles.setting.ContentLayout>
-          <p>
-            {t(
-              '테이블 점유시간 표기'
-            )}
-          </p>
+          <p>{t('테이블 점유시간 표기')}</p>
           <ToggleButton
             size="M"
             isOn={tableOccupationTime}
             onChange={() => setTableOccupationTime(!tableOccupationTime)}
           />
         </UIStyles.setting.ContentLayout>
-        <UIStyles.setting.ContentLayout>
+        {/* <UIStyles.setting.ContentLayout>
           <p>{t('메뉴판 타입')}</p>
           <Dropdown
             options={menuboardTypeOptions}
             value={menuboardType}
             onChange={(value) => setMenuboardType(value as TMenuboardType | '')}
           />
-        </UIStyles.setting.ContentLayout>
+        </UIStyles.setting.ContentLayout> */}
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>
   );
