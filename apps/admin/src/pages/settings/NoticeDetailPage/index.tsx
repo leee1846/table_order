@@ -57,9 +57,6 @@ export const NoticeDetailPage = () => {
               />
             </S.BackButton>
           </S.HeaderLeft>
-          <BasicButton variant="Solid_Grey_L" onClick={() => {}}>
-            {t('고객센터')}
-          </BasicButton>
         </S.Header>
 
         <S.DetailContainer>

@@ -1,3 +1,4 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 
@@ -38,19 +39,6 @@ export const MenuGrid = styled.div`
   align-content: start;
 `;
 
-export const MenuCard = styled.div<{ isSelected: boolean }>`
-  background-color: ${colors.white};
-  border: 1px solid ${colors.grey[200]};
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
-  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
-  height: 154px;
-`;
-
 export const MenuGridPlaceholder = styled.div`
   display: flex;
   align-items: center;
@@ -59,9 +47,28 @@ export const MenuGridPlaceholder = styled.div`
   ${TYPOGRAPHY.MT_7}
 `;
 
+export const MenuCard = styled.div<{ isSelected: boolean }>`
+  background-color: ${colors.white};
+  border: 1px solid ${colors.grey[200]};
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
+  height: 154px;
+  overflow: hidden;
+  justify-content: space-between;
+`;
+
 export const MenuTitle = styled.div`
   ${TYPOGRAPHY.MT_7}
   color: ${colors.grey[800]};
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const MenuPrice = styled.div`
@@ -166,6 +173,7 @@ export const QuantitySelector = styled.div`
   overflow: hidden;
   background-color: ${colors.white};
   height: 52px;
+  border: 1px solid red;
 `;
 
 export const QuantityButton = styled.button`
@@ -223,4 +231,8 @@ export const TotalPrice = styled.div`
   ${TYPOGRAPHY.ST_4}
   color: ${colors.primary[500]};
   font-weight: 700;
+`;
+
+export const RightPanelMenuQuantityInput = css`
+  height: 50px !important;
 `;

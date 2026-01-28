@@ -1,13 +1,7 @@
 import { useMemo } from 'react';
-import { BasicButton, ModalBackground } from '@repo/ui/components';
+import { BasicButton, ModalBackground, NumberInput } from '@repo/ui/components';
 import { theme } from '@repo/ui';
-import {
-  CloseIcon,
-  EmptedCartIcon,
-  DeleteIcon,
-  RemoveIcon,
-  AddIcon,
-} from '@repo/ui/icons';
+import { CloseIcon, EmptedCartIcon, DeleteIcon } from '@repo/ui/icons';
 import type { ICategoryWithMenus, IMenu } from '@repo/api/types';
 import type { SelectedMenuWithOptions } from '../index';
 import type { i18n as I18nInstance } from 'i18next';
@@ -163,6 +157,7 @@ export const MenuSelectionView = ({
                           customStyle={css`
                             padding: 14px;
                             height: 52px;
+                            border-radius: 13px;
                           `}
                         >
                           <DeleteIcon
@@ -171,33 +166,16 @@ export const MenuSelectionView = ({
                             color={colors.grey[600]}
                           />
                         </BasicButton>
-                        <S.QuantitySelector>
-                          <S.QuantityButton
-                            onClick={() =>
-                              onItemQuantityChange(index, item.quantity - 1)
-                            }
-                            aria-label={t('수량 감소')}
-                          >
-                            <RemoveIcon
-                              width={24}
-                              height={24}
-                              color={colors.grey[800]}
-                            />
-                          </S.QuantityButton>
-                          <S.QuantityValue>{item.quantity}</S.QuantityValue>
-                          <S.QuantityButton
-                            onClick={() =>
-                              onItemQuantityChange(index, item.quantity + 1)
-                            }
-                            aria-label={t('수량 증가')}
-                          >
-                            <AddIcon
-                              width={24}
-                              height={24}
-                              color={colors.grey[800]}
-                            />
-                          </S.QuantityButton>
-                        </S.QuantitySelector>
+                        <NumberInput
+                          variant="square"
+                          value={item.quantity}
+                          onChange={(value) =>
+                            onItemQuantityChange(index, value)
+                          }
+                          min={0}
+                          customStyle={S.RightPanelMenuQuantityInput}
+                          size="M"
+                        />
                       </S.ItemActions>
                     </S.SelectedItem>
                   ))}

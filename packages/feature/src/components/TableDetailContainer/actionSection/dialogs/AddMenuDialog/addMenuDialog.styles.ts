@@ -4,6 +4,7 @@ import {
   BaseDialogContainer,
   BaseCloseButton,
 } from '../../../../shared/dialogStyles';
+import { css } from '@emotion/react';
 
 const { colors } = theme;
 

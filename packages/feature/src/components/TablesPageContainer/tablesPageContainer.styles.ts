@@ -16,7 +16,6 @@ export const TableArea = styled.div`
   justify-content: center;
   background: ${colors.grey[600]};
   overflow-y: auto;
-  padding: 100px;
 `;
 
 export const GridContainer = styled.div`
@@ -28,4 +27,6 @@ export const GridContainer = styled.div`
   align-content: start;
   width: 100%;
   height: 100%;
+  padding: 100px;
+  overflow-y: auto;
 `;
