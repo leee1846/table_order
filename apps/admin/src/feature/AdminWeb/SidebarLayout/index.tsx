@@ -192,13 +192,13 @@ export const StoresSidebarLayout = () => {
             })}
           </S.NavMenu>
 
-          <S.DownloadLink
+          {/* <S.DownloadLink
             href="/app-download.html"
             target="_blank"
             rel="noopener noreferrer"
           >
             자료실
-          </S.DownloadLink>
+          </S.DownloadLink> */}
         </S.NavbarContent>
       </S.Navbar>
 

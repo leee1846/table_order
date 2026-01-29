@@ -83,7 +83,7 @@ export const Calender = ({
       saturday: t('토'),
     },
     year: t('년도'),
-    month: t('월_날짜'),
+    month: i18nInstance ? t('월_날짜') : '월',
     complete: t('선택 완료'),
     selectedDays: (count: number) => {
       const template = t('총 {{count}}일 선택완료', { count });
