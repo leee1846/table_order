@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
+import { AxiosError } from '@repo/api/axios';
 import { t } from '@/config/i18n';
 import { useParams, useNavigate } from 'react-router-dom';
-import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/NoticeDetailPage/noticeDetailPage.style';
 import { useGetNoticeDetail } from '@repo/api/queries';
@@ -14,7 +15,7 @@ export const NoticeDetailPage = () => {
   const { noticeSeq } = useParams<{ noticeSeq: string }>();
   const navigate = useNavigate();
 
-  const { data: noticeDetailResponse } = useGetNoticeDetail(
+  const { data: noticeDetailResponse, error } = useGetNoticeDetail(
     Number(noticeSeq || 0),
     {
       enabled: !!noticeSeq,
@@ -27,22 +28,18 @@ export const NoticeDetailPage = () => {
     navigate(ROUTES.SETTINGS.NOTICES.generate());
   };
 
+  // 400 에러 처리
+  useEffect(() => {
+    if (error && error instanceof AxiosError) {
+      const statusCode = error.response?.status;
+      if (statusCode === 400) {
+        handleBack();
+      }
+    }
+  }, [error]);
+
   if (!notice) {
-    return (
-      <UIStyles.setting.TablePageContainer>
-        <S.Container>
-          <S.Header>
-            <h1>{t('공지사항')}</h1>
-          </S.Header>
-          <S.EmptyStateContainer>
-            <p>{t('공지사항을 찾을 수 없습니다.')}</p>
-            <BasicButton variant="Solid_Grey_L" onClick={handleBack}>
-              {t('목록으로 돌아가기')}
-            </BasicButton>
-          </S.EmptyStateContainer>
-        </S.Container>
-      </UIStyles.setting.TablePageContainer>
-    );
+    return;
   }
 
   return (

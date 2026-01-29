@@ -2,7 +2,7 @@ import { t } from '@/config/i18n';
 import { useAuth } from '@/hooks/useAuth';
 import { queryKeys, usePutUpdateMenuTranslation } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { openDualActionDialog } from '@repo/feature/utils';
+import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { theme } from '@repo/ui';
 import { BasicButton } from '@repo/ui/components';
 import { AddIcon } from '@repo/ui/icons';
@@ -59,6 +59,7 @@ export const Header = ({
         await queryClient.invalidateQueries({
           queryKey: queryKeys.menu.all,
         });
+        toast(t('메뉴가 일괄 번역되었습니다.'));
       },
     });
   };

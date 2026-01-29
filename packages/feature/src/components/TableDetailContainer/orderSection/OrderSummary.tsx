@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { formatCurrency } from '@repo/util/string';
-import { TYPOGRAPHY, theme } from '@repo/ui';
+import { theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import type { i18n as I18nInstance } from 'i18next';

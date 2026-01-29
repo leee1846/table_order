@@ -252,12 +252,13 @@ export const OptionGroupManageModal = ({
     if (isPosLinked) {
       return;
     }
-
-    if (options.length <= 1) {
+    const activeOptions = options.filter(
+      (option) => !('isDeleted' in option && option.isDeleted)
+    );
+    if (activeOptions.length <= 1) {
       toast(t('최소 1개 이상의 옵션이 필요합니다.'));
       return;
     }
-
     if (optionSeq && optionSeq > 0) {
       const updatedList = options.map((option) =>
         'optionSeq' in option && option.optionSeq === optionSeq
@@ -316,7 +317,6 @@ export const OptionGroupManageModal = ({
       toast(t('옵션 그룹명을 입력해주세요.'));
       return false;
     }
-
     if (options.length === 0) {
       toast(t('최소 1개 이상의 옵션을 추가해주세요.'));
       return false;

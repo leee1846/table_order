@@ -670,5 +670,8 @@
   "미분류": "Uncategorized",
   "메뉴의 상위 카테고리가 삭제된 경우, 해당 메뉴는 '미분류'로 분류됩니다": "If a menu's parent category is deleted, the menu is categorized as 'Uncategorized'",
   "현금 상세 내역": "Cash detail history",
-  "카드 상세 내역": "Card detail history"
+  "카드 상세 내역": "Card detail history",
+  "메뉴가 생성되었습니다.": "Menu has been created.",
+  "메뉴가 추가되었습니다.": "Menu has been added.",
+  "메뉴가 일괄 번역되었습니다.": "Menus have been batch translated."
 }

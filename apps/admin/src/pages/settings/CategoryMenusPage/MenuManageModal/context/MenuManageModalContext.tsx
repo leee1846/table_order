@@ -187,6 +187,7 @@ export const MenuManageModalProvider = ({
     );
 
     await runMutation(() => createMenu({ menu: menuData, files }));
+    toast(t('메뉴가 생성되었습니다.'));
   }, [formValues, categorySeq, images, runMutation, createMenu, i18n]);
 
   /**
@@ -214,6 +215,7 @@ export const MenuManageModalProvider = ({
     );
 
     await runMutation(() => updateMenu({ menu: updateData, files }));
+    toast(t('메뉴가 수정되었습니다.'));
   }, [menu, formValues, images, runMutation, updateMenu]);
 
   /**
