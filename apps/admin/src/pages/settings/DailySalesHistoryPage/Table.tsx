@@ -98,6 +98,7 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
       cancelCount: 0,
       cancelAmount: 0,
       customerCount: 0,
+      pricePerCustomer: 0,
       cardSalesCount: 0,
       cardSalesAmount: 0,
       cardCancelCount: 0,
@@ -122,6 +123,7 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
       acc.cancelCount += row.cancelCount ?? 0;
       acc.cancelAmount += row.cancelAmount ?? 0;
       acc.customerCount += row.customerCount ?? 0;
+      acc.pricePerCustomer += row.pricePerCustomer ?? 0;
       acc.cardSalesCount += row.cardSalesCount ?? 0;
       acc.cardSalesAmount += row.cardSalesAmount ?? 0;
       acc.cardCancelCount += row.cardCancelCount ?? 0;
@@ -139,11 +141,6 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
     }, initialTotals);
   }, [rows]);
 
-  const averageGuestPrice =
-    totals.customerCount > 0
-      ? Math.round(totals.totalSalesAmount / Math.max(totals.customerCount, 1))
-      : 0;
-
   const renderRows = () => {
     if (!rows.length) {
       return (
@@ -160,11 +157,7 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
         <td>{renderMetric(row.actualSalesCount, row.actualSalesAmount, t)}</td>
         <td>{`${row.cancelCount ?? 0}${t('건')}`}</td>
         <td>{`${row.customerCount ?? 0}${t('명')}`}</td>
-        <td>
-          <S.Metric>
-            <strong>{formatCurrency(row.pricePerCustomer)}</strong>
-          </S.Metric>
-        </td>
+        <td>{formatCurrency(row.pricePerCustomer)}</td>
         <td>{renderMetric(row.cardSalesCount, row.cardSalesAmount, t)}</td>
         <td>{renderMetric(row.cardCancelCount, row.cardCancelAmount, t)}</td>
         <td>{renderMetric(row.cashSalesCount, row.cashSalesAmount, t)}</td>
@@ -277,7 +270,7 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
               <td>{`${totals.customerCount}${t('명')}`}</td>
               <td>
                 <S.Metric>
-                  <strong>{formatCurrency(averageGuestPrice)}</strong>
+                  <strong>{formatCurrency(totals.pricePerCustomer)}</strong>
                 </S.Metric>
               </td>
               <td>

@@ -12,7 +12,6 @@ import { useAuth } from '@/hooks/useAuth';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { DailySalesTable, type TDailySaleRow } from './Table';
 import * as S from './dailySalesPage.style';
-import { CapacitorApp } from '@repo/util/app';
 
 type TPaymentTab = null | 'CARD' | 'CASH' | 'PARTIAL';
 
@@ -20,7 +19,7 @@ const PAYMENT_TABS: { key: TPaymentTab; labelKey: string }[] = [
   { key: null, labelKey: '전체' },
   { key: 'CARD', labelKey: '카드' },
   { key: 'CASH', labelKey: '현금' },
-  { key: 'PARTIAL', labelKey: '분할' },
+  { key: 'PARTIAL', labelKey: '부분' },
 ];
 
 const formatTransactionTime = (time: string, saleDate: string): string => {
