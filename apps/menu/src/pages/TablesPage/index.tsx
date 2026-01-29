@@ -34,6 +34,7 @@ import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useTableDrag } from '@/hooks/useTableDrag';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { Sidebar } from '@/pages/TablesPage/Sidebar';
@@ -86,11 +87,8 @@ export const TablesPage = () => {
 
   const { shopData } = useShopData();
   const { data: shopDetailData } = useShopDetailData();
-  const {
-    data: deviceData,
-    refresh: refreshDeviceData,
-    setDataAsync: setDeviceData,
-  } = useDeviceData();
+  const { data: deviceData, setDataAsync: setDeviceData } = useDeviceData();
+  const { setIsInitialized: setDeviceInitialized } = useDeviceStore();
   const { data: tableGroupsData } = useTableGroupData();
   const { shopSetting } = shopDetailData ?? {};
 
@@ -299,21 +297,19 @@ export const TablesPage = () => {
     // 🔒 필수 디바이스 정보가 없으면 새로 가져오기
     if (!currentDeviceData?.androidId || !currentDeviceData?.ipAddress) {
       const freshDeviceInfo = await getDeviceInfo({ t });
-      const updatedDeviceData = {
+      currentDeviceData = {
         ...currentDeviceData,
         androidId: freshDeviceInfo.androidId,
         ipAddress: freshDeviceInfo.ipAddress,
         version: freshDeviceInfo.appInfo.version,
         buildNumber: freshDeviceInfo.appInfo.build,
       };
-      await setDeviceData(updatedDeviceData);
-      currentDeviceData = updatedDeviceData;
     }
 
-    await createDeviceDetail({
+    const postPayload = {
       tableNumber,
       shopCode: shopData?.shopCode ?? '',
-      deviceType: 'MENU',
+      deviceType: 'MENU' as const,
       orderPosNumber: null,
       androidId: currentDeviceData.androidId!,
       battery: currentDeviceData?.battery ?? 0,
@@ -321,9 +317,23 @@ export const TablesPage = () => {
       ipAddress: currentDeviceData.ipAddress!,
       version: currentDeviceData?.version ?? '',
       buildNumber: currentDeviceData?.buildNumber ?? '',
+    };
+
+    await createDeviceDetail(postPayload);
+    await setDeviceData({
+      ...currentDeviceData,
+      tableNumber: postPayload.tableNumber,
+      deviceType: postPayload.deviceType,
+      orderPosNumber: postPayload.orderPosNumber,
+      androidId: postPayload.androidId,
+      battery: postPayload.battery,
+      wifiSignal: postPayload.wifiSignal,
+      ipAddress: postPayload.ipAddress,
+      version: postPayload.version,
+      buildNumber: postPayload.buildNumber,
     });
 
-    await refreshDeviceData();
+    setDeviceInitialized(true);
   };
 
   // 테이블 선택 처리

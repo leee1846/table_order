@@ -46,8 +46,9 @@ export const BottomActions = ({
 
   // 테이블 삭제
   const handleDelete = () => {
-    if (!table) return;
-
+    if (!table) {
+      return;
+    }
     openDualActionDialog({
       title: t('정말 테이블을 삭제하시겠습니까?'),
       content: `테이블 명 : ${table?.tableName || table?.tableNumber}`,

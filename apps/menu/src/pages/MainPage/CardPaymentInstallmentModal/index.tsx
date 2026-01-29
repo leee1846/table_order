@@ -298,12 +298,12 @@ export const CardPaymentInstallmentModal = ({
         </DialogContainer>
       </ModalBackground>
 
-      {isPaymentProgressModalOpen && (
+      {/* {isPaymentProgressModalOpen && (
         <CardPaymentProgressModal
           onClose={handleClosePaymentProgressModal}
           message={paymentProgressMessage}
         />
-      )}
+      )} */}
     </>
   );
 };

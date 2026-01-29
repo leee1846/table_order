@@ -930,14 +930,14 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       )}
 
       {/* 카드 결제 진행 모달 */}
-      {modalData.isCardPaymentProgressModalOpened && (
+      {/* {modalData.isCardPaymentProgressModalOpened && (
         <CardPaymentProgressModal
           onClose={() =>
             setModalData('isCardPaymentProgressModalOpened', false)
           }
           message={paymentProgressMessage}
         />
-      )}
+      )} */}
     </>
   );
 };
