@@ -114,10 +114,23 @@ export const StartScreenLogoPage = () => {
 
     // 기존 페이지 상세 정보 유지 (업데이트 방식)
     const pageDetails = themePage?.shopPageDetailList ?? [];
-    const shopPageDetailList: IShopPageDetail[] = pageDetails.map((detail) => ({
-      ...detail,
-      shopSeq,
-    }));
+    const shopPageDetailList: IShopPageDetail[] = pageDetails.map((detail) => {
+      // 현재 편집 중인 레이아웃 타입의 상세 정보인 경우
+      if (detail.pageDetailType === currentPageDetailType) {
+        // 이미지가 삭제된 경우 (currentLogoFile도 없고 currentLogoImage도 없는 경우)
+        if (!currentLogoFile && !currentLogoImage) {
+          return {
+            ...detail,
+            shopSeq,
+            pageDetailImagePath: null,
+          };
+        }
+      }
+      return {
+        ...detail,
+        shopSeq,
+      };
+    });
 
     // 파일이 변경된 경우에만 파일 업로드 파라미터 생성
     let initLightFile: { file: File; fileName: string } | undefined;
@@ -169,6 +182,8 @@ export const StartScreenLogoPage = () => {
     themePage,
     shopSeqFromAuth,
     currentLogoFile,
+    currentLogoImage,
+    currentPageDetailType,
     initPageLayout,
     updateShopThemePage,
     queryClient,
