@@ -3,7 +3,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import type { IGetAdminShopItem } from '@repo/api/types';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '@repo/ui';
-import { EditIcon, SettingsIcon } from '@repo/ui/icons';
+import { EditIcon } from '@repo/ui/icons';
 import { Button } from '@/feature/AdminWeb/components';
 import * as S from './table.style';
 
@@ -67,7 +67,7 @@ export const Table = ({ stores }: Props) => {
       <S.TableElement>
         <S.Thead>
           <S.Tr>
-            <S.Th>SID</S.Th>
+            <S.Th>매장 아이디</S.Th>
             <S.Th>매장명</S.Th>
             <S.Th>사업자등록번호</S.Th>
             <S.Th>기본 주소</S.Th>

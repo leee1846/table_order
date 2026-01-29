@@ -41,19 +41,6 @@ export const useMerchantRegistration = (options?: Props) => {
         throw new Error('선불 결제 방식이 아닙니다.');
       }
 
-      try {
-        await Payment.inquiryMerchant();
-      } catch (error) {
-        if (
-          (error as { data: { RESULT_CODE: string } })?.data?.RESULT_CODE ===
-          '9970'
-        ) {
-          // 가맹점 등록 필요 error (정상 플로우)
-        } else {
-          throw error;
-        }
-      }
-
       if (
         !shopData.areaCode ||
         !shopData.shopPhoneNumber ||
@@ -76,6 +63,19 @@ export const useMerchantRegistration = (options?: Props) => {
         throw new Error(
           `필수 정보가 누락되었습니다: ${missingFields.join(', ')}`
         );
+      }
+
+      try {
+        await Payment.inquiryMerchant();
+      } catch (error) {
+        if (
+          (error as { data: { RESULT_CODE: string } })?.data?.RESULT_CODE ===
+          '9970'
+        ) {
+          // 가맹점 등록 필요 error (정상 플로우)
+        } else {
+          throw error;
+        }
       }
 
       try {

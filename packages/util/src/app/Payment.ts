@@ -105,7 +105,9 @@ interface IPaymentPlugin extends Plugin {
   /**
    * 결제 요청 (네이티브 메서드)
    */
-  requestPayment(params: IPaymentRequestParams): Promise<IPaymentResponse>;
+  requestPaymentActivity(
+    params: IPaymentRequestParams
+  ): Promise<IPaymentResponse>;
   /**
    * 이벤트 리스너 추가
    */
@@ -203,7 +205,7 @@ export const Payment: IPayment = {
   approve: async (options) => {
     const amt = options.amount.toString();
 
-    return NativePayment.requestPayment({
+    return NativePayment.requestPaymentActivity({
       // 부가세 자동 계산 (옵션 없으면 10% 자동)
       tran_type: 'D1',
       amount: amt,
@@ -213,7 +215,7 @@ export const Payment: IPayment = {
   },
 
   cancel: async (options) => {
-    return NativePayment.requestPayment({
+    return NativePayment.requestPaymentActivity({
       tran_type: 'D4',
       amount: options.amount.toString(),
       approval_num: options.orgApprNum,
