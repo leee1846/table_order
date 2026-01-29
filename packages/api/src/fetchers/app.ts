@@ -6,6 +6,7 @@ import type {
   TGetAppVersionListResponse,
   ICreateAppVersionParams,
   TGetAppVersionResponse,
+  TPostAppVersionResponse,
 } from '../types/app';
 import type { IPaginationParams, TVoidApiResponse } from '../types/common';
 
@@ -37,10 +38,10 @@ export const getAppVersionList = async (
 
 export const createAppVersion = async (
   params: ICreateAppVersionParams
-): Promise<TVoidApiResponse> => {
+): Promise<TPostAppVersionResponse> => {
   const axiosInstance = getAxiosInstance('private');
 
-  const response = await axiosInstance<TVoidApiResponse>({
+  const response = await axiosInstance<TPostAppVersionResponse>({
     method: 'POST',
     url: ENDPOINTS.APP.VERSION,
     data: params,
@@ -68,13 +69,33 @@ export const getAppVersionDetail = async (
 export const updateAppVersion = async (
   appVersionSeq: number,
   params: ICreateAppVersionParams & { appVersionSeq: number }
-): Promise<TVoidApiResponse> => {
+): Promise<TPostAppVersionResponse> => {
   const axiosInstance = getAxiosInstance('private');
 
-  const response = await axiosInstance<TVoidApiResponse>({
+  const response = await axiosInstance<TPostAppVersionResponse>({
     method: 'PUT',
     url: ENDPOINTS.APP.VERSION,
     data: { ...params, appVersionSeq },
+  });
+
+  return response.data;
+};
+
+export const postAppVersionFile = async (
+  appVersionSeq: number,
+  file: File
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.APP.APP_VERSION_FILE(appVersionSeq),
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
 
   return response.data;

@@ -12,6 +12,8 @@ export const ENDPOINTS = {
     LATEST_VERSION: (type: string) => `/app/version/latest/${type}`,
     VERSION_LIST: `/app/version/list`,
     VERSION: '/app/version',
+    APP_VERSION_FILE: (appVersionSeq: number) =>
+      `/app/version/file/${appVersionSeq}`,
   },
 
   AUTH: {

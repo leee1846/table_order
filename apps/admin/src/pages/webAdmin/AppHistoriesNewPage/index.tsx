@@ -3,7 +3,7 @@ import { ROUTES } from '@/constants/routes';
 import { AppHistories } from '@/feature/AdminWeb/AppHistories';
 import { validateAppHistoriesData } from '@/feature/AdminWeb/util';
 import { toast } from '@repo/feature/utils';
-import { usePostAppVersion } from '@repo/api/queries';
+import { usePostAppVersion, usePostAppVersionFile } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import type { AppHistoriesFormData } from '@/feature/AdminWeb/AppHistories/constants';
 import type { ICreateAppVersionParams } from '@repo/api/types';
@@ -33,14 +33,25 @@ const convertToCreateParams = (
 export const AppHistoriesNewPage = () => {
   const navigate = useNavigate();
   const { mutateAsync: createAppVersion } = usePostAppVersion();
+  const { mutateAsync: postAppVersionFile } = usePostAppVersionFile();
 
-  const handleSave = async (data: AppHistoriesFormData) => {
-    if (!validateAppHistoriesData(data)) {
+  const handleSave = async (
+    data: AppHistoriesFormData,
+    apkFile?: File | null
+  ) => {
+    if (!validateAppHistoriesData(data, { apkFile, requireApk: true })) {
+      return;
+    }
+
+    if (!apkFile) {
       return;
     }
 
     const params = convertToCreateParams(data);
-    await createAppVersion(params);
+    const result = await createAppVersion(params);
+
+    const appVersionSeq = result.data?.appVersionSeq;
+    await postAppVersionFile({ appVersionSeq, file: apkFile });
 
     toast('앱 히스토리 생성이 완료되었습니다.');
     navigate(ROUTES.ADMIN_WEB.APP_HISTORIES.generate());

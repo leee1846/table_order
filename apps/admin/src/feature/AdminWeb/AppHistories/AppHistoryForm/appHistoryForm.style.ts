@@ -120,3 +120,62 @@ export const TextArea = styled.textarea<{ isDetail?: boolean }>`
   }
 `;
 
+export const ApkUploadRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+`;
+
+export const ApkFileNameGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+`;
+
+export const ApkFileName = styled.span`
+  font-size: 14px;
+  color: ${theme.colors.grey[600]};
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.5;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+export const ApkRemoveButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: ${theme.colors.grey[100]};
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${theme.colors.primary[500]};
+    outline-offset: 2px;
+  }
+`;
+
+export const ApkHint = styled.p`
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: ${theme.colors.grey[500]};
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.4;
+`;

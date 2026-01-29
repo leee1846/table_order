@@ -2,21 +2,25 @@ import type { IApiResponse } from './common';
 
 export type TAppType = 'MENU' | 'POS_APP' | 'AGENT';
 
-export interface IAppVersion {
-  title: string;
-  appVersionSeq?: number;
-  type?: TAppType;
-  version?: string;
-  downloadPath?: string;
-  checksum?: string;
-  releaseNote?: string;
+export interface IPostAppVersionResponse {
+  appVersionSeq: number;
+  createMemberUuid: string;
   // YYYYMMDDHHMMSS
   deployDate: string;
+  releaseNote: string;
+  title: string;
+  type: TAppType;
+  version: string;
   viewCount: number;
+}
+
+export type TPostAppVersionResponse = IApiResponse<IPostAppVersionResponse>;
+
+export interface IAppVersion extends IPostAppVersionResponse {
+  checksum?: string;
   createDate?: string;
-  createMemberUuid?: string;
   updateDate?: string;
-  updateMemberUuid?: string;
+  downloadPath?: string;
 }
 
 export type TGetLatestAppVersionResponse = IApiResponse<IAppVersion>;

@@ -1,12 +1,15 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { TVoidApiResponse, type IApiError } from '../../types/common';
-import type { ICreateAppVersionParams } from '../../types/app';
+import { type IApiError } from '../../types/common';
+import type {
+  ICreateAppVersionParams,
+  TPostAppVersionResponse,
+} from '../../types/app';
 import { createAppVersion } from '../../fetchers/app';
 
 export const usePostAppVersion = () => {
   return useMutation<
-    TVoidApiResponse,
+    TPostAppVersionResponse,
     AxiosError<IApiError>,
     ICreateAppVersionParams
   >({

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { toast } from '@repo/feature/utils';
 import { AppHistoryForm } from './AppHistoryForm';
 import { ChangeHistoryDialog } from '../ChangeHistoryDialog';
 import * as S from './appHistories.style';
@@ -10,10 +11,12 @@ import { Button } from '@/feature/AdminWeb/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 
+const APK_ACCEPT = '.apk';
+
 interface Props {
   mode: Mode;
   initialData?: AppHistoriesFormData;
-  onSave?: (data: AppHistoriesFormData) => Promise<void>;
+  onSave?: (data: AppHistoriesFormData, apkFile?: File | null) => Promise<void>;
 }
 
 export const AppHistories = ({ mode, initialData, onSave }: Props) => {
@@ -21,6 +24,8 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
     DEFAULT_APP_HISTORIES_DATA
   );
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  const [apkFile, setApkFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -34,7 +39,38 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
 
   const handleSave = async () => {
     if (onSave) {
-      await onSave(formData);
+      await onSave(formData, apkFile);
+    }
+  };
+
+  const handleApkFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setApkFile(null);
+      return;
+    }
+
+    if (!file.name.toLowerCase().endsWith('.apk')) {
+      toast('APK 파일만 업로드 가능합니다.');
+      setApkFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
+    }
+
+    setApkFile(file);
+    e.target.value = '';
+  };
+
+  const handleSelectApkClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleRemoveApk = () => {
+    setApkFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -76,22 +112,33 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
           )}
         </S.TitleContainer>
 
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={APK_ACCEPT}
+          onChange={handleApkFileChange}
+          style={{ display: 'none' }}
+          aria-hidden
+        />
         <AppHistoryForm
           mode={mode}
           formData={formData}
           updateFormData={updateFormData}
+          apkFile={apkFile}
+          onSelectApkClick={handleSelectApkClick}
+          onRemoveApk={handleRemoveApk}
         />
-      <ChangeHistoryDialog
-        isOpen={isHistoryDialogOpen}
-        onClose={handleCloseHistoryDialog}
-        histories={[
-          {
-            code: 'APP_VERSION',
-            id: initialData?.id ?? '',
-            label: '앱 버전 변경 이력',
-          },
-        ]}
-      />
+        <ChangeHistoryDialog
+          isOpen={isHistoryDialogOpen}
+          onClose={handleCloseHistoryDialog}
+          histories={[
+            {
+              code: 'APP_VERSION',
+              id: initialData?.id ?? '',
+              label: '앱 버전 변경 이력',
+            },
+          ]}
+        />
       </S.Container>
     </S.PageWrapper>
   );

@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { Calender } from '@repo/ui/components';
-import { CalendarMonthIcon } from '@repo/ui/icons';
+import { CalendarMonthIcon, CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { toast } from '@repo/feature/utils';
 import { formatDateTime } from '@repo/util/date';
 import type { TAppType } from '@repo/api/types';
 import * as S from './appHistoryForm.style';
 import type { AppHistoriesFormData } from '../constants';
-import { Input, Dropdown } from '@/feature/AdminWeb/components';
+import { Input, Dropdown, Button } from '@/feature/AdminWeb/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -15,6 +15,9 @@ interface Props {
   mode: Mode;
   formData: AppHistoriesFormData;
   updateFormData: (updates: Partial<AppHistoriesFormData>) => void;
+  apkFile?: File | null;
+  onSelectApkClick?: () => void;
+  onRemoveApk?: () => void;
 }
 
 const TYPE_OPTIONS: Array<{ value: TAppType; label: string }> = [
@@ -38,7 +41,14 @@ const MINUTE_OPTIONS = Array.from({ length: 6 }, (_, i) => {
   };
 });
 
-export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
+export const AppHistoryForm = ({
+  mode,
+  formData,
+  updateFormData,
+  apkFile,
+  onSelectApkClick,
+  onRemoveApk,
+}: Props) => {
   const [showCalender, setShowCalender] = useState<boolean>(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -183,7 +193,9 @@ export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
               <Dropdown
                 options={TYPE_OPTIONS}
                 value={formData.type}
-                onChange={(value) => updateFormData({ type: value as TAppType })}
+                onChange={(value) =>
+                  updateFormData({ type: value as TAppType })
+                }
                 disabled={isReadOnly}
               />
             </S.FieldGroup>
@@ -224,7 +236,9 @@ export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
                       height={16}
                       color={theme.colors.grey[700]}
                     />
-                    <S.CalendarText>{displayDate || '날짜 선택'}</S.CalendarText>
+                    <S.CalendarText>
+                      {displayDate || '날짜 선택'}
+                    </S.CalendarText>
                   </S.CalendarButton>
                   <S.HourDropdownWrapper onClick={handleHourDropdownClick}>
                     <Dropdown
@@ -240,7 +254,9 @@ export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
                       options={MINUTE_OPTIONS}
                       value={selectedMinute}
                       onChange={handleMinuteChange}
-                      disabled={isReadOnly || !isDateSelected || !isHourSelected}
+                      disabled={
+                        isReadOnly || !isDateSelected || !isHourSelected
+                      }
                       placeholder="분 선택"
                     />
                   </S.MinuteDropdownWrapper>
@@ -273,6 +289,63 @@ export const AppHistoryForm = ({ mode, formData, updateFormData }: Props) => {
                 isDetail={isReadOnly}
               />
             </S.FieldGroup>
+
+            {mode === 'detail' && (
+              <S.FieldGroup>
+                <S.Label>
+                  APP 파일명 <span>*</span>
+                </S.Label>
+                <Input
+                  placeholder="업로드된 파일 없음"
+                  value={
+                    formData.downloadPath?.replace(/^.*\//, '') ||
+                    '업로드된 파일 없음'
+                  }
+                  disabled
+                />
+              </S.FieldGroup>
+            )}
+
+            {(mode === 'create' || mode === 'edit') && (
+              <S.FieldGroup>
+                <S.Label>
+                  APP 업로드 <span>*</span>
+                </S.Label>
+                <S.ApkUploadRow>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onSelectApkClick}
+                    disabled={!!apkFile}
+                  >
+                    파일 선택
+                  </Button>
+                  <S.ApkFileNameGroup>
+                    <S.ApkFileName>
+                      {apkFile
+                        ? apkFile.name
+                        : mode === 'edit' && formData.downloadPath
+                          ? formData.downloadPath.replace(/^.*\//, '')
+                          : '선택된 파일 없음'}
+                    </S.ApkFileName>
+                    {apkFile && (
+                      <S.ApkRemoveButton
+                        type="button"
+                        onClick={onRemoveApk}
+                        aria-label="선택한 파일 제거"
+                      >
+                        <CloseIcon
+                          width={18}
+                          height={18}
+                          color={theme.colors.grey[600]}
+                        />
+                      </S.ApkRemoveButton>
+                    )}
+                  </S.ApkFileNameGroup>
+                </S.ApkUploadRow>
+                <S.ApkHint>APK 파일을 업로드 해주세요.</S.ApkHint>
+              </S.FieldGroup>
+            )}
 
             {(mode === 'edit' || mode === 'detail') && (
               <S.HorizontalLayout>

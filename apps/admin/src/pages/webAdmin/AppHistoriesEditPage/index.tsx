@@ -4,7 +4,11 @@ import { AppHistories } from '@/feature/AdminWeb/AppHistories';
 import { validateAppHistoriesData } from '@/feature/AdminWeb/util';
 import { toast } from '@repo/feature/utils';
 import { ROUTES } from '@/constants/routes';
-import { useGetAppVersionDetail, usePutAppVersion } from '@repo/api/queries';
+import {
+  useGetAppVersionDetail,
+  usePutAppVersion,
+  usePostAppVersionFile,
+} from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import type { AppHistoriesFormData } from '@/feature/AdminWeb/AppHistories/constants';
 import type { IAppVersion, ICreateAppVersionParams } from '@repo/api/types';
@@ -39,6 +43,7 @@ const convertToFormData = (
     updatedAt: appVersion.updateDate
       ? formatDateTime(appVersion.updateDate, 'YYYY-MM-DD HH:mm:ss')
       : undefined,
+    downloadPath: appVersion.downloadPath,
   };
 };
 
@@ -68,6 +73,7 @@ export const AppHistoriesEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { mutateAsync: updateAppVersion } = usePutAppVersion();
+  const { mutateAsync: postAppVersionFile } = usePostAppVersionFile();
 
   const { data } = useGetAppVersionDetail(Number(id || 0), {
     enabled: !!id,
@@ -77,8 +83,11 @@ export const AppHistoriesEditPage = () => {
     return convertToFormData(data?.data);
   }, [data]);
 
-  const handleSave = async (formData: AppHistoriesFormData) => {
-    if (!validateAppHistoriesData(formData)) {
+  const handleSave = async (
+    formData: AppHistoriesFormData,
+    apkFile?: File | null
+  ) => {
+    if (!validateAppHistoriesData(formData, { apkFile })) {
       return;
     }
 
@@ -90,15 +99,18 @@ export const AppHistoriesEditPage = () => {
     const params = convertToUpdateParams(formData);
     await updateAppVersion({ ...params, appVersionSeq: formData.id });
 
+    if (apkFile) {
+      await postAppVersionFile({
+        appVersionSeq: formData.id,
+        file: apkFile,
+      });
+    }
+
     toast('앱 히스토리 수정이 완료되었습니다.');
     navigate(ROUTES.ADMIN_WEB.APP_HISTORIES.generate());
   };
 
   return (
-    <AppHistories
-      mode="edit"
-      initialData={initialData}
-      onSave={handleSave}
-    />
+    <AppHistories mode="edit" initialData={initialData} onSave={handleSave} />
   );
 };

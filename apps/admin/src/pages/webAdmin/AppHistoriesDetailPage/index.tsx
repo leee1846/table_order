@@ -36,6 +36,7 @@ const convertToFormData = (
     updatedAt: appVersion.updateDate
       ? formatDateTime(appVersion.updateDate, 'YYYY-MM-DD HH:mm:ss')
       : undefined,
+    downloadPath: appVersion.downloadPath,
   };
 };
 
