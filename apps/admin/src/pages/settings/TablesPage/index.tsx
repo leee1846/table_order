@@ -129,6 +129,7 @@ export const TablesPage = () => {
       <Sidebar
         tableGroups={tableGroups}
         selectedTableGroupId={selectedTableGroupId}
+        setSelectedTableGroupId={setSelectedTableGroupId}
         onTableGroupSelect={setSelectedTableGroupId}
         isPosLinked={isPosLinked}
       />

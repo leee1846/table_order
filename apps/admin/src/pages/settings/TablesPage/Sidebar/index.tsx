@@ -28,6 +28,7 @@ const { colors } = theme;
 interface SidebarProps {
   tableGroups: ITableGroup[];
   selectedTableGroupId: number | null;
+  setSelectedTableGroupId: (groupId: number | null) => void;
   onTableGroupSelect: (groupId: number) => void;
   isPosLinked: boolean;
 }
@@ -35,6 +36,7 @@ interface SidebarProps {
 export const Sidebar = ({
   tableGroups,
   selectedTableGroupId,
+  setSelectedTableGroupId,
   onTableGroupSelect,
   isPosLinked,
 }: SidebarProps) => {
@@ -83,24 +85,17 @@ export const Sidebar = ({
       secondaryText: t('취소'),
       size: 'xsmall',
       onConfirm: () => {
-        deleteTableGroup(
-          {
-            shopSeq: shopSeq ?? 0,
-            tableGroupSeq: group.tableGroupSeq,
-          },
-          {
-            onSuccess: async () => {
-              await queryClient.invalidateQueries({
-                queryKey: queryKeys.table.groupList(shopCode ?? ''),
-              });
-              toast(t('테이블 그룹이 삭제되었습니다.'));
-              setEditingGroupId(null);
-            },
-            onError: () => {
-              toast(t('테이블 그룹 삭제에 실패했습니다.'));
-            },
-          }
-        );
+        deleteTableGroup({
+          shopSeq: shopSeq ?? 0,
+          tableGroupSeq: group.tableGroupSeq,
+        }).then(async () => {
+          await queryClient.invalidateQueries({
+            queryKey: queryKeys.table.groupList(shopCode ?? ''),
+          });
+          toast(t('테이블 그룹이 삭제되었습니다.'));
+          setEditingGroupId(null);
+          setSelectedTableGroupId(null);
+        });
       },
     });
     setEditingGroupId(null);
