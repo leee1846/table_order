@@ -83,7 +83,7 @@ export const SelectCancelDialog = ({
     }
 
     if (selectedItems.size === 0) {
-      toast(t('취소할 메뉴를 선택해주세요.'));
+      toast(t('삭제할 메뉴를 선택해주세요.'));
       return;
     }
 
@@ -98,18 +98,18 @@ export const SelectCancelDialog = ({
       );
 
     if (cancelItems.length === 0) {
-      toast(t('취소할 수 있는 메뉴가 없어요.'));
+      toast(t('삭제할 수 있는 메뉴가 없어요.'));
       return;
     }
 
     try {
       await cancelOrderMenu(cancelItems);
-      toast(t('선택한 메뉴를 취소했어요.'));
+      toast(t('선택한 메뉴를 삭제했어요.'));
 
       onCancelSuccess?.();
       handleClose();
     } catch (error) {
-      toast(t('메뉴 취소 중 오류가 발생했어요. 다시 시도해주세요.'));
+      toast(t('메뉴 삭제 중 오류가 발생했어요. 다시 시도해주세요.'));
     }
   };
 
@@ -132,7 +132,7 @@ export const SelectCancelDialog = ({
 
         <S.ContentWrapper>
           <S.Header>
-            <S.Title>{t('선택 취소')}</S.Title>
+            <S.Title>{t('선택 삭제')}</S.Title>
           </S.Header>
 
           <S.ItemsList>
@@ -141,7 +141,7 @@ export const SelectCancelDialog = ({
               const quantity = quantities.get(item.id) || item.qty;
 
               return (
-                <S.ItemRow key={`${item.id}-${index}`}>
+                <S.ItemRow key={`${item.id}-${index + 1}`}>
                   <CheckButton
                     variant="square"
                     checked={isChecked}
@@ -183,7 +183,7 @@ export const SelectCancelDialog = ({
               disabled={isPending}
               fullWidth
             >
-              {t('선택 취소')}
+              {t('선택 삭제')}
             </BasicButton>
           </S.Footer>
         </S.ContentWrapper>

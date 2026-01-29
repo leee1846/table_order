@@ -35,6 +35,14 @@ export const useCustomerCountSettings = (
       return;
     }
 
+    if (
+      !shopDetailData?.shopSetting?.useCustomerCount &&
+      shopDetailData?.shopSetting?.useKidsCustomerCount
+    ) {
+      setShowCustomerCountSelector(false);
+      return;
+    }
+
     // table이 점유 되었을경우
     if (
       tableOrderHistoriesData === null ||

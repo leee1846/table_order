@@ -264,12 +264,12 @@ export const TableDetailContainer = ({
 
   const handleAllCancel = () => {
     if (order.items.length === 0) {
-      toast(t('취소할 메뉴가 없어요.'));
+      toast(t('삭제할 메뉴가 없어요.'));
       return;
     }
 
     openDualActionDialog({
-      title: t('전체 메뉴를 취소하시겠어요?'),
+      title: t('전체 메뉴를 삭제하시겠어요?'),
       primaryText: t('네'),
       secondaryText: t('아니오'),
       onConfirm: async () => {
@@ -279,7 +279,7 @@ export const TableDetailContainer = ({
         }
 
         await cancelOrderAll({ shopCode, tableNumber });
-        toast(t('전체 메뉴를 취소했어요.'));
+        toast(t('전체 메뉴를 삭제했어요.'));
         await refetchOrderHistories();
         navigate('/tables');
       },
