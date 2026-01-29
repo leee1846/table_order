@@ -694,6 +694,7 @@ export const MenuAppFeature = ({
                     }
                     value={breakTimeLastOrderAlertTimeBefore}
                     placeholder="0"
+                    maxLength={3}
                   />
                   {t('분')}
                 </div>
@@ -713,6 +714,7 @@ export const MenuAppFeature = ({
                       )
                     }
                     value={breakTimeLastOrderTimeBefore}
+                    maxLength={3}
                   />
                   {t('분')}
                 </div>

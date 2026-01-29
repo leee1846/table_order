@@ -201,7 +201,7 @@ export const ClickableText = styled.div`
     transform: translateY(1px);
 
     > input {
-      width: 20px;
+      width: 40px;
       text-align: center;
       ${TYPOGRAPHY.ST_2}
       color: ${theme.colors.grey[800]};

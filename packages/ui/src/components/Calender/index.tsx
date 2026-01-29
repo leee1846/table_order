@@ -359,6 +359,9 @@ export const Calender = ({
     if (!tempStartDate || !tempEndDate) {
       return 0;
     }
+    if (isSameDate(tempStartDate, tempEndDate)) {
+      return 0;
+    }
     return getDaysBetween(tempStartDate, tempEndDate);
   };
 
