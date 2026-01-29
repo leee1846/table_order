@@ -104,9 +104,9 @@ export const StoreEnvironment = ({
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
-        <UIStyles.setting.ContentLayout>
-          <p>{t('정산 시간 (영업 시간)')}</p>
-          <UIStyles.setting.TimeRangeInput>
+        {/* <UIStyles.setting.ContentLayout> */}
+        {/* <p>{t('정산 시간 (영업 시간)')}</p> */}
+        {/* <UIStyles.setting.TimeRangeInput>
             <input
               type="text"
               inputMode="numeric"
@@ -150,8 +150,8 @@ export const StoreEnvironment = ({
               onKeyDown={endTime.handleMinuteKeyDown}
               maxLength={2}
             />
-          </UIStyles.setting.TimeRangeInput>
-        </UIStyles.setting.ContentLayout>
+          </UIStyles.setting.TimeRangeInput> */}
+        {/* </UIStyles.setting.ContentLayout> */}
         <UIStyles.setting.ContentLayout>
           <p>{t('테이블 점유시간 표기')}</p>
           <ToggleButton
