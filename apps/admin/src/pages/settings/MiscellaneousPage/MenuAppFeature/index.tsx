@@ -487,14 +487,14 @@ export const MenuAppFeature = ({
           }
         />
       </UIStyles.setting.ContentLayout>
-      <UIStyles.setting.ContentLayout>
+      {/* <UIStyles.setting.ContentLayout>
         <p>{t('도난방지 알림팝업')}</p>
         <ToggleButton
           size="M"
           isOn={useTheftPrevention}
           onChange={() => setUseTheftPrevention(!useTheftPrevention)}
         />
-      </UIStyles.setting.ContentLayout>
+      </UIStyles.setting.ContentLayout> */}
       <UIStyles.setting.ContentLayout>
         <p>{t('테이블 중복 사용 허용')}</p>
         <ToggleButton
