@@ -108,7 +108,7 @@ export const SelectCancelDialog = ({
 
       onCancelSuccess?.();
       handleClose();
-    } catch (error) {
+    } catch {
       toast(t('메뉴 삭제 중 오류가 발생했어요. 다시 시도해주세요.'));
     }
   };

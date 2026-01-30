@@ -198,7 +198,9 @@ export const MenuManageModalProvider = ({
    * 4. API 호출 및 후처리
    */
   const handleUpdate = useCallback(async () => {
-    if (!menu) return;
+    if (!menu) {
+      return;
+    }
 
     // 새로 추가된 이미지 파일들만 추출
     const files = images.getFiles();

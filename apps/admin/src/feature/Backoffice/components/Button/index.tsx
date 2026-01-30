@@ -26,7 +26,7 @@ export const Button = ({
   type = 'button',
   size = 'default',
 }: Props) => {
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = () => {
     if (!disabled && onClick) {
       onClick();
     }

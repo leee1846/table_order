@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Dropdown, BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
-import { formatCurrency } from '@repo/util/string';
 import { getYears, getMonths, getMonthDateRange } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';

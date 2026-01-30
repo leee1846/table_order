@@ -105,7 +105,9 @@ export const CalendarSalesPage = () => {
 
   const handleOpenModal = (dateString: string) => {
     const entry = salesMap.get(dateString);
-    if (!entry) return;
+    if (!entry) {
+      return;
+    }
     setSelectedDate(dateString);
     setSelectedEntry(entry);
   };
@@ -116,7 +118,9 @@ export const CalendarSalesPage = () => {
   };
 
   const formatModalDate = () => {
-    if (!selectedDate) return '';
+    if (!selectedDate) {
+      return '';
+    }
     return formatDateTime(
       selectedDate,
       `YYYY${t('년도')} MM${t('월_날짜')} DD${t('일_날짜')}`
@@ -124,7 +128,9 @@ export const CalendarSalesPage = () => {
   };
 
   const handleViewDetails = () => {
-    if (!selectedDate) return;
+    if (!selectedDate) {
+      return;
+    }
     navigate(
       `${ROUTES.SETTINGS.SALES.SALES_DAILY.generate()}?date=${selectedDate}`
     );
@@ -164,7 +170,10 @@ export const CalendarSalesPage = () => {
             const isOtherMonth = day.type !== 'current';
             const dateString = convertToDateString(day.date, day.type);
             return (
-              <S.DayCell key={`${weekIndex}-${dayIndex}`} dimmed={isOtherMonth}>
+              <S.DayCell
+                key={`${weekIndex + 1}-${dayIndex + 1}`}
+                dimmed={isOtherMonth}
+              >
                 <S.DayNumber dimmed={isOtherMonth}>{day.date}</S.DayNumber>
                 {renderEvent(dateString)}
               </S.DayCell>

@@ -77,7 +77,7 @@ export const Table = ({ orders, onSelectOrder, pageSize }: TableProps) => {
           orders.map((order, index) => {
             const cancelled = isCancelled(order);
             return (
-              <tr key={`${order.orderNumber}-${index}`}>
+              <tr key={`${order.orderNumber}-${index + 1}`}>
                 <S.ColorTd color={getTextColor(cancelled)}>
                   {order.orderNumber}
                 </S.ColorTd>

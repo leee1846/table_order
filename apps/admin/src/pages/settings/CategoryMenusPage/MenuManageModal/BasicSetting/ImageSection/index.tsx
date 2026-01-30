@@ -151,10 +151,14 @@ export const ImageSection = () => {
   // 선택된 파일을 목표 위치에 분배 (main 우선, 나머지는 additional)
   const applyFilesToTarget = useCallback(
     (files: File[], target?: CaptureTarget | null) => {
-      if (files.length === 0) return;
+      if (files.length === 0) {
+        return;
+      }
 
       const [primary, ...rest] = files;
-      if (!primary) return;
+      if (!primary) {
+        return;
+      }
 
       const resolvedTarget = resolveTarget(target);
 
@@ -207,7 +211,9 @@ export const ImageSection = () => {
   // 갤러리에서 선택한 파일 적용
   const applyGalleryFiles = useCallback(
     (files: File[], target?: CaptureTarget | null) => {
-      if (files.length === 0) return;
+      if (files.length === 0) {
+        return;
+      }
       applyFilesToTarget(files, target);
       resetCaptureTarget();
     },
@@ -218,7 +224,9 @@ export const ImageSection = () => {
   const handleFileChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files ? Array.from(e.target.files) : [];
-      if (!files.length) return;
+      if (!files.length) {
+        return;
+      }
 
       applyFilesToTarget(files, captureTargetRef.current);
 
@@ -247,7 +255,9 @@ export const ImageSection = () => {
   const loadAlbumPage = useCallback(
     async (page: number) => {
       // 이미 로딩 중이면 중복 호출 방지
-      if (isAlbumLoading) return;
+      if (isAlbumLoading) {
+        return;
+      }
       setIsAlbumLoading(true);
       try {
         // CameraManager를 통해 해당 페이지의 이미지 목록을 가져옴 (페이지 번호, 페이지당 개수)
@@ -305,7 +315,9 @@ export const ImageSection = () => {
 
   // 앨범 더 불러오기
   const handleLoadMoreAlbum = useCallback(() => {
-    if (!hasMoreAlbum || isAlbumLoading) return;
+    if (!hasMoreAlbum || isAlbumLoading) {
+      return;
+    }
     loadAlbumPage(albumPage + 1);
   }, [albumPage, hasMoreAlbum, isAlbumLoading, loadAlbumPage]);
 
@@ -350,7 +362,9 @@ export const ImageSection = () => {
 
         const files: File[] = [];
         for (const path of preparedPaths) {
-          if (!path) continue;
+          if (!path) {
+            continue;
+          }
           const file = await toCameraFile(path);
           if (file) {
             files.push(file);

@@ -3,7 +3,7 @@ import { formatDateTime } from '@repo/util/date';
 import { ROUTES } from '@/constants/routes';
 import type { IAppVersion } from '@repo/api/types';
 import { theme } from '@repo/ui';
-import { EditIcon, InfoIcon } from '@repo/ui/icons';
+import { EditIcon } from '@repo/ui/icons';
 import { Button } from '@/feature/backoffice/components';
 import * as S from './table.style';
 

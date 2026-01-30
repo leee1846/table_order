@@ -119,7 +119,9 @@ export const SalesOrderPage = () => {
   };
 
   const formatCalendarText = (date: string) => {
-    if (!date) return t('날짜 선택');
+    if (!date) {
+      return t('날짜 선택');
+    }
     const dateObj = new Date(date);
     const year = dateObj.getFullYear();
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');

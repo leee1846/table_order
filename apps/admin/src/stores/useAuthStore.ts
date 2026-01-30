@@ -86,10 +86,14 @@ export const useAuthStore = create<IAuthStore>((set, _) => {
         return;
       }
 
+      const sessionShopSeq = storage.session.load<number>(
+        STORAGE_KEYS.SHOP_SEQ
+      );
+
       // shopCode는 별도로 매칭해야 하므로 여기서는 shopSeq만 업데이트
       set({
         tokenPayload: payload,
-        shopSeq: payload.shopSeq,
+        shopSeq: payload.shopSeq || sessionShopSeq,
         // shopCode는 useAuth 훅에서 업데이트
       });
     },

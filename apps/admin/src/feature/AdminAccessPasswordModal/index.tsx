@@ -110,7 +110,7 @@ export const AdminAccessPasswordModal = (
         >
           {filledDigits.map((isFilled, digitIndex) => (
             <li
-              key={digitIndex}
+              key={`${digitIndex + 1}`}
               aria-label={isFilled ? t('입력됨') : t('미입력')}
             >
               {isFilled && <span />}

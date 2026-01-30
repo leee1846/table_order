@@ -51,8 +51,14 @@ export const EditDeleteButtons = styled.div<{
   position: absolute;
   right: calc(100% - 8px);
   top: ${({ buttonPosition }) => {
-    if (buttonPosition === 'bottom') return '0%'; // 첫 번째 항목: 항목 하단
-    if (buttonPosition === 'top') return 'auto'; // 마지막 항목: bottom 사용
+    if (buttonPosition === 'bottom') {
+      // 첫 번째 항목: 항목 하단
+      return '0%';
+    }
+    if (buttonPosition === 'top') {
+      // 마지막 항목: bottom 사용
+      return 'auto';
+    }
     return '50%'; // 기본: 항목 중앙
   }};
   // 마지막 항목일 때만 bottom 0 적용

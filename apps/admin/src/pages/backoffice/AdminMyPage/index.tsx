@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import * as UIStyles from '@repo/ui/styles';
 import * as S from './adminMyPage.style';
 import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';

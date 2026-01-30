@@ -480,7 +480,6 @@ export const TableDetailContainer = ({
           setIsArbitraryPaymentConfirmDialogOpen(false);
         }}
         onContinue={() => {
-          console.log('임의 결제 계속 진행');
           setIsArbitraryPaymentConfirmDialogOpen(false);
           setIsCardPaymentDialogOpen(false);
           // TODO: 실제 임의 결제 로직 구현
@@ -509,12 +508,7 @@ export const TableDetailContainer = ({
       <CashReceiptDialog
         isOpen={isCashReceiptDialogOpen}
         onClose={() => setIsCashReceiptDialogOpen(false)}
-        onComplete={(type, number) => {
-          console.log('현금 결제 완료:', {
-            receivedAmount: cashReceivedAmount,
-            receiptType: type,
-            receiptNumber: number,
-          });
+        onComplete={() => {
           setIsCashReceiptDialogOpen(false);
           if (isPaymentFromSplit) {
             // 분할 결제 내역 추가

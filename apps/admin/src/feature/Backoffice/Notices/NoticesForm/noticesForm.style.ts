@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { TYPOGRAPHY, theme } from '@repo/ui';
+import { theme } from '@repo/ui';
 
 export {
   Container,

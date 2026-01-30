@@ -30,7 +30,9 @@ export const getInitialFormValues = (
   const currentLanguage = (i18nInstance.language?.toUpperCase() ||
     'KO') as TShopLanguage;
 
-  if (!menu) return { ...DEFAULT_FORM_VALUES, categorySeq };
+  if (!menu) {
+    return { ...DEFAULT_FORM_VALUES, categorySeq };
+  }
 
   return {
     menuName: menu.localeMenuName?.[currentLanguage] ?? '',
@@ -121,12 +123,7 @@ const toCreateOptionGroup = (group: IOptionGroup): ICreateOptionGroup => ({
 
 /** 기존 옵션 그룹을 IUpdateOptionGroup으로 변환 */
 const toUpdateOptionGroup = (group: IOptionGroup): IUpdateOptionGroup => {
-  const {
-    localeOptionGroupName,
-    localeOptionGroupNameStr,
-    optionList,
-    ...updateGroup
-  } = group;
+  const { optionList, ...updateGroup } = group;
   return {
     ...updateGroup,
     optionList: (optionList || []).map((opt) =>

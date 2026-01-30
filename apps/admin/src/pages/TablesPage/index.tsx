@@ -164,7 +164,9 @@ export const TablesPage = () => {
    */
   const handleGuestCountConfirm = useCallback(
     async (data: { customerCount: number; kidsCustomerCount?: number }) => {
-      if (!selectedTable) return;
+      if (!selectedTable) {
+        return;
+      }
 
       await createOrderGroupAndNavigate(
         selectedTable.tableNumber,

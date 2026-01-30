@@ -43,7 +43,9 @@ export const CategoryMenusPage = () => {
 
   // categorySeq와 일치하는 카테고리 이름 찾기
   const categoryName = useMemo(() => {
-    if (!isValidCategorySeq || !categoryListResponse?.data) return undefined;
+    if (!isValidCategorySeq || !categoryListResponse?.data) {
+      return undefined;
+    }
     const category = categoryListResponse.data.find(
       (cat) => cat.categorySeq === categorySeq
     );

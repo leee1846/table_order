@@ -29,7 +29,9 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
   >(new Map());
 
   useEffect(() => {
-    if (mode !== 'edit' || !menu?.menuImageList) return;
+    if (mode !== 'edit' || !menu?.menuImageList) {
+      return;
+    }
 
     const validImages = menu.menuImageList.filter(
       (img) => !img.isDeleted && img.imagePath
@@ -122,7 +124,9 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
   );
 
   const removeMainImage = useCallback(() => {
-    if (!mainImageData) return;
+    if (!mainImageData) {
+      return;
+    }
     markAsDeleted(mainImageData.id);
     setMainImageData(null);
   }, [mainImageData, markAsDeleted]);
@@ -246,7 +250,9 @@ export const useMenuImagesState = ({ menu, mode }: Props) => {
       const deletedImageList = Array.from(deletedImageIds)
         .map((imageSeq): IMenuImage | null => {
           const originalImage = originalImagesMap.get(imageSeq);
-          if (!originalImage) return null;
+          if (!originalImage) {
+            return null;
+          }
 
           return {
             imageSeq,

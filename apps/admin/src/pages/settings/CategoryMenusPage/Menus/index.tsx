@@ -57,7 +57,7 @@ export const Menus = ({ menus, onClickEditMenu, isPosLinked }: MenusProps) => {
         queryKey: queryKeys.menu.list(draggedMenu.categorySeq),
       });
       toast(t('메뉴 순서가 변경되었습니다.'));
-    } catch (error) {
+    } catch {
       // 실패 시 원래 순서로 롤백
       if (menus) {
         setLocalMenus(menus);

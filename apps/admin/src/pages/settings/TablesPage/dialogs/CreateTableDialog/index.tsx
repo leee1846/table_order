@@ -59,8 +59,6 @@ export const CreateTableDialog = ({
           <S.InputWrapper>
             <S.Label>{t('테이블 ID')}</S.Label>
             <Input
-              value={''}
-              onChange={() => {}}
               disabled
               errorMessage={t('테이블 ID는 자동으로 생성돼요.')}
             />

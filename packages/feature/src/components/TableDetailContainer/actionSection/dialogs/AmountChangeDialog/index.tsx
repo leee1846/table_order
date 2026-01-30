@@ -78,7 +78,7 @@ export const AmountChangeDialog = ({
       toast(t('금액을 변경했어요.'));
       onApplySuccess?.();
       handleClose();
-    } catch (error) {
+    } catch {
       toast(t('금액 변경 중 오류가 발생했어요. 다시 시도해주세요.'));
     }
   };

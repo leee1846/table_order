@@ -7,7 +7,6 @@ import * as UIStyles from '@repo/ui/styles';
 import { useGetOneDaySales } from '@repo/api/queries';
 import type { TPaymentType } from '@repo/api/types';
 import { formatDateToYYYYMMDD, getTodayDateString } from '@repo/util/date';
-import { toast } from '@repo/feature/utils';
 import { useAuth } from '@/hooks/useAuth';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { DailySalesTable, type TDailySaleRow } from './Table';
@@ -126,9 +125,9 @@ export const DailySalesPage = () => {
     setShowCalendar(false);
   };
 
-  const handleDownload = () => {
-    toast(t('내역 다운로드 준비 중입니다.'));
-  };
+  // const handleDownload = () => {
+  //   toast(t('내역 다운로드 준비 중입니다.'));
+  // };
 
   return (
     <>
