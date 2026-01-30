@@ -166,6 +166,7 @@ export interface IShopPageDetail {
   pageDetailDescription: string;
   pageDetailImageSeq?: number;
   pageDetailImageFileName?: string;
+  pageDetailImageFileIndex: number;
 }
 
 export interface IGetShop extends IGetShopItem {

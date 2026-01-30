@@ -20,6 +20,7 @@ type InitCommonItem = {
   description: string;
   imageUrl: string | null;
   pageDetailImageSeq?: number;
+  pageDetailImageFileIndex?: number;
 };
 
 export const StartScreenImageRegistrationPage = () => {
@@ -57,6 +58,13 @@ export const StartScreenImageRegistrationPage = () => {
     enabled: !!shopCode,
   });
 
+  console.log(
+    'data',
+    data?.data?.shopPageDetailList?.filter(
+      ({ pageDetailType }) => pageDetailType === 'INIT_COMMON'
+    )
+  );
+
   const { mutateAsync: updateShopThemePage } = usePutUpdateShopThemePage();
 
   const themePage = data?.data;
@@ -84,6 +92,7 @@ export const StartScreenImageRegistrationPage = () => {
           description: detail.pageDetailDescription ?? '',
           imageUrl: detail.pageDetailImagePath ?? null,
           pageDetailImageSeq: detail.pageDetailImageSeq,
+          pageDetailImageFileIndex: detail.pageDetailImageFileIndex,
         }))
     );
     setInitCommonFiles({});
@@ -170,12 +179,14 @@ export const StartScreenImageRegistrationPage = () => {
       pageDetailImageSeq,
       pageDetailImagePath,
       pageDetailImageFileName,
+      pageDetailImageFileIndex,
     }: {
       type: IShopPageDetail['pageDetailType'];
       description: string;
       pageDetailImageSeq?: number | null;
       pageDetailImagePath: string | null;
       pageDetailImageFileName?: string;
+      pageDetailImageFileIndex?: number;
     }): IShopPageDetail => ({
       shopSeq,
       pageDetailType: type,
@@ -183,12 +194,13 @@ export const StartScreenImageRegistrationPage = () => {
       pageDetailImagePath,
       pageDetailDescription: description,
       pageDetailImageFileName,
+      pageDetailImageFileIndex: pageDetailImageFileIndex ?? 0,
     });
 
     const initCommonFilesToSend: Array<{ file: File; fileName: string }> = [];
 
     const commonDetails = initCommonItems
-      .flatMap((item) => {
+      .flatMap((item, index) => {
         const file = initCommonFiles[item.id];
         if (file) {
           const imageId = generateId();
@@ -199,10 +211,12 @@ export const StartScreenImageRegistrationPage = () => {
           return [
             createDetail({
               type: 'INIT_COMMON',
-              pageDetailImageSeq: 0,
+              pageDetailImageSeq: item.pageDetailImageSeq ?? 0,
               pageDetailImagePath: null,
               pageDetailImageFileName: imageId,
               description: item.description,
+              pageDetailImageFileIndex:
+                item.pageDetailImageFileIndex ?? index + 1,
             }),
           ];
         }
@@ -215,6 +229,8 @@ export const StartScreenImageRegistrationPage = () => {
               pageDetailImagePath: item.imageUrl,
               pageDetailImageFileName: '',
               description: item.description,
+              pageDetailImageFileIndex:
+                item.pageDetailImageFileIndex ?? index + 1,
             }),
           ];
         }
@@ -222,7 +238,8 @@ export const StartScreenImageRegistrationPage = () => {
         return [];
       })
       .sort(
-        (a, b) => (a.pageDetailImageSeq ?? 0) - (b.pageDetailImageSeq ?? 0)
+        (a, b) =>
+          (a.pageDetailImageFileIndex ?? 0) - (b.pageDetailImageFileIndex ?? 0)
       );
 
     const pageDetails = themePage?.shopPageDetailList ?? [];
