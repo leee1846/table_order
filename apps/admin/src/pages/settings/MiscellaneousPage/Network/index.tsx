@@ -1,5 +1,5 @@
 import { useAdminTranslation } from '@/config/i18n';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGetLatestAppVersion } from '@repo/api/queries';
 import type { IShopNetwork, TAppType, TNetworkType } from '@repo/api/types';
 import * as UIStyles from '@repo/ui/styles';
@@ -28,14 +28,14 @@ const toNetworkSettingOption = (networkType?: TNetworkType): TNetworkType => {
 export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
   const { t } = useAdminTranslation();
   const appType: TAppType = 'POS_APP';
-  const networkSettings = useMemo(
-    () => [
-      { value: 'AUTO' as TNetworkType, label: t('자동') },
-      { value: 'LAN' as TNetworkType, label: t('유선') },
-      { value: 'WIFI' as TNetworkType, label: t('무선') },
-    ],
-    [t]
-  );
+  // const networkSettings = useMemo(
+  //   () => [
+  //     { value: 'AUTO' as TNetworkType, label: t('자동') },
+  //     { value: 'LAN' as TNetworkType, label: t('유선') },
+  //     { value: 'WIFI' as TNetworkType, label: t('무선') },
+  //   ],
+  //   [t]
+  // );
   const [networkSetting, setNetworkSetting] = useState<TNetworkType>('AUTO');
   const [ssid, setSsid] = useState('');
   const [ipAddress, setIpAddress] = useState('');
@@ -94,9 +94,9 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
     });
   }, [ipAddress, networkSetting, onChange, shopNetwork?.shopSeq, ssid]);
 
-  const handleNetworkSettingChange = (value: TNetworkType) => {
-    setNetworkSetting(value);
-  };
+  // const handleNetworkSettingChange = (value: TNetworkType) => {
+  //   setNetworkSetting(value);
+  // };
 
   return (
     <UIStyles.setting.Container>

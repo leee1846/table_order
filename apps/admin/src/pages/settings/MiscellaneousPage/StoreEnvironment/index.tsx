@@ -1,5 +1,5 @@
 import { useAdminTranslation } from '@/config/i18n';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { IShopSetting, IShopTime, TMenuboardType } from '@repo/api/types';
 import * as UIStyles from '@repo/ui/styles';
 import { ToggleButton } from '@repo/ui/components';
@@ -7,7 +7,7 @@ import { useTimeInput } from '@/hooks/useTimeInput';
 import { StoreIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './storeEnvironment.style';
-import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
+import type { MiscellaneousChange } from '../types';
 
 interface StoreEnvironmentProps {
   shopSetting?: IShopSetting;
@@ -80,19 +80,19 @@ export const StoreEnvironment = ({
     tableOccupationTime,
   ]);
 
-  const menuboardTypeOptions = useMemo(
-    () => [
-      {
-        value: 'PLUS' as TMenuboardType,
-        label: t('플러스형'),
-      },
-      {
-        value: 'MINUS' as TMenuboardType,
-        label: t('마이너스형'),
-      },
-    ],
-    [t]
-  );
+  // const menuboardTypeOptions = useMemo(
+  //   () => [
+  //     {
+  //       value: 'PLUS' as TMenuboardType,
+  //       label: t('플러스형'),
+  //     },
+  //     {
+  //       value: 'MINUS' as TMenuboardType,
+  //       label: t('마이너스형'),
+  //     },
+  //   ],
+  //   [t]
+  // );
 
   return (
     <UIStyles.setting.Container>

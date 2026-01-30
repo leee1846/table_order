@@ -280,7 +280,7 @@ export const MenuAppFeature = ({
     const closureEnd = toTimeString(closureEndTime.hour, closureEndTime.minute);
 
     const shopTimeChanges: Partial<IShopTime> = {
-      shopSeq: shopSeq,
+      shopSeq,
       useBreakTime,
       breakTimeList,
       breakTimeLastOrderTimeBefore: toNumberOrUndefined(
