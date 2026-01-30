@@ -1,9 +1,9 @@
 import { allowOnlyNumbers } from '@repo/util/string';
 import { usePostAdminMemberPWReset } from '@repo/api/queries';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
-import * as S from '@/feature/Backoffice/Stores/StoreInfoTab/storeInfoTab.style';
+import * as S from '@/feature/backoffice/Stores/StoreInfoTab/storeInfoTab.style';
 import type { ICreateAdminMemberRequest } from '@repo/api/types';
-import { Input, Button } from '@/feature/Backoffice/components';
+import { Input, Button } from '@/feature/backoffice/components';
 
 interface Props {
   formData: ICreateAdminMemberRequest;

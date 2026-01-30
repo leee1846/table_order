@@ -1,9 +1,8 @@
 'use client';
 import { t } from '@/config/i18n';
-import { EditTableDialog } from '../dialogs/EditTableDialog';
+import { EditTableDialog } from '@/pages/settings/TablesPage/dialogs/EditTableDialog';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
-
-import * as S from './bottomActions.styles';
+import * as S from '@/pages/settings/TablesPage/BottomActions/bottomActions.styles';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useState } from 'react';

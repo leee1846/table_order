@@ -5,8 +5,8 @@ import { BasicButton } from '@repo/ui/components';
 import { AddIcon, EditIcon, DeleteIcon } from '@repo/ui/icons';
 import { toast } from '@repo/feature/utils';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/optionSetting.style';
-import { OptionGroupManageModal } from './OptionGroupManageModal';
-import { useMenuManageModal } from '../context/MenuManageModalContext';
+import { OptionGroupManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/OptionGroupManageModal';
+import { useMenuManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
 
 interface Props {
   isPosLinked: boolean;

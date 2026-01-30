@@ -1,5 +1,4 @@
 import { useAdminTranslation } from '@/config/i18n';
-import { BasicButton, Dropdown } from '@repo/ui/components';
 import { useEffect, useMemo, useState } from 'react';
 import { useGetLatestAppVersion } from '@repo/api/queries';
 import type { IShopNetwork, TAppType, TNetworkType } from '@repo/api/types';
@@ -7,7 +6,7 @@ import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Network/network.style';
 import { NetworkIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import type { MiscellaneousChange } from '../types';
+import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
 import { CapacitorApp, AndroidInfo } from '@repo/util/app';
 
 interface NetworkProps {

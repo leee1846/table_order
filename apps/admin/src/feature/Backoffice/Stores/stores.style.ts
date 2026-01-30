@@ -7,7 +7,7 @@ export {
   TitleContainer,
   Title,
   ButtonGroup,
-} from '@/feature/Backoffice/styles/formPage.styles';
+} from '@/feature/backoffice/styles/formPage.styles';
 
 export const TabContainer = styled.div`
   display: flex;
@@ -20,8 +20,7 @@ export const TabButton = styled.button<{ isActive: boolean }>`
   padding: 12px 24px;
   border: none;
   border-bottom: 2px solid
-    ${({ isActive }) =>
-      isActive ? theme.colors.primary[500] : 'transparent'};
+    ${({ isActive }) => (isActive ? theme.colors.primary[500] : 'transparent')};
   background: none;
   color: ${({ isActive }) =>
     isActive ? theme.colors.primary[500] : theme.colors.grey[600]};

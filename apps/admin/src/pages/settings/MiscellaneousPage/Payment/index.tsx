@@ -6,10 +6,10 @@ import * as UIStyles from '@repo/ui/styles';
 import { Dropdown, ToggleButton } from '@repo/ui/components';
 import { PaymentsIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import type { MiscellaneousChange } from '../types';
+import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
 import { CapacitorApp } from '@repo/util/app';
 import { toast } from '@repo/feature/utils';
-import * as S from './payment.style';
+import * as S from '@/pages/settings/MiscellaneousPage/Payment/payment.style';
 
 type PaymentTypeOption = 'prepayment' | 'postpayment';
 

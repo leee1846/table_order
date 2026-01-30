@@ -3,8 +3,8 @@ import * as S from './noticesForm.style';
 import {
   BOARD_TYPE_OPTIONS,
   type NoticesFormData,
-} from '@/feature/Backoffice/Notices/constants';
-import { Input, Dropdown } from '@/feature/Backoffice/components';
+} from '@/feature/backoffice/Notices/constants';
+import { Input, Dropdown } from '@/feature/backoffice/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 

@@ -4,9 +4,9 @@ import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
 } from '@repo/api/types';
-import type { AppHistoriesFormData } from '@/feature/Backoffice/AppHistories/constants';
-import type { NoticesFormData } from '@/feature/Backoffice/Notices/constants';
-import type { MembersFormData } from '@/feature/Backoffice/Members/constants';
+import type { AppHistoriesFormData } from '@/feature/backoffice/AppHistories/constants';
+import type { NoticesFormData } from '@/feature/backoffice/Notices/constants';
+import type { MembersFormData } from '@/feature/backoffice/Members/constants';
 
 export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
   if (!shopData.shopName || !shopData.shopName.trim()) {

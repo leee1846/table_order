@@ -1,7 +1,7 @@
 import { getAccessToken } from '@repo/api/auth';
 import { ENDPOINTS } from '@repo/api/cores';
 import { useSSE } from '@repo/feature/hooks';
-import { SSE_KEYS } from '../constants/keys';
+import { SSE_KEYS } from '@/constants/keys';
 import { AndroidInfo } from '@repo/util/app';
 
 /**

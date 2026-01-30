@@ -18,8 +18,8 @@ import type {
 } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
 import { MAX_NAME_LENGTH } from '@repo/util/constants';
-import { useMenuManageModal } from '../../context/MenuManageModalContext';
-import * as S from './optionGroupManageModal.style';
+import { useMenuManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
+import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/OptionGroupManageModal/optionGroupManageModal.style';
 import { toast } from '@repo/feature/utils';
 
 interface OptionGroupSettings {

@@ -1,6 +1,6 @@
-import * as S from '@/feature/Backoffice/Stores/StoreInfoTab/storeInfoTab.style';
+import * as S from '@/feature/backoffice/Stores/StoreInfoTab/storeInfoTab.style';
 import type { IGetAdminShopDetail } from '@repo/api/types';
-import { Input, Dropdown } from '@/feature/Backoffice/components';
+import { Input, Dropdown } from '@/feature/backoffice/components';
 
 interface Props {
   formData: IGetAdminShopDetail;

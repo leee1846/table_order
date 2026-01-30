@@ -1,7 +1,9 @@
-import type { MenuImageData } from '../../context/MenuManageModalContext';
+import type { MenuImageData } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
 
 export const getImageUrl = (image: MenuImageData | null): string | null => {
-  if (!image) return null;
+  if (!image) {
+    return null;
+  }
   return image.file
     ? URL.createObjectURL(image.file)
     : (image.imagePath ?? null);
@@ -10,11 +12,21 @@ export const getImageUrl = (image: MenuImageData | null): string | null => {
 export const getFileExtension = (src: string, mimeType?: string) => {
   if (mimeType) {
     const normalized = mimeType.toLowerCase();
-    if (normalized === 'image/png') return '.png';
-    if (normalized === 'image/webp') return '.webp';
-    if (normalized === 'image/heic') return '.heic';
-    if (normalized === 'image/heif') return '.heif';
-    if (normalized === 'image/jpeg') return '.jpg';
+    if (normalized === 'image/png') {
+      return '.png';
+    }
+    if (normalized === 'image/webp') {
+      return '.webp';
+    }
+    if (normalized === 'image/heic') {
+      return '.heic';
+    }
+    if (normalized === 'image/heif') {
+      return '.heif';
+    }
+    if (normalized === 'image/jpeg') {
+      return '.jpg';
+    }
   }
 
   const match = src.match(/\.(\w+)(?:$|\?)/);

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { NoticesForm } from '@/feature/Backoffice/Notices/NoticesForm';
-import { ChangeHistoryDialog } from '@/feature/Backoffice/ChangeHistoryDialog';
+import { NoticesForm } from '@/feature/backoffice/Notices/NoticesForm';
+import { ChangeHistoryDialog } from '@/feature/backoffice/ChangeHistoryDialog';
 import * as S from './notices.style';
 import {
   type NoticesFormData,
   DEFAULT_NOTICES_DATA,
-} from '@/feature/Backoffice/Notices/constants';
-import { Button } from '@/feature/Backoffice/components';
+} from '@/feature/backoffice/Notices/constants';
+import { Button } from '@/feature/backoffice/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 

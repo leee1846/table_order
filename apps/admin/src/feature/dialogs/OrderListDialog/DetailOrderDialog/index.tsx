@@ -4,7 +4,7 @@ import { theme } from '@repo/ui';
 import { formatCurrency } from '@repo/util/string';
 import { useAdminTranslation } from '@/config/i18n';
 import type { OrderItem as MenuItem } from '@repo/feature/components';
-import type { OrderItem as OrderInfo } from '../index';
+import type { OrderItem as OrderInfo } from '@/feature/dialogs/OrderListDialog';
 
 const { colors } = theme;
 

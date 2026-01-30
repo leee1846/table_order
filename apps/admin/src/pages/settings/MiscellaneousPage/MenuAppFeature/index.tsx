@@ -15,10 +15,10 @@ import { theme } from '@repo/ui';
 import { DeleteIcon, MenuBookIcon } from '@repo/ui/icons';
 import { CategoryModal } from './CategoryModal';
 import { getDays } from '@/constants/days';
-import { normalizeNumberString, allowOnlyNumbers } from '@repo/util/string';
+import { allowOnlyNumbers } from '@repo/util/string';
 import { generateTimeOptions, calculateTimeBefore } from '@repo/util/time';
 import { MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
-import type { MiscellaneousChange } from '../types';
+import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
 import { CapacitorApp } from '@repo/util/app';
 import { toast } from '@repo/feature/utils';
 

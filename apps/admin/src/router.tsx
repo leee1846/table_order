@@ -13,7 +13,7 @@ import App from '@/App';
 import type { ITokenPayload } from '@repo/api/types';
 import { decodeJwtToken } from '@repo/util/function';
 import { CapacitorApp } from '@repo/util/app';
-import { StoresPage } from './pages/webAdmin/StoresPage';
+import { StoresPage } from '@/pages/backoffice/StoresPage';
 import { SalesAccessGuard } from '@/feature/SalesAccessGuard';
 
 // ============================================================================
@@ -35,7 +35,7 @@ const SettingsAccessGuard = lazy(() =>
   }))
 );
 const StoresSidebar = lazy(() =>
-  import('@/feature/AdminWeb/SidebarLayout').then((module) => ({
+  import('@/feature/backoffice/SidebarLayout').then((module) => ({
     default: module.StoresSidebarLayout,
   }))
 );
@@ -49,72 +49,72 @@ const NotFoundPage = lazy(() =>
 // Lazy Loaded Components - Admin Web Pages
 // ============================================================================
 const StoresNewPage = lazy(() =>
-  import('@/pages/webAdmin/StoresNewPage').then((module) => ({
+  import('@/pages/backoffice/StoresNewPage').then((module) => ({
     default: module.StoresNewPage,
   }))
 );
 const StoresEditPage = lazy(() =>
-  import('@/pages/webAdmin/StoresEditPage').then((module) => ({
+  import('@/pages/backoffice/StoresEditPage').then((module) => ({
     default: module.StoresEditPage,
   }))
 );
 const AdminMyPage = lazy(() =>
-  import('@/pages/webAdmin/AdminMyPage').then((module) => ({
+  import('@/pages/backoffice/AdminMyPage').then((module) => ({
     default: module.AdminMyPage,
   }))
 );
 const AppHistoriesPage = lazy(() =>
-  import('@/pages/webAdmin/AppHistoriesPage').then((module) => ({
+  import('@/pages/backoffice/AppHistoriesPage').then((module) => ({
     default: module.AppHistoriesPage,
   }))
 );
 const AppHistoriesNewPage = lazy(() =>
-  import('@/pages/webAdmin/AppHistoriesNewPage').then((module) => ({
+  import('@/pages/backoffice/AppHistoriesNewPage').then((module) => ({
     default: module.AppHistoriesNewPage,
   }))
 );
 const AppHistoriesEditPage = lazy(() =>
-  import('@/pages/webAdmin/AppHistoriesEditPage').then((module) => ({
+  import('@/pages/backoffice/AppHistoriesEditPage').then((module) => ({
     default: module.AppHistoriesEditPage,
   }))
 );
 const AppHistoriesDetailPage = lazy(() =>
-  import('@/pages/webAdmin/AppHistoriesDetailPage').then((module) => ({
+  import('@/pages/backoffice/AppHistoriesDetailPage').then((module) => ({
     default: module.AppHistoriesDetailPage,
   }))
 );
 const AdminNoticesPage = lazy(() =>
-  import('@/pages/webAdmin/NoticesPage').then((module) => ({
+  import('@/pages/backoffice/NoticesPage').then((module) => ({
     default: module.NoticesPage,
   }))
 );
 const NoticesNewPage = lazy(() =>
-  import('@/pages/webAdmin/NoticesNewPage').then((module) => ({
+  import('@/pages/backoffice/NoticesNewPage').then((module) => ({
     default: module.NoticesNewPage,
   }))
 );
 const NoticesEditPage = lazy(() =>
-  import('@/pages/webAdmin/NoticesEditPage').then((module) => ({
+  import('@/pages/backoffice/NoticesEditPage').then((module) => ({
     default: module.NoticesEditPage,
   }))
 );
 const NoticesDetailPage = lazy(() =>
-  import('@/pages/webAdmin/NoticesDetailPage').then((module) => ({
+  import('@/pages/backoffice/NoticesDetailPage').then((module) => ({
     default: module.NoticesDetailPage,
   }))
 );
 const MembersPage = lazy(() =>
-  import('@/pages/webAdmin/MembersPage').then((module) => ({
+  import('@/pages/backoffice/MembersPage').then((module) => ({
     default: module.MembersPage,
   }))
 );
 const MembersNewPage = lazy(() =>
-  import('@/pages/webAdmin/MembersNewPage').then((module) => ({
+  import('@/pages/backoffice/MembersNewPage').then((module) => ({
     default: module.MembersNewPage,
   }))
 );
 const MembersEditPage = lazy(() =>
-  import('@/pages/webAdmin/MembersEditPage').then((module) => ({
+  import('@/pages/backoffice/MembersEditPage').then((module) => ({
     default: module.MembersEditPage,
   }))
 );

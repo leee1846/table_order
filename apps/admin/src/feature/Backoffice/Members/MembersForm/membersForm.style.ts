@@ -5,4 +5,4 @@ export {
   FieldGroup,
   Label,
   HorizontalLayout,
-} from '@/feature/Backoffice/styles/form.styles';
+} from '@/feature/backoffice/styles/form.styles';

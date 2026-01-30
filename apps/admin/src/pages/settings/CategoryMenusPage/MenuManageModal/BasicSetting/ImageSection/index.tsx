@@ -13,14 +13,14 @@ import {
 } from '@repo/ui/icons';
 import { CameraManager, CapacitorApp, type AlbumPhoto } from '@repo/util/app';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection/imageSection.style';
-import { AddImageModal } from '../AddImageModal';
-import { ExistingImageModal } from '../AddImageModal/ExistingImageModal';
-import { RecommendedImageModal } from '../AddImageModal/RecommendedImageModal';
+import { AddImageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/AddImageModal';
+import { ExistingImageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/AddImageModal/ExistingImageModal';
+import { RecommendedImageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/AddImageModal/RecommendedImageModal';
 import {
   useMenuForm,
   useMenuImages,
   type MenuImageData,
-} from '../../context/MenuManageModalContext';
+} from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
 import { BasicButton } from '@repo/ui/components';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@repo/feature/utils';
@@ -33,8 +33,11 @@ import type {
   ISampleMenuImage,
   ISampleMenuImageListResponse,
 } from '@repo/api/types';
-import { GalleryModal } from './GalleryModal';
-import { getImageUrl, toCameraFile } from './imageHelpers';
+import { GalleryModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection/GalleryModal';
+import {
+  getImageUrl,
+  toCameraFile,
+} from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection/imageHelpers';
 
 type ImageModalMode = 'main' | 'additional';
 type CaptureTarget = {

@@ -3,8 +3,8 @@ import * as S from './membersForm.style';
 import {
   MEMBER_ROLE_OPTIONS,
   type MembersFormData,
-} from '@/feature/Backoffice/Members/constants';
-import { Input, Dropdown } from '@/feature/Backoffice/components';
+} from '@/feature/backoffice/Members/constants';
+import { Input, Dropdown } from '@/feature/backoffice/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 

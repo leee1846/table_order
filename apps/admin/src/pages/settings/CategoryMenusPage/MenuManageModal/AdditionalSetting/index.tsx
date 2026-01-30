@@ -1,7 +1,7 @@
 import { t } from '@/config/i18n';
 import { Input } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/AdditionalSetting/additionalSetting.style';
-import { useMenuForm } from '../context/MenuManageModalContext';
+import { useMenuForm } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
 
 export const AdditionalSetting = () => {
   const { formValues, updateFormValues } = useMenuForm();

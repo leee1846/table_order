@@ -5,7 +5,7 @@ import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
 import type { TPaymentType } from '@repo/api/types';
 import { useAdminTranslation } from '@/config/i18n';
-import * as S from '../dailySalesPage.style';
+import * as S from '@/pages/settings/DailySalesPage/dailySalesPage.style';
 
 export type TDailySaleRow = {
   id: string;

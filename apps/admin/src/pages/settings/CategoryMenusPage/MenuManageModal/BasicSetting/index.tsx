@@ -11,8 +11,8 @@ import {
   spicyLevel3Icon,
 } from '@repo/ui/icons';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
-import { ImageSection } from './ImageSection';
-import { useMenuForm } from '../context/MenuManageModalContext';
+import { ImageSection } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection';
+import { useMenuForm } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
 import { formatCurrency, allowOnlyNumbers } from '@repo/util/string';
 import { MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 

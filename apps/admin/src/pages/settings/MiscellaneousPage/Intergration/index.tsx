@@ -6,7 +6,7 @@ import * as UIStyles from '@repo/ui/styles';
 import { BasicButton, Dropdown, ToggleButton } from '@repo/ui/components';
 import { ConnectionIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import type { MiscellaneousChange } from '../types';
+import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
 import { usePostOrderOnboardingTest } from '@repo/api/queries';
 import { useAuth } from '@/hooks/useAuth';
 import { openDualActionDialog } from '@repo/feature/utils';

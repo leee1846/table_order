@@ -7,8 +7,8 @@ import {
 import * as S from './sidebar.styles';
 import { theme } from '@repo/ui';
 import { useNavigate } from 'react-router-dom';
-import { AddTableGroupDialog } from '../dialogs/AddTableGroupDialog';
-import { EditTableGroupDialog } from '../dialogs/EditTableGroupDialog';
+import { AddTableGroupDialog } from '@/pages/settings/TablesPage/dialogs/AddTableGroupDialog';
+import { EditTableGroupDialog } from '@/pages/settings/TablesPage/dialogs/EditTableGroupDialog';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import {
@@ -16,7 +16,7 @@ import {
   useDeleteTableGroup,
   useGetShopThemeMenu,
 } from '@repo/api/queries';
-import { TableGroupItem } from './TableGroupItem';
+import { TableGroupItem } from '@/pages/settings/TablesPage/Sidebar/TableGroupItem';
 import { ROUTES } from '@/constants/routes';
 import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import type { ITableGroup } from '@repo/api/types';

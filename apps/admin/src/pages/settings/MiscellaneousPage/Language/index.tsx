@@ -11,7 +11,7 @@ import { CheckButton, Dropdown, ToggleButton } from '@repo/ui/components';
 import * as S from '@/pages/settings/MiscellaneousPage/Language/language.style';
 import { LanguageIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import type { MiscellaneousChange } from '../types';
+import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
 
 interface LanguageProps {
   shopSetting?: IShopSetting;

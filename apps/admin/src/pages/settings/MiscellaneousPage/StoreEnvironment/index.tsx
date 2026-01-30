@@ -2,12 +2,12 @@ import { useAdminTranslation } from '@/config/i18n';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { IShopSetting, IShopTime, TMenuboardType } from '@repo/api/types';
 import * as UIStyles from '@repo/ui/styles';
-import { Dropdown, ToggleButton } from '@repo/ui/components';
+import { ToggleButton } from '@repo/ui/components';
 import { useTimeInput } from '@/hooks/useTimeInput';
 import { StoreIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as S from './storeEnvironment.style';
-import type { MiscellaneousChange } from '../types';
+import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
 
 interface StoreEnvironmentProps {
   shopSetting?: IShopSetting;
