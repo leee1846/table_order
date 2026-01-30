@@ -53,7 +53,7 @@ export const AppHistoriesNewPage = () => {
     const appVersionSeq = result.data?.appVersionSeq;
     await postAppVersionFile({ appVersionSeq, file: apkFile });
 
-    toast('앱 히스토리 생성이 완료되었습니다.');
+    toast('릴리즈 노트 생성이 완료되었습니다.');
     navigate(ROUTES.ADMIN_WEB.APP_HISTORIES.generate());
   };
 

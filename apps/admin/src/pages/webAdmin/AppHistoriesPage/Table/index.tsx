@@ -38,7 +38,7 @@ export const Table = ({ histories }: Props) => {
     if (!histories || histories.length === 0) {
       return (
         <S.EmptyRow>
-          <S.EmptyCell colSpan={6}>앱 히스토리 목록이 없습니다.</S.EmptyCell>
+          <S.EmptyCell colSpan={6}>릴리즈 노트 목록이 없습니다.</S.EmptyCell>
         </S.EmptyRow>
       );
     }

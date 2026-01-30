@@ -45,7 +45,7 @@ export const AppHistoriesPage = () => {
     <S.PageWrapper>
       <S.Container>
         <S.Title>
-          앱 히스토리
+          릴리즈 노트
           <div />
           <span>목록</span>
         </S.Title>
@@ -59,7 +59,7 @@ export const AppHistoriesPage = () => {
             />
           </S.SearchInputWrapper>
           <Button variant="default" onClick={handleCreate}>
-            앱 히스토리 생성
+            릴리즈 노트 생성
           </Button>
         </S.SearchContainer>
 

@@ -61,7 +61,7 @@ export const StoresSidebarLayout = () => {
       },
       {
         id: 'app-histories',
-        label: '앱 히스토리',
+        label: '릴리즈 노트',
         path: ROUTES.ADMIN_WEB.APP_HISTORIES.generate(),
         matchPattern: '/admin/app-histories/*',
       }

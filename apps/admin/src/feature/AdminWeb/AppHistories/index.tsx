@@ -97,7 +97,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
       <S.Container>
         <S.TitleContainer>
           <S.Title>
-            앱 히스토리
+            릴리즈 노트
             <div />
             <span>{getTitle()}</span>
           </S.Title>

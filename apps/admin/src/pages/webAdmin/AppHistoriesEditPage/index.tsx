@@ -92,7 +92,7 @@ export const AppHistoriesEditPage = () => {
     }
 
     if (!formData.id) {
-      toast('앱 히스토리 ID가 없습니다.');
+      toast('릴리즈 노트 ID가 없습니다.');
       return;
     }
 
@@ -106,7 +106,7 @@ export const AppHistoriesEditPage = () => {
       });
     }
 
-    toast('앱 히스토리 수정이 완료되었습니다.');
+    toast('릴리즈 노트 수정이 완료되었습니다.');
     navigate(ROUTES.ADMIN_WEB.APP_HISTORIES.generate());
   };
 
