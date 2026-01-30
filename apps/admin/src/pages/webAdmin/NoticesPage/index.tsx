@@ -3,8 +3,8 @@ import { Table } from './Table';
 import * as S from './noticesPage.style';
 import { useGetNoticeList } from '@repo/api/queries';
 import { ROUTES } from '@/constants/routes';
-import { usePaginationState } from '@/feature/AdminWeb/hooks';
-import { Button, Pagination } from '@/feature/AdminWeb/components';
+import { usePaginationState } from '@/feature/Backoffice/hooks';
+import { Button, Pagination } from '@/feature/Backoffice/components';
 
 const PAGE_SIZE = 10;
 

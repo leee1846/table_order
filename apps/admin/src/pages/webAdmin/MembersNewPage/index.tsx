@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import { Members } from '@/feature/AdminWeb/Members';
+import { Members } from '@/feature/Backoffice/Members';
 import { validateMembersData } from '@/feature/AdminWeb/util';
 import { toast } from '@repo/feature/utils';
 import { usePostAdminMember } from '@repo/api/queries';
-import type { MembersFormData } from '@/feature/AdminWeb/Members/constants';
+import type { MembersFormData } from '@/feature/Backoffice/Members/constants';
 import type { ICreateAdminMemberRequest } from '@repo/api/types';
 
 // MembersFormData를 ICreateAdminMemberRequest로 변환

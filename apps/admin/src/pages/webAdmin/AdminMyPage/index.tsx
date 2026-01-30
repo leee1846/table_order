@@ -3,7 +3,7 @@ import * as UIStyles from '@repo/ui/styles';
 import * as S from './adminMyPage.style';
 import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
-import { Input, Button } from '@/feature/AdminWeb/components';
+import { Input, Button } from '@/feature/Backoffice/components';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ROUTES } from '@/constants/routes';
 import {

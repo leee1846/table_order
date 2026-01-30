@@ -9,7 +9,7 @@ export {
   FieldGroup,
   Label,
   HorizontalLayout,
-} from '@/feature/AdminWeb/styles/form.styles';
+} from '@/feature/Backoffice/styles/form.styles';
 
 export const BusinessNumberContainer = styled.div`
   display: flex;

@@ -3,8 +3,8 @@ import * as S from './membersForm.style';
 import {
   MEMBER_ROLE_OPTIONS,
   type MembersFormData,
-} from '../constants';
-import { Input, Dropdown } from '@/feature/AdminWeb/components';
+} from '@/feature/Backoffice/Members/constants';
+import { Input, Dropdown } from '@/feature/Backoffice/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -79,7 +79,9 @@ export const MembersForm = ({ mode, formData, updateFormData }: Props) => {
               options={MEMBER_ROLE_OPTIONS}
               value={formData.memberRole}
               onChange={(value) =>
-                updateFormData({ memberRole: value as typeof formData.memberRole })
+                updateFormData({
+                  memberRole: value as typeof formData.memberRole,
+                })
               }
               disabled={isReadOnly}
               placeholder="권한 선택"

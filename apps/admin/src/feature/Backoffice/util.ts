@@ -4,9 +4,9 @@ import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
 } from '@repo/api/types';
-import type { AppHistoriesFormData } from './AppHistories/constants';
-import type { NoticesFormData } from './Notices/constants';
-import type { MembersFormData } from './Members/constants';
+import type { AppHistoriesFormData } from '@/feature/Backoffice/AppHistories/constants';
+import type { NoticesFormData } from '@/feature/Backoffice/Notices/constants';
+import type { MembersFormData } from '@/feature/Backoffice/Members/constants';
 
 export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
   if (!shopData.shopName || !shopData.shopName.trim()) {
@@ -72,7 +72,9 @@ export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
     shopData.managerPhoneNumber.trim() &&
     !isValidPhoneNumber(shopData.managerPhoneNumber)
   ) {
-    toast('매장정보 > 실무 담당자 연락처는 9~11자리 연락처 형식으로 입력해주세요.');
+    toast(
+      '매장정보 > 실무 담당자 연락처는 9~11자리 연락처 형식으로 입력해주세요.'
+    );
     return false;
   }
 

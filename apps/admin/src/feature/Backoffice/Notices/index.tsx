@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { NoticesForm } from './NoticesForm';
-import { ChangeHistoryDialog } from '../ChangeHistoryDialog';
+import { NoticesForm } from '@/feature/Backoffice/Notices/NoticesForm';
+import { ChangeHistoryDialog } from '@/feature/Backoffice/ChangeHistoryDialog';
 import * as S from './notices.style';
-import { type NoticesFormData, DEFAULT_NOTICES_DATA } from './constants';
-import { Button } from '@/feature/AdminWeb/components';
+import {
+  type NoticesFormData,
+  DEFAULT_NOTICES_DATA,
+} from '@/feature/Backoffice/Notices/constants';
+import { Button } from '@/feature/Backoffice/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -85,17 +88,17 @@ export const Notices = ({ mode, initialData, onSave, onDelete }: Props) => {
           formData={formData}
           updateFormData={updateFormData}
         />
-      <ChangeHistoryDialog
-        isOpen={isHistoryDialogOpen}
-        onClose={handleCloseHistoryDialog}
-        histories={[
-          {
-            code: 'NOTICE',
-            id: initialData?.id ?? '',
-            label: '공지사항 변경 이력',
-          },
-        ]}
-      />
+        <ChangeHistoryDialog
+          isOpen={isHistoryDialogOpen}
+          onClose={handleCloseHistoryDialog}
+          histories={[
+            {
+              code: 'NOTICE',
+              id: initialData?.id ?? '',
+              label: '공지사항 변경 이력',
+            },
+          ]}
+        />
       </S.Container>
     </S.PageWrapper>
   );

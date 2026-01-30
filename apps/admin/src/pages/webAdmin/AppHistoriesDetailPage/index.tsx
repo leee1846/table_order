@@ -1,9 +1,9 @@
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
-import { AppHistories } from '@/feature/AdminWeb/AppHistories';
+import { AppHistories } from '@/feature/Backoffice/AppHistories';
 import { useGetAppVersionDetail } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
-import type { AppHistoriesFormData } from '@/feature/AdminWeb/AppHistories/constants';
+import type { AppHistoriesFormData } from '@/feature/Backoffice/AppHistories/constants';
 import type { IAppVersion } from '@repo/api/types';
 
 // IAppVersion을 AppHistoriesFormData로 변환

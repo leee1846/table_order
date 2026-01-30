@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
-import { StoreInfoTab } from '@/feature/AdminWeb/Stores/StoreInfoTab';
-import { MemberInfoTab } from '@/feature/AdminWeb/Stores/MemberInfoTab';
-import { SettingInfoTab } from '@/feature/AdminWeb/Stores/SettingInfoTab';
-import { ChangeHistoryDialog } from '../ChangeHistoryDialog';
+import { StoreInfoTab } from '@/feature/Backoffice/Stores/StoreInfoTab';
+import { MemberInfoTab } from '@/feature/Backoffice/Stores/MemberInfoTab';
+import { SettingInfoTab } from '@/feature/Backoffice/Stores/SettingInfoTab';
+import { ChangeHistoryDialog } from '@/feature/Backoffice/ChangeHistoryDialog';
 import * as S from './stores.style';
 import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
 } from '@repo/api/types';
-import { DEFAULT_MEMBER_DATA, DEFAULT_SHOP_DATA } from './constants';
-import { Button } from '@/feature/AdminWeb/components';
+import {
+  DEFAULT_MEMBER_DATA,
+  DEFAULT_SHOP_DATA,
+} from '@/feature/Backoffice/Stores/constants';
+import { Button } from '@/feature/Backoffice/components';
 
 type TabType = 'storeInfo' | 'memberInfo' | 'settingInfo';
 type Mode = 'create' | 'edit';

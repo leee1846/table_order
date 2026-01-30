@@ -1,7 +1,10 @@
 import { useRef, useEffect } from 'react';
 import * as S from './noticesForm.style';
-import { BOARD_TYPE_OPTIONS, type NoticesFormData } from '../constants';
-import { Input, Dropdown } from '@/feature/AdminWeb/components';
+import {
+  BOARD_TYPE_OPTIONS,
+  type NoticesFormData,
+} from '@/feature/Backoffice/Notices/constants';
+import { Input, Dropdown } from '@/feature/Backoffice/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -34,7 +37,9 @@ export const NoticesForm = ({ mode, formData, updateFormData }: Props) => {
             <Dropdown
               options={BOARD_TYPE_OPTIONS}
               value={formData.boardType}
-              onChange={(value) => updateFormData({ boardType: value as string })}
+              onChange={(value) =>
+                updateFormData({ boardType: value as string })
+              }
               disabled={isReadOnly}
               placeholder="유형 선택"
             />

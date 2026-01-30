@@ -3,8 +3,8 @@ import { Table } from './Table';
 import * as S from './membersPage.style';
 import { ROUTES } from '@/constants/routes';
 import { useGetAdminMemberList } from '@repo/api/queries';
-import { useTablePageState } from '@/feature/AdminWeb/hooks';
-import { Input, Button, Pagination } from '@/feature/AdminWeb/components';
+import { useTablePageState } from '@/feature/Backoffice/hooks';
+import { Input, Button, Pagination } from '@/feature/Backoffice/components';
 
 const PAGE_SIZE = 10;
 

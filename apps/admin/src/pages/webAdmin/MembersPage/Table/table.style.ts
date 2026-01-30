@@ -10,4 +10,4 @@ export {
   EmptyCell,
   ActionCell,
   ActionWrapper,
-} from '@/feature/AdminWeb/styles/table.styles';
+} from '@/feature/Backoffice/styles/table.styles';

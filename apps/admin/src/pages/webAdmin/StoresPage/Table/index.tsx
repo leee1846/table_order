@@ -4,7 +4,7 @@ import type { IGetAdminShopItem } from '@repo/api/types';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '@repo/ui';
 import { EditIcon } from '@repo/ui/icons';
-import { Button } from '@/feature/AdminWeb/components';
+import { Button } from '@/feature/Backoffice/components';
 import * as S from './table.style';
 
 interface Props {

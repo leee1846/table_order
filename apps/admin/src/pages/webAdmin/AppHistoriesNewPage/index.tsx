@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import { AppHistories } from '@/feature/AdminWeb/AppHistories';
+import { AppHistories } from '@/feature/Backoffice/AppHistories';
 import { validateAppHistoriesData } from '@/feature/AdminWeb/util';
 import { toast } from '@repo/feature/utils';
 import { usePostAppVersion, usePostAppVersionFile } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
-import type { AppHistoriesFormData } from '@/feature/AdminWeb/AppHistories/constants';
+import type { AppHistoriesFormData } from '@/feature/Backoffice/AppHistories/constants';
 import type { ICreateAppVersionParams } from '@repo/api/types';
 
 // AppHistoriesFormData를 ICreateAppVersionParams로 변환

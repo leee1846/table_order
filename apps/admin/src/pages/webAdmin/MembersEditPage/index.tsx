@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo, useEffect } from 'react';
-import { Members } from '@/feature/AdminWeb/Members';
+import { Members } from '@/feature/Backoffice/Members';
 import { validateMembersData } from '@/feature/AdminWeb/util';
 import {
   toast,
@@ -16,7 +16,7 @@ import {
 } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import { AxiosError } from '@repo/api/axios';
-import type { MembersFormData } from '@/feature/AdminWeb/Members/constants';
+import type { MembersFormData } from '@/feature/Backoffice/Members/constants';
 import type {
   IGetAdminMember,
   ICreateAdminMemberRequest,

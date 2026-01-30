@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { MembersForm } from './MembersForm';
 import * as S from './members.style';
 import { type MembersFormData, DEFAULT_MEMBERS_DATA } from './constants';
-import { Button } from '@/feature/AdminWeb/components';
+import { Button } from '@/feature/Backoffice/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 

@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { toast } from '@repo/feature/utils';
-import { AppHistoryForm } from './AppHistoryForm';
-import { ChangeHistoryDialog } from '../ChangeHistoryDialog';
-import * as S from './appHistories.style';
+import { AppHistoryForm } from '@/feature/Backoffice/AppHistories/AppHistoryForm';
+import { ChangeHistoryDialog } from '@/feature/Backoffice/ChangeHistoryDialog';
+import * as S from '@/feature/Backoffice/AppHistories/appHistories.style';
 import {
   type AppHistoriesFormData,
   DEFAULT_APP_HISTORIES_DATA,
-} from './constants';
-import { Button } from '@/feature/AdminWeb/components';
+} from '@/feature/Backoffice/AppHistories/constants';
+import { Button } from '@/feature/Backoffice/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 

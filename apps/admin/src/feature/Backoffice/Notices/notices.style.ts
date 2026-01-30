@@ -4,4 +4,4 @@ export {
   TitleContainer,
   Title,
   ButtonGroup,
-} from '@/feature/AdminWeb/styles/formPage.styles';
+} from '@/feature/Backoffice/styles/formPage.styles';

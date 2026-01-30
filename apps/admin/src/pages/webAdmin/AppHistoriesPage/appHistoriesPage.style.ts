@@ -6,4 +6,4 @@ export {
   SearchInputWrapper,
   TableWrapper,
   Footer,
-} from '@/feature/AdminWeb/styles/commonPage.styles';
+} from '@/feature/Backoffice/styles/commonPage.styles';

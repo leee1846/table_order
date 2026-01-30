@@ -5,9 +5,9 @@ import { theme } from '@repo/ui';
 import { toast } from '@repo/feature/utils';
 import { formatDateTime } from '@repo/util/date';
 import type { TAppType } from '@repo/api/types';
-import * as S from './appHistoryForm.style';
-import type { AppHistoriesFormData } from '../constants';
-import { Input, Dropdown, Button } from '@/feature/AdminWeb/components';
+import * as S from '@/feature/Backoffice/AppHistories/AppHistoryForm/appHistoryForm.style';
+import type { AppHistoriesFormData } from '@/feature/Backoffice/AppHistories/constants';
+import { Input, Dropdown, Button } from '@/feature/Backoffice/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 

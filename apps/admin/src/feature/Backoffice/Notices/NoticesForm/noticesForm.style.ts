@@ -8,7 +8,7 @@ export {
   FieldGroup,
   Label,
   HorizontalLayout,
-} from '@/feature/AdminWeb/styles/form.styles';
+} from '@/feature/Backoffice/styles/form.styles';
 
 export const TextArea = styled.textarea<{ isDetail?: boolean }>`
   width: 100%;

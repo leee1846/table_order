@@ -3,7 +3,7 @@ import { EditIcon } from '@repo/ui/icons';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import type { IGetAdminMember } from '@repo/api/types';
-import { Button } from '@/feature/AdminWeb/components';
+import { Button } from '@/feature/Backoffice/components';
 import * as S from './table.style';
 
 interface Props {

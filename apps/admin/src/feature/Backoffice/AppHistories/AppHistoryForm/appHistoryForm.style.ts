@@ -8,7 +8,7 @@ export {
   FieldGroup,
   Label,
   HorizontalLayout,
-} from '@/feature/AdminWeb/styles/form.styles';
+} from '@/feature/Backoffice/styles/form.styles';
 
 export const CalendarButton = styled.button`
   display: flex;

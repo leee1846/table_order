@@ -5,7 +5,7 @@ import { formatDateTime } from '@repo/util/date';
 import { theme } from '@repo/ui';
 import { EditIcon } from '@repo/ui/icons';
 import { getBoardTypeLabel } from '@/feature/AdminWeb/Notices/constants';
-import { Button } from '@/feature/AdminWeb/components';
+import { Button } from '@/feature/Backoffice/components';
 import * as S from './table.style';
 
 interface Props {

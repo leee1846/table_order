@@ -2,7 +2,7 @@ import { CheckButton } from '@repo/ui/components';
 import { allowOnlyNumbers } from '@repo/util/string';
 import * as S from './storeInfoTab.style';
 import type { IGetAdminShopDetail } from '@repo/api/types';
-import { Input, Dropdown } from '@/feature/AdminWeb/components';
+import { Input, Dropdown } from '@/feature/Backoffice/components';
 
 type Mode = 'create' | 'edit';
 
