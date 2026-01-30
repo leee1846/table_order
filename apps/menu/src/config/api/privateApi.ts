@@ -57,8 +57,8 @@ privateApi.interceptors.request.use(
       throw new axios.Cancel('Invalid access token');
     }
 
-    // 토큰 만료 120초 전에 갱신 요청
-    if (isExpired(payload.exp, 120, getCurrentUnixTime())) {
+    // 토큰 만료 30초 전에 갱신 요청
+    if (isExpired(payload.exp, 30, getCurrentUnixTime())) {
       accessToken = await accessTokenRefreshManager.runRefresh();
     }
 
