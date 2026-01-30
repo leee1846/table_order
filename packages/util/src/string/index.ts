@@ -150,6 +150,26 @@ export const isValidEmail = (email: string): boolean => {
 };
 
 /**
+ * 한국 연락처 형식이 유효한지 검증합니다.
+ * 숫자만 추출했을 때 9~11자리면 유효한 한국 연락처로 간주합니다.
+ *
+ * @param value - 검증할 연락처 문자열 (하이픈 등 포함 가능)
+ * @returns 유효한 연락처 형식이면 true, 아니면 false
+ *
+ * @example
+ * ```ts
+ * isValidPhoneNumber('010-1234-5678') // true
+ * isValidPhoneNumber('0212345678') // true
+ * isValidPhoneNumber('123') // false
+ * isValidPhoneNumber('01012345678901') // false
+ * ```
+ */
+export const isValidPhoneNumber = (value: string): boolean => {
+  const digitsOnly = value.replace(/\D/g, '');
+  return digitsOnly.length >= 9 && digitsOnly.length <= 11;
+};
+
+/**
  * 결제 수단 코드를 i18n 키로 변환합니다. (키는 한국어 문자열)
  *
  * @param method - 결제 수단 코드 (예: 'CARD', 'CASH', 'CANCELED_ALL')

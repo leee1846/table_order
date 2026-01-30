@@ -1,5 +1,5 @@
 import { toast } from '@repo/feature/utils';
-import { isValidEmail } from '@repo/util/string';
+import { isValidEmail, isValidPhoneNumber } from '@repo/util/string';
 import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
@@ -29,6 +29,11 @@ export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
     return false;
   }
 
+  if (!isValidPhoneNumber(shopData.shopPhoneNumber)) {
+    toast('매장정보 > 매장 전화번호는 9~11자리 연락처 형식으로 입력해주세요.');
+    return false;
+  }
+
   if (!shopData.ownerName || !shopData.ownerName.trim()) {
     toast('매장정보 > 대표자명을 입력해주세요.');
     return false;
@@ -39,12 +44,36 @@ export const validateShopData = (shopData: IGetAdminShopDetail): boolean => {
     return false;
   }
 
+  if (!isValidPhoneNumber(shopData.ownerPhoneNumber)) {
+    toast('매장정보 > 대표자 연락처는 9~11자리 연락처 형식으로 입력해주세요.');
+    return false;
+  }
+
   // 이메일이 입력된 경우 형식 검증
   if (shopData.shopEmail && shopData.shopEmail.trim()) {
     if (!isValidEmail(shopData.shopEmail)) {
       toast('매장정보 > 올바른 이메일 형식을 입력해주세요.');
       return false;
     }
+  }
+
+  // 사업자등록번호가 입력된 경우 최소 10자리 검증
+  if (shopData.businessNumber && shopData.businessNumber.trim()) {
+    const digitsOnly = shopData.businessNumber.replace(/\D/g, '');
+    if (digitsOnly.length < 10) {
+      toast('매장정보 > 사업자등록번호는 최소 10자리 이상 입력해주세요.');
+      return false;
+    }
+  }
+
+  // 실무 담당자 연락처가 입력된 경우 연락처 형식 검증
+  if (
+    shopData.managerPhoneNumber &&
+    shopData.managerPhoneNumber.trim() &&
+    !isValidPhoneNumber(shopData.managerPhoneNumber)
+  ) {
+    toast('매장정보 > 실무 담당자 연락처는 9~11자리 연락처 형식으로 입력해주세요.');
+    return false;
   }
 
   return true;
@@ -65,6 +94,11 @@ export const validateMemberData = (
 
   if (!memberData.memberTel || !memberData.memberTel.trim()) {
     toast('계정정보 > 회원 전화번호를 입력해주세요.');
+    return false;
+  }
+
+  if (!isValidPhoneNumber(memberData.memberTel)) {
+    toast('계정정보 > 회원 전화번호는 9~11자리 연락처 형식으로 입력해주세요.');
     return false;
   }
 
