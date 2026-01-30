@@ -34,7 +34,7 @@ export const StoresSidebarLayout = () => {
       {
         id: 'mypage',
         label: '내 정보',
-        path: ROUTES.ADMIN_WEB.MYPAGE.generate(),
+        path: ROUTES.BACKOFFICE.MYPAGE.generate(),
       },
     ];
 
@@ -42,7 +42,8 @@ export const StoresSidebarLayout = () => {
       menus.push({
         id: 'members',
         label: '회원 관리',
-        path: ROUTES.ADMIN_WEB.MEMBERS.generate(),
+        path: ROUTES.BACKOFFICE.MEMBERS.generate(),
+        matchPattern: '/backoffice/members/*',
       });
     }
 
@@ -50,20 +51,20 @@ export const StoresSidebarLayout = () => {
       {
         id: 'stores',
         label: '매장 관리',
-        path: ROUTES.ADMIN_WEB.STORES.generate(),
-        matchPattern: '/admin/stores/*',
+        path: ROUTES.BACKOFFICE.STORES.generate(),
+        matchPattern: '/backoffice/stores/*',
       },
       {
         id: 'notices',
         label: '공지사항',
-        path: ROUTES.ADMIN_WEB.NOTICES.generate(),
-        matchPattern: '/admin/notices/*',
+        path: ROUTES.BACKOFFICE.NOTICES.generate(),
+        matchPattern: '/backoffice/notices/*',
       },
       {
         id: 'app-histories',
         label: '릴리즈 노트',
-        path: ROUTES.ADMIN_WEB.APP_HISTORIES.generate(),
-        matchPattern: '/admin/app-histories/*',
+        path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(),
+        matchPattern: '/backoffice/app-histories/*',
       }
     );
 

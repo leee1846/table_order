@@ -9,69 +9,69 @@ export const ROUTES = {
     generate: () => '/',
   },
 
-  ADMIN_WEB: {
-    path: '/admin',
-    generate: () => '/admin',
+  BACKOFFICE: {
+    path: '/backoffice',
+    generate: () => '/backoffice',
 
     STORES: {
       path: 'stores',
-      generate: () => '/admin/stores',
+      generate: () => '/backoffice/stores',
     },
     STORES_NEW: {
       path: 'stores/new',
-      generate: () => '/admin/stores/new',
+      generate: () => '/backoffice/stores/new',
     },
     STORES_EDIT: {
       path: 'stores/:shopCode/edit',
-      generate: (shopCode: string) => `/admin/stores/${shopCode}/edit`,
+      generate: (shopCode: string) => `/backoffice/stores/${shopCode}/edit`,
     },
     MYPAGE: {
       path: 'mypage',
-      generate: () => '/admin/mypage',
+      generate: () => '/backoffice/mypage',
     },
     APP_HISTORIES: {
       path: 'app-histories',
-      generate: () => '/admin/app-histories',
+      generate: () => '/backoffice/app-histories',
     },
     APP_HISTORIES_NEW: {
       path: 'app-histories/new',
-      generate: () => '/admin/app-histories/new',
+      generate: () => '/backoffice/app-histories/new',
     },
     APP_HISTORIES_EDIT: {
       path: 'app-histories/:id/edit',
-      generate: (id: string | number) => `/admin/app-histories/${id}/edit`,
+      generate: (id: string | number) => `/backoffice/app-histories/${id}/edit`,
     },
     APP_HISTORIES_DETAIL: {
       path: 'app-histories/:id',
-      generate: (id: string | number) => `/admin/app-histories/${id}`,
+      generate: (id: string | number) => `/backoffice/app-histories/${id}`,
     },
     NOTICES: {
       path: 'notices',
-      generate: () => '/admin/notices',
+      generate: () => '/backoffice/notices',
     },
     NOTICES_NEW: {
       path: 'notices/new',
-      generate: () => '/admin/notices/new',
+      generate: () => '/backoffice/notices/new',
     },
     NOTICES_EDIT: {
       path: 'notices/:id/edit',
-      generate: (id: string | number) => `/admin/notices/${id}/edit`,
+      generate: (id: string | number) => `/backoffice/notices/${id}/edit`,
     },
     NOTICES_DETAIL: {
       path: 'notices/:id',
-      generate: (id: string | number) => `/admin/notices/${id}`,
+      generate: (id: string | number) => `/backoffice/notices/${id}`,
     },
     MEMBERS: {
       path: 'members',
-      generate: () => '/admin/members',
+      generate: () => '/backoffice/members',
     },
     MEMBERS_NEW: {
       path: 'members/new',
-      generate: () => '/admin/members/new',
+      generate: () => '/backoffice/members/new',
     },
     MEMBERS_EDIT: {
       path: 'members/:memberId/edit',
-      generate: (memberId: string) => `/admin/members/${memberId}/edit`,
+      generate: (memberId: string) => `/backoffice/members/${memberId}/edit`,
     },
   },
 

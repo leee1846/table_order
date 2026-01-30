@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import { Notices } from '@/feature/AdminWeb/Notices';
-import { validateNoticesData } from '@/feature/AdminWeb/util';
+import { Notices } from '@/feature/backoffice/Notices';
+import { validateNoticesData } from '@/feature/backoffice/util';
 import { toast } from '@repo/feature/utils';
 import { usePostNotice } from '@repo/api/queries';
-import type { NoticesFormData } from '@/feature/AdminWeb/Notices/constants';
+import type { NoticesFormData } from '@/feature/backoffice/Notices/constants';
 import type { ICreateNoticeRequest, TNoticeBoardType } from '@repo/api/types';
 
 // NoticesFormData를 ICreateNoticeRequest로 변환
@@ -31,7 +31,7 @@ export const NoticesNewPage = () => {
     await createNotice(params);
 
     toast('공지사항 생성이 완료되었습니다.');
-    navigate(ROUTES.ADMIN_WEB.NOTICES.generate());
+    navigate(ROUTES.BACKOFFICE.NOTICES.generate());
   };
 
   return <Notices mode="create" onSave={handleSave} />;

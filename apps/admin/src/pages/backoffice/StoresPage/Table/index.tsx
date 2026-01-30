@@ -15,7 +15,7 @@ export const Table = ({ stores }: Props) => {
   const navigate = useNavigate();
 
   const redirectToStoreDetail = (shopCode: string, shopSeq: number) => {
-    useAuthStore.getState().setShopDataForAdminWeb(shopCode, shopSeq);
+    useAuthStore.getState().setShopDataForBackoffice(shopCode, shopSeq);
     const url = `${window.location.origin}${ROUTES.SETTINGS.NOTICES.generate()}`;
     window.open(url, '_blank');
   };
@@ -42,7 +42,7 @@ export const Table = ({ stores }: Props) => {
               size="icon"
               onClick={() =>
                 navigate(
-                  `${ROUTES.ADMIN_WEB.STORES_EDIT.generate(store.shopCode)}?memberId=${store.memberId}`
+                  `${ROUTES.BACKOFFICE.STORES_EDIT.generate(store.shopCode)}?memberId=${store.memberId}`
                 )
               }
             >

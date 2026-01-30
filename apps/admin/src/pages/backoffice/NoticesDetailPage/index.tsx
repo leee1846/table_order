@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
-import { Notices } from '@/feature/AdminWeb/Notices';
+import { Notices } from '@/feature/backoffice/Notices';
 import { formatDateTime } from '@repo/util/date';
-import type { NoticesFormData } from '@/feature/AdminWeb/Notices/constants';
+import type { NoticesFormData } from '@/feature/backoffice/Notices/constants';
 import type { INotice } from '@repo/api/types';
 import { useGetNoticeDetail } from '@repo/api/queries';
 

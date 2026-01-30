@@ -18,7 +18,7 @@ export const NoticesPage = () => {
   });
 
   const handleCreate = () => {
-    navigate(ROUTES.ADMIN_WEB.NOTICES_NEW.generate());
+    navigate(ROUTES.BACKOFFICE.NOTICES_NEW.generate());
   };
 
   return (

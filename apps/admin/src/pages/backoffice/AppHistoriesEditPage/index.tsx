@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import { AppHistories } from '@/feature/backoffice/AppHistories';
-import { validateAppHistoriesData } from '@/feature/AdminWeb/util';
+import { validateAppHistoriesData } from '@/feature/backoffice/util';
 import { toast } from '@repo/feature/utils';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -107,7 +107,7 @@ export const AppHistoriesEditPage = () => {
     }
 
     toast('릴리즈 노트 수정이 완료되었습니다.');
-    navigate(ROUTES.ADMIN_WEB.APP_HISTORIES.generate());
+    navigate(ROUTES.BACKOFFICE.APP_HISTORIES.generate());
   };
 
   return (

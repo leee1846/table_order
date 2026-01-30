@@ -295,7 +295,7 @@ const redirectByUserRole = (payload: ITokenPayload) => {
 
   // 관리자 권한 && Web(데스크탑)일 경우 매장목록 페이지로 리디렉트
   if (!isNative) {
-    return redirect(ROUTES.ADMIN_WEB.STORES.generate());
+    return redirect(ROUTES.BACKOFFICE.STORES.generate());
   }
 
   // 권한 없음 → 404 페이지로 리디렉트
@@ -355,7 +355,7 @@ const requireNativeLoader = () => {
 };
 
 /**
- * Admin Web 경로에서 native일 경우 404로 리디렉트하는 loader
+ * Backoffice 경로에서 native일 경우 404로 리디렉트하는 loader
  */
 const requireWebLoader = () => {
   if (CapacitorApp.isNative()) {
@@ -365,9 +365,9 @@ const requireWebLoader = () => {
 };
 
 /**
- * Admin Web 경로에서 Web 체크와 ADMIN 권한 체크를 모두 수행하는 loader
+ * Backoffice 경로에서 Web 체크와 ADMIN 권한 체크를 모두 수행하는 loader
  */
-const requireAdminWebLoader = () => {
+const requireBackofficeLoader = () => {
   const payload = getTokenPayload();
   if (!payload) {
     return redirect(ROUTES.LOGIN.generate());
@@ -429,84 +429,84 @@ const createRoute = (Component: React.ComponentType) => (
 /**
  * Admin Web 라우트 설정
  */
-const createAdminWebRoutes = () => [
+const createBackofficeRoutes = () => [
   {
     index: true,
-    loader: requireAdminWebLoader,
-    element: <Navigate to={ROUTES.ADMIN_WEB.STORES.generate()} replace />,
+    loader: requireBackofficeLoader,
+    element: <Navigate to={ROUTES.BACKOFFICE.STORES.generate()} replace />,
   },
   {
-    path: ROUTES.ADMIN_WEB.STORES.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.STORES.path,
+    loader: requireBackofficeLoader,
     element: createRoute(StoresPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.STORES_NEW.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.STORES_NEW.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(StoresNewPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.STORES_EDIT.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.STORES_EDIT.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(StoresEditPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.MYPAGE.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.MYPAGE.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(AdminMyPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.APP_HISTORIES.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.APP_HISTORIES.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(AppHistoriesPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.APP_HISTORIES_NEW.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.APP_HISTORIES_NEW.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(AppHistoriesNewPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.APP_HISTORIES_EDIT.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.APP_HISTORIES_EDIT.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(AppHistoriesEditPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.APP_HISTORIES_DETAIL.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.APP_HISTORIES_DETAIL.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(AppHistoriesDetailPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.NOTICES.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.NOTICES.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(AdminNoticesPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.NOTICES_NEW.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.NOTICES_NEW.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(NoticesNewPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.NOTICES_EDIT.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.NOTICES_EDIT.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(NoticesEditPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.NOTICES_DETAIL.path,
-    loader: requireAdminWebLoader,
+    path: ROUTES.BACKOFFICE.NOTICES_DETAIL.path,
+    loader: requireBackofficeLoader,
     element: createLazyRoute(NoticesDetailPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.MEMBERS.path,
+    path: ROUTES.BACKOFFICE.MEMBERS.path,
     loader: requireMasterLoader,
     element: createLazyRoute(MembersPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.MEMBERS_NEW.path,
+    path: ROUTES.BACKOFFICE.MEMBERS_NEW.path,
     loader: requireMasterLoader,
     element: createLazyRoute(MembersNewPage),
   },
   {
-    path: ROUTES.ADMIN_WEB.MEMBERS_EDIT.path,
+    path: ROUTES.BACKOFFICE.MEMBERS_EDIT.path,
     loader: requireMasterLoader,
     element: createLazyRoute(MembersEditPage),
   },
@@ -686,10 +686,10 @@ export const router = createBrowserRouter([
         loader: rootRouteLoader,
       },
       {
-        path: ROUTES.ADMIN_WEB.path,
+        path: ROUTES.BACKOFFICE.path,
         loader: requireWebLoader,
         element: createLazyRoute(StoresSidebar),
-        children: createAdminWebRoutes(),
+        children: createBackofficeRoutes(),
       },
       {
         // /tables

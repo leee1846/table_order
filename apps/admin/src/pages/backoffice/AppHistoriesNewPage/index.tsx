@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { AppHistories } from '@/feature/backoffice/AppHistories';
-import { validateAppHistoriesData } from '@/feature/AdminWeb/util';
+import { validateAppHistoriesData } from '@/feature/backoffice/util';
 import { toast } from '@repo/feature/utils';
 import { usePostAppVersion, usePostAppVersionFile } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
@@ -54,7 +54,7 @@ export const AppHistoriesNewPage = () => {
     await postAppVersionFile({ appVersionSeq, file: apkFile });
 
     toast('릴리즈 노트 생성이 완료되었습니다.');
-    navigate(ROUTES.ADMIN_WEB.APP_HISTORIES.generate());
+    navigate(ROUTES.BACKOFFICE.APP_HISTORIES.generate());
   };
 
   return <AppHistories mode="create" onSave={handleSave} />;

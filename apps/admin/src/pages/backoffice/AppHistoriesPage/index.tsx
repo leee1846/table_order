@@ -38,7 +38,7 @@ export const AppHistoriesPage = () => {
   const totalPages = data?.data?.totalPageNumber ?? 1;
 
   const handleCreate = () => {
-    navigate(ROUTES.ADMIN_WEB.APP_HISTORIES_NEW.generate());
+    navigate(ROUTES.BACKOFFICE.APP_HISTORIES_NEW.generate());
   };
 
   return (

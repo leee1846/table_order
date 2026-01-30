@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
-import { Notices } from '@/feature/AdminWeb/Notices';
-import { validateNoticesData } from '@/feature/AdminWeb/util';
+import { Notices } from '@/feature/backoffice/Notices';
+import { validateNoticesData } from '@/feature/backoffice/util';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -10,7 +10,7 @@ import {
   useDeleteNotice,
 } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
-import type { NoticesFormData } from '@/feature/AdminWeb/Notices/constants';
+import type { NoticesFormData } from '@/feature/backoffice/Notices/constants';
 import type { INotice, ICreateNoticeRequest } from '@repo/api/types';
 
 // INotice를 NoticesFormData로 변환
@@ -67,7 +67,7 @@ export const NoticesEditPage = () => {
       onConfirm: async () => {
         await deleteNoticeMutation.mutateAsync(noticeId);
         toast('공지사항이 삭제되었습니다.');
-        navigate(ROUTES.ADMIN_WEB.NOTICES.generate());
+        navigate(ROUTES.BACKOFFICE.NOTICES.generate());
       },
     });
   };
@@ -94,7 +94,7 @@ export const NoticesEditPage = () => {
     });
 
     toast('공지사항 수정이 완료되었습니다.');
-    navigate(ROUTES.ADMIN_WEB.NOTICES.generate());
+    navigate(ROUTES.BACKOFFICE.NOTICES.generate());
   };
 
   return (

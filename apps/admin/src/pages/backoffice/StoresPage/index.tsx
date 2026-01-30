@@ -25,7 +25,7 @@ export const StoresPage = () => {
   });
 
   const handleCreate = () => {
-    navigate(ROUTES.ADMIN_WEB.STORES_NEW.generate());
+    navigate(ROUTES.BACKOFFICE.STORES_NEW.generate());
   };
 
   return (

@@ -15,11 +15,11 @@ export const Table = ({ histories }: Props) => {
   const navigate = useNavigate();
 
   const handleDetail = (id: number) => {
-    navigate(ROUTES.ADMIN_WEB.APP_HISTORIES_DETAIL.generate(id));
+    navigate(ROUTES.BACKOFFICE.APP_HISTORIES_DETAIL.generate(id));
   };
 
   const handleEdit = (id: number) => {
-    navigate(ROUTES.ADMIN_WEB.APP_HISTORIES_EDIT.generate(id));
+    navigate(ROUTES.BACKOFFICE.APP_HISTORIES_EDIT.generate(id));
   };
 
   // deployDate: YYYYMMDDHHMMSS 형식을 YYYY-MM-DD HH시로 변환

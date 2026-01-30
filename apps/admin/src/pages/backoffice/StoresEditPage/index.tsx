@@ -1,6 +1,9 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Stores } from '@/feature/AdminWeb/Stores';
-import { validateShopData, validateMemberData } from '@/feature/AdminWeb/util';
+import { Stores } from '@/feature/backoffice/Stores';
+import {
+  validateShopData,
+  validateMemberData,
+} from '@/feature/backoffice/util';
 import {
   useGetAdminShopDetail,
   useGetAdminMember,
@@ -104,7 +107,7 @@ export const StoresEditPage = () => {
 
     // 성공 메시지 및 페이지 이동
     toast('매장 정보가 수정되었습니다.');
-    navigate(ROUTES.ADMIN_WEB.STORES.generate());
+    navigate(ROUTES.BACKOFFICE.STORES.generate());
   };
 
   return (

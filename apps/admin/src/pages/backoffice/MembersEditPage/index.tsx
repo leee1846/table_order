@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo, useEffect } from 'react';
 import { Members } from '@/feature/backoffice/Members';
-import { validateMembersData } from '@/feature/AdminWeb/util';
+import { validateMembersData } from '@/feature/backoffice/util';
 import {
   toast,
   openDualActionDialog,
@@ -99,7 +99,7 @@ export const MembersEditPage = () => {
       onConfirm: async () => {
         await deleteAdminMutation.mutateAsync(memberId);
         toast('삭제가 완료되었습니다.');
-        navigate(ROUTES.ADMIN_WEB.MEMBERS.generate());
+        navigate(ROUTES.BACKOFFICE.MEMBERS.generate());
       },
     });
   };
@@ -123,7 +123,7 @@ export const MembersEditPage = () => {
     await updateAdminMutation.mutateAsync(params);
 
     toast('관리자 수정이 완료되었습니다.');
-    navigate(ROUTES.ADMIN_WEB.MEMBERS.generate());
+    navigate(ROUTES.BACKOFFICE.MEMBERS.generate());
   };
 
   const handleResetPassword = async () => {

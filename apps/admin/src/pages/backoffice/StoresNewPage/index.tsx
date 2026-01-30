@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import { Stores } from '@/feature/AdminWeb/Stores';
-import { validateShopData } from '@/feature/AdminWeb/util';
+import { Stores } from '@/feature/backoffice/Stores';
+import { validateShopData } from '@/feature/backoffice/util';
 import { usePostAdminShop } from '@repo/api/queries';
 import { toast } from '@repo/feature/utils';
 import type {
@@ -77,7 +77,7 @@ export const StoresNewPage = () => {
 
     // 성공 메시지 및 페이지 이동
     toast('매장 생성이 완료되었습니다.');
-    navigate(ROUTES.ADMIN_WEB.STORES.generate());
+    navigate(ROUTES.BACKOFFICE.STORES.generate());
   };
 
   return <Stores mode="create" onSave={handleCreateShop} />;

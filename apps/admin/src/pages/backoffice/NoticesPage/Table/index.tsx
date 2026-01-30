@@ -4,7 +4,7 @@ import type { INotice } from '@repo/api/types';
 import { formatDateTime } from '@repo/util/date';
 import { theme } from '@repo/ui';
 import { EditIcon } from '@repo/ui/icons';
-import { getBoardTypeLabel } from '@/feature/AdminWeb/Notices/constants';
+import { getBoardTypeLabel } from '@/feature/backoffice/Notices/constants';
 import { Button } from '@/feature/backoffice/components';
 import * as S from './table.style';
 
@@ -16,11 +16,11 @@ export const Table = ({ notices }: Props) => {
   const navigate = useNavigate();
 
   const handleEdit = (noticeSeq: number) => {
-    navigate(ROUTES.ADMIN_WEB.NOTICES_EDIT.generate(noticeSeq));
+    navigate(ROUTES.BACKOFFICE.NOTICES_EDIT.generate(noticeSeq));
   };
 
   const handleDetail = (noticeSeq: number) => {
-    navigate(ROUTES.ADMIN_WEB.NOTICES_DETAIL.generate(noticeSeq));
+    navigate(ROUTES.BACKOFFICE.NOTICES_DETAIL.generate(noticeSeq));
   };
 
   const renderRows = () => {

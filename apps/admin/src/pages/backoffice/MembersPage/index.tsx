@@ -25,7 +25,7 @@ export const MembersPage = () => {
   });
 
   const handleCreate = () => {
-    navigate(ROUTES.ADMIN_WEB.MEMBERS_NEW.generate());
+    navigate(ROUTES.BACKOFFICE.MEMBERS_NEW.generate());
   };
 
   return (

@@ -15,8 +15,8 @@ export interface IAuthStore {
   refreshTokenInfo: () => void;
   /** 데이터 초기화 */
   clearAuth: () => void;
-  /** 관리자 웹에서 선택한 매장 코드를 저장하는 함수 */
-  setShopDataForAdminWeb: (shopCode: string, shopSeq: number) => void;
+  /** 백오피스에서 선택한 매장 코드를 저장하는 함수 */
+  setShopDataForBackoffice: (shopCode: string, shopSeq: number) => void;
 }
 
 /**
@@ -99,7 +99,7 @@ export const useAuthStore = create<IAuthStore>((set, _) => {
       storage.session.remove(STORAGE_KEYS.SHOP_SEQ);
       set({ tokenPayload: null, shopCode: null, shopSeq: null });
     },
-    setShopDataForAdminWeb: (shopCode: string, shopSeq: number) => {
+    setShopDataForBackoffice: (shopCode: string, shopSeq: number) => {
       storage.session.save<string>(STORAGE_KEYS.SHOP_CODE, shopCode);
       storage.session.save<number>(STORAGE_KEYS.SHOP_SEQ, shopSeq);
       set({ shopCode, shopSeq });

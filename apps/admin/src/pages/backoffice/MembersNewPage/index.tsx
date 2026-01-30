@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { Members } from '@/feature/backoffice/Members';
-import { validateMembersData } from '@/feature/AdminWeb/util';
+import { validateMembersData } from '@/feature/backoffice/util';
 import { toast } from '@repo/feature/utils';
 import { usePostAdminMember } from '@repo/api/queries';
 import type { MembersFormData } from '@/feature/backoffice/Members/constants';
@@ -36,7 +36,7 @@ export const MembersNewPage = () => {
     await createAdminMember(params);
 
     toast('관리자 생성이 완료되었습니다.');
-    navigate(ROUTES.ADMIN_WEB.MEMBERS.generate());
+    navigate(ROUTES.BACKOFFICE.MEMBERS.generate());
   };
 
   return <Members mode="create" onSave={handleSave} />;
