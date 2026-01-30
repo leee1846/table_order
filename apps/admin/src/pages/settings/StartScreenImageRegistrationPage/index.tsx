@@ -54,6 +54,9 @@ export const StartScreenImageRegistrationPage = () => {
     Record<number, File | null>
   >({});
 
+  // 서버에서 로드된 기존 항목의 pageDetailImageSeq 목록을 추적
+  const existingSeqsRef = useRef<Set<number>>(new Set());
+
   const { data, refetch } = useGetShopThemePage(shopCode ?? '', {
     enabled: !!shopCode,
   });
@@ -83,17 +86,25 @@ export const StartScreenImageRegistrationPage = () => {
     }
 
     const pageDetails = themePage.shopPageDetailList ?? [];
+    const initCommonDetails = pageDetails.filter(
+      ({ pageDetailType }) => pageDetailType === 'INIT_COMMON'
+    );
+
+    // 기존 항목의 seq 목록 저장
+    existingSeqsRef.current = new Set(
+      initCommonDetails
+        .map((detail) => detail.pageDetailImageSeq)
+        .filter((seq): seq is number => seq !== null && seq !== undefined)
+    );
 
     setInitCommonItems(
-      pageDetails
-        .filter(({ pageDetailType }) => pageDetailType === 'INIT_COMMON')
-        .map((detail, index) => ({
-          id: detail.pageDetailImageSeq || index + 1,
-          description: detail.pageDetailDescription ?? '',
-          imageUrl: detail.pageDetailImagePath ?? null,
-          pageDetailImageSeq: detail.pageDetailImageSeq,
-          pageDetailImageFileIndex: detail.pageDetailImageFileIndex,
-        }))
+      initCommonDetails.map((detail, index) => ({
+        id: detail.pageDetailImageSeq || index + 1,
+        description: detail.pageDetailDescription ?? '',
+        imageUrl: detail.pageDetailImagePath ?? null,
+        pageDetailImageSeq: detail.pageDetailImageSeq,
+        pageDetailImageFileIndex: detail.pageDetailImageFileIndex,
+      }))
     );
     setInitCommonFiles({});
   }, [themePage]);
@@ -208,10 +219,15 @@ export const StartScreenImageRegistrationPage = () => {
           const fileName = `${imageId}${fileExtension}`;
           initCommonFilesToSend.push({ file, fileName });
 
+          // 기존 항목(서버에서 로드된 항목)이면 seq 유지, 새 항목이면 0
+          const isExistingItem =
+            item.pageDetailImageSeq &&
+            existingSeqsRef.current.has(item.pageDetailImageSeq);
+
           return [
             createDetail({
               type: 'INIT_COMMON',
-              pageDetailImageSeq: item.pageDetailImageSeq ?? 0,
+              pageDetailImageSeq: isExistingItem ? item.pageDetailImageSeq : 0,
               pageDetailImagePath: null,
               pageDetailImageFileName: imageId,
               description: item.description,
