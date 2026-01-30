@@ -62,7 +62,7 @@ export const useSystemStatusMonitor = () => {
       return;
     }
 
-    const batteryToSend = battery ?? null;
+    const batteryToSend = battery ?? 0;
 
     try {
       await postDeviceDetail({
