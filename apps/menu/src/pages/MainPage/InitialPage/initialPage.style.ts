@@ -46,8 +46,10 @@ export const DarkLightContainer = styled.div`
 export const LeftContainer = styled.div<{ initPageLayout: TInitPageLayout }>`
   position: relative;
   width: 40%;
+  min-width: 0;
   height: 100%;
   padding: 140px 40px 40px;
+  overflow: hidden;
   background-color: ${({ initPageLayout }) =>
     initPageLayout === 'DARK'
       ? baseTheme.darkModeColors.undefined_palette[100]
@@ -78,6 +80,9 @@ export const Description = styled.p<{ initPageLayout: TInitPageLayout }>`
     initPageLayout === 'DARK'
       ? baseTheme.darkModeColors.grey[600]
       : baseTheme.colors.grey[600]};
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 `;
 
 export const SmallNotice = styled.p<{ initPageLayout: TInitPageLayout }>`

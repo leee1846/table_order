@@ -98,7 +98,7 @@ export const InitialPage = () => {
           }}
         >
           {detailImageList.map((item) => (
-            <SwiperSlide key={item.pageSeq}>
+            <SwiperSlide key={item.pageDetailImageSeq}>
               <S.Image
                 src={item.pageDetailImagePath ?? undefined}
                 alt={item.pageDetailDescription}
@@ -130,7 +130,7 @@ export const InitialPage = () => {
         }}
       >
         {detailImageList.map((detailImage) => (
-          <SwiperSlide key={detailImage.pageSeq}>
+          <SwiperSlide key={detailImage.pageDetailImageSeq}>
             <S.DarkLightContainer>
               <S.LeftContainer initPageLayout={initPageLayout}>
                 {/* 로고 */}
