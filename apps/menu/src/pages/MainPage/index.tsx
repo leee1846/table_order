@@ -44,6 +44,10 @@ export const MainPage = () => {
   } = useCategoriesData();
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
   const { data: shopThemeData } = useShopThemePage();
+  const hasInitialPageDetailImages =
+    (shopThemeData?.themePageData?.shopPageDetailList?.filter(
+      (item) => item.pageDetailType === 'INIT_COMMON'
+    )?.length ?? 0) > 0;
 
   const orderHistories =
     tableOrderHistoriesData && tableOrderHistoriesData !== 'isEmptyTable'
@@ -116,7 +120,7 @@ export const MainPage = () => {
     breakTimeLastOrder: breakTimeLastOrderState,
     closureLastOrder: closureLastOrderState,
     initialPage: {
-      show: initialPageData.showInitialPage,
+      show: initialPageData.showInitialPage && hasInitialPageDetailImages,
     },
     languageSelector: {
       show: languageSettings.showLanguageSelector,

@@ -11,6 +11,7 @@ import {
   toast,
 } from '@repo/feature/utils';
 import { usePutMemberPassword } from '@repo/api/queries';
+import { validateNewPassword } from '@repo/util/string';
 
 export const AdminMyPage = () => {
   const { clearAuth, tokenPayload } = useAuthStore();
@@ -78,16 +79,14 @@ export const AdminMyPage = () => {
   // 새 비밀번호 변경 핸들러
   const handleNewPasswordChange = (value: string) => {
     setNewPassword(value);
-    if (value.length > 0) {
-      setNewPasswordError('');
-      // 새 비밀번호 확인과 일치하는지 확인
-      if (confirmPassword && value !== confirmPassword) {
+    setNewPasswordError(validateNewPassword(value));
+    // 새 비밀번호 확인과 일치하는지 확인
+    if (confirmPassword) {
+      if (value !== confirmPassword) {
         setConfirmPasswordError('새 비밀번호와 일치하지 않습니다.');
-      } else if (confirmPassword && value === confirmPassword) {
+      } else {
         setConfirmPasswordError('');
       }
-    } else {
-      setNewPasswordError('새 비밀번호를 입력해주세요.');
     }
   };
 
@@ -112,8 +111,9 @@ export const AdminMyPage = () => {
       setCurrentPasswordError('기존 비밀번호를 입력해주세요.');
       return;
     }
-    if (!newPassword) {
-      setNewPasswordError('새 비밀번호를 입력해주세요.');
+    const newPasswordValidationError = validateNewPassword(newPassword);
+    if (newPasswordValidationError) {
+      setNewPasswordError(newPasswordValidationError);
       return;
     }
     if (!confirmPassword) {

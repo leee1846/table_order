@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BasicButton, Input, ModalBackground } from '@repo/ui/components';
 import { VisibilityIcon, VisibilityOffIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import { validateNewPassword } from '@repo/util/string';
 import * as S from './loginPasswordChangeModal.styles';
 
 interface Props {
@@ -11,7 +12,6 @@ interface Props {
 }
 
 export const LoginPasswordChangeModal = ({
-  isOpen,
   onConfirm,
   existingPassword,
 }: Props) => {
@@ -52,20 +52,19 @@ export const LoginPasswordChangeModal = ({
   // 새 비밀번호 변경 핸들러
   const handleNewPasswordChange = (value: string) => {
     setNewPassword(value);
-    if (value.length > 0) {
-      if (value === existingPassword) {
-        setNewPasswordError('이전 비밀번호와 다른 비밀번호를 입력해주세요.');
-      } else {
-        setNewPasswordError('');
-      }
-      // 새 비밀번호 확인과 일치하는지 확인
-      if (confirmPassword && value !== confirmPassword) {
+    const validationError = validateNewPassword(value);
+    const sameAsExistingError =
+      value && value === existingPassword
+        ? '이전 비밀번호와 다른 비밀번호를 입력해주세요.'
+        : '';
+    setNewPasswordError(validationError || sameAsExistingError);
+    // 새 비밀번호 확인과 일치하는지 확인
+    if (confirmPassword) {
+      if (value !== confirmPassword) {
         setConfirmPasswordError('새 비밀번호와 일치하지 않습니다.');
-      } else if (confirmPassword && value === confirmPassword) {
+      } else {
         setConfirmPasswordError('');
       }
-    } else {
-      setNewPasswordError('새 비밀번호를 입력해주세요.');
     }
   };
 
@@ -86,16 +85,17 @@ export const LoginPasswordChangeModal = ({
   // 비밀번호 변경 핸들러
   const handleChangePassword = async () => {
     // 유효성 검사
-    if (!newPassword) {
-      setNewPasswordError('새 비밀번호를 입력해주세요.');
-      return;
-    }
-    if (!confirmPassword) {
-      setConfirmPasswordError('새 비밀번호 확인을 입력해주세요.');
+    const newPasswordValidationError = validateNewPassword(newPassword);
+    if (newPasswordValidationError) {
+      setNewPasswordError(newPasswordValidationError);
       return;
     }
     if (newPassword === existingPassword) {
       setNewPasswordError('이전 비밀번호와 다른 비밀번호를 입력해주세요.');
+      return;
+    }
+    if (!confirmPassword) {
+      setConfirmPasswordError('새 비밀번호 확인을 입력해주세요.');
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -105,10 +105,6 @@ export const LoginPasswordChangeModal = ({
 
     await onConfirm(newPassword);
   };
-
-  if (!isOpen) {
-    return null;
-  }
 
   return (
     <ModalBackground position="center">

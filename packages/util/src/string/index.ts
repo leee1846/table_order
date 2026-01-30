@@ -170,6 +170,36 @@ export const isValidPhoneNumber = (value: string): boolean => {
 };
 
 /**
+ * 새 비밀번호 유효성 검사 (조건: 최소 8자, 영문 대/소문자·숫자·특수문자 중 3종 이상, 공백 불가)
+ * 실패 시 에러 메시지(한국어)를 반환하고, 성공 시 빈 문자열을 반환합니다.
+ *
+ * @param value - 검증할 비밀번호 문자열
+ * @returns 에러 메시지 또는 빈 문자열
+ */
+export const validateNewPassword = (value: string): string => {
+  if (!value) {
+    return '새 비밀번호를 입력해주세요.';
+  }
+  if (/\s/.test(value)) {
+    return '공백은 사용할 수 없습니다.';
+  }
+  if (value.length < 8) {
+    return '비밀번호는 최소 8자 이상이어야 합니다. (권장: 10~12자)';
+  }
+  const hasUpper = /[A-Z]/.test(value);
+  const hasLower = /[a-z]/.test(value);
+  const hasNumber = /[0-9]/.test(value);
+  const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(value);
+  const typeCount = [hasUpper, hasLower, hasNumber, hasSpecial].filter(
+    Boolean
+  ).length;
+  if (typeCount < 3) {
+    return '영문 대문자, 소문자, 숫자, 특수문자 중 3종 이상을 조합해주세요.';
+  }
+  return '';
+};
+
+/**
  * 결제 수단 코드를 i18n 키로 변환합니다. (키는 한국어 문자열)
  *
  * @param method - 결제 수단 코드 (예: 'CARD', 'CASH', 'CANCELED_ALL')

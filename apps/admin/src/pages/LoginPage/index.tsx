@@ -245,11 +245,13 @@ export const LoginPage = () => {
         </S.LoginContainer>
       </S.Container>
 
-      <LoginPasswordChangeModal
-        isOpen={isPasswordChangeModalOpen}
-        onConfirm={handlePasswordChangeSubmit}
-        existingPassword={loginUserPassword}
-      />
+      {isPasswordChangeModalOpen && (
+        <LoginPasswordChangeModal
+          isOpen={isPasswordChangeModalOpen}
+          onConfirm={handlePasswordChangeSubmit}
+          existingPassword={loginUserPassword}
+        />
+      )}
     </>
   );
 };

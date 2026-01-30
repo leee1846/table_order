@@ -10,6 +10,7 @@ import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
 import { usePutMemberPassword } from '@repo/api/queries';
 import { disconnectSse } from '@/utils/sseConnection';
+import { validateNewPassword } from '@repo/util/string';
 
 export const MyPage = () => {
   const { t } = useAdminTranslation();
@@ -73,16 +74,15 @@ export const MyPage = () => {
   // 새 비밀번호 변경 핸들러
   const handleNewPasswordChange = (value: string) => {
     setNewPassword(value);
-    if (value.length > 0) {
-      setNewPasswordError('');
-      // 새 비밀번호 확인과 일치하는지 확인
-      if (confirmPassword && value !== confirmPassword) {
+    const validationError = validateNewPassword(value);
+    setNewPasswordError(validationError ? t(validationError) : '');
+    // 새 비밀번호 확인과 일치하는지 확인
+    if (confirmPassword) {
+      if (value !== confirmPassword) {
         setConfirmPasswordError(t('새 비밀번호와 일치하지 않습니다.'));
-      } else if (confirmPassword && value === confirmPassword) {
+      } else {
         setConfirmPasswordError('');
       }
-    } else {
-      setNewPasswordError(t('새 비밀번호를 입력해주세요.'));
     }
   };
 
@@ -107,8 +107,9 @@ export const MyPage = () => {
       setCurrentPasswordError(t('기존 비밀번호를 입력해주세요.'));
       return;
     }
-    if (!newPassword) {
-      setNewPasswordError(t('새 비밀번호를 입력해주세요.'));
+    const newPasswordValidationError = validateNewPassword(newPassword);
+    if (newPasswordValidationError) {
+      setNewPasswordError(t(newPasswordValidationError));
       return;
     }
     if (!confirmPassword) {
