@@ -134,4 +134,5 @@ export const Description = styled.p`
   -webkit-line-clamp: 6;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
 `;
