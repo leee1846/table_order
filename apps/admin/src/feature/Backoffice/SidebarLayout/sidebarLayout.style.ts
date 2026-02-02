@@ -27,8 +27,9 @@ export const NavbarContent = styled.div`
   gap: 40px;
 `;
 
-export const Logo = styled.div`
+export const Logo = styled.button`
   width: 100px;
+  padding: 5px 0;
 
   & > img {
     width: 100%;
@@ -47,6 +48,26 @@ export const NavMenu = styled.ul`
 
 export const NavMenuItem = styled.li`
   position: relative;
+`;
+
+export const MyPageIconButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: ${theme.colors.grey[100]};
+  }
+
+  &:active {
+    background-color: ${theme.colors.grey[200]};
+  }
 `;
 
 interface ICategoryButton {

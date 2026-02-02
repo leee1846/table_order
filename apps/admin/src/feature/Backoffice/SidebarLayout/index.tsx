@@ -2,7 +2,11 @@ import { Suspense, useState, useEffect, useMemo } from 'react';
 import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import * as S from './sidebarLayout.style';
-import { capsSmartOrderBlueGreyLogo, ChevronForwardIcon } from '@repo/ui/icons';
+import {
+  capsSmartOrderBlueGreyLogo,
+  ChevronForwardIcon,
+  PersonIcon,
+} from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -32,9 +36,10 @@ export const StoresSidebarLayout = () => {
   const SIDEBAR_MENUS = useMemo<TMenu[]>(() => {
     const menus: TMenu[] = [
       {
-        id: 'mypage',
-        label: '내 정보',
-        path: ROUTES.BACKOFFICE.MYPAGE.generate(),
+        id: 'stores',
+        label: '매장 관리',
+        path: ROUTES.BACKOFFICE.STORES.generate(),
+        matchPattern: '/backoffice/stores/*',
       },
     ];
 
@@ -47,26 +52,18 @@ export const StoresSidebarLayout = () => {
       });
     }
 
-    menus.push(
-      {
-        id: 'stores',
-        label: '매장 관리',
-        path: ROUTES.BACKOFFICE.STORES.generate(),
-        matchPattern: '/backoffice/stores/*',
-      },
-      {
-        id: 'notices',
-        label: '공지사항',
-        path: ROUTES.BACKOFFICE.NOTICES.generate(),
-        matchPattern: '/backoffice/notices/*',
-      },
-      {
-        id: 'app-histories',
-        label: '릴리즈 노트',
-        path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(),
-        matchPattern: '/backoffice/app-histories/*',
-      }
-    );
+    menus.push({
+      id: 'notices',
+      label: '공지사항 관리',
+      path: ROUTES.BACKOFFICE.NOTICES.generate(),
+      matchPattern: '/backoffice/notices/*',
+    });
+    menus.push({
+      id: 'app-histories',
+      label: '릴리즈 노트 관리',
+      path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(),
+      matchPattern: '/backoffice/app-histories/*',
+    });
 
     return menus;
   }, [isMaster]);
@@ -145,7 +142,10 @@ export const StoresSidebarLayout = () => {
     <S.Layout>
       <S.Navbar>
         <S.NavbarContent>
-          <S.Logo>
+          <S.Logo
+            type="button"
+            onClick={() => navigate(ROUTES.BACKOFFICE.STORES.generate())}
+          >
             <img src={capsSmartOrderBlueGreyLogo} alt="logo" />
           </S.Logo>
 
@@ -192,6 +192,22 @@ export const StoresSidebarLayout = () => {
               );
             })}
           </S.NavMenu>
+
+          <S.MyPageIconButton
+            type="button"
+            onClick={() => navigate(ROUTES.BACKOFFICE.MYPAGE.generate())}
+            aria-label="내 정보"
+          >
+            <PersonIcon
+              width={16}
+              height={16}
+              color={
+                isPathActive(ROUTES.BACKOFFICE.MYPAGE.generate())
+                  ? theme.colors.primary[500]
+                  : theme.colors.grey[500]
+              }
+            />
+          </S.MyPageIconButton>
 
           {/* <S.DownloadLink
             href="/app-download.html"
