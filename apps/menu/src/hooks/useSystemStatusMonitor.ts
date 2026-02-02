@@ -12,9 +12,9 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
  *
  * @description
  * - Android 네이티브 브릿지를 통해 WiFi 신호를 실시간으로 모니터링합니다
- * - WiFi 신호 변경 시에만 서버에 자동으로 동기화합니다
+ * - 로그인 여부와 상관없이 WiFi 변경 시 디바이스 정보(wifi, getDeviceInfo)를 요청하고 스토어에 저장합니다
+ * - 로그인된 경우에만 POST API로 서버 동기화를 수행합니다
  * - 배터리 정보는 무시하고 처리하지 않습니다
- * - 디바이스 초기화가 완료된 후에만 서버 동기화를 수행합니다
  */
 export const useSystemStatusMonitor = () => {
   const { t } = useAdminTranslation();
@@ -23,7 +23,7 @@ export const useSystemStatusMonitor = () => {
   });
   const { shopData } = useShopData({ skipInitialRequest: true });
   const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
-  const { isInitialized } = useDeviceStore();
+  const { isInitialized, setDataAsync } = useDeviceStore();
 
   // 최신 값들을 참조하기 위한 ref (비동기 콜백에서 최신 값 참조용)
   const deviceDataRef = useRef(deviceData);
@@ -47,65 +47,75 @@ export const useSystemStatusMonitor = () => {
 
   useEffect(() => {
     const handleStatusUpdate = async (status: SystemStatus) => {
-      // 배터리는 무시하고 WiFi만 처리
+      // 1. WiFi 유효성 (배터리는 무시)
       if (status.wifi === undefined || status.wifi === null) {
         return;
       }
 
-      const deviceData = deviceDataRef.current;
-      const shopData = shopDataRef.current;
       const newWifiSignal = String(status.wifi);
 
-      // WiFi 값이 변경되었는지 확인
-      const isWifiChanged = !deviceData || deviceData.wifiSignal !== newWifiSignal;
-      if (!isWifiChanged) {
+      // 2. 현재 스토어 데이터
+      const currentData = deviceDataRef.current;
+
+      // 3. WiFi 변경 시에만 처리
+      if (currentData?.wifiSignal === newWifiSignal) {
         return;
       }
 
-      // 서버 동기화 전제 조건 확인
-      const canSyncToServer =
-        deviceData &&
-        isInitializedRef.current &&
-        shopData?.shopCode;
+      // 4. 디바이스 정보 요청 (wifi + getDeviceInfo) - 요청한 정보만 사용
+      let androidId: string;
+      let ipAddress: string;
+      let version: string;
+      let buildNumber: string;
+
+      if (currentData?.androidId && currentData?.ipAddress) {
+        androidId = currentData.androidId;
+        ipAddress = currentData.ipAddress;
+        version = currentData.version ?? '';
+        buildNumber = currentData.buildNumber ?? '';
+      } else {
+        const freshInfo = await getDeviceInfo({ t });
+        androidId = freshInfo.androidId;
+        ipAddress = freshInfo.ipAddress;
+        version = freshInfo.appInfo.version;
+        buildNumber = freshInfo.appInfo.build;
+      }
+
+      // 5. 요청한 정보만 스토어에 저장 (wifi, getDeviceInfo 결과)
+      setDataAsync({
+        ...(currentData ?? {}),
+        wifiSignal: newWifiSignal,
+        androidId,
+        ipAddress,
+        version,
+        buildNumber,
+      });
+
+      // 6. 로그인된 경우에만 POST API 호출
+      const shopData = shopDataRef.current;
+      const canSyncToServer = !!shopData?.shopCode && isInitializedRef.current;
 
       if (!canSyncToServer) {
         return;
       }
 
-      // 필수 디바이스 정보가 없으면 새로 가져오기
-      let deviceInfo = deviceData;
-      if (!deviceInfo.androidId || !deviceInfo.ipAddress) {
-        const freshInfo = await getDeviceInfo({ t });
-        deviceInfo = {
-          ...deviceInfo,
-          androidId: freshInfo.androidId,
-          ipAddress: freshInfo.ipAddress,
-          version: freshInfo.appInfo.version,
-          buildNumber: freshInfo.appInfo.build,
-        };
-      }
-
-      // 필수 정보가 모두 있어야 서버에 전송
-      if (!deviceInfo.androidId || !deviceInfo.ipAddress) {
-        return;
-      }
-
-      // 서버에 WiFi 신호 동기화
-      const deviceType = deviceInfo.deviceType ?? 'MENU';
-      const tableNumber = deviceInfo.tableNumber ?? null;
+      const deviceType = currentData?.deviceType ?? 'MENU';
+      const tableNumber = currentData?.tableNumber ?? null;
 
       await postDeviceDetail({
         shopCode: shopData.shopCode,
-        androidId: deviceInfo.androidId,
-        ipAddress: deviceInfo.ipAddress,
+        androidId,
+        ipAddress,
         deviceType,
         wifiSignal: newWifiSignal,
         tableNumber: deviceType === 'ORDER_POS' ? null : tableNumber,
-        battery: deviceInfo.battery ?? 0,
+        battery: currentData?.battery ?? 0,
         orderPosNumber:
-          deviceType === 'ORDER_POS' ? deviceInfo.orderPosNumber ?? null : null,
-        version: deviceInfo.version ?? '',
-        buildNumber: deviceInfo.buildNumber ?? '',
+          deviceType === 'ORDER_POS'
+            ? (currentData?.orderPosNumber ?? null)
+            : null,
+        version,
+        buildNumber,
       });
     };
 
@@ -114,5 +124,5 @@ export const useSystemStatusMonitor = () => {
     return () => {
       SystemControl.stopMonitoring();
     };
-  }, [postDeviceDetail, t]);
+  }, [postDeviceDetail, setDataAsync, t]);
 };
