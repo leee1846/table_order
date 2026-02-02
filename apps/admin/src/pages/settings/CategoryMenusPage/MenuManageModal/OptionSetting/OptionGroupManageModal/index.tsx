@@ -635,7 +635,6 @@ export const OptionGroupManageModal = ({
                 {t('최소 수량')}
 
                 <input
-                  disabled={isPosLinked}
                   type="string"
                   inputMode="numeric"
                   value={settings.minQuantity.toString()}
