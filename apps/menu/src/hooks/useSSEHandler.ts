@@ -76,43 +76,40 @@ export const useSSEHandler = () => {
     }
 
     const getDeviceData = async () => {
-      // AndroidInfo에서 기기 정보 가져오기 (androidId가 필요하므로 먼저 실행)
+      // 기존 스토어 데이터 유지 (wifi 등 GET API에 없는 값 보존)
+      const existingStore = deviceStoreDataRef.current ?? {};
+
       const { ipAddress, androidId, appInfo } = await getDeviceInfo({ t });
 
-      // androidId를 얻었으므로, 먼저 GET 요청을 통해 서버에서 최신 device 데이터를 가져옴
-      let fetchedDeviceData = null;
-      if (androidId) {
-        // androidId를 먼저 저장해서 refreshDeviceData가 동작하도록 함
-        const currentDeviceStoreData = deviceStoreDataRef.current;
-        if (!currentDeviceStoreData?.androidId) {
-          await setDataAsync({
-            ...(currentDeviceStoreData ?? {}),
-            androidId,
-          });
-          deviceStoreDataRef.current = {
-            ...(currentDeviceStoreData ?? {}),
-            androidId,
-          };
-        }
-
-        // 서버에서 최신 디바이스 데이터 조회
-        fetchedDeviceData = await refreshDeviceData();
-        if (fetchedDeviceData) {
-          deviceStoreDataRef.current = fetchedDeviceData;
-        }
+      if (androidId && !existingStore.androidId) {
+        await setDataAsync({ ...existingStore, androidId });
+        deviceStoreDataRef.current = { ...existingStore, androidId };
       }
 
-      const currentDeviceStoreData =
-        fetchedDeviceData ?? deviceStoreDataRef.current;
+      // GET device API: 서버 필드만 가져오고, 스토어는 덮어쓰지 않음
+      let apiDeviceData = null;
+      if (androidId) {
+        apiDeviceData = await refreshDeviceData();
+      }
 
+      // 기존 스토어 + getDeviceInfo + API 결과 병합 (기존 wifiSignal·battery 유지)
       const baseDeviceDetail = {
-        ...(currentDeviceStoreData ?? {}),
+        ...existingStore,
         ipAddress,
         androidId,
         version: appInfo.version,
         buildNumber: appInfo.build,
+        // API에만 있는 필드만 API 값으로 채움
+        ...(apiDeviceData && {
+          deviceType: apiDeviceData.deviceType,
+          tableNumber: apiDeviceData.tableNumber,
+          orderPosNumber: apiDeviceData.orderPosNumber,
+          deviceSeq: apiDeviceData.deviceSeq,
+          shopSeq: apiDeviceData.shopSeq,
+        }),
       };
 
+      deviceStoreDataRef.current = baseDeviceDetail;
       await setDataAsync(baseDeviceDetail);
 
       // 서버에 디바이스 정보 동기화 (기본값 설정 포함)

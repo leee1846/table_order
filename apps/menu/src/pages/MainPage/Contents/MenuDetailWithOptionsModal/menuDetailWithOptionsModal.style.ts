@@ -143,7 +143,7 @@ export const TotalInfo = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap:12px;
+  gap: 12px;
 
   & > h3 {
     color: ${({ theme }) => theme.mode.grey[800]};
