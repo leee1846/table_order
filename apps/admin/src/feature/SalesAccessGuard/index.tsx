@@ -7,10 +7,8 @@ import {
   type ReactNode,
 } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { openConfirmDialog } from '@repo/feature/utils';
 import { usePostLoginSales } from '@repo/api/queries';
 import { CapacitorApp } from '@repo/util/app';
-import { useAdminTranslation } from '@/config/i18n';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/constants/routes';
@@ -37,7 +35,6 @@ export const SalesAccessGuard = ({
 }: SalesAccessGuardProps) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
   const { data: shopDetailData, refresh } = useShopDetailData();
   const { mutateAsync: loginSales } = usePostLoginSales({
@@ -146,27 +143,13 @@ export const SalesAccessGuard = ({
     setIsModalOpen(false);
   }, []);
 
-  const handleSalesAuthError = useCallback(
-    (error: unknown) => {
-      const status = (error as { response?: { status?: number } })?.response
-        ?.status;
-      if (status === 401) {
-        openConfirmDialog({
-          title: t('인증 실패'),
-          content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
-        });
-      }
-    },
-    [t]
-  );
-
   const handleClose = useCallback(() => {
     setIsModalOpen(false);
     setIsUnlocked(false);
     if (onClose) {
       onClose();
     } else if (!location.pathname.startsWith(ROUTES.TABLES.path)) {
-      navigate(-1);
+      navigate(ROUTES.SETTINGS.NOTICES.generate());
     }
   }, [navigate, location.pathname, onClose]);
 
@@ -190,7 +173,6 @@ export const SalesAccessGuard = ({
         <AdminAccessPasswordModal
           onClose={handleClose}
           onSubmit={handleSalesAuthSubmit}
-          onSubmitError={handleSalesAuthError}
           onSuccess={handleSalesAuthSuccess}
         />
       )}
