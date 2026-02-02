@@ -5,7 +5,8 @@ import styled from '@emotion/styled';
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  max-height: 500px;
+  height: 500px;
+  overflow: auto;
 `;
 
 export const cancelButtonCss = css`
@@ -35,7 +36,6 @@ export const Tables = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  overflow-y: auto;
   flex: 1;
 `;
 
