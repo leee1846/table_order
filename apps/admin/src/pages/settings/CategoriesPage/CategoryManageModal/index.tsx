@@ -367,7 +367,6 @@ export const CategoryManageModal = ({
                   checked={isQuantitySelectable}
                   onChange={(checked) => setIsQuantitySelectable(checked)}
                   customStyle={S.checkButtonCss}
-                  disabled={isPosLinked}
                 >
                   <p>{t('수량선택 사용')}</p>
                 </CheckButton>
