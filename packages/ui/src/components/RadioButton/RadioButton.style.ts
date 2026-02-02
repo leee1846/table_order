@@ -70,13 +70,23 @@ export const Label = styled.label<Props>`
   display: flex;
   align-items: center;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  width: fit-content;
+  width: 100%;
+  min-width: 0;
 
   & > div {
+    flex-shrink: 0;
     width: 1.5rem;
     height: 1.5rem;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
     border-radius: 50%;
     ${({ checked, disabled, theme }) =>
       getRadioButtonStyles(checked, disabled, theme)}
   }
+`;
+
+export const LabelText = styled.span`
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
 `;

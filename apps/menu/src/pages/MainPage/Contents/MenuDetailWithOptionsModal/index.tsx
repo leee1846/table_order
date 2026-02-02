@@ -534,6 +534,8 @@ export const MenuDetailWithOptionsModal = ({
               & > div {
                 width: 24px;
                 height: 24px;
+                min-width: 24px;
+                min-height: 24px;
               }
             `}
           >
@@ -561,10 +563,6 @@ export const MenuDetailWithOptionsModal = ({
       </li>
     );
   };
-
-  // ============================================================================
-  // Render
-  // ============================================================================
 
   const menuName =
     menu.localeMenuName?.[languageData.currentLanguage] ?? menu.menuName;
@@ -623,7 +621,9 @@ export const MenuDetailWithOptionsModal = ({
                 onChange={handleMenuQuantityChange}
                 size="L"
                 min={1}
-                customStyle={css`min-width: 100%;`}
+                customStyle={css`
+                  min-width: 100%;
+                `}
                 aria-label={t('수량제한')}
                 disabled={disabledOrderable}
               />
@@ -632,7 +632,7 @@ export const MenuDetailWithOptionsModal = ({
         </S.MenuInfoContainer>
 
         <S.RightWrapper>
-        {/* Options */}
+          {/* Options */}
           <S.OptionsContainer>
             {!hasOptionGroups && (
               <NoContent paddingTop="10%">
@@ -653,7 +653,9 @@ export const MenuDetailWithOptionsModal = ({
                         {buildOptionGroupTitle(group)}
                       </S.OptionGroupName>
                       <S.Options
-                        role={group.isMultipleSelectable ? 'group' : 'radiogroup'}
+                        role={
+                          group.isMultipleSelectable ? 'group' : 'radiogroup'
+                        }
                         aria-label={groupName}
                       >
                         {group.optionList.map((option) =>

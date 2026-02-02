@@ -37,7 +37,7 @@ export const RadioButton = ({
         checked={checked}
         disabled={disabled}
       />
-      {children}
+      <S.LabelText>{children}</S.LabelText>
     </S.Label>
   );
 };
