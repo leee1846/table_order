@@ -58,7 +58,7 @@ privateApi.interceptors.request.use(
     }
 
     // 토큰 만료 30초 전에 갱신 요청
-    if (isExpired(payload.exp, 30, getCurrentUnixTime())) {
+    if (isExpired(payload.exp, 20, getCurrentUnixTime())) {
       accessToken = await accessTokenRefreshManager.runRefresh();
     }
 
