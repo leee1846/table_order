@@ -15,7 +15,6 @@ export const useSSEHandler = () => {
   const queryClient = useQueryClient();
   const { shopCode } = useAuth();
   const { clearAuth } = useAuthStore();
-
   const { openAlert } = useTheftAlertStore();
 
   useEffect(() => {
@@ -30,15 +29,17 @@ export const useSSEHandler = () => {
     SSE_KEYS.MAIN_CONNECTION
   );
 
+  // LOGOUT 체크를 렌더링 단계에서 수행
   useEffect(() => {
-    if (!shopCode) {
-      return;
-    }
-
     if (sseMessage?.type === 'LOGOUT') {
       clearAuth();
       disconnectSse();
       window.location.replace(ROUTES.LOGIN.generate());
+    }
+  }, [sseMessage, clearAuth]);
+
+  useEffect(() => {
+    if (!shopCode) {
       return;
     }
 
@@ -84,5 +85,5 @@ export const useSSEHandler = () => {
     //     }
     //   }
     // }
-  }, [sseMessage, shopCode, queryClient, openAlert, clearAuth]);
+  }, [sseMessage, shopCode, queryClient, openAlert]);
 };

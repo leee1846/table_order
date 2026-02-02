@@ -19,7 +19,7 @@ export const useSystemStatusMonitor = () => {
     tableNumber: null,
     orderPosNumber: null,
     ipAddress: '',
-    battery: null,
+    battery: 0,
     wifiSignal: null,
     version: '',
     buildNumber: '',
@@ -49,8 +49,7 @@ export const useSystemStatusMonitor = () => {
       deviceStateRef.current.ipAddress = ipAddress ?? '';
     }
 
-    const { androidId, ipAddress, wifiSignal, battery } =
-      deviceStateRef.current;
+    const { androidId, ipAddress, wifiSignal } = deviceStateRef.current;
 
     if (
       !currentShopCode ||
@@ -62,8 +61,6 @@ export const useSystemStatusMonitor = () => {
       return;
     }
 
-    const batteryToSend = battery ?? 0;
-
     try {
       await postDeviceDetail({
         shopCode: currentShopCode,
@@ -71,7 +68,7 @@ export const useSystemStatusMonitor = () => {
         ipAddress,
         deviceType: 'POS_APP',
         wifiSignal,
-        battery: batteryToSend,
+        battery: 0,
         tableNumber: null,
         orderPosNumber: null,
         version: version ?? '',
