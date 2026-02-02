@@ -79,7 +79,7 @@ export const NoticesPage = () => {
             </S.QRModalHeader>
             <S.QRModalContent>
               <div>
-                <img src={'/images/qr.png'} alt="QR Code" />
+                <img src="/images/qr.png" alt="QR Code" />
               </div>
             </S.QRModalContent>
           </S.QRModalContainer>

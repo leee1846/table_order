@@ -42,6 +42,7 @@ export const SidebarLayout = () => {
 
   const onClickLogo = () => {
     if (!CapacitorApp.isNative()) {
+      navigate(ROUTES.SETTINGS.NOTICES.generate());
       return;
     }
 
