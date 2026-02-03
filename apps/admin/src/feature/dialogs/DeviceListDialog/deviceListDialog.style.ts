@@ -177,3 +177,14 @@ export const ScreenOffButton = css`
   background-color: ${colors.grey[600]};
   color: ${colors.grey[50]};
 `;
+
+export const SelectAllButton = css`
+  ${TYPOGRAPHY.ST_2}
+  color: ${colors.grey[700]};
+  margin-bottom: 20px;
+
+  > div {
+    width: 22px;
+    height: 22px;
+  }
+`;

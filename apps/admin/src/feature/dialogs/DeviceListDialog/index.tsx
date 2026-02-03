@@ -1,13 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ModalBackground, BasicButton } from '@repo/ui/components';
+import { ModalBackground, BasicButton, CheckButton } from '@repo/ui/components';
 import { CloseIcon /* , FullBatteryIcon */ } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { useGetDeviceList, usePostDeviceControl } from '@repo/api/queries';
-import type {
-  IDeviceControlItem,
-  TDeviceControlType,
-  IGetDeviceListItem,
-} from '@repo/api/types';
+import type { TDeviceControlType, IGetDeviceListItem } from '@repo/api/types';
 import { toast } from '@repo/feature/utils';
 import { getDeviceTypeLabel } from '@repo/util/constants';
 import { useAdminTranslation } from '@/config/i18n';
@@ -58,7 +54,7 @@ export const DeviceListDialog = ({
   shopCode,
 }: DeviceListDialogProps) => {
   const { t } = useAdminTranslation();
-  const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
+  const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
 
   const DEVICE_CONTROL_MESSAGES: Record<TDeviceControlType, string> = {
     DEVICE_APP_UPDATE: t('기기 업데이트 요청을 보냈어요.'),
@@ -70,12 +66,12 @@ export const DeviceListDialog = ({
 
   useEffect(() => {
     if (!isOpen) {
-      setSelectedDevice(null);
+      setSelectedDevices([]);
     }
   }, [isOpen]);
 
   useEffect(() => {
-    setSelectedDevice(null);
+    setSelectedDevices([]);
   }, [shopCode]);
 
   const {
@@ -150,17 +146,18 @@ export const DeviceListDialog = ({
   const isInitialLoading = isFetching && !deviceListResponse;
 
   const handleSelectDevice = (deviceId: string) => {
-    setSelectedDevice((prev) => {
-      if (prev === deviceId) {
-        return null; // 이미 선택된 경우 해제
+    setSelectedDevices((prev) => {
+      if (prev.includes(deviceId)) {
+        // 이미 선택된 경우 해제
+        return prev.filter((id) => id !== deviceId);
       }
-      return deviceId; // 새로운 디바이스 선택
+      // 새로운 디바이스 추가
+      return [...prev, deviceId];
     });
   };
 
-  const getTargetDevices = (targetAndroidId?: string) => {
-    const targetDeviceId = targetAndroidId ?? selectedDevice;
-    if (!targetDeviceId) {
+  const getTargetDevices = () => {
+    if (selectedDevices.length === 0) {
       return {
         validDevices: [],
         hasInvalidSelection: false,
@@ -168,21 +165,19 @@ export const DeviceListDialog = ({
       };
     }
 
-    const targetDevice = deviceItems.find(
-      (device) => device.androidId === targetDeviceId
+    const targetDevices = selectedDevices
+      .map((deviceId) =>
+        deviceItems.find((device) => device.androidId === deviceId)
+      )
+      .filter((device): device is IGetDeviceListItem => device !== undefined);
+
+    const validDevices = targetDevices
+      .filter((device) => device.androidId)
+      .map((device) => ({ androidId: device.androidId! }));
+
+    const hasInvalidSelection = targetDevices.some(
+      (device) => !device.androidId
     );
-    if (!targetDevice) {
-      return {
-        validDevices: [],
-        hasInvalidSelection: false,
-        hasSelection: false,
-      };
-    }
-
-    const hasInvalidSelection = !targetDevice.androidId;
-    const validDevices: IDeviceControlItem[] = targetDevice.androidId
-      ? [{ androidId: targetDevice.androidId }]
-      : [];
 
     return {
       validDevices,
@@ -192,10 +187,7 @@ export const DeviceListDialog = ({
   };
 
   // 기기 제어 요청
-  const handleDeviceControl = async (
-    controlType: TDeviceControlType,
-    targetAndroidId?: string
-  ) => {
+  const handleDeviceControl = async (controlType: TDeviceControlType) => {
     if (isDeviceControlLoading) {
       return;
     }
@@ -206,7 +198,7 @@ export const DeviceListDialog = ({
     }
 
     const { validDevices, hasInvalidSelection, hasSelection } =
-      getTargetDevices(targetAndroidId);
+      getTargetDevices();
 
     if (!hasSelection || validDevices.length === 0) {
       toast(
@@ -224,7 +216,21 @@ export const DeviceListDialog = ({
     });
     toast(DEVICE_CONTROL_MESSAGES[controlType]);
     await refetch();
-    setSelectedDevice(null);
+    setSelectedDevices([]);
+  };
+
+  const handleSelectAll = () => {
+    const selectableDevices = deviceItems.filter(
+      (device) => device.deviceType !== 'POS_APP'
+    );
+    const allDeviceIds = selectableDevices.map((device) => device.androidId);
+
+    // 이미 전체 선택된 상태면 해제, 아니면 전체 선택
+    if (selectedDevices.length === allDeviceIds.length) {
+      setSelectedDevices([]);
+    } else {
+      setSelectedDevices(allDeviceIds);
+    }
   };
 
   return (
@@ -283,6 +289,20 @@ export const DeviceListDialog = ({
           </S.ButtonContainer>
 
           <S.DeviceGridWrapper>
+            <CheckButton
+              checked={
+                deviceItems.filter((device) => device.deviceType !== 'POS_APP')
+                  .length > 0 &&
+                selectedDevices.length ===
+                  deviceItems.filter(
+                    (device) => device.deviceType !== 'POS_APP'
+                  ).length
+              }
+              onChange={() => handleSelectAll()}
+              customStyle={S.SelectAllButton}
+            >
+              {t('전체 선택')}
+            </CheckButton>
             {isInitialLoading ? (
               <S.EmptyState>{t('기기 목록을 불러오는 중입니다.')}</S.EmptyState>
             ) : deviceItems.filter((device) => device.deviceType !== 'POS_APP')
@@ -293,7 +313,9 @@ export const DeviceListDialog = ({
                 {deviceItems
                   .filter((device) => device.deviceType !== 'POS_APP')
                   .map((device) => {
-                    const isSelected = selectedDevice === device.androidId;
+                    const isSelected = selectedDevices.includes(
+                      device.androidId
+                    );
                     const numericSignal =
                       device.wifiSignal != null ? Number(device.wifiSignal) : 0;
                     const wifiTone: 4 | 3 | 2 | 1 | 0 =
