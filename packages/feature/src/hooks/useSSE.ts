@@ -92,7 +92,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
     state.isConnected = true;
     state.isReconnecting = false;
     state.reconnectAttempts = 0;
-    
+
     state.setIsConnectedCallbacks.forEach((callback) => callback(true));
     state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
   };
@@ -167,9 +167,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 
         state.isReconnecting = false;
         state.reconnectAttempts = 0;
-        state.setIsReconnectingCallbacks.forEach((callback) =>
-          callback(false)
-        );
+        state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
 
         openConfirmDialog({
           title: '연결 오류',
@@ -227,6 +225,8 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 
 /**
  * 지정한 SSE 연결 해제
+ * - 맵에서 state는 삭제하지 않음 (재연결 시 같은 state를 사용해 구독자(setDataCallbacks)가 유지되도록 함)
+ * - 토큰 갱신 등으로 재연결 후에도 useSSEData 구독이 그대로 메시지를 받을 수 있음
  */
 export const disconnectSSE = (key: string): void => {
   const state = sseConnectionMap.get(key);
@@ -242,17 +242,19 @@ export const disconnectSSE = (key: string): void => {
       state.eventSource.close();
       state.eventSource = null;
     }
-    
+
     state.isConnected = false;
     state.isReconnecting = false;
     state.reconnectAttempts = 0;
-    
+    // 재연결 후 이전 연결의 메시지가 처리되지 않도록 큐/상태 초기화 (구독자 콜백은 유지)
+    state.messageQueue = [];
+    state.originData = null;
+    state.isProcessingQueue = false;
+
     // 모든 콜백 호출
     state.setIsConnectedCallbacks.forEach((callback) => callback(false));
     state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
   }
-
-  sseConnectionMap.delete(key);
 };
 
 /**
