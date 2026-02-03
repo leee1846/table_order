@@ -112,11 +112,14 @@ export const LoginPage = () => {
 
   // Login handler
   const handleLogin = async () => {
-    if (!id) {
+    const trimmedId = id.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedId) {
       setIdErrorMessage(t('아이디를 입력해주세요.'));
       return;
     }
-    if (!password) {
+    if (!trimmedPassword) {
       setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
       return;
     }
@@ -125,8 +128,8 @@ export const LoginPage = () => {
     setPasswordErrorMessage('');
 
     const loginResponse = await login({
-      id,
-      pw: password,
+      id: trimmedId,
+      pw: trimmedPassword,
     });
 
     // api는 성공 처리됨.

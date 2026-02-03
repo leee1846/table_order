@@ -71,12 +71,15 @@ export const LoginPage = () => {
 
   // 로그인 처리 함수
   const handleLogin = async () => {
+    const trimmedId = id.trim();
+    const trimmedPassword = password.trim();
+
     // 1단계: 클라이언트 측 유효성 검사
-    if (!id) {
+    if (!trimmedId) {
       setIdErrorMessage(t('아이디를 입력해주세요.'));
       return;
     }
-    if (!password) {
+    if (!trimmedPassword) {
       setPasswordErrorMessage(t('비밀번호를 입력해주세요.'));
       return;
     }
@@ -87,8 +90,8 @@ export const LoginPage = () => {
 
     // 3단계: 로그인 API 호출
     const response = await login({
-      id,
-      pw: password,
+      id: trimmedId,
+      pw: trimmedPassword,
     });
 
     // 4단계: 로그인 결과 확인
@@ -106,8 +109,8 @@ export const LoginPage = () => {
       tempAccessToken.current = response.data.accessToken;
       useAuthStore.getState().refreshTokenInfo();
       toast('비밀번호를 변경해주세요.');
-      setLoginUserId(id);
-      setLoginUserPassword(password);
+      setLoginUserId(trimmedId);
+      setLoginUserPassword(trimmedPassword);
       setIsPasswordChangeModalOpen(true);
       return;
     }
