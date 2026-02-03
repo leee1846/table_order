@@ -69,18 +69,14 @@ export const Label = styled.label<Props>`
   align-items: center;
   gap: 7px;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  width: 100%;
-  min-width: 0;
+  width: fit-content;
 
   & > div {
-    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 1.125rem;
     height: 1.125rem;
-    min-width: 1.125rem;
-    min-height: 1.125rem;
     border-radius: ${({ variant }) => (variant === 'round' ? '50%' : '6px')};
     ${({ checked, disabled, theme }) =>
       getCheckButtonStyles(checked, disabled, theme)}
@@ -89,10 +85,4 @@ export const Label = styled.label<Props>`
   & > input {
     display: none;
   }
-`;
-
-export const LabelText = styled.span`
-  flex: 1;
-  min-width: 0;
-  word-break: break-word;
 `;

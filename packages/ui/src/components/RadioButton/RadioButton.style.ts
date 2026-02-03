@@ -70,8 +70,7 @@ export const Label = styled.label<Props>`
   display: flex;
   align-items: center;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  width: 100%;
-  min-width: 0;
+  width: fit-content;
 
   & > div {
     flex-shrink: 0;

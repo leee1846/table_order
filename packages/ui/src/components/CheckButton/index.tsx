@@ -52,7 +52,8 @@ export const CheckButton = ({
         onChange={() => onChange(!checked)}
         disabled={disabled}
       />
-      <S.LabelText>{children}</S.LabelText>
+      {children}
+      {/* <S.LabelText>{children}</S.LabelText> */}
     </S.Label>
   );
 };
