@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { globalTimerManager } from '@/utils/timerManager';
 import { TIMER_KEYS } from '@/constants/keys';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
@@ -20,6 +20,7 @@ import { useModalStore } from '@/stores/useModalStore';
  * - 2분 30초 동안 터치가 없으면 모든 데이터를 새로고침하고 페이지를 리로드합니다
  * - 장바구니에 메뉴가 있고 모든 모달이 닫혀있으면 1분 30초 후 주문 알림을 표시합니다
  * - 터치 이벤트 발생 시 타이머를 재시작합니다
+ * - refresh 함수들은 ref로만 참조하여, device API 등 외부 리렌더로 인한 effect 재실행(타이머 재계산)을 방지합니다.
  */
 export const useTouchDetectTimer = () => {
   const { refresh: refreshShopDetailData } = useShopDetailData();
@@ -27,8 +28,22 @@ export const useTouchDetectTimer = () => {
   const { refresh: refreshDeviceData } = useDeviceData();
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData();
-
   const { refresh: refreshTableGroupData } = useTableGroupData();
+
+  const refreshShopDetailDataRef = useRef(refreshShopDetailData);
+  const refreshCategoriesDataRef = useRef(refreshCategoriesData);
+  const refreshDeviceDataRef = useRef(refreshDeviceData);
+  const refreshTableOrderHistoriesDataRef = useRef(
+    refreshTableOrderHistoriesData
+  );
+  const refreshTableGroupDataRef = useRef(refreshTableGroupData);
+
+  refreshShopDetailDataRef.current = refreshShopDetailData;
+  refreshCategoriesDataRef.current = refreshCategoriesData;
+  refreshDeviceDataRef.current = refreshDeviceData;
+  refreshTableOrderHistoriesDataRef.current = refreshTableOrderHistoriesData;
+  refreshTableGroupDataRef.current = refreshTableGroupData;
+
   const { data: cartData, clearCart } = useCartStore();
   const { clearData: clearLanguageData } = useCustomerLanguageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
@@ -40,18 +55,15 @@ export const useTouchDetectTimer = () => {
     const timerCallback = async () => {
       globalTimerManager.clear(TIMER_KEYS.API_RESET_TIMEOUT);
 
-      // 상점 상세 데이터 api 요청
-      await refreshShopDetailData();
-      // 메뉴 카테고리 api 요청
-      await refreshCategoriesData();
-      // 테이블 그룹 데이터 api 요청
-      await refreshTableGroupData();
-      // 디바이스 데이터 api 요청
-      await refreshDeviceData();
+      await refreshShopDetailDataRef.current();
+      await refreshCategoriesDataRef.current();
+      await refreshTableGroupDataRef.current();
+      await refreshDeviceDataRef.current();
 
       // 장바구니 비우기
       clearCart();
-      const newTableOrderHistoriesData = await refreshTableOrderHistoriesData();
+      const newTableOrderHistoriesData =
+        await refreshTableOrderHistoriesDataRef.current();
 
       // 테이블이 점유되지 않았을경우
       if (newTableOrderHistoriesData === null) {
@@ -59,7 +71,6 @@ export const useTouchDetectTimer = () => {
         clearCustomerCountData();
         // 언어 선택 초기화
         clearLanguageData();
-        // 초기 화면 노출
         showInitialPage();
       }
 
@@ -125,10 +136,5 @@ export const useTouchDetectTimer = () => {
     clearCart,
     clearCustomerCountData,
     clearLanguageData,
-    refreshShopDetailData,
-    refreshCategoriesData,
-    refreshTableOrderHistoriesData,
-    refreshTableGroupData,
-    refreshDeviceData,
   ]);
 };

@@ -142,7 +142,7 @@ const checkSaleDay = (
     return false;
   }
 
-  // saleDayOfWeek가 null이거나 빈 배열이면 매일 판매
+  // saleDayOfWeek가 null이거나 빈 배열이면 판매 불가
   if (!saleDayOfWeek || saleDayOfWeek.length === 0) {
     return false;
   }
