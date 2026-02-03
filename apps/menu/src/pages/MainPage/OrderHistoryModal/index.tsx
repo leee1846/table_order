@@ -25,6 +25,7 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
         role="dialog"
         aria-modal="true"
         aria-labelledby="order-history-title"
+        onClick={(e) => e.stopPropagation()}
       >
         <S.Header>
           <h2 id="order-history-title">{t('주문내역')}</h2>
@@ -76,7 +77,11 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
               </p>
             </div>
           )}
-          <BasicButton variant="Solid_Blue_2XL" aria-label={t('모달 닫기')}>
+          <BasicButton
+            variant="Solid_Blue_2XL"
+            aria-label={t('모달 닫기')}
+            onClick={onClose}
+          >
             {t('닫기')}
           </BasicButton>
         </S.TotalContainer>
