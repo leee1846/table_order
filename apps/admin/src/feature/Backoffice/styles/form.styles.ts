@@ -34,6 +34,7 @@ export const FieldGroup = styled.div`
 `;
 
 export const Label = styled.label`
+  display: flex;
   font-size: 14px;
   color: ${theme.colors.grey[700]};
   font-weight: 500;

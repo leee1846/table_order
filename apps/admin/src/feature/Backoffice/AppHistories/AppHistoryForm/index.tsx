@@ -267,12 +267,15 @@ export const AppHistoryForm = ({
             <S.FieldGroup>
               <S.Label>
                 버전 <span>*</span>
+                {(mode === 'edit' || mode === 'create') && (
+                  <S.VersionEditHint>수정이 불가능합니다.</S.VersionEditHint>
+                )}
               </S.Label>
               <Input
                 placeholder="버전을 입력하세요 (예: 1.2.3)"
                 value={formData.version}
                 onChange={(value) => updateFormData({ version: value })}
-                disabled={isReadOnly}
+                disabled={isReadOnly || mode === 'edit'}
               />
             </S.FieldGroup>
 

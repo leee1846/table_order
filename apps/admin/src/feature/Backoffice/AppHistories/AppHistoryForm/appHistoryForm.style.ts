@@ -179,3 +179,13 @@ export const ApkHint = styled.p`
   letter-spacing: -0.005em;
   line-height: 1.4;
 `;
+
+export const VersionEditHint = styled.span`
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: ${theme.colors.semantic[500]};
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.4;
+`;
