@@ -175,73 +175,75 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
         <S.LeftContainer>
           <h2 id="staff-call-title">{category.categoryName} </h2>
-          {category.menuInfoList.length < 1 && (
-            <S.noContent>
-              <p>{t('메뉴가 존재하지 않아요.')}</p>
-            </S.noContent>
-          )}
+          <S.MenuListScrollArea>
+            {category.menuInfoList.length < 1 && (
+              <S.noContent>
+                <p>{t('메뉴가 존재하지 않아요.')}</p>
+              </S.noContent>
+            )}
 
-          {category.menuInfoList.length > 0 && (
-            <S.MenuList role="list">
-              {category.menuInfoList
-                .filter((menu) => !menu.isHidden && !menu.isOutOfStock)
-                .map((menu, index) => {
-                  const currentQuantity = getMenuQuantity(menu.menuSeq);
-                  const menuName =
-                    menu.localeMenuName?.[languageData.currentLanguage] ??
-                    menu.menuName;
-                  const isMenuSelected = currentQuantity >= 1;
+            {category.menuInfoList.length > 0 && (
+              <S.MenuList role="list">
+                {category.menuInfoList
+                  .filter((menu) => !menu.isHidden && !menu.isOutOfStock)
+                  .map((menu, index) => {
+                    const currentQuantity = getMenuQuantity(menu.menuSeq);
+                    const menuName =
+                      menu.localeMenuName?.[languageData.currentLanguage] ??
+                      menu.menuName;
+                    const isMenuSelected = currentQuantity >= 1;
 
-                  return (
-                    <li key={`menu-${index + 1}`} role="listitem">
-                      <S.menuButton
-                        type="button"
-                        onClick={() => handleSelectMenu(menu)}
-                        isSelected={isMenuSelected}
-                        aria-label={menuName}
-                        aria-pressed={isMenuSelected}
-                      >
-                        <p>{menuName}</p>
-                        {isMenuSelected && (
-                          <div>
-                            <S.DeleteButton
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteMenu(menu.menuSeq);
-                              }}
-                              aria-label={t('메뉴 삭제')}
-                            >
-                              <DeleteIcon
-                                width={20}
-                                height={20}
-                                color={theme.mode.grey[600]}
+                    return (
+                      <li key={`menu-${index + 1}`} role="listitem">
+                        <S.menuButton
+                          type="button"
+                          onClick={() => handleSelectMenu(menu)}
+                          isSelected={isMenuSelected}
+                          aria-label={menuName}
+                          aria-pressed={isMenuSelected}
+                        >
+                          <p>{menuName}</p>
+                          {isMenuSelected && (
+                            <div>
+                              <S.DeleteButton
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteMenu(menu.menuSeq);
+                                }}
+                                aria-label={t('메뉴 삭제')}
+                              >
+                                <DeleteIcon
+                                  width={20}
+                                  height={20}
+                                  color={theme.mode.grey[600]}
+                                />
+                              </S.DeleteButton>
+                              <NumberInput
+                                variant="square"
+                                size="M"
+                                min={0}
+                                value={currentQuantity}
+                                onChange={(newValue) => {
+                                  handleQuantityChange(menu.menuSeq, newValue);
+                                }}
+                                customStyle={css`
+                                  min-width: 116px;
+                                  width: 116px;
+                                  & > input {
+                                    min-width: 34px;
+                                    ${TYPOGRAPHY.ST_3}
+                                  }
+                                `}
                               />
-                            </S.DeleteButton>
-                            <NumberInput
-                              variant="square"
-                              size="M"
-                              min={0}
-                              value={currentQuantity}
-                              onChange={(newValue) => {
-                                handleQuantityChange(menu.menuSeq, newValue);
-                              }}
-                              customStyle={css`
-                                min-width: 116px;
-                                width: 116px;
-                                & > input {
-                                  min-width: 34px;
-                                  ${TYPOGRAPHY.ST_3}
-                                }
-                              `}
-                            />
-                          </div>
-                        )}
-                      </S.menuButton>
-                    </li>
-                  );
-                })}
-            </S.MenuList>
-          )}
+                            </div>
+                          )}
+                        </S.menuButton>
+                      </li>
+                    );
+                  })}
+              </S.MenuList>
+            )}
+          </S.MenuListScrollArea>
         </S.LeftContainer>
         <S.OrderButton>
           <BasicButton variant="Solid_Blue_2XL" onClick={requestOrder}>

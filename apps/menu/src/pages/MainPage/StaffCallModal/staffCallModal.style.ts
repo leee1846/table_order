@@ -26,22 +26,34 @@ export const CloseButton = styled.button`
 
 export const LeftContainer = styled.div`
   width: 100%;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   background-color: ${({ theme }) => theme.mode.undefined_palette[1000]};
   padding: 24px;
 
   display: flex;
   flex-direction: column;
   gap: 40px;
+  overflow: hidden;
 
-  & > h2  {
+  & > h2 {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     ${TYPOGRAPHY.MT_1}
     color: ${({ theme }) => theme.mode.undefined_palette[400]};
-    padding-top: 26 px;
+    padding-top: 26px;
   }
+`;
+
+/** 메뉴 목록만 스크롤, 버튼은 하단 고정을 위한 래퍼 */
+export const MenuListScrollArea = styled.div`
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 `;
 
 export const MenuList = styled.ul`
@@ -49,7 +61,6 @@ export const MenuList = styled.ul`
   grid-template-columns: repeat(4, 1fr);
   grid-column-gap: 12px;
   grid-row-gap: 16px;
-  overflow-y: auto;
 `;
 
 export const menuButton = styled.button<{ isSelected: boolean }>`
@@ -112,6 +123,7 @@ export const noContent = styled.li`
 `;
 
 export const OrderButton = styled.div`
+  flex-shrink: 0;
   width: 100%;
   padding: 24px;
   background-color: ${({ theme }) => theme.mode.undefined_palette[1000]};
