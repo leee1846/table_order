@@ -14,7 +14,6 @@ import { setAccessToken, setRefreshToken } from '@repo/api/auth';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { initializeSseConnection } from '@/utils/sseConnection';
 import { CapacitorApp } from '@repo/util/app';
 import { LoginPasswordChangeModal } from './LoginPasswordChangeModal';
 import { rawApi } from '@/config/rawApi';
@@ -120,8 +119,7 @@ export const LoginPage = () => {
     setRefreshToken(response.data.refreshToken);
     // Store 업데이트
     useAuthStore.getState().refreshTokenInfo();
-    // sse 연결
-    initializeSseConnection();
+    // SSE 연결은 App.tsx의 useSSEHandler에서 자동으로 처리됨
     navigate(ROUTES.ROOT.generate()); // 루트 경로로 이동 (router에서 리디렉트됨)
   };
 
@@ -172,7 +170,7 @@ export const LoginPage = () => {
     setAccessToken(response.data.accessToken);
     setRefreshToken(response.data.refreshToken);
     useAuthStore.getState().refreshTokenInfo();
-    initializeSseConnection();
+    // SSE 연결은 App.tsx의 useSSEHandler에서 자동으로 처리됨
 
     // 모달 닫기
     setIsPasswordChangeModalOpen(false);

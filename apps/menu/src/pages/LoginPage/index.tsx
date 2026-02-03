@@ -14,7 +14,6 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
-import { initializeSseConnection } from '@/utils/sseConnection';
 import * as S from '@/pages/LoginPage/loginPage.style';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useMerchantRegistration } from '@/hooks/useMerchantRegistration';
@@ -105,7 +104,7 @@ export const LoginPage = () => {
     };
 
     await setDeviceData(deviceData);
-    initializeSseConnection();
+    // SSE 연결은 useSSEHandler에서 shopCode 기반으로 자동 처리됨
     registerMerchant();
     navigate(ROUTES.ROOT.generate());
   };

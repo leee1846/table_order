@@ -14,16 +14,20 @@ import { SystemControl } from '@repo/util/app';
 export const useSSEHandler = () => {
   const queryClient = useQueryClient();
   const { shopCode } = useAuth();
-  const { clearAuth } = useAuthStore();
+  const { clearAuth, tokenPayload } = useAuthStore();
   const { openAlert } = useTheftAlertStore();
 
+  // 로그인/로그아웃 시 SSE 연결 관리
   useEffect(() => {
-    initializeSseConnection();
+    // 토큰이 있을 때만 SSE 연결 시도
+    if (tokenPayload) {
+      initializeSseConnection();
+    }
 
     return () => {
       disconnectSse();
     };
-  }, []);
+  }, [tokenPayload]); // tokenPayload 변경 시 재실행
 
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
     SSE_KEYS.MAIN_CONNECTION
