@@ -77,9 +77,9 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
             </S.FieldGroup>
           </S.HorizontalLayout>
 
-          <S.FieldGroup>
-            <S.Label>사업자등록번호</S.Label>
-            <S.BusinessNumberContainer>
+          <S.HorizontalLayout>
+            <S.FieldGroup>
+              <S.Label>사업자등록번호</S.Label>
               <Input
                 placeholder="사업자등록번호를 입력하세요"
                 value={formData.businessNumber}
@@ -88,6 +88,8 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
                 }
                 type="tel"
               />
+            </S.FieldGroup>
+            <S.FieldGroup>
               <CheckButton
                 checked={formData.isCorporate}
                 onChange={(checked) => updateFormData({ isCorporate: checked })}
@@ -95,8 +97,8 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
               >
                 <p>법인 여부</p>
               </CheckButton>
-            </S.BusinessNumberContainer>
-          </S.FieldGroup>
+            </S.FieldGroup>
+          </S.HorizontalLayout>
 
           <S.FieldGroup>
             <S.Label>

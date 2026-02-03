@@ -11,20 +11,16 @@ export {
   HorizontalLayout,
 } from '@/feature/backoffice/styles/form.styles';
 
-export const BusinessNumberContainer = styled.div`
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-
-  & > div:first-of-type {
-    flex: 1;
-  }
-`;
-
 export const CheckboxGroup = styled.div`
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+
+  /* CheckButton(Label) 기본이 width: 100%라 세로로 쌓이므로, 가로 나열되도록 오버라이드 */
+  & > * {
+    width: auto;
+    flex: 0 1 auto;
+  }
 `;
 
 export const LargeCheckboxStyle = css`

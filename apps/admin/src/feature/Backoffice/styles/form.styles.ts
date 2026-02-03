@@ -48,6 +48,7 @@ export const Label = styled.label`
 
 export const HorizontalLayout = styled.div`
   display: flex;
+  align-items: flex-end;
   gap: 16px;
 
   & > div {
