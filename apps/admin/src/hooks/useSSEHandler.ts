@@ -55,6 +55,14 @@ export const useSSEHandler = () => {
       return;
     }
 
+    if (sseMessage?.type === 'TABLE') {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.table.groupList(shopCode),
+      });
+
+      return;
+    }
+
     if (sseMessage?.type === 'RING_BELL') {
       SystemControl.playSound({ type: 'dingdong' });
       return;
