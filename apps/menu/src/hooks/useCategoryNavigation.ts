@@ -21,6 +21,7 @@ interface IReturn {
   handleCategoryClick: (category: ICategoryWithMenus) => void;
   selectedCategory: ICategoryWithMenus | undefined;
   activate: () => void;
+  deactivate: () => void;
 }
 
 /**
@@ -336,7 +337,7 @@ export function useCategoryNavigation({
         ) || undefined // find가 undefined를 반환할 수 있으므로 명시적으로 처리
       : undefined;
 
-  // 활성화 함수: 마지막 컴포넌트가 렌더링될 때 호출
+  // 활성화 함수: Sidebar/Contents가 렌더링될 때 호출
   const activate = () => {
     // 이미 활성화되었으면 중복 호출 방지 (무한 렌더링 방지)
     if (isActivated) {
@@ -345,10 +346,19 @@ export function useCategoryNavigation({
     setIsActivated(true);
   };
 
+  // 비활성화 함수: 다른 화면으로 전환될 때 호출
+  const deactivate = () => {
+    if (!isActivated) {
+      return;
+    }
+    setIsActivated(false);
+  };
+
   return {
     selectedCategorySeq,
     handleCategoryClick,
     selectedCategory,
     activate,
+    deactivate,
   };
 }

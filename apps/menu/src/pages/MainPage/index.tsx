@@ -216,9 +216,6 @@ export const MainPage = () => {
     return <CartReminder />;
   }
 
-  // Sidebar, Contents가 렌더링되는 시점에 실행되도록 처리
-  categoryNavigation.activate();
-
   return (
     <S.Container>
       <Header
@@ -239,7 +236,7 @@ export const MainPage = () => {
         <Contents
           categories={nonStaffCallCategories}
           useSinglePageMenuboard={useSinglePageMenuboard}
-          selectedCategory={categoryNavigation.selectedCategory}
+          categoryNavigation={categoryNavigation}
         />
 
         <CartButton categories={visibleCategories} />
