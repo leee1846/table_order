@@ -104,7 +104,7 @@ export const ImageRegistration = ({
                     '고객이 메뉴판 화면에서 볼 수 있는 매장 로고를 설정할 수 있어요.'
                   )}
                 </p>
-                <span>{t('(400*200px 가로형 이미지 권장)')}</span>
+                <span>{t('(1280*800px 가로형 이미지 권장)')}</span>
               </>
             )}
           </S.ImageSection>
