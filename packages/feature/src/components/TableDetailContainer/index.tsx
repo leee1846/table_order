@@ -108,6 +108,9 @@ export const TableDetailContainer = ({
 
   const [orderTime, setOrderTime] = useState<string>('');
 
+  // 테이블 비우기 완료 후 언마운트 전까지 버튼 비활성화
+  const [isNavigatingAway, setIsNavigatingAway] = useState(false);
+
   // API 데이터 가져오기
   const { data: orderHistoriesResponse, refetch: refetchOrderHistories } =
     useGetTableOrderHistories(
@@ -204,7 +207,8 @@ export const TableDetailContainer = ({
   const { mutateAsync: cancelOrderAll, isPending: isCancelAllPending } =
     usePutCancelOrderAll();
 
-  const { mutateAsync: clearOrder } = usePutClearOrder();
+  const { mutateAsync: clearOrder, isPending: isClearOrderPending } =
+    usePutClearOrder();
 
   const order: Order | null = useMemo(() => {
     const calculatedNumberOfPeople =
@@ -326,8 +330,8 @@ export const TableDetailContainer = ({
 
     await clearOrder({ shopCode, tableNumber });
     toast(t('테이블을 정리했어요.'));
+    setIsNavigatingAway(true); // 페이지 이동 시작 - 버튼 비활성화 유지
     navigate('/tables');
-    await refetchOrderHistories();
   };
 
   // 데이터가 없을 때
@@ -345,6 +349,7 @@ export const TableDetailContainer = ({
             // onPayCash={() => setIsCashPaymentDialogOpen(true)}
             // onSplitPay={() => setIsSplitPaymentDialogOpen(true)}
             shouldShowClearButton={shouldShowClearButton}
+            isClearingTable={isClearOrderPending || isNavigatingAway}
             onClearTable={handleClearTable}
             onItemClick={handleItemClick}
             useCustomerCount={useCustomerCount}

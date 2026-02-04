@@ -9,6 +9,7 @@ export type PaymentActionsProps = {
   // onPayCash?: () => void;
   // onSplitPay?: () => void;
   shouldShowClearButton: boolean;
+  isClearingTable?: boolean;
   onClearTable?: () => void;
   i18nInstance?: I18nInstance;
 };
@@ -18,6 +19,7 @@ export function PaymentActions({
   // onPayCash,
   // onSplitPay,
   shouldShowClearButton,
+  isClearingTable,
   onClearTable,
   i18nInstance,
 }: PaymentActionsProps) {
@@ -62,6 +64,7 @@ export function PaymentActions({
           `}
           onClick={onClearTable}
           fullWidth={true}
+          disabled={isClearingTable}
         >
           {t('테이블 비우기')}
         </BasicButton>
