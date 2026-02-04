@@ -2,7 +2,7 @@ export interface TableWithStatus {
   id: number;
   tableNumber: string;
   tableName: string;
-  batteryLevel: number | null;
+  wifiSignal: string | null;
   totalAmount?: number | null;
   remainingAmount?: number | null;
   orderTime?: string | null;

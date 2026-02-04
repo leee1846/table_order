@@ -30,6 +30,7 @@ export const LongPressTableCard = ({
   return (
     <S.LongPressCard {...handlers}>
       <TableCard
+        wifiSignal={table.wifiSignal ?? null}
         id={table.id}
         table={table}
         tableNumber={table.tableNumber}

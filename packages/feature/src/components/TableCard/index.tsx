@@ -13,9 +13,11 @@ interface Props {
   orderTime: string | null;
   onClick?: () => void;
   i18nInstance?: I18nInstance;
+  wifiSignal: string | null;
 }
 
 export const TableCard = ({
+  wifiSignal,
   onClick,
   id,
   orderTime,
@@ -33,7 +35,10 @@ export const TableCard = ({
         <S.TableNumber isEmpty={table.menuItems === null}>
           {table.tableName}
         </S.TableNumber>
-        <S.OrderTime>{orderTime}</S.OrderTime>
+        <div>
+          <S.OrderTime>{orderTime}</S.OrderTime>
+          {wifiSignal && <S.WifiSignal>{<p>{t('이용 중')}</p>}</S.WifiSignal>}
+        </div>
       </S.CardHeader>
 
       <S.CardContent>

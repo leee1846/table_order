@@ -20,6 +20,7 @@ export const DraggableTableCard = ({
   i18nInstance,
 }: DraggableTableCardProps) => {
   const tableNumber = String(table.tableNumber);
+  //주문 그룹이 생성됐는 지 생성되지 않았는지 확인하는 용도
   const hasOrder = table.menuItems !== null && table.menuItems !== undefined;
   const isActive = activeTableNumber === tableNumber;
 
@@ -68,6 +69,7 @@ export const DraggableTableCard = ({
         orderTime={table.orderTime ?? null}
         i18nInstance={i18nInstance}
         onClick={() => onClick(table)}
+        wifiSignal={table.wifiSignal ?? null}
       />
     </S.DraggableCard>
   );

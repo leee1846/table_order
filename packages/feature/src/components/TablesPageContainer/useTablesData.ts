@@ -42,13 +42,13 @@ export const useTablesData = ({
       },
     });
 
+  // 디바이스 목록을 tableNumber를 키로 하는 Map으로 변환 (빠른 조회를 위해)
   const menuDeviceMap = useMemo(() => {
     const map = new Map<string, IGetDeviceListItem>();
 
     if (deviceListResponse?.data) {
       deviceListResponse.data.forEach((device) => {
-        //TODO : 중복 테이블의 경우 어떤 테이블의 배터리량을 보여줘야 하는지
-        //TODO device.deviceType === 'MENU' &&
+        // tableNumber가 있는 디바이스만 Map에 추가
         if (device.tableNumber) {
           map.set(device.tableNumber, device);
         }
@@ -94,7 +94,7 @@ export const useTablesData = ({
       const orderInfo = orderMap.get(table.tableNumber);
       const deviceInfo = menuDeviceMap.get(table.tableNumber);
 
-      const batteryLevel = deviceInfo?.battery ?? null;
+      const wifiSignal = deviceInfo?.wifiSignal ?? null;
 
       const hasOrder = !!orderInfo && !!orderInfo.orderDetailMenuList;
       // 주문 정보가 있는 경우
@@ -130,7 +130,7 @@ export const useTablesData = ({
           id: table.tableSeq, // tableSeq를 id로 사용
           tableNumber: table.tableNumber,
           tableName: table.tableName ?? '',
-          batteryLevel,
+          wifiSignal,
           totalAmount: orderInfo.totalAmount ?? null,
           remainingAmount,
           orderTime,
@@ -144,7 +144,7 @@ export const useTablesData = ({
         id: table.tableSeq,
         tableNumber: table.tableNumber,
         tableName: table.tableName ?? '',
-        batteryLevel,
+        wifiSignal,
         totalAmount: null,
         remainingAmount: null,
         orderTime: null,

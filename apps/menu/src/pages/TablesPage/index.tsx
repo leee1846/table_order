@@ -198,7 +198,7 @@ export const TablesPage = () => {
         id: table.tableSeq,
         tableNumber: table.tableNumber,
         tableName: table.tableName ?? '',
-        batteryLevel: deviceForTable?.battery ?? 0,
+        wifiSignal: deviceForTable?.wifiSignal ?? null,
         totalAmount: tableOrderData?.totalAmount ?? null,
         remainingAmount,
         orderTime,

@@ -34,6 +34,12 @@ export const CardHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 `;
 
 export const TableNumber = styled.h1<{ isEmpty?: boolean }>`
@@ -86,12 +92,22 @@ export const CardFooter = styled.div`
   }
 `;
 
-export const TotalAmount = styled.div`
+export const TotalAmount = styled.div<{ isEmpty?: boolean }>`
   ${TYPOGRAPHY.ST_3}
-  color: ${colors.grey[800]};
+  color: ${({ isEmpty }) => (isEmpty ? colors.grey[400] : colors.grey[800])};
 `;
 
 export const StatusText = styled.div`
   ${TYPOGRAPHY.ST_3}
   color: ${colors.grey[400]};
+`;
+
+export const WifiSignal = styled.div`
+  ${TYPOGRAPHY.CT_5}
+  color: ${colors.primary[500]};
+  background: ${colors.primary[200]};
+  padding: 3px 6px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.08);
 `;
