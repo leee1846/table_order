@@ -230,7 +230,8 @@ export const PriceSelector = ({
       <S.MenuList>
         {persons.map((person, index) => {
           const personPrice = calculatePersonPrice(person);
-          const canChangePrice = personPrice > MIN_AMOUNT_PER_PERSON;
+          const canChangePrice =
+            personPrice > MIN_AMOUNT_PER_PERSON && persons.length > 1;
 
           return (
             <S.MenuItem key={person.id} isSelected={person.isSelected}>
@@ -252,7 +253,7 @@ export const PriceSelector = ({
                   </S.Price>
                 </CheckButton>
 
-                {/* 10원 초과 시에만 금액 변경 버튼 표시 */}
+                {/* 10원 초과이고 인원이 2명 이상일 때만 금액 변경 버튼 표시 (항목 1개일 때는 비노출) */}
                 {canChangePrice && (
                   <S.ChangePriceButton
                     onClick={() => setEditingPersonIndex(index)}
