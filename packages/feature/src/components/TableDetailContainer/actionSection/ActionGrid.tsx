@@ -78,14 +78,14 @@ export function ActionGrid({
             <label>{t('알림 발송 ')}</label>
           </ActionBtn>
         )}
-        <ActionBtn onClick={() => onPress?.('amount-change')}>
+        {/* <ActionBtn onClick={() => onPress?.('amount-change')}>
           <img src={AmountChangeIcon} alt={t('금액 변경')} />
           <label>{t('금액 변경')}</label>
         </ActionBtn>
         <ActionBtn onClick={handleAllDiscount}>
           <img src={TotalDiscountIcon} alt={t('전체 할인')} />
           <label>{t('전체 할인')}</label>
-        </ActionBtn>
+        </ActionBtn> */}
       </Grid>
 
       <PickupNotificationDialog
