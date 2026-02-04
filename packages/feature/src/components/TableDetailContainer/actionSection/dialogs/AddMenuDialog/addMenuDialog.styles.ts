@@ -16,7 +16,7 @@ export const DialogContainer = styled(BaseDialogContainer)`
 export const CloseButton = styled(BaseCloseButton)`
   width: 50px;
   height: 50px;
-  transform: translate(6px, 6px);
+  transform: translate(6px, -10px);
 `;
 
 export const RightPanel = styled.div`

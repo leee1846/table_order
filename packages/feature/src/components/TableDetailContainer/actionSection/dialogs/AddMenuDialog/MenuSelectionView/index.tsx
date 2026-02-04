@@ -67,46 +67,7 @@ export const MenuSelectionView = ({
         </A.CloseButton>
 
         <S.ContentWrapper>
-          {/* 왼쪽 사이드바 - 카테고리 */}
-          <S.Sidebar>
-            {categories.map((category) => (
-              <S.CategoryItem
-                key={category.categorySeq}
-                onClick={() => onCategoryChange(category.categorySeq)}
-                isActive={selectedCategory === category.categorySeq}
-              >
-                {category.categoryName}
-              </S.CategoryItem>
-            ))}
-          </S.Sidebar>
-
-          {/* 중앙 영역 - 메뉴 그리드 */}
-          <S.MenuGrid>
-            {currentMenuList.length === 0 ? (
-              <S.MenuGridPlaceholder></S.MenuGridPlaceholder>
-            ) : (
-              currentMenuList.map((menu) => (
-                <S.MenuCard
-                  key={menu.menuSeq}
-                  onClick={() => !menu.isOutOfStock && onMenuClick(menu)}
-                  isSelected={false}
-                  isOutOfStock={menu.isOutOfStock}
-                >
-                  {menu.isOutOfStock && (
-                    <S.SoldOutBadge>Sold Out</S.SoldOutBadge>
-                  )}
-                  <S.MenuTitle isOutOfStock={menu.isOutOfStock}>
-                    {menu.localeMenuName?.[currentLan]}
-                  </S.MenuTitle>
-                  <S.MenuPrice isOutOfStock={menu.isOutOfStock}>
-                    {formatCurrency(menu.menuPrice)}
-                  </S.MenuPrice>
-                </S.MenuCard>
-              ))
-            )}
-          </S.MenuGrid>
-
-          {/* 오른쪽 패널 - 선택된 메뉴 */}
+          {/* 왼쪽 패널 - 선택된 메뉴 */}
           <A.RightPanel>
             <A.PanelHeader>
               <A.PanelTitle>{tableName}</A.PanelTitle>
@@ -198,6 +159,44 @@ export const MenuSelectionView = ({
               </BasicButton>
             </A.PanelFooter>
           </A.RightPanel>
+
+          {/* 오른쪽 영역 - 메뉴 그리드 */}
+          <S.MenuGrid>
+            {currentMenuList.length === 0 ? (
+              <S.MenuGridPlaceholder></S.MenuGridPlaceholder>
+            ) : (
+              currentMenuList.map((menu) => (
+                <S.MenuCard
+                  key={menu.menuSeq}
+                  onClick={() => !menu.isOutOfStock && onMenuClick(menu)}
+                  isSelected={false}
+                  isOutOfStock={menu.isOutOfStock}
+                >
+                  {menu.isOutOfStock && (
+                    <S.SoldOutBadge>Sold Out</S.SoldOutBadge>
+                  )}
+                  <S.MenuTitle isOutOfStock={menu.isOutOfStock}>
+                    {menu.localeMenuName?.[currentLan]}
+                  </S.MenuTitle>
+                  <S.MenuPrice isOutOfStock={menu.isOutOfStock}>
+                    {formatCurrency(menu.menuPrice)}
+                  </S.MenuPrice>
+                </S.MenuCard>
+              ))
+            )}
+          </S.MenuGrid>
+          {/* 중앙 사이드바 - 카테고리 */}
+          <S.Sidebar>
+            {categories.map((category) => (
+              <S.CategoryItem
+                key={category.categorySeq}
+                onClick={() => onCategoryChange(category.categorySeq)}
+                isActive={selectedCategory === category.categorySeq}
+              >
+                {category.categoryName}
+              </S.CategoryItem>
+            ))}
+          </S.Sidebar>
         </S.ContentWrapper>
       </A.DialogContainer>
     </ModalBackground>

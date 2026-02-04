@@ -11,7 +11,7 @@ export const ContentWrapper = styled.div`
 
 export const Sidebar = styled.div`
   flex: 1;
-  padding: 40px 24px;
+  padding: 70px 24px 40px;
   display: flex;
   flex-direction: column;
   gap: 16px;

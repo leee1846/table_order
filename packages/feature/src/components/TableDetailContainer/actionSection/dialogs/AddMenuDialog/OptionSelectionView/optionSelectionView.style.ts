@@ -7,7 +7,7 @@ const { colors } = theme;
 
 export const OptionContentWrapper = styled.div`
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 320px 1fr;
   height: 100%;
 `;
 

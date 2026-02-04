@@ -135,7 +135,77 @@ export const OptionSelectionView = ({
         </A.CloseButton>
 
         <S.OptionContentWrapper>
-          {/* 왼쪽 패널 - 옵션 그룹 및 옵션 리스트 */}
+          {/* 왼쪽 패널 - 선택된 옵션 */}
+          <S.OptionRightPanel>
+            <A.PanelHeader>
+              <A.PanelTitle>{t('선택된 옵션')}</A.PanelTitle>
+            </A.PanelHeader>
+            <A.PanelContent>
+              {!hasSelectedOptions ? (
+                <A.EmptyState>
+                  <OptionSettingIcon width={52} height={52} />
+                  <A.EmptyText>{t('추가한 옵션이 없어요.')}</A.EmptyText>
+                </A.EmptyState>
+              ) : (
+                <S.SelectedOptionsList>
+                  {Array.from(selectedOptions.entries()).map(
+                    ([optionSeq, quantity]) => {
+                      const option = optionGroups
+                        .flatMap((group) => group.optionList)
+                        .find((opt) => opt.optionSeq === optionSeq);
+
+                      if (!option) {
+                        return null;
+                      }
+
+                      return (
+                        <S.SelectedOptionItem key={optionSeq}>
+                          <S.OptionItemName>
+                            ㄴ{option.localeOptionName?.[currentLan]}
+                          </S.OptionItemName>
+                          <S.OptionItemPrice>
+                            {t('(+{{price}})', {
+                              price: t('{{price}}원', {
+                                price: formatCurrency(option.optionPrice),
+                              }),
+                            })}
+                          </S.OptionItemPrice>
+                          {quantity >= 2 && (
+                            <S.OptionItemQuantity>
+                              {t('{{count}}개', { count: quantity })}
+                            </S.OptionItemQuantity>
+                          )}
+                        </S.SelectedOptionItem>
+                      );
+                    }
+                  )}
+                </S.SelectedOptionsList>
+              )}
+            </A.PanelContent>
+
+            <S.MenuQuantitySection>
+              <NumberInput
+                variant="square"
+                value={menuQuantity}
+                min={1}
+                onChange={onMenuQuantityChange}
+                customStyle={S.rightPanelMenuQuantityInput}
+              />
+            </S.MenuQuantitySection>
+            <S.TotalMountSection>
+              <S.TotalMountLabel>{t('합계')}</S.TotalMountLabel>
+              <S.TotalMountValue>
+                {t('{{price}}원', { price: formatCurrency(totalPrice) })}
+              </S.TotalMountValue>
+            </S.TotalMountSection>
+            <A.PanelFooter>
+              <BasicButton variant="Solid_Navy_2XL" onClick={onAdd} fullWidth>
+                {t('추가하기')}
+              </BasicButton>
+            </A.PanelFooter>
+          </S.OptionRightPanel>
+
+          {/* 오른쪽 패널 - 옵션 그룹 및 옵션 리스트 */}
           <S.OptionLeftPanel>
             <S.OptionHeader>
               <S.OptionMenuName>
@@ -265,76 +335,6 @@ export const OptionSelectionView = ({
               ))}
             </S.OptionListContainer>
           </S.OptionLeftPanel>
-
-          {/* 오른쪽 패널 - 선택된 옵션 */}
-          <S.OptionRightPanel>
-            <A.PanelHeader>
-              <A.PanelTitle>{t('선택된 옵션')}</A.PanelTitle>
-            </A.PanelHeader>
-            <A.PanelContent>
-              {!hasSelectedOptions ? (
-                <A.EmptyState>
-                  <OptionSettingIcon width={52} height={52} />
-                  <A.EmptyText>{t('추가한 옵션이 없어요.')}</A.EmptyText>
-                </A.EmptyState>
-              ) : (
-                <S.SelectedOptionsList>
-                  {Array.from(selectedOptions.entries()).map(
-                    ([optionSeq, quantity]) => {
-                      const option = optionGroups
-                        .flatMap((group) => group.optionList)
-                        .find((opt) => opt.optionSeq === optionSeq);
-
-                      if (!option) {
-                        return null;
-                      }
-
-                      return (
-                        <S.SelectedOptionItem key={optionSeq}>
-                          <S.OptionItemName>
-                            ㄴ{option.localeOptionName?.[currentLan]}
-                          </S.OptionItemName>
-                          <S.OptionItemPrice>
-                            {t('(+{{price}})', {
-                              price: t('{{price}}원', {
-                                price: formatCurrency(option.optionPrice),
-                              }),
-                            })}
-                          </S.OptionItemPrice>
-                          {quantity >= 2 && (
-                            <S.OptionItemQuantity>
-                              {t('{{count}}개', { count: quantity })}
-                            </S.OptionItemQuantity>
-                          )}
-                        </S.SelectedOptionItem>
-                      );
-                    }
-                  )}
-                </S.SelectedOptionsList>
-              )}
-            </A.PanelContent>
-
-            <S.MenuQuantitySection>
-              <NumberInput
-                variant="square"
-                value={menuQuantity}
-                min={1}
-                onChange={onMenuQuantityChange}
-                customStyle={S.rightPanelMenuQuantityInput}
-              />
-            </S.MenuQuantitySection>
-            <S.TotalMountSection>
-              <S.TotalMountLabel>{t('합계')}</S.TotalMountLabel>
-              <S.TotalMountValue>
-                {t('{{price}}원', { price: formatCurrency(totalPrice) })}
-              </S.TotalMountValue>
-            </S.TotalMountSection>
-            <A.PanelFooter>
-              <BasicButton variant="Solid_Navy_2XL" onClick={onAdd} fullWidth>
-                {t('추가하기')}
-              </BasicButton>
-            </A.PanelFooter>
-          </S.OptionRightPanel>
         </S.OptionContentWrapper>
       </A.DialogContainer>
     </ModalBackground>
