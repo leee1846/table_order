@@ -89,8 +89,14 @@ export const TablesPage = () => {
   const { data: shopDetailData } = useShopDetailData();
   const { data: deviceData, setDataAsync: setDeviceData } = useDeviceData();
   const { setIsInitialized: setDeviceInitialized } = useDeviceStore();
-  const { data: tableGroupsData } = useTableGroupData();
   const { shopSetting } = shopDetailData ?? {};
+  const { data: tableGroupsData, refresh: refreshTableGroupsData } =
+    useTableGroupData();
+
+  // 페이지 접근시 테이블 그룹 데이터 새로고침
+  useEffect(() => {
+    refreshTableGroupsData();
+  }, [refreshTableGroupsData]);
 
   // 디바이스 타입 확인
   const isOrderPosDevice = deviceData?.deviceType === 'ORDER_POS';

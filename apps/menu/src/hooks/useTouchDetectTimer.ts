@@ -89,6 +89,10 @@ export const useTouchDetectTimer = () => {
 
     const orderReminderTimerCallback = () => {
       globalTimerManager.clear(TIMER_KEYS.CART_ORDER_REMINDER);
+      // 타이머 만료 시점에 다시 한 번 모달 상태 확인 (열린 모달 위에 노출 방지)
+      if (!isAllModalsClosed()) {
+        return;
+      }
       showCartReminder();
     };
 
