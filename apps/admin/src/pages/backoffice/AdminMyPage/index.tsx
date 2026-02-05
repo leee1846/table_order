@@ -189,6 +189,12 @@ export const AdminMyPage = () => {
             <S.TokenInfoKey>권한</S.TokenInfoKey>
             <S.TokenInfoValue>{tokenPayload?.role ?? '-'}</S.TokenInfoValue>
           </S.TokenInfoItem>
+          {/* Q/A동안 노출 버전 */}
+          {/* TODO: 삭제 예정 */}
+          <S.TokenInfoItem>
+            <S.TokenInfoKey>Q/A 버전</S.TokenInfoKey>
+            <S.TokenInfoValue>1.0.0</S.TokenInfoValue>
+          </S.TokenInfoItem>
         </S.TokenInfoGrid>
       </S.TokenInfoCard>
 

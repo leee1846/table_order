@@ -120,6 +120,12 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
             </p>
           )}
           {CapacitorApp.isNative() && <div />}
+          {/* Q/A동안 노출 버전 */}
+          {/* TODO: 삭제 예정 */}
+          <p>
+            Q/A 버전
+            <span>1.0.0</span>
+          </p>
           <p>
             {t('최신 버전')}
             <span>{latestAppVersionText}</span>
