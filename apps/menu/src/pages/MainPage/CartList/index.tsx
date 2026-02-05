@@ -258,10 +258,14 @@ export const CartList = ({
                           {option.optionName}
                         </p>
                         <div>
-                          <p>{formatCurrency(option.quantity)}</p>
+                          <p>
+                            {formatCurrency(option.quantity * menu.quantity)}
+                          </p>
                           <p>
                             {formatCurrency(
-                              option.optionPrice * option.quantity
+                              option.optionPrice *
+                                option.quantity *
+                                menu.quantity
                             )}
                           </p>
                         </div>

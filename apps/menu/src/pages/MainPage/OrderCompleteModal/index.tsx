@@ -56,9 +56,15 @@ export const OrderCompleteModal = ({
                       </div>
 
                       <div>
-                        <p>{formatCurrency(option.quantity)}</p>
                         <p>
-                          {formatCurrency(option.optionPrice * option.quantity)}
+                          {formatCurrency(option.quantity * order.quantity)}
+                        </p>
+                        <p>
+                          {formatCurrency(
+                            option.optionPrice *
+                              option.quantity *
+                              order.quantity
+                          )}
                         </p>
                       </div>
                     </li>
