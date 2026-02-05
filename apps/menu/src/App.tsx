@@ -10,18 +10,7 @@ const App = () => {
   useMerchantRegistration();
 
   // 디버깅용, AppStorage 저장된 모든 데이터 콘솔 출력
-  AppStorage.getAllData().then((data) => {
-    const parsedData: Record<string, unknown> = {};
-    Object.entries(data.temporary).forEach(([key, value]) => {
-      try {
-        parsedData[key] = typeof value === 'string' ? JSON.parse(value) : value;
-      } catch {
-        parsedData[key] = value;
-      }
-    });
-    // eslint-disable-next-line no-console
-    console.log(parsedData);
-  });
+  AppStorage.getAllData();
 
   return (
     <div>

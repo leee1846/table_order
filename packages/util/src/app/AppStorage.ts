@@ -97,7 +97,10 @@ const AppStorageNative = registerPlugin<IAppStorage & Plugin>('AppStorage');
  */
 export const AppStorage: IAppStorage = {
   saveData: async (options) => {
-    console.warn('[AppStorage.saveData] 요청:', { key: options.key, isTemporary: options.isTemporary });
+    console.warn('[AppStorage.saveData] 요청:', {
+      key: options.key,
+      isTemporary: options.isTemporary,
+    });
     const stringValue =
       typeof options.value === 'string'
         ? options.value
@@ -144,7 +147,15 @@ export const AppStorage: IAppStorage = {
   getAllData: async () => {
     console.warn('[AppStorage.getAllData] 요청');
     const result = await AppStorageNative.getAllData();
-    console.warn('[AppStorage.getAllData] 반환:', result);
+    const parsedData: Record<string, unknown> = {};
+    Object.entries(result.temporary).forEach(([key, value]) => {
+      try {
+        parsedData[key] = typeof value === 'string' ? JSON.parse(value) : value;
+      } catch {
+        parsedData[key] = value;
+      }
+    });
+    console.warn('[AppStorage.getAllData] 반환:', parsedData);
     return result;
   },
 
@@ -156,7 +167,10 @@ export const AppStorage: IAppStorage = {
   },
 
   saveMedia: async (options) => {
-    console.warn('[AppStorage.saveMedia] 요청:', { fileName: options.fileName, type: options.type });
+    console.warn('[AppStorage.saveMedia] 요청:', {
+      fileName: options.fileName,
+      type: options.type,
+    });
     await AppStorageNative.saveMedia(options);
     console.warn('[AppStorage.saveMedia] 반환: void');
   },
