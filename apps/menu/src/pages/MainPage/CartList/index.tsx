@@ -246,7 +246,7 @@ export const CartList = ({
               <S.OrderItem key={`order-${index + 1}`} role="listitem">
                 <S.OrderMenu>
                   <h3>{menu.menuName}</h3>
-                  <p>{formatCurrency(menu.menuPrice)}</p>
+                  <p>{formatCurrency(menu.menuPrice * menu.quantity)}</p>
                 </S.OrderMenu>
 
                 {hasOptions && (
@@ -259,7 +259,11 @@ export const CartList = ({
                         </p>
                         <div>
                           <p>{formatCurrency(option.quantity)}</p>
-                          <p>{formatCurrency(option.optionPrice)}</p>
+                          <p>
+                            {formatCurrency(
+                              option.optionPrice * option.quantity
+                            )}
+                          </p>
                         </div>
                       </S.OptionItem>
                     ))}

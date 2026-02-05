@@ -44,7 +44,7 @@ export const OrderCompleteModal = ({
                 <S.MenuInfo>
                   <h3>{order.menuName}</h3>
                   <p>{formatCurrency(order.quantity)}</p>
-                  <p>{formatCurrency(order.menuPrice)}</p>
+                  <p>{formatCurrency(order.menuPrice * order.quantity)}</p>
                 </S.MenuInfo>
 
                 <S.OptionList role="list">
@@ -57,7 +57,9 @@ export const OrderCompleteModal = ({
 
                       <div>
                         <p>{formatCurrency(option.quantity)}</p>
-                        <p>{formatCurrency(option.optionPrice)}</p>
+                        <p>
+                          {formatCurrency(option.optionPrice * option.quantity)}
+                        </p>
                       </div>
                     </li>
                   ))}
