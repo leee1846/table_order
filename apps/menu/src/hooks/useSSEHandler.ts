@@ -530,7 +530,7 @@ export const useSSEHandler = () => {
       case 'APP_OFF':
         // 앱 종료 제어
         handlersRef.current.handleDeviceControlMessage(() => {
-          SystemControl.exitApp();
+          SystemControl.shutdown();
         }, sseMessage);
         break;
 

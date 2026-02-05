@@ -91,10 +91,9 @@ export interface ISystemControl {
   stopKiosk(): Promise<void>;
 
   /**
-   * 앱 종료 (Process Kill).
-   * 종료 전 키오스크 모드 해제
+   * 디바이스 종료
    */
-  exitApp(): Promise<void>;
+  shutdown(): Promise<void>;
 
   /**
    * 웹뷰의 캐시, 쿠키, 로컬스토리지, 방문기록 삭제
@@ -193,10 +192,10 @@ export const SystemControl: ISystemControl = {
     console.warn('[SystemControl.stopKiosk] 반환: void');
   },
 
-  exitApp: async () => {
-    console.warn('[SystemControl.exitApp] 요청');
-    await NativeSystem.exitApp();
-    console.warn('[SystemControl.exitApp] 반환: void');
+  shutdown: async () => {
+    console.warn('[SystemControl.shutdown] 요청');
+    await NativeSystem.shutdown();
+    console.warn('[SystemControl.shutdown] 반환: void');
   },
 
   clearWebData: async () => {
