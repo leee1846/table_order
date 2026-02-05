@@ -54,7 +54,7 @@ export const OptionDetailModal = ({ menu, onClose }: Props) => {
 
                 <div>
                   <p>{formatCurrency(option.quantity)}</p>
-                  <p>{formatCurrency(option.optionPrice)}</p>
+                  <p>{formatCurrency(option.optionPrice * option.quantity)}</p>
                 </div>
               </li>
             ))}
