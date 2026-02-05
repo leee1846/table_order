@@ -97,57 +97,80 @@ const AppStorageNative = registerPlugin<IAppStorage & Plugin>('AppStorage');
  */
 export const AppStorage: IAppStorage = {
   saveData: async (options) => {
+    console.warn('[AppStorage.saveData] 요청:', { key: options.key, isTemporary: options.isTemporary });
     const stringValue =
       typeof options.value === 'string'
         ? options.value
         : JSON.stringify(options.value);
 
-    AppStorageNative.saveData({
+    await AppStorageNative.saveData({
       ...options,
       value: stringValue,
     });
+    console.warn('[AppStorage.saveData] 반환: void');
   },
 
-  loadData: async (options) => {
+  loadData: async <T = unknown>(options: { key: string }) => {
+    console.warn('[AppStorage.loadData] 요청:', options);
     const result = await AppStorageNative.loadData(options);
     const value = result.value as string | null;
+    let out: { value: T | null };
     if (!value) {
-      return { value: null };
+      out = { value: null };
+    } else {
+      try {
+        out = { value: JSON.parse(value) as T };
+      } catch (e) {
+        console.warn('[AppStorage.loadData] JSON 파싱 실패, 원본 반환', e);
+        out = { value: value as T };
+      }
     }
-
-    try {
-      return { value: JSON.parse(value) };
-    } catch {
-      // JSON 파싱 실패 시 원본 값 반환
-      return { value };
-    }
+    console.warn('[AppStorage.loadData] 반환:', out);
+    return out;
   },
 
   removeData: async (options) => {
-    AppStorageNative.removeData(options);
+    console.warn('[AppStorage.removeData] 요청:', options);
+    await AppStorageNative.removeData(options);
+    console.warn('[AppStorage.removeData] 반환: void');
   },
 
   removeAllData: async () => {
-    AppStorageNative.removeAllData();
+    console.warn('[AppStorage.removeAllData] 요청');
+    await AppStorageNative.removeAllData();
+    console.warn('[AppStorage.removeAllData] 반환: void');
   },
 
   getAllData: async () => {
-    return AppStorageNative.getAllData();
+    console.warn('[AppStorage.getAllData] 요청');
+    const result = await AppStorageNative.getAllData();
+    console.warn('[AppStorage.getAllData] 반환:', result);
+    return result;
   },
 
   exists: async (options) => {
-    return AppStorageNative.exists(options);
+    console.warn('[AppStorage.exists] 요청:', options);
+    const result = await AppStorageNative.exists(options);
+    console.warn('[AppStorage.exists] 반환:', result);
+    return result;
   },
 
   saveMedia: async (options) => {
-    return AppStorageNative.saveMedia(options);
+    console.warn('[AppStorage.saveMedia] 요청:', { fileName: options.fileName, type: options.type });
+    await AppStorageNative.saveMedia(options);
+    console.warn('[AppStorage.saveMedia] 반환: void');
   },
 
   downloadFromUrl: async (options) => {
-    return AppStorageNative.downloadFromUrl(options);
+    console.warn('[AppStorage.downloadFromUrl] 요청:', options);
+    await AppStorageNative.downloadFromUrl(options);
+    console.warn('[AppStorage.downloadFromUrl] 반환: void');
   },
 
   getLocalUrl: async (options) => {
-    return AppStorageNative.getLocalUrl(options);
+    console.warn('[AppStorage.getLocalUrl] 요청:', options);
+    const result = await AppStorageNative.getLocalUrl(options);
+    console.warn('[AppStorage.getLocalUrl] 반환:', result);
+    return result;
   },
 };

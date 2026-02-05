@@ -13,14 +13,20 @@ export interface ICapacitorApp {
 
 export const CapacitorApp: ICapacitorApp = {
   getInfo: async () => {
+    console.warn('[CapacitorApp.getInfo] 요청');
     try {
       const res = await App.getInfo();
+      console.warn('[CapacitorApp.getInfo] 반환:', res);
       return res;
-    } catch {
+    } catch (e) {
+      console.warn('[CapacitorApp.getInfo] 반환: null (에러)', e);
       return null;
     }
   },
   isNative: () => {
-    return Capacitor.isNativePlatform();
+    console.warn('[CapacitorApp.isNative] 요청');
+    const out = Capacitor.isNativePlatform();
+    console.warn('[CapacitorApp.isNative] 반환:', out);
+    return out;
   },
 };

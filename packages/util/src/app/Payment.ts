@@ -199,23 +199,30 @@ export interface IPayment {
 
 export const Payment: IPayment = {
   addListener: async (eventName, callback) => {
-    return NativePayment.addListener(eventName, callback);
+    console.warn('[Payment.addListener] 요청:', { eventName });
+    const result = await NativePayment.addListener(eventName, callback);
+    console.warn('[Payment.addListener] 반환:', result);
+    return result;
   },
 
   approve: async (options) => {
+    console.warn('[Payment.approve] 요청:', options);
     const amt = options.amount.toString();
 
-    return NativePayment.requestPaymentActivity({
+    const result = await NativePayment.requestPaymentActivity({
       // 부가세 자동 계산 (옵션 없으면 10% 자동)
       tran_type: 'D1',
       amount: amt,
       installment: options.installment || '00',
       tran_no: Date.now().toString(),
     });
+    console.warn('[Payment.approve] 반환:', result);
+    return result;
   },
 
   cancel: async (options) => {
-    return NativePayment.requestPaymentActivity({
+    console.warn('[Payment.cancel] 요청:', options);
+    const result = await NativePayment.requestPaymentActivity({
       tran_type: 'D4',
       amount: options.amount.toString(),
       approval_num: options.orgApprNum,
@@ -223,23 +230,33 @@ export const Payment: IPayment = {
       installment: '00', // 취소는 항상 일시불 처리
       tran_no: options.tranNo,
     });
+    console.warn('[Payment.cancel] 반환:', result);
+    return result;
   },
 
   stop: async () => {
-    return NativePayment.stopPayment();
+    console.warn('[Payment.stop] 요청');
+    await NativePayment.stopPayment();
+    console.warn('[Payment.stop] 반환: void');
   },
 
   downloadMerchant: async (options) => {
-    return NativePayment.requestMerchantDownload({
+    console.warn('[Payment.downloadMerchant] 요청:', options);
+    const result = await NativePayment.requestMerchantDownload({
       biz_no: options.bizNo,
       tid: options.tid,
       zone_code: options.zoneCode,
       phone: options.phone,
       init_yn: options.initYn || 'N',
     });
+    console.warn('[Payment.downloadMerchant] 반환:', result);
+    return result;
   },
 
   inquiryMerchant: async () => {
-    return NativePayment.requestMerchantInquiry();
+    console.warn('[Payment.inquiryMerchant] 요청');
+    const result = await NativePayment.requestMerchantInquiry();
+    console.warn('[Payment.inquiryMerchant] 반환:', result);
+    return result;
   },
 };
