@@ -36,19 +36,18 @@ export const Pagination = ({
       <S.Buttons>
         <S.Button onClick={() => handlePageChange(1)} disabled={isFirstPage}>
           <FirstPageIcon
-            width={16}
-            height={16}
+            width={20}
+            height={20}
             color={theme.colors.grey[700]}
           />
         </S.Button>
         <S.Button
-          padding="0 12px"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={isFirstPage}
         >
           <ChevronBackwardIcon
-            width={16}
-            height={16}
+            width={20}
+            height={20}
             color={theme.colors.grey[700]}
           />
         </S.Button>
@@ -60,13 +59,12 @@ export const Pagination = ({
       </S.Texts>
       <S.Buttons>
         <S.Button
-          padding="0 12px"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={isLastPage}
         >
           <ChevronForwardIcon
-            width={16}
-            height={16}
+            width={20}
+            height={20}
             color={theme.colors.grey[700]}
           />
         </S.Button>
@@ -74,7 +72,7 @@ export const Pagination = ({
           onClick={() => handlePageChange(totalPages)}
           disabled={isLastPage}
         >
-          <LastPageIcon width={16} height={16} color={theme.colors.grey[700]} />
+          <LastPageIcon width={20} height={20} color={theme.colors.grey[700]} />
         </S.Button>
       </S.Buttons>
     </S.Container>
