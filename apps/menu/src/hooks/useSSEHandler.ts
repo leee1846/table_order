@@ -76,7 +76,7 @@ export const useSSEHandler = () => {
     }
 
     const getDeviceData = async () => {
-      // 기존 스토어 데이터 유지 (wifi 등 GET API에 없는 값 보존)
+      // 기존 스토어 데이터 유지 (wifi 등 GET API에 없는 값 보존) — App에서 hydration 후 렌더하므로 ref에 이미 반영됨
       const existingStore = deviceStoreDataRef.current ?? {};
 
       const { ipAddress, androidId, appInfo } = await getDeviceInfo({ t });

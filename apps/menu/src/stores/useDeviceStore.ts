@@ -11,6 +11,8 @@ interface IDeviceStore {
   setDataAsync: (data: IDevicePartial) => void;
   setIsInitialized: (isInitialized: boolean) => void;
   clearData: () => void;
+  /** AppStorage 로드 완료 대기. App.tsx에서만 사용하며, 그 후에 자식이 렌더되어 tableNumber 레이스가 발생하지 않음 */
+  waitForHydration: () => Promise<void>;
 }
 
 /**
@@ -22,14 +24,14 @@ interface IDeviceStore {
  * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
 export const useDeviceStore = create<IDeviceStore>((set) => {
-  // 초기 데이터 로드 (비동기)
-  AppStorage.loadData<IDevicePartial>({ key: STORAGE_KEYS.DEVICE }).then(
-    (data) => {
-      if (data?.value) {
-        set({ data: data.value });
-      }
+  // 초기 데이터 로드 (비동기) — 완료 시점을 기다리기 위해 Promise 노출
+  const hydrationPromise = AppStorage.loadData<IDevicePartial>({
+    key: STORAGE_KEYS.DEVICE,
+  }).then((data) => {
+    if (data?.value) {
+      set({ data: data.value });
     }
-  );
+  });
 
   return {
     isInitialized: false,
@@ -54,5 +56,6 @@ export const useDeviceStore = create<IDeviceStore>((set) => {
       });
       set({ data: null, isInitialized: false });
     },
+    waitForHydration: () => hydrationPromise,
   };
 });
