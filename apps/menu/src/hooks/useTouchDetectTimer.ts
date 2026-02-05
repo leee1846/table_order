@@ -55,6 +55,11 @@ export const useTouchDetectTimer = () => {
     const timerCallback = async () => {
       globalTimerManager.clear(TIMER_KEYS.API_RESET_TIMEOUT);
 
+      // 모달이 하나라도 열려 있으면 새로고침하지 않음 (분할 결제 등 진행 중 방지)
+      if (!isAllModalsClosed()) {
+        return;
+      }
+
       await refreshShopDetailDataRef.current();
       await refreshCategoriesDataRef.current();
       await refreshTableGroupDataRef.current();
@@ -78,6 +83,10 @@ export const useTouchDetectTimer = () => {
     };
 
     const startResetTimer = () => {
+      // 모달이 열려 있으면 리셋 타이머를 시작하지 않음
+      if (!isAllModalsClosed()) {
+        return;
+      }
       // 이미 타이머 실행 중이면 제거
       globalTimerManager.clear(TIMER_KEYS.API_RESET_TIMEOUT);
       globalTimerManager.setTimeout(

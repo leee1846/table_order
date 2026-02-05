@@ -10,7 +10,7 @@ export const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: ${zIndex.notification};
+  z-index: ${zIndex.popover};
   background-color: transparent;
 `;
 
