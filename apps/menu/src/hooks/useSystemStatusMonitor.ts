@@ -18,7 +18,7 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
  */
 export const useSystemStatusMonitor = () => {
   const { t } = useAdminTranslation();
-  const { data: deviceData } = useDeviceData({
+  const { data: deviceData, refresh: refreshDeviceData } = useDeviceData({
     skipInitialRequest: true,
   });
   const { shopData } = useShopData({ skipInitialRequest: true });
@@ -100,7 +100,13 @@ export const useSystemStatusMonitor = () => {
       }
 
       const deviceType = currentData?.deviceType ?? 'MENU';
-      const tableNumber = currentData?.tableNumber ?? null;
+      let tableNumber = currentData?.tableNumber ?? null;
+
+      // reload 직후 AppStorage hydration 전에 tableNumber가 null일 수 있으므로 서버에서 가져오기
+      if (tableNumber === null && androidId && shopData?.shopCode) {
+        const freshDeviceData = await refreshDeviceData();
+        tableNumber = freshDeviceData?.tableNumber ?? null;
+      }
 
       await postDeviceDetail({
         shopCode: shopData.shopCode,
@@ -124,5 +130,5 @@ export const useSystemStatusMonitor = () => {
     return () => {
       SystemControl.stopMonitoring();
     };
-  }, [postDeviceDetail, setDataAsync, t]);
+  }, [postDeviceDetail, setDataAsync, t, refreshDeviceData]);
 };

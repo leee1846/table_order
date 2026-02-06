@@ -102,7 +102,7 @@ export const useSSEHandler = () => {
         // API에만 있는 필드만 API 값으로 채움
         ...(apiDeviceData && {
           deviceType: apiDeviceData.deviceType,
-          tableNumber: apiDeviceData.tableNumber,
+          tableNumber: apiDeviceData.tableNumber ?? existingStore.tableNumber,
           orderPosNumber: apiDeviceData.orderPosNumber,
           deviceSeq: apiDeviceData.deviceSeq,
           shopSeq: apiDeviceData.shopSeq,
