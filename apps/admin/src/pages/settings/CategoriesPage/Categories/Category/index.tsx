@@ -201,12 +201,13 @@ export const Category = ({
             <p>{t('가능')}</p>
           </li>
         )}
-        {category.useTwoColumnLayout && (
+        {/* 3열 배치로 무조건 쓰기로 함 */}
+        {/* {category.useTwoColumnLayout && (
           <li>
             <p>{t('보기 옵션')}</p>
             <p>{t('2열')}</p>
           </li>
-        )}
+        )} */}
       </S.Badges>
       <S.Footer>
         <S.HiddenContainer>

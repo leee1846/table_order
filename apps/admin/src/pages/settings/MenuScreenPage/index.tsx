@@ -18,7 +18,6 @@ import {
   type ScreenModeOption,
 } from '@/pages/settings/MenuScreenPage/ScreenMode';
 import { Logo } from '@/pages/settings/MenuScreenPage/Logo';
-import { Template } from '@/pages/settings/MenuScreenPage/Template';
 import * as S from './menuScreenPage.style';
 
 export const MenuScreenPage = () => {
@@ -27,7 +26,7 @@ export const MenuScreenPage = () => {
   const [screenMode, setScreenMode] = useState<ScreenModeOption>('light');
   const [logoImageUrl, setLogoImageUrl] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [isMenuThreeColumnLayout, setIsMenuThreeColumnLayout] = useState(false);
+  const [isMenuThreeColumnLayout, setIsMenuThreeColumnLayout] = useState(true);
   const [templateType, setTemplateType] =
     useState<TMenuboardTemplateType>('DEFAULT');
 
@@ -126,12 +125,13 @@ export const MenuScreenPage = () => {
 
       <ScreenMode mode={screenMode} onChange={setScreenMode} />
       <Logo imageUrl={logoImageUrl} onChange={handleLogoChange} />
-      <Template
+      {/* 안 쓰는 UI 없애라고 하셔서 템플릿 설정(가로 기본형), 3열 배치가 있는 Template 컴포넌트 주석 */}
+      {/* <Template
         isMenuThreeColumnLayout={isMenuThreeColumnLayout}
         templateType={templateType}
         onChangeThreeColumnLayout={setIsMenuThreeColumnLayout}
         onChangeTemplateType={setTemplateType}
-      />
+      /> */}
     </S.Container>
   );
 };

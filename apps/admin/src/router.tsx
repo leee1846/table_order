@@ -35,7 +35,7 @@ const SettingsAccessGuard = lazy(() =>
   }))
 );
 const StoresSidebar = lazy(() =>
-  import('@/feature/backoffice/SidebarLayout').then((module) => ({
+  import('@/feature/Backoffice/SidebarLayout').then((module) => ({
     default: module.StoresSidebarLayout,
   }))
 );

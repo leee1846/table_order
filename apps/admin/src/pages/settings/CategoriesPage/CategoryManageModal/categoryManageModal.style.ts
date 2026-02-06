@@ -71,10 +71,9 @@ export const DayList = styled.ul`
 `;
 
 export const CheckButtonList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-
+display: flex;
+flex-direction : row;
+justify-content : space-between;
   p {
     color: ${theme.colors.grey[800]};
     white-space: nowrap;
@@ -108,4 +107,8 @@ export const TimeRangeDisplay = styled.div<{ hasValue: boolean }>`
   white-space: nowrap;
   ${TYPOGRAPHY.ST_2}
   border-bottom : 1px solid ${theme.colors.grey[400]};
+`;
+
+export const SubmitButtonCss = css`
+  margin-top: 24px;
 `;

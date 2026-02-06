@@ -239,12 +239,15 @@ export const MenuManageModalProvider = ({
 
     setIsSaving(true);
 
-    if (mode === 'create') {
-      await handleCreate();
-    } else {
-      await handleUpdate();
+    try {
+      if (mode === 'create') {
+        await handleCreate();
+      } else {
+        await handleUpdate();
+      }
+    } finally {
+      setIsSaving(false);
     }
-    setIsSaving(false);
   }, [isSaving, mode, handleCreate, handleUpdate, formValues.menuName]);
 
   /**

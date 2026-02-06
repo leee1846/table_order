@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import { Stores } from '@/feature/backoffice/Stores';
-import { validateShopData } from '@/feature/backoffice/util';
+import { Stores } from '@/feature/Backoffice/Stores';
+import { validateShopData } from '@/feature/Backoffice/util';
 import { usePostAdminShop } from '@repo/api/queries';
 import { toast } from '@repo/feature/utils';
 import type {
