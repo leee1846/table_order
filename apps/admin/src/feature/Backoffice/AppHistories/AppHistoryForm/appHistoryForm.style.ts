@@ -10,6 +10,35 @@ export {
   HorizontalLayout,
 } from '@/feature/backoffice/styles/form.styles';
 
+export const LabelRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+export const DownloadButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: ${theme.colors.grey[100]};
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${theme.colors.primary[500]};
+    outline-offset: 2px;
+  }
+`;
+
 export const CalendarButton = styled.button`
   display: flex;
   align-items: center;

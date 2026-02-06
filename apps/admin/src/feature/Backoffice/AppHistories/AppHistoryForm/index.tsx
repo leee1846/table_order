@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Calender } from '@repo/ui/components';
-import { CalendarMonthIcon, CloseIcon } from '@repo/ui/icons';
+import { CalendarMonthIcon, CloseIcon, DownloadIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { toast } from '@repo/feature/utils';
 import { formatDateTime } from '@repo/util/date';
@@ -295,9 +295,26 @@ export const AppHistoryForm = ({
 
             {mode === 'detail' && (
               <S.FieldGroup>
-                <S.Label>
-                  APP 파일명 <span>*</span>
-                </S.Label>
+                <S.LabelRow>
+                  <S.Label>
+                    APP 파일명 <span>*</span>
+                  </S.Label>
+                  {formData.downloadPath && (
+                    <S.DownloadButton
+                      href={formData.downloadPath}
+                      download={formData.downloadPath.replace(/^.*\//, '')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="앱 파일 다운로드"
+                    >
+                      <DownloadIcon
+                        width={18}
+                        height={18}
+                        color={theme.colors.grey[700]}
+                      />
+                    </S.DownloadButton>
+                  )}
+                </S.LabelRow>
                 <Input
                   placeholder="업로드된 파일 없음"
                   value={
