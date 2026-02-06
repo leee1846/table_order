@@ -18,6 +18,7 @@ import {
   type ScreenModeOption,
 } from '@/pages/settings/MenuScreenPage/ScreenMode';
 import { Logo } from '@/pages/settings/MenuScreenPage/Logo';
+import { Template } from '@/pages/settings/MenuScreenPage/Template';
 import * as S from './menuScreenPage.style';
 
 export const MenuScreenPage = () => {
@@ -116,7 +117,7 @@ export const MenuScreenPage = () => {
         <S.Title>
           <h1>{t('메뉴 화면')}</h1>
           <div />
-          <span>{t('테마설정')}</span>
+          <span>{t('테마 설정')}</span>
         </S.Title>
         <BasicButton variant="Solid_Navy_XL" onClick={handleSave}>
           {t('저장하기')}
@@ -125,13 +126,12 @@ export const MenuScreenPage = () => {
 
       <ScreenMode mode={screenMode} onChange={setScreenMode} />
       <Logo imageUrl={logoImageUrl} onChange={handleLogoChange} />
-      {/* 안 쓰는 UI 없애라고 하셔서 템플릿 설정(가로 기본형), 3열 배치가 있는 Template 컴포넌트 주석 */}
-      {/* <Template
+      <Template
         isMenuThreeColumnLayout={isMenuThreeColumnLayout}
         templateType={templateType}
         onChangeThreeColumnLayout={setIsMenuThreeColumnLayout}
         onChangeTemplateType={setTemplateType}
-      /> */}
+      />
     </S.Container>
   );
 };

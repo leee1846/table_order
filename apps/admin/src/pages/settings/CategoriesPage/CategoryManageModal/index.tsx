@@ -101,9 +101,10 @@ export const CategoryManageModal = ({
 
   //3열 배치로 무조건 쓰기로 함
   //2열 배치(가로 기본형)
-  // const [useTwoColumnLayout, setUseTwoColumnLayout] = useState<boolean>(
-  //   (categoryData as ICategory)?.useTwoColumnLayout ?? false
-  // );
+  const [useTwoColumnLayout, setUseTwoColumnLayout] = useState<boolean>(
+    // (categoryData as ICategory)?.useTwoColumnLayout ?? false
+    false
+  );
 
   // 언어 선택 상태
   const [selectedLanguageCode, setSelectedLanguageCode] =
@@ -228,7 +229,7 @@ export const CategoryManageModal = ({
           saleStartTime,
           saleEndTime,
           isSaleOnHoliday,
-          useTwoColumnLayout: false,
+          useTwoColumnLayout,
           isQuantitySelectable,
           isStaffCall,
           categoryDescription,
@@ -247,7 +248,7 @@ export const CategoryManageModal = ({
           saleStartTime: saleStartTime || null,
           saleEndTime: saleEndTime || null,
           isSaleOnHoliday,
-          useTwoColumnLayout: false,
+          useTwoColumnLayout,
           isQuantitySelectable,
           isStaffCall,
           categoryDescription: categoryDescription || null,
@@ -380,13 +381,13 @@ export const CategoryManageModal = ({
                   <p>{t('직원호출 사용')}</p>
                 </CheckButton>
 
-                {/* <CheckButton
+                <CheckButton
                   checked={useTwoColumnLayout}
                   onChange={(checked) => setUseTwoColumnLayout(checked)}
                   customStyle={S.checkButtonCss}
                 >
                   <p>{t('2열 배치(가로 기본형)')}</p>
-                </CheckButton> */}
+                </CheckButton>
                 <S.TimeRangeWrapper>
                   <CheckButton
                     checked={useSaleTime}
@@ -407,11 +408,7 @@ export const CategoryManageModal = ({
               </S.CheckButtonList>
             </div>
 
-            <BasicButton
-              variant="Solid_Navy_2XL"
-              onClick={handleSubmit}
-              customStyle={S.SubmitButtonCss}
-            >
+            <BasicButton variant="Solid_Navy_2XL" onClick={handleSubmit}>
               {createCategoryMutation.isPending ||
               updateCategoryMutation.isPending
                 ? t('처리 중...')
