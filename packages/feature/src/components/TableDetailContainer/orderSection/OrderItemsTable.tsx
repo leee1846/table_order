@@ -49,7 +49,7 @@ export function OrderItemsTable({
   return (
     <TableWrap>
       {items.map((it, index) => (
-        <React.Fragment key={`${it.id}-${index}`}>
+        <React.Fragment key={`${it.id}-${index + 1}`}>
           <Row
             data-item-id={it.id}
             onClick={() => handleRowClick(it)}
@@ -153,6 +153,7 @@ const Row = styled.div`
 
 const Cell = styled.div`
   padding: 8px;
+  min-width: 0;
 
   &.name {
     overflow: hidden;
@@ -162,5 +163,7 @@ const Cell = styled.div`
 
   &.price {
     text-align: right;
+    word-break: break-all;
+    overflow-wrap: anywhere;
   }
 `;

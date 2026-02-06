@@ -108,7 +108,10 @@ export const MenuInfo = styled.div`
 
   & > p:last-of-type {
     flex: 1;
+    min-width: 0;
     text-align: right;
+    word-break: break-all;
+    overflow-wrap: break-word;
   }
 `;
 

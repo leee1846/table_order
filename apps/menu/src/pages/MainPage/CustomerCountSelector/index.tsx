@@ -34,21 +34,13 @@ export const CustomerCountSelector = () => {
     : adultCount === 0 && childCount === 0;
 
   const handleAdultCountChange = (value: number) => {
-    if (value < 0) {
-      setAdultCount(0);
-      return;
-    }
-
-    setAdultCount(value);
+    const num = Number.isNaN(value) ? 0 : value;
+    setAdultCount(Math.max(0, Math.min(999, num)));
   };
 
   const handleChildCountChange = (value: number) => {
-    if (value < 0) {
-      setChildCount(0);
-      return;
-    }
-
-    setChildCount(value);
+    const num = Number.isNaN(value) ? 0 : value;
+    setChildCount(Math.max(0, Math.min(999, num)));
   };
 
   const { mutateAsync: createOrderGroup } = usePostOrderGroup({

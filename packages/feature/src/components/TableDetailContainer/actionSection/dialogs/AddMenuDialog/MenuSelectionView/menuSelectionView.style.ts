@@ -95,6 +95,10 @@ export const MenuPrice = styled.div<{ isOutOfStock?: boolean }>`
   color: ${({ isOutOfStock }) =>
     isOutOfStock ? colors.grey[400] : colors.grey[700]};
   text-align: right;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 export const SelectedItemsList = styled.div`

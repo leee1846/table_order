@@ -7,6 +7,7 @@ import { type ITableInfo } from '@repo/api/types';
 import { usePutUpdateTable, queryKeys } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
+import { MAX_TABLE_GROUP_NAME_LENGTH } from '@repo/util/constants';
 import * as S from './editTableDialog.styles';
 
 const { colors } = theme;
@@ -89,7 +90,11 @@ export const EditTableDialog = ({
             <S.Label>{t('테이블 이름')}</S.Label>
             <Input
               value={tableName}
-              onChange={setTableName}
+              onChange={(value) => {
+                if (value.length <= MAX_TABLE_GROUP_NAME_LENGTH) {
+                  setTableName(value);
+                }
+              }}
               placeholder={table.tableName || table.tableNumber}
             />
           </S.InputWrapper>

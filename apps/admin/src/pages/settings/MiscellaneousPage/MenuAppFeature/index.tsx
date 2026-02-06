@@ -15,7 +15,11 @@ import { theme } from '@repo/ui';
 import { DeleteIcon, MenuBookIcon } from '@repo/ui/icons';
 import { CategoryModal } from './CategoryModal';
 import { getDays } from '@/constants/days';
-import { allowOnlyNumbers } from '@repo/util/string';
+import {
+  allowOnlyNumbers,
+  formatCurrency,
+  clampNumericToMax,
+} from '@repo/util/string';
 import { generateTimeOptions, calculateTimeBefore } from '@repo/util/time';
 import { MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
@@ -40,6 +44,9 @@ interface BreakTimeRow {
 }
 
 const TIME_OPTIONS = generateTimeOptions();
+
+/** 첫주문 금액 입력 최대값 (999,999,999원) */
+const MAX_FIRST_ORDER_MIN_AMOUNT = 999999999;
 
 export const MenuAppFeature = ({
   shopSetting,
@@ -391,10 +398,21 @@ export const MenuAppFeature = ({
         <p>{t('첫주문 금액')}</p>
         <input
           inputMode="numeric"
-          value={firstOrderMinAmount}
+          value={
+            firstOrderMinAmount === ''
+              ? ''
+              : formatCurrency(Number(firstOrderMinAmount))
+          }
           onChange={(event) => {
-            const numericValue = allowOnlyNumbers(event.target.value);
-            setFirstOrderMinAmount(numericValue);
+            const value = event.target.value;
+            const numericStr = allowOnlyNumbers(value);
+            if (numericStr.length === 0) {
+              setFirstOrderMinAmount('');
+            } else {
+              setFirstOrderMinAmount(
+                String(clampNumericToMax(value, MAX_FIRST_ORDER_MIN_AMOUNT))
+              );
+            }
           }}
         />
       </UIStyles.setting.ContentLayout>
@@ -826,6 +844,7 @@ export const MenuAppFeature = ({
                       )
                     }
                     value={closureLastOrderTimeBefore}
+                    maxLength={3}
                   />
                   {t('분')}
                 </div>
@@ -846,6 +865,7 @@ export const MenuAppFeature = ({
                       )
                     }
                     value={closureLastOrderMinutes}
+                    maxLength={3}
                   />
                   {t('분')}
                 </div>

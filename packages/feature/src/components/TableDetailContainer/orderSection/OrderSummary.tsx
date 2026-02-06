@@ -54,7 +54,8 @@ const Row = styled.div`
   line-height: 31.998px; /* 133.333% */
   letter-spacing: -0.6px;
   display: grid;
-  grid-template-columns: 1fr 5rem 8rem;
+  grid-template-columns: 1fr minmax(0, 5rem) 8rem;
+  min-width: 0;
 
   .name,
   .qty {
@@ -72,6 +73,7 @@ const Row = styled.div`
 
 const Cell = styled.div`
   padding: 8px;
+  min-width: 0;
 
   &.name {
     overflow: hidden;
@@ -81,5 +83,7 @@ const Cell = styled.div`
 
   &.price {
     text-align: right;
+    word-break: break-all;
+    overflow-wrap: anywhere;
   }
 `;

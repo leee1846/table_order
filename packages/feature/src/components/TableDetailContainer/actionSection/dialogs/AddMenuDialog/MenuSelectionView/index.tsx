@@ -163,7 +163,7 @@ export const MenuSelectionView = ({
           {/* 오른쪽 영역 - 메뉴 그리드 */}
           <S.MenuGrid>
             {currentMenuList.length === 0 ? (
-              <S.MenuGridPlaceholder></S.MenuGridPlaceholder>
+              <S.MenuGridPlaceholder />
             ) : (
               currentMenuList.map((menu) => (
                 <S.MenuCard

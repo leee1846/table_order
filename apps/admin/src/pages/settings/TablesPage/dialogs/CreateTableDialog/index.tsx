@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ModalBackground, Input, BasicButton } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
+import { MAX_TABLE_GROUP_NAME_LENGTH } from '@repo/util/constants';
 import * as S from './createTableDialog.styles';
 
 const { colors } = theme;
@@ -52,7 +53,11 @@ export const CreateTableDialog = ({
             <S.Label>{t('테이블 이름')}</S.Label>
             <Input
               value={tableName}
-              onChange={setTableName}
+              onChange={(value) => {
+                if (value.length <= MAX_TABLE_GROUP_NAME_LENGTH) {
+                  setTableName(value);
+                }
+              }}
               placeholder={t('테이블 이름')}
             />
           </S.InputWrapper>

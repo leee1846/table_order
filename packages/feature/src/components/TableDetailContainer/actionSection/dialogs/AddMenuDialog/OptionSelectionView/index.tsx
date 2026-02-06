@@ -188,6 +188,7 @@ export const OptionSelectionView = ({
                 variant="square"
                 value={menuQuantity}
                 min={1}
+                max={999}
                 onChange={onMenuQuantityChange}
                 customStyle={S.rightPanelMenuQuantityInput}
               />
@@ -195,7 +196,9 @@ export const OptionSelectionView = ({
             <S.TotalMountSection>
               <S.TotalMountLabel>{t('합계')}</S.TotalMountLabel>
               <S.TotalMountValue>
-                {t('{{price}}원', { price: formatCurrency(totalPrice) })}
+                {t('{{price}}원', {
+                  price: formatCurrency(totalPrice),
+                })}
               </S.TotalMountValue>
             </S.TotalMountSection>
             <A.PanelFooter>
@@ -263,6 +266,7 @@ export const OptionSelectionView = ({
                             variant="rounded"
                             value={displayQuantity}
                             min={0}
+                            max={999}
                             disabled={isDisabled}
                             onChange={(newValue) =>
                               handleOptionQuantityInputChange(

@@ -33,18 +33,25 @@ export const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   margin-bottom: 8px;
+  min-width: 0;
 
   > div {
     display: flex;
     align-items: center;
     gap: 6px;
+    flex-shrink: 0;
   }
 `;
 
 export const TableNumber = styled.h1<{ isEmpty?: boolean }>`
   ${TYPOGRAPHY.ST_3}
   color: ${({ isEmpty }) => (isEmpty ? colors.grey[400] : colors.grey[800])};
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 export const OrderTime = styled.span`
@@ -84,17 +91,31 @@ export const CardFooter = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  min-width: 0;
+`;
 
-  > div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+export const CardFooterSide = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+
+  &:last-of-type {
+    flex: 1 1 0;
+    overflow: hidden;
+    justify-content: flex-end;
   }
 `;
 
 export const TotalAmount = styled.div<{ isEmpty?: boolean }>`
   ${TYPOGRAPHY.ST_3}
   color: ${({ isEmpty }) => (isEmpty ? colors.grey[400] : colors.grey[800])};
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 export const StatusText = styled.div`
@@ -110,4 +131,5 @@ export const WifiSignal = styled.div`
   border-radius: 10px;
   letter-spacing: 0.5px;
   box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
 `;

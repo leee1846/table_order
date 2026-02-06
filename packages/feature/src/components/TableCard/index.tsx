@@ -36,7 +36,9 @@ export const TableCard = ({
         <div>
           <S.OrderTime>{orderTime}</S.OrderTime>
           {table.wifiSignal && (
-            <S.WifiSignal>{<p>{t('이용 중')}</p>}</S.WifiSignal>
+            <S.WifiSignal>
+              <p>{t('이용 중')}</p>
+            </S.WifiSignal>
           )}
         </div>
       </S.CardHeader>
@@ -53,12 +55,16 @@ export const TableCard = ({
       </S.CardContent>
 
       <S.CardFooter>
-        <div></div>
-        {!table.menuItems ? (
-          <S.StatusText>{t('빈 테이블')}</S.StatusText>
-        ) : (
-          <S.TotalAmount>{formatCurrency(displayAmount ?? 0)}</S.TotalAmount>
-        )}
+        <S.CardFooterSide />
+        <S.CardFooterSide>
+          {!table.menuItems ? (
+            <S.StatusText>{t('빈 테이블')}</S.StatusText>
+          ) : (
+            <S.TotalAmount title={formatCurrency(displayAmount ?? 0)}>
+              {formatCurrency(displayAmount ?? 0)}
+            </S.TotalAmount>
+          )}
+        </S.CardFooterSide>
       </S.CardFooter>
     </S.CardContainer>
   );

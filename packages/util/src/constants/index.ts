@@ -11,6 +11,11 @@ export const MAX_NAME_LENGTH = 40;
 export const MAX_DESCRIPTION_LENGTH = 300;
 
 /**
+ * 테이블 그룹 이름 최대 길이 제한 (20자)
+ */
+export const MAX_TABLE_GROUP_NAME_LENGTH = 20;
+
+/**
  * 기기 타입을 i18n 키(한국어)로 변환합니다.
  *
  * @param deviceType - 기기 타입 ('MENU' | 'ORDER_POS' | 'POS_APP')

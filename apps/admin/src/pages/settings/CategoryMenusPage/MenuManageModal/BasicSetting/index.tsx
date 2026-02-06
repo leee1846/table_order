@@ -13,10 +13,16 @@ import {
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/basicSetting.style';
 import { ImageSection } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection';
 import { useMenuForm } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
-import { formatCurrency, allowOnlyNumbers } from '@repo/util/string';
-import { MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
+import { formatCurrency, clampNumericToMax } from '@repo/util/string';
+import {
+  MAX_NAME_LENGTH,
+  MAX_DESCRIPTION_LENGTH,
+} from '@repo/util/constants';
 
 const SPICE_LEVELS = [1, 2, 3] as const;
+
+/** 메뉴 가격 입력 최대값 (999,999,999원) */
+const MAX_MENU_PRICE = 999999999;
 
 interface Props {
   isPosLinked: boolean;
@@ -51,10 +57,8 @@ export const BasicSetting = ({ isPosLinked, hideImageSection }: Props) => {
 
   const handlePriceChange = useCallback(
     (value: string) => {
-      // 콤마를 제거한 숫자만 추출
-      const numericValue = allowOnlyNumbers(value);
       updateFormValues({
-        menuPrice: numericValue.length > 0 ? Number(numericValue) : 0,
+        menuPrice: clampNumericToMax(value, MAX_MENU_PRICE),
       });
     },
     [updateFormValues]

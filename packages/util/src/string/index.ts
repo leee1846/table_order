@@ -39,6 +39,31 @@ export const allowOnlyNumbers = (value: string): string => {
 };
 
 /**
+ * 숫자만 허용하고 최대값으로 제한한 값을 반환합니다.
+ * 입력 문자열에서 숫자가 아닌 문자를 제거한 뒤, max를 초과하면 max로 clamping합니다.
+ *
+ * @param value - 사용자 입력 문자열
+ * @param max - 허용 최대값 (이clusive)
+ * @returns 0 이상 max 이하의 숫자
+ *
+ * @example
+ * ```ts
+ * clampNumericToMax('12345', 999) // 999
+ * clampNumericToMax('500', 999) // 500
+ * clampNumericToMax('1,000,000', 999999999) // 1000000
+ * clampNumericToMax('abc', 100) // 0
+ * ```
+ */
+export const clampNumericToMax = (value: string, max: number): number => {
+  const numericStr = allowOnlyNumbers(value);
+  if (numericStr.length === 0) {
+    return 0;
+  }
+  const num = Number(numericStr);
+  return Number.isNaN(num) ? 0 : Math.min(Math.max(0, num), max);
+};
+
+/**
  * 숫자를 원화 포맷으로 포맷팅합니다.
  *
  * @param num - 포맷팅할 숫자

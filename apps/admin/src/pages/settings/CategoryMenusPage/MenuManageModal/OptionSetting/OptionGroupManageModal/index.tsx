@@ -16,8 +16,11 @@ import type {
   IUpdateOption,
   TLocale,
 } from '@repo/api/types';
-import { formatCurrency } from '@repo/util/string';
+import { formatCurrency, clampNumericToMax } from '@repo/util/string';
 import { MAX_NAME_LENGTH } from '@repo/util/constants';
+
+/** 옵션 가격 입력 최대값 (999,999,999원) */
+const MAX_OPTION_PRICE = 999999999;
 import { useMenuManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/OptionGroupManageModal/optionGroupManageModal.style';
 import { toast } from '@repo/feature/utils';
@@ -496,17 +499,11 @@ export const OptionGroupManageModal = ({
     if (isPosLinked) {
       return;
     }
-
-    const numericValue = value.replace(/,/g, '');
-    const parsedValue = parseInt(numericValue, 10);
-
-    // 숫자가 아니거나 음수인 경우 0으로 설정
-    if (isNaN(parsedValue) || parsedValue < 0) {
-      handleOptionChange(index, 'optionPrice', 0);
-      return;
-    }
-
-    handleOptionChange(index, 'optionPrice', parsedValue);
+    handleOptionChange(
+      index,
+      'optionPrice',
+      clampNumericToMax(value, MAX_OPTION_PRICE)
+    );
   };
 
   return (

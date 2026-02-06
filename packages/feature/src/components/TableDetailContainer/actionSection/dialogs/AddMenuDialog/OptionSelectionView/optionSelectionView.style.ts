@@ -30,7 +30,7 @@ export const OptionMenuName = styled.h2`
 
 export const OptionListContainer = styled.div`
   flex: 1;
-  overflow -y: auto;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 40px;
@@ -116,16 +116,24 @@ export const TotalMountSection = styled.div`
   align-items: center;
   border-top: 1px solid ${colors.grey[200]};
   padding: 24px 8px;
+  gap: 8px;
+  min-width: 0;
 `;
 
 export const TotalMountLabel = styled.div`
   ${TYPOGRAPHY.MT_2}
   color: ${colors.grey[800]};
+  white-space: nowrap;
+  flex-shrink: 0;
 `;
 
 export const TotalMountValue = styled.div`
   ${TYPOGRAPHY.MT_2}
   color: ${colors.primary[500]};
+  min-width: 0;
+  text-align: left;
+  word-break: break-all;
+  overflow-wrap: anywhere;
 `;
 
 export const rightPanelMenuQuantityInput = css`

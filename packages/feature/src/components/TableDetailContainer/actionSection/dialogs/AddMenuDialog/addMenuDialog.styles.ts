@@ -67,16 +67,24 @@ export const TotalSection = styled.div`
   padding: 16px 0;
   border-top: 1px solid ${colors.grey[300]};
   margin-top: auto;
+  gap: 8px;
+  min-width: 0;
 `;
 
 export const TotalLabel = styled.div`
   color: ${colors.grey[800]};
   ${TYPOGRAPHY.MT_2}
+  white-space: nowrap;
+  flex-shrink: 0;
 `;
 
 export const TotalPrice = styled.div`
   ${TYPOGRAPHY.MT_2}
   color: ${colors.primary[500]};
+  min-width: 0;
+  text-align: right;
+  word-break: break-all;
+  overflow-wrap: anywhere;
 `;
 
 export const PanelFooter = styled.div`

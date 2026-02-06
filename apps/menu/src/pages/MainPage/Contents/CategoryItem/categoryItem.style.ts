@@ -28,4 +28,5 @@ export const CategoryName = styled.p`
 export const CategoryDescription = styled.p`
   ${TYPOGRAPHY.ST_4}
   color: ${({ theme }) => theme.mode.grey[600]};
+  max-width: 85%;
 `;

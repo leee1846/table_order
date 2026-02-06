@@ -8,6 +8,8 @@ import { toast } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostCreateTableGroup } from '@repo/api/queries';
 import { useAuth } from '@/hooks/useAuth';
+import { MAX_TABLE_GROUP_NAME_LENGTH } from '@repo/util/constants';
+
 const { colors } = theme;
 
 interface AddTableGroupDialogProps {
@@ -63,7 +65,11 @@ export const AddTableGroupDialog = ({
         <S.ModalBody>
           <Input
             value={groupName}
-            onChange={setGroupName}
+            onChange={(value) => {
+              if (value.length <= MAX_TABLE_GROUP_NAME_LENGTH) {
+                setGroupName(value);
+              }
+            }}
             placeholder={t('테이블 그룹 이름을 입력하세요')}
           />
         </S.ModalBody>
