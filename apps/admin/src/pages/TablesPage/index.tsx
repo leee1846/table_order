@@ -7,6 +7,7 @@ import {
   useTablesData,
   GuestCountDialog,
   type TableWithStatus,
+  TableCard,
 } from '@repo/feature/components';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Sidebar } from './Sidebar';
@@ -19,6 +20,7 @@ import { useQueryClient } from '@repo/api/tanstack-query';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import adminI18n from '@/config/i18n';
 import { TABLE_GROUP_STORAGE_KEY } from '@/constants/keys';
+import { useIsPosLinked } from '@/hooks/useIsPosLinked';
 
 export const TablesPage = () => {
   const { shopCode } = useAuth();
@@ -28,6 +30,8 @@ export const TablesPage = () => {
   const { data: shopDetailData, refresh: refreshShopDetailData } =
     useShopDetailData();
   const { shopSetting } = shopDetailData ?? {};
+
+  const isPosLinked = useIsPosLinked();
 
   const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
     number | null
@@ -200,15 +204,28 @@ export const TablesPage = () => {
       <TablesPageContainer>
         <TableCardsArea>
           <TableCardsGrid>
-            {tables.map((table) => (
-              <DraggableTableCard
-                key={table.id}
-                table={table}
-                activeTableNumber={activeTableNumber}
-                onClick={handleTableClick}
-                i18nInstance={adminI18n}
-              />
-            ))}
+            {tables.map((table) =>
+              isPosLinked ? (
+                <div key={table.id}>
+                  <TableCard
+                    id={table.id}
+                    table={table}
+                    tableNumber={table.tableNumber}
+                    orderTime={table.orderTime ?? null}
+                    onClick={() => handleTableClick(table)}
+                    i18nInstance={adminI18n}
+                  />
+                </div>
+              ) : (
+                <DraggableTableCard
+                  key={table.id}
+                  table={table}
+                  activeTableNumber={activeTableNumber}
+                  onClick={handleTableClick}
+                  i18nInstance={adminI18n}
+                />
+              )
+            )}
           </TableCardsGrid>
         </TableCardsArea>
         <Sidebar

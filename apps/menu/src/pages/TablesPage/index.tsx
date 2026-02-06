@@ -21,6 +21,7 @@ import {
   DraggableTableCard,
   GuestCountDialog,
   type TableWithStatus,
+  TableCard,
 } from '@repo/feature/components';
 import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
@@ -432,33 +433,60 @@ export const TablesPage = () => {
 
   if (isOrderPosDevice) {
     return (
-      <DndContextWrapper
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        onDragCancel={handleDragCancel}
-        longPressDelay={350}
-      >
-        <TablesPageContainer>
-          <TableCardsArea>
-            <TableCardsGrid>
-              {tablesWithStatus.map((table) => (
-                <DraggableTableCard
-                  key={table.id}
-                  table={table}
-                  activeTableNumber={activeTableNumber}
-                  onClick={handleOrderPosTableClick}
-                  i18nInstance={adminI18n}
-                />
-              ))}
-            </TableCardsGrid>
-          </TableCardsArea>
-          <Sidebar
-            tableGroups={tableGroupsData ?? []}
-            selectedTableGroupSeq={selectedTableGroupSeq ?? 0}
-            onTableGroupClick={setSelectedTableGroupSeq}
-          />
-        </TablesPageContainer>
-
+      <>
+        {shopDetailData?.shopSetting?.shopPosCode === 'OKPOS' ? (
+          <TablesPageContainer>
+            <TableCardsArea>
+              <TableCardsGrid>
+                {tablesWithStatus.map((table) => (
+                  <div key={table.id}>
+                    <TableCard
+                      id={table.id}
+                      table={table}
+                      tableNumber={table.tableNumber}
+                      orderTime={table.orderTime ?? null}
+                      onClick={() => handleOrderPosTableClick}
+                      i18nInstance={adminI18n}
+                    />
+                  </div>
+                ))}
+              </TableCardsGrid>
+            </TableCardsArea>
+            <Sidebar
+              tableGroups={tableGroupsData ?? []}
+              selectedTableGroupSeq={selectedTableGroupSeq ?? 0}
+              onTableGroupClick={setSelectedTableGroupSeq}
+            />
+          </TablesPageContainer>
+        ) : (
+          <DndContextWrapper
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+            longPressDelay={350}
+          >
+            <TablesPageContainer>
+              <TableCardsArea>
+                <TableCardsGrid>
+                  {tablesWithStatus.map((table) => (
+                    <DraggableTableCard
+                      key={table.id}
+                      table={table}
+                      activeTableNumber={activeTableNumber}
+                      onClick={handleOrderPosTableClick}
+                      i18nInstance={adminI18n}
+                    />
+                  ))}
+                </TableCardsGrid>
+              </TableCardsArea>
+              <Sidebar
+                tableGroups={tableGroupsData ?? []}
+                selectedTableGroupSeq={selectedTableGroupSeq ?? 0}
+                onTableGroupClick={setSelectedTableGroupSeq}
+              />
+            </TablesPageContainer>
+          </DndContextWrapper>
+        )}
         <GuestCountDialog
           isOpen={isGuestCountDialogOpen}
           onClose={handleGuestCountClose}
@@ -467,7 +495,7 @@ export const TablesPage = () => {
           initialCustomerCount={0}
           initialKidsCustomerCount={0}
         />
-      </DndContextWrapper>
+      </>
     );
   }
 

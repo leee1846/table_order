@@ -69,7 +69,6 @@ export const DraggableTableCard = ({
         orderTime={table.orderTime ?? null}
         i18nInstance={i18nInstance}
         onClick={() => onClick(table)}
-        wifiSignal={table.wifiSignal ?? null}
       />
     </S.DraggableCard>
   );
