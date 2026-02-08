@@ -10,6 +10,7 @@ export interface TableWithStatus {
     name: string;
     quantity: number;
     localeMenuName?: Record<string, string> | null;
+    orderDetailMenuSeq?: number;
   }> | null;
   hasOrder: boolean;
   customerCount?: number;

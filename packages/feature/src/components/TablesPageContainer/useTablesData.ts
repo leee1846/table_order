@@ -115,15 +115,19 @@ export const useTablesData = ({
           }
         );
 
-        // orderDetailMenuList를 menuItems로 변환
+        // orderDetailMenuList를 menuItems로 변환 (주문 순서대로 정렬)
         const menuItems = orderInfo.orderDetailMenuList
-          ? orderInfo.orderDetailMenuList.map((menu) => {
-              return {
-                name: menu.menuName,
-                quantity: menu.menuQuantity,
-                localeMenuName: menu.localeMenuName,
-              };
-            })
+          ? orderInfo.orderDetailMenuList
+              .slice()
+              .sort((a, b) => a.orderDetailMenuSeq - b.orderDetailMenuSeq)
+              .map((menu) => {
+                return {
+                  name: menu.menuName,
+                  quantity: menu.menuQuantity,
+                  localeMenuName: menu.localeMenuName,
+                  orderDetailMenuSeq: menu.orderDetailMenuSeq,
+                };
+              })
           : null;
 
         return {
