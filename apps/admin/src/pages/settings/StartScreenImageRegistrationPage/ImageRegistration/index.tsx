@@ -27,6 +27,9 @@ export const ImageRegistration = ({
   onChangeImage,
   onRemoveImage,
 }: ImageRegistrationProps) => {
+  const MAX_IMAGE_COUNT = 20;
+  const isMaxImageCount = items.length >= MAX_IMAGE_COUNT;
+
   const handleDescriptionChange = (id: number, value: string) => {
     onChangeDescription(id, value);
   };
@@ -46,6 +49,13 @@ export const ImageRegistration = ({
   const sortedItems = [...items].sort(
     (a, b) => (a.pageDetailImageSeq ?? 0) - (b.pageDetailImageSeq ?? 0)
   );
+
+  const handleAddItem = () => {
+    if (isMaxImageCount) {
+      return;
+    }
+    onAddItem();
+  };
 
   return (
     <S.Container>
@@ -123,7 +133,8 @@ export const ImageRegistration = ({
       <S.AddButtonContainer>
         <BasicButton
           variant="Outline_Grey_L"
-          onClick={onAddItem}
+          onClick={handleAddItem}
+          disabled={isMaxImageCount}
           icon={
             <AddCircleIcon
               width={18.33}
