@@ -292,17 +292,30 @@ export const AddMenuDialog = ({
     }
 
     // 최소 수량 검증 로직
-    for (const { menu, quantity } of selectedMenus) {
+    // 같은 메뉴의 수량을 모두 합산 (옵션이 다르더라도)
+    const menuQuantityMap = new Map<number, { menu: IMenu; totalQuantity: number }>();
+    
+    selectedMenus.forEach(({ menu, quantity }) => {
+      const existing = menuQuantityMap.get(menu.menuSeq);
+      if (existing) {
+        existing.totalQuantity += quantity;
+      } else {
+        menuQuantityMap.set(menu.menuSeq, { menu, totalQuantity: quantity });
+      }
+    });
+
+    // 각 메뉴별로 최소 수량 검증
+    for (const [menuSeq, { menu, totalQuantity }] of menuQuantityMap) {
       const minQuantity = menu.minQuantity || 0;
       
       if (minQuantity > 0) {
-        // 현재 주문에서 해당 메뉴의 총 수량 계산
+        // 현재 주문에서 해당 메뉴의 총 수량 계산 (모든 옵션 포함)
         const currentQuantity = currentOrder?.items
-          ?.filter((item) => item.menuSeq === menu.menuSeq)
+          ?.filter((item) => item.menuSeq === menuSeq)
           ?.reduce((sum: number, item) => sum + item.qty, 0) || 0;
 
         // 추가하려는 수량과 현재 수량의 합계
-        const totalQuantityAfterAdd = currentQuantity + quantity;
+        const totalQuantityAfterAdd = currentQuantity + totalQuantity;
 
         // 최소 수량을 만족하지 못하는 경우
         if (totalQuantityAfterAdd < minQuantity) {
