@@ -5,7 +5,7 @@ import { formatCurrency } from '@repo/util/string';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import type { i18n as I18nInstance } from 'i18next';
-import { IPayment } from '@repo/api/types';
+import { IPayment, type TShopPosCode } from '@repo/api/types';
 
 const { colors } = theme;
 
@@ -15,6 +15,7 @@ export type OrderItemsTableProps = {
   onItemClick?: (item: OrderItem) => void;
   i18nInstance?: I18nInstance;
   paymentList: IPayment[];
+  shopPosCode?: TShopPosCode;
 };
 export function OrderItemsTable({
   items,
@@ -22,12 +23,18 @@ export function OrderItemsTable({
   onItemClick,
   i18nInstance,
   paymentList,
+  shopPosCode,
 }: OrderItemsTableProps) {
   const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
 
   const currentLanguage = (i18n?.language || 'KO').toUpperCase();
 
+  const isOkPos = shopPosCode === 'OKPOS';
+
   const handleRowClick = (item: OrderItem) => {
+    if (isOkPos) {
+      return; // OKPOS일 때는 클릭 무시
+    }
     if (onItemClick) {
       onItemClick(item);
     }
@@ -53,7 +60,7 @@ export function OrderItemsTable({
           <Row
             data-item-id={it.id}
             onClick={() => handleRowClick(it)}
-            className={it.name === '금액변경' ? 'no-click' : ''}
+            className={it.name === '금액변경' || isOkPos ? 'no-click' : ''}
           >
             <Cell className="name" title={it.localeMenuName?.[currentLanguage]}>
               {it.name === '금액변경'

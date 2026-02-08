@@ -362,6 +362,7 @@ export const TableDetailContainer = ({
             orderTime={orderTime}
             refetchOrderHistories={refetchOrderHistories}
             onPress={handleActionPress}
+            shopPosCode={shopDetailResponse?.data?.shopSetting?.shopPosCode}
           />
         </S.Left>
         <S.Right>
@@ -374,6 +375,7 @@ export const TableDetailContainer = ({
             shopCode={shopCode}
             tableNumber={tableNumber}
             pickupAlertMessage={pickupAlertMessage}
+            shopPosCode={shopDetailResponse?.data?.shopSetting?.shopPosCode}
           />
         </S.Right>
       </S.Layout>

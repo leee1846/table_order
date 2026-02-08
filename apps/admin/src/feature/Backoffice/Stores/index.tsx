@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { StoreInfoTab } from '@/feature/backoffice/Stores/StoreInfoTab';
-import { MemberInfoTab } from '@/feature/backoffice/Stores/MemberInfoTab';
-import { SettingInfoTab } from '@/feature/backoffice/Stores/SettingInfoTab';
-import { ChangeHistoryDialog } from '@/feature/backoffice/ChangeHistoryDialog';
-import * as S from './stores.style';
+import { StoreInfoTab } from '@/feature/Backoffice/Stores/StoreInfoTab';
+import { MemberInfoTab } from '@/feature/Backoffice/Stores/MemberInfoTab';
+import { SettingInfoTab } from '@/feature/Backoffice/Stores/SettingInfoTab';
+import { ChangeHistoryDialog } from '@/feature/Backoffice/ChangeHistoryDialog';
+import * as S from '@/feature/Backoffice/Stores/stores.style';
 import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
@@ -11,7 +11,7 @@ import type {
 import {
   DEFAULT_MEMBER_DATA,
   DEFAULT_SHOP_DATA,
-} from '@/feature/backoffice/Stores/constants';
+} from '@/feature/Backoffice/Stores/constants';
 import { Button } from '@/feature/backoffice/components';
 
 type TabType = 'storeInfo' | 'memberInfo' | 'settingInfo';

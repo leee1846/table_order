@@ -38,6 +38,7 @@ export const DEFAULT_SHOP_DATA: IGetAdminShopDetail = {
   etcNote: '',
   shopCode: '',
   ownerPhoneNumber: '',
+  areaCode: '',
   settingInfo: {
     shopSeq: 0,
     vanId: '',

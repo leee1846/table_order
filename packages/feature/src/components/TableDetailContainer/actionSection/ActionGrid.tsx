@@ -11,7 +11,7 @@ import { theme } from '@repo/ui';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { i18n as I18nInstance } from 'i18next';
-import { IPayment } from '@repo/api/types';
+import { IPayment, type TShopPosCode } from '@repo/api/types';
 import { toast } from '@repo/feature/utils';
 import { PickupNotificationDialog } from '../orderSection/dialogs/PickupNotificationDialog';
 
@@ -26,6 +26,7 @@ export type ActionGridProps = {
   shopCode: string;
   tableNumber: string;
   pickupAlertMessage?: string;
+  shopPosCode?: TShopPosCode;
 };
 
 export function ActionGrid({
@@ -37,10 +38,13 @@ export function ActionGrid({
   shopCode,
   tableNumber,
   pickupAlertMessage,
+  shopPosCode,
 }: ActionGridProps) {
   const { t } = useTranslation('admin', { i18n: i18nInstance });
   const navigate = useNavigate();
   const [isPickupDialogOpen, setIsPickupDialogOpen] = useState(false);
+
+  const isOkPos = shopPosCode === 'OKPOS';
 
   const handleAllDiscount = async () => {
     await refetchOrderHistories?.();
@@ -78,14 +82,18 @@ export function ActionGrid({
             <label>{t('알림 발송 ')}</label>
           </ActionBtn>
         )}
-        {/* <ActionBtn onClick={() => onPress?.('amount-change')}>
+
+        <ActionBtn
+          onClick={() => onPress?.('amount-change')}
+          disabled={isOkPos}
+        >
           <img src={AmountChangeIcon} alt={t('금액 변경')} />
           <label>{t('금액 변경')}</label>
         </ActionBtn>
-        <ActionBtn onClick={handleAllDiscount}>
+        <ActionBtn onClick={handleAllDiscount} disabled={isOkPos}>
           <img src={TotalDiscountIcon} alt={t('전체 할인')} />
           <label>{t('전체 할인')}</label>
-        </ActionBtn> */}
+        </ActionBtn>
       </Grid>
 
       <PickupNotificationDialog
@@ -144,4 +152,9 @@ const ActionBtn = styled.button`
   font-weight: 500;
   line-height: 29.998px; /* 150% */
   letter-spacing: -0.5px;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 `;

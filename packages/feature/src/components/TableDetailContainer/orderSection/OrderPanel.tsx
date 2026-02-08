@@ -5,6 +5,7 @@ import { OrderItemsTable } from './OrderItemsTable';
 import { OrderSummary } from './OrderSummary';
 import { PaymentActions } from './PaymentActions';
 import type { Order, OrderItem } from './types';
+import type { TShopPosCode } from '@repo/api/types';
 
 export type OrderPanelProps = {
   order: Order;
@@ -23,6 +24,7 @@ export type OrderPanelProps = {
   orderTime: string | undefined;
   refetchOrderHistories?: () => void;
   onPress?: (id: string) => void;
+  shopPosCode?: TShopPosCode;
 };
 
 export function OrderPanel({
@@ -37,6 +39,7 @@ export function OrderPanel({
   orderTime,
   refetchOrderHistories,
   onPress,
+  shopPosCode,
 }: OrderPanelProps) {
   return (
     <Wrap>
@@ -57,6 +60,7 @@ export function OrderPanel({
         discountRate={order.discountRate ?? 0}
         i18nInstance={i18nInstance}
         paymentList={order.paymentList ?? []}
+        shopPosCode={shopPosCode}
       />
       <OrderSummary
         totalCount={order.totalCount}
