@@ -114,6 +114,11 @@ export interface ISystemControl {
    * - 'siren': 경고/에러
    */
   playSound(options: { type: 'dingdong' | 'siren' }): Promise<void>;
+
+  /**
+   * 앱 종료 (네이티브 전용)
+   */
+  exitApp(): Promise<void>;
 }
 
 const NativeSystem = registerPlugin<ISystemControl & Plugin>('SystemControl');
@@ -214,5 +219,10 @@ export const SystemControl: ISystemControl = {
     console.warn('[SystemControl.playSound] 요청:', options);
     await NativeSystem.playSound(options);
     console.warn('[SystemControl.playSound] 반환: void');
+  },
+
+  exitApp: async () => {
+    console.warn('[SystemControl.exitApp] 요청');
+    return NativeSystem.exitApp();
   },
 };
