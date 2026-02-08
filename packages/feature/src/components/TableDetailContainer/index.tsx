@@ -392,6 +392,7 @@ export const TableDetailContainer = ({
         childCount={orderHistoriesResponse?.data?.kidsCustomerCount ?? 0}
         orderType={orderType}
         i18nInstance={i18nInstance}
+        currentOrder={order}
       />
       {/* 선택 취소 모달 */}
       <SelectCancelDialog

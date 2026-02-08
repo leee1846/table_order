@@ -14,6 +14,7 @@ import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostTableOrder } from '@repo/api/queries';
 import { calculateTotalAmount } from '@repo/util/calculation';
 import { useTranslation } from 'react-i18next';
+import type { Order } from '../../../orderSection/types';
 
 export interface SelectedOption extends IOption {
   selectedQuantity: number;
@@ -37,6 +38,7 @@ interface AddMenuDialogProps {
   childCount?: number;
   orderType?: TOrderType;
   i18nInstance?: I18nInstance;
+  currentOrder?: Order | null;
 }
 
 export const AddMenuDialog = ({
@@ -51,6 +53,7 @@ export const AddMenuDialog = ({
   childCount = 0,
   orderType,
   i18nInstance,
+  currentOrder = null,
 }: AddMenuDialogProps) => {
   const { t } = useTranslation('admin', { i18n: i18nInstance });
   const queryClient = useQueryClient();
@@ -286,6 +289,32 @@ export const AddMenuDialog = ({
     if (!shopCode || !tableNumber) {
       toast(t('테이블 정보가 없어요. 다시 시도해주세요.'));
       return;
+    }
+
+    // 최소 수량 검증 로직
+    for (const { menu, quantity } of selectedMenus) {
+      const minQuantity = menu.minQuantity || 0;
+      
+      if (minQuantity > 0) {
+        // 현재 주문에서 해당 메뉴의 총 수량 계산
+        const currentQuantity = currentOrder?.items
+          ?.filter((item) => item.menuSeq === menu.menuSeq)
+          ?.reduce((sum: number, item) => sum + item.qty, 0) || 0;
+
+        // 추가하려는 수량과 현재 수량의 합계
+        const totalQuantityAfterAdd = currentQuantity + quantity;
+
+        // 최소 수량을 만족하지 못하는 경우
+        if (totalQuantityAfterAdd < minQuantity) {
+          toast(
+            t('{{menuName}}는 최소 {{minQuantity}}개를 주문해야 해요.', {
+              menuName: menu.menuName,
+              minQuantity,
+            })
+          );
+          return;
+        }
+      }
     }
 
     const orders = selectedMenus.map(({ menu, quantity, selectedOptions }) => ({

@@ -79,7 +79,7 @@ export function ActionGrid({
         {usePickupAlert && (
           <ActionBtn onClick={handlePickupClick}>
             <img src={RingIcon} alt={t('알림 발송')} />
-            <label>{t('알림 발송 ')}</label>
+            <label>{t('알림 발송')}</label>
           </ActionBtn>
         )}
 

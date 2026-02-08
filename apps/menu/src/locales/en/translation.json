@@ -288,5 +288,6 @@
   "부가세": "VAT",
   "영수증": "Receipt",
   "매장 아이디": "Store ID",
-  "이용 중": "In Use"
+  "이용 중": "In Use",
+  "{{menuName}}는 최소 {{minQuantity}}개를 주문해야 해요.": "You must order at least {{minQuantity}} of {{menuName}}."
 }
