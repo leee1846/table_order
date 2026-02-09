@@ -21,8 +21,8 @@ export const ContentWrapper = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 100%;
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
+  max-width: 100%;
   padding: 20px;
   box-sizing: border-box;
   margin: 0 auto;
@@ -41,6 +41,11 @@ export const Title = styled.h1`
   letter-spacing: -0.21875rem;
   color: ${({ theme }) => theme.mode.undefined_palette[400]};
   margin-bottom: 40px;
+  width: 100%;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
 `;
 
 export const Time = styled.p`
@@ -59,4 +64,8 @@ export const Description = styled.p`
   ${TYPOGRAPHY.MT_7}
   text-align: center;
   color: ${({ theme }) => theme.mode.grey[600]};
+  width: 100%;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 `;

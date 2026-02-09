@@ -22,8 +22,8 @@ export const ContentWrapper = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 100%;
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
+  max-width: 100%;
   padding: 20px;
   box-sizing: border-box;
   margin: 0 auto;
@@ -43,6 +43,11 @@ export const Title = styled.p`
   letter-spacing: -0.1125rem;
   color: ${({ theme }) => theme.mode.primary[500]};
   margin-bottom: 24px;
+  width: 100%;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
 
   & > span {
     margin-left: 16px;
@@ -58,6 +63,11 @@ export const Title = styled.p`
 export const Description = styled.p`
   ${TYPOGRAPHY.MT_3}
   color: ${({ theme }) => theme.mode.grey[600]};
+  width: 100%;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
 `;
 
 export const ButtonCss = css`

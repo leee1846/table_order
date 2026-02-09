@@ -53,9 +53,7 @@ export const useSSEHandler = () => {
     data: deviceStoreData,
     setDataAsync,
     refresh: refreshDeviceData,
-  } = useDeviceData({
-    skipInitialRequest: true,
-  });
+  } = useDeviceData({ skipInitialRequest: true });
   const { shopData: currentShopData } = useShopData({
     skipInitialRequest: true,
   });
