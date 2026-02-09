@@ -57,8 +57,11 @@ export const accessTokenRefreshManager = (() => {
         return token;
       })
       .catch((err) => {
-        state.refreshFailed = true;
-        state.config?.onRefreshFailed?.();
+        // 401일 때만 로그아웃(onRefreshFailed). 그 외 에러는 reject만 하고, response interceptor에서 일반 error dialog 처리
+        if (err?.response?.status === 401) {
+          state.refreshFailed = true;
+          state.config?.onRefreshFailed?.();
+        }
         return Promise.reject(err);
       })
       .finally(() => {
