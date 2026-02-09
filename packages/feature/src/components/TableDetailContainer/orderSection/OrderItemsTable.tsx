@@ -53,9 +53,17 @@ export function OrderItemsTable({
   // 할인 금액 계산
   const discountAmount =
     discountRate > 0 ? totalPrice * (discountRate / 100) : 0;
+
+  // 주문 순서대로 정렬 (orderDetailMenuSeq 기준)
+  const sortedItems = [...items].sort((a, b) => {
+    const seqA = Number(a.id) || 0;
+    const seqB = Number(b.id) || 0;
+    return seqA - seqB;
+  });
+
   return (
     <TableWrap>
-      {items.map((it, index) => (
+      {sortedItems.map((it, index) => (
         <React.Fragment key={`${it.id}-${index + 1}`}>
           <Row
             data-item-id={it.id}
