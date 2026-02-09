@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { ModalBackground } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import {
   Payment,
   type IPaymentResponse,
-  type IPaymentEventData,
+  // type IPaymentEventData,
 } from '@repo/util/app';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
-import { CardPaymentProgressModal } from '../CardPaymentProgressModal';
+// import { CardPaymentProgressModal } from '../CardPaymentProgressModal';
 import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
 import { useShopData } from '@/hooks/useShopData';
@@ -31,7 +31,7 @@ import {
 } from '@/feature/Installment';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
-const PAYMENT_EVENT_NAME = 'paymentEvent';
+// const PAYMENT_EVENT_NAME = 'paymentEvent';
 const HTTP_STATUS_BAD_REQUEST = 400;
 const HTTP_STATUS_SERVER_ERROR = 500;
 const HTTP_STATUS_NOT_FOUND = 404;
@@ -96,14 +96,14 @@ export const CardPaymentInstallmentModal = ({
   });
   const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
 
-  const [paymentProgressMessage, setPaymentProgressMessage] =
-    useState<string>('');
+  // const [paymentProgressMessage, setPaymentProgressMessage] =
+  //   useState<string>('');
   const [selectedInstallmentMonths, setSelectedInstallmentMonths] =
     useState<number>(INSTALLMENT_LUMP_SUM);
 
-  const paymentListenerRef = useRef<{ remove: () => Promise<void> } | null>(
-    null
-  );
+  // const paymentListenerRef = useRef<{ remove: () => Promise<void> } | null>(
+  //   null
+  // );
 
   const shouldShowInstallmentSection = totalPrice >= INSTALLMENT_MINIMUM_AMOUNT;
   const isPaymentProgressModalOpen =
@@ -119,25 +119,25 @@ export const CardPaymentInstallmentModal = ({
       return;
     }
 
-    let paymentListener: { remove: () => Promise<void> } | null = null;
+    // let paymentListener: { remove: () => Promise<void> } | null = null;
 
-    const setupPaymentListener = async () => {
-      paymentListener = await Payment.addListener(
-        PAYMENT_EVENT_NAME,
-        (eventData: IPaymentEventData) => {
-          setPaymentProgressMessage(eventData.EVENT_MSG);
-        }
-      );
-      paymentListenerRef.current = paymentListener;
-    };
+    // const setupPaymentListener = async () => {
+    //   paymentListener = await Payment.addListener(
+    //     PAYMENT_EVENT_NAME,
+    //     (eventData: IPaymentEventData) => {
+    //       setPaymentProgressMessage(eventData.EVENT_MSG);
+    //     }
+    //   );
+    //   paymentListenerRef.current = paymentListener;
+    // };
 
-    setupPaymentListener();
+    // setupPaymentListener();
 
     return () => {
       Payment.stop();
-      if (paymentListener) {
-        paymentListener.remove();
-      }
+      // if (paymentListener) {
+      //   paymentListener.remove();
+      // }
     };
   }, [isPaymentProgressModalOpen]);
 
@@ -272,9 +272,9 @@ export const CardPaymentInstallmentModal = ({
     }
   };
 
-  const handleClosePaymentProgressModal = () => {
-    modalStore.setModalData('isCardPaymentProgressModalOpened', false);
-  };
+  // const handleClosePaymentProgressModal = () => {
+  //   modalStore.setModalData('isCardPaymentProgressModalOpened', false);
+  // };
 
   const handleInstallmentChange = (value: string | number) => {
     setSelectedInstallmentMonths(value as number);
