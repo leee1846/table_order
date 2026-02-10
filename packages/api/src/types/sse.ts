@@ -16,7 +16,8 @@ export interface ISseMessage {
     | 'LOGOUT'
     | 'SHOP_THEME_PAGE'
     | 'SHOP_THEME_MENU'
-    | 'RING_BELL';
+    | 'RING_BELL'
+    | 'POS_ERROR';
   data:
     | {
         [key: string]: number | string;

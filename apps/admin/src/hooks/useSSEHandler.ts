@@ -10,6 +10,7 @@ import { useTheftAlertStore } from '@/stores/useTheftAlertStore';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ROUTES } from '@/constants/routes';
 import { SystemControl } from '@repo/util/app';
+import { toast } from '@repo/feature/utils';
 
 export const useSSEHandler = () => {
   const queryClient = useQueryClient();
@@ -56,6 +57,11 @@ export const useSSEHandler = () => {
         queryKey: ['orders', 'orderLogList'],
       });
 
+      return;
+    }
+
+    if (sseMessage?.type === 'POS_ERROR') {
+      toast('POS 에러가 발생했습니다.');
       return;
     }
 
