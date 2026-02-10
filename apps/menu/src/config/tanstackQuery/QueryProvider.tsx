@@ -43,6 +43,11 @@ export function QueryProvider({ children }: Props) {
             staleTime: 0,
             refetchOnWindowFocus: false,
             retry: 0,
+            networkMode: 'always',
+          },
+          mutations: {
+            retry: 0,
+            networkMode: 'always',
           },
         },
       })
