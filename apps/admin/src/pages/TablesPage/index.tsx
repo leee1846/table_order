@@ -174,7 +174,7 @@ export const TablesPage = () => {
 
       await createOrderGroupAndNavigate(
         selectedTable.tableNumber,
-        data.customerCount,
+        data.customerCount + (data.kidsCustomerCount ?? 0),
         data.kidsCustomerCount ?? 0
       );
 

@@ -211,15 +211,11 @@ export const TableDetailContainer = ({
     usePutClearOrder();
 
   const order: Order | null = useMemo(() => {
-    const calculatedNumberOfPeople =
-      (orderHistoriesResponse?.data?.customerCount ?? 0) +
-      (orderHistoriesResponse?.data?.kidsCustomerCount ?? 0);
-
     if (!orderHistoriesResponse?.data) {
       return {
         tableName: orderHistoriesResponse?.data?.tableName ?? '',
         discountRate: 0,
-        numberOfPeople: calculatedNumberOfPeople,
+        numberOfPeople: orderHistoriesResponse?.data?.customerCount ?? 0,
         items: [],
         paymentList: [],
         totalCount: 0,
@@ -256,7 +252,7 @@ export const TableDetailContainer = ({
     return {
       tableName: data.tableName ?? '',
       discountRate: data.discountRate || 0,
-      numberOfPeople: calculatedNumberOfPeople,
+      numberOfPeople: orderHistoriesResponse?.data?.customerCount ?? 0,
       items,
       totalCount: items
         .filter((item) => item.menuSeq !== 0)
