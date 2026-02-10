@@ -682,5 +682,7 @@
   "메뉴가 추가되었습니다.": "Menu has been added.",
   "메뉴가 일괄 번역되었습니다.": "Menus have been batch translated.",
   "이용 중": "In Use",
-  "{{menuName}}는 최소 {{minQuantity}}개를 주문해야 해요.": "You must order at least {{minQuantity}} of {{menuName}}."
+  "{{menuName}}는 최소 {{minQuantity}}개를 주문해야 해요.": "You must order at least {{minQuantity}} of {{menuName}}.",
+  "포스 응답 지연": "POS Response Delay",
+  "포스 상태를 확인해주세요": "Please check the POS status"
 }

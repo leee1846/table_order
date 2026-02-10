@@ -1,3 +1,4 @@
+import { useAdminTranslation } from '@/config/i18n';
 import { ModalBackground, ConfirmDialog } from '@repo/ui/components';
 
 interface PosErrorDialogProps {
@@ -6,6 +7,7 @@ interface PosErrorDialogProps {
 }
 
 export const PosErrorDialog = ({ isOpen, onClose }: PosErrorDialogProps) => {
+  const { t } = useAdminTranslation();
   if (!isOpen) {
     return null;
   }
@@ -14,11 +16,11 @@ export const PosErrorDialog = ({ isOpen, onClose }: PosErrorDialogProps) => {
     <ModalBackground onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()}>
         <ConfirmDialog
-          title="POS 에러"
-          content="POS 에러가 발생했습니다."
-          confirmText="확인"
+          title={t('포스 응답 지연')}
+          content={t('포스 상태를 확인해주세요')}
+          confirmText={t('확인')}
           onConfirm={onClose}
-          size="small"
+          size="xsmall"
         />
       </div>
     </ModalBackground>
