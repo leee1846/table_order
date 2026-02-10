@@ -296,24 +296,29 @@ export const useSSEHandler = () => {
         return;
       }
 
-      // 현금 결제 유도 모달이 열려있는지 확인
-      const isCashPaymentInducementModalOpened =
-        useModalStore.getState().data.isCashPaymentInducementModalOpened;
-      // 현금 결제 유도 모달이 열려있으면 주문 내역 새로고침
-      if (isCashPaymentInducementModalOpened) {
-        // totalAmount 계산 (null이면 0으로 처리)
-        const totalAmount = refreshResult.totalAmount ?? 0;
+      const {
+        isCashPaymentInducementModalOpened,
+        isSplitPaymentModalOpened,
+        isCardPaymentInstallmentModalOpened,
+      } = useModalStore.getState().data;
 
-        // paymentList에서 isCanceled가 false인 항목들의 transactionAmount 합계 계산
-        const paidAmount = refreshResult.paymentList
-          .filter((payment) => !payment.isCanceled)
-          .reduce((sum, payment) => sum + payment.transactionAmount, 0);
+      const isPaymentModalOpened =
+        isCashPaymentInducementModalOpened ||
+        isSplitPaymentModalOpened ||
+        isCardPaymentInstallmentModalOpened;
 
-        // 모든 주문금액 결제가 완료 되었을경우
-        if (totalAmount - paidAmount === 0) {
-          // 현금 결제 유도 모달 닫기
-          useModalStore.getState().closeAllModals();
-        }
+      if (!isPaymentModalOpened) {
+        return;
+      }
+
+      const totalAmount = refreshResult.totalAmount ?? 0;
+      const paidAmount = refreshResult.paymentList
+        .filter((payment) => !payment.isCanceled)
+        .reduce((sum, payment) => sum + payment.transactionAmount, 0);
+      const isFullyPaid = totalAmount - paidAmount === 0;
+
+      if (isFullyPaid) {
+        useModalStore.getState().closeAllModals();
       }
     },
 
