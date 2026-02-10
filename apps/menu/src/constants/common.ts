@@ -6,6 +6,9 @@ import {
   ruFlagIcon,
 } from '@repo/ui/icons';
 
+/** API 요청 타임아웃 (ms) */
+export const REQUEST_TIMEOUT_MS = 15_000;
+
 export const CURRENCY_SYMBOL: Record<'KRW' | 'USD', string> = {
   KRW: '₩',
   USD: '$',

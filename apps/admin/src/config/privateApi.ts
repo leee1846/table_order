@@ -14,6 +14,7 @@ import {
   getAccessToken,
   removeAuthTokens,
 } from '@repo/api/auth';
+import { REQUEST_TIMEOUT_MS } from '@/constants/common';
 import { ROUTES } from '@/constants/routes';
 import { decodeJwtToken } from '@repo/util/function';
 import { isExpired } from '@repo/util/date';
@@ -41,6 +42,7 @@ accessTokenRefreshManager.configure({
 
 export const privateApi = createAxiosInstance({
   baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: REQUEST_TIMEOUT_MS,
 });
 
 privateApi.interceptors.request.use(

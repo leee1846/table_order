@@ -29,7 +29,7 @@ function GlobalLoadingIndicator() {
 }
 
 /**
- * React Query Provider 컴포넌트 예시시
+ * React Query Provider 컴포넌트 예시
  *
  * 앱 전체에서 React Query를 사용할 수 있도록 설정함
  * QueryClient 옵션에서 공통 에러 처리를 설정할 수 있음
