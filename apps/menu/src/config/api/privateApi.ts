@@ -12,7 +12,6 @@ import { openConfirmDialog } from '@repo/feature/utils';
 import { isExpired } from '@repo/util/date';
 import { decodeJwtToken } from '@repo/util/function';
 import { getCurrentUnixTime } from '@repo/util/time';
-import { REQUEST_TIMEOUT_MS } from '@/constants/common';
 import { ROUTES } from '@/constants/routes';
 import { clearAuthData } from '@/utils/auth';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
@@ -39,7 +38,6 @@ accessTokenRefreshManager.configure({
  */
 export const privateApi = createAxiosInstance({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: REQUEST_TIMEOUT_MS,
 });
 
 privateApi.interceptors.request.use(

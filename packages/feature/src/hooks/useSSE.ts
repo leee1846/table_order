@@ -32,21 +32,6 @@ type TSSEConnectionState<T> = {
 const sseConnectionMap = new Map<string, TSSEConnectionState<unknown>>();
 
 /**
- * 재연결 상태 변경 시 알림을 받을 전역 리스너 (useSSEReconnecting 훅에서 등록)
- * - state가 나중에 생성되어도(useSSEData가 늦게 마운트) 새 state에 리스너가 붙도록 함
- */
-type TReconnectingListener = () => void;
-const globalReconnectingListeners = new Set<TReconnectingListener>();
-
-function addGlobalReconnectingListenersToState(
-  state: TSSEConnectionState<unknown>
-) {
-  globalReconnectingListeners.forEach((listener) => {
-    state.setIsReconnectingCallbacks.add(listener);
-  });
-}
-
-/**
  * 지정한 SSE 엔드포인트에 연결 (앱 전체에서 한 번만 호출)
  * @template T - SSE로 수신하는 데이터의 타입
  */
@@ -84,9 +69,6 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       reconnectTimeoutId: null,
     };
     sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
-    addGlobalReconnectingListenersToState(
-      state as TSSEConnectionState<unknown>
-    );
   }
 
   // URL 저장
@@ -313,9 +295,6 @@ export const useSSEData = <T = unknown>(key: string) => {
         reconnectTimeoutId: null,
       };
       sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
-      addGlobalReconnectingListenersToState(
-        state as TSSEConnectionState<unknown>
-      );
     }
 
     // 콜백 등록 (Set이므로 중복 자동 방지)
@@ -374,20 +353,16 @@ export const useSSEReconnecting = (): boolean => {
       setIsReconnecting(checkAnyReconnecting());
     };
 
-    // 전역 리스너에 등록 → 나중에 생성되는 state(useSSEData)에도 이 콜백이 붙음
-    globalReconnectingListeners.add(updateReconnectingState);
+    // 초기 상태 설정
+    setIsReconnecting(checkAnyReconnecting());
 
-    // 이미 존재하는 연결에도 콜백 등록
+    // 모든 연결에 콜백 등록
     for (const state of sseConnectionMap.values()) {
       state.setIsReconnectingCallbacks.add(updateReconnectingState);
     }
 
-    // 초기 상태 설정
-    setIsReconnecting(checkAnyReconnecting());
-
-    // cleanup: 전역 리스너 및 모든 연결에서 콜백 제거
+    // cleanup: 모든 콜백 제거
     return () => {
-      globalReconnectingListeners.delete(updateReconnectingState);
       for (const state of sseConnectionMap.values()) {
         state.setIsReconnectingCallbacks.delete(updateReconnectingState);
       }

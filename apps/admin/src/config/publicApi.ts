@@ -8,11 +8,9 @@ import type {
 } from '@repo/api/axios';
 import type { IApiError } from '@repo/api/types';
 import { openConfirmDialog } from '@repo/feature/utils';
-import { REQUEST_TIMEOUT_MS } from '@/constants/common';
 
 export const publicApi = createAxiosInstance({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: REQUEST_TIMEOUT_MS,
 });
 
 publicApi.interceptors.request.use(
@@ -46,7 +44,9 @@ publicApi.interceptors.response.use(
       title: 'Server Error',
       content:
         error.response?.data?.status?.userMessage ||
-        t('알 수 없는 오류가 발생했습니다.'),
+        t(
+          '알 수 없는 오류가 발생했습니다.'
+        ),
     });
     return Promise.reject(error);
   }

@@ -7,14 +7,12 @@ import type {
 } from '@repo/api/axios';
 import { openConfirmDialog } from '@repo/feature/utils';
 import type { IApiError } from '@repo/api/types';
-import { REQUEST_TIMEOUT_MS } from '@/constants/common';
 
 /**
  * 인증 없이 요청하고싶을때 사용
  */
 export const publicApi = createAxiosInstance({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: REQUEST_TIMEOUT_MS,
 });
 
 publicApi.interceptors.request.use(
