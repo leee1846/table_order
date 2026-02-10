@@ -57,8 +57,8 @@ export const GuestCountDialog = ({
     return null;
   }
 
-  // 성인만 사용: 성인이 0이면 비활성화
-  const isButtonDisabled = customerCount === 0;
+  // 성인과 이동 둘 다  0 이면 버튼 활성화
+  const isButtonDisabled = customerCount === 0 && kidsCustomerCount === 0;
 
   /** 확인 버튼 핸들러 - 입력값 전달 */
   const handleConfirm = () => {
@@ -105,6 +105,7 @@ export const GuestCountDialog = ({
                     size="L"
                     value={customerCount}
                     onChange={setCustomerCount}
+                    min={0}
                   />
                 </S.NumberInputWrapper>
               </S.CounterSection>
@@ -119,6 +120,7 @@ export const GuestCountDialog = ({
                     size="L"
                     value={kidsCustomerCount}
                     onChange={setKidsCustomerCount}
+                    min={0}
                   />
                 </S.NumberInputWrapper>
               </S.CounterSection>
@@ -136,6 +138,7 @@ export const GuestCountDialog = ({
                   size="L"
                   value={customerCount}
                   onChange={setCustomerCount}
+                  min={0}
                 />
               </S.NumberInputWrapper>
             </S.CounterSection>

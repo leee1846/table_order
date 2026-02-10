@@ -6,6 +6,10 @@ export const HeaderButton = styled.button`
   flex-direction: column;
   width: 100%;
   gap: 24px;
+  justify-content: space-between;
+  > div:first-of-type {
+    width: 100%;
+  }
 `;
 
 export const TitleContentContainer = styled.div`
