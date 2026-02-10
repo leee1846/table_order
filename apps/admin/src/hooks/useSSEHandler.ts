@@ -6,17 +6,18 @@ import type { ISseMessage } from '@repo/api/types';
 import { useAuth } from './useAuth';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
-import { useTheftAlertStore } from '@/stores/useTheftAlertStore';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { usePosErrorStore } from '@/stores/usePosErrorStore';
+import { useTheftAlertStore } from '@/stores/useTheftAlertStore';
 import { ROUTES } from '@/constants/routes';
 import { SystemControl } from '@repo/util/app';
-import { toast } from '@repo/feature/utils';
 
 export const useSSEHandler = () => {
   const queryClient = useQueryClient();
   const { shopCode } = useAuth();
   const { clearAuth, tokenPayload } = useAuthStore();
   const { openAlert } = useTheftAlertStore();
+  const { openError } = usePosErrorStore();
 
   // 로그인/로그아웃 시 SSE 연결 관리
   useEffect(() => {
@@ -61,7 +62,7 @@ export const useSSEHandler = () => {
     }
 
     if (sseMessage?.type === 'POS_ERROR') {
-      toast('POS 에러가 발생했습니다.');
+      openError();
       return;
     }
 
@@ -109,5 +110,5 @@ export const useSSEHandler = () => {
     //     }
     //   }
     // }
-  }, [sseMessage, shopCode, queryClient, openAlert]);
+  }, [sseMessage, shopCode, queryClient, openAlert, openError]);
 };
