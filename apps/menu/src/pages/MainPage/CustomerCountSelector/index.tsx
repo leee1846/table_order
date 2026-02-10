@@ -55,7 +55,7 @@ export const CustomerCountSelector = () => {
     createOrderGroup({
       shopCode: shopData?.shopCode ?? '',
       tableNumber: deviceData?.tableNumber ?? '',
-      customerCount: adultCount,
+      customerCount: adultCount + childCount,
       kidsCustomerCount: childCount,
     }).catch((error) => {
       if (error.response?.status === 400) {
