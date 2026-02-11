@@ -162,6 +162,9 @@ export const resetStyles = css`
       margin: 0;
     }
   }
+  input[type='password']::-ms-reveal {
+    display: none;
+  }
   input[type='radio'],
   input[type='checkbox'] {
     appearance: none;
