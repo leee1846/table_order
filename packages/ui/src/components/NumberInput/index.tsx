@@ -83,7 +83,15 @@ export const NumberInput = ({
       return theme.mode.grey[50];
     }
 
-    if (type === 'remove') {
+    // 버튼의 실제 disabled 상태 확인
+    const isDecreaseDisabled = disabled || (min !== undefined && value <= min);
+    const isIncreaseDisabled = disabled || (max !== undefined && value >= max);
+
+    if (type === 'remove' && isDecreaseDisabled) {
+      return theme.mode.grey[400];
+    }
+
+    if (type === 'add' && isIncreaseDisabled) {
       return theme.mode.grey[400];
     }
 

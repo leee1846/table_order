@@ -38,41 +38,36 @@ export const SelectCancelDialog = ({
   const { mutateAsync: cancelOrderMenu, isPending } = usePutCancelOrderMenu();
 
   const handleCheckboxChange = (itemId: string, checked: boolean) => {
-    setSelectedItems((prev) => {
-      const newSet = new Set(prev);
-      if (checked) {
-        newSet.add(itemId);
-        // 체크박스가 활성화되면 현재 수량을 기본값으로 설정
-        const item = items.find((it) => it.id === itemId);
-        if (item && !quantities.has(itemId)) {
-          setQuantities((prevQty) => {
-            const newQty = new Map(prevQty);
-            newQty.set(itemId, item.qty);
-            return newQty;
-          });
-        }
-      } else {
-        newSet.delete(itemId);
+    if (checked) {
+      setSelectedItems((prev) => new Set(prev).add(itemId));
+
+      // 수량 초기화는 별도로 처리
+      const item = items.find((it) => it.id === itemId);
+      if (item) {
+        setQuantities((prev) => {
+          if (!prev.has(itemId)) {
+            const newMap = new Map(prev);
+            newMap.set(itemId, item.qty);
+            return newMap;
+          }
+          return prev;
+        });
       }
-      return newSet;
-    });
+    } else {
+      setSelectedItems((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(itemId);
+        return newSet;
+      });
+    }
   };
 
   const handleQuantityChange = (itemId: string, quantity: number) => {
     setQuantities((prev) => {
       const newMap = new Map(prev);
-      if (quantity < 1) {
-        newMap.delete(itemId);
-        setSelectedItems((prevSet) => {
-          const newSet = new Set(prevSet);
-          newSet.delete(itemId);
-          return newSet;
-        });
-      } else {
-        const item = items.find((it) => it.id === itemId);
-        const maxQty = item?.qty || 1;
-        newMap.set(itemId, Math.min(quantity, maxQty));
-      }
+      const item = items.find((it) => it.id === itemId);
+      const maxQty = item?.qty || 1;
+      newMap.set(itemId, Math.min(quantity, maxQty));
       return newMap;
     });
   };
@@ -84,6 +79,15 @@ export const SelectCancelDialog = ({
 
     if (selectedItems.size === 0) {
       toast(t('삭제할 메뉴를 선택해주세요.'));
+      return;
+    }
+
+    const hasZeroQuantity = Array.from(selectedItems).some(
+      (itemId) => (quantities.get(itemId) ?? 0) === 0
+    );
+
+    if (hasZeroQuantity) {
+      toast(t('수량을 한 개 이상 입력해주세요.'));
       return;
     }
 
@@ -138,7 +142,7 @@ export const SelectCancelDialog = ({
           <S.ItemsList>
             {items.map((item, index) => {
               const isChecked = selectedItems.has(item.id);
-              const quantity = quantities.get(item.id) || item.qty;
+              const quantity = quantities.get(item.id) ?? item.qty;
 
               return (
                 <S.ItemRow key={`${item.id}-${index + 1}`}>
@@ -161,7 +165,7 @@ export const SelectCancelDialog = ({
                     <NumberInput
                       variant="square"
                       value={quantity}
-                      min={1}
+                      min={0}
                       max={item.qty}
                       disabled={!isChecked}
                       onChange={(value) => handleQuantityChange(item.id, value)}
