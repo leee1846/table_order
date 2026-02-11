@@ -5,3 +5,4 @@ export * from './AndroidInfo';
 export * from './CameraManager';
 export * from './Payment';
 export * from './Installer';
+export * from './SettingsLauncher';

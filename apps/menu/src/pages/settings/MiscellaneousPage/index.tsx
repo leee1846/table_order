@@ -11,6 +11,7 @@ import { useShopData } from '@/hooks/useShopData';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { Account } from '@/pages/settings/MiscellaneousPage/Account';
 import { Detail } from '@/pages/settings/MiscellaneousPage/Detail';
+import { DeviceManagement } from '@/pages/settings/MiscellaneousPage/DeviceManagement';
 import { Payment } from '@/pages/settings/MiscellaneousPage/Payment';
 import * as S from '@/pages/settings/MiscellaneousPage/MiscellaneousPage.style';
 
@@ -108,6 +109,7 @@ export const MiscellaneousPage = () => {
           handleOrderPosNumberChange={handleOrderPosNumberChange}
         />
         <Payment />
+        <DeviceManagement />
       </S.Sections>
     </S.Container>
   );
