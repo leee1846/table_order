@@ -29,6 +29,7 @@ import { MenuAppFeature } from '@/pages/settings/MiscellaneousPage/MenuAppFeatur
 import { Payment } from '@/pages/settings/MiscellaneousPage/Payment';
 import { Intergration } from '@/pages/settings/MiscellaneousPage/Intergration';
 import { Language } from '@/pages/settings/MiscellaneousPage/Language';
+import { DeviceManagement } from '@/pages/settings/MiscellaneousPage/DeviceManagement';
 import type { MiscellaneousChange } from './types';
 import { toast } from '@repo/feature/utils';
 import { ADMIN_LANGUAGE_STORAGE_KEY } from '@/constants/keys';
@@ -303,6 +304,8 @@ export const MiscellaneousPage = () => {
           onAdminLanguageChange={setAdminLanguage}
           adminLanguage={adminLanguage}
         />
+
+        <DeviceManagement />
       </S.Sections>
     </S.Container>
   );
