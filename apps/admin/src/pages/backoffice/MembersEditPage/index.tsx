@@ -110,7 +110,7 @@ export const MembersEditPage = () => {
     }
 
     const params: ICreateAdminMemberRequest = {
-      memberId: formData.memberEmail,
+      memberId: formData.memberId || '',
       shopSeq: null,
       memberRole: formData.memberRole,
       memberName: formData.memberName,
