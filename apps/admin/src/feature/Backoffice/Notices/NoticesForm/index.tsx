@@ -61,14 +61,20 @@ export const NoticesForm = ({ mode, formData, updateFormData }: Props) => {
             <S.Label>
               내용 <span>*</span>
             </S.Label>
-            <S.TextArea
-              ref={textAreaRef}
-              placeholder="내용을 입력하세요"
-              value={formData.content}
-              onChange={(e) => updateFormData({ content: e.target.value })}
-              disabled={isReadOnly}
-              isDetail={isReadOnly}
-            />
+            <S.TextAreaWrapper>
+              <S.TextArea
+                ref={textAreaRef}
+                placeholder="내용을 입력하세요"
+                value={formData.content}
+                onChange={(e) =>
+                  updateFormData({ content: e.target.value.slice(0, 200) })
+                }
+                maxLength={200}
+                disabled={isReadOnly}
+                isDetail={isReadOnly}
+              />
+              <S.TextAreaCount>{formData.content.length}/200</S.TextAreaCount>
+            </S.TextAreaWrapper>
           </S.FieldGroup>
 
           {(mode === 'edit' || mode === 'detail') && (

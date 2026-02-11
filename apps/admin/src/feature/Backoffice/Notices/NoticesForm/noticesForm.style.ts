@@ -46,3 +46,21 @@ export const TextArea = styled.textarea<{ isDetail?: boolean }>`
     font-size: 14px;
   }
 `;
+
+export const TextAreaWrapper = styled.div`
+  position: relative;
+  width: 100%;
+
+  textarea {
+    padding-bottom: 28px;
+  }
+`;
+
+export const TextAreaCount = styled.span`
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  color: ${theme.colors.grey[400]};
+  font-size: 14px;
+  pointer-events: none;
+`;
