@@ -27,19 +27,21 @@ export const AddTableGroupDialog = ({
 
   const { shopCode, shopSeq } = useAuth();
   const handleSubmit = async () => {
-    if (groupName.trim() !== '') {
-      await createTableGroup({
-        shopSeq: shopSeq ?? 0,
-        tableGroupName: groupName,
-      });
-
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.table.groupList(shopCode ?? ''),
-      });
-
-      toast(t('테이블 그룹이 추가되었습니다.'));
-      handleClose();
+    if (groupName.trim() === '') {
+      toast(t('테이블 그룹 이름을 입력하세요'));
+      return;
     }
+    await createTableGroup({
+      shopSeq: shopSeq ?? 0,
+      tableGroupName: groupName.trim(),
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.table.groupList(shopCode ?? ''),
+    });
+
+    toast(t('테이블 그룹이 추가되었습니다.'));
+    handleClose();
   };
 
   const handleClose = () => {
