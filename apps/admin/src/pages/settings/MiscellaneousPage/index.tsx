@@ -32,6 +32,7 @@ import { Language } from '@/pages/settings/MiscellaneousPage/Language';
 import { DeviceManagement } from '@/pages/settings/MiscellaneousPage/DeviceManagement';
 import type { MiscellaneousChange } from './types';
 import { toast } from '@repo/feature/utils';
+import { CapacitorApp } from '@repo/util/app';
 import { ADMIN_LANGUAGE_STORAGE_KEY } from '@/constants/keys';
 
 export const MiscellaneousPage = () => {
@@ -305,7 +306,7 @@ export const MiscellaneousPage = () => {
           adminLanguage={adminLanguage}
         />
 
-        <DeviceManagement />
+        {CapacitorApp.isNative() && <DeviceManagement />}
       </S.Sections>
     </S.Container>
   );
