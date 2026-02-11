@@ -86,7 +86,7 @@ export const MenuSelectionView = ({
                 <S.SelectedItemsList>
                   {selectedMenus.map((item, index) => (
                     <S.SelectedItem
-                      key={`${item.menu.menuSeq}-${item.menu.menuName}-${index}`}
+                      key={`${item.menu.menuSeq}-${item.menu.menuName}-${index.toString()}`}
                     >
                       <S.ItemHeader>
                         <S.ItemName>

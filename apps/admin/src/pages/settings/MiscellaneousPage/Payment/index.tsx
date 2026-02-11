@@ -199,7 +199,6 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       {paymentType === 'prepayment' && (
         <>
           <UIStyles.setting.ContentLayout>
-            {/* TODO 선불 van 옵션 뭐뭐 있는 지 아직 모름 */}
             <p>{t('선불 VAN')}</p>
             <Dropdown
               options={vanOptions}

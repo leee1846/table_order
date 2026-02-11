@@ -74,7 +74,11 @@ export const SalesReportPage = () => {
     { enabled: !!shopCode }
   );
 
-  const dailyRows: IDailySalesHistoryItem[] = dailySalesRes?.data ?? [];
+  const dailyRows: IDailySalesHistoryItem[] = useMemo(
+    () => dailySalesRes?.data ?? [],
+    [dailySalesRes?.data]
+  );
+
   const menuRows: IMenuSalesHistoryItem[] = menuSalesRes?.data ?? [];
   const hourlyRows: IHourlySalesItem[] = hourlySalesRes?.data ?? [];
 

@@ -112,7 +112,7 @@ export const OrderListDialog = ({
       setSelectedOrder(null);
       setOpenDetailOrderDialog(false);
     }
-  }, [isOpen, shopCode, PAZE_SIZE]);
+  }, [isOpen, shopCode]);
 
   const {
     data: orderLogResponse,
@@ -130,7 +130,7 @@ export const OrderListDialog = ({
     }
 
     refetch();
-  }, [isOpen, shopCode, currentPage, PAZE_SIZE, refetch]);
+  }, [isOpen, shopCode, currentPage, refetch]);
 
   const orderLogData = useMemo(() => {
     const data = orderLogResponse?.data;
@@ -274,7 +274,6 @@ export const OrderListDialog = ({
                         <td>{order.orderDateTime}</td>
                         <td>{order.tableNumber}</td>
                         <td>{order.orderChannel}</td>
-                        {/* TODO paymentStatus 아직 백엔드에서 구현 안됨 현재 null로 오는 중 */}
                         <td>{order.paymentStatus}</td>
                         <td>{order.orderStatus}</td>
                       </tr>

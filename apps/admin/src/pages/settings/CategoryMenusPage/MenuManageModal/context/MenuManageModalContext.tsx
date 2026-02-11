@@ -188,7 +188,7 @@ export const MenuManageModalProvider = ({
 
     await runMutation(() => createMenu({ menu: menuData, files }));
     toast(t('메뉴가 생성되었습니다.'));
-  }, [formValues, categorySeq, images, runMutation, createMenu, i18n]);
+  }, [formValues, categorySeq, images, runMutation, createMenu, i18n, t]);
 
   /**
    * 메뉴 수정 핸들러
@@ -218,7 +218,7 @@ export const MenuManageModalProvider = ({
 
     await runMutation(() => updateMenu({ menu: updateData, files }));
     toast(t('메뉴가 수정되었습니다.'));
-  }, [menu, formValues, images, runMutation, updateMenu]);
+  }, [menu, formValues, images, runMutation, updateMenu, t]);
 
   /**
    * 메뉴 제출 핸들러 (생성/수정 통합)
@@ -248,7 +248,7 @@ export const MenuManageModalProvider = ({
     } finally {
       setIsSaving(false);
     }
-  }, [isSaving, mode, handleCreate, handleUpdate, formValues.menuName]);
+  }, [isSaving, mode, handleCreate, handleUpdate, formValues.menuName, t]);
 
   /**
    * Context에 제공할 값들을 메모이제이션

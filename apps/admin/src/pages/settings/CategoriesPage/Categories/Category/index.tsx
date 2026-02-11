@@ -160,13 +160,11 @@ export const Category = ({
       <S.Header>
         <div>
           <span>{displayCategoryName}</span>
-          <button type="button" onClick={() => {}}>
-            <ChevronForwardIcon
-              width={30}
-              height={30}
-              color={theme.colors.grey[400]}
-            />
-          </button>
+          <ChevronForwardIcon
+            width={30}
+            height={30}
+            color={theme.colors.grey[400]}
+          />
         </div>
         <button
           type="button"

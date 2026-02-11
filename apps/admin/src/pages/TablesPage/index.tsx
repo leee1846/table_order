@@ -153,7 +153,6 @@ export const TablesPage = () => {
       }
     },
     [
-      shopCode,
       shopSetting?.useCustomerCount,
       navigate,
       createOrderGroupAndNavigate,

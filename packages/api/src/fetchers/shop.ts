@@ -117,7 +117,6 @@ export interface IUpdateShopThemePageParams {
 }
 
 export const updateShopThemePage = async ({
-  shopCode,
   body,
   initLightFile,
   initDarkFile,

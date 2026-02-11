@@ -15,7 +15,6 @@ export const useGetDeviceListWithPagination = ({
   options,
 }: IGetDeviceListWithPaginationParams & {
   options?: Omit<
-    // TODO 이거 왜 필요한거임?
     UseQueryOptions<
       TGetDeviceListWithPaginationResponse,
       AxiosError<IApiError>

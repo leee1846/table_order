@@ -26,7 +26,7 @@ export const Table = ({ items }: Props) => {
     }
 
     return items.map((item, index) => (
-      <S.MenuRow key={`${item.menuName}-${index}`}>
+      <S.MenuRow key={`${item.menuName}-${index.toString()}`}>
         <td>{item.menuName}</td>
         <td>{formatCurrency(item.unitPrice)}</td>
         <td>{formatCurrency(item.quantity)}</td>

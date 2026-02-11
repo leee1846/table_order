@@ -93,14 +93,10 @@ export const AllDiscountDialog = ({
 
     const type: TCustomAmountType = 'GROUP_DISCOUNT';
 
-    try {
-      await postCustomAmount({ orderGroupUuid, amount: parsedDiscount, type });
-      toast(t('전체 할인을 적용했어요.'));
-      onApplySuccess?.();
-      handleClose();
-    } catch (error) {
-      toast(t('전체 할인 적용 중 오류가 발생했어요. 다시 시도해주세요.'));
-    }
+    await postCustomAmount({ orderGroupUuid, amount: parsedDiscount, type });
+    toast(t('전체 할인을 적용했어요.'));
+    onApplySuccess?.();
+    handleClose();
   };
 
   const handleClose = () => {

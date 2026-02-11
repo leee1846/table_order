@@ -46,11 +46,6 @@ export const createSidebarMenus = (
               label: translate('카드승인내역'),
               path: ROUTES.SETTINGS.SALES.CARD.generate(),
             },
-            // {
-            //   id: 'cash',
-            //   label: '단순현금결제내역',
-            //   path: ROUTES.SETTINGS.SALES.CASH.generate(),
-            // },
             {
               id: 'menu',
               label: translate('메뉴판매집계'),

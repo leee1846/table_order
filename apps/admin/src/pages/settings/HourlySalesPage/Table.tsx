@@ -68,9 +68,7 @@ export const HourlySalesTable = ({ rows }: Props) => {
         <td>{row.hour}</td>
         <td>
           {formatCurrency(row.actualSalesAmount ?? 0)}
-          <S.Metric>
-            <span>{`${row.actualSalesCount ?? 0}${t('건')}`}</span>
-          </S.Metric>
+          <span>{`${row.actualSalesCount ?? 0}${t('건')}`}</span>
         </td>
         <td>{`${row.customerCount ?? 0}${t('명')}`}</td>
         <td>{formatCurrency(row.pricePerCustomer ?? 0)}</td>

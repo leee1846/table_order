@@ -4,7 +4,7 @@ import {
   getInitialLanguage,
 } from '@/config/i18n';
 import { storage } from '@repo/util/function';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { BasicButton } from '@repo/ui/components';
 import {
@@ -73,7 +73,10 @@ export const MiscellaneousPage = () => {
     }
   }, [shopInfo]);
 
-  const categories: ICategory[] = categoryListResponse?.data ?? [];
+  const categories: ICategory[] = useMemo(
+    () => categoryListResponse?.data ?? [],
+    [categoryListResponse?.data]
+  );
 
   useEffect(() => {
     if (categories.length === 0) {
@@ -113,61 +116,6 @@ export const MiscellaneousPage = () => {
     }
   }, []);
 
-  /**
-   * 설정 저장 전 유효성 검증 함수
-   * @param change - 검증할 설정 변경사항
-   * @throws 에러 메시지와 함께 throw
-   */
-  const validateShopSettings = (change: MiscellaneousChange) => {
-    if (
-      change.shopTime?.shopBusinessStartTime ||
-      change.shopTime?.shopBusinessEndTime
-    ) {
-      if (!change.shopTime?.shopBusinessEndTime) {
-        toast(t('정산 시간을 입력해주세요.'));
-        throw new Error(t('정산 시간을 입력해주세요.'));
-      }
-    }
-
-    // 영업마감시간 안내가 활성화되어 있는데 시작시간 또는 종료시간이 없는 경우
-    if (change.shopTime?.useClosure) {
-      if (
-        !change.shopTime?.shopClosureStartTime ||
-        !change.shopTime?.shopClosureEndTime
-      ) {
-        toast(
-          t(
-            '영업마감시간 안내가 활성화되어 있습니다. 시작시간과 종료시간을 입력해주세요.'
-          )
-        );
-        throw new Error(
-          t(
-            '영업마감시간 안내가 활성화되어 있습니다. 시작시간과 종료시간을 입력해주세요.'
-          )
-        );
-      }
-    }
-
-    // 브레이크타임 기능이 활성화되어 있는데 브레이크타임 목록이 없는 경우
-    if (change.shopTime?.useBreakTime) {
-      if (
-        !change.shopTime?.breakTimeList ||
-        change.shopTime?.breakTimeList.length === 0
-      ) {
-        toast(
-          t(
-            '브레이크타임 기능이 활성화되어 있습니다. 브레이크타임을 설정해주세요.'
-          )
-        );
-        throw new Error(
-          t(
-            '브레이크타임 기능이 활성화되어 있습니다. 브레이크타임을 설정해주세요.'
-          )
-        );
-      }
-    }
-  };
-
   const handleSave = useCallback(async () => {
     if (!shopInfo) {
       return;
@@ -205,12 +153,62 @@ export const MiscellaneousPage = () => {
             ),
           }));
 
-    try {
-      validateShopSettings({ shopTime, shopSetting, shopNetwork });
-    } catch (error) {
-      // 검증 실패 시 저장하지 않음
-      return;
-    }
+    /**
+     * 설정 저장 전 유효성 검증 함수
+     * @param change - 검증할 설정 변경사항
+     * @throws 에러 메시지와 함께 throw
+     */
+    const validateShopSettings = (change: MiscellaneousChange) => {
+      if (
+        change.shopTime?.shopBusinessStartTime ||
+        change.shopTime?.shopBusinessEndTime
+      ) {
+        if (!change.shopTime?.shopBusinessEndTime) {
+          toast(t('정산 시간을 입력해주세요.'));
+          throw new Error(t('정산 시간을 입력해주세요.'));
+        }
+      }
+
+      // 영업마감시간 안내가 활성화되어 있는데 시작시간 또는 종료시간이 없는 경우
+      if (change.shopTime?.useClosure) {
+        if (
+          !change.shopTime?.shopClosureStartTime ||
+          !change.shopTime?.shopClosureEndTime
+        ) {
+          toast(
+            t(
+              '영업마감시간 안내가 활성화되어 있습니다. 시작시간과 종료시간을 입력해주세요.'
+            )
+          );
+          throw new Error(
+            t(
+              '영업마감시간 안내가 활성화되어 있습니다. 시작시간과 종료시간을 입력해주세요.'
+            )
+          );
+        }
+      }
+
+      // 브레이크타임 기능이 활성화되어 있는데 브레이크타임 목록이 없는 경우
+      if (change.shopTime?.useBreakTime) {
+        if (
+          !change.shopTime?.breakTimeList ||
+          change.shopTime?.breakTimeList.length === 0
+        ) {
+          toast(
+            t(
+              '브레이크타임 기능이 활성화되어 있습니다. 브레이크타임을 설정해주세요.'
+            )
+          );
+          throw new Error(
+            t(
+              '브레이크타임 기능이 활성화되어 있습니다. 브레이크타임을 설정해주세요.'
+            )
+          );
+        }
+      }
+    };
+
+    validateShopSettings({ shopTime, shopSetting, shopNetwork });
 
     const request: IUpdateShopSettingRequest = {
       ...shopInfo,
@@ -248,7 +246,7 @@ export const MiscellaneousPage = () => {
     shopInfo,
     updateCategoryFirstOrderMutation,
     updateShopSettingMutation,
-    validateShopSettings,
+    t,
   ]);
 
   const isSaving =

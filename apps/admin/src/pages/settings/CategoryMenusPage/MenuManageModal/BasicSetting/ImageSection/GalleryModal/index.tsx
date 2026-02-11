@@ -53,7 +53,9 @@ export const GalleryModal = ({
   );
   const handleGridScroll = useCallback(() => {
     const grid = gridRef.current;
-    if (!grid || isLoading || !hasMore) return;
+    if (!grid || isLoading || !hasMore) {
+      return;
+    }
 
     const threshold = 120;
     const remaining = grid.scrollHeight - grid.scrollTop - grid.clientHeight;

@@ -24,14 +24,14 @@ export const ArbitraryPaymentConfirmDialog = ({
   const handleBack = () => {
     onBack();
     if (dontShowAgain) {
-      // TODO: 로컬 스토리지에 저장하여 다음부터 표시하지 않기
+      // 로컬 스토리지에 저장하여 다음부터 표시하지 않기
     }
   };
 
   const handleContinue = () => {
     onContinue();
     if (dontShowAgain) {
-      // TODO: 로컬 스토리지에 저장하여 다음부터 표시하지 않기
+      // 로컬 스토리지에 저장하여 다음부터 표시하지 않기
     }
   };
 

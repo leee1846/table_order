@@ -1,5 +1,5 @@
 import { t } from '@/config/i18n';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BasicButton } from '@repo/ui/components';
 import {
   queryKeys,
@@ -16,7 +16,6 @@ import * as S from './startScreenThemePage.style';
 export const StartScreenThemePage = () => {
   const { shopCode, shopSeq: shopSeqFromAuth } = useAuth();
   const queryClient = useQueryClient();
-  const blobUrlsRef = useRef<Set<string>>(new Set());
 
   const [initPageLayout, setInitPageLayout] =
     useState<TInitPageLayout>('LIGHT');

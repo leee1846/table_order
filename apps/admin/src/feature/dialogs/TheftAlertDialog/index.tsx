@@ -8,7 +8,6 @@ interface TheftAlertDialogProps {
   onClose: () => void;
 }
 
-//TODO 테이블 관리 위에서는 모달이 안 뜸 확인해보기
 export const TheftAlertDialog = ({
   isOpen,
   tableNumber,
@@ -31,15 +30,9 @@ export const TheftAlertDialog = ({
             <div>
               <AlertMessage>
                 {tableInfo}
-                {t(
-                  '의 연결이 끊겼습니다.'
-                )}
+                {t('의 연결이 끊겼습니다.')}
               </AlertMessage>
-              <AlertMessage>
-                {t(
-                  '기기를 확인해 주세요.'
-                )}
-              </AlertMessage>
+              <AlertMessage>{t('기기를 확인해 주세요.')}</AlertMessage>
             </div>
           }
           confirmText={t('확인')}

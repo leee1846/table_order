@@ -46,10 +46,14 @@ export const Logo = ({ imageUrl, onChange }: LogoProps) => {
   // 파일 선택 시 호출되는 핸들러
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files?.length) return;
+    if (!files?.length) {
+      return;
+    }
 
     const file = files[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     const preview = URL.createObjectURL(file);
 

@@ -7,7 +7,6 @@ const URL_PARAM_PAGE = 'page';
 const URL_PARAM_SEARCH = 'search';
 
 interface UseTablePageStateOptions {
-  pageSize?: number;
   debounceDelay?: number;
 }
 
@@ -29,7 +28,7 @@ interface UseTablePageStateReturn {
 export const useTablePageState = (
   options: UseTablePageStateOptions = {}
 ): UseTablePageStateReturn => {
-  const { pageSize = 10, debounceDelay = DEBOUNCE_DELAY } = options;
+  const { debounceDelay = DEBOUNCE_DELAY } = options;
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();

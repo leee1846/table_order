@@ -126,15 +126,6 @@ export const updateMenu = async (params: {
     });
   }
 
-  // FormData 콘솔 출력
-  for (const [key, value] of formData.entries()) {
-    if (value instanceof Blob) {
-      value.text().then((text) => {
-        console.log(`${key} blob 내용`, JSON.parse(text));
-      });
-    }
-  }
-
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'PUT',
     url: ENDPOINTS.MENU.UPDATE,

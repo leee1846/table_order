@@ -67,7 +67,6 @@ export function OrderPanel({
         totalPrice={order.totalPrice}
         paymentList={order.paymentList ?? []}
       />
-      {/* TODO slot 뚫어서 받기 */}
       <PaymentActions
         // onPayCard={onPayCard}
         // onPayCash={onPayCash}

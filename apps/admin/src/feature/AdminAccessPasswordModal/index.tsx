@@ -43,7 +43,7 @@ export const AdminAccessPasswordModal = (
         setPassword(null);
       }
     },
-    [onSubmit, onSuccess]
+    [onSubmit, onSuccess, t]
   );
 
   const handleNumberPress = useCallback(

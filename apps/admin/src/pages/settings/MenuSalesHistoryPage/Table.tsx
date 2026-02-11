@@ -18,7 +18,9 @@ export const MenuSalesHistoryTable = ({ rows }: Props) => {
   const salesCountIconWrapperRef = useRef<HTMLDivElement>(null);
   const totalSalesIconWrapperRef = useRef<HTMLDivElement>(null);
   const orderedRows = useMemo(() => {
-    if (!rows.length) return [];
+    if (!rows.length) {
+      return [];
+    }
 
     const usedOptionSeqs = new Set<number>();
     const parentRows = rows.filter((row) => row.isOption !== 1);

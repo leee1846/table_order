@@ -295,7 +295,7 @@ export const ImageSection = () => {
       // 로딩 상태 해제
       setIsAlbumLoading(false);
     },
-    [isAlbumLoading, t]
+    [isAlbumLoading]
   );
 
   // 갤러리에서 선택 (네이티브: 갤러리 모달, 웹: 파일 입력)
@@ -391,7 +391,7 @@ export const ImageSection = () => {
       toast(t('이미지 업로드에 실패했습니다.'));
     }
     setIsAlbumUploading(false);
-  }, [applyGalleryFiles, resetGalleryState, selectedAlbumUris, isNativeApp, t]);
+  }, [applyGalleryFiles, resetGalleryState, selectedAlbumUris, isNativeApp]);
 
   // 갤러리 모달 닫기
   const handleCloseGalleryModal = useCallback(() => {
@@ -430,7 +430,7 @@ export const ImageSection = () => {
       toast(t('사진 촬영에 실패했습니다.'));
       resetCaptureTarget();
     }
-  }, [handleCaptureResult, isNativeApp, resetCaptureTarget, t]);
+  }, [handleCaptureResult, isNativeApp, resetCaptureTarget]);
 
   // 기존 이미지 사용 모달 열기
   const handleUseExistingImage = useCallback(async () => {
@@ -448,7 +448,7 @@ export const ImageSection = () => {
 
     setExistingImages(result.data.data);
     setIsExistingModalOpen(true);
-  }, [shopCode, refetchExistingImages, t]);
+  }, [shopCode, refetchExistingImages]);
 
   // 추천 이미지 사용 모달 열기
   const handleUseRecommendedImage = useCallback(async () => {
@@ -461,7 +461,7 @@ export const ImageSection = () => {
     // API 응답이 이미 배열이면 그대로, 단일 객체면 배열로 변환해 전달
     setRecommendedImages(Array.isArray(data) ? data : [data]);
     setIsRecommendedModalOpen(true);
-  }, [recommendedImagesData, t]);
+  }, [recommendedImagesData]);
 
   // 기존 이미지를 MenuImageData로 변환
   const toExistingMenuImageData = useCallback(

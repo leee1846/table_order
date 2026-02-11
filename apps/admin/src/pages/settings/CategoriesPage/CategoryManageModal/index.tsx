@@ -7,7 +7,6 @@ import {
   Dropdown,
 } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoriesPage/CategoryManageModal/categoryManageModal.style';
-import { useIsPosLinked } from '@/hooks/useIsPosLinked';
 
 import { theme } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
@@ -45,7 +44,6 @@ export const CategoryManageModal = ({
   const queryClient = useQueryClient();
   const createCategoryMutation = usePostCreateCategory();
   const updateCategoryMutation = usePutUpdateCategory();
-  const isPosLinked = useIsPosLinked();
   // 현재 언어 코드를 안전하게 가져오기
   const currentLanguage: TShopLanguage = useMemo(
     () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
@@ -218,51 +216,47 @@ export const CategoryManageModal = ({
     const allDaysSelected = selectedDays.length === days.length;
     const useSaleDay = !(allDaysSelected && isSaleOnHoliday);
 
-    try {
-      if (isEdit) {
-        // 수정 모드
-        const category = categoryData as ICategory;
-        const updateData: IUpdateCategoryRequest = {
-          ...category,
-          categoryName: categoryName || category.categoryName,
-          saleDayOfWeek: saleDayOfWeekNumbers,
-          saleStartTime,
-          saleEndTime,
-          isSaleOnHoliday,
-          useTwoColumnLayout,
-          isQuantitySelectable,
-          isStaffCall,
-          categoryDescription,
-          selectedLanguageCode,
-          useSaleDay,
-          useSaleTime,
-        };
-        await updateCategoryMutation.mutateAsync(updateData);
-        queryClient.invalidateQueries({ queryKey: queryKeys.category.list() });
-      } else {
-        await createCategoryMutation.mutateAsync({
-          shopSeq,
-          categoryName,
-          saleDayOfWeek:
-            saleDayOfWeekNumbers.length > 0 ? saleDayOfWeekNumbers : [],
-          saleStartTime: saleStartTime || null,
-          saleEndTime: saleEndTime || null,
-          isSaleOnHoliday,
-          useTwoColumnLayout,
-          isQuantitySelectable,
-          isStaffCall,
-          categoryDescription: categoryDescription || null,
-          isFirstOrderRequired: false,
-          selectedLanguageCode,
-          useSaleDay,
-          useSaleTime,
-        });
-        queryClient.invalidateQueries({ queryKey: queryKeys.category.list() });
-      }
-      onClose();
-    } catch (error) {
-      console.error(error);
+    if (isEdit) {
+      // 수정 모드
+      const category = categoryData as ICategory;
+      const updateData: IUpdateCategoryRequest = {
+        ...category,
+        categoryName: categoryName || category.categoryName,
+        saleDayOfWeek: saleDayOfWeekNumbers,
+        saleStartTime,
+        saleEndTime,
+        isSaleOnHoliday,
+        useTwoColumnLayout,
+        isQuantitySelectable,
+        isStaffCall,
+        categoryDescription,
+        selectedLanguageCode,
+        useSaleDay,
+        useSaleTime,
+      };
+      await updateCategoryMutation.mutateAsync(updateData);
+      queryClient.invalidateQueries({ queryKey: queryKeys.category.list() });
+    } else {
+      await createCategoryMutation.mutateAsync({
+        shopSeq,
+        categoryName,
+        saleDayOfWeek:
+          saleDayOfWeekNumbers.length > 0 ? saleDayOfWeekNumbers : [],
+        saleStartTime: saleStartTime || null,
+        saleEndTime: saleEndTime || null,
+        isSaleOnHoliday,
+        useTwoColumnLayout,
+        isQuantitySelectable,
+        isStaffCall,
+        categoryDescription: categoryDescription || null,
+        isFirstOrderRequired: false,
+        selectedLanguageCode,
+        useSaleDay,
+        useSaleTime,
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.category.list() });
     }
+    onClose();
   };
 
   return (

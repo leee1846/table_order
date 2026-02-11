@@ -36,7 +36,10 @@ export const TablesPage = () => {
     { enabled: !!shopCode } // shopCode가 있을 때만 쿼리 실행
   );
 
-  const tableGroups = tableGroupListResponse?.data || [];
+  const tableGroups = useMemo(
+    () => tableGroupListResponse?.data || [],
+    [tableGroupListResponse?.data]
+  );
 
   // 테이블 생성 mutation
   const { mutateAsync: createTable } = usePostCreateTable();

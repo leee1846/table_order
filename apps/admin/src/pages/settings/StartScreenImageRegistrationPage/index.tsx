@@ -61,13 +61,6 @@ export const StartScreenImageRegistrationPage = () => {
     enabled: !!shopCode,
   });
 
-  console.log(
-    'data',
-    data?.data?.shopPageDetailList?.filter(
-      ({ pageDetailType }) => pageDetailType === 'INIT_COMMON'
-    )
-  );
-
   const { mutateAsync: updateShopThemePage } = usePutUpdateShopThemePage();
 
   const themePage = data?.data;

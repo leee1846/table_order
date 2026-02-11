@@ -1,4 +1,3 @@
-import { BasicButton } from '@repo/ui/components';
 import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
 import { formatDateTime } from '@repo/util/date';
 import { useAdminTranslation } from '@/config/i18n';

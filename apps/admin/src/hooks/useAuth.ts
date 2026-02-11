@@ -14,7 +14,9 @@ export const useAuth = () => {
     enabled: !!shopSeq && !shopCode, // shopSeq가 있고 shopCode가 없을 때만 호출
   });
 
-  const shops = shopsResponse?.data ?? [];
+  const shopsData = shopsResponse?.data;
+
+  const shops = useMemo(() => shopsData ?? [], [shopsData]);
 
   // shopSeq로 shopCode 매칭
   const matchedShopCode = useMemo(() => {

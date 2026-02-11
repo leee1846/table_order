@@ -215,11 +215,6 @@ const SalesCardPage = lazy(() =>
     default: module.SalesCardPage,
   }))
 );
-// const SalesCashPage = lazy(() =>
-//   import('@/pages/settings/SalesCashPage').then((module) => ({
-//     default: module.SalesCashPage,
-//   }))
-// );
 const SalesMenuPage = lazy(() =>
   import('@/pages/settings/SalesMenuPage').then((module) => ({
     default: module.SalesMenuPage,
@@ -588,10 +583,6 @@ const createSettingsRoutes = () => [
         element: <SalesCardPage />,
         loader: requireNativeLoader,
       },
-      // {
-      //   path: ROUTES.SETTINGS.SALES.CASH.path,
-      //   element: <SalesCashPage />,
-      // },
       {
         path: ROUTES.SETTINGS.SALES.MENU.path, //메뉴판매집계(앱)
         element: <SalesMenuPage />,

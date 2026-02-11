@@ -43,28 +43,23 @@ export const EditTableDialog = ({
       return;
     }
 
-    try {
-      await updateTable({
-        tableSeq: table.tableSeq,
-        tableName: tableName.trim(),
-        tablePositionX: table.tablePositionX,
-        tablePositionY: table.tablePositionY,
-      });
+    await updateTable({
+      tableSeq: table.tableSeq,
+      tableName: tableName.trim(),
+      tablePositionX: table.tablePositionX,
+      tablePositionY: table.tablePositionY,
+    });
 
-      toast(t('테이블이 수정되었습니다.'));
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.table.groupList(shopCode),
-      });
+    toast(t('테이블이 수정되었습니다.'));
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.table.groupList(shopCode),
+    });
 
-      if (onSubmit) {
-        await onSubmit(tableName.trim());
-      }
-
-      onClose();
-    } catch (error) {
-      toast(t('테이블 수정 중 오류가 발생했습니다.'));
-      console.error(t('테이블 수정 오류:'), error);
+    if (onSubmit) {
+      await onSubmit(tableName.trim());
     }
+
+    onClose();
   };
 
   const handleClose = () => {

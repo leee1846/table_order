@@ -13,7 +13,9 @@ interface Props {
 }
 
 const toNumber = (value?: number | string | null) => {
-  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : 0;
+  }
   if (typeof value === 'string') {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : 0;
@@ -22,7 +24,9 @@ const toNumber = (value?: number | string | null) => {
 };
 
 const formatTransactionDate = (raw?: string | null) => {
-  if (!raw) return '-';
+  if (!raw) {
+    return '-';
+  }
   const digits = raw.replace(/\D/g, '');
 
   if (digits.length >= 14) {
@@ -54,7 +58,6 @@ export const Table = ({ items, pageSize }: Props) => {
   //     primaryText: t('확인'),
   //     secondaryText: t('취소'),
   //     onConfirm: () => {
-  //       // TODO: 취소 로직 추가
   //     },
   //   });
   // };
@@ -76,7 +79,7 @@ export const Table = ({ items, pageSize }: Props) => {
       const transactionDate = formatTransactionDate(item.transactionDate);
 
       return (
-        <tr key={`${index}-${item.approvalNumber}`}>
+        <tr key={`${index.toString()}-${item.approvalNumber}`}>
           <S.ColorTd color={getTextColor(isCancel, true)}>
             {item.approvalType === 'APPROVAL' ? t('승인') : t('취소')}
           </S.ColorTd>

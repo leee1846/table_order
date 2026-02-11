@@ -105,7 +105,11 @@ export const DailySalesPage = () => {
     }
   );
 
-  const oneDaySales = oneDaySalesResponse?.data ?? [];
+  const oneDaySales = useMemo(
+    () => oneDaySalesResponse?.data ?? [],
+    [oneDaySalesResponse?.data]
+  );
+
   const paymentRows = useMemo(
     () => buildPaymentRows(oneDaySales, apiDate),
     [oneDaySales, apiDate]

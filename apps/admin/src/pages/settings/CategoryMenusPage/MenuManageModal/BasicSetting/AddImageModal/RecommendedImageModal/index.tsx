@@ -71,7 +71,9 @@ export const RecommendedImageModal = ({
   }, [images, selectionOrder]);
 
   const currentCategoryImages = useMemo(() => {
-    if (!selectedCategoryCode) return [];
+    if (!selectedCategoryCode) {
+      return [];
+    }
     const category = images.find(
       (response) => response.categoryCode === selectedCategoryCode
     );
@@ -149,7 +151,7 @@ export const RecommendedImageModal = ({
 
                   return (
                     <S.ImageButton
-                      key={`image-${image.menuImageSampleSeq}-${index}`}
+                      key={`image-${image.menuImageSampleSeq}-${index.toString()}`}
                       type="button"
                       selected={isSelected}
                       aria-pressed={isSelected}

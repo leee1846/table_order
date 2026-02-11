@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { i18n as I18nInstance } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { ModalBackground, BasicButton, NumberInput } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';

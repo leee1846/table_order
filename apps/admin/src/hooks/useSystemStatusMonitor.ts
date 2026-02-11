@@ -61,23 +61,18 @@ export const useSystemStatusMonitor = () => {
       return;
     }
 
-    try {
-      await postDeviceDetail({
-        shopCode: currentShopCode,
-        androidId,
-        ipAddress,
-        deviceType: 'POS_APP',
-        wifiSignal,
-        battery: 0,
-        tableNumber: null,
-        orderPosNumber: null,
-        version: version ?? '',
-        buildNumber: buildNumber ?? '',
-      });
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('디바이스 정보 전송 실패:', error);
-    }
+    await postDeviceDetail({
+      shopCode: currentShopCode,
+      androidId,
+      ipAddress,
+      deviceType: 'POS_APP',
+      wifiSignal,
+      battery: 0,
+      tableNumber: null,
+      orderPosNumber: null,
+      version: version ?? '',
+      buildNumber: buildNumber ?? '',
+    });
   }, [postDeviceDetail]);
 
   //deviceInfo 초기화 함수
@@ -132,14 +127,10 @@ export const useSystemStatusMonitor = () => {
       return;
     }
 
-    try {
-      // WiFi 신호 감지 리스너 등록 - 네이티브에서 WiFi 값이 달라지면 handleStatusUpdate 함수 호출
-      // 배터리 변경은 무시하고 처리하지 않음
-      SystemControl.startMonitoring(handleStatusUpdate);
-      isMonitoringRef.current = true;
-    } catch (error) {
-      console.error('시스템 상태 모니터링 시작 실패:', error);
-    }
+    // WiFi 신호 감지 리스너 등록 - 네이티브에서 WiFi 값이 달라지면 handleStatusUpdate 함수 호출
+    // 배터리 변경은 무시하고 처리하지 않음
+    SystemControl.startMonitoring(handleStatusUpdate);
+    isMonitoringRef.current = true;
   }, [handleStatusUpdate]);
 
   //모니터링 종료 함수
@@ -148,11 +139,8 @@ export const useSystemStatusMonitor = () => {
       return;
     }
 
-    try {
-      SystemControl.stopMonitoring();
-    } catch (error) {
-      console.error('시스템 상태 모니터링 종료 실패:', error);
-    }
+    SystemControl.stopMonitoring();
+
     isMonitoringRef.current = false;
   }, []);
 

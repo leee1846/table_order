@@ -35,7 +35,10 @@ export const CategoryTableAssignModal = ({
     enabled: !!shopCode,
   });
 
-  const tableGroups = tableGroupResponse?.data ?? [];
+  const tableGroups = useMemo(
+    () => tableGroupResponse?.data ?? [],
+    [tableGroupResponse?.data]
+  );
 
   const [selectedGroupSeq, setSelectedGroupSeq] = useState<number | null>(null);
   const [selectedTableNumbers, setSelectedTableNumbers] = useState<Set<string>>(

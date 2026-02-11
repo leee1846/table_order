@@ -54,7 +54,6 @@ export const TableDetailContainer = ({
   orderType,
   i18nInstance,
 }: TableDetailContainerProps) => {
-  // TODO : useTranslation 사용하여 번역 데이터 가져오기 (확장성 없음)
   const { t } = useTranslation('admin', { i18n: i18nInstance as I18nInstance });
 
   const navigate = useNavigate();
@@ -95,7 +94,7 @@ export const TableDetailContainer = ({
   const [isCashPaymentDialogOpen, setIsCashPaymentDialogOpen] = useState(false);
   //현금영수증 모달
   const [isCashReceiptDialogOpen, setIsCashReceiptDialogOpen] = useState(false);
-  const [cashReceivedAmount, setCashReceivedAmount] = useState<number>(0);
+  const [_cashReceivedAmount, setCashReceivedAmount] = useState<number>(0);
   //분할 결제 모달
   const [isSplitPaymentDialogOpen, setIsSplitPaymentDialogOpen] =
     useState(false);
@@ -473,7 +472,6 @@ export const TableDetailContainer = ({
             setIsPaymentFromSplit(false);
             setIsSplitPaymentDialogOpen(true);
           }
-          // TODO: 결제하기 모달 열기
         }}
       />
       {/* 임의 결제 확인 모달 */}
@@ -486,7 +484,6 @@ export const TableDetailContainer = ({
         onContinue={() => {
           setIsArbitraryPaymentConfirmDialogOpen(false);
           setIsCardPaymentDialogOpen(false);
-          // TODO: 실제 임의 결제 로직 구현
         }}
       />
       {/* 현금 결제 모달 */}
@@ -529,7 +526,6 @@ export const TableDetailContainer = ({
             setIsPaymentFromSplit(false);
             setIsSplitPaymentDialogOpen(true);
           }
-          // TODO: 실제 현금 결제 로직 구현
         }}
       />
       {/* 분할 결제 모달 */}
