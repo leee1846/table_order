@@ -1,6 +1,6 @@
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/SplitPaymentModal/splitPaymentModal.style';
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { MenuSelector } from '@/pages/MainPage/SplitPaymentModal/MenuSelector';
 import { PriceSelector } from '@/pages/MainPage/SplitPaymentModal/PriceSelector';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -13,12 +13,12 @@ import { useDeviceData } from '@/hooks/useDeviceData';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useModalStore } from '@/stores/useModalStore';
-import { CardPaymentProgressModal } from '@/pages/MainPage/CardPaymentProgressModal';
+// import { CardPaymentProgressModal } from '@/pages/MainPage/CardPaymentProgressModal';
 import { SplitPaymentInstallmentModal } from './SplitPaymentInstallmentModal';
 import {
   Payment,
   type IPaymentResponse,
-  type IPaymentEventData,
+  // type IPaymentEventData,
 } from '@repo/util/app';
 import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
 import type { IOrder } from '@repo/api/types';
@@ -39,7 +39,7 @@ interface Props {
 }
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
-const PAYMENT_EVENT_NAME = 'paymentEvent';
+// const PAYMENT_EVENT_NAME = 'paymentEvent';
 const HTTP_STATUS_BAD_REQUEST = 400;
 const HTTP_STATUS_SERVER_ERROR = 500;
 const HTTP_STATUS_NOT_FOUND = 404;
@@ -216,11 +216,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const [orderUuid, setOrderUuid] = useState<string | null>(null);
 
   // Payment 진행 상태
-  const [paymentProgressMessage, setPaymentProgressMessage] =
-    useState<string>('');
-  const paymentListenerRef = useRef<{ remove: () => Promise<void> } | null>(
-    null
-  );
+  // const [paymentProgressMessage, setPaymentProgressMessage] =
+  //   useState<string>('');
+  // const paymentListenerRef = useRef<{ remove: () => Promise<void> } | null>(
+  //   null
+  // );
 
   // 할부 선택
   const [selectedInstallmentMonths, setSelectedInstallmentMonths] =
@@ -370,25 +370,25 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       return;
     }
 
-    let paymentListener: { remove: () => Promise<void> } | null = null;
+    // let paymentListener: { remove: () => Promise<void> } | null = null;
 
-    const setupPaymentListener = async () => {
-      paymentListener = await Payment.addListener(
-        PAYMENT_EVENT_NAME,
-        (eventData: IPaymentEventData) => {
-          setPaymentProgressMessage(eventData.EVENT_MSG);
-        }
-      );
-      paymentListenerRef.current = paymentListener;
-    };
+    // const setupPaymentListener = async () => {
+    //   paymentListener = await Payment.addListener(
+    //     PAYMENT_EVENT_NAME,
+    //     (eventData: IPaymentEventData) => {
+    //       setPaymentProgressMessage(eventData.EVENT_MSG);
+    //     }
+    //   );
+    //   paymentListenerRef.current = paymentListener;
+    // };
 
-    setupPaymentListener();
+    // setupPaymentListener();
 
     return () => {
       Payment.stop();
-      if (paymentListener) {
-        paymentListener.remove();
-      }
+      // if (paymentListener) {
+      //   paymentListener.remove();
+      // }
     };
   }, [modalData.isCardPaymentProgressModalOpened]);
 
