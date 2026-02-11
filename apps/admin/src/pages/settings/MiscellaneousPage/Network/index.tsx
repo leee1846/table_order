@@ -1,13 +1,16 @@
 import { useAdminTranslation } from '@/config/i18n';
 import { useEffect, useState } from 'react';
+import { getLatestAppVersion } from '@repo/api/fetchers';
 import { useGetLatestAppVersion } from '@repo/api/queries';
 import type { IShopNetwork, TAppType, TNetworkType } from '@repo/api/types';
+import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Network/network.style';
 import { NetworkIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
-import { CapacitorApp, AndroidInfo } from '@repo/util/app';
+import { CapacitorApp, AndroidInfo, Installer } from '@repo/util/app';
+import { toast } from '@repo/feature/utils';
 
 interface NetworkProps {
   shopNetwork?: IShopNetwork;
@@ -98,6 +101,60 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
   //   setNetworkSetting(value);
   // };
 
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleAppUpdate = async () => {
+    if (isUpdating) {
+      toast(t('업데이트가 진행중입니다.'), {
+        position: 'center-center',
+        duration: 1000,
+      });
+      return;
+    }
+
+    if (
+      latestAppVersionText &&
+      currentVersion &&
+      currentVersion === latestAppVersionText
+    ) {
+      toast(t('이미 최신 버전입니다.'), {
+        position: 'center-center',
+        duration: 1000,
+      });
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      const response = await getLatestAppVersion(appType);
+      const { downloadPath, checksum } = response?.data ?? {};
+
+      if (!downloadPath || !checksum) {
+        toast(t('업데이트 정보를 가져올 수 없습니다.'), {
+          position: 'center-center',
+          duration: 1000,
+        });
+        return;
+      }
+
+      await Installer.startUpdate(downloadPath, checksum);
+      toast(t('업데이트를 시작합니다. 잠시만 기다려주세요.'), {
+        position: 'center-center',
+        duration: 1000,
+      });
+    } catch {
+      // 업데이트 실패 결과를 app plugin에서 전달받지 못해 실패처리는 실행되지 않음
+      toast(t('업데이트에 실패했습니다.'), {
+        position: 'center-center',
+        duration: 1000,
+      });
+    } finally {
+      setTimeout(() => {
+        setIsUpdating(false);
+      }, 5000);
+    }
+  };
+
   return (
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
@@ -134,6 +191,14 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
+        {CapacitorApp.isNative() && (
+          <UIStyles.setting.ContentLayout>
+            <p>{t('앱 업데이트')}</p>
+            <BasicButton variant="Outline_Grey_M" onClick={handleAppUpdate}>
+              {t('업데이트')}
+            </BasicButton>
+          </UIStyles.setting.ContentLayout>
+        )}
         <UIStyles.setting.ContentLayout>
           <p>Android ID</p>
           <p>{androidId || '-'}</p>
