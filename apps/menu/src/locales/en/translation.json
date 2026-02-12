@@ -76,6 +76,7 @@
   "{{count}}명": "{{count}} people",
   "성인": "Adult",
   "아동": "Child",
+  "인원 수는 {{max}}명까지 입력할 수 있어요.": "You can enter up to {{max}} guests.",
   "주문 시작하기": "Start Ordering",
   "주문하신 메뉴가 준비되었어요!": "Your order is ready!",
   "잠시 후 다시 시도해주세요.": "Please try again later.",

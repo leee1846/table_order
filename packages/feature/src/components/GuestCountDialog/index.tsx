@@ -11,6 +11,8 @@ import { toast } from '../../utils';
 
 const { colors } = theme;
 
+const MAX_GUEST_COUNT = 999;
+
 export type GuestCountDialogProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -51,6 +53,28 @@ export const GuestCountDialog = ({
       setKidsCustomerCount(initialKidsCustomerCount);
     }
   }, [isOpen, initialCustomerCount, initialKidsCustomerCount]);
+
+  const handleCustomerCountChange = (value: number) => {
+    const num = Number.isNaN(value) ? 0 : value;
+    if (num > MAX_GUEST_COUNT) {
+      toast(
+        t('인원 수는 {{max}}명까지 입력할 수 있어요.', { max: MAX_GUEST_COUNT })
+      );
+      return;
+    }
+    setCustomerCount(Math.max(0, num));
+  };
+
+  const handleKidsCustomerCountChange = (value: number) => {
+    const num = Number.isNaN(value) ? 0 : value;
+    if (num > MAX_GUEST_COUNT) {
+      toast(
+        t('인원 수는 {{max}}명까지 입력할 수 있어요.', { max: MAX_GUEST_COUNT })
+      );
+      return;
+    }
+    setKidsCustomerCount(Math.max(0, num));
+  };
 
   if (!isOpen) {
     return null;
@@ -103,7 +127,7 @@ export const GuestCountDialog = ({
                     variant="square"
                     size="L"
                     value={customerCount}
-                    onChange={setCustomerCount}
+                    onChange={handleCustomerCountChange}
                     min={0}
                   />
                 </S.NumberInputWrapper>
@@ -118,7 +142,7 @@ export const GuestCountDialog = ({
                     variant="square"
                     size="L"
                     value={kidsCustomerCount}
-                    onChange={setKidsCustomerCount}
+                    onChange={handleKidsCustomerCountChange}
                     min={0}
                   />
                 </S.NumberInputWrapper>
@@ -136,7 +160,7 @@ export const GuestCountDialog = ({
                   variant="square"
                   size="L"
                   value={customerCount}
-                  onChange={setCustomerCount}
+                  onChange={handleCustomerCountChange}
                   min={0}
                 />
               </S.NumberInputWrapper>

@@ -580,6 +580,7 @@
   "성인 인원 수를 입력해주세요.": "Please enter the number of adult guests.",
   "아동": "Child",
   "인원 수": "Number of Guests",
+  "인원 수는 {{max}}명까지 입력할 수 있어요.": "You can enter up to {{max}} guests.",
   "테이블": "Table",
   "배터리": "Battery",
   "IP": "IP",
