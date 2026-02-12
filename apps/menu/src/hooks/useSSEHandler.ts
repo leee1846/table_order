@@ -20,9 +20,10 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
+import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { useShopThemePage } from './useShopThemePage';
 import { useDialogStore } from '@repo/feature/stores';
 import { clearAuthData } from '@/utils/auth';
@@ -42,7 +43,6 @@ import { getDeviceInfo } from '@/utils/deviceInfo';
  * - 모든 메시지 처리는 현재 매장의 shopCode와 일치하는 경우에만 수행됩니다
  */
 export const useSSEHandler = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
   // i18n: 고객용 번역 함수
@@ -353,8 +353,7 @@ export const useSSEHandler = () => {
       handlersRef.current.refetchCurrentTableList(shopCode); // 현재 테이블 목록 새로고침
       handlersRef.current.refetchDeviceList(shopCode); // 디바이스 목록 새로고침
 
-      const { currentDeviceData, tableGroupData, locationPathname } =
-        dataRefs.current;
+      const { currentDeviceData, tableGroupData } = dataRefs.current;
 
       if (!currentDeviceData?.tableNumber) {
         return;
@@ -378,10 +377,15 @@ export const useSSEHandler = () => {
                 table?.tableNumber === currentTableNumber
             )
         ) {
-          // 루트 페이지에 있으면 테이블 선택 페이지로 이동
-          if (locationPathname === ROUTES.ROOT.path) {
-            navigate(ROUTES.TABLES.generate(), { replace: true });
-          }
+          toast(t('존재하지 않는 테이블입니다.'), {
+            position: 'center-center',
+            duration: 1500,
+          });
+          setDataAsync({
+            ...currentDeviceData,
+            tableNumber: null,
+          });
+          useRequestAdminAccessModalStore.getState().setShow(true);
         }
       }, 100);
     },
