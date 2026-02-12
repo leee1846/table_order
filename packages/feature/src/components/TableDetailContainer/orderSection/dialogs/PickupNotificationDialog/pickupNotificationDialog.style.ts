@@ -25,7 +25,7 @@ export const InputSection = styled.div`
   flex-direction: column;
 `;
 
-export const CustomInputLink = styled.button`
+export const CustomInputLink = styled.button<{ isActive?: boolean }>`
   align-self: flex-end;
   background: none;
   border: none;
@@ -33,7 +33,7 @@ export const CustomInputLink = styled.button`
   padding: 0;
   margin-bottom: 12px;
   ${TYPOGRAPHY.BD_3}
-  color: ${colors.grey[500]};
+  color: ${({ isActive }) => (isActive ? colors.primary[500] : colors.grey[500])};
   text-decoration: underline;
 `;
 
@@ -41,10 +41,10 @@ export const TextAreaWrapper = styled.div`
   position: relative;
 `;
 
-export const TextArea = styled.textarea`
+export const TextArea = styled.textarea<{ isActive?: boolean }>`
   width: 100%;
   padding: 16px 12px;
-  border: 1px solid ${colors.grey[400]};
+  border: 1px solid ${({ isActive }) => (isActive ? colors.primary[500] : colors.grey[400])};
   border-radius: 12px;
   color: ${colors.grey[700]};
   ${TYPOGRAPHY.ST_4}

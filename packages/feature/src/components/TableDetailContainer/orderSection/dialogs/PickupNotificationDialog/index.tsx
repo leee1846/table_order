@@ -76,7 +76,7 @@ export const PickupNotificationDialog = ({
         </S.CloseButton>
         <S.Title>{t('픽업 알림 메시지')}</S.Title>
         <S.InputSection>
-          <S.CustomInputLink onClick={handleCustomInputClick}>
+          <S.CustomInputLink onClick={handleCustomInputClick} isActive={isCustomInput}>
             {t('직접입력하기')}
           </S.CustomInputLink>
 
@@ -88,6 +88,7 @@ export const PickupNotificationDialog = ({
               rows={4}
               disabled={!isCustomInput}
               maxLength={MAX_DESCRIPTION_LENGTH}
+              isActive={isCustomInput}
             />
           </S.TextAreaWrapper>
         </S.InputSection>
