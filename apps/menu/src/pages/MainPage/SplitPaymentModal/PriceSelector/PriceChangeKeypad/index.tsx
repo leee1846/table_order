@@ -48,19 +48,25 @@ export const PriceChangeKeypad = ({
   /**
    * 숫자 버튼 클릭 핸들러
    * 현재 금액 * 10 + 입력된 숫자
+   * 최대 금액 초과 시 입력 차단
    */
   const handleNumberPress = (number: number) => {
     const newPrice = inputPrice * 10 + number;
-    setInputPrice(newPrice);
+    if (newPrice <= maxAllowedAmount) {
+      setInputPrice(newPrice);
+    }
   };
 
   /**
    * '00' 버튼 클릭 핸들러
    * 현재 금액 * 100
+   * 최대 금액 초과 시 입력 차단
    */
   const handleDoubleZeroPress = () => {
     const newPrice = inputPrice * 100;
-    setInputPrice(newPrice);
+    if (newPrice <= maxAllowedAmount) {
+      setInputPrice(newPrice);
+    }
   };
 
   /**
@@ -76,7 +82,8 @@ export const PriceChangeKeypad = ({
    * - 최소 금액: 10원
    * - 최대 금액: 나머지 인원이 최소 10원 이상 받을 수 있는 금액
    */
-  const isValidPrice = inputPrice >= MIN_AMOUNT && inputPrice <= maxAllowedAmount;
+  const isValidPrice =
+    inputPrice >= MIN_AMOUNT && inputPrice <= maxAllowedAmount;
 
   /**
    * 적용 버튼 클릭 핸들러
