@@ -202,7 +202,7 @@ export const buildUpdateData = (
     isNew: formValues.isNew ?? menu.isNew,
     spiceLevel: formValues.spiceLevel ?? menu.spiceLevel,
     isTaxFree: formValues.isTaxFree ?? menu.isTaxFree,
-    minQuantity: formValues.minQuantity ?? menu.minQuantity,
+    minQuantity: formValues.minQuantity ?? 0,
     optionGroupList: (convertedOptionGroupList as IOptionGroup[]) ?? undefined,
     selectedLanguageCode:
       formValues.selectedLanguageCode ?? menu.selectedLanguageCode,
