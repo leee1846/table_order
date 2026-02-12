@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import type { AxiosError } from '@repo/api/axios';
 import type { IDevice } from '@repo/api/types';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
+import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { toast } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
@@ -36,8 +37,12 @@ export const useAdminAccessControl = (
   const { t } = useCustomerTranslation();
   const { data: tableGroupData } = useTableGroupData();
 
-  const [showAdminAccessPasswordModal, setShowAdminAccessPasswordModal] =
-    useState(false);
+  const showAdminAccessPasswordModal = useRequestAdminAccessModalStore(
+    (s) => s.show
+  );
+  const setShowAdminAccessPasswordModal = useRequestAdminAccessModalStore(
+    (s) => s.setShow
+  );
 
   const {
     data: deviceData,

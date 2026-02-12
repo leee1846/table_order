@@ -95,11 +95,15 @@ export const createTableOrder = async ({
 export const getTableOrderHistories = async ({
   shopCode,
   tableNumber,
-}: IGetTableOrderHistoriesParams): Promise<TGetTableOrderHistoriesResponse> => {
+  ignoreGlobalErrors,
+}: IGetTableOrderHistoriesParams & {
+  ignoreGlobalErrors?: number[];
+}): Promise<TGetTableOrderHistoriesResponse> => {
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TGetTableOrderHistoriesResponse>({
     method: 'GET',
     url: ENDPOINTS.ORDER.TABLE_ORDER_HISTORY(shopCode, tableNumber),
+    ignoreGlobalErrors,
   });
 
   return response.data;

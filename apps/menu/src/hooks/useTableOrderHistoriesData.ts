@@ -1,8 +1,11 @@
 import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStore';
+import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { useGetTableOrderHistories } from '@repo/api/queries';
 import { useEffect } from 'react';
 import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
+import { toast, openConfirmDialog } from '@repo/feature/utils';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 interface Props {
   /**
@@ -25,9 +28,15 @@ interface Props {
  */
 export const useTableOrderHistoriesData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
+  const { t } = useCustomerTranslation();
 
   const { shopData } = useShopData({ skipInitialRequest: true });
-  const { data: deviceData } = useDeviceData({ skipInitialRequest: true });
+  const { data: deviceData, setDataAsync: setDeviceDataAsync } = useDeviceData({
+    skipInitialRequest: true,
+  });
+  const setShowAdminAccessModal = useRequestAdminAccessModalStore(
+    (s) => s.setShow
+  );
 
   const { data: storeData, setDataAsync: setTableOrderHistoriesData } =
     useTableOrderHistoriesStore();
@@ -37,13 +46,53 @@ export const useTableOrderHistoriesData = (options?: Props) => {
     !!deviceData?.tableNumber &&
     storeData === null &&
     !skipInitialRequest;
-  const { data: apiData, refetch } = useGetTableOrderHistories(
+  const {
+    data: apiData,
+    refetch,
+    error,
+  } = useGetTableOrderHistories(
     {
       shopCode: shopData?.shopCode ?? '',
       tableNumber: deviceData?.tableNumber ?? '',
     },
-    { enabled }
+    { enabled, ignoreGlobalErrors: [400] }
   );
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+
+    const statusCode = error.response?.data?.status?.code;
+
+    if (statusCode === -101) {
+      toast(t('존재하지 않는 테이블입니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
+      setDeviceDataAsync({
+        ...deviceData,
+        tableNumber: null,
+      });
+      setShowAdminAccessModal(true);
+      return;
+    }
+
+    if (error.response?.status === 400) {
+      openConfirmDialog({
+        title: 'Server Error',
+        content:
+          error.response?.data?.status?.userMessage ??
+          t('알 수 없는 오류가 발생했습니다.'),
+      });
+    }
+  }, [
+    error,
+    t,
+    deviceData,
+    setDeviceDataAsync,
+    setShowAdminAccessModal,
+  ]);
 
   useEffect(() => {
     if (skipInitialRequest) {

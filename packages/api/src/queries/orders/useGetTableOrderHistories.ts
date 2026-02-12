@@ -13,14 +13,16 @@ export const useGetTableOrderHistories = (
   options?: Omit<
     UseQueryOptions<TGetTableOrderHistoriesResponse, AxiosError<IApiError>>,
     'queryKey' | 'queryFn'
-  >
+  > & { ignoreGlobalErrors?: number[] }
 ) => {
+  const { ignoreGlobalErrors, ...queryOptions } = options ?? {};
   return useQuery<TGetTableOrderHistoriesResponse, AxiosError<IApiError>>({
     queryKey: queryKeys.orders.tableOrderHistories(
       params.shopCode,
       params.tableNumber
     ),
-    queryFn: () => getTableOrderHistories(params),
-    ...options,
+    queryFn: () =>
+      getTableOrderHistories({ ...params, ignoreGlobalErrors }),
+    ...queryOptions,
   });
 };
