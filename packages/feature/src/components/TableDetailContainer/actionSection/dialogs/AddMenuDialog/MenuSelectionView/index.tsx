@@ -11,7 +11,10 @@ import { formatCurrency } from '@repo/util/string';
 import { calculateTotalAmount } from '@repo/util/calculation';
 import { css } from '@emotion/react';
 import { useTranslation } from 'react-i18next';
+import { toast } from '@repo/feature/utils';
+
 const { colors } = theme;
+const MENU_MAX_QUANTITY = 999;
 
 interface MenuSelectionViewProps {
   i18nInstance?: I18nInstance;
@@ -134,9 +137,19 @@ export const MenuSelectionView = ({
                         <NumberInput
                           variant="square"
                           value={item.quantity}
-                          onChange={(value) =>
-                            onItemQuantityChange(index, value)
-                          }
+                          onChange={(value) => {
+                            if (value > MENU_MAX_QUANTITY) {
+                              toast(
+                                t(
+                                  '최대 {{count}}개까지 선택 가능합니다.',
+                                  { count: MENU_MAX_QUANTITY }
+                                ),
+                                { position: 'center-center', duration: 1500 }
+                              );
+                              return;
+                            }
+                            onItemQuantityChange(index, value);
+                          }}
                           min={0}
                           customStyle={S.RightPanelMenuQuantityInput}
                           size="M"
