@@ -18,7 +18,9 @@ export const Container = styled.div<IProps>`
   align-items: ${({ position }) =>
     position === 'center' ? 'center' : 'flex-start'};
 
+  /* 내부 박스가 화면보다 클 때 배경(Container)에서 스크롤되도록 flex-shrink: 0. position: fixed 제거. */
   & > div {
+    flex-shrink: 0;
     margin: ${({ position }) => {
       if (position === 'top') {
         return '4rem auto 1rem';
@@ -28,16 +30,5 @@ export const Container = styled.div<IProps>`
       }
       return 'auto';
     }};
-
-    & > div {
-      ${({ position }) =>
-        position === 'center' &&
-        `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      `}
-    }
   }
 `;

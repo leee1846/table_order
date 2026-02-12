@@ -45,10 +45,8 @@ export const checkButtonCss = css`
 export const Container = styled.div`
   position: relative;
   width: 71.25rem;
-  height: 50rem;
   background-color: ${theme.colors.white};
   padding: 24px 24px 0;
-  overflow-y: auto;
 
   & > h1 {
     text-align: center;
