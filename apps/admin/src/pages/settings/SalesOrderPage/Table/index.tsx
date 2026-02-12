@@ -63,7 +63,7 @@ export const Table = ({ orders, onSelectOrder, pageSize }: Props) => {
             {clearedAt || '-'}
           </S.ColorTd>
           <S.ColorTd color={getTextColor(isCanceled)}>
-            {item.tableNumber ?? '-'}
+            {item.orderLog?.tableName ?? '-'}
           </S.ColorTd>
           <S.ColorTd color={getTextColor(isCanceled)}>
             {formatCurrency(item.paidAmount ?? 0)}
@@ -91,7 +91,7 @@ export const Table = ({ orders, onSelectOrder, pageSize }: Props) => {
         <tr>
           <th>{t('주문번호')}</th>
           <th>{t('거래일자')}</th>
-          <th>{t('테이블 번호')}</th>
+          <th>{t('테이블')}</th>
           <th>{t('거래금액')}</th>
           <th>{t('결제수단')}</th>
           <th>{t('객수')}</th>

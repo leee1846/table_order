@@ -59,6 +59,7 @@ export type OrderItem = {
   id: string;
   orderUuid: string;
   orderNumber: string;
+  tableName: string;
   orderDateTime: string;
   tableNumber: string;
   orderChannel: string;
@@ -168,6 +169,7 @@ export const OrderListDialog = ({
         orderNumber: order.orderCode ?? '-',
         orderDateTime: formatOrderDate(order.createDate),
         tableNumber: order.tableNumber ?? '-',
+        tableName: order.tableName ?? '-',
         orderChannel:
           ORDER_CHANNEL_LABELS[order.orderType as TOrderType] ??
           order.orderType,
@@ -227,7 +229,7 @@ export const OrderListDialog = ({
                   <tr>
                     <th>{t('주문번호')}</th>
                     <th>{t('주문일시')}</th>
-                    <th>{t('테이블 번호')}</th>
+                    <th>{t('테이블')}</th>
                     <th>{t('주문채널')}</th>
                     <th>{t('결제상태')}</th>
                     <th>{t('주문상태')}</th>
@@ -272,7 +274,7 @@ export const OrderListDialog = ({
                       <tr key={order.id} onClick={() => handleRowClick(order)}>
                         <td>{order.orderNumber}</td>
                         <td>{order.orderDateTime}</td>
-                        <td>{order.tableNumber}</td>
+                        <td>{order.tableName}</td>
                         <td>{order.orderChannel}</td>
                         <td>{order.paymentStatus}</td>
                         <td>{order.orderStatus}</td>

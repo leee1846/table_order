@@ -399,6 +399,7 @@ export interface IOrderLogItem {
   shopSeq: number;
   tableSeq: number;
   tableNumber: string;
+  tableName: string;
   orderType: TOrderType;
   totalAmount: number;
   orderCode: string;

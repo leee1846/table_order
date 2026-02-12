@@ -64,8 +64,8 @@ const DetailOrderDialog = ({
         <S.OrderInfo>
           <S.InfoRow>
             <S.InfoItem>
-              <S.InfoLabel>{t('테이블 번호')}</S.InfoLabel>
-              <S.InfoValue>{order?.tableNumber || '-'}</S.InfoValue>
+              <S.InfoLabel>{t('테이블')}</S.InfoLabel>
+              <S.InfoValue>{order?.tableName || '-'}</S.InfoValue>
             </S.InfoItem>
             <S.InfoItem>
               <S.InfoLabel>{t('주문 일시')}</S.InfoLabel>

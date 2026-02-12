@@ -53,7 +53,7 @@ export const Table = ({ orders, onSelectOrder, pageSize }: TableProps) => {
         <tr>
           <th>{t('주문번호')}</th>
           <th>{t('거래일자')}</th>
-          <th>{t('테이블 번호')}</th>
+          <th>{t('테이블')}</th>
           <th>{t('거래금액')}</th>
           <th>{t('결제수단')}</th>
           <th>{t('객수')}</th>
@@ -85,7 +85,7 @@ export const Table = ({ orders, onSelectOrder, pageSize }: TableProps) => {
                   {formatDateTime(order.orderClearedDate)}
                 </S.ColorTd>
                 <S.ColorTd color={getTextColor(cancelled)}>
-                  {order.tableNumber}
+                  {order.orderLog?.tableName ?? '-'}
                 </S.ColorTd>
                 <S.ColorTd color={getTextColor(cancelled)}>
                   {formatCurrency(order.paidAmount)}

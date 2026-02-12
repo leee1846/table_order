@@ -25,8 +25,7 @@ export const OrderSection = ({ order }: Props) => {
     <S.Container>
       <S.TitleContainer>
         <p>
-          {t('테이블 번호 ')}:{' '}
-          {order.tableNumber ?? orderLog?.tableNumber ?? '-'}
+          {t('테이블')}: {order.orderLog?.tableName ?? '-'}
         </p>
         {/* <div>
           <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
