@@ -97,11 +97,9 @@ export const CategoryManageModal = ({
     (categoryData as ICategory)?.isStaffCall ?? false
   );
 
-  //3열 배치로 무조건 쓰기로 함
   //2열 배치(가로 기본형)
   const [useTwoColumnLayout, setUseTwoColumnLayout] = useState<boolean>(
-    // (categoryData as ICategory)?.useTwoColumnLayout ?? false
-    false
+    (categoryData as ICategory)?.useTwoColumnLayout ?? false
   );
 
   // 언어 선택 상태

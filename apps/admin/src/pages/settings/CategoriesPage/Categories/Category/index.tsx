@@ -185,27 +185,24 @@ export const Category = ({
           <p>{t('판매시간')}</p>
           <p>{saleTimeDisplay}</p>
         </li>
-
         {saleDayDisplay && (
           <li>
             <p>{t('판매 요일')}</p>
             <p>{saleDayDisplay}</p>
           </li>
         )}
-
         {category.isQuantitySelectable && (
           <li>
             <p>{t('수량 선택')}</p>
             <p>{t('가능')}</p>
           </li>
         )}
-        {/* 3열 배치로 무조건 쓰기로 함 */}
-        {/* {category.useTwoColumnLayout && (
+        {category.useTwoColumnLayout && (
           <li>
             <p>{t('보기 옵션')}</p>
             <p>{t('2열')}</p>
           </li>
-        )} */}
+        )}
       </S.Badges>
       <S.Footer>
         <S.HiddenContainer>
