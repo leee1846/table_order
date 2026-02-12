@@ -69,17 +69,13 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
       return;
     }
 
-    const prevCartData = cartData.menus.find(
-      (item) => item.menuSeq === menu.menuSeq
-    );
-
     addToCart({
       categorySeq: menu.categorySeq,
       menuSeq: menu.menuSeq,
       menuName:
         menu.localeMenuName?.[languageData.currentLanguage] ?? menu.menuName,
       menuPrice: menu.menuPrice,
-      quantity: prevCartData?.quantity ?? 0 + currentCount,
+      quantity: currentCount,
       selectedOptions: [],
     });
 
