@@ -445,7 +445,7 @@ export const TablesPage = () => {
                       table={table}
                       tableNumber={table.tableNumber}
                       orderTime={table.orderTime ?? null}
-                      onClick={() => handleOrderPosTableClick}
+                      onClick={() => handleOrderPosTableClick(table)}
                       i18nInstance={adminI18n}
                     />
                   </div>

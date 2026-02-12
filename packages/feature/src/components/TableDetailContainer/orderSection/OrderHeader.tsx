@@ -204,6 +204,7 @@ const GuestCount = styled.div`
   border: 1px solid ${colors.grey[300]};
   ${TYPOGRAPHY.CT_1}
   color: ${colors.grey[600]};
+  white-space: nowrap;
 `;
 
 const LeftBox = styled.div`
