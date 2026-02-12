@@ -1,5 +1,5 @@
 import { useAdminTranslation } from '@/config/i18n';
-import { useMemo, useState, useRef } from 'react';
+import { useMemo, useState } from 'react';
 import {
   BasicButton,
   ToggleButton,
@@ -19,6 +19,10 @@ import {
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { theme } from '@repo/ui';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 interface Props {
   menu: IMenu;
@@ -27,13 +31,16 @@ interface Props {
   isDragging?: boolean;
 }
 
-export const Menu = ({ menu, onEditMenu, isPosLinked, isDragging = false }: Props) => {
+export const Menu = ({
+  menu,
+  onEditMenu,
+  isPosLinked,
+  isDragging = false,
+}: Props) => {
   const { t, i18n } = useAdminTranslation();
   const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
-  const touchStartX = useRef<number>(0);
-  const touchEndX = useRef<number>(0);
   const queryClient = useQueryClient();
   const deleteMenuMutation = useDeleteMenu();
   const { mutateAsync: updateMenuHidden } = usePutUpdateMenuHidden();
@@ -136,35 +143,6 @@ export const Menu = ({ menu, onEditMenu, isPosLinked, isDragging = false }: Prop
     setPreviewIndex(index);
   };
 
-  // 터치 시작 위치 저장
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0]?.clientX ?? 0;
-  };
-
-  // 터치 이동 중 위치 업데이트
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0]?.clientX ?? 0;
-  };
-
-  // 터치 종료 시 스와이프 거리 계산하여 이미지 변경
-  const handleTouchEnd = () => {
-    const swipeDistance = touchStartX.current - touchEndX.current;
-
-    if (swipeDistance > 50) {
-      // 왼쪽으로 스와이프 -> 다음 이미지
-      setPreviewIndex((prev) =>
-        prev < availableImages.length - 1 ? prev + 1 : 0
-      );
-    }
-
-    if (swipeDistance < -50) {
-      // 오른쪽으로 스와이프 -> 이전 이미지
-      setPreviewIndex((prev) =>
-        prev > 0 ? prev - 1 : availableImages.length - 1
-      );
-    }
-  };
-
   return (
     <>
       <S.Container isDragging={isDragging}>
@@ -235,31 +213,35 @@ export const Menu = ({ menu, onEditMenu, isPosLinked, isDragging = false }: Prop
       )}
 
       {isPreviewOpen && availableImages[previewIndex] && (
-        <ModalBackground onClick={handleClosePreview}>
+        <ModalBackground>
           <S.PreviewModal>
             <S.CloseButton type="button" onClick={handleClosePreview}>
               <CloseIcon width={32} height={32} color={theme.colors.white} />
             </S.CloseButton>
-            <S.PreviewImage
-              src={availableImages[previewIndex].imagePath ?? undefined}
-              alt={`${menu.menuName}-${previewIndex + 1}`}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            />
-            {availableImages.length > 1 && (
-              <S.DotGroup>
-                {availableImages.map((_, index) => (
-                  <S.DotButton
-                    key={availableImages[index]?.imageSeq ?? index}
-                    type="button"
-                    aria-label={t('이미지 미리보기')}
-                    data-active={previewIndex === index}
-                    onClick={() => handleSelectPreview(index)}
+            <Swiper
+              modules={[Pagination]}
+              initialSlide={previewIndex}
+              spaceBetween={0}
+              slidesPerView={1}
+              loop={availableImages.length > 1}
+              onSlideChange={(swiper) => handleSelectPreview(swiper.realIndex)}
+              pagination={{
+                clickable: true,
+                renderBullet: (_idx, className) => {
+                  return `<button type="button" class="${className}" aria-label="${t('이미지 미리보기')}"></button>`;
+                },
+              }}
+              style={{ width: '100%', height: '100%' }}
+            >
+              {availableImages.map((image, index) => (
+                <SwiperSlide key={image.imageSeq ?? index}>
+                  <S.PreviewImage
+                    src={image.imagePath ?? undefined}
+                    alt={`${menu.menuName}-${index + 1}`}
                   />
-                ))}
-              </S.DotGroup>
-            )}
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </S.PreviewModal>
         </ModalBackground>
       )}
