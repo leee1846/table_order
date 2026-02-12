@@ -54,6 +54,7 @@ export const NoticesForm = ({ mode, formData, updateFormData }: Props) => {
               value={formData.title}
               onChange={(value) => updateFormData({ title: value })}
               disabled={isReadOnly}
+              maxLength={200}
             />
           </S.FieldGroup>
 

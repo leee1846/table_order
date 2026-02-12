@@ -15,6 +15,7 @@ interface InputProps {
   rightComponent?: React.ReactNode;
   errorMessage?: string;
   inputMode?: 'text' | 'numeric';
+  maxLength?: number;
 }
 
 const InputComponent = ({
@@ -28,6 +29,7 @@ const InputComponent = ({
   rightComponent,
   errorMessage,
   inputMode = 'text',
+  maxLength,
 }: InputProps) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,6 +78,7 @@ const InputComponent = ({
             inputMode={inputMode}
             placeholder={placeholder}
             disabled={disabled}
+            maxLength={maxLength}
             $isPassword={isPassword}
             $hasRightSpace={hasRightSpace}
           />
