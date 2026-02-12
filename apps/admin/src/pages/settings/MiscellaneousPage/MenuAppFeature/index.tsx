@@ -421,7 +421,13 @@ export const MenuAppFeature = ({
         <ToggleButton
           size="M"
           isOn={useCustomerCount}
-          onChange={() => setUseCustomerCount(!useCustomerCount)}
+          onChange={() => {
+            const next = !useCustomerCount;
+            setUseCustomerCount(next);
+            if (!next) {
+              setUseKidsCustomerCount(false);
+            }
+          }}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
@@ -429,7 +435,14 @@ export const MenuAppFeature = ({
         <ToggleButton
           size="M"
           isOn={useKidsCustomerCount}
-          onChange={() => setUseKidsCustomerCount(!useKidsCustomerCount)}
+          onChange={() => {
+            const next = !useKidsCustomerCount;
+            if (next && !useCustomerCount) {
+              toast(t('객수 사용을 활성화 해주세요.'));
+              return;
+            }
+            setUseKidsCustomerCount(next);
+          }}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>

@@ -384,6 +384,7 @@
   "암호": "Password",
   "어두운 테마": "Dark theme",
   "어린이 객수 사용": "Enable child guest count",
+  "객수 사용을 활성화 해주세요.": "Please enable guest count first.",
   "영수증": "Receipt",
   "영업마감 안내 메세지": "Closing notice message",
   "영업마감안내 사용": "Enable closing notice",
