@@ -35,9 +35,6 @@ export const validateOptionGroups = (
   const results: OptionGroupValidationResult[] = optionGroups.map(
     (optionGroup) => {
       //옵션 그룹에 선택 가능한 옵션는지 확인
-      const hasAvailableOptions = optionGroup.optionList.some(
-        (option) => !option.isDeleted && !option.isOutOfStock
-      );
 
       //옵션 그룹 내에서 선택된 옵션들의 총 수량을 계산
       const selectedCount = countSelectedByGroup(optionGroup, selectedOptions);
@@ -46,18 +43,6 @@ export const validateOptionGroups = (
       const minRequired = optionGroup.minQuantity;
 
       const maxAllowed = optionGroup.maxQuantity;
-
-      if (!hasAvailableOptions) {
-        return {
-          optionGroupSeq: optionGroup.optionGroupSeq,
-          optionGroupName: optionGroup.optionGroupName,
-          isValid: false,
-          messageKey: '선택 가능한 옵션이 없습니다.',
-          selectedCount,
-          minRequired,
-          maxAllowed,
-        };
-      }
 
       if (minRequired > 0 && selectedCount < minRequired) {
         return {
