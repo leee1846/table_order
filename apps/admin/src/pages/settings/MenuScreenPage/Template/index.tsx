@@ -45,7 +45,7 @@ export const Template = ({
             onChange={() => onChangeThreeColumnLayout(!isMenuThreeColumnLayout)}
           />
         </S.OptionRow>
-        <S.OptionRow>
+        {/* <S.OptionRow>
           <S.OptionLabel>{t('템플릿 선택')}</S.OptionLabel>
           <Dropdown
             options={templateOptions}
@@ -55,7 +55,7 @@ export const Template = ({
             }
             disabled={true}
           />
-        </S.OptionRow>
+        </S.OptionRow> */}
       </S.TemplateOptions>
     </S.Container>
   );
