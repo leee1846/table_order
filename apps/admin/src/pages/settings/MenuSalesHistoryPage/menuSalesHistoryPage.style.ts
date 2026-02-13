@@ -220,8 +220,15 @@ export const TableRow = styled.tr<{ isOption?: boolean }>`
     isOption &&
     `
     & > td {
-      color: ${theme.colors.grey[700]};
-
+      color: ${theme.colors.grey[500]} !important;
+      font-size : 13px !important;
+      >span{
+        font-size : 13px !important;
+        padding-left: 10px !important;      
+      }
+        &:last-child{
+          padding-right: 5px !important;
+        }
     }
   `}
 

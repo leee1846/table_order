@@ -22,21 +22,41 @@ export const MenuSalesHistoryTable = ({ rows }: Props) => {
       return [];
     }
 
-    const usedOptionSeqs = new Set<number>();
-    const parentRows = rows.filter((row) => row.isOption !== 1);
-    const flattenedRows = parentRows.flatMap((parent) => {
-      const options = rows.filter(
-        (row) => row.isOption === 1 && row.parentMenuName === parent.menuName
-      );
-      options.forEach((option) => usedOptionSeqs.add(option.menuSeq));
-      return [parent, ...options];
+    const result: IMenuSalesHistoryItem[] = [];
+    const processedOptionSeqs = new Set<number>();
+
+    // rows의 원래 순서를 유지하면서 순회
+    rows.forEach((row) => {
+      // 이미 처리된 옵션이면 스킵
+      if (row.isOption === 1 && processedOptionSeqs.has(row.menuSeq)) {
+        return;
+      }
+
+      // 부모 메뉴인 경우
+      if (row.isOption !== 1) {
+        result.push(row);
+
+        // 해당 부모의 옵션들을 원래 rows 순서대로 찾아서 추가
+        const options = rows.filter(
+          (r) => r.isOption === 1 && r.parentMenuSeq === row.menuSeq
+        );
+        options.forEach((option) => {
+          result.push(option);
+          processedOptionSeqs.add(option.menuSeq);
+        });
+      } else {
+        // 고아 옵션 (부모가 없는 옵션)
+        const hasParent = rows.some(
+          (r) => r.isOption !== 1 && r.menuSeq === row.parentMenuSeq
+        );
+        if (!hasParent) {
+          result.push(row);
+          processedOptionSeqs.add(row.menuSeq);
+        }
+      }
     });
 
-    const orphanOptions = rows.filter(
-      (row) => row.isOption === 1 && !usedOptionSeqs.has(row.menuSeq)
-    );
-
-    return [...flattenedRows, ...orphanOptions];
+    return result;
   }, [rows]);
 
   const handleSalesCountIconClick = () => {

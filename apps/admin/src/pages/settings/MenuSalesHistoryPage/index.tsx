@@ -347,7 +347,7 @@ export const MenuSalesHistoryPage = () => {
 
           <S.TableCard>
             <MenuSalesHistoryTable
-              key={selectedCategories.join(',')}
+              key={`${selectedCategories.join(',')}-${sortBy}`}
               rows={filteredItems}
             />
           </S.TableCard>
