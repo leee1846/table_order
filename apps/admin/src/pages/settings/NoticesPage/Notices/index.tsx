@@ -82,14 +82,14 @@ export const Notices = ({ notices, pageSize }: NoticesProps) => {
               onClick={() => handleOpenNotice(notice.noticeSeq)}
               isOpen={isOpen}
             >
-              <S.LeftContainer>
+              <S.LeftContainer isOpen={isOpen}>
                 <S.Num>{notice.noticeSeq}</S.Num>
                 <S.Status boardType={notice.boardType as TNoticeBoardType}>
                   {notice.boardType
                     ? BOARD_TYPE_LABELS[notice.boardType]
                     : t('일반')}
                 </S.Status>
-                <S.Title>{notice.noticeTitle}</S.Title>
+                <S.Title isOpen={isOpen}>{notice.noticeTitle}</S.Title>
               </S.LeftContainer>
               <S.RightContainer isOpen={isOpen}>
                 <S.CreatedAt>

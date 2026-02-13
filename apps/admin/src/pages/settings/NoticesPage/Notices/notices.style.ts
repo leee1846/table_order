@@ -49,15 +49,17 @@ export const Notice = styled.li<{
 
 export const Header = styled.button<{ isOpen: boolean }>`
   display: flex;
-  align-items: center;
+  align-items: ${({ isOpen }) => (isOpen ? 'flex-start' : 'center')};
   justify-content: space-between;
   padding: 14px 16px 14px 0;
   cursor: pointer;
 `;
 
-export const LeftContainer = styled.div`
+export const LeftContainer = styled('div', {
+  shouldForwardProp: (propName) => propName !== 'isOpen',
+})<{ isOpen?: boolean }>`
   display: flex;
-  align-items: center;
+  align-items: ${({ isOpen }) => (isOpen ? 'flex-start' : 'center')};
   width: 100%;
   min-width: 0;
   overflow: hidden;
@@ -84,18 +86,30 @@ export const Status = styled.p<{ boardType?: TNoticeBoardType }>`
   padding: 0 6px;
 `;
 
-export const Title = styled.p`
+export const Title = styled('p', {
+  shouldForwardProp: (propName) => propName !== 'isOpen',
+})<{ isOpen?: boolean }>`
   ${TYPOGRAPHY.ST_2}
   color: ${theme.colors.grey[700]};
   padding: 0 6px;
   text-align: left;
+  min-width: 0;
+  flex: 1 1 0;
 
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  ${({ isOpen }) =>
+    isOpen
+      ? `
+    display: block;
+    white-space: normal;
+    word-break: break-word;
+    overflow: visible;
+
+  `
+      : `
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  `}
 `;
 
 export const RightContainer = styled.div<{ isOpen: boolean }>`
