@@ -27,7 +27,7 @@ export const Tbody = styled(UIStyles.setting.Tbody)<{
   }
 
   & > tr > td:nth-child(5) {
-    flex: 2 1 0;
+    flex: 1 1 0;
   }
 
   ${({ pageSize, itemLength }) =>
@@ -42,6 +42,6 @@ export const Tbody = styled(UIStyles.setting.Tbody)<{
 
 export const Thead = styled(UIStyles.setting.Thead)`
   & > tr > th:nth-child(5) {
-    flex: 2 1 0;
+    flex: 1 1 0;
   }
 `;

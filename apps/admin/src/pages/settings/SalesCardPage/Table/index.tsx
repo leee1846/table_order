@@ -90,9 +90,7 @@ export const Table = ({ items, pageSize }: Props) => {
           <S.ColorTd color={getTextColor(isCancel)}>
             {formatCurrency(transactionAmount)}
           </S.ColorTd>
-          <S.ColorTd color={getTextColor(isCancel)}>
-            {formatCurrency(transactionAmount)}
-          </S.ColorTd>
+
           <S.ColorTd color={getTextColor(isCancel)}>
             {transactionDate}
             <br />
@@ -107,7 +105,7 @@ export const Table = ({ items, pageSize }: Props) => {
             <br />
             {formatCurrency(vat)}
           </S.ColorTd>
-          <td>-</td>
+
           {/* <td>
             <BasicButton
               variant="Outline_Navy_M"
@@ -129,7 +127,6 @@ export const Table = ({ items, pageSize }: Props) => {
         <tr>
           <th>
             {t('승인')}
-
             <br />
             {t('구분')}
           </th>
@@ -140,7 +137,7 @@ export const Table = ({ items, pageSize }: Props) => {
             {t('(승인번호)')}
           </th>
           <th>{t('총거래금액')}</th>
-          <th>{t('거래금액')}</th>
+
           <th>
             {t('거래승인(취소)일시')}
 
@@ -159,7 +156,7 @@ export const Table = ({ items, pageSize }: Props) => {
             <br />
             {t('부가세')}
           </th>
-          <th>{t('영수증')}</th>
+
           {/* <th>{t('거래취소')}</th> */}
         </tr>
       </S.Thead>

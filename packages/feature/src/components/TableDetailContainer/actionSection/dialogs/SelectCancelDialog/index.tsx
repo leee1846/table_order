@@ -168,7 +168,7 @@ export const SelectCancelDialog = ({
                         {item.options.map((option, optIndex) => (
                           <div key={`${option.id}-${optIndex.toString()}`}>
                             <span>{option.name}</span>
-                            <span>x</span>
+                            <span>{` x `}</span>
                             <span>{option.qty}</span>
                           </div>
                         ))}
