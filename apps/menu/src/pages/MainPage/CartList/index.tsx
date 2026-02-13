@@ -91,10 +91,6 @@ export const CartList = ({
 
   // 카트 메뉴 수량 변경 핸들러
   const handleCartQuantityChange = (index: number, newQuantity: number) => {
-    if (newQuantity < 1) {
-      return;
-    }
-
     if (newQuantity > MENU_MAX_QUANTITY) {
       toast(
         t('최대 {{maxQuantity}}개까지 선택 가능합니다.', {
@@ -122,6 +118,14 @@ export const CartList = ({
   const handleOrderSubmit = () => {
     if (cartData.menus.length < 1) {
       toast(t('현재 담긴 메뉴가 없어요.'), TOAST_OPTIONS);
+      return;
+    }
+
+    const hasMenuWithZeroQuantity = cartData.menus.some(
+      (menu) => menu.quantity < 1
+    );
+    if (hasMenuWithZeroQuantity) {
+      toast(t('각 메뉴의 수량을 {{count}}개 이상 설정해주세요.', { count: 1 }), TOAST_OPTIONS);
       return;
     }
 
@@ -293,7 +297,7 @@ export const CartList = ({
                   <NumberInput
                     variant="square"
                     size="L"
-                    min={1}
+                    min={0}
                     value={menu.quantity}
                     onChange={(value) => handleCartQuantityChange(index, value)}
                   />

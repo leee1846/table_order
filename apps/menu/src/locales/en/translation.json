@@ -6,6 +6,7 @@
   "합계": "Total",
   "주문하기": "Place Order",
   "현재 담긴 메뉴가 없어요.": "There are no items in your cart.",
+  "각 메뉴의 수량을 {{count}}개 이상 설정해주세요.": "Please set the quantity of each menu to at least {{count}}.",
   "선택한 요청사항": "Selected Requests",
   "요청하기": "Request",
   "메뉴가 존재하지 않아요.": "Menu does not exist.",
@@ -295,5 +296,5 @@
   "설정 화면을 열 수 없습니다.": "Unable to open settings.",
   "디바이스 관리": "Device Management",
   "시스템 설정": "System Settings",
-  "수량을 한 개 이상 입력해주세요.": "Please enter a quantity of at least one."
+  "수량을 {{count}}개 이상 입력해주세요.": "Please enter a quantity of at least {{count}}."
 }

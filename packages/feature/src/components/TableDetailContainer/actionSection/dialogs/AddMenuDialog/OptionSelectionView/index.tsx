@@ -14,6 +14,7 @@ import * as S from './optionSelectionView.style';
 import * as A from '../addMenuDialog.styles';
 import { formatCurrency } from '@repo/util/string';
 import { useTranslation } from 'react-i18next';
+import { toast } from '@repo/feature/utils';
 
 const { colors } = theme;
 
@@ -112,6 +113,14 @@ export const OptionSelectionView = ({
     onOptionQuantityChange(optionSeq, newQuantity);
   };
 
+  const handleAddClick = () => {
+    if (menuQuantity < 1) {
+      toast(t('수량을 {{count}}개 이상 입력해주세요.', { count: 1 }));
+      return;
+    }
+    onAdd();
+  };
+
   // 라디오 버튼 옵션 선택 처리 (같은 그룹의 다른 옵션들을 모두 해제)
   const handleRadioSelect = (optionSeq: number, optionGroupSeq: number) => {
     // 같은 그룹의 모든 옵션을 먼저 해제
@@ -187,7 +196,7 @@ export const OptionSelectionView = ({
               <NumberInput
                 variant="square"
                 value={menuQuantity}
-                min={1}
+                min={0}
                 max={999}
                 onChange={onMenuQuantityChange}
                 customStyle={S.rightPanelMenuQuantityInput}
@@ -202,7 +211,7 @@ export const OptionSelectionView = ({
               </S.TotalMountValue>
             </S.TotalMountSection>
             <A.PanelFooter>
-              <BasicButton variant="Solid_Navy_2XL" onClick={onAdd} fullWidth>
+              <BasicButton variant="Solid_Navy_2XL" onClick={handleAddClick} fullWidth>
                 {t('추가하기')}
               </BasicButton>
             </A.PanelFooter>

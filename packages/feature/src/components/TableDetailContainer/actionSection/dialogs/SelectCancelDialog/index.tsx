@@ -89,7 +89,7 @@ export const SelectCancelDialog = ({
     );
 
     if (hasZeroQuantity) {
-      toast(t('수량을 한 개 이상 입력해주세요.'));
+      toast(t('수량을 {{count}}개 이상 입력해주세요.', { count: 1 }));
       return;
     }
 

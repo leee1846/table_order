@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react';
+import { useId } from 'react';
 import { RemoveIcon, AddIcon } from '../../icons';
 import * as S from './numberInput.style';
 import { SerializedStyles } from '@emotion/react';
@@ -29,37 +29,19 @@ export const NumberInput = ({
 }: Props) => {
   const id = useId();
   const { theme } = useThemeMode();
-  const [temporaryInputText, setTemporaryInputText] = useState<string | null>(
-    null
-  );
-  const valueWhenEditStartedRef = useRef(value);
 
-  const isTemporaryInput = temporaryInputText !== null;
-  const inputDisplayText = isTemporaryInput
-    ? temporaryInputText
-    : String(value);
-
-  const finalizeInputValue = (inputText: string) => {
-    const parsedNumber = inputText === '' ? 0 : Number(inputText);
-    const isOutsideMinMax =
-      (min !== undefined && parsedNumber < min) ||
-      (max !== undefined && parsedNumber > max);
-    const valueToApply = isOutsideMinMax
-      ? valueWhenEditStartedRef.current
-      : parsedNumber;
-    onChange(valueToApply);
-    setTemporaryInputText(null);
+  const isWithinMinMax = (n: number) => {
+    if (min !== undefined && n < min) {
+      return false;
+    }
+    if (max !== undefined && n > max) {
+      return false;
+    }
+    return true;
   };
 
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    valueWhenEditStartedRef.current = value;
-    setTemporaryInputText(String(value));
     e.target.select();
-  };
-
-  const handleInputBlur = () => {
-    const currentInputText = temporaryInputText ?? String(value);
-    finalizeInputValue(currentInputText);
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -74,7 +56,14 @@ export const NumberInput = ({
     const digitsOnly = e.target.value.replace(/[^0-9]/g, '');
     const sanitizedText =
       digitsOnly === '' ? '' : digitsOnly.replace(/^0+/, '') || '0';
-    setTemporaryInputText(sanitizedText);
+    if (sanitizedText === '') {
+      onChange(min ?? 0);
+      return;
+    }
+    const parsed = Number(sanitizedText);
+    if (isWithinMinMax(parsed)) {
+      onChange(parsed);
+    }
   };
 
   const handleDecreaseButtonClick = (
@@ -143,10 +132,9 @@ export const NumberInput = ({
         inputMode="numeric"
         pattern="[0-9]*"
         id={id}
-        value={inputDisplayText}
+        value={String(value)}
         onChange={handleInputChange}
         onFocus={handleInputFocus}
-        onBlur={handleInputBlur}
         onKeyDown={handleInputKeyDown}
         disabled={disabled}
         onClick={(e) => e.stopPropagation()}

@@ -41,10 +41,6 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
 
   // 메뉴 수량 변경 핸들러
   const handleCountChange = (newQuantity: number) => {
-    if (newQuantity < 1) {
-      return;
-    }
-
     if (newQuantity > MENU_MAX_QUANTITY) {
       toast(
         t('최대 {{maxQuantity}}개까지 선택 가능합니다.', {
@@ -59,6 +55,14 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
   };
 
   const onClickAdd = () => {
+    if (currentCount < 1) {
+      toast(t('수량을 {{count}}개 이상 입력해주세요.', { count: 1 }), {
+        position: 'center-center',
+        duration: 1500,
+      });
+      return;
+    }
+
     if (menu.minQuantity > currentCount) {
       toast(
         t('최소 주문 수량은 {{minQuantity}}개 입니다.', {
@@ -136,7 +140,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
           value={currentCount}
           onChange={handleCountChange}
           size="L"
-          min={1}
+          min={0}
           customStyle={css`
             width: 100%;
           `}

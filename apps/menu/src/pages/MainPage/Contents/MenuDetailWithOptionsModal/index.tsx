@@ -165,10 +165,6 @@ export const MenuDetailWithOptionsModal = ({
 
   // 메뉴 수량 변경 핸들러
   const handleMenuQuantityChange = (newQuantity: number) => {
-    if (newQuantity < 1) {
-      return;
-    }
-
     if (newQuantity > MENU_MAX_QUANTITY) {
       toast(
         t('최대 {{maxQuantity}}개까지 선택 가능합니다.', {
@@ -397,6 +393,14 @@ export const MenuDetailWithOptionsModal = ({
   };
 
   const validateMenuQuantity = (): boolean => {
+    if (menuQuantity < 1) {
+      toast(t('수량을 {{count}}개 이상 입력해주세요.', { count: 1 }), {
+        position: 'center-center',
+        duration: 1500,
+      });
+      return false;
+    }
+
     if (menu.minQuantity > menuQuantity) {
       toast(
         t('최소 주문 수량은 {{minQuantity}}개 입니다.', {
@@ -620,7 +624,7 @@ export const MenuDetailWithOptionsModal = ({
                 value={menuQuantity}
                 onChange={handleMenuQuantityChange}
                 size="L"
-                min={1}
+                min={0}
                 customStyle={css`
                   min-width: 100%;
                 `}
