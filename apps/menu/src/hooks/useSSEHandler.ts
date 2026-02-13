@@ -20,6 +20,7 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useLocation } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
@@ -247,9 +248,7 @@ export const useSSEHandler = () => {
     handleOrderMessage: async (shopCode: string, message: ISseMessage) => {
       // 현재 테이블 목록 먼저 새로고침
       handlersRef.current.refetchCurrentTableList(shopCode);
-
       const { currentDeviceData, tableOrderHistoriesData } = dataRefs.current;
-
       if (!message.data || !currentDeviceData?.tableNumber) {
         return;
       }
@@ -258,12 +257,13 @@ export const useSSEHandler = () => {
       // 메시지 데이터: { [tableNumber]: sseUpdatedAt } 형태
       const orderDataByTable = message.data as { [key: string]: number };
 
-      // 현재 테이블이 주문 목록에 없으면 (주문 삭제됨)
+      // 현재 테이블이 주문 목록에 없거나, 주문 그룹만 생성되어 있고, 주문이 없을 경우
       if (!(currentTableNumber in orderDataByTable)) {
         const hasExistingOrders =
           tableOrderHistoriesData &&
           tableOrderHistoriesData !== 'isEmptyTable' &&
-          tableOrderHistoriesData?.orderDetailMenuList?.length > 0;
+          (tableOrderHistoriesData?.orderDetailMenuList?.length > 0 ||
+            tableOrderHistoriesData?.orderDetailMenuList?.length < 1);
 
         // 기존 주문이 있었다면 모든 상태 초기화
         if (hasExistingOrders) {
@@ -271,9 +271,12 @@ export const useSSEHandler = () => {
           clearInitialPage(); // 초기 페이지 데이터 초기화
           clearCart(); // 장바구니 초기화
           clearCustomerCountData(); // 고객 수 초기화
+          useCustomerLanguageStore.getState().clearData(); // 언어 설정 초기화
           useModalStore.getState().closeAllModals(); // 모든 모달 닫기
           useDialogStore.getState().closeAllDialogs(); // 모든 다이얼로그 닫기
+          return;
         }
+
         return;
       }
 
