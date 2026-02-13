@@ -75,7 +75,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
     }
 
     setPaymentType(shopSetting.usePrepayment ? 'prepayment' : 'postpayment');
-    setVanCode(shopSetting.vanCode);
+    setVanCode('EASY');
     setVanId(shopSetting.vanId);
     setShopCardTerminal(shopSetting.shopCardTerminalCode ?? '');
     setCurrencySetting(shopSetting.currencySetting ?? '');
@@ -204,6 +204,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
               options={vanOptions}
               value={vanCode}
               onChange={(value) => setVanCode(value as TVanCode)}
+              disabled={true}
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
