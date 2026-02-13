@@ -96,7 +96,7 @@ export const OrderListDialog = ({
 
   const PAYMENT_STATUS_LABELS: Record<TOrderPaymentStatus, string> = {
     UNPAID: t('후결제'),
-    PAID: t('결제완료'),
+    PAID: t('선결제'),
     REFUND: t('환불'),
   };
 
