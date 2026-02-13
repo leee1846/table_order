@@ -39,10 +39,10 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
     [t]
   );
 
-  const cardTerminalOptions = [
-    { value: 'KICC', label: t('KICC') },
-    { value: 'NONE', label: t('미사용') },
-  ];
+  // const cardTerminalOptions = [
+  //   { value: 'KICC', label: t('KICC') },
+  //   { value: 'NONE', label: t('미사용') },
+  // ];
 
   const [paymentType, setPaymentType] =
     useState<PaymentTypeOption>('postpayment');
@@ -259,14 +259,17 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           </UIStyles.setting.ContentLayout>
         </>
       )}
-      <UIStyles.setting.ContentLayout>
+
+      {/* 관리자앱 카드결제 기능이 없으므로 주석처리합니다. */}
+      {/* <UIStyles.setting.ContentLayout>
         <p>{t('카드 단말기')}</p>
         <Dropdown
           options={cardTerminalOptions}
           value={shopCardTerminal}
           onChange={(value) => setShopCardTerminal(value as string)}
         />
-      </UIStyles.setting.ContentLayout>
+      </UIStyles.setting.ContentLayout> */}
+
       <UIStyles.setting.ContentLayout>
         <p>{t('통화설정')}</p>
         <Dropdown
