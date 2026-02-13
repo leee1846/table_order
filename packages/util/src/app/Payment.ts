@@ -199,14 +199,11 @@ export interface IPayment {
 
 export const Payment: IPayment = {
   addListener: async (eventName, callback) => {
-    console.warn('[Payment.addListener] 요청:', { eventName });
     const result = await NativePayment.addListener(eventName, callback);
-    console.warn('[Payment.addListener] 반환:', result);
     return result;
   },
 
   approve: async (options) => {
-    console.warn('[Payment.approve] 요청:', options);
     const amt = options.amount.toString();
 
     const result = await NativePayment.requestPaymentActivity({
@@ -216,12 +213,10 @@ export const Payment: IPayment = {
       installment: options.installment || '00',
       tran_no: Date.now().toString(),
     });
-    console.warn('[Payment.approve] 반환:', result);
     return result;
   },
 
   cancel: async (options) => {
-    console.warn('[Payment.cancel] 요청:', options);
     const result = await NativePayment.requestPaymentActivity({
       tran_type: 'D4',
       amount: options.amount.toString(),
@@ -230,18 +225,14 @@ export const Payment: IPayment = {
       installment: '00', // 취소는 항상 일시불 처리
       tran_no: options.tranNo,
     });
-    console.warn('[Payment.cancel] 반환:', result);
     return result;
   },
 
   stop: async () => {
-    console.warn('[Payment.stop] 요청');
     await NativePayment.stopPayment();
-    console.warn('[Payment.stop] 반환: void');
   },
 
   downloadMerchant: async (options) => {
-    console.warn('[Payment.downloadMerchant] 요청:', options);
     const result = await NativePayment.requestMerchantDownload({
       biz_no: options.bizNo,
       tid: options.tid,
@@ -249,14 +240,11 @@ export const Payment: IPayment = {
       phone: options.phone,
       init_yn: options.initYn || 'N',
     });
-    console.warn('[Payment.downloadMerchant] 반환:', result);
     return result;
   },
 
   inquiryMerchant: async () => {
-    console.warn('[Payment.inquiryMerchant] 요청');
     const result = await NativePayment.requestMerchantInquiry();
-    console.warn('[Payment.inquiryMerchant] 반환:', result);
     return result;
   },
 };

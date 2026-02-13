@@ -97,10 +97,6 @@ const AppStorageNative = registerPlugin<IAppStorage & Plugin>('AppStorage');
  */
 export const AppStorage: IAppStorage = {
   saveData: async (options) => {
-    console.warn('[AppStorage.saveData] 요청:', {
-      key: options.key,
-      isTemporary: options.isTemporary,
-    });
     const stringValue =
       typeof options.value === 'string'
         ? options.value
@@ -110,11 +106,9 @@ export const AppStorage: IAppStorage = {
       ...options,
       value: stringValue,
     });
-    console.warn('[AppStorage.saveData] 반환: void');
   },
 
   loadData: async <T = unknown>(options: { key: string }) => {
-    console.warn('[AppStorage.loadData] 요청:', options);
     const result = await AppStorageNative.loadData(options);
     const value = result.value as string | null;
     let out: { value: T | null };
@@ -123,25 +117,19 @@ export const AppStorage: IAppStorage = {
     } else {
       try {
         out = { value: JSON.parse(value) as T };
-      } catch (e) {
-        console.warn('[AppStorage.loadData] JSON 파싱 실패, 원본 반환', e);
+      } catch {
         out = { value: value as T };
       }
     }
-    console.warn('[AppStorage.loadData] 반환:', out);
     return out;
   },
 
   removeData: async (options) => {
-    console.warn('[AppStorage.removeData] 요청:', options);
     await AppStorageNative.removeData(options);
-    console.warn('[AppStorage.removeData] 반환: void');
   },
 
   removeAllData: async () => {
-    console.warn('[AppStorage.removeAllData] 요청');
     await AppStorageNative.removeAllData();
-    console.warn('[AppStorage.removeAllData] 반환: void');
   },
 
   getAllData: async () => {
@@ -160,31 +148,20 @@ export const AppStorage: IAppStorage = {
   },
 
   exists: async (options) => {
-    console.warn('[AppStorage.exists] 요청:', options);
     const result = await AppStorageNative.exists(options);
-    console.warn('[AppStorage.exists] 반환:', result);
     return result;
   },
 
   saveMedia: async (options) => {
-    console.warn('[AppStorage.saveMedia] 요청:', {
-      fileName: options.fileName,
-      type: options.type,
-    });
     await AppStorageNative.saveMedia(options);
-    console.warn('[AppStorage.saveMedia] 반환: void');
   },
 
   downloadFromUrl: async (options) => {
-    console.warn('[AppStorage.downloadFromUrl] 요청:', options);
     await AppStorageNative.downloadFromUrl(options);
-    console.warn('[AppStorage.downloadFromUrl] 반환: void');
   },
 
   getLocalUrl: async (options) => {
-    console.warn('[AppStorage.getLocalUrl] 요청:', options);
     const result = await AppStorageNative.getLocalUrl(options);
-    console.warn('[AppStorage.getLocalUrl] 반환:', result);
     return result;
   },
 };

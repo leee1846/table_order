@@ -129,7 +129,6 @@ const NativeSystem = registerPlugin<ISystemControl & Plugin>('SystemControl');
  */
 export const SystemControl: ISystemControl = {
   startMonitoring: async (callback) => {
-    console.warn('[SystemControl.startMonitoring] 요청');
     NativeSystem.stopMonitoring();
 
     // RSSI 값을 0~4로 정규화하는 래퍼 콜백
@@ -146,83 +145,57 @@ export const SystemControl: ISystemControl = {
     };
 
     await NativeSystem.startMonitoring(normalizedCallback);
-    console.warn('[SystemControl.startMonitoring] 반환: void');
   },
 
   stopMonitoring: async () => {
-    console.warn('[SystemControl.stopMonitoring] 요청');
     await NativeSystem.stopMonitoring();
-    console.warn('[SystemControl.stopMonitoring] 반환: void');
   },
 
   restartApp: async () => {
-    console.warn('[SystemControl.restartApp] 요청');
     await NativeSystem.restartApp();
-    console.warn('[SystemControl.restartApp] 반환: void');
   },
 
   reboot: async () => {
-    console.warn('[SystemControl.reboot] 요청');
     await NativeSystem.reboot();
-    console.warn('[SystemControl.reboot] 반환: void');
   },
 
   lockScreen: async () => {
-    console.warn('[SystemControl.lockScreen] 요청');
     await NativeSystem.lockScreen();
-    console.warn('[SystemControl.lockScreen] 반환: void');
   },
 
   wakeScreen: async () => {
-    console.warn('[SystemControl.wakeScreen] 요청');
     await NativeSystem.wakeScreen();
-    console.warn('[SystemControl.wakeScreen] 반환: void');
   },
 
   setBrightness: async (options) => {
-    console.warn('[SystemControl.setBrightness] 요청:', options);
     await NativeSystem.setBrightness(options);
-    console.warn('[SystemControl.setBrightness] 반환: void');
   },
 
   startKiosk: async () => {
-    console.warn('[SystemControl.startKiosk] 요청');
     await NativeSystem.startKiosk();
-    console.warn('[SystemControl.startKiosk] 반환: void');
   },
 
   stopKiosk: async () => {
-    console.warn('[SystemControl.stopKiosk] 요청');
     await NativeSystem.stopKiosk();
-    console.warn('[SystemControl.stopKiosk] 반환: void');
   },
 
   shutdown: async () => {
-    console.warn('[SystemControl.shutdown] 요청');
     await NativeSystem.shutdown();
-    console.warn('[SystemControl.shutdown] 반환: void');
   },
 
   clearWebData: async () => {
-    console.warn('[SystemControl.clearWebData] 요청');
     await NativeSystem.clearWebData();
-    console.warn('[SystemControl.clearWebData] 반환: void');
   },
 
   goToUrl: async (options: { url: string }) => {
-    console.warn('[SystemControl.goToUrl] 요청:', options);
     await NativeSystem.goToUrl(options);
-    console.warn('[SystemControl.goToUrl] 반환: void');
   },
 
   playSound: async (options) => {
-    console.warn('[SystemControl.playSound] 요청:', options);
     await NativeSystem.playSound(options);
-    console.warn('[SystemControl.playSound] 반환: void');
   },
 
   exitApp: async () => {
-    console.warn('[SystemControl.exitApp] 요청');
     return NativeSystem.exitApp();
   },
 };

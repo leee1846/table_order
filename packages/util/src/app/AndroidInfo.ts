@@ -34,37 +34,28 @@ const NativeInfo = registerPlugin<INativeAndroidInfo & Plugin>('AndroidInfo');
  */
 export const AndroidInfo: IAndroidInfo = {
   getIp: async () => {
-    console.warn('[AndroidInfo.getIp] 요청');
     try {
       const res = await NativeInfo.getIpAddress();
-      console.warn('[AndroidInfo.getIp] 반환:', res.ip);
       return res.ip;
-    } catch (e) {
-      console.warn('[AndroidInfo.getIp] 반환: null (에러)', e);
+    } catch {
       return null;
     }
   },
 
   getMac: async () => {
-    console.warn('[AndroidInfo.getMac] 요청');
     try {
       const res = await NativeInfo.getMacAddress();
-      console.warn('[AndroidInfo.getMac] 반환:', res.mac);
       return res.mac;
-    } catch (e) {
-      console.warn('[AndroidInfo.getMac] 반환: null (에러)', e);
+    } catch {
       return null;
     }
   },
 
   getId: async () => {
-    console.warn('[AndroidInfo.getId] 요청');
     try {
       const res = await NativeInfo.getAndroidId();
-      console.warn('[AndroidInfo.getId] 반환:', res.uuid);
       return res.uuid;
-    } catch (e) {
-      console.warn('[AndroidInfo.getId] 반환: null (에러)', e);
+    } catch {
       return null;
     }
   },

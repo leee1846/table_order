@@ -31,18 +31,15 @@ export interface IInstaller {
 
 export const Installer: IInstaller = {
   startUpdate: async (url: string, checksum: string): Promise<void> => {
-    console.warn('[Installer.startUpdate] 요청:', { url, checksum });
     if (!url) throw new Error('APK URL is required');
 
     await NativeInstaller.downloadAndInstall({ url, checksum });
-    console.warn('[Installer.startUpdate] 반환: void');
   },
 
   installExternal: async (
     url: string,
     silent: boolean = true
   ): Promise<void> => {
-    console.warn('[Installer.installExternal] 요청:', { url, silent });
     if (!url) throw new Error('APK URL is required');
 
     // 고유한 값 생성: timestamp + UUID 조합
@@ -55,6 +52,5 @@ export const Installer: IInstaller = {
 
     // Java Method: installExternalApk
     await NativeInstaller.installExternalApk({ url, checksum, silent });
-    console.warn('[Installer.installExternal] 반환: void');
   },
 };
