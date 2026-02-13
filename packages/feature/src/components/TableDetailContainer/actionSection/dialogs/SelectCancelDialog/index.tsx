@@ -128,7 +128,6 @@ export const SelectCancelDialog = ({
   if (!isOpen) {
     return null;
   }
-  console.log('items', items);
   return (
     <ModalBackground position="center" onClick={handleClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>

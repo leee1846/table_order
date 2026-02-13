@@ -32,33 +32,28 @@ export const QRModalContainer = styled.div`
 export const QRModalHeader = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-
-  & > h2 {
+  justify-content: center;
+  & > p {
     ${TYPOGRAPHY.MT_2}
     color: ${theme.colors.grey[800]};
-    flex: 1;
     text-align: center;
-    transform: translateX(20px);
+    transform: translateY(-20px);
   }
 `;
 
+export const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+`;
+
 export const CloseButton = styled.button`
-  background: none;
-  border: none;
   font-size: 32px;
   color: ${theme.colors.grey[600]};
   cursor: pointer;
   padding: 0;
-  width: 32px;
   height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  transition: color 0.2s;
-
+  text-align: right;
   &:hover {
     color: ${theme.colors.grey[800]};
   }

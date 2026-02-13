@@ -67,8 +67,7 @@ export const NoticesPage = () => {
       {isModalOpen && (
         <ModalBackground onClick={closeModal}>
           <S.QRModalContainer>
-            <S.QRModalHeader>
-              <h2>{t('고객센터 QR 코드')}</h2>
+            <S.ButtonWrapper>
               <S.CloseButton onClick={closeModal}>
                 <CloseIcon
                   width={32}
@@ -76,6 +75,9 @@ export const NoticesPage = () => {
                   color={theme.colors.grey[700]}
                 />
               </S.CloseButton>
+            </S.ButtonWrapper>
+            <S.QRModalHeader>
+              <p>{t('고객센터 QR 코드')}</p>
             </S.QRModalHeader>
             <S.QRModalContent>
               <div>
