@@ -192,9 +192,7 @@ export interface ICategoryExceptTableItem {
 }
 
 // API 응답이 실제로는 tableNumber 배열(string | number)로 옵니다
-export type TGetCategoryExceptTableResponse = IApiResponse<
-  (string | number)[]
->;
+export type TGetCategoryExceptTableResponse = IApiResponse<(string | number)[]>;
 
 // ============================================================================
 // POST /category/except-table/{shopCode}
@@ -214,6 +212,12 @@ export interface ITableBlackListRequest {
 // PUT /category/first-order
 // ============================================================================
 
-export type TUpdateCategoryFirstOrderRequest = ICategory[];
+export interface FirstOrderCategory {
+  categorySeq: number;
+  isFirstOrderRequired: boolean;
+  shopSeq: number;
+}
+
+export type TUpdateCategoryFirstOrderRequest = FirstOrderCategory[];
 
 export type TUpdateCategoryFirstOrderResponse = TVoidApiResponse;

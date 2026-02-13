@@ -30,26 +30,14 @@ export const CategoryModal = ({
     <ModalBackground onClick={onClose}>
       <S.Container>
         <S.Header>
-          <h3>
-            {t(
-              '첫주문 필수 카테고리'
-            )}
-          </h3>
-          <button
-            type="button"
-            aria-label={t('닫기')}
-            onClick={onClose}
-          >
+          <h3>{t('첫주문 필수 카테고리')}</h3>
+          <button type="button" aria-label={t('닫기')} onClick={onClose}>
             <CloseIcon width={28} height={28} color={theme.colors.grey[600]} />
           </button>
         </S.Header>
 
         {isLoading ? (
-          <S.LoadingText>
-            {t(
-              '카테고리를 불러오는 중입니다.'
-            )}
-          </S.LoadingText>
+          <S.LoadingText>{t('카테고리를 불러오는 중입니다.')}</S.LoadingText>
         ) : categories.length > 0 ? (
           <S.CategoryList>
             {categories.map((category) => {
@@ -71,11 +59,7 @@ export const CategoryModal = ({
             })}
           </S.CategoryList>
         ) : (
-          <S.EmptyState>
-            {t(
-              '등록된 카테고리가 없습니다.'
-            )}
-          </S.EmptyState>
+          <S.EmptyState>{t('등록된 카테고리가 없습니다.')}</S.EmptyState>
         )}
       </S.Container>
     </ModalBackground>

@@ -141,16 +141,18 @@ export const MiscellaneousPage = () => {
     const categoryPayload: TUpdateCategoryFirstOrderRequest =
       categories.length === 0
         ? ((await refetchCategoryList()).data?.data?.map((category) => ({
-            ...category,
+            categorySeq: category.categorySeq,
             isFirstOrderRequired: selectedCategorySeqs.includes(
               category.categorySeq
             ),
+            shopSeq: category.shopSeq,
           })) ?? [])
         : categories.map((category) => ({
-            ...category,
+            categorySeq: category.categorySeq,
             isFirstOrderRequired: selectedCategorySeqs.includes(
               category.categorySeq
             ),
+            shopSeq: category.shopSeq,
           }));
 
     /**
@@ -217,6 +219,7 @@ export const MiscellaneousPage = () => {
       shopNetwork,
     };
 
+    console.log('categoryPayload', categoryPayload);
     await Promise.all([
       updateShopSettingMutation.mutateAsync(request),
       updateCategoryFirstOrderMutation.mutateAsync(categoryPayload),
