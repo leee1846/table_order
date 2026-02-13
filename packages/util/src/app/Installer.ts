@@ -33,7 +33,7 @@ export const Installer: IInstaller = {
   startUpdate: async (url: string, checksum: string): Promise<void> => {
     if (!url) throw new Error('APK URL is required');
 
-    await NativeInstaller.downloadAndInstall({ url, checksum });
+    return await NativeInstaller.downloadAndInstall({ url, checksum });
   },
 
   installExternal: async (

@@ -133,7 +133,6 @@ export const AppStorage: IAppStorage = {
   },
 
   getAllData: async () => {
-    console.warn('[AppStorage.getAllData] 요청');
     const result = await AppStorageNative.getAllData();
     const parsedData: Record<string, unknown> = {};
     Object.entries(result.temporary).forEach(([key, value]) => {
