@@ -37,6 +37,7 @@ export const ItemsList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding-bottom: 15px;
 `;
 
 export const ItemRow = styled.div`
@@ -44,10 +45,24 @@ export const ItemRow = styled.div`
   justify-content: space-between;
 `;
 
+export const ItemInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
 export const ItemName = styled.span`
   ${TYPOGRAPHY.MT_5}
   color: ${colors.grey[900]};
-  flex: 1;
+`;
+
+export const ItemOptions = styled.div`
+  ${TYPOGRAPHY.ST_5}
+  color: ${colors.grey[600]};
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-left: 35px;
 `;
 
 export const QuantityWrapper = styled.div`

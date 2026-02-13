@@ -37,6 +37,8 @@ export const SelectCancelDialog = ({
   const [quantities, setQuantities] = useState<Map<string, number>>(new Map());
   const { mutateAsync: cancelOrderMenu, isPending } = usePutCancelOrderMenu();
 
+  console.log('items', items);
+
   const handleCheckboxChange = (itemId: string, checked: boolean) => {
     if (checked) {
       setSelectedItems((prev) => new Set(prev).add(itemId));
@@ -126,7 +128,7 @@ export const SelectCancelDialog = ({
   if (!isOpen) {
     return null;
   }
-
+  console.log('items', items);
   return (
     <ModalBackground position="center" onClick={handleClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
@@ -146,21 +148,34 @@ export const SelectCancelDialog = ({
 
               return (
                 <S.ItemRow key={`${item.id}-${index + 1}`}>
-                  <CheckButton
-                    variant="square"
-                    checked={isChecked}
-                    onChange={(checked) =>
-                      handleCheckboxChange(item.id, checked)
-                    }
-                    customStyle={css`
-                      & > div {
-                        width: 1.5rem;
-                        height: 1.5rem;
+                  <S.ItemInfo>
+                    <CheckButton
+                      variant="square"
+                      checked={isChecked}
+                      onChange={(checked) =>
+                        handleCheckboxChange(item.id, checked)
                       }
-                    `}
-                  >
-                    <S.ItemName>{item.name}</S.ItemName>
-                  </CheckButton>
+                      customStyle={css`
+                        & > div {
+                          width: 1.5rem;
+                          height: 1.5rem;
+                        }
+                      `}
+                    >
+                      <S.ItemName>{item.name}</S.ItemName>
+                    </CheckButton>
+                    {item.options && item.options.length > 0 && (
+                      <S.ItemOptions>
+                        {item.options.map((option, optIndex) => (
+                          <div key={`${option.id}-${optIndex.toString()}`}>
+                            <span>{option.name}</span>
+                            <span>x</span>
+                            <span>{option.qty}</span>
+                          </div>
+                        ))}
+                      </S.ItemOptions>
+                    )}
+                  </S.ItemInfo>
                   <S.QuantityWrapper>
                     <NumberInput
                       variant="square"
