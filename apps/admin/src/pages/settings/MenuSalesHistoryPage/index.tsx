@@ -346,7 +346,10 @@ export const MenuSalesHistoryPage = () => {
           </S.CategoryFilter>
 
           <S.TableCard>
-            <MenuSalesHistoryTable rows={filteredItems} />
+            <MenuSalesHistoryTable
+              key={selectedCategories.join(',')}
+              rows={filteredItems}
+            />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>
