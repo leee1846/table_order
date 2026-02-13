@@ -43,7 +43,6 @@ export const Template = ({
             size="M"
             isOn={isMenuThreeColumnLayout}
             onChange={() => onChangeThreeColumnLayout(!isMenuThreeColumnLayout)}
-            disabled={true}
           />
         </S.OptionRow>
         <S.OptionRow>
