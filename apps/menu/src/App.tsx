@@ -6,12 +6,14 @@ import { useSystemStatusMonitor } from '@/hooks/useSystemStatusMonitor';
 import { useMerchantRegistration } from '@/hooks/useMerchantRegistration';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { AppStorage } from '@repo/util/app';
+import { useVersionCheck } from '@repo/feature/hooks';
 
 /** 디바이스 스토어 hydration 이후에만 마운트 → useSSEHandler/useSystemStatusMonitor가 항상 채워진 data 참조 */
 const AppContent = () => {
   useSSEHandler();
   useSystemStatusMonitor();
   useMerchantRegistration();
+  useVersionCheck();
 
   // 디버깅용, AppStorage 저장된 모든 데이터 콘솔 출력
   AppStorage.getAllData();

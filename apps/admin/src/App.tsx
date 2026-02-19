@@ -6,6 +6,7 @@ import { useTheftAlertStore } from '@/stores/useTheftAlertStore';
 import { usePosErrorStore } from '@/stores/usePosErrorStore';
 import { useSSEHandler } from './hooks/useSSEHandler';
 import { useSystemStatusMonitor } from './hooks/useSystemStatusMonitor';
+import { useVersionCheck } from '@repo/feature/hooks';
 
 const App = () => {
   const { isOpen, tableNumber, closeAlert } = useTheftAlertStore();
@@ -19,6 +20,7 @@ const App = () => {
 
   useSSEHandler();
   useSystemStatusMonitor();
+  useVersionCheck();
 
   return (
     <div>

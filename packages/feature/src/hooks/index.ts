@@ -2,6 +2,7 @@ export * as useSSE from './useSSE';
 export { useSSEReconnecting } from './useSSE';
 export { useToast } from './useToast';
 export { useLongPress } from './useLongPress';
+export { useVersionCheck } from './useVersionCheck';
 export type {
   UseLongPressOptions,
   UseLongPressReturn,
