@@ -108,7 +108,7 @@ export const DeviceListDialog = ({
       deviceSeq: device.deviceSeq ?? null,
       shopSeq: device.shopSeq ?? null,
       orderPosNumber: device.orderPosNumber ?? null,
-      updateStatus: device.updateStatus ?? null,
+      controlStatus: device.controlStatus ?? null,
     }));
 
     // 테이블 번호로 정렬
@@ -223,7 +223,9 @@ export const DeviceListDialog = ({
   const handleSelectAll = () => {
     const selectableDevices = deviceItems.filter(
       (device) =>
-        device.deviceType !== 'POS_APP' && device.updateStatus !== 'IN_PROGRESS'
+        device.deviceType !== 'POS_APP' &&
+        device.controlStatus !== 'UPDATING' &&
+        device.controlStatus !== 'REBOOTING'
     );
     const allDeviceIds = selectableDevices.map((device) => device.androidId);
 
@@ -296,13 +298,15 @@ export const DeviceListDialog = ({
                 deviceItems.filter(
                   (device) =>
                     device.deviceType !== 'POS_APP' &&
-                    device.updateStatus !== 'IN_PROGRESS'
+                    device.controlStatus !== 'UPDATING' &&
+                    device.controlStatus !== 'REBOOTING'
                 ).length > 0 &&
                 selectedDevices.length ===
                   deviceItems.filter(
                     (device) =>
                       device.deviceType !== 'POS_APP' &&
-                      device.updateStatus !== 'IN_PROGRESS'
+                      device.controlStatus !== 'UPDATING' &&
+                      device.controlStatus !== 'REBOOTING'
                   ).length
               }
               onChange={() => handleSelectAll()}
@@ -337,8 +341,17 @@ export const DeviceListDialog = ({
                         key={device.androidId}
                         onClick={() => handleSelectDevice(device.androidId)}
                         selected={isSelected}
-                        updateStatus={device.updateStatus === 'IN_PROGRESS'}
-                        updateText={t('업데이트 중...')}
+                        controlStatus={
+                          device.controlStatus === 'UPDATING' ||
+                          device.controlStatus === 'REBOOTING'
+                        }
+                        controlText={
+                          device.controlStatus === 'UPDATING'
+                            ? t('업데이트 중...')
+                            : device.controlStatus === 'REBOOTING'
+                              ? t('재부팅 중...')
+                              : ''
+                        }
                       >
                         <S.CardHeader>
                           <S.DeviceTitle>

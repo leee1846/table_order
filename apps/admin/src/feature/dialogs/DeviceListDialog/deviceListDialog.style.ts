@@ -79,8 +79,8 @@ export const DeviceGrid = styled.div`
 
 export const DeviceCard = styled.div<{
   selected?: boolean;
-  updateStatus?: boolean;
-  updateText?: string;
+  controlStatus?: boolean;
+  controlText?: string;
 }>`
   position: relative;
   background: ${colors.white};
@@ -100,8 +100,8 @@ export const DeviceCard = styled.div<{
   `
       : ''}
 
-  ${({ updateStatus, updateText }) =>
-    updateStatus
+  ${({ controlStatus, controlText }) =>
+    controlStatus
       ? `
     pointer-events: none;
 
@@ -111,7 +111,7 @@ export const DeviceCard = styled.div<{
     }
 
     &::after {
-      content: '${updateText || ''}';
+      content: '${controlText || ''}';
       position: absolute;
       top: 50%; 
       left: 50%;

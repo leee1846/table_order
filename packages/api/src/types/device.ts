@@ -13,7 +13,7 @@ export interface IDeviceBase {
   version: string;
   buildNumber: string;
   tableName: string | null;
-  updateStatus: string | null;
+  controlStatus: TControlStatus;
 }
 
 export interface IDevice extends IDeviceBase {
@@ -23,7 +23,12 @@ export interface IDevice extends IDeviceBase {
 
 export type TGetDeviceDetailResponse = IApiResponse<IDevice>;
 
-export type TUpdateStatus = null | 'SUCCESS' | 'FAIL' | 'IN_PROGRESS';
+export type TControlStatus =
+  | null
+  | 'SUCCESS'
+  | 'FAIL'
+  | 'UPDATING'
+  | 'REBOOTING';
 
 export interface IPostDeviceDetailRequestBase {
   androidId: string;
@@ -35,7 +40,7 @@ export interface IPostDeviceDetailRequestBase {
   ipAddress: string;
   version: string;
   buildNumber: string;
-  updateStatus?: TUpdateStatus;
+  controlStatus?: TControlStatus;
 }
 export interface IPostDeviceDetailRequest extends IPostDeviceDetailRequestBase {
   shopCode: string;

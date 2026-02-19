@@ -9,7 +9,7 @@ import type {
   ITableGroup,
   ITableInfo,
   TDeviceType,
-  TUpdateStatus,
+  TControlStatus,
 } from '@repo/api/types';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
@@ -45,7 +45,7 @@ type DeviceDetailPayload = Record<string, unknown> & {
   tableNumber?: string | null;
   battery?: number | null;
   wifiSignal?: string | null;
-  updateStatus?: TUpdateStatus;
+  controlStatus?: TControlStatus;
 };
 
 type DeviceStoreRef = {
@@ -64,7 +64,7 @@ type DeviceDataSyncDeps = {
 async function collectDeviceInfoAndSyncToServer(
   syncDeps: DeviceDataSyncDeps,
   shopCode: string,
-  updateStatus: TUpdateStatus = null
+  controlStatus: TControlStatus = null
 ): Promise<void> {
   const {
     deviceStoreDataRef,

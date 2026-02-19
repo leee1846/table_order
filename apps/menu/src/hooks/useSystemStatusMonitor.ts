@@ -122,7 +122,7 @@ export const useSystemStatusMonitor = () => {
             : null,
         version,
         buildNumber,
-        updateStatus: null,
+        controlStatus: null,
       });
     };
 
