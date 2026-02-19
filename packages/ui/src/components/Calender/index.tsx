@@ -396,11 +396,7 @@ export const Calender = ({
               width={yearInput.length}
             />
             {translationsData.year}
-            <ArrowDropDownIcon
-              width={28}
-              height={28}
-              color={theme.colors.grey[500]}
-            />
+            <div />
             {month}
             {translationsData.month}
           </p>

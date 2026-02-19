@@ -62,7 +62,7 @@ export const DeviceGridWrapper = styled.div`
 `;
 
 export const EmptyState = styled.div`
-  height: 100%;
+  height: 90%;
   display: flex;
   align-items: center;
   justify-content: center;
