@@ -89,7 +89,7 @@ async function collectDeviceInfoAndSyncToServer(
     androidId,
     version: appInfo.version,
     buildNumber: appInfo.build,
-    updateStatus,
+    controlStatus,
     ...(deviceDetailFromApi && {
       deviceType: deviceDetailFromApi.deviceType,
       tableNumber:
@@ -118,7 +118,7 @@ async function collectDeviceInfoAndSyncToServer(
       : (mergedDeviceDetail.tableNumber ?? null),
     battery: mergedDeviceDetail.battery ?? 0,
     wifiSignal: mergedDeviceDetail.wifiSignal ?? '',
-    updateStatus: mergedDeviceDetail.updateStatus ?? null,
+    controlStatus: mergedDeviceDetail.controlStatus ?? null,
   } as IPostDeviceDetailRequest);
 }
 

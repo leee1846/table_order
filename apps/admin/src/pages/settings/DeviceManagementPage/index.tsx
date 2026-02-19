@@ -68,7 +68,7 @@ export const DeviceManagementPage = () => {
       deviceSeq: device.deviceSeq ?? null,
       shopSeq: device.shopSeq ?? null,
       orderPosNumber: device.orderPosNumber ?? null,
-      updateStatus: device.updateStatus ?? null,
+      controlStatus: device.controlStatus ?? null,
     }));
 
     // 테이블 번호로 정렬
