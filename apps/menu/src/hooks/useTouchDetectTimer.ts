@@ -55,31 +55,36 @@ export const useTouchDetectTimer = () => {
     const timerCallback = async () => {
       globalTimerManager.clear(TIMER_KEYS.API_RESET_TIMEOUT);
 
-      // 모달이 하나라도 열려 있으면 새로고침하지 않음 (분할 결제 등 진행 중 방지)
-      if (!isAllModalsClosed()) {
-        return;
+      try {
+        // 모달이 하나라도 열려 있으면 새로고침하지 않음 (분할 결제 등 진행 중 방지)
+        if (!isAllModalsClosed()) {
+          return;
+        }
+
+        await refreshShopDetailDataRef.current();
+        await refreshCategoriesDataRef.current();
+        await refreshTableGroupDataRef.current();
+        await refreshDeviceDataRef.current();
+
+        // 장바구니 비우기
+        clearCart();
+        const newTableOrderHistoriesData =
+          await refreshTableOrderHistoriesDataRef.current();
+
+        // 테이블이 점유되지 않았을경우
+        if (newTableOrderHistoriesData === null) {
+          // 객수 선택 초기화
+          clearCustomerCountData();
+          // 언어 선택 초기화
+          clearLanguageData();
+          showInitialPage();
+        }
+
+        window.location.reload();
+      } catch {
+        // TimerManager는 async 콜백의 Promise를 await하지 않으므로
+        // throw가 나면 Unhandled Rejection → 웹뷰 앱 종료로 이어질 수 있음
       }
-
-      await refreshShopDetailDataRef.current();
-      await refreshCategoriesDataRef.current();
-      await refreshTableGroupDataRef.current();
-      await refreshDeviceDataRef.current();
-
-      // 장바구니 비우기
-      clearCart();
-      const newTableOrderHistoriesData =
-        await refreshTableOrderHistoriesDataRef.current();
-
-      // 테이블이 점유되지 않았을경우
-      if (newTableOrderHistoriesData === null) {
-        // 객수 선택 초기화
-        clearCustomerCountData();
-        // 언어 선택 초기화
-        clearLanguageData();
-        showInitialPage();
-      }
-
-      window.location.reload();
     };
 
     const startResetTimer = () => {
