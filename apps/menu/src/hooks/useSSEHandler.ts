@@ -2,7 +2,15 @@ import { useCallback, useEffect, useRef } from 'react';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
 import { SSE_KEYS } from '@/constants/keys';
-import type { ISseMessage, ITableGroup, ITableInfo } from '@repo/api/types';
+import type {
+  IDevice,
+  IPostDeviceDetailRequest,
+  ISseMessage,
+  ITableGroup,
+  ITableInfo,
+  TDeviceType,
+  TUpdateStatus,
+} from '@repo/api/types';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
@@ -29,6 +37,90 @@ import { useShopThemePage } from './useShopThemePage';
 import { useDialogStore } from '@repo/feature/stores';
 import { clearAuthData } from '@/utils/auth';
 import { getDeviceInfo } from '@/utils/deviceInfo';
+import type { TFunction } from 'i18next';
+
+type DeviceDetailPayload = Record<string, unknown> & {
+  deviceType?: TDeviceType | null;
+  orderPosNumber?: number | null;
+  tableNumber?: string | null;
+  battery?: number | null;
+  wifiSignal?: string | null;
+  updateStatus?: TUpdateStatus;
+};
+
+type DeviceStoreRef = {
+  current: Record<string, unknown> | null | undefined;
+};
+
+type DeviceDataSyncDeps = {
+  deviceStoreDataRef: DeviceStoreRef;
+  setDataAsync: (data: Partial<IDevice>) => void | Promise<void>;
+  refreshDeviceData: () => Promise<IDevice | undefined>;
+  postDeviceDetail: (req: IPostDeviceDetailRequest) => Promise<unknown>;
+  t: TFunction;
+};
+
+/** 디바이스 정보 수집 → 스토어/ref 반영 → 서버 POST */
+async function collectDeviceInfoAndSyncToServer(
+  syncDeps: DeviceDataSyncDeps,
+  shopCode: string,
+  updateStatus: TUpdateStatus = null
+): Promise<void> {
+  const {
+    deviceStoreDataRef,
+    setDataAsync,
+    refreshDeviceData,
+    postDeviceDetail,
+    t,
+  } = syncDeps;
+  const existingStoreSnapshot = deviceStoreDataRef.current ?? {};
+  const { ipAddress, androidId, appInfo } = await getDeviceInfo({ t });
+
+  if (androidId && !existingStoreSnapshot.androidId) {
+    const storeWithAndroidId = { ...existingStoreSnapshot, androidId };
+    deviceStoreDataRef.current = storeWithAndroidId;
+    await setDataAsync(storeWithAndroidId as Partial<IDevice>);
+  }
+
+  const deviceDetailFromApi = androidId ? await refreshDeviceData() : null;
+  const mergedDeviceDetail = {
+    ...existingStoreSnapshot,
+    ipAddress,
+    androidId,
+    version: appInfo.version,
+    buildNumber: appInfo.build,
+    updateStatus,
+    ...(deviceDetailFromApi && {
+      deviceType: deviceDetailFromApi.deviceType,
+      tableNumber:
+        deviceDetailFromApi.tableNumber ?? existingStoreSnapshot.tableNumber,
+      orderPosNumber: deviceDetailFromApi.orderPosNumber,
+      deviceSeq: deviceDetailFromApi.deviceSeq,
+      shopSeq: deviceDetailFromApi.shopSeq,
+    }),
+  } as DeviceDetailPayload;
+
+  deviceStoreDataRef.current = mergedDeviceDetail;
+  await setDataAsync(mergedDeviceDetail as Partial<IDevice>);
+
+  const resolvedDeviceType = (mergedDeviceDetail.deviceType ??
+    'MENU') as TDeviceType;
+  const isOrderPosDevice = resolvedDeviceType === 'ORDER_POS';
+  await postDeviceDetail({
+    shopCode,
+    ...mergedDeviceDetail,
+    deviceType: resolvedDeviceType,
+    orderPosNumber: isOrderPosDevice
+      ? (mergedDeviceDetail.orderPosNumber ?? null)
+      : null,
+    tableNumber: isOrderPosDevice
+      ? null
+      : (mergedDeviceDetail.tableNumber ?? null),
+    battery: mergedDeviceDetail.battery ?? 0,
+    wifiSignal: mergedDeviceDetail.wifiSignal ?? '',
+    updateStatus: mergedDeviceDetail.updateStatus ?? null,
+  } as IPostDeviceDetailRequest);
+}
 
 /**
  * SSE(Server-Sent Events) 연결 및 실시간 메시지 처리를 담당하는 커스텀 훅
@@ -67,75 +159,28 @@ export const useSSEHandler = () => {
     deviceStoreDataRef.current = deviceStoreData;
   }, [deviceStoreData]);
 
+  const deviceDataSyncDeps: DeviceDataSyncDeps = {
+    deviceStoreDataRef,
+    setDataAsync,
+    refreshDeviceData,
+    postDeviceDetail,
+    t,
+  };
+
   // 초기 디바이스 데이터 설정 및 SSE 연결
-  // shopCode가 변경될 때마다 디바이스 정보 수집 및 SSE 연결 초기화
   useEffect(() => {
     if (!currentShopData?.shopCode) {
       return;
     }
 
-    const getDeviceData = async () => {
-      // 기존 스토어 데이터 유지 (wifi 등 GET API에 없는 값 보존) — App에서 hydration 후 렌더하므로 ref에 이미 반영됨
-      const existingStore = deviceStoreDataRef.current ?? {};
-
-      const { ipAddress, androidId, appInfo } = await getDeviceInfo({ t });
-
-      if (androidId && !existingStore.androidId) {
-        await setDataAsync({ ...existingStore, androidId });
-        deviceStoreDataRef.current = { ...existingStore, androidId };
-      }
-
-      // GET device API: 서버 필드만 가져오고, 스토어는 덮어쓰지 않음
-      let apiDeviceData = null;
-      if (androidId) {
-        apiDeviceData = await refreshDeviceData();
-      }
-
-      // 기존 스토어 + getDeviceInfo + API 결과 병합 (기존 wifiSignal·battery 유지)
-      const baseDeviceDetail = {
-        ...existingStore,
-        ipAddress,
-        androidId,
-        version: appInfo.version,
-        buildNumber: appInfo.build,
-        // API에만 있는 필드만 API 값으로 채움
-        ...(apiDeviceData && {
-          deviceType: apiDeviceData.deviceType,
-          tableNumber: apiDeviceData.tableNumber ?? existingStore.tableNumber,
-          orderPosNumber: apiDeviceData.orderPosNumber,
-          deviceSeq: apiDeviceData.deviceSeq,
-          shopSeq: apiDeviceData.shopSeq,
-        }),
-      };
-
-      deviceStoreDataRef.current = baseDeviceDetail;
-      await setDataAsync(baseDeviceDetail);
-
-      // 서버에 디바이스 정보 동기화 (기본값 설정 포함)
-      const deviceType = baseDeviceDetail.deviceType ?? 'MENU';
-      await postDeviceDetail({
-        shopCode: currentShopData.shopCode,
-        ...baseDeviceDetail,
-        deviceType,
-        // deviceType에 따라 올바른 필드만 설정
-        orderPosNumber:
-          deviceType === 'ORDER_POS'
-            ? (baseDeviceDetail.orderPosNumber ?? null)
-            : null,
-        tableNumber:
-          deviceType === 'ORDER_POS'
-            ? null
-            : (baseDeviceDetail.tableNumber ?? null),
-        battery: baseDeviceDetail.battery ?? 0,
-        wifiSignal: baseDeviceDetail.wifiSignal ?? '',
-      });
-
-      // SSE 연결 초기화 (서버와 실시간 통신 시작)
+    const run = async () => {
+      await collectDeviceInfoAndSyncToServer(
+        deviceDataSyncDeps,
+        currentShopData.shopCode
+      );
       await initializeSseConnection();
     };
-
-    // 비동기 함수 실행 (fire and forget)
-    getDeviceData();
+    run();
 
     // cleanup: 컴포넌트 언마운트 또는 shopCode 변경 시 SSE 연결 해제
     return () => {
@@ -554,7 +599,7 @@ export const useSSEHandler = () => {
       case 'DEVICE_APP_UPDATE':
         // 앱 업데이트 제어
         (async () => {
-          const { currentDeviceData } = dataRefs.current;
+          const { currentDeviceData, currentShopData } = dataRefs.current;
 
           if (!sseMessage.data || !currentDeviceData?.androidId) {
             return;
@@ -576,7 +621,17 @@ export const useSSEHandler = () => {
             return;
           }
 
-          await Installer.startUpdate(downloadPath, checksum);
+          try {
+            await Installer.startUpdate(downloadPath, checksum);
+          } catch {
+            if (currentShopData?.shopCode) {
+              await collectDeviceInfoAndSyncToServer(
+                deviceDataSyncDeps,
+                currentShopData.shopCode,
+                'FAIL'
+              );
+            }
+          }
         })();
         break;
 
@@ -606,5 +661,6 @@ export const useSSEHandler = () => {
       default:
         break;
     }
-  }, [sseMessage]); // sseMessage만 dependency에 포함 (다른 데이터는 ref로 참조)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- postDeviceDetail 등은 ref로 참조하므로 의존성에서 제외
+  }, [sseMessage]);
 };

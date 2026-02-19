@@ -72,6 +72,7 @@ export const useSystemStatusMonitor = () => {
       orderPosNumber: null,
       version: version ?? '',
       buildNumber: buildNumber ?? '',
+      updateStatus: null,
     });
   }, [postDeviceDetail]);
 

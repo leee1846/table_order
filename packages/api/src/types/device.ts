@@ -22,6 +22,8 @@ export interface IDevice extends IDeviceBase {
 
 export type TGetDeviceDetailResponse = IApiResponse<IDevice>;
 
+export type TUpdateStatus = null | 'SUCCESS' | 'FAIL' | 'IN_PROGRESS';
+
 export interface IPostDeviceDetailRequestBase {
   androidId: string;
   deviceType: TDeviceType;
@@ -32,6 +34,7 @@ export interface IPostDeviceDetailRequestBase {
   ipAddress: string;
   version: string;
   buildNumber: string;
+  updateStatus?: TUpdateStatus;
 }
 export interface IPostDeviceDetailRequest extends IPostDeviceDetailRequestBase {
   shopCode: string;
