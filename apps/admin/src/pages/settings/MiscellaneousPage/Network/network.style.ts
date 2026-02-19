@@ -1,6 +1,12 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
+export const ButtonLoadingContent = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+`;
+
 export const TitleContentContainer = styled.div`
   display: flex;
   align-items: center;

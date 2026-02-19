@@ -14,6 +14,7 @@ export { Pagination } from './Pagination';
 export { Calender } from './Calender';
 export { Keypad } from './Keypad';
 export { FullscreenLoadingSpinner } from './FullscreenLoadingSpinner';
+export { LoadingSpinner } from './LoadingSpinner';
 
 export type { DialogSize } from './Dialog/dialog';
 export {
