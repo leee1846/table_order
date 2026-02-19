@@ -699,5 +699,6 @@
   "설정 화면을 열 수 없습니다.": "Unable to open settings.",
   "디바이스 관리": "Device Management",
   "시스템 설정": "System Settings",
-  "수량을 {{count}}개 이상 입력해주세요.": "Please enter a quantity of at least {{count}}."
+  "수량을 {{count}}개 이상 입력해주세요.": "Please enter a quantity of at least {{count}}.",
+  "업데이트 중...": "Updating..."
 }

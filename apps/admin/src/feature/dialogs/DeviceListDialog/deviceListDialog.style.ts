@@ -77,7 +77,11 @@ export const DeviceGrid = styled.div`
   gap: 16px;
 `;
 
-export const DeviceCard = styled.div<{ selected?: boolean }>`
+export const DeviceCard = styled.div<{
+  selected?: boolean;
+  updateStatus?: boolean;
+  updateText?: string;
+}>`
   position: relative;
   background: ${colors.white};
   border-radius: 16px;
@@ -93,6 +97,36 @@ export const DeviceCard = styled.div<{ selected?: boolean }>`
     selected
       ? `
     border: solid 2px ${colors.primary[500]};
+  `
+      : ''}
+
+  ${({ updateStatus, updateText }) =>
+    updateStatus
+      ? `
+    pointer-events: none;
+
+    & > * {
+      opacity: 0.5;
+      filter: grayscale(0.3);
+    }
+
+    &::after {
+      content: '${updateText || ''}';
+      position: absolute;
+      top: 50%; 
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 14px;
+      font-weight: 600;
+      color: ${colors.grey[900]};
+      background-color: ${colors.white};
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid ${colors.grey[300]};
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1;
+      white-space: nowrap;
+    }
   `
       : ''}
 `;

@@ -108,6 +108,7 @@ export const DeviceListDialog = ({
       deviceSeq: device.deviceSeq ?? null,
       shopSeq: device.shopSeq ?? null,
       orderPosNumber: device.orderPosNumber ?? null,
+      updateStatus: device.updateStatus ?? null,
     }));
 
     // 테이블 번호로 정렬
@@ -221,7 +222,8 @@ export const DeviceListDialog = ({
 
   const handleSelectAll = () => {
     const selectableDevices = deviceItems.filter(
-      (device) => device.deviceType !== 'POS_APP'
+      (device) =>
+        device.deviceType !== 'POS_APP' && device.updateStatus !== 'IN_PROGRESS'
     );
     const allDeviceIds = selectableDevices.map((device) => device.androidId);
 
@@ -291,11 +293,16 @@ export const DeviceListDialog = ({
           <S.DeviceGridWrapper>
             <CheckButton
               checked={
-                deviceItems.filter((device) => device.deviceType !== 'POS_APP')
-                  .length > 0 &&
+                deviceItems.filter(
+                  (device) =>
+                    device.deviceType !== 'POS_APP' &&
+                    device.updateStatus !== 'IN_PROGRESS'
+                ).length > 0 &&
                 selectedDevices.length ===
                   deviceItems.filter(
-                    (device) => device.deviceType !== 'POS_APP'
+                    (device) =>
+                      device.deviceType !== 'POS_APP' &&
+                      device.updateStatus !== 'IN_PROGRESS'
                   ).length
               }
               onChange={() => handleSelectAll()}
@@ -330,6 +337,8 @@ export const DeviceListDialog = ({
                         key={device.androidId}
                         onClick={() => handleSelectDevice(device.androidId)}
                         selected={isSelected}
+                        updateStatus={device.updateStatus === 'IN_PROGRESS'}
+                        updateText={t('업데이트 중...')}
                       >
                         <S.CardHeader>
                           <S.DeviceTitle>

@@ -13,6 +13,7 @@ export interface IDeviceBase {
   version: string;
   buildNumber: string;
   tableName: string | null;
+  updateStatus: string | null;
 }
 
 export interface IDevice extends IDeviceBase {

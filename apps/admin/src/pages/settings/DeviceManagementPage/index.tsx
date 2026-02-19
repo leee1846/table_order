@@ -41,10 +41,7 @@ export const DeviceManagementPage = () => {
   const { t } = useAdminTranslation();
   const { shopCode } = useAuth();
 
-  const {
-    data: deviceListResponse,
-    isFetching,
-  } = useGetDeviceList({
+  const { data: deviceListResponse, isFetching } = useGetDeviceList({
     shopCode: shopCode ?? '',
     options: {
       enabled: !!shopCode,
@@ -71,6 +68,7 @@ export const DeviceManagementPage = () => {
       deviceSeq: device.deviceSeq ?? null,
       shopSeq: device.shopSeq ?? null,
       orderPosNumber: device.orderPosNumber ?? null,
+      updateStatus: device.updateStatus ?? null,
     }));
 
     // 테이블 번호로 정렬
@@ -132,9 +130,7 @@ export const DeviceManagementPage = () => {
                 return (
                   <S.DeviceCard key={device.androidId}>
                     <S.CardHeader>
-                      <S.DeviceTitle>
-                        {device.tableName ?? '-'}
-                      </S.DeviceTitle>
+                      <S.DeviceTitle>{device.tableName ?? '-'}</S.DeviceTitle>
                       <S.DeviceCode>
                         {t(getDeviceTypeLabel(device.deviceType))}
                       </S.DeviceCode>
@@ -142,9 +138,7 @@ export const DeviceManagementPage = () => {
 
                     <S.CardSectionWrapper>
                       <S.CardSection>
-                        <S.SectionLabel>
-                          {t('와이파이 신호')}
-                        </S.SectionLabel>
+                        <S.SectionLabel>{t('와이파이 신호')}</S.SectionLabel>
                         <S.SectionValue tone={wifiTone}>
                           {formatWifiSignal(device.wifiSignal, t)}
                         </S.SectionValue>
