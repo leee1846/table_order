@@ -381,7 +381,7 @@ export const useSSEHandler = () => {
 
       // 매장 상세 정보 새로고침 후 전체 페이지 리로드
       await refreshShopDetailData();
-      window.location.reload();
+      await SystemControl.deepCleanAndReload();
     },
 
     // MENU 메시지 핸들러: 메뉴 정보 업데이트 처리

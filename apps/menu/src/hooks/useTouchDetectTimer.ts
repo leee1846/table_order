@@ -12,6 +12,7 @@ import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useModalStore } from '@/stores/useModalStore';
+import { SystemControl } from '@repo/util/app';
 
 /**
  * 터치 감지 및 자동 리셋 타이머를 관리하는 커스텀 훅
@@ -80,7 +81,7 @@ export const useTouchDetectTimer = () => {
           showInitialPage();
         }
 
-        window.location.reload();
+        await SystemControl.deepCleanAndReload();
       } catch {
         // TimerManager는 async 콜백의 Promise를 await하지 않으므로
         // throw가 나면 Unhandled Rejection → 웹뷰 앱 종료로 이어질 수 있음

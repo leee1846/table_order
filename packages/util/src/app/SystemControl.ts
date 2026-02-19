@@ -102,6 +102,12 @@ export interface ISystemControl {
   clearWebData(): Promise<void>;
 
   /**
+   * 웹 데이터 정리 후 앱 리로드
+   * (캐시/스토리지 삭제 후 현재 앱을 새로고침)
+   */
+  deepCleanAndReload(): Promise<void>;
+
+  /**
    * 안전한 페이지 이동 (플러그인 연결 유지)
    * @param url
    */
@@ -185,6 +191,10 @@ export const SystemControl: ISystemControl = {
 
   clearWebData: async () => {
     await NativeSystem.clearWebData();
+  },
+
+  deepCleanAndReload: async () => {
+    await NativeSystem.deepCleanAndReload();
   },
 
   goToUrl: async (options: { url: string }) => {
