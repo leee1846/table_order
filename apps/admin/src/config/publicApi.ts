@@ -40,13 +40,19 @@ publicApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    let content: string;
+    if (!error.response) {
+      content = t('API 요청에 실패하였습니다.');
+    } else if (error.response.status === 500) {
+      content = t('알 수 없는 서버 에러가 발생했습니다.');
+    } else if (!error.response?.data?.status?.userMessage) {
+      content = t('알 수 없는 오류가 발생했습니다.');
+    } else {
+      content = error.response.data.status.userMessage;
+    }
     openConfirmDialog({
       title: 'Server Error',
-      content:
-        error.response?.data?.status?.userMessage ||
-        t(
-          '알 수 없는 오류가 발생했습니다.'
-        ),
+      content,
     });
     return Promise.reject(error);
   }
