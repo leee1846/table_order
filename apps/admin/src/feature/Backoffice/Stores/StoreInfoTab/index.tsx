@@ -87,6 +87,7 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
                   updateFormData({ businessNumber: allowOnlyNumbers(value) })
                 }
                 type="tel"
+                inputMode="numeric"
               />
             </S.FieldGroup>
             <S.FieldGroup>
@@ -150,6 +151,7 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
                 updateFormData({ shopPhoneNumber: allowOnlyNumbers(value) })
               }
               type="tel"
+              inputMode="numeric"
             />
           </S.FieldGroup>
 
@@ -176,6 +178,7 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
                   updateFormData({ ownerPhoneNumber: allowOnlyNumbers(value) })
                 }
                 type="tel"
+                inputMode="numeric"
               />
             </S.FieldGroup>
           </S.HorizontalLayout>
@@ -201,6 +204,7 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
                   })
                 }
                 type="tel"
+                inputMode="numeric"
               />
             </S.FieldGroup>
           </S.HorizontalLayout>

@@ -56,6 +56,7 @@ export const MembersForm = ({ mode, formData, updateFormData }: Props) => {
                 updateFormData({ memberTel: allowOnlyNumbers(value) })
               }
               disabled={isReadOnly}
+              inputMode="numeric"
             />
           </S.FieldGroup>
 

@@ -80,6 +80,7 @@ export const MemberInfoTab = ({ formData, updateFormData }: Props) => {
                   updateFormData({ memberTel: allowOnlyNumbers(value) })
                 }
                 type="tel"
+                inputMode="numeric"
               />
             </S.FieldGroup>
           </S.HorizontalLayout>

@@ -31,6 +31,22 @@ const InputComponent = ({
   inputMode = 'text',
   maxLength,
 }: InputProps) => {
+  const handleCompositionStart = useCallback(
+    (e: React.CompositionEvent<HTMLInputElement>) => {
+      // numeric 모드일 때만 IME 차단
+      if (inputMode === 'numeric') {
+        const target = e.currentTarget;
+        target.blur();
+
+        // 즉시 다시 포커스 (IME는 취소되지만 입력 필드는 활성 상태 유지)
+        setTimeout(() => {
+          target.focus();
+        }, 0);
+      }
+    },
+    [inputMode]
+  );
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange?.(e.target.value);
@@ -75,6 +91,7 @@ const InputComponent = ({
             type={type}
             value={value}
             onChange={handleChange}
+            onCompositionStart={handleCompositionStart}
             inputMode={inputMode}
             placeholder={placeholder}
             disabled={disabled}
