@@ -11,6 +11,7 @@ import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { ROUTES } from '@/constants/routes';
 import { STORAGE_KEYS } from '@/constants/keys';
+import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import * as S from '@/pages/MainPage/AdminAccessPasswordModal/adminAccessPasswordModal.style';
 
 const PASSWORD_MAX_LENGTH = 4;
@@ -27,6 +28,9 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
   const { t } = useAdminTranslation();
   const { shopData } = useShopData();
   const { data: deviceData } = useDeviceData();
+  const setShowAdminAccessModal = useRequestAdminAccessModalStore(
+    (s) => s.setShow
+  );
 
   const { mutateAsync: loginMenuboardAdmin } = usePostLoginMenuboardAdmin({
     ignoreGlobalErrors: [401],
@@ -49,6 +53,7 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
       value: true,
       isTemporary: true,
     });
+    setShowAdminAccessModal(false);
     navigate(ROUTES.TABLES.generate());
   };
 
