@@ -11,6 +11,7 @@ import { theme } from '@repo/ui';
 import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
 import { CapacitorApp, AndroidInfo, Installer } from '@repo/util/app';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
+import { css } from '@emotion/react';
 
 interface NetworkProps {
   shopNetwork?: IShopNetwork;
@@ -190,10 +191,15 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
               variant="Outline_Grey_M"
               onClick={handleAppUpdate}
               disabled={isUpdating}
+              customStyle={css`
+                &:disabled {
+                  background-color: ${theme.colors.grey[50]};
+                }
+              `}
             >
               {isUpdating ? (
                 <S.ButtonLoadingContent>
-                  <LoadingSpinner size={60} />
+                  <LoadingSpinner size={48.5} />
                 </S.ButtonLoadingContent>
               ) : (
                 t('업데이트')

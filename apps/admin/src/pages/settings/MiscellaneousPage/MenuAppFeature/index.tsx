@@ -504,18 +504,8 @@ export const MenuAppFeature = ({
           size="M"
           isOn={isAdminLocked}
           onChange={() => {
-            if (CapacitorApp.isNative()) {
-              toast(t('관리자 웹에서 변경해주세요.'));
-              return;
-            }
-
             setIsAdminLocked(!isAdminLocked);
           }}
-          customStyle={
-            CapacitorApp.isNative()
-              ? S.getNativeToggleButtonStyle(isAdminLocked)
-              : undefined
-          }
         />
       </UIStyles.setting.ContentLayout>
       {/* <UIStyles.setting.ContentLayout>
