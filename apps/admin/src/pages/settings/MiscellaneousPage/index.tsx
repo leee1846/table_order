@@ -219,7 +219,6 @@ export const MiscellaneousPage = () => {
       shopNetwork,
     };
 
-    console.log('categoryPayload', categoryPayload);
     await Promise.all([
       updateShopSettingMutation.mutateAsync(request),
       updateCategoryFirstOrderMutation.mutateAsync(categoryPayload),

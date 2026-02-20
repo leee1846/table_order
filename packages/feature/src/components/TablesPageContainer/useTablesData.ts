@@ -126,6 +126,7 @@ export const useTablesData = ({
                   quantity: menu.menuQuantity,
                   localeMenuName: menu.localeMenuName,
                   orderDetailMenuSeq: menu.orderDetailMenuSeq,
+                  menuSeq: menu.menuSeq,
                 };
               })
           : null;

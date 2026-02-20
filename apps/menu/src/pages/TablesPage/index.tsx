@@ -63,6 +63,7 @@ const convertOrderDetailMenuListToMenuItems = (
         menuName: string;
         menuQuantity: number;
         localeMenuName: Record<string, string>;
+        menuSeq: number;
       }>
     | null
     | undefined
@@ -70,6 +71,7 @@ const convertOrderDetailMenuListToMenuItems = (
   name: string;
   quantity: number;
   localeMenuName: Record<string, string>;
+  menuSeq: number;
 }> | null => {
   if (!orderDetailMenuList) {
     return null;
@@ -79,6 +81,7 @@ const convertOrderDetailMenuListToMenuItems = (
     name: menu.menuName,
     quantity: menu.menuQuantity,
     localeMenuName: menu.localeMenuName,
+    menuSeq: menu.menuSeq,
   }));
 };
 
