@@ -53,7 +53,13 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
       value: true,
       isTemporary: true,
     });
-    setShowAdminAccessModal(false);
+
+    // 페이지가 이동되는 동안 모달이 닫혀 깜빡임이 생김
+    // modal상태는 500ms 뒤에 닫히도록 설정
+    setTimeout(() => {
+      setShowAdminAccessModal(false);
+    }, 500);
+
     navigate(ROUTES.TABLES.generate());
   };
 
