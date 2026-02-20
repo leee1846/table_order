@@ -173,7 +173,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
           {/* TODO: 삭제 예정 */}
           <p>
             Q/A 버전
-            <span>1.0.4</span>
+            <span>1.0.5</span>
           </p>
           <p>
             {t('최신 버전')}
