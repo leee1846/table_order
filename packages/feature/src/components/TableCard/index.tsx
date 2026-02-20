@@ -44,25 +44,14 @@ export const TableCard = ({
       </S.CardHeader>
 
       <S.CardContent>
-        {table.menuItems
-          ?.reduce<typeof table.menuItems>((acc, item) => {
-            const existing = acc.find((i) => i.menuSeq === item.menuSeq);
-            if (existing) {
-              existing.quantity =
-                (existing.quantity ?? 0) + (item.quantity ?? 0);
-              return acc;
-            }
-            return [...acc, { ...item }];
-          }, [])
-          .slice(0, 3)
-          .map((item, idx) => (
-            <S.MenuItem key={`item-${table.tableName}-${id}-${idx + 1}`}>
-              <S.MenuItemName>
-                {item.localeMenuName?.[currentLanguage] ?? item.name}
-              </S.MenuItemName>
-              <S.MenuItemQuantity>{item.quantity}</S.MenuItemQuantity>
-            </S.MenuItem>
-          ))}
+        {table.menuItems?.slice(0, 3).map((item, idx) => (
+          <S.MenuItem key={`item-${table.tableName}-${id}-${idx + 1}`}>
+            <S.MenuItemName>
+              {item.localeMenuName?.[currentLanguage] ?? item.name}
+            </S.MenuItemName>
+            <S.MenuItemQuantity>{item.quantity}</S.MenuItemQuantity>
+          </S.MenuItem>
+        ))}
       </S.CardContent>
 
       <S.CardFooter>

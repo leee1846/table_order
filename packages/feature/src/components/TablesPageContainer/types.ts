@@ -11,7 +11,6 @@ export interface TableWithStatus {
     quantity: number;
     localeMenuName?: Record<string, string> | null;
     orderDetailMenuSeq?: number;
-    menuSeq?: number;
   }> | null;
   hasOrder: boolean;
   customerCount?: number;
