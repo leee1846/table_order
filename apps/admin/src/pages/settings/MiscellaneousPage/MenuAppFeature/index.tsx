@@ -485,17 +485,6 @@ export const MenuAppFeature = ({
             setMenuboardAdminPassword(value);
           }}
           readOnly={CapacitorApp.isNative()}
-          onClick={() => {
-            if (CapacitorApp.isNative()) {
-              toast(t('관리자 웹에서 변경해주세요.'));
-            }
-          }}
-          onFocus={(e) => {
-            if (CapacitorApp.isNative()) {
-              e.target.blur();
-              toast(t('관리자 웹에서 변경해주세요.'));
-            }
-          }}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
@@ -504,8 +493,17 @@ export const MenuAppFeature = ({
           size="M"
           isOn={isAdminLocked}
           onChange={() => {
+            if (CapacitorApp.isNative()) {
+              toast(t('관리자 웹에서 변경해주세요.'));
+              return;
+            }
             setIsAdminLocked(!isAdminLocked);
           }}
+          customStyle={
+            CapacitorApp.isNative()
+              ? S.getNativeToggleButtonStyle(isAdminLocked)
+              : undefined
+          }
         />
       </UIStyles.setting.ContentLayout>
       {/* <UIStyles.setting.ContentLayout>
