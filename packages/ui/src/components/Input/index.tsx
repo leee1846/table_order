@@ -36,6 +36,22 @@ const InputComponent = ({
     [onChange]
   );
 
+  const handleCompositionStart = useCallback(
+    (e: React.CompositionEvent<HTMLInputElement>) => {
+      // numeric 모드일 때만 IME 차단
+      if (inputMode === 'numeric') {
+        const target = e.currentTarget;
+        target.blur();
+
+        // 즉시 다시 포커스 (IME는 취소되지만 입력 필드는 활성 상태 유지)
+        setTimeout(() => {
+          target.focus();
+        }, 0);
+      }
+    },
+    [inputMode]
+  );
+
   const handleClear = useCallback(() => {
     onChange?.('');
   }, [onChange]);
@@ -78,6 +94,7 @@ const InputComponent = ({
             disabled={disabled}
             $isPassword={isPassword}
             $hasRightSpace={hasRightSpace}
+            onCompositionStart={handleCompositionStart}
           />
           {isPassword && (
             <S.PasswordOverlay $hasRightSpace={!!rightComponent}>
