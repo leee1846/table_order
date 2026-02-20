@@ -1,4 +1,3 @@
-import { Suspense, lazy } from 'react';
 import {
   createBrowserRouter,
   redirect,
@@ -6,47 +5,17 @@ import {
   Navigate,
 } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { getAccessToken } from '@repo/api/auth';
 import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from './constants/keys';
 import App from './App';
-
-const MainPage = lazy(() =>
-  import('@/pages/MainPage').then((module) => ({
-    default: module.MainPage,
-  }))
-);
-const LoginPage = lazy(() =>
-  import('@/pages/LoginPage').then((module) => ({
-    default: module.LoginPage,
-  }))
-);
-const TablesPage = lazy(() =>
-  import('@/pages/TablesPage').then((module) => ({
-    default: module.TablesPage,
-  }))
-);
-const SidebarLayout = lazy(() =>
-  import('@/pages/settings/SidebarLayout').then((module) => ({
-    default: module.SidebarLayout,
-  }))
-);
-const MiscellaneousPage = lazy(() =>
-  import('@/pages/settings/MiscellaneousPage').then((module) => ({
-    default: module.MiscellaneousPage,
-  }))
-);
-const PaymentsCardsPage = lazy(() =>
-  import('@/pages/settings/PaymentsCardsPage').then((module) => ({
-    default: module.PaymentsCardsPage,
-  }))
-);
-const TableDetailPage = lazy(() =>
-  import('@/pages/TableDetailPage').then((module) => ({
-    default: module.TableDetailPage,
-  }))
-);
+import { MainPage } from '@/pages/MainPage';
+import { LoginPage } from '@/pages/LoginPage';
+import { TablesPage } from '@/pages/TablesPage';
+import { SidebarLayout } from '@/pages/settings/SidebarLayout';
+import { MiscellaneousPage } from '@/pages/settings/MiscellaneousPage';
+import { PaymentsCardsPage } from '@/pages/settings/PaymentsCardsPage';
+import { TableDetailPage } from '@/pages/TableDetailPage';
 /**
  * 로그인 여부 확인 loader
  */
@@ -80,11 +49,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: ROUTES.LOGIN.path,
-        element: (
-          <Suspense fallback={<FullscreenLoadingSpinner />}>
-            <LoginPage />
-          </Suspense>
-        ),
+        element: <LoginPage />,
       },
       {
         /**
@@ -96,11 +61,7 @@ export const router = createBrowserRouter([
         children: [
           {
             path: ROUTES.ROOT.path,
-            element: (
-              <Suspense fallback={<FullscreenLoadingSpinner />}>
-                <MainPage />
-              </Suspense>
-            ),
+            element: <MainPage />,
           },
           {
             /**
@@ -112,27 +73,15 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: ROUTES.TABLES.path,
-                element: (
-                  <Suspense fallback={<FullscreenLoadingSpinner />}>
-                    <TablesPage />
-                  </Suspense>
-                ),
+                element: <TablesPage />,
               },
               {
                 path: ROUTES.TABLES.TABLE_DETAIL.path,
-                element: (
-                  <Suspense fallback={<FullscreenLoadingSpinner />}>
-                    <TableDetailPage />
-                  </Suspense>
-                ),
+                element: <TableDetailPage />,
               },
               {
                 path: ROUTES.SETTINGS.path,
-                element: (
-                  <Suspense fallback={<FullscreenLoadingSpinner />}>
-                    <SidebarLayout />
-                  </Suspense>
-                ),
+                element: <SidebarLayout />,
                 children: [
                   {
                     // /settings → /settings/misc
@@ -146,19 +95,11 @@ export const router = createBrowserRouter([
                   },
                   {
                     path: ROUTES.SETTINGS.MISCELLANEOUS.path,
-                    element: (
-                      <Suspense fallback={<FullscreenLoadingSpinner />}>
-                        <MiscellaneousPage />
-                      </Suspense>
-                    ),
+                    element: <MiscellaneousPage />,
                   },
                   {
                     path: ROUTES.SETTINGS.PAYMENTS_CARDS.path,
-                    element: (
-                      <Suspense fallback={<FullscreenLoadingSpinner />}>
-                        <PaymentsCardsPage />
-                      </Suspense>
-                    ),
+                    element: <PaymentsCardsPage />,
                   },
                 ],
               },
