@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import type { ComponentType } from 'react';
 import {
   createBrowserRouter,
   Navigate,
@@ -7,7 +7,6 @@ import {
   type LoaderFunctionArgs,
 } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { getAccessToken } from '@repo/api/auth';
 import App from '@/App';
 import type { ITokenPayload } from '@repo/api/types';
@@ -15,243 +14,49 @@ import { decodeJwtToken } from '@repo/util/function';
 import { CapacitorApp } from '@repo/util/app';
 import { StoresPage } from '@/pages/backoffice/StoresPage';
 import { SalesAccessGuard } from '@/feature/SalesAccessGuard';
-
-// ============================================================================
-// Lazy Loaded Components - Auth & Layout
-// ============================================================================
-const LoginPage = lazy(() =>
-  import('@/pages/LoginPage').then((module) => ({
-    default: module.LoginPage,
-  }))
-);
-const SettingSidebar = lazy(() =>
-  import('@/pages/settings/SidebarLayout').then((module) => ({
-    default: module.SidebarLayout,
-  }))
-);
-const SettingsAccessGuard = lazy(() =>
-  import('@/feature/SettingsAccessGuard').then((module) => ({
-    default: module.SettingsAccessGuard,
-  }))
-);
-const StoresSidebar = lazy(() =>
-  import('@/feature/backoffice/SidebarLayout').then((module) => ({
-    default: module.StoresSidebarLayout,
-  }))
-);
-const NotFoundPage = lazy(() =>
-  import('@/pages/NotFoundPage').then((module) => ({
-    default: module.NotFoundPage,
-  }))
-);
-
-// ============================================================================
-// Lazy Loaded Components - Admin Web Pages
-// ============================================================================
-const StoresNewPage = lazy(() =>
-  import('@/pages/backoffice/StoresNewPage').then((module) => ({
-    default: module.StoresNewPage,
-  }))
-);
-const StoresEditPage = lazy(() =>
-  import('@/pages/backoffice/StoresEditPage').then((module) => ({
-    default: module.StoresEditPage,
-  }))
-);
-const AdminMyPage = lazy(() =>
-  import('@/pages/backoffice/AdminMyPage').then((module) => ({
-    default: module.AdminMyPage,
-  }))
-);
-const AppHistoriesPage = lazy(() =>
-  import('@/pages/backoffice/AppHistoriesPage').then((module) => ({
-    default: module.AppHistoriesPage,
-  }))
-);
-const AppHistoriesNewPage = lazy(() =>
-  import('@/pages/backoffice/AppHistoriesNewPage').then((module) => ({
-    default: module.AppHistoriesNewPage,
-  }))
-);
-const AppHistoriesEditPage = lazy(() =>
-  import('@/pages/backoffice/AppHistoriesEditPage').then((module) => ({
-    default: module.AppHistoriesEditPage,
-  }))
-);
-const AppHistoriesDetailPage = lazy(() =>
-  import('@/pages/backoffice/AppHistoriesDetailPage').then((module) => ({
-    default: module.AppHistoriesDetailPage,
-  }))
-);
-const AdminNoticesPage = lazy(() =>
-  import('@/pages/backoffice/NoticesPage').then((module) => ({
-    default: module.NoticesPage,
-  }))
-);
-const NoticesNewPage = lazy(() =>
-  import('@/pages/backoffice/NoticesNewPage').then((module) => ({
-    default: module.NoticesNewPage,
-  }))
-);
-const NoticesEditPage = lazy(() =>
-  import('@/pages/backoffice/NoticesEditPage').then((module) => ({
-    default: module.NoticesEditPage,
-  }))
-);
-const NoticesDetailPage = lazy(() =>
-  import('@/pages/backoffice/NoticesDetailPage').then((module) => ({
-    default: module.NoticesDetailPage,
-  }))
-);
-const MembersPage = lazy(() =>
-  import('@/pages/backoffice/MembersPage').then((module) => ({
-    default: module.MembersPage,
-  }))
-);
-const MembersNewPage = lazy(() =>
-  import('@/pages/backoffice/MembersNewPage').then((module) => ({
-    default: module.MembersNewPage,
-  }))
-);
-const MembersEditPage = lazy(() =>
-  import('@/pages/backoffice/MembersEditPage').then((module) => ({
-    default: module.MembersEditPage,
-  }))
-);
-
-const DailySalesPage = lazy(() =>
-  import('@/pages/settings/DailySalesPage').then((module) => ({
-    default: module.DailySalesPage,
-  }))
-);
-
-const DailySalesHistoryPage = lazy(() =>
-  import('@/pages/settings/DailySalesHistoryPage').then((module) => ({
-    default: module.DailySalesHistoryPage,
-  }))
-);
-const MenuSalesHistoryPage = lazy(() =>
-  import('@/pages/settings/MenuSalesHistoryPage').then((module) => ({
-    default: module.MenuSalesHistoryPage,
-  }))
-);
-const SalesReportPage = lazy(() =>
-  import('@/pages/settings/SalesReportPage').then((module) => ({
-    default: module.SalesReportPage,
-  }))
-);
-const CalendarSalesPage = lazy(() =>
-  import('@/pages/settings/CalendarSalesPage').then((module) => ({
-    default: module.CalendarSalesPage,
-  }))
-);
-
-const HourlySalesPage = lazy(() =>
-  import('@/pages/settings/HourlySalesPage').then((module) => ({
-    default: module.HourlySalesPage,
-  }))
-);
-
-// ============================================================================
-// Lazy Loaded Components - Native App Pages
-// ============================================================================
-const TablesPage = lazy(() =>
-  import('@/pages/TablesPage').then((module) => ({
-    default: module.TablesPage,
-  }))
-);
-const TableDetailPage = lazy(() =>
-  import('@/pages/TableDetailPage').then((module) => ({
-    default: module.TableDetailPage,
-  }))
-);
-const SettingsTablesPage = lazy(() =>
-  import('@/pages/settings/TablesPage').then((module) => ({
-    default: module.TablesPage,
-  }))
-);
-
-// ============================================================================
-// Lazy Loaded Components - Settings Pages
-// ============================================================================
-const MyPage = lazy(() =>
-  import('@/pages/settings/MyPage').then((module) => ({
-    default: module.MyPage,
-  }))
-);
-
-const NoticesPage = lazy(() =>
-  import('@/pages/settings/NoticesPage').then((module) => ({
-    default: module.NoticesPage,
-  }))
-);
-const SettingsNoticeDetailPage = lazy(() =>
-  import('@/pages/settings/NoticeDetailPage').then((module) => ({
-    default: module.NoticeDetailPage,
-  }))
-);
-const CategoriesPage = lazy(() =>
-  import('@/pages/settings/CategoriesPage').then((module) => ({
-    default: module.CategoriesPage,
-  }))
-);
-const CategoryMenusPage = lazy(() =>
-  import('@/pages/settings/CategoryMenusPage').then((module) => ({
-    default: module.CategoryMenusPage,
-  }))
-);
-const SalesSummaryPage = lazy(() =>
-  import('@/pages/settings/SalesSummaryPage').then((module) => ({
-    default: module.SalesSummaryPage,
-  }))
-);
-const SalesOrderPage = lazy(() =>
-  import('@/pages/settings/SalesOrderPage').then((module) => ({
-    default: module.SalesOrderPage,
-  }))
-);
-const SalesCardPage = lazy(() =>
-  import('@/pages/settings/SalesCardPage').then((module) => ({
-    default: module.SalesCardPage,
-  }))
-);
-const SalesMenuPage = lazy(() =>
-  import('@/pages/settings/SalesMenuPage').then((module) => ({
-    default: module.SalesMenuPage,
-  }))
-);
-const MiscellaneousPage = lazy(() =>
-  import('@/pages/settings/MiscellaneousPage').then((module) => ({
-    default: module.MiscellaneousPage,
-  }))
-);
-const DeviceManagementPage = lazy(() =>
-  import('@/pages/settings/DeviceManagementPage').then((module) => ({
-    default: module.DeviceManagementPage,
-  }))
-);
-const MenuScreenPage = lazy(() =>
-  import('@/pages/settings/MenuScreenPage').then((module) => ({
-    default: module.MenuScreenPage,
-  }))
-);
-const StartScreenThemePage = lazy(() =>
-  import('@/pages/settings/StartScreenThemePage').then((module) => ({
-    default: module.StartScreenThemePage,
-  }))
-);
-const StartScreenLogoPage = lazy(() =>
-  import('@/pages/settings/StartScreenLogoPage').then((module) => ({
-    default: module.StartScreenLogoPage,
-  }))
-);
-const StartScreenImageRegistrationPage = lazy(() =>
-  import('@/pages/settings/StartScreenImageRegistrationPage').then(
-    (module) => ({
-      default: module.StartScreenImageRegistrationPage,
-    })
-  )
-);
+import { LoginPage } from '@/pages/LoginPage';
+import { SidebarLayout as SettingSidebar } from '@/pages/settings/SidebarLayout';
+import { SettingsAccessGuard } from '@/feature/SettingsAccessGuard';
+import { StoresSidebarLayout as StoresSidebar } from '@/feature/backoffice/SidebarLayout';
+import { NotFoundPage } from '@/pages/NotFoundPage';
+import { StoresNewPage } from '@/pages/backoffice/StoresNewPage';
+import { StoresEditPage } from '@/pages/backoffice/StoresEditPage';
+import { AdminMyPage } from '@/pages/backoffice/AdminMyPage';
+import { AppHistoriesPage } from '@/pages/backoffice/AppHistoriesPage';
+import { AppHistoriesNewPage } from '@/pages/backoffice/AppHistoriesNewPage';
+import { AppHistoriesEditPage } from '@/pages/backoffice/AppHistoriesEditPage';
+import { AppHistoriesDetailPage } from '@/pages/backoffice/AppHistoriesDetailPage';
+import { NoticesPage as AdminNoticesPage } from '@/pages/backoffice/NoticesPage';
+import { NoticesNewPage } from '@/pages/backoffice/NoticesNewPage';
+import { NoticesEditPage } from '@/pages/backoffice/NoticesEditPage';
+import { NoticesDetailPage } from '@/pages/backoffice/NoticesDetailPage';
+import { MembersPage } from '@/pages/backoffice/MembersPage';
+import { MembersNewPage } from '@/pages/backoffice/MembersNewPage';
+import { MembersEditPage } from '@/pages/backoffice/MembersEditPage';
+import { DailySalesPage } from '@/pages/settings/DailySalesPage';
+import { DailySalesHistoryPage } from '@/pages/settings/DailySalesHistoryPage';
+import { MenuSalesHistoryPage } from '@/pages/settings/MenuSalesHistoryPage';
+import { SalesReportPage } from '@/pages/settings/SalesReportPage';
+import { CalendarSalesPage } from '@/pages/settings/CalendarSalesPage';
+import { HourlySalesPage } from '@/pages/settings/HourlySalesPage';
+import { TablesPage } from '@/pages/TablesPage';
+import { TableDetailPage } from '@/pages/TableDetailPage';
+import { TablesPage as SettingsTablesPage } from '@/pages/settings/TablesPage';
+import { MyPage } from '@/pages/settings/MyPage';
+import { NoticesPage } from '@/pages/settings/NoticesPage';
+import { NoticeDetailPage as SettingsNoticeDetailPage } from '@/pages/settings/NoticeDetailPage';
+import { CategoriesPage } from '@/pages/settings/CategoriesPage';
+import { CategoryMenusPage } from '@/pages/settings/CategoryMenusPage';
+import { SalesSummaryPage } from '@/pages/settings/SalesSummaryPage';
+import { SalesOrderPage } from '@/pages/settings/SalesOrderPage';
+import { SalesCardPage } from '@/pages/settings/SalesCardPage';
+import { SalesMenuPage } from '@/pages/settings/SalesMenuPage';
+import { MiscellaneousPage } from '@/pages/settings/MiscellaneousPage';
+import { DeviceManagementPage } from '@/pages/settings/DeviceManagementPage';
+import { MenuScreenPage } from '@/pages/settings/MenuScreenPage';
+import { StartScreenThemePage } from '@/pages/settings/StartScreenThemePage';
+import { StartScreenLogoPage } from '@/pages/settings/StartScreenLogoPage';
+import { StartScreenImageRegistrationPage } from '@/pages/settings/StartScreenImageRegistrationPage';
 
 // ============================================================================
 // Helper Functions - Token & Payload
@@ -398,24 +203,9 @@ const requireMasterLoader = () => {
 // ============================================================================
 
 /**
- * Suspense로 감싼 lazy 컴포넌트를 생성합니다.
+ * 라우트용 컴포넌트를 생성합니다.
  */
-const createLazyRoute = (
-  Component: React.LazyExoticComponent<React.ComponentType<unknown>>
-) => (
-  <Suspense fallback={<FullscreenLoadingSpinner />}>
-    <Component />
-  </Suspense>
-);
-
-/**
- * Suspense로 감싼 일반 컴포넌트를 생성합니다.
- */
-const createRoute = (Component: React.ComponentType) => (
-  <Suspense fallback={<FullscreenLoadingSpinner />}>
-    <Component />
-  </Suspense>
-);
+const createRoute = (Component: ComponentType) => <Component />;
 
 // ============================================================================
 // Route Configuration
@@ -438,72 +228,72 @@ const createBackofficeRoutes = () => [
   {
     path: ROUTES.BACKOFFICE.STORES_NEW.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(StoresNewPage),
+    element: createRoute(StoresNewPage),
   },
   {
     path: ROUTES.BACKOFFICE.STORES_EDIT.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(StoresEditPage),
+    element: createRoute(StoresEditPage),
   },
   {
     path: ROUTES.BACKOFFICE.MYPAGE.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(AdminMyPage),
+    element: createRoute(AdminMyPage),
   },
   {
     path: ROUTES.BACKOFFICE.APP_HISTORIES.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(AppHistoriesPage),
+    element: createRoute(AppHistoriesPage),
   },
   {
     path: ROUTES.BACKOFFICE.APP_HISTORIES_NEW.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(AppHistoriesNewPage),
+    element: createRoute(AppHistoriesNewPage),
   },
   {
     path: ROUTES.BACKOFFICE.APP_HISTORIES_EDIT.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(AppHistoriesEditPage),
+    element: createRoute(AppHistoriesEditPage),
   },
   {
     path: ROUTES.BACKOFFICE.APP_HISTORIES_DETAIL.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(AppHistoriesDetailPage),
+    element: createRoute(AppHistoriesDetailPage),
   },
   {
     path: ROUTES.BACKOFFICE.NOTICES.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(AdminNoticesPage),
+    element: createRoute(AdminNoticesPage),
   },
   {
     path: ROUTES.BACKOFFICE.NOTICES_NEW.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(NoticesNewPage),
+    element: createRoute(NoticesNewPage),
   },
   {
     path: ROUTES.BACKOFFICE.NOTICES_EDIT.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(NoticesEditPage),
+    element: createRoute(NoticesEditPage),
   },
   {
     path: ROUTES.BACKOFFICE.NOTICES_DETAIL.path,
     loader: requireBackofficeLoader,
-    element: createLazyRoute(NoticesDetailPage),
+    element: createRoute(NoticesDetailPage),
   },
   {
     path: ROUTES.BACKOFFICE.MEMBERS.path,
     loader: requireMasterLoader,
-    element: createLazyRoute(MembersPage),
+    element: createRoute(MembersPage),
   },
   {
     path: ROUTES.BACKOFFICE.MEMBERS_NEW.path,
     loader: requireMasterLoader,
-    element: createLazyRoute(MembersNewPage),
+    element: createRoute(MembersNewPage),
   },
   {
     path: ROUTES.BACKOFFICE.MEMBERS_EDIT.path,
     loader: requireMasterLoader,
-    element: createLazyRoute(MembersEditPage),
+    element: createRoute(MembersEditPage),
   },
 ];
 
@@ -519,11 +309,7 @@ const createSettingsRoutes = () => [
   {
     path: ROUTES.SETTINGS.MYPAGE.path,
     loader: requireWebLoader,
-    element: (
-      <Suspense fallback={<FullscreenLoadingSpinner />}>
-        <MyPage />
-      </Suspense>
-    ),
+    element: <MyPage />,
   },
   {
     path: ROUTES.SETTINGS.NOTICES.path,
@@ -545,11 +331,7 @@ const createSettingsRoutes = () => [
   },
   {
     path: ROUTES.SETTINGS.NOTICES.DETAIL.path,
-    element: (
-      <Suspense fallback={<FullscreenLoadingSpinner />}>
-        <SettingsNoticeDetailPage />
-      </Suspense>
-    ),
+    element: <SettingsNoticeDetailPage />,
   },
   {
     path: ROUTES.SETTINGS.SALES.path,
@@ -653,18 +435,14 @@ const createSettingsRoutes = () => [
   {
     path: ROUTES.SETTINGS.DEVICE_MANAGEMENT.path,
     loader: requireWebLoader,
-    element: (
-      <Suspense fallback={<FullscreenLoadingSpinner />}>
-        <DeviceManagementPage />
-      </Suspense>
-    ),
+    element: <DeviceManagementPage />,
   },
 ];
 
 export const router = createBrowserRouter([
   {
     path: ROUTES.LOGIN.path,
-    element: createLazyRoute(LoginPage),
+    element: createRoute(LoginPage),
     loader: loginPageLoader,
   },
   {
@@ -679,29 +457,27 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.BACKOFFICE.path,
         loader: requireWebLoader,
-        element: createLazyRoute(StoresSidebar),
+        element: createRoute(StoresSidebar),
         children: createBackofficeRoutes(),
       },
       {
         // /tables
         path: ROUTES.TABLES.path,
         loader: requireNativeLoader,
-        element: createLazyRoute(TablesPage),
+        element: createRoute(TablesPage),
       },
       {
         // /tables/:tableNum
         path: ROUTES.TABLE_DETAIL.path,
         loader: requireNativeLoader,
-        element: createLazyRoute(TableDetailPage),
+        element: createRoute(TableDetailPage),
       },
       {
         path: ROUTES.SETTINGS.path,
         element: (
-          <Suspense fallback={<FullscreenLoadingSpinner />}>
-            <SettingsAccessGuard>
-              <Outlet />
-            </SettingsAccessGuard>
-          </Suspense>
+          <SettingsAccessGuard>
+            <Outlet />
+          </SettingsAccessGuard>
         ),
         children: [
           {
@@ -711,18 +487,18 @@ export const router = createBrowserRouter([
           },
           {
             path: ROUTES.SETTINGS.TABLES.path,
-            element: createLazyRoute(SettingsTablesPage),
+            element: createRoute(SettingsTablesPage),
           },
         ],
       },
       {
         path: ROUTES.NOT_FOUND.path,
-        element: createLazyRoute(NotFoundPage),
+        element: createRoute(NotFoundPage),
       },
       {
         // 존재하지 않는 모든 경로를 404 페이지로 리디렉트
         path: '*',
-        element: createLazyRoute(NotFoundPage),
+        element: createRoute(NotFoundPage),
       },
     ],
   },
