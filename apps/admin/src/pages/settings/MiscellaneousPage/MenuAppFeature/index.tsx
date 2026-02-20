@@ -484,7 +484,7 @@ export const MenuAppFeature = ({
             const value = event.target.value.replace(/\D/g, '').slice(0, 4);
             setMenuboardAdminPassword(value);
           }}
-          readOnly={CapacitorApp.isNative()}
+          inputMode="numeric"
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
