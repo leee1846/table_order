@@ -129,10 +129,6 @@ export const DailySalesPage = () => {
     setShowCalendar(false);
   };
 
-  // const handleDownload = () => {
-  //   toast(t('내역 다운로드 준비 중입니다.'));
-  // };
-
   return (
     <>
       <UIStyles.setting.TablePageContainer>

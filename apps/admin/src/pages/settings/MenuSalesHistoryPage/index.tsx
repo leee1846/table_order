@@ -192,10 +192,6 @@ export const MenuSalesHistoryPage = () => {
     setAppliedRange({ startDate, endDate });
   };
 
-  // const handleDownload = () => {
-  //   toast(t('내역 다운로드 준비 중입니다.'));
-  // };
-
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
