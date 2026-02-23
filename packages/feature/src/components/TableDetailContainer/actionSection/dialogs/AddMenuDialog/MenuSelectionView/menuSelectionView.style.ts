@@ -40,6 +40,8 @@ export const MenuGrid = styled.div`
 `;
 
 export const MenuGridPlaceholder = styled.div`
+  grid-column: 1 / 4;
+  grid-row: 4 / 35;
   display: flex;
   align-items: center;
   justify-content: center;

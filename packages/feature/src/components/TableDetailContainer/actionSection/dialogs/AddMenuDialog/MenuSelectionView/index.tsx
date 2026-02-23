@@ -176,7 +176,9 @@ export const MenuSelectionView = ({
           {/* 오른쪽 영역 - 메뉴 그리드 */}
           <S.MenuGrid>
             {currentMenuList.length === 0 ? (
-              <S.MenuGridPlaceholder />
+              <S.MenuGridPlaceholder>
+                {t('등록된 메뉴가 없습니다.')}
+              </S.MenuGridPlaceholder>
             ) : (
               currentMenuList.map((menu) => (
                 <S.MenuCard
