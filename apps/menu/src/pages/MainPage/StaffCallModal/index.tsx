@@ -196,7 +196,6 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
                     return (
                       <li key={`menu-${index + 1}`} role="listitem">
                         <S.menuButton
-                          type="button"
                           onClick={() => handleSelectMenu(menu)}
                           isSelected={isMenuSelected}
                           aria-label={menuName}

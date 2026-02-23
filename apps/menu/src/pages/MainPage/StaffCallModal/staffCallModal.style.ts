@@ -63,7 +63,7 @@ export const MenuList = styled.ul`
   grid-row-gap: 16px;
 `;
 
-export const menuButton = styled.button<{ isSelected: boolean }>`
+export const menuButton = styled.div<{ isSelected: boolean }>`
   width: 100%;
   min-height: 9.625rem;
   height: auto;
@@ -71,7 +71,8 @@ export const menuButton = styled.button<{ isSelected: boolean }>`
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
-  background-color: ${({ isSelected, theme }) => isSelected ? theme.mode.undefined_palette[100] : theme.mode.grey[200]};
+  background-color: ${({ isSelected, theme }) =>
+    isSelected ? theme.mode.undefined_palette[100] : theme.mode.grey[200]};
   border-radius: 0.75rem;
   padding: 16px 13px;
   border: ${({ isSelected, theme }) =>
