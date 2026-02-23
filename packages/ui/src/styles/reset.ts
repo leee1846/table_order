@@ -117,6 +117,11 @@ export const resetStyles = css`
   body {
     line-height: 1;
   }
+  html,
+  body {
+    touch-action: pan-x pan-y;
+    overscroll-behavior: none;
+  }
   ol,
   ul {
     list-style: none;
