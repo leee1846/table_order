@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppStorage } from '@repo/util/app';
 import {
@@ -431,13 +431,53 @@ export const TablesPage = () => {
     );
   };
 
+  // 스크롤 상태 추적
+  const scrollingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const isScrollingRef = useRef(false);
+
+  // 스크롤 이벤트 핸들러
+  const handleScroll = useCallback(() => {
+    isScrollingRef.current = true;
+
+    // 기존 타이머 제거
+    if (scrollingTimeoutRef.current) {
+      clearTimeout(scrollingTimeoutRef.current);
+    }
+
+    // 스크롤 종료 후 200ms 동안 클릭 방지
+    scrollingTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 200);
+  }, []);
+
+  // cleanup
+  useEffect(() => {
+    return () => {
+      if (scrollingTimeoutRef.current) {
+        clearTimeout(scrollingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // 스크롤 중이 아닐 때만 클릭 허용
+  const handleTableClickWithScrollCheck = useCallback(
+    (table: TableWithStatus) => {
+      if (!isScrollingRef.current) {
+        handleOrderPosTableClick(table);
+      }
+    },
+    [handleOrderPosTableClick]
+  );
+
   if (isOrderPosDevice) {
     return (
       <>
         {shopDetailData?.shopSetting?.shopPosCode === 'OKPOS' ? (
           <TablesPageContainer>
             <TableCardsArea>
-              <TableCardsGrid>
+              <TableCardsGrid onScroll={handleScroll}>
                 {tablesWithStatus.map((table) => (
                   <div key={table.id}>
                     <TableCard
@@ -445,7 +485,7 @@ export const TablesPage = () => {
                       table={table}
                       tableNumber={table.tableNumber}
                       orderTime={table.orderTime ?? null}
-                      onClick={() => handleOrderPosTableClick(table)}
+                      onClick={() => handleTableClickWithScrollCheck(table)}
                       i18nInstance={adminI18n}
                     />
                   </div>
@@ -467,13 +507,13 @@ export const TablesPage = () => {
           >
             <TablesPageContainer>
               <TableCardsArea>
-                <TableCardsGrid>
+                <TableCardsGrid onScroll={handleScroll}>
                   {tablesWithStatus.map((table) => (
                     <DraggableTableCard
                       key={table.id}
                       table={table}
                       activeTableNumber={activeTableNumber}
-                      onClick={handleOrderPosTableClick}
+                      onClick={(tbl) => handleTableClickWithScrollCheck(tbl)}
                       i18nInstance={adminI18n}
                     />
                   ))}
@@ -504,12 +544,16 @@ export const TablesPage = () => {
     <>
       <TablesPageContainer>
         <TableCardsArea>
-          <TableCardsGrid>
+          <TableCardsGrid onScroll={handleScroll}>
             {tablesWithStatus.map((table) => (
               <LongPressTableCard
                 key={table.id}
                 table={table}
-                onClick={handleMenuModeTableClick}
+                onClick={(tbl) => {
+                  if (!isScrollingRef.current) {
+                    handleMenuModeTableClick(tbl);
+                  }
+                }}
                 onLongPress={handleMenuModeLongPress}
                 i18nInstance={adminI18n}
                 longPressDelay={500}
