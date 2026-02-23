@@ -2,7 +2,7 @@
 
 import { ThemeProvider as EmotionThemeProvider, Global } from '@emotion/react';
 import type { ReactNode } from 'react';
-import { createTheme } from './index';
+import { createTheme } from './theme/createTheme';
 import { resetStyles } from './styles/reset';
 import { globalStyles } from './styles/global';
 import { useThemeMode } from './hooks/useThemeMode';

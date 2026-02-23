@@ -1,12 +1,28 @@
 import { useContext } from 'react';
-import { ThemeModeContext } from '../contexts/ThemeModeContext';
+import {
+  ThemeModeContext,
+  type ThemeModeContextValue,
+} from '../contexts/ThemeModeContext';
+import { createTheme } from '../theme/createTheme';
 
-export const useThemeMode = () => {
+const defaultThemeModeValue: ThemeModeContextValue = {
+  mode: 'light',
+  theme: createTheme('light'),
+  toggleMode: () => {
+    // noop
+  },
+  setMode: () => {
+    // noop
+  },
+  active: false,
+};
+
+export const useThemeMode = (): ThemeModeContextValue => {
   const context = useContext(ThemeModeContext);
 
-  if (context === undefined) {
-    throw new Error('useThemeMode must be used within ThemeModeProvider');
+  if (context !== undefined) {
+    return context;
   }
 
-  return context;
+  return defaultThemeModeValue;
 };

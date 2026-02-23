@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, type ReactNode } from 'react';
 import type { ThemeMode } from '../theme/modeColors';
-import { createTheme, type Theme } from '../index';
+import { createTheme, type Theme } from '../theme/createTheme';
 
 export interface ThemeModeContextValue {
   mode: ThemeMode;
