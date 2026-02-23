@@ -8,6 +8,7 @@ const URL_PARAM_SEARCH = 'search';
 
 interface UseTablePageStateOptions {
   debounceDelay?: number;
+  pageSize?: number;
 }
 
 interface UseTablePageStateReturn {
