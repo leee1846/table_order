@@ -3,7 +3,9 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { readFileSync } from 'fs';
 
-const pkg = JSON.parse(readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8')) as {
+const pkg = JSON.parse(
+  readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8')
+) as {
   version: string;
 };
 
@@ -41,15 +43,15 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(pkg.version),
   },
   build: {
-    target: 'chrome83',
+    target: 'chrome130',
   },
   esbuild: {
-    target: 'chrome83',
+    target: 'chrome130',
   },
   optimizeDeps: {
-    //노드 모듈에서 의존성도 변환 대상에 포함함
+    //노드 모듈에서 의존성도 변환 대상에 포함
     esbuildOptions: {
-      target: 'chrome83',
+      target: 'chrome130',
     },
   },
   resolve: {
