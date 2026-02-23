@@ -111,7 +111,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       vanId,
       shopCardTerminalCode: shopCardTerminal || undefined,
       isSalesTotalVisible,
-      salesPassword: salesPassword || undefined,
+      salesPassword: salesPassword !== '' ? salesPassword : undefined,
       // 매출 총 금액 노출 여부가 true이면 매출 세부 내역 잠금 여부를 false로 강제 설정
       isSalesDetailLocked: isSalesTotalVisible ? false : isSalesDetailLocked,
       usePrepaymentDutch,
@@ -314,7 +314,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           type="password"
           maxLength={4}
           value={salesPassword}
-          placeholder="****"
+          placeholder=""
           readOnly={CapacitorApp.isNative()}
           onChange={(event) => {
             const value = event.target.value.replace(/\D/g, '').slice(0, 4);

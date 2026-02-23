@@ -276,9 +276,7 @@ export const MenuAppFeature = ({
       shopSettingChanges.firstOrderMinAmount = firstOrderMinAmountValue;
     }
 
-    if (menuboardAdminPassword !== '') {
-      shopSettingChanges.menuboardAdminPassword = menuboardAdminPassword;
-    }
+    shopSettingChanges.menuboardAdminPassword = menuboardAdminPassword !== '' ? menuboardAdminPassword : undefined;
 
     const closureStart = toTimeString(
       closureStartTime.hour,
@@ -479,7 +477,7 @@ export const MenuAppFeature = ({
           type="password"
           value={menuboardAdminPassword}
           maxLength={4}
-          placeholder="****"
+          placeholder=""
           onChange={(event) => {
             const value = event.target.value.replace(/\D/g, '').slice(0, 4);
             setMenuboardAdminPassword(value);
