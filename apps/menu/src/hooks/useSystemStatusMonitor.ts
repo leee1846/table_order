@@ -29,6 +29,10 @@ export const useSystemStatusMonitor = () => {
   const deviceDataRef = useRef(deviceData);
   const shopDataRef = useRef(shopData);
   const isInitializedRef = useRef(isInitialized);
+  const setDataAsyncRef = useRef(setDataAsync);
+  const tRef = useRef(t);
+  const postDeviceDetailRef = useRef(postDeviceDetail);
+  const refreshDeviceDataRef = useRef(refreshDeviceData);
 
   // deviceData 변경 시 ref 동기화 (렌더링 없이 최신 값 유지)
   useEffect(() => {
@@ -45,6 +49,15 @@ export const useSystemStatusMonitor = () => {
     isInitializedRef.current = isInitialized;
   }, [isInitialized]);
 
+  // effect는 []로 한 번만 실행되므로 handleStatusUpdate는 최신 t/postDeviceDetail 등을 쓸 수 있게 ref로만 갱신
+  useEffect(() => {
+    setDataAsyncRef.current = setDataAsync;
+    tRef.current = t;
+    postDeviceDetailRef.current = postDeviceDetail;
+    refreshDeviceDataRef.current = refreshDeviceData;
+  }, [setDataAsync, t, postDeviceDetail, refreshDeviceData]);
+
+  // 모니터링은 마운트 시 한 번만 등록/해제
   useEffect(() => {
     const handleStatusUpdate = async (status: SystemStatus) => {
       // 1. WiFi 유효성 (배터리는 무시)
@@ -61,6 +74,11 @@ export const useSystemStatusMonitor = () => {
       if (currentData?.wifiSignal === newWifiSignal) {
         return;
       }
+
+      const setDataAsync = setDataAsyncRef.current;
+      const t = tRef.current;
+      const postDeviceDetail = postDeviceDetailRef.current;
+      const refreshDeviceData = refreshDeviceDataRef.current;
 
       // 4. 디바이스 정보 요청 (wifi + getDeviceInfo) - 요청한 정보만 사용
       let androidId: string;
@@ -131,5 +149,5 @@ export const useSystemStatusMonitor = () => {
     return () => {
       SystemControl.stopMonitoring();
     };
-  }, [postDeviceDetail, setDataAsync, t, refreshDeviceData]);
+  }, []);
 };
