@@ -3,18 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
-    "./auth": "./src/auth/index.ts",
-    "./types": "./src/types/index.ts",
-    "./cores": "./src/cores/index.ts",
-    "./queries": "./src/queries/index.ts",
-    "./fetchers": "./src/fetchers/index.ts",
-    "./tanstack-query": "./src/tanstack-query.ts",
-    "./axios": "./src/axios.ts",
+    ".": { "types": "./dist/index.d.ts", "default": "./src/index.ts" },
+    "./auth": { "types": "./dist/auth/index.d.ts", "default": "./src/auth/index.ts" },
+    "./types": { "types": "./dist/types/index.d.ts", "default": "./src/types/index.ts" },
+    "./cores": { "types": "./dist/cores/index.d.ts", "default": "./src/cores/index.ts" },
+    "./queries": { "types": "./dist/queries/index.d.ts", "default": "./src/queries/index.ts" },
+    "./fetchers": { "types": "./dist/fetchers/index.d.ts", "default": "./src/fetchers/index.ts" },
+    "./tanstack-query": { "types": "./dist/tanstack-query.d.ts", "default": "./src/tanstack-query.ts" },
+    "./axios": { "types": "./dist/axios.d.ts", "default": "./src/axios.ts" },
     "./package.json": "./package.json"
   },
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,md}\"",
     "check-types": "tsc --noEmit"

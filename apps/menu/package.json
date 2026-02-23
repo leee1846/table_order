@@ -7,13 +7,13 @@
     "dev": "vite --mode development --host",
     "dev:prod": "vite --mode production",
     "dev:stage": "vite --mode stage --host",
-    "build:dev": "tsc --noEmit && vite build --mode development",
-    "build:prod": "tsc --noEmit && vite build --mode production",
-    "build:stage": "tsc --noEmit && vite build --mode stage",
+    "build:dev": "tsc --noEmit -p tsconfig.app.check.json && tsc --noEmit -p tsconfig.node.json && vite build --mode development",
+    "build:prod": "tsc --noEmit -p tsconfig.app.check.json && tsc --noEmit -p tsconfig.node.json && vite build --mode production",
+    "build:stage": "tsc --noEmit -p tsconfig.app.check.json && tsc --noEmit -p tsconfig.node.json && vite build --mode stage",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit -p tsconfig.app.check.json && tsc --noEmit -p tsconfig.node.json"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

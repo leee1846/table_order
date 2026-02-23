@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./vite-react.json",
+  "compilerOptions": {
+    "paths": {
+      "@repo/api": ["../api/src/index.ts"],
+      "@repo/api/*": ["../api/src/*"],
+      "@repo/util": ["../util/src/index.ts"],
+      "@repo/util/*": ["../util/src/*"],
+      "@repo/feature": ["../feature/src/index.ts"],
+      "@repo/feature/*": ["../feature/src/*"],
+      "@repo/ui": ["../ui/src/index.ts"],
+      "@repo/ui/*": ["../ui/src/*"]
+    }
+  }
+}

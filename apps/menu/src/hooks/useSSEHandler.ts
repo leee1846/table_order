@@ -108,7 +108,10 @@ async function collectDeviceInfoAndSyncToServer(
   const isOrderPosDevice = resolvedDeviceType === 'ORDER_POS';
   await postDeviceDetail({
     shopCode,
-    ...mergedDeviceDetail,
+    androidId: String(mergedDeviceDetail.androidId ?? ''),
+    ipAddress: String(mergedDeviceDetail.ipAddress ?? ''),
+    version: String(mergedDeviceDetail.version ?? ''),
+    buildNumber: String(mergedDeviceDetail.buildNumber ?? ''),
     deviceType: resolvedDeviceType,
     orderPosNumber: isOrderPosDevice
       ? (mergedDeviceDetail.orderPosNumber ?? null)
@@ -119,7 +122,7 @@ async function collectDeviceInfoAndSyncToServer(
     battery: mergedDeviceDetail.battery ?? 0,
     wifiSignal: mergedDeviceDetail.wifiSignal ?? '',
     controlStatus: mergedDeviceDetail.controlStatus ?? null,
-  } as IPostDeviceDetailRequest);
+  });
 }
 
 /**
