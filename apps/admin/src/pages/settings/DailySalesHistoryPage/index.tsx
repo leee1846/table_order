@@ -130,10 +130,6 @@ export const DailySalesHistoryPage = () => {
     setAppliedRange({ startDate, endDate });
   };
 
-  const _handleDownload = () => {
-    toast(t('내역 다운로드 준비 중입니다.'));
-  };
-
   const formatCalendarText = (date: string) => {
     if (!date) {
       return t('날짜 선택');

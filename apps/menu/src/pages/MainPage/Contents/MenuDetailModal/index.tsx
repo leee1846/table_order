@@ -29,7 +29,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
 
   const [currentCount, setCurrentCount] = useState(1);
 
-  const { addToCart, data: cartData } = useCartStore();
+  const { addToCart } = useCartStore();
 
   const { data: shopDetailData } = useShopDetailData();
   const currencySymbol =
