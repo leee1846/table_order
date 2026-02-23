@@ -1,4 +1,5 @@
 import { registerPlugin, type Plugin } from '@capacitor/core';
+import { BackgroundMode } from '@anuradev/capacitor-background-mode';
 
 /**
  * 배터리/와이파이 상태 정보
@@ -166,11 +167,14 @@ export const SystemControl: ISystemControl = {
   },
 
   lockScreen: async () => {
+    await BackgroundMode.enable();
+    await BackgroundMode.disableWebViewOptimizations();
     await NativeSystem.lockScreen();
   },
 
   wakeScreen: async () => {
     await NativeSystem.wakeScreen();
+    await BackgroundMode.disable();
   },
 
   setBrightness: async (options) => {

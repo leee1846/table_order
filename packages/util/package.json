@@ -32,6 +32,7 @@
   },
   "prettier": "@repo/prettier-config",
   "dependencies": {
+    "@anuradev/capacitor-background-mode": "6",
     "@capacitor/app": "^6.0.3",
     "@capacitor/core": "^6.2.1",
     "dayjs": "^1.11.19",

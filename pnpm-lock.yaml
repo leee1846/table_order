@@ -397,6 +397,9 @@ importers:
 
   packages/util:
     dependencies:
+      '@anuradev/capacitor-background-mode':
+        specifier: '6'
+        version: 6.0.0(@capacitor/core@6.2.1)
       '@capacitor/app':
         specifier: ^6.0.3
         version: 6.0.3(@capacitor/core@6.2.1)
@@ -433,6 +436,11 @@ importers:
         version: 5.9.2
 
 packages:
+
+  '@anuradev/capacitor-background-mode@6.0.0':
+    resolution: {integrity: sha512-5vFSa724ECp1m7+5qNHePt95N9pENwT97uODaTnBv9L1xJNoRH8dYeD3VqALiTPZYC1N+2OnjKPhRTVLC9S18Q==}
+    peerDependencies:
+      '@capacitor/core': 6.2.0
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
@@ -2332,6 +2340,10 @@ packages:
         optional: true
 
 snapshots:
+
+  '@anuradev/capacitor-background-mode@6.0.0(@capacitor/core@6.2.1)':
+    dependencies:
+      '@capacitor/core': 6.2.1
 
   '@babel/code-frame@7.27.1':
     dependencies:
