@@ -193,7 +193,7 @@ export const AdminMyPage = () => {
           {/* TODO: 삭제 예정 */}
           <S.TokenInfoItem>
             <S.TokenInfoKey>Q/A 버전</S.TokenInfoKey>
-            <S.TokenInfoValue>1.0.6</S.TokenInfoValue>
+            <S.TokenInfoValue>1.0.7</S.TokenInfoValue>
           </S.TokenInfoItem>
         </S.TokenInfoGrid>
       </S.TokenInfoCard>
