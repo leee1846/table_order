@@ -113,10 +113,20 @@ export const AddMenuDialog = ({
 
         //findIndex -1
         if (existingIndex !== -1) {
+          const currentItem = prev[existingIndex];
+          if (!currentItem) {
+            return prev;
+          }
+
+          const newQuantity = currentItem.quantity + 1;
+
+          if (newQuantity > 999) {
+            toast(t('최대 {{count}}개까지 선택 가능합니다.', { count: 999 }));
+            return prev;
+          }
+
           return prev.map((item, index) =>
-            index === existingIndex
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
+            index === existingIndex ? { ...item, quantity: newQuantity } : item
           );
         } else {
           const menuWithOptions: SelectedMenuWithOptions = {
@@ -228,6 +238,17 @@ export const AddMenuDialog = ({
 
       if (existingIndex !== -1) {
         // 동일한 조합이 있으면 메뉴 수량과 옵션 수량 모두 증가
+        const currentItem = prev[existingIndex];
+        if (!currentItem) {
+          return prev;
+        }
+
+        const newQuantity = currentItem.quantity + menuQuantity;
+
+        if (newQuantity > 999) {
+          toast(t('최대 {{count}}개까지 선택 가능합니다.', { count: 999 }));
+          return prev;
+        }
 
         return prev.map((item, index) => {
           if (index === existingIndex) {
@@ -246,7 +267,7 @@ export const AddMenuDialog = ({
             });
             return {
               ...item,
-              quantity: item.quantity + menuQuantity,
+              quantity: newQuantity,
               selectedOptions: updatedOptions,
             };
           }
@@ -293,8 +314,11 @@ export const AddMenuDialog = ({
 
     // 최소 수량 검증 로직
     // 같은 메뉴의 수량을 모두 합산 (옵션이 다르더라도)
-    const menuQuantityMap = new Map<number, { menu: IMenu; totalQuantity: number }>();
-    
+    const menuQuantityMap = new Map<
+      number,
+      { menu: IMenu; totalQuantity: number }
+    >();
+
     selectedMenus.forEach(({ menu, quantity }) => {
       const existing = menuQuantityMap.get(menu.menuSeq);
       if (existing) {
@@ -307,12 +331,13 @@ export const AddMenuDialog = ({
     // 각 메뉴별로 최소 수량 검증
     for (const [menuSeq, { menu, totalQuantity }] of menuQuantityMap) {
       const minQuantity = menu.minQuantity || 0;
-      
+
       if (minQuantity > 0) {
         // 현재 주문에서 해당 메뉴의 총 수량 계산 (모든 옵션 포함)
-        const currentQuantity = currentOrder?.items
-          ?.filter((item) => item.menuSeq === menuSeq)
-          ?.reduce((sum: number, item) => sum + item.qty, 0) || 0;
+        const currentQuantity =
+          currentOrder?.items
+            ?.filter((item) => item.menuSeq === menuSeq)
+            ?.reduce((sum: number, item) => sum + item.qty, 0) || 0;
 
         // 추가하려는 수량과 현재 수량의 합계
         const totalQuantityAfterAdd = currentQuantity + totalQuantity;
