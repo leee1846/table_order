@@ -151,8 +151,9 @@ export const ModalTitle = styled.h2`
 
 export const CloseButton = styled.button`
   cursor: pointer;
-  position: fixed;
-  right: 24px;
+  position: absolute;
+  top: -17px;
+  right: -12px;
 `;
 
 export const Divider = styled.div`
