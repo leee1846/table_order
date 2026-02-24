@@ -669,7 +669,6 @@ export const OptionGroupManageModal = ({
                   updateSettings({ isOptionQuantitySelectable: checked })
                 }
                 customStyle={S.checkButtonCss}
-                disabled={isPosLinked}
               >
                 <span>{t('옵션 수량 선택')}</span>
               </CheckButton>
