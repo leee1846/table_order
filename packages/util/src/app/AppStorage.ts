@@ -142,7 +142,7 @@ export const AppStorage: IAppStorage = {
         parsedData[key] = value;
       }
     });
-    console.warn('[AppStorage.getAllData] 반환:', parsedData);
+    console.log('[AppStorage.getAllData] 반환:', parsedData);
     return result;
   },
 

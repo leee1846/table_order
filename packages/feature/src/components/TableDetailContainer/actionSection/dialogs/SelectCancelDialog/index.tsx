@@ -37,8 +37,6 @@ export const SelectCancelDialog = ({
   const [quantities, setQuantities] = useState<Map<string, number>>(new Map());
   const { mutateAsync: cancelOrderMenu, isPending } = usePutCancelOrderMenu();
 
-  console.log('items', items);
-
   const handleCheckboxChange = (itemId: string, checked: boolean) => {
     if (checked) {
       setSelectedItems((prev) => new Set(prev).add(itemId));

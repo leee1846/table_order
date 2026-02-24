@@ -384,7 +384,7 @@ export const ImageSection = () => {
       try {
         await CameraManager.clearCache();
       } catch (error) {
-        console.warn('Failed to clear cache after upload:', error);
+        console.error('Failed to clear cache after upload:', error);
       }
     } catch (error) {
       console.error('Gallery upload error:', error);
