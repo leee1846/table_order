@@ -85,7 +85,7 @@ export const DeviceCard = styled.div<{
   position: relative;
   background: ${colors.white};
   border-radius: 16px;
-  border: 2px solid transparent;
+  border: 4px solid transparent;
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.06);
   padding: 16px;
   display: flex;
@@ -96,7 +96,7 @@ export const DeviceCard = styled.div<{
   ${({ selected }) =>
     selected
       ? `
-    border: solid 2px ${colors.primary[500]};
+    border: solid 4px ${colors.primary[500]};
   `
       : ''}
 

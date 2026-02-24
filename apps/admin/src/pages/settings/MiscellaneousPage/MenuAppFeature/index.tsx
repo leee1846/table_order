@@ -276,7 +276,7 @@ export const MenuAppFeature = ({
       shopSettingChanges.firstOrderMinAmount = firstOrderMinAmountValue;
     }
 
-    shopSettingChanges.menuboardAdminPassword = menuboardAdminPassword !== '' ? menuboardAdminPassword : undefined;
+    shopSettingChanges.menuboardAdminPassword = menuboardAdminPassword ?? '';
 
     const closureStart = toTimeString(
       closureStartTime.hour,
