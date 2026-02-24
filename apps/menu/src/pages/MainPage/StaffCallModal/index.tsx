@@ -221,6 +221,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
                                 variant="square"
                                 size="M"
                                 min={0}
+                                max={999}
                                 value={currentQuantity}
                                 onChange={(newValue) => {
                                   handleQuantityChange(menu.menuSeq, newValue);
