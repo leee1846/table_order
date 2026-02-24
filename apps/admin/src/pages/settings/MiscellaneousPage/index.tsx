@@ -41,9 +41,11 @@ export const MiscellaneousPage = () => {
   const queryClient = useQueryClient();
   const [adminLanguage, setAdminLanguage] =
     useState<TShopLanguage>(getInitialLanguage());
+  const [componentKey, setComponentKey] = useState(0);
 
   const { data: shopDetailResponse } = useGetShopDetail(shopCode ?? '', {
     enabled: !!shopCode,
+    structuralSharing: false, // 객체 참조를 항상 새로 만들어 useEffect 트리거 보장
   });
 
   const shopInfo = shopDetailResponse?.data;
@@ -238,6 +240,7 @@ export const MiscellaneousPage = () => {
 
     toast(t('설정이 저장되었습니다.'));
     changesRef.current = {};
+    setComponentKey((prev) => prev + 1); // 강제 리마운트로 확실하게 업데이트
   }, [
     adminLanguage,
     categories,
@@ -277,14 +280,20 @@ export const MiscellaneousPage = () => {
           userId={tokenPayload?.sub}
         />
 
-        <Network shopNetwork={shopInfo?.shopNetwork} onChange={handleChange} />
+        <Network
+          key={`network-${componentKey}`}
+          shopNetwork={shopInfo?.shopNetwork}
+          onChange={handleChange}
+        />
         <StoreEnvironment
+          key={`store-env-${componentKey}`}
           shopSetting={shopInfo?.shopSetting}
           shopTime={shopInfo?.shopTime}
           onChange={handleChange}
         />
 
         <MenuAppFeature
+          key={`menu-app-${componentKey}`}
           shopSetting={shopInfo?.shopSetting}
           shopTime={shopInfo?.shopTime}
           categories={categories}
@@ -293,13 +302,19 @@ export const MiscellaneousPage = () => {
           onChange={handleChange}
         />
 
-        <Payment shopSetting={shopInfo?.shopSetting} onChange={handleChange} />
+        <Payment
+          key={`payment-${componentKey}`}
+          shopSetting={shopInfo?.shopSetting}
+          onChange={handleChange}
+        />
         <Intergration
+          key={`integration-${componentKey}`}
           shopSetting={shopInfo?.shopSetting}
           onChange={handleChange}
         />
 
         <Language
+          key={`language-${componentKey}`}
           shopSetting={shopInfo?.shopSetting}
           onChange={handleChange}
           onAdminLanguageChange={setAdminLanguage}
