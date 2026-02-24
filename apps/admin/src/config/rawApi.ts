@@ -1,3 +1,4 @@
+import type { AxiosError, AxiosResponse } from '@repo/api/axios';
 import { createAxiosInstance } from '@repo/api/cores';
 
 /**
@@ -8,3 +9,16 @@ import { createAxiosInstance } from '@repo/api/cores';
 export const rawApi = createAxiosInstance({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 });
+
+rawApi.interceptors.response.use(
+  (response: AxiosResponse) => {
+    return response;
+  },
+  (error: AxiosError) => {
+    // app에서 로그 확인용
+    if (!error.response) {
+      console.error('rawApi interceptor error:', error);
+    }
+    return Promise.reject(error);
+  }
+);

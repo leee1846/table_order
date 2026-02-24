@@ -40,6 +40,9 @@ publicApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // app에서 로그 확인용
+    console.error('publicApi interceptor error:', error);
+
     let content: string;
     if (!error.response) {
       content = t('API 요청에 실패하였습니다.');

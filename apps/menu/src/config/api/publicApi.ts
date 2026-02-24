@@ -44,6 +44,9 @@ publicApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // app에서 로그 확인용
+    console.error('publicApi interceptor error:', error);
+
     // 나머지 모든 error dialog 처리
     let content: string;
     if (!error.response) {

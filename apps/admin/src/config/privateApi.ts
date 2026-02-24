@@ -111,6 +111,9 @@ privateApi.interceptors.response.use(
       throw new axios.Cancel('Invalid access token');
     }
 
+    // app에서 로그 확인용
+    console.error('privateApi interceptor error:', error);
+
     // 나머지 모든 error dialog 처리
     let content: string;
     if (!error.response) {
