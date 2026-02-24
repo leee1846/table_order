@@ -31,6 +31,8 @@ export const Table = ({ items }: Props) => {
         <td>{formatCurrency(item.unitPrice)}</td>
         <td>{formatCurrency(item.quantity)}</td>
         <td>{formatCurrency(item.totalPrice)}</td>
+        <td>{formatCurrency(item.discountAmount)}</td>
+        <td>{formatCurrency(item.actualSalesAmount)}</td>
       </S.MenuRow>
     ));
   };
@@ -43,6 +45,8 @@ export const Table = ({ items }: Props) => {
           <th>{t('단위가격')}</th>
           <th>{t('수량')}</th>
           <th>{t('총가격')}</th>
+          <th>{t('총 할인액')}</th>
+          <th>{t('실 매출액')}</th>
         </tr>
       </UIStyles.setting.Thead>
       <S.Tbody>{renderRows()}</S.Tbody>

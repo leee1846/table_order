@@ -21,6 +21,8 @@ export interface IMenuSalesSummaryItem {
   unitPrice: number;
   quantity: number;
   totalPrice: number;
+  actualSalesAmount: number;
+  discountAmount: number;
 }
 
 export interface IMenuSalesSummary {
