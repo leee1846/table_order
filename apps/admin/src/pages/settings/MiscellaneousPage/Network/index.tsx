@@ -163,22 +163,20 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
           </UIStyles.setting.Title>
         </S.TitleContentContainer>
         <S.Versions>
-          {CapacitorApp.isNative() && (
-            <p>
-              {t('현재 버전')}
-              <span>{currentVersion}</span>
-            </p>
-          )}
-          {CapacitorApp.isNative() && <div />}
-          {/* Q/A동안 노출 버전 */}
-          {/* TODO: 삭제 예정 */}
           <p>
-            Q/A 버전
-            <span>1.0.7</span>
+            {t('WEB 버전')} <span>1.0.7</span>
           </p>
+          <div />
+          {CapacitorApp.isNative() && (
+            <>
+              <p>
+                {t('APP 버전')} <span>{currentVersion}</span>
+              </p>
+              <div />
+            </>
+          )}
           <p>
-            {t('최신 버전')}
-            <span>{latestAppVersionText}</span>
+            {t('APP 최신 버전')} <span>{latestAppVersionText ?? '-'}</span>
           </p>
         </S.Versions>
       </UIStyles.setting.Header>

@@ -30,15 +30,15 @@ export const Detail = ({
           {/* Q/A동안 노출 버전 */}
           {/* TODO: 삭제 예정 */}
           <p>
-            Q/A 버전 <span>1.0.7</span>
+            {t('WEB 버전')} <span>1.0.7</span>
           </p>
           <div />
           <p>
-            {t('메뉴판 현재 버전')} <span>{deviceData?.version}</span>
+            {t('APP 버전')} <span>{deviceData?.version}</span>
           </p>
           <div />
           <p>
-            {t('최신 버전')}{' '}
+            {t('APP 최신 버전')}{' '}
             <span>{latestVersionData?.data?.version ?? '-'}</span>
           </p>
         </S.Versions>
