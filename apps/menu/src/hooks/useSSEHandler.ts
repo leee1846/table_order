@@ -594,8 +594,20 @@ export const useSSEHandler = () => {
 
       case 'DEVICE_RESTART':
         // 기기 재시작 제어
-        handlersRef.current.handleDeviceControlMessage(() => {
-          SystemControl.reboot();
+        handlersRef.current.handleDeviceControlMessage(async () => {
+          try {
+            await SystemControl.reboot();
+          } catch (e) {
+            console.error('DEVICE_RESTART error:', e);
+            const { currentShopData } = dataRefs.current;
+            if (currentShopData?.shopCode) {
+              await collectDeviceInfoAndSyncToServer(
+                deviceDataSyncDeps,
+                currentShopData.shopCode,
+                'FAIL'
+              );
+            }
+          }
         }, sseMessage);
         break;
 
@@ -626,8 +638,9 @@ export const useSSEHandler = () => {
 
           try {
             await Installer.startUpdate(downloadPath, checksum);
-          } catch {
+          } catch (e) {
             if (currentShopData?.shopCode) {
+              console.error('DEVICE_APP_UPDATE error:', e);
               await collectDeviceInfoAndSyncToServer(
                 deviceDataSyncDeps,
                 currentShopData.shopCode,
