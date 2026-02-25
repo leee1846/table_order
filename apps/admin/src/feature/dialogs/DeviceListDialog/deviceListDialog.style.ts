@@ -81,6 +81,7 @@ export const DeviceCard = styled.div<{
   selected?: boolean;
   controlStatus?: boolean;
   controlText?: string;
+  isFail?: boolean;
 }>`
   position: relative;
   background: ${colors.white};
@@ -100,7 +101,7 @@ export const DeviceCard = styled.div<{
   `
       : ''}
 
-  ${({ controlStatus, controlText }) =>
+  ${({ controlStatus, controlText, isFail }) =>
     controlStatus
       ? `
     pointer-events: none;
@@ -118,14 +119,24 @@ export const DeviceCard = styled.div<{
       transform: translate(-50%, -50%);
       font-size: 14px;
       font-weight: 600;
-      color: ${colors.grey[900]};
-      background-color: ${colors.white};
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: 1px solid ${colors.grey[300]};
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      color: ${isFail ? colors.white : colors.grey[900]};
+      background-color: ${isFail ? colors.semantic[400] : colors.white};
+      padding: ${isFail ? '10px 20px' : '8px 16px'};
+      border-radius: ${isFail ? '12px' : '8px'};
+      border: ${isFail ? 'none' : `1px solid ${colors.grey[300]}`};
+      box-shadow: ${isFail ? '0 6px 20px rgba(237, 73, 86, 0.35)' : '0 4px 12px rgba(0, 0, 0, 0.15)'};
       z-index: 1;
       white-space: nowrap;
+      animation: ${isFail ? 'pulse-fail 0.6s ease-in-out' : 'none'};
+    }
+
+    @keyframes pulse-fail {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.05);
+      }
     }
   `
       : ''}

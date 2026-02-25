@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ModalBackground, BasicButton, CheckButton } from '@repo/ui/components';
 import { CloseIcon /* , FullBatteryIcon */ } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -55,6 +55,14 @@ export const DeviceListDialog = ({
 }: DeviceListDialogProps) => {
   const { t } = useAdminTranslation();
   const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
+  
+  // 각 디바이스의 이전 controlStatus를 추적 (useRef로 변경하여 의존성 문제 해결)
+  const prevControlStatusRef = useRef<Record<string, string | null>>({});
+  
+  // FAIL 표시 상태 (3초 동안 실패 유형과 함께 표시)
+  const [showFailStatus, setShowFailStatus] = useState<
+    Record<string, 'UPDATING' | 'REBOOTING' | null>
+  >({});
 
   const DEVICE_CONTROL_MESSAGES: Record<TDeviceControlType, string> = {
     DEVICE_APP_UPDATE: t('기기 업데이트 요청을 보냈어요.'),
@@ -67,11 +75,15 @@ export const DeviceListDialog = ({
   useEffect(() => {
     if (!isOpen) {
       setSelectedDevices([]);
+      prevControlStatusRef.current = {};
+      setShowFailStatus({});
     }
   }, [isOpen]);
 
   useEffect(() => {
     setSelectedDevices([]);
+    prevControlStatusRef.current = {};
+    setShowFailStatus({});
   }, [shopCode]);
 
   const {
@@ -139,6 +151,45 @@ export const DeviceListDialog = ({
       return String(tableA).localeCompare(String(tableB));
     });
   }, [deviceListResponse]);
+
+  // controlStatus 변화 감지 및 FAIL 상태 처리
+  useEffect(() => {
+    deviceItems.forEach((device) => {
+      const deviceId = device.androidId;
+      const currentStatus = device.controlStatus;
+      const previousStatus = prevControlStatusRef.current[deviceId];
+
+      // UPDATING 또는 REBOOTING에서 FAIL로 변경된 경우만 처리
+      if (
+        currentStatus === 'FAIL' &&
+        (previousStatus === 'UPDATING' || previousStatus === 'REBOOTING')
+      ) {
+        // 실패 유형과 함께 상태 저장
+        setShowFailStatus((prev) => ({
+          ...prev,
+          [deviceId]: previousStatus as 'UPDATING' | 'REBOOTING',
+        }));
+
+        // 3초 후 "실패" 상태 제거
+        const timer = setTimeout(() => {
+          setShowFailStatus((prev) => {
+            const newState = { ...prev };
+            delete newState[deviceId];
+            return newState;
+          });
+        }, 3000);
+
+        return () => clearTimeout(timer);
+      }
+    });
+
+    // 현재 상태를 이전 상태로 저장
+    const newPrevStatus: Record<string, string | null> = {};
+    deviceItems.forEach((device) => {
+      newPrevStatus[device.androidId] = device.controlStatus;
+    });
+    prevControlStatusRef.current = newPrevStatus;
+  }, [deviceItems]);
 
   if (!isOpen) {
     return null;
@@ -336,22 +387,37 @@ export const DeviceListDialog = ({
                         ? (numericSignal as 4 | 3 | 2 | 1 | 0)
                         : 0;
 
+                    // FAIL 상태 표시 여부 확인
+                    const failType = showFailStatus[device.androidId];
+                    const isShowingFail = !!failType;
+                    
+                    // controlStatus 결정: FAIL 표시 중에도 비활성화 유지
+                    const isControlDisabled = isShowingFail
+                      ? true // FAIL 표시 중(3초 동안)에도 카드 비활성화 유지
+                      : device.controlStatus === 'UPDATING' ||
+                        device.controlStatus === 'REBOOTING';
+
+                    const controlText = isShowingFail
+                      ? t('{{status}} 실패', {
+                          status:
+                            failType === 'UPDATING'
+                              ? t('업데이트')
+                              : t('재부팅'),
+                        })
+                      : device.controlStatus === 'UPDATING'
+                        ? t('업데이트 중...')
+                        : device.controlStatus === 'REBOOTING'
+                          ? t('재부팅 중...')
+                          : '';
+
                     return (
                       <S.DeviceCard
                         key={device.androidId}
                         onClick={() => handleSelectDevice(device.androidId)}
                         selected={isSelected}
-                        controlStatus={
-                          device.controlStatus === 'UPDATING' ||
-                          device.controlStatus === 'REBOOTING'
-                        }
-                        controlText={
-                          device.controlStatus === 'UPDATING'
-                            ? t('업데이트 중...')
-                            : device.controlStatus === 'REBOOTING'
-                              ? t('재부팅 중...')
-                              : ''
-                        }
+                        controlStatus={isControlDisabled}
+                        controlText={controlText}
+                        isFail={isShowingFail}
                       >
                         <S.CardHeader>
                           <S.DeviceTitle>
