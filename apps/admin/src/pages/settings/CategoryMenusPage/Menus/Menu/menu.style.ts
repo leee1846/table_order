@@ -70,6 +70,11 @@ export const Price = styled.p`
 export const DeleteButton = css`
   border: 1px solid ${theme.colors.grey[400]};
   color: ${theme.colors.grey[700]};
+
+  &:disabled {
+    color: ${theme.colors.grey[400]};
+    border-color: ${theme.colors.grey[200]};
+  }
 `;
 
 export const EditButton = css`
