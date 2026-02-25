@@ -10,8 +10,9 @@ import {
 import { css } from '@emotion/react';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { openDualActionDialog } from '@repo/feature/utils';
+import { openDualActionDialog, openConfirmDialog } from '@repo/feature/utils';
 import { useThemeMode } from '@repo/ui';
+import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 import { CardPaymentInstallmentModal } from '../CardPaymentInstallmentModal';
 import { CashPaymentInducement } from '@/feature/CashPaymentInducement';
 import { useModalStore } from '@/stores/useModalStore';
@@ -45,6 +46,11 @@ export const PaymentsModal = ({
   const { data: shopDetailData } = useShopDetailData();
   const { data: modalData, setModalData } = useModalStore();
   const { data: cartData } = useCartStore();
+  const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
+
+  const isPosLinked =
+    !!shopDetailData?.shopSetting?.shopPosCode &&
+    shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
   // 카트 메뉴의 총 가격 계산
   const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
@@ -78,7 +84,7 @@ export const PaymentsModal = ({
         secondaryText: t('취소'),
         onConfirm: async () => {
           const response = await executePostpaidOrder();
-          if (response.result) {
+          const handleOrderCompleteSuccess = () => {
             // 현금 결제 유도 설정이 활성화되어 있으면 전체 화면 다이얼로그 열기
             if (
               shopDetailData?.shopSetting?.usePrepaymentCashPaymentInducement
@@ -87,9 +93,32 @@ export const PaymentsModal = ({
               setModalData('isCashPaymentInducementModalOpened', true);
               return;
             }
-
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
+          };
+
+          if (response.result) {
+            if (isPosLinked && response.orderGroupUuid) {
+              const handleOrderCompleteFailure = () => {
+                openConfirmDialog({
+                  title: t('POS 오류'),
+                  content: t(
+                    '주문 요청에 실패했습니다. 사장님에게 문의해주세요.'
+                  ),
+                  confirmText: t('확인'),
+                });
+                onClose();
+              };
+
+              setPendingOrder(
+                response.orderGroupUuid,
+                handleOrderCompleteSuccess,
+                handleOrderCompleteFailure
+              );
+              return;
+            }
+
+            handleOrderCompleteSuccess();
           }
         },
       });
@@ -105,6 +134,29 @@ export const PaymentsModal = ({
         onConfirm: async () => {
           const response = await executePostpaidOrder();
           if (response.result) {
+            if (isPosLinked && response.orderGroupUuid) {
+              const handleOrderCompleteSuccess = () => {
+                setModalData('isOrderCompleteModalOpened', true);
+                onClose();
+              };
+              const handleOrderCompleteFailure = () => {
+                openConfirmDialog({
+                  title: t('POS 오류'),
+                  content: t(
+                    '주문 요청에 실패했습니다. 사장님에게 문의해주세요.'
+                  ),
+                  confirmText: t('확인'),
+                });
+                onClose();
+              };
+              setPendingOrder(
+                response.orderGroupUuid,
+                handleOrderCompleteSuccess,
+                handleOrderCompleteFailure
+              );
+              return;
+            }
+
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
           }

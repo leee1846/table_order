@@ -4,7 +4,11 @@ import * as S from '@/pages/MainPage/CartList/cartList.style';
 import { BasicButton, NumberInput } from '@repo/ui/components';
 import { DeleteIcon, EmptedCartIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
-import { openDualActionDialog, toast } from '@repo/feature/utils';
+import {
+  openDualActionDialog,
+  openConfirmDialog,
+  toast,
+} from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import { formatCurrency } from '@repo/util/string';
 import { MenuDetailWithOptionsModal } from '../Contents/MenuDetailWithOptionsModal';
@@ -16,6 +20,7 @@ import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
+import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 
 const TOAST_OPTIONS = {
   position: 'center-center' as const,
@@ -43,6 +48,12 @@ export const CartList = ({
   const { theme } = useThemeMode();
   const { data: modalData, setModalData } = useModalStore();
   const { data: shopDetailData } = useShopDetailData();
+  const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
+
+  const isPosLinked =
+    !!shopDetailData?.shopSetting?.shopPosCode &&
+    shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
+
   const { firstOrderRequiredCategories } = useCategoriesData();
   const {
     data: cartData,
@@ -125,7 +136,10 @@ export const CartList = ({
       (menu) => menu.quantity < 1
     );
     if (hasMenuWithZeroQuantity) {
-      toast(t('각 메뉴의 수량을 {{count}}개 이상 설정해주세요.', { count: 1 }), TOAST_OPTIONS);
+      toast(
+        t('각 메뉴의 수량을 {{count}}개 이상 설정해주세요.', { count: 1 }),
+        TOAST_OPTIONS
+      );
       return;
     }
 
@@ -203,9 +217,34 @@ export const CartList = ({
         // 총 금액이 0원이거나 선불이 아닌 경우 후불 처리
         if (totalPrice === 0 || !shopDetailData?.shopSetting?.usePrepayment) {
           const response = await executePostpaidOrder();
-          if (response.result) {
+          const handleOrderCompleteSuccess = () => {
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
+          };
+
+          if (response.result) {
+            if (isPosLinked && response.orderGroupUuid) {
+              const handleOrderCompleteFailure = () => {
+                openConfirmDialog({
+                  title: t('POS 오류'),
+                  content: t(
+                    '주문 요청에 실패했습니다. 사장님에게 문의해주세요.'
+                  ),
+                  confirmText: t('확인'),
+                });
+                onClose();
+              };
+
+              setPendingOrder(
+                response.orderGroupUuid,
+                handleOrderCompleteSuccess,
+                handleOrderCompleteFailure
+              );
+
+              return;
+            }
+
+            handleOrderCompleteSuccess();
           }
           return;
         }

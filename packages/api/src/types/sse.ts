@@ -17,11 +17,13 @@ export interface ISseMessage {
     | 'SHOP_THEME_PAGE'
     | 'SHOP_THEME_MENU'
     | 'RING_BELL'
-    | 'POS_ERROR';
+    | 'POS_ERROR'
+    | 'ORDER_COMPLETE';
   data:
     | {
         [key: string]: number | string;
       }
     | null
-    | string[];
+    | string[]
+    | string;
 }

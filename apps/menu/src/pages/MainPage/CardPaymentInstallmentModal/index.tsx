@@ -21,6 +21,7 @@ import type { ICartMenu } from '@/types/cart';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 import {
   INSTALLMENT_MINIMUM_AMOUNT,
   INSTALLMENT_LUMP_SUM,
@@ -86,6 +87,11 @@ export const CardPaymentInstallmentModal = ({
   const { shopData } = useShopData();
   const { data: shopDetailData } = useShopDetailData();
   const { data: deviceData } = useDeviceData();
+  const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
+
+  const isPosLinked =
+    !!shopDetailData?.shopSetting?.shopPosCode &&
+    shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
   const { data: cartData } = useCartStore();
   const { data: customerCountData } = useCustomerCountStore();
@@ -175,7 +181,10 @@ export const CardPaymentInstallmentModal = ({
     return { orderGroupUuid, orderUuid };
   };
 
-  const processPayment = async () => {
+  const processPayment = async (): Promise<{
+    paymentResult: IPaymentResponse;
+    orderGroupUuid: string;
+  }> => {
     modalStore.setModalData('isCardPaymentProgressModalOpened', true);
 
     const paymentResult: IPaymentResponse = await Payment.approve({
@@ -211,7 +220,7 @@ export const CardPaymentInstallmentModal = ({
       throw new Error('결제 처리 중 오류가 발생했습니다.');
     }
 
-    return paymentResult;
+    return { paymentResult, orderGroupUuid };
   };
 
   const handlePaymentSuccess = () => {
@@ -255,9 +264,34 @@ export const CardPaymentInstallmentModal = ({
     });
   };
 
+  const handleOrderCompleteFailure = () => {
+    openConfirmDialog({
+      title: t('POS 오류'),
+      content: t('주문 요청에 실패했습니다. 사장님에게 문의해주세요.'),
+      confirmText: t('확인'),
+    });
+
+    // 모든 모달 닫기
+    modalStore.setModalData('isCardPaymentProgressModalOpened', false);
+    modalStore.setModalData('isPaymentsModalOpened', false);
+    modalStore.setModalData('isCartListOpened', false);
+    modalStore.setModalData('isCardPaymentInstallmentModalOpened', false);
+    // 현재 모달 닫기
+    onClose();
+  };
+
   const handleConfirmPayment = async () => {
     try {
-      await processPayment();
+      const { orderGroupUuid } = await processPayment();
+      if (isPosLinked) {
+        setPendingOrder(
+          orderGroupUuid,
+          handlePaymentSuccess,
+          handleOrderCompleteFailure
+        );
+        return;
+      }
+
       handlePaymentSuccess();
     } catch (error) {
       // 사용자가 결제를 직접 취소했을 경우

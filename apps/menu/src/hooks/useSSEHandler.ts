@@ -21,6 +21,7 @@ import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
 import { getLatestAppVersion } from '@repo/api/fetchers';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
+import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 import { SystemControl, Installer } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
@@ -673,6 +674,36 @@ export const useSSEHandler = () => {
       case 'LOGOUT':
         handlersRef.current.handleLogoutMessage();
         break;
+
+      case 'ORDER_COMPLETE': {
+        const orderGroupUuidData =
+          typeof sseMessage.data === 'string' ? sseMessage.data : null;
+        const { pendingOrderGroupUuid, completeWithSuccess } =
+          useOrderPendingPosStore.getState();
+        if (
+          orderGroupUuidData &&
+          pendingOrderGroupUuid &&
+          orderGroupUuidData === pendingOrderGroupUuid
+        ) {
+          completeWithSuccess();
+        }
+        break;
+      }
+
+      case 'POS_ERROR': {
+        const orderGroupUuidData =
+          typeof sseMessage.data === 'string' ? sseMessage.data : null;
+        const { pendingOrderGroupUuid, completeWithFailure } =
+          useOrderPendingPosStore.getState();
+        if (
+          orderGroupUuidData &&
+          pendingOrderGroupUuid &&
+          orderGroupUuidData === pendingOrderGroupUuid
+        ) {
+          completeWithFailure();
+        }
+        break;
+      }
 
       default:
         break;

@@ -7,6 +7,7 @@ import {
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSEReconnecting } from '@repo/feature/hooks';
 import { useState, type ReactNode } from 'react';
+import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 
 interface Props {
   children: ReactNode;
@@ -19,7 +20,13 @@ function GlobalLoadingIndicator() {
   const isFetching = useIsFetching();
   const isMutating = useIsMutating();
   const isSSEReconnecting = useSSEReconnecting();
-  const isLoading = isFetching > 0 || isMutating > 0 || isSSEReconnecting;
+  const isWaitingForOrderComplete =
+    useOrderPendingPosStore((s) => s.isWaitingForOrderComplete);
+  const isLoading =
+    isFetching > 0 ||
+    isMutating > 0 ||
+    isSSEReconnecting ||
+    isWaitingForOrderComplete;
 
   if (!isLoading) {
     return null;

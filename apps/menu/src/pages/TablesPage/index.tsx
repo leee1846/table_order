@@ -474,7 +474,8 @@ export const TablesPage = () => {
   if (isOrderPosDevice) {
     return (
       <>
-        {shopDetailData?.shopSetting?.shopPosCode === 'OKPOS' ? (
+        {shopDetailData?.shopSetting?.shopPosCode !== 'NONE' &&
+        shopDetailData?.shopSetting?.shopPosCode != null ? (
           <TablesPageContainer>
             <TableCardsArea>
               <TableCardsGrid onScroll={handleScroll}>

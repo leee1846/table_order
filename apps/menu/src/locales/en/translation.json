@@ -300,5 +300,8 @@
   "설정 화면을 열 수 없습니다.": "Unable to open settings.",
   "디바이스 관리": "Device Management",
   "시스템 설정": "System Settings",
-  "수량을 {{count}}개 이상 입력해주세요.": "Please enter a quantity of at least {{count}}."
+  "수량을 {{count}}개 이상 입력해주세요.": "Please enter a quantity of at least {{count}}.",
+  "POS 오류": "POS Error",
+  "주문 요청에 실패했습니다. 사장님에게 문의해주세요.": "Order request failed. Please contact the store owner.",
+  "주문 처리에 실패했습니다. 사장님에게 문의해주세요.": "Order processing failed. Please contact the store owner."
 }
