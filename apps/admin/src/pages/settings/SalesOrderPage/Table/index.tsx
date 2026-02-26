@@ -71,7 +71,7 @@ export const Table = ({ orders, onSelectOrder, pageSize }: Props) => {
           <S.ColorTd color={getTextColor(isCanceled, true)}>
             {paymentLabel}
           </S.ColorTd>
-          <td>{item.customerCount ?? item.orderLog?.customerCount ?? '-'}</td>
+          <td>{item.customerCount > 0 ? item.customerCount : '-'}</td>
           <td>
             <BasicButton
               variant="Outline_Navy_S"
