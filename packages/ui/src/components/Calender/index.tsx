@@ -19,6 +19,7 @@ import {
   getDaysBetween,
   getYearMonthFromDate,
 } from '@repo/util/date';
+import { allowOnlyNumbers } from '@repo/util/string';
 import * as S from './calender.style';
 import { BasicButton } from '../BasicButton';
 
@@ -312,7 +313,26 @@ export const Calender = ({
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setYearInput(value);
+    // 숫자만 허용(util), 최대 4자리
+    const digitsOnly = allowOnlyNumbers(value);
+    if (digitsOnly.length > 4) {
+      return;
+    }
+
+    // 4자리 완성 시 min/max 범위를 벗어나면 입력 무시
+    if (digitsOnly.length === 4) {
+      const num = parseInt(digitsOnly, 10);
+      if (!Number.isNaN(num)) {
+        if (MIN_YEAR !== null && num < MIN_YEAR) {
+          return;
+        }
+        if (MAX_YEAR !== null && num > MAX_YEAR) {
+          return;
+        }
+      }
+    }
+
+    setYearInput(digitsOnly);
   };
 
   const handleYearBlur = () => {
