@@ -425,6 +425,16 @@ export const TablesPage = () => {
       return;
     }
 
+    // 주문 그룹만 생성
+    if (!table.hasOrder) {
+      await createOrderGroup({
+        shopCode: shopData?.shopCode ?? '',
+        tableNumber: table.tableNumber,
+        customerCount: 1,
+        kidsCustomerCount: 0,
+      });
+    }
+
     // 주문이 있는 테이블은 바로 테이블 디테일로 이동
     navigate(
       `${ROUTES.TABLES.TABLE_DETAIL.generate(table.tableNumber)}?orderType=MENU`
