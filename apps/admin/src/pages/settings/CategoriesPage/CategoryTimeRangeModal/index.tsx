@@ -6,6 +6,7 @@ import * as S from '@/pages/settings/CategoriesPage/CategoryTimeRangeModal/categ
 import { useId, useState, useEffect, useCallback } from 'react';
 import type { ICategory } from '@repo/api/types';
 import { parseTimeString, formatTimeString } from '@repo/util/time';
+import { allowOnlyNumbers } from '@repo/util/string';
 
 interface Props {
   onClose: () => void;
@@ -52,11 +53,29 @@ export const CategoryTimeRangeModal = ({
     max: number
   ) => {
     return (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
+      const value = allowOnlyNumbers(e.target.value);
       if (value === '' || (Number(value) >= 0 && Number(value) <= max)) {
         setValue(value);
       }
     };
+  };
+
+  // 숫자만 입력 가능하도록 제어, 입력을 차단함
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowedKeys = [
+      'Backspace',
+      'Delete',
+      'Tab',
+      'ArrowLeft',
+      'ArrowRight',
+      'Home',
+      'End',
+    ];
+    const isNumber = /^[0-9]$/.test(e.key);
+
+    if (!isNumber && !allowedKeys.includes(e.key)) {
+      e.preventDefault();
+    }
   };
 
   const handleClose = () => {
@@ -79,9 +98,7 @@ export const CategoryTimeRangeModal = ({
           <CloseIcon width={32} height={32} color={theme.colors.grey[600]} />
         </S.CloseButton>
 
-        <S.Title>
-          {t('판매 시간 설정')}
-        </S.Title>
+        <S.Title>{t('판매 시간 설정')}</S.Title>
 
         <S.Contents>
           <S.Content>
@@ -91,10 +108,10 @@ export const CategoryTimeRangeModal = ({
                 id={SALE_START_HOUR_ID}
                 value={startHour}
                 onChange={createTimeInputHandler(setStartHour, 23)}
-                type="number"
+                onKeyDown={handleKeyDown}
+                type="text"
+                inputMode="numeric"
                 placeholder="00"
-                min="0"
-                max="23"
               />
 
               <span>{t('시')}</span>
@@ -102,10 +119,9 @@ export const CategoryTimeRangeModal = ({
                 id={SALE_START_MINUTE_ID}
                 value={startMinute}
                 onChange={createTimeInputHandler(setStartMinute, 59)}
-                type="number"
+                onKeyDown={handleKeyDown}
+                type="text"
                 placeholder="00"
-                min="0"
-                max="59"
               />
 
               <span>{t('분')}</span>
@@ -118,10 +134,10 @@ export const CategoryTimeRangeModal = ({
                 id={SALE_END_HOUR_ID}
                 value={endHour}
                 onChange={createTimeInputHandler(setEndHour, 23)}
-                type="number"
+                onKeyDown={handleKeyDown}
+                type="text"
+                inputMode="numeric"
                 placeholder="00"
-                min="0"
-                max="23"
               />
 
               <span>{t('시')}</span>
@@ -129,10 +145,9 @@ export const CategoryTimeRangeModal = ({
                 id={SALE_END_MINUTE_ID}
                 value={endMinute}
                 onChange={createTimeInputHandler(setEndMinute, 59)}
-                type="number"
+                onKeyDown={handleKeyDown}
+                type="text"
                 placeholder="00"
-                min="0"
-                max="59"
               />
 
               <span>{t('분')}</span>
