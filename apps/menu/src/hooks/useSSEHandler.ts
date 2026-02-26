@@ -30,7 +30,7 @@ import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams, matchPath } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
@@ -141,6 +141,7 @@ async function collectDeviceInfoAndSyncToServer(
  */
 export const useSSEHandler = () => {
   const location = useLocation();
+  const { tableNum: tableNumFromParams } = useParams();
   const queryClient = useQueryClient();
   // i18n: 고객용 번역 함수
   const { t } = useCustomerTranslation();
@@ -243,6 +244,7 @@ export const useSSEHandler = () => {
     tableGroupData: null as typeof tableGroupData,
     pickupAlarmData: null as typeof pickupAlarmData | null,
     locationPathname: location.pathname,
+    tableNumFromParams: undefined as string | undefined,
   });
 
   // ref 업데이트 (렌더링을 트리거하지 않음)
@@ -255,6 +257,7 @@ export const useSSEHandler = () => {
     dataRefs.current.tableGroupData = tableGroupData;
     dataRefs.current.pickupAlarmData = pickupAlarmData;
     dataRefs.current.locationPathname = location.pathname;
+    dataRefs.current.tableNumFromParams = tableNumFromParams;
   }, [
     currentDeviceData,
     currentShopData,
@@ -263,6 +266,7 @@ export const useSSEHandler = () => {
     tableGroupData,
     pickupAlarmData,
     location.pathname,
+    tableNumFromParams,
   ]);
 
   // 픽업 알림 상태를 ref로 관리 (중복 알림 방지용)
@@ -389,8 +393,35 @@ export const useSSEHandler = () => {
     },
 
     // MENU 메시지 핸들러: 메뉴 정보 업데이트 처리
+    // 테이블 상세 페이지(/tables/:tableNum)에서는 packages/feature 하위에 공통 컴포넌트를 사용하므로,
+    // queryClient.refetchQueries 사용하여 update 처리
     handleMenuMessage: () => {
-      refreshCategoriesData(); // 카테고리 데이터 새로고침
+      const {
+        locationPathname,
+        tableNumFromParams: tableNum,
+        currentShopData,
+      } = dataRefs.current;
+
+      // 현재 페이지가 테이블 상세인지 TABLE_DETAIL.path로 검증 (React Router matchPath 사용)
+      const tableDetailMatch = matchPath(
+        { path: ROUTES.TABLES.TABLE_DETAIL.path, end: true },
+        locationPathname ?? ''
+      );
+
+      const isTableDetailPage =
+        tableDetailMatch !== null && !!tableNum && !!currentShopData?.shopCode;
+
+      if (isTableDetailPage) {
+        queryClient.refetchQueries({
+          queryKey: queryKeys.category.menuboardList(
+            currentShopData.shopCode,
+            tableNum
+          ),
+        });
+      } else {
+        refreshCategoriesData(); // 그 외 페이지: 카테고리 데이터 새로고침
+      }
+
       useModalStore.getState().closeMenuDetail(); // 메뉴 상세 모달 닫기
       // 업데이트 알림 토스트 표시
       toast(t('메뉴정보가 업데이트 되었습니다.'), {
