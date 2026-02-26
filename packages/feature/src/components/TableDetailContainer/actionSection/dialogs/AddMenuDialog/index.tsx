@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import type {
   ICategoryWithMenus,
   IMenu,
   IOption,
   TOrderType,
+  TShopPosCode,
 } from '@repo/api/types';
 import type { i18n as I18nInstance } from 'i18next';
 import { toast } from '@repo/feature/utils';
@@ -39,6 +40,8 @@ interface AddMenuDialogProps {
   orderType?: TOrderType;
   i18nInstance?: I18nInstance;
   currentOrder?: Order | null;
+  shopPosCode?: TShopPosCode;
+  onOrderCreated?: (orderGroupUuid: string) => void;
 }
 
 export const AddMenuDialog = ({
@@ -54,10 +57,12 @@ export const AddMenuDialog = ({
   orderType,
   i18nInstance,
   currentOrder = null,
+  shopPosCode,
+  onOrderCreated,
 }: AddMenuDialogProps) => {
   const { t } = useTranslation('admin', { i18n: i18nInstance });
   const queryClient = useQueryClient();
-  const { mutateAsync: createTableOrder } = usePostTableOrder();
+  const { mutateAsync: createTableOrder, isPending } = usePostTableOrder();
   const [viewMode, setViewMode] = useState<'menu' | 'option'>('menu');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<IMenu | null>(null);
@@ -68,6 +73,9 @@ export const AddMenuDialog = ({
     new Map()
   );
   const [menuQuantity, setMenuQuantity] = useState<number>(1);
+
+  // OKPOS 연동 여부 확인
+  const isOkPos = shopPosCode === 'OKPOS';
 
   const menuboardCategories: ICategoryWithMenus[] = useMemo(() => {
     return categories || [];
@@ -371,7 +379,7 @@ export const AddMenuDialog = ({
 
     const totalAmount = String(calculateTotalAmount(selectedMenus));
 
-    await createTableOrder({
+    const response = await createTableOrder({
       shopCode,
       tableNumber,
       orderType: orderType as TOrderType,
@@ -381,14 +389,26 @@ export const AddMenuDialog = ({
       orders,
     });
 
-    await queryClient.invalidateQueries({
-      queryKey: queryKeys.orders.tableOrderHistories(shopCode, tableNumber),
-    });
+    // OKPOS 연동 매장: SSE 이벤트 대기를 위해 orderGroupUuid 전달
+    if (isOkPos && response?.data?.orderGroupUuid) {
+      onOrderCreated?.(response.data.orderGroupUuid);
+
+      // 모달 닫기
+      setSelectedMenus([]);
+      setSelectedCategory(defaultCategorySeq);
+      setSelectedMenu(null);
+      setSelectedOptions(new Map());
+      setMenuQuantity(1);
+      setViewMode('menu');
+      onClose();
+      return;
+    }
+
     toast(t('메뉴를 추가했어요.'));
     handleClose();
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setSelectedMenus([]);
     setSelectedCategory(defaultCategorySeq);
     setSelectedMenu(null);
@@ -396,7 +416,7 @@ export const AddMenuDialog = ({
     setMenuQuantity(1);
     setViewMode('menu');
     onClose();
-  };
+  }, [defaultCategorySeq, onClose]);
 
   if (!isOpen) {
     return null;
@@ -417,6 +437,7 @@ export const AddMenuDialog = ({
         onClose={handleClose}
         onRemoveItem={handleRemoveItem}
         onItemQuantityChange={handleItemQuantityChange}
+        isLoading={isPending}
       />
     );
   }

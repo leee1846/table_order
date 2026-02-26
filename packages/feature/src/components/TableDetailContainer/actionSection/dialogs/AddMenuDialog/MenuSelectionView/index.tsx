@@ -28,6 +28,7 @@ interface MenuSelectionViewProps {
   onClose: () => void;
   onRemoveItem: (index: number) => void;
   onItemQuantityChange: (index: number, quantity: number) => void;
+  isLoading?: boolean;
 }
 
 export const MenuSelectionView = ({
@@ -42,6 +43,7 @@ export const MenuSelectionView = ({
   onRemoveItem,
   onItemQuantityChange,
   i18nInstance,
+  isLoading = false,
 }: MenuSelectionViewProps) => {
   const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
   const currentLan = i18n.language || 'KO';
@@ -167,8 +169,13 @@ export const MenuSelectionView = ({
               </A.TotalSection>
             )}
             <A.PanelFooter>
-              <BasicButton variant="Solid_Navy_2XL" onClick={onAdd} fullWidth>
-                {t('추가하기')}
+              <BasicButton 
+                variant="Solid_Navy_2XL" 
+                onClick={onAdd} 
+                fullWidth
+                disabled={isLoading}
+              >
+                {isLoading ? t('처리 중...') : t('추가하기')}
               </BasicButton>
             </A.PanelFooter>
           </A.RightPanel>
