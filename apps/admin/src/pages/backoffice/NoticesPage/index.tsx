@@ -5,6 +5,7 @@ import { useGetNoticeList } from '@repo/api/queries';
 import { ROUTES } from '@/constants/routes';
 import { usePaginationState } from '@/feature/backoffice/hooks';
 import { Button, Pagination } from '@/feature/backoffice/components';
+import { keepPreviousData } from '@repo/api/tanstack-query';
 
 const PAGE_SIZE = 10;
 
@@ -12,10 +13,13 @@ export const NoticesPage = () => {
   const navigate = useNavigate();
   const { currentPage, handlePageChange } = usePaginationState();
 
-  const { data: noticeList } = useGetNoticeList({
-    page: currentPage,
-    pageSize: PAGE_SIZE,
-  });
+  const { data: noticeList } = useGetNoticeList(
+    {
+      page: currentPage,
+      pageSize: PAGE_SIZE,
+    },
+    { placeholderData: keepPreviousData }
+  );
 
   const handleCreate = () => {
     navigate(ROUTES.BACKOFFICE.NOTICES_NEW.generate());

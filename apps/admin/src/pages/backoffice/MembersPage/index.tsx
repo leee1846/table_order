@@ -5,6 +5,7 @@ import { ROUTES } from '@/constants/routes';
 import { useGetAdminMemberList } from '@repo/api/queries';
 import { useTablePageState } from '@/feature/backoffice/hooks';
 import { Input, Button, Pagination } from '@/feature/backoffice/components';
+import { keepPreviousData } from '@repo/api/tanstack-query';
 
 const PAGE_SIZE = 10;
 
@@ -18,11 +19,14 @@ export const MembersPage = () => {
     handlePageChange,
   } = useTablePageState({ pageSize: PAGE_SIZE });
 
-  const { data: adminList } = useGetAdminMemberList({
-    pageNumber: currentPage - 1,
-    pageSize: PAGE_SIZE,
-    searchWord: searchKeyword,
-  });
+  const { data: adminList } = useGetAdminMemberList(
+    {
+      pageNumber: currentPage - 1,
+      pageSize: PAGE_SIZE,
+      searchWord: searchKeyword,
+    },
+    { placeholderData: keepPreviousData }
+  );
 
   const handleCreate = () => {
     navigate(ROUTES.BACKOFFICE.MEMBERS_NEW.generate());

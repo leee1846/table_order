@@ -1,3 +1,4 @@
+import { keepPreviousData } from '@repo/api/tanstack-query';
 import { useNavigate } from 'react-router-dom';
 import { Table } from './Table';
 import * as S from './storesPage.style';
@@ -18,11 +19,14 @@ export const StoresPage = () => {
     handlePageChange,
   } = useTablePageState({ pageSize: PAGE_SIZE });
 
-  const { data: shopList } = useGetAdminShopList({
-    pageNumber: currentPage - 1,
-    pageSize: PAGE_SIZE,
-    searchWord: searchKeyword,
-  });
+  const { data: shopList } = useGetAdminShopList(
+    {
+      pageNumber: currentPage - 1,
+      pageSize: PAGE_SIZE,
+      searchWord: searchKeyword,
+    },
+    { placeholderData: keepPreviousData }
+  );
 
   const handleCreate = () => {
     navigate(ROUTES.BACKOFFICE.STORES_NEW.generate());

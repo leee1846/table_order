@@ -6,6 +6,7 @@ import * as S from './appHistoriesPage.style';
 import { ROUTES } from '@/constants/routes';
 import { useTablePageState } from '@/feature/backoffice/hooks';
 import { Input, Button, Pagination } from '@/feature/backoffice/components';
+import { keepPreviousData } from '@repo/api/tanstack-query';
 
 const PAGE_SIZE = 10;
 
@@ -19,11 +20,14 @@ export const AppHistoriesPage = () => {
     handlePageChange,
   } = useTablePageState({ pageSize: PAGE_SIZE });
 
-  const { data } = useGetAppVersionList({
-    pageNumber: currentPage - 1,
-    pageSize: PAGE_SIZE,
-    searchWord: searchKeyword,
-  });
+  const { data } = useGetAppVersionList(
+    {
+      pageNumber: currentPage - 1,
+      pageSize: PAGE_SIZE,
+      searchWord: searchKeyword,
+    },
+    { placeholderData: keepPreviousData }
+  );
 
   const histories = useMemo(() => {
     if (
