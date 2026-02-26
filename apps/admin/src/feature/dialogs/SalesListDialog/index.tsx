@@ -23,6 +23,7 @@ import * as S from './salesListDialog.style';
 import { Table } from './Table';
 import { OrderDetailModal } from './OrderDetailModal';
 import { PAZE_SIZE } from '@/constants/keys';
+import { keepPreviousData } from '@repo/api/tanstack-query';
 
 const { colors } = theme;
 
@@ -76,13 +77,18 @@ export const SalesListDialog = ({
     [startDate, endDate]
   );
 
-  const { data: orderHistoryResponse, refetch } = useGetOrderHistory({
-    shopCode: shopCode ?? '',
-    startDate: apiStartDate,
-    endDate: apiEndDate,
-    pageNumber: currentPage - 1,
-    pageSize: itemsPerPage,
-  });
+  const { data: orderHistoryResponse, refetch } = useGetOrderHistory(
+    {
+      shopCode: shopCode ?? '',
+      startDate: apiStartDate,
+      endDate: apiEndDate,
+      pageNumber: currentPage - 1,
+      pageSize: itemsPerPage,
+    },
+    {
+      placeholderData: keepPreviousData,
+    }
+  );
 
   useEffect(() => {
     if (!isOpen || !shopCode) {

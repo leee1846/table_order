@@ -3,6 +3,7 @@ import { ModalBackground, Pagination } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { useGetOrderLogList } from '@repo/api/queries';
+import { keepPreviousData } from '@repo/api/tanstack-query';
 import type {
   IOrderDetailMenu,
   TOrderPaymentStatus,
@@ -119,11 +120,16 @@ export const OrderListDialog = ({
     data: orderLogResponse,
     isFetching,
     refetch,
-  } = useGetOrderLogList({
-    shopCode: shopCode ?? '',
-    pageNumber: currentPage - 1,
-    pageSize: PAZE_SIZE,
-  });
+  } = useGetOrderLogList(
+    {
+      shopCode: shopCode ?? '',
+      pageNumber: currentPage - 1,
+      pageSize: PAZE_SIZE,
+    },
+    {
+      placeholderData: keepPreviousData,
+    }
+  );
 
   useEffect(() => {
     if (!isOpen || !shopCode) {
@@ -141,17 +147,6 @@ export const OrderListDialog = ({
 
     return Array.isArray(data) ? data[0] : data;
   }, [orderLogResponse]);
-
-  const currentPageFromApi = orderLogData?.currentPageNumber;
-
-  useEffect(() => {
-    if (
-      typeof currentPageFromApi === 'number' &&
-      currentPageFromApi + 1 !== currentPage
-    ) {
-      setCurrentPage(currentPageFromApi + 1);
-    }
-  }, [currentPageFromApi, currentPage]);
 
   const orderItems = useMemo<OrderItem[]>(() => {
     const orderLogList = orderLogData?.orderLog;

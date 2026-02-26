@@ -21,6 +21,7 @@ import * as UIStyles from '@repo/ui/styles';
 import * as S from './salesOrderPage.style';
 import { SALES_PAGE_SIZE } from '@/constants/keys';
 import { toast } from '@repo/feature/utils';
+import { keepPreviousData } from '@repo/api/tanstack-query';
 
 const PAGE_SIZE = SALES_PAGE_SIZE;
 
@@ -71,6 +72,7 @@ export const SalesOrderPage = () => {
     },
     {
       enabled: !!shopCode && !!apiStartDate && !!apiEndDate,
+      placeholderData: keepPreviousData,
     }
   );
 
