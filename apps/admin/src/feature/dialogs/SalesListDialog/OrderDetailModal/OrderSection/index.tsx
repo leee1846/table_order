@@ -62,9 +62,9 @@ export const OrderSection = ({ order }: Props) => {
               ) || '-'}
             </span>
           </p>
-          <p>
+          <p style={{ marginLeft: '10px' }}>
             {t('객수')}
-            <span>{order.customerCount ?? orderLog?.customerCount ?? '-'}</span>
+            <span>{order.customerCount > 0 ? order.customerCount : '-'}</span>
           </p>
         </div>
       </S.OrderInfoContainer>

@@ -21,7 +21,7 @@ export const TitleContainer = styled.div`
 `;
 
 export const OrderInfoContainer = styled.div`
-  width: 70%;
+  width: 80%;
   display: flex;
   flex-direction: column;
   gap: 6px;
