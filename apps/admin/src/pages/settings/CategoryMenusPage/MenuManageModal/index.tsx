@@ -122,7 +122,6 @@ const MenuManageModalContent = ({
                       {languageOptions.map((option) => (
                         <S.LanguageTab
                           key={option.value}
-                          type="button"
                           isSelected={selectedLanguageCode === option.value}
                           onClick={() => handleLanguageChange(option.value)}
                         >
@@ -132,16 +131,12 @@ const MenuManageModalContent = ({
                     </S.LanguageTabs>
                   </>
                 ) : (
-                  <S.LanguageTitleButton
-                    type="button"
-                    onClick={() => setIsExpanded(true)}
-                  >
+                  <S.LanguageTitleButton onClick={() => setIsExpanded(true)}>
                     <LanguageIcon
                       width={20}
                       height={20}
                       color={theme.colors.grey[600]}
                     />
-
                     {selectedLanguage.label}
                   </S.LanguageTitleButton>
                 )}

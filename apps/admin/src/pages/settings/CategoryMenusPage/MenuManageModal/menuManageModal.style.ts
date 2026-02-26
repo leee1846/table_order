@@ -137,20 +137,18 @@ export const LanguageSelector = styled.div`
   margin-top: 0;
 `;
 
-export const LanguageTitleButton = styled.button`
+export const LanguageTitleButton = styled.span`
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid ${theme.colors.grey[300]};
-  background-color: ${colors.white};
+  gap: 6px;
   color: ${theme.colors.grey[600]};
   ${TYPOGRAPHY.ST_2}
+  border: 1px solid ${theme.colors.grey[400]};
   cursor: pointer;
-  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
 
   &:hover {
-    border-color: ${theme.colors.primary[500]};
     background-color: ${colors.primary[100]};
   }
 `;
@@ -173,12 +171,13 @@ export const LanguageTabs = styled.div`
   flex-wrap: wrap;
 `;
 
-export const LanguageTab = styled.button<{ isSelected: boolean }>`
+export const LanguageTab = styled.span<{ isSelected: boolean }>`
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
   border-radius: 8px;
+
   border: 1px solid
     ${({ isSelected }) =>
       isSelected ? theme.colors.primary[500] : theme.colors.grey[300]};

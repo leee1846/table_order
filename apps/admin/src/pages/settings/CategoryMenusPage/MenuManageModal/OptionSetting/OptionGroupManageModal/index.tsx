@@ -367,6 +367,16 @@ export const OptionGroupManageModal = ({
       return;
     }
 
+    // 최소 수량과 최대 수량 검증
+    if (
+      settings.minQuantity > settings.maxQuantity &&
+      settings.maxQuantity !== 0 &&
+      settings.minQuantity !== 0
+    ) {
+      toast(t('최소 수량이 최대 수량보다 클 수 없습니다.'));
+      return;
+    }
+
     if (!validateForm()) {
       return;
     }
