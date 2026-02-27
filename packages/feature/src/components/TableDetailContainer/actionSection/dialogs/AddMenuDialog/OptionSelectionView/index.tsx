@@ -41,7 +41,10 @@ export const OptionSelectionView = ({
 }: OptionSelectionViewProps) => {
   const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
   const currentLan = i18n.language || 'KO';
-  const optionGroups = selectedMenu.optionGroupList || [];
+  const optionGroups = useMemo(
+    () => selectedMenu.optionGroupList || [],
+    [selectedMenu.optionGroupList]
+  );
 
   const hasSelectedOptions = Array.from(selectedOptions.values()).some(
     (qty) => qty > 0
