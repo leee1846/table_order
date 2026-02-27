@@ -55,14 +55,16 @@ export const useSSEHandler = (tableNumber?: string) => {
         agentPingCheckTimeoutRef.current = null;
       }
     }
+  }, [shopDetailData]);
 
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
     return () => {
-      // cleanup: 컴포넌트 언마운트 시 타이머 정리
       if (agentPingCheckTimeoutRef.current) {
         clearTimeout(agentPingCheckTimeoutRef.current);
       }
     };
-  }, [shopDetailData]);
+  }, []);
 
   // LOGOUT 체크를 렌더링 단계에서 수행
   useEffect(() => {
