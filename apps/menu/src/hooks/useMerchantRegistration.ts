@@ -74,7 +74,7 @@ export const useMerchantRegistration = (options?: Props) => {
         ) {
           // 가맹점 등록 필요 error (정상 플로우)
         } else {
-          throw error;
+          new Error(`Merchant inquiry failed' ${error}`);
         }
       }
 
