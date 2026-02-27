@@ -3,7 +3,6 @@ import { Outlet } from 'react-router-dom';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSEHandler } from '@/hooks/useSSEHandler';
 import { useSystemStatusMonitor } from '@/hooks/useSystemStatusMonitor';
-import { useMerchantRegistration } from '@/hooks/useMerchantRegistration';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useVersionCheck } from '@repo/feature/hooks';
 
@@ -11,7 +10,6 @@ import { useVersionCheck } from '@repo/feature/hooks';
 const AppContent = () => {
   useSSEHandler();
   useSystemStatusMonitor();
-  useMerchantRegistration();
   useVersionCheck();
 
   return (
