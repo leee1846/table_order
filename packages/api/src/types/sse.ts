@@ -18,7 +18,8 @@ export interface ISseMessage {
     | 'SHOP_THEME_MENU'
     | 'RING_BELL'
     | 'POS_ERROR'
-    | 'ORDER_COMPLETE';
+    | 'ORDER_COMPLETE'
+    | 'AGENT_PING';
   data:
     | {
         [key: string]: number | string;

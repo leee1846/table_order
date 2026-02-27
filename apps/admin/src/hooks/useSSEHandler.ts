@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { initializeSseConnection, disconnectSse } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
 import { SSE_KEYS } from '@/constants/keys';
@@ -8,16 +8,21 @@ import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { usePosErrorStore } from '@/stores/usePosErrorStore';
+import { usePosAgentErrorStore } from '@/stores/usePosAgentErrorStore';
 import { useTheftAlertStore } from '@/stores/useTheftAlertStore';
 import { ROUTES } from '@/constants/routes';
-import { SystemControl } from '@repo/util/app';
+import { SystemControl, CapacitorApp } from '@repo/util/app';
+import { useShopDetailData } from './useShopDetailData';
 
-export const useSSEHandler = () => {
+export const useSSEHandler = (tableNumber?: string) => {
   const queryClient = useQueryClient();
   const { shopCode } = useAuth();
   const { clearAuth, tokenPayload } = useAuthStore();
   const { openAlert } = useTheftAlertStore();
   const { openError } = usePosErrorStore();
+  const { openError: openAgentError } = usePosAgentErrorStore();
+  const { data: shopDetailData } = useShopDetailData();
+  const agentPingCheckTimeoutRef = useRef<number | null>(null); // AGENT_PING 체크 타이머
 
   // 로그인/로그아웃 시 SSE 연결 관리
   useEffect(() => {
@@ -34,6 +39,30 @@ export const useSSEHandler = () => {
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
     SSE_KEYS.MAIN_CONNECTION
   );
+
+  // AGENT_PING 타이머 정리를 위한 effect
+  //처음엔 조건 만족(앱 + 포스연동)
+  useEffect(() => {
+    const isApp = CapacitorApp.isNative();
+    const isPosIntegrated =
+      shopDetailData?.shopSetting?.shopPosCode &&
+      shopDetailData.shopSetting.shopPosCode === 'OKPOS';
+
+    //관리자가 포스 설정을 선택안함으로 바꾸거나 앱이 아니면 타이머 정리
+    if (!isApp || !isPosIntegrated) {
+      if (agentPingCheckTimeoutRef.current) {
+        clearTimeout(agentPingCheckTimeoutRef.current);
+        agentPingCheckTimeoutRef.current = null;
+      }
+    }
+
+    return () => {
+      // cleanup: 컴포넌트 언마운트 시 타이머 정리
+      if (agentPingCheckTimeoutRef.current) {
+        clearTimeout(agentPingCheckTimeoutRef.current);
+      }
+    };
+  }, [shopDetailData]);
 
   // LOGOUT 체크를 렌더링 단계에서 수행
   useEffect(() => {
@@ -91,6 +120,20 @@ export const useSSEHandler = () => {
       });
     }
 
+    if (sseMessage?.type === 'AGENT_PING') {
+      // 기존 타이머 취소
+      if (agentPingCheckTimeoutRef.current) {
+        clearTimeout(agentPingCheckTimeoutRef.current);
+      }
+
+      // 새로운 타이머 설정 (40초 후 체크)
+      agentPingCheckTimeoutRef.current = window.setTimeout(() => {
+        openAgentError();
+      }, 40000);
+
+      return;
+    }
+
     // 도난방지 팝업 테스트 필요
     // if (sseMessage?.type === 'DEVICE_THEFT') {
     //   // data는 DeviceVo 객체
@@ -110,5 +153,13 @@ export const useSSEHandler = () => {
     //     }
     //   }
     // }
-  }, [sseMessage, shopCode, queryClient, openAlert, openError]);
+  }, [
+    sseMessage,
+    shopCode,
+    tableNumber,
+    queryClient,
+    openAlert,
+    openError,
+    openAgentError,
+  ]);
 };
