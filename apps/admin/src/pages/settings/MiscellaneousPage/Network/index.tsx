@@ -164,7 +164,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
         </S.TitleContentContainer>
         <S.Versions>
           <p>
-            {t('WEB 버전')} <span>1.0.7</span>
+            {t('WEB 버전')} <span>{__APP_VERSION__}</span>
           </p>
           <div />
           {CapacitorApp.isNative() && (

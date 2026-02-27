@@ -30,7 +30,7 @@ export const Detail = ({
           {/* Q/A동안 노출 버전 */}
           {/* TODO: 삭제 예정 */}
           <p>
-            {t('WEB 버전')} <span>1.0.7</span>
+            {t('WEB 버전')} <span>{__APP_VERSION__}</span>
           </p>
           <div />
           <p>
