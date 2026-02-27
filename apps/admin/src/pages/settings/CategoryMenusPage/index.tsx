@@ -16,7 +16,7 @@ import { useAdminTranslation } from '@/config/i18n';
 import { useIsPosLinked } from '@/hooks/useIsPosLinked';
 
 export const CategoryMenusPage = () => {
-  const { i18n } = useAdminTranslation();
+  const { i18n, t } = useAdminTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [selectedMenu, setSelectedMenu] = useState<IMenu | null>(null);
@@ -94,13 +94,18 @@ export const CategoryMenusPage = () => {
         categoryName={categoryName}
         isPosLinked={isPosLinked}
       />
-      <Menus
-        menus={menuListResponse?.data}
-        hasCategory={isValidCategorySeq}
-        onClickEditMenu={handleEditMenu}
-        isPosLinked={isPosLinked}
-      />
-
+      {menuListResponse?.data && menuListResponse?.data?.length > 0 ? (
+        <Menus
+          menus={menuListResponse?.data}
+          hasCategory={isValidCategorySeq}
+          onClickEditMenu={handleEditMenu}
+          isPosLinked={isPosLinked}
+        />
+      ) : (
+        <S.NoContent>
+          <p>{t('등록된 메뉴가 없습니다.')}</p>
+        </S.NoContent>
+      )}
       {isMenuManageModalOpen && isValidCategorySeq && (
         <MenuManageModal
           menu={selectedMenu ?? undefined}
