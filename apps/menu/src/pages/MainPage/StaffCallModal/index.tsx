@@ -220,7 +220,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
                               <NumberInput
                                 variant="square"
                                 size="M"
-                                min={0}
+                                min={1}
                                 max={999}
                                 value={currentQuantity}
                                 onChange={(newValue) => {
