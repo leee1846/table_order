@@ -418,6 +418,11 @@ export const TablesPage = () => {
 
   // 일반 모드: 테이블 길게 누르기 처리
   const handleMenuModeLongPress = async (table: TableWithStatus) => {
+    //스크롤 중이면 길게 누르기 무시
+    if (isScrollingRef.current) {
+      return;
+    }
+
     // 주문이 없는 테이블인 경우 고객 수 입력 확인
     if (shopSetting?.useCustomerCount && !table.hasOrder) {
       setSelectedTableForGuestCount(table);
