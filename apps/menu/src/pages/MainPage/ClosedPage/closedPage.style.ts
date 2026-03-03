@@ -22,6 +22,7 @@ export const ContentWrapper = styled.div`
   min-height: 100%;
   width: max-content;
   min-width: 100%;
+  max-width: 100%;
   padding: 20px;
   box-sizing: border-box;
   margin: 0 auto;
@@ -55,6 +56,8 @@ export const Time = styled.p`
 `;
 
 export const Description = styled.p`
+  width: 100%;
+  max-width: 100%;
   font-size: 1.25rem;
   font-style: normal;
   font-weight: 500;
@@ -62,4 +65,6 @@ export const Description = styled.p`
   letter-spacing: -0.03125rem;
   color: ${({ theme }) => theme.mode.grey[600]};
   text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 `;
