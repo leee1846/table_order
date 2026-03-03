@@ -69,9 +69,9 @@ export const AllDiscountDialog = ({
 
     const rawDiscount =
       selectedDiscount === 'custom' ? customDiscount : selectedDiscount;
-    const parsedDiscount = Number(rawDiscount);
+    const parsedDiscount = rawDiscount !== '' ? Number(rawDiscount) : null;
 
-    if (!parsedDiscount) {
+    if (parsedDiscount !== 0 && !parsedDiscount) {
       toast(t('할인율을 입력해주세요.'));
       return;
     }
