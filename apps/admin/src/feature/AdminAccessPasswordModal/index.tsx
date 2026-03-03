@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { UnlockedIcon, ArrowBackIcon, CloseIcon } from '@repo/ui/icons';
+import { ArrowBackIcon, CloseIcon, PasswordIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
 import { useAdminTranslation } from '@/config/i18n';
@@ -93,39 +93,49 @@ export const AdminAccessPasswordModal = (
       aria-labelledby="password-title"
     >
       <S.CloseButton type="button" onClick={onClose} aria-label={t('닫기')}>
-        <CloseIcon width={28} height={28} color={theme.mode.grey[50]} />
+        <CloseIcon width={32} height={32} color={theme.mode.grey[50]} />
       </S.CloseButton>
-      <S.Content>
-        <UnlockedIcon
-          width={80}
-          height={80}
-          color={theme.mode.grey[400]}
-          aria-hidden="true"
-        />
-        <S.Title id="password-title">{t('비밀번호를 입력해 주세요')}</S.Title>
-        <S.PasswordContainer
-          role="status"
-          aria-live="polite"
-          aria-label={t('비밀번호')}
-        >
-          {filledDigits.map((isFilled, digitIndex) => (
-            <li
-              key={`${digitIndex + 1}`}
-              aria-label={isFilled ? t('입력됨') : t('미입력')}
-            >
-              {isFilled && <span />}
-            </li>
-          ))}
-        </S.PasswordContainer>
-        <Keypad
-          onNumberPress={handleNumberPress}
-          bottomRightAction={handleDeletePassword}
-          bottomRightIcon={
-            <ArrowBackIcon width={28} height={28} color={theme.mode.grey[50]} />
-          }
-          customStyle={S.KeypadCss(theme)}
-        />
-      </S.Content>
+      <S.InnerContainer>
+        <S.Header>
+          <S.Title>{t('관리자 비밀번호 4자리를')}</S.Title>
+          <S.Title>{t('입력해 주세요 ')}</S.Title>
+        </S.Header>
+        <S.Content>
+          <S.PasswordContainer
+            role="status"
+            aria-live="polite"
+            aria-label={t('비밀번호')}
+          >
+            {filledDigits.map((isFilled, digitIndex) => (
+              <S.PasswordItem
+                key={`${digitIndex + 1}`}
+                aria-label={isFilled ? t('입력됨') : t('미입력')}
+                isFilled={isFilled}
+              >
+                {isFilled && (
+                  <PasswordIcon
+                    width={18}
+                    height={18}
+                    color={theme.mode.grey[50]}
+                  />
+                )}
+              </S.PasswordItem>
+            ))}
+          </S.PasswordContainer>
+          <Keypad
+            onNumberPress={handleNumberPress}
+            bottomRightAction={handleDeletePassword}
+            bottomRightIcon={
+              <ArrowBackIcon
+                width={28}
+                height={28}
+                color={theme.mode.grey[50]}
+              />
+            }
+            customStyle={S.KeypadCss(theme)}
+          />
+        </S.Content>
+      </S.InnerContainer>
     </S.Container>
   );
 };

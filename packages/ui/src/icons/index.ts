@@ -46,6 +46,7 @@ export { default as MenuBookIcon } from './MenuBookIcon';
 export { default as EmptedImageIcon } from './EmptedImageIcon';
 export { default as CheckIcon } from './CheckIcon';
 export { default as DownloadIcon } from './DownloadIcon';
+export { default as PasswordIcon } from './PasswordIcon';
 
 export { default as bestOnIcon } from './best_on.svg';
 export { default as newOnIcon } from './new_on.svg';

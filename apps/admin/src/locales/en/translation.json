@@ -714,5 +714,7 @@
   "포스 에이전트 연결 오류": "POS Agent Connection Error",
   "포스 에이전트와의 연결이 원활하지 않습니다.": "Connection to the POS agent is not stable.",
   "에이전트 프로그램을 확인해주세요.": "Please check the agent program.",
-  "상단 QR코드를 스캔하면 채널톡 서비스로 연결됩니다.": "Scanning the QR code at the top will connect you to Channel Talk service."
+  "상단 QR코드를 스캔하면 채널톡 서비스로 연결됩니다.": "Scanning the QR code at the top will connect you to Channel Talk service.",
+  "관리자 비밀번호 4자리를": "Enter the 4-digit administrator password",
+  "입력해 주세요": "Please enter"
 }

@@ -6,7 +6,7 @@ export const KeypadCss = (theme: Theme) => css`
   & > div > button {
     background-color: ${theme.mode.grey[700]};
     color: ${theme.mode.grey[50]};
-    width: 9.16667rem;
+    width: 115px;
 
     & > svg > path {
       fill: ${theme.mode.grey[50]};
@@ -29,7 +29,7 @@ export const Container = styled.div`
   box-sizing: border-box;
   overflow: auto;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
 `;
 
@@ -39,22 +39,31 @@ export const CloseButton = styled.button`
   right: 27px;
 `;
 
+export const InnerContainer = styled.div`
+  display: flex;
+  gap: 30px;
+`;
+
+export const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+`;
+
+export const Title = styled.p`
+  ${TYPOGRAPHY.MT_3}
+  color: ${({ theme }) => theme.mode.grey[100]};
+`;
+
 export const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   width: max-content;
-  padding: 20px;
+  padding: 0 20px;
   box-sizing: border-box;
-  margin: auto 0;
-  min-height: calc(100vh - 180px);
-`;
-
-export const Title = styled.p`
-  ${TYPOGRAPHY.MT_1}
-  color: ${({ theme }) => theme.mode.grey[50]};
-  margin: 16px 0 80px;
 `;
 
 export const PasswordContainer = styled.ul`
@@ -65,19 +74,16 @@ export const PasswordContainer = styled.ul`
   margin-bottom: 60px;
 
   & > li {
-    width: 4.0625rem;
-    height: 2.375rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid ${({ theme }) => theme.mode.grey[400]};
-
-    & > span {
-      display: inline-block;
-      width: 0.75rem;
-      height: 0.75rem;
-      border-radius: 50%;
-      background-color: ${({ theme }) => theme.mode.grey[400]};
-    }
   }
+`;
+
+export const PasswordItem = styled.li<{ isFilled: boolean }>`
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: ${({ theme, isFilled }) =>
+    isFilled ? theme.mode.grey[600] : theme.mode.grey[800]};
 `;
