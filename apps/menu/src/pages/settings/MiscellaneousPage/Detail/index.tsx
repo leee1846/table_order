@@ -27,8 +27,6 @@ export const Detail = ({
       <UIStyles.setting.Header>
         <UIStyles.setting.Title>{t('버전 및 네트워크')}</UIStyles.setting.Title>
         <S.Versions>
-          {/* Q/A동안 노출 버전 */}
-          {/* TODO: 삭제 예정 */}
           <p>
             {t('WEB 버전')} <span>{__APP_VERSION__}</span>
           </p>
