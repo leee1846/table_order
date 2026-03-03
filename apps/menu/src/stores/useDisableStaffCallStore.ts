@@ -33,6 +33,7 @@ export const useDisableStaffCallStore = create<IDisableStaffCallStore>(
       );
     },
     clearData: () => {
+      globalTimerManager.clear(TIMER_KEYS.DISABLE_STAFF_CALL);
       set({ data: { disableStaffCall: false } });
     },
   })
