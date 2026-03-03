@@ -3,7 +3,7 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 
 const { colors } = theme;
 
-export const CardContainer = styled.div`
+export const CardContainer = styled.div<{ isUsed?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -16,6 +16,8 @@ export const CardContainer = styled.div`
   -webkit-tap-highlight-color: transparent;
 
   border-radius: 12px;
+
+  background-color: ${({ isUsed }) => (isUsed ? `white` : colors.grey[200])};
 
   &:active {
     color: ${colors.white};

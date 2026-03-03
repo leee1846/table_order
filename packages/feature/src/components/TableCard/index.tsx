@@ -28,7 +28,7 @@ export const TableCard = ({
   const displayAmount = table.remainingAmount ?? table.totalAmount;
 
   return (
-    <S.CardContainer onClick={onClick}>
+    <S.CardContainer onClick={onClick} isUsed={table.wifiSignal !== null}>
       <S.CardHeader>
         <S.TableNumber isEmpty={table.menuItems === null}>
           {table.tableName}

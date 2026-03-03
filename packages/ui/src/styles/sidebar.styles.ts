@@ -30,11 +30,7 @@ export const MenuList = styled.ul`
   flex-direction: column;
   flex: 1;
   padding: 0 12px;
-`;
-
-export const MenuDivider = styled.div`
-  height: 1px;
-  background-color: ${colors.grey[700]};
+  margin-top: 40px;
 `;
 
 export interface IMenuItem {
@@ -67,4 +63,11 @@ export const ActionButton = styled.button`
   cursor: pointer;
   ${TYPOGRAPHY.MT_4}
   color: ${colors.grey[500]};
+`;
+
+export const Line = styled.div`
+  width: 90%;
+  height: 1px;
+  background-color: ${colors.grey[700]};
+  transform: translateX(5%);
 `;

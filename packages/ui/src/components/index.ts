@@ -24,5 +24,5 @@ export {
   MenuItem,
   ActionButtons,
   ActionButton,
-  MenuDivider,
+  Line,
 } from '../styles/sidebar.styles';

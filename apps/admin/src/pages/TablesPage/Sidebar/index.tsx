@@ -5,18 +5,16 @@ import {
   Logo,
   MenuList,
   MenuItem,
-  MenuDivider,
   ActionButtons,
   ActionButton,
+  Line,
 } from '@repo/ui/components';
 import { OrderListDialog } from '@/feature/dialogs/OrderListDialog';
 import { SalesListDialogWithGuard } from '@/feature/dialogs/SalesListDialog';
 import { DeviceListDialog } from '@/feature/dialogs/DeviceListDialog';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import type { ICurrentTable, ITableGroup } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
-import { TableGroupList } from './sidebar.styles';
 import { SystemControl } from '@repo/util/app';
 import { useGetShopThemeMenu } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
@@ -27,18 +25,7 @@ type MenuItem = {
   label: string;
 };
 
-interface SidebarProps {
-  currentTableList?: ICurrentTable[];
-  tableGroups: ITableGroup[];
-  selectedTableGroupSeq: number | null;
-  onTableGroupSelect: (tableGroupSeq: number) => void;
-}
-
-export const Sidebar = ({
-  tableGroups,
-  selectedTableGroupSeq,
-  onTableGroupSelect,
-}: SidebarProps) => {
+export const Sidebar = () => {
   const { t } = useAdminTranslation();
   const menuItems = useMemo(
     () => [
@@ -105,20 +92,7 @@ export const Sidebar = ({
         />
       </Logo>
 
-      <TableGroupList>
-        {tableGroups.map((group) => (
-          <MenuItem
-            key={group.tableGroupSeq}
-            onClick={() => onTableGroupSelect(group.tableGroupSeq)}
-            isSelected={selectedTableGroupSeq === group.tableGroupSeq}
-          >
-            {group.tableGroupName}
-          </MenuItem>
-        ))}
-      </TableGroupList>
-
       <MenuList>
-        <MenuDivider />
         {menuItems.map((menu) => (
           <MenuItem
             key={menu.id}
@@ -131,6 +105,7 @@ export const Sidebar = ({
       </MenuList>
 
       <ActionButtons>
+        <Line />
         <ActionButton onClick={handleClose}>{t('종료')}</ActionButton>
       </ActionButtons>
 

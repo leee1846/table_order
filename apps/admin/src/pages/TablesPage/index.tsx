@@ -6,6 +6,10 @@ import {
   DraggableTableCard,
   useTablesData,
   GuestCountDialog,
+  TableGroupWrapper,
+  TableGroupList,
+  TableGroup,
+  TableGroupButton,
   type TableWithStatus,
   TableCard,
 } from '@repo/feature/components';
@@ -45,11 +49,10 @@ export const TablesPage = () => {
   );
 
   // 테이블 데이터 조회 (공통 훅 사용)
-  const { tables, tableGroupListResponse, currentTableListResponse } =
-    useTablesData({
-      shopCode: shopCode ?? '',
-      selectedTableGroupSeq,
-    });
+  const { tables, tableGroupListResponse } = useTablesData({
+    shopCode: shopCode ?? '',
+    selectedTableGroupSeq,
+  });
 
   // 테이블 그룹 선택값을 세션 스토리지에 저장해, 페이지 재진입 시 유지
   useEffect(() => {
@@ -201,7 +204,24 @@ export const TablesPage = () => {
       longPressDelay={350}
     >
       <TablesPageContainer>
+        <Sidebar />
         <TableCardsArea>
+          <TableGroupWrapper>
+            <TableGroupList>
+              {tableGroupListResponse?.data?.map((group) => (
+                <TableGroup key={group.tableGroupSeq}>
+                  <TableGroupButton
+                    isSelected={selectedTableGroupSeq === group.tableGroupSeq}
+                    onClick={() =>
+                      setSelectedTableGroupSeq(group.tableGroupSeq)
+                    }
+                  >
+                    {group.tableGroupName}
+                  </TableGroupButton>
+                </TableGroup>
+              ))}
+            </TableGroupList>
+          </TableGroupWrapper>
           <TableCardsGrid>
             {tables.map((table) =>
               isPosLinked ? (
@@ -227,12 +247,6 @@ export const TablesPage = () => {
             )}
           </TableCardsGrid>
         </TableCardsArea>
-        <Sidebar
-          currentTableList={currentTableListResponse?.data}
-          tableGroups={tableGroupListResponse?.data ?? []}
-          selectedTableGroupSeq={selectedTableGroupSeq}
-          onTableGroupSelect={setSelectedTableGroupSeq}
-        />
       </TablesPageContainer>
 
       <GuestCountDialog
