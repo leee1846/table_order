@@ -1,21 +1,11 @@
 import * as CommonStyles from '@repo/ui/styles/sidebar.styles';
-import type { ITableGroup } from '@repo/api/types';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { capsSmartOrderWhiteLogo } from '@repo/ui/icons';
 
-interface Props {
-  tableGroups?: ITableGroup[];
-  selectedTableGroupSeq: number;
-  onTableGroupClick: (tableGroupSeq: number) => void;
-}
-export const Sidebar = ({
-  tableGroups,
-  selectedTableGroupSeq,
-  onTableGroupClick,
-}: Props) => {
+export const Sidebar = () => {
   const navigate = useNavigate();
   const { t } = useAdminTranslation();
 
@@ -38,16 +28,6 @@ export const Sidebar = ({
       </CommonStyles.Logo>
 
       <CommonStyles.MenuList>
-        {tableGroups?.map((tableGroup) => (
-          <CommonStyles.MenuItem
-            key={tableGroup.tableGroupSeq}
-            isSelected={selectedTableGroupSeq === tableGroup.tableGroupSeq}
-            onClick={() => onTableGroupClick(tableGroup.tableGroupSeq)}
-          >
-            {tableGroup.tableGroupName}
-          </CommonStyles.MenuItem>
-        ))}
-
         <CommonStyles.MenuItem isSelected={false} onClick={onClickManagement}>
           {t('관리')}
         </CommonStyles.MenuItem>

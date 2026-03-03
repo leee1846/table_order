@@ -22,6 +22,10 @@ import {
   GuestCountDialog,
   type TableWithStatus,
   TableCard,
+  TableGroupWrapper,
+  TableGroupList,
+  TableGroup,
+  TableGroupButton,
 } from '@repo/feature/components';
 import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
@@ -492,7 +496,26 @@ export const TablesPage = () => {
         {shopDetailData?.shopSetting?.shopPosCode !== 'NONE' &&
         shopDetailData?.shopSetting?.shopPosCode != null ? (
           <TablesPageContainer>
+            <Sidebar />
             <TableCardsArea>
+              <TableGroupWrapper>
+                <TableGroupList>
+                  {tableGroupsData?.map((tableGroup) => (
+                    <TableGroup key={tableGroup.tableGroupSeq}>
+                      <TableGroupButton
+                        isSelected={
+                          selectedTableGroupSeq === tableGroup.tableGroupSeq
+                        }
+                        onClick={() =>
+                          setSelectedTableGroupSeq(tableGroup.tableGroupSeq)
+                        }
+                      >
+                        {tableGroup.tableGroupName}
+                      </TableGroupButton>
+                    </TableGroup>
+                  ))}
+                </TableGroupList>
+              </TableGroupWrapper>
               <TableCardsGrid onScroll={handleScroll}>
                 {tablesWithStatus.map((table) => (
                   <div key={table.id}>
@@ -508,11 +531,6 @@ export const TablesPage = () => {
                 ))}
               </TableCardsGrid>
             </TableCardsArea>
-            <Sidebar
-              tableGroups={tableGroupsData ?? []}
-              selectedTableGroupSeq={selectedTableGroupSeq ?? 0}
-              onTableGroupClick={setSelectedTableGroupSeq}
-            />
           </TablesPageContainer>
         ) : (
           <DndContextWrapper
@@ -522,7 +540,26 @@ export const TablesPage = () => {
             longPressDelay={350}
           >
             <TablesPageContainer>
+              <Sidebar />
               <TableCardsArea>
+                <TableGroupWrapper>
+                  <TableGroupList>
+                    {tableGroupsData?.map((tableGroup) => (
+                      <TableGroup key={tableGroup.tableGroupSeq}>
+                        <TableGroupButton
+                          isSelected={
+                            selectedTableGroupSeq === tableGroup.tableGroupSeq
+                          }
+                          onClick={() =>
+                            setSelectedTableGroupSeq(tableGroup.tableGroupSeq)
+                          }
+                        >
+                          {tableGroup.tableGroupName}
+                        </TableGroupButton>
+                      </TableGroup>
+                    ))}
+                  </TableGroupList>
+                </TableGroupWrapper>
                 <TableCardsGrid onScroll={handleScroll}>
                   {tablesWithStatus.map((table) => (
                     <DraggableTableCard
@@ -535,11 +572,6 @@ export const TablesPage = () => {
                   ))}
                 </TableCardsGrid>
               </TableCardsArea>
-              <Sidebar
-                tableGroups={tableGroupsData ?? []}
-                selectedTableGroupSeq={selectedTableGroupSeq ?? 0}
-                onTableGroupClick={setSelectedTableGroupSeq}
-              />
             </TablesPageContainer>
           </DndContextWrapper>
         )}
@@ -559,7 +591,27 @@ export const TablesPage = () => {
   return (
     <>
       <TablesPageContainer>
+        <Sidebar />
+
         <TableCardsArea>
+          <TableGroupWrapper>
+            <TableGroupList>
+              {tableGroupsData?.map((tableGroup) => (
+                <TableGroup key={tableGroup.tableGroupSeq}>
+                  <TableGroupButton
+                    isSelected={
+                      selectedTableGroupSeq === tableGroup.tableGroupSeq
+                    }
+                    onClick={() =>
+                      setSelectedTableGroupSeq(tableGroup.tableGroupSeq)
+                    }
+                  >
+                    {tableGroup.tableGroupName}
+                  </TableGroupButton>
+                </TableGroup>
+              ))}
+            </TableGroupList>
+          </TableGroupWrapper>
           <TableCardsGrid onScroll={handleScroll}>
             {tablesWithStatus.map((table) => (
               <LongPressTableCard
@@ -577,11 +629,6 @@ export const TablesPage = () => {
             ))}
           </TableCardsGrid>
         </TableCardsArea>
-        <Sidebar
-          tableGroups={tableGroupsData ?? []}
-          selectedTableGroupSeq={selectedTableGroupSeq ?? 0}
-          onTableGroupClick={setSelectedTableGroupSeq}
-        />
       </TablesPageContainer>
 
       <GuestCountDialog
