@@ -33,11 +33,12 @@ export const QRModalHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 20px;
+
   & > p {
-    ${TYPOGRAPHY.MT_2}
+    ${TYPOGRAPHY.MT_1}
     color: ${theme.colors.grey[800]};
     text-align: center;
-    transform: translateY(-20px);
   }
 `;
 
@@ -66,7 +67,7 @@ export const QRModalContent = styled.div`
   gap: 20px;
 
   & > p {
-    ${TYPOGRAPHY.MT_4}
+    ${TYPOGRAPHY.ST_2}
     color: ${theme.colors.grey[600]};
     margin: 0;
     text-align: center;
@@ -77,8 +78,8 @@ export const QRModalContent = styled.div`
     height: 100%;
 
     > img {
-      width: 100%;
-      height: 100%;
+      width: 120px;
+      height: 120px;
       object-fit: contain;
     }
   }

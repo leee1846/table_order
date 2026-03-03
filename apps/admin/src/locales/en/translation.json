@@ -288,6 +288,7 @@
   "기타": "Other",
   "계정": "Account",
   "고객센터": "Customer service",
+  "고객센터 안내": "Customer Service Information",
   "고객이 메뉴판 화면에서 볼 수 있는 매장 로고를 설정할 수 있어요.": "Set the store logo customers see on the menu screen.",
   "공급가": "Supply price",
   "공지사항을 불러오는 중입니다...": "Loading announcements...",
@@ -710,5 +711,6 @@
   "최소 수량이 최대 수량보다 클 수 없습니다.": "Minimum quantity cannot be greater than maximum quantity.",
   "포스 에이전트 연결 오류": "POS Agent Connection Error",
   "포스 에이전트와의 연결이 원활하지 않습니다.": "Connection to the POS agent is not stable.",
-  "에이전트 프로그램을 확인해주세요.": "Please check the agent program."
+  "에이전트 프로그램을 확인해주세요.": "Please check the agent program.",
+  "상단 QR코드를 스캔하면 채널톡 서비스로 연결됩니다.": "Scanning the QR code at the top will connect you to Channel Talk service."
 }

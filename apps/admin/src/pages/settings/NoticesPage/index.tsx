@@ -77,12 +77,14 @@ export const NoticesPage = () => {
               </S.CloseButton>
             </S.ButtonWrapper>
             <S.QRModalHeader>
-              <p>{t('고객센터 QR 코드')}</p>
+              <p>{t('고객센터 안내')}</p>
             </S.QRModalHeader>
             <S.QRModalContent>
               <div>
                 <img src="/images/qr.png" alt="QR Code" />
               </div>
+
+              <p>{t('상단 QR코드를 스캔하면 채널톡 서비스로 연결됩니다.')}</p>
             </S.QRModalContent>
           </S.QRModalContainer>
         </ModalBackground>
