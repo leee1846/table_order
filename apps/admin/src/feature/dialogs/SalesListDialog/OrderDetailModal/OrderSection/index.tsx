@@ -23,49 +23,34 @@ export const OrderSection = ({ order }: Props) => {
 
   return (
     <S.Container>
-      <S.TitleContainer>
-        <p>
-          {t('테이블')}: {order.orderLog?.tableName ?? '-'}
-        </p>
-        {/* <div>
-          <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
-            {t('재결제')}
-          </BasicButton>
-          <BasicButton variant="Outline_Navy_M" onClick={() => {}}>
-            {t('재판매')}
-          </BasicButton>
-        </div> */}
-      </S.TitleContainer>
-
       <S.OrderInfoContainer>
         <div>
-          <p>
-            {t('멤버십')}
-            <span>-</span>
-          </p>
-          <p>
-            {t('결제 수단')}
-            <span>{paymentLabel ?? '-'}</span>
-          </p>
-          <p />
+          <p>{t('멤버십')}</p>
+          <span>{t('비회원')}</span>
         </div>
+
         <div>
-          <p>
-            {t('주문번호')}
-            <span>{order.orderNumber ?? '-'}</span>
-          </p>
-          <p>
-            {t('주문 일시')}
-            <span>
-              {formatDateTime(
-                order.orderClearedDate ?? orderLog?.createDate ?? ''
-              ) || '-'}
-            </span>
-          </p>
-          <p style={{ marginLeft: '10px' }}>
-            {t('객수')}
-            <span>{order.customerCount > 0 ? order.customerCount : '-'}</span>
-          </p>
+          <p>{t('주문번호')}</p>
+          <span>{order.orderNumber ?? '-'}</span>
+        </div>
+
+        <div>
+          <p>{t('결제 수단')}</p>
+          <span>{paymentLabel ?? '-'}</span>
+        </div>
+
+        <div>
+          <p>{t('주문 일시')}</p>
+          <span>
+            {formatDateTime(
+              order.orderClearedDate ?? orderLog?.createDate ?? ''
+            ) || '-'}
+          </span>
+        </div>
+
+        <div>
+          <p>{t('객수')}</p>
+          <span>{order.customerCount > 0 ? order.customerCount : '-'}</span>
         </div>
       </S.OrderInfoContainer>
 

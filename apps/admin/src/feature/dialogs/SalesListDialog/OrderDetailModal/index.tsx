@@ -23,6 +23,14 @@ export const OrderDetailModal = ({ order, onClose }: Props) => {
           <CloseIcon width={32} height={32} color={theme.colors.grey[700]} />
         </button>
 
+        <S.Header>
+          <S.Title>{t('주문 내역 상세')}</S.Title>
+          <S.TableName>
+            <p>{t('테이블 이름')} :</p>
+            <span>{order.orderLog?.tableName || '-'}</span>
+          </S.TableName>
+        </S.Header>
+
         <S.Tab>
           <S.TabButton
             isSelected={tab === 'order'}

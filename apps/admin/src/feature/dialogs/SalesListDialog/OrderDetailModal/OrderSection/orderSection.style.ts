@@ -3,55 +3,26 @@ import styled from '@emotion/styled';
 
 export const Container = styled.div``;
 
-export const TitleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-
-  & > p {
-    color: ${theme.colors.grey[800]};
-    ${TYPOGRAPHY.MT_6}
-  }
-  & > div {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-`;
-
 export const OrderInfoContainer = styled.div`
   width: 80%;
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-bottom: 24px;
-  & > div {
-    display: flex;
-    gap: 6px;
-    width: 100%;
 
-    & > p {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      ${TYPOGRAPHY.BD_2}
+  & > div {
+    ${TYPOGRAPHY.MT_9}
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    > p {
+      width: 73px;
       color: ${theme.colors.grey[500]};
 
-      & > span {
-        ${TYPOGRAPHY.MT_7}
+      > span {
         color: ${theme.colors.grey[900]};
       }
-    }
-
-    &:first-of-type > p {
-      flex: 2 1 0;
-      min-width: 0;
-    }
-
-    &:last-of-type > p {
-      flex: 2 1 0;
-      min-width: 0;
     }
   }
 `;
@@ -82,7 +53,7 @@ export const MenuItem = styled.div`
   width: 100%;
 
   & > p {
-    ${TYPOGRAPHY.MT_7}
+    ${TYPOGRAPHY.MT_9}
     color: ${theme.colors.grey[800]};
   }
   & > p:first-of-type {
