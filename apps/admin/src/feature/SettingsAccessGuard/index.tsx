@@ -67,7 +67,7 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
     // 인증이 필요하면 모달 표시
     setIsUnlocked(false);
     setIsModalOpen(true);
-  }, [requireAuth, isUnlocked]);
+  }, [requireAuth]);
 
   const handleAdminAuthSubmit = useCallback(
     async (password: string) => {
