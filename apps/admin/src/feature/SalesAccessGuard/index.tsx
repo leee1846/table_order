@@ -82,7 +82,6 @@ export const SalesAccessGuard = ({
 
     /**
      * 접근 권한을 확인하는 비동기 함수
-     * 네이티브 환경에서 매출 상세 잠금 설정이 활성화되어 있으면 비밀번호 인증 모달을 표시
      */
     const checkAccess = async () => {
       // 페이지가 변경되었는지 확인
@@ -120,12 +119,8 @@ export const SalesAccessGuard = ({
         return;
       }
 
-      // 페이지가 변경되지 않았고 이미 인증되었으면 모달을 다시 띄우지 않음
-      if (!isPageChanged && isUnlocked) {
-        return;
-      }
-
-      // 인증이 필요하면 비밀번호 입력 모달 표시
+      // 인증이 필요하면 상태 리셋 후 모달 표시
+      setIsUnlocked(false);
       setIsModalOpen(true);
     };
 
@@ -135,8 +130,15 @@ export const SalesAccessGuard = ({
     return () => {
       isCancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasContent, isNative, location.pathname, revalidateKey]);
+  }, [
+    hasContent,
+    isNative,
+    location.pathname,
+    revalidateKey,
+    shouldRequireAuth,
+    shopDetailData,
+    refresh,
+  ]);
 
   const handleSalesAuthSubmit = useCallback(
     async (password: string) => {

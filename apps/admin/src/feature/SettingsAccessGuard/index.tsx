@@ -57,16 +57,15 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
   }, []); // 초기 마운트 시 한 번만 실행
 
   useEffect(() => {
+    // requireAuth가 변경되면 인증 상태 리셋
     if (!requireAuth) {
       setIsUnlocked(true);
+      setIsModalOpen(false);
       return;
     }
 
-    // 이미 인증 완료된 경우 모달을 다시 띄우지 않음
-    if (isUnlocked) {
-      return;
-    }
-
+    // 인증이 필요하면 모달 표시
+    setIsUnlocked(false);
     setIsModalOpen(true);
   }, [requireAuth, isUnlocked]);
 
