@@ -13,6 +13,8 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/constants/routes';
 import { AdminAccessPasswordModal } from '@/feature/AdminAccessPasswordModal';
+import { useAdminTranslation } from '@/config/i18n';
+import { openConfirmDialog } from '@repo/feature/utils';
 
 interface SalesAccessGuardProps {
   children: ReactNode;
@@ -37,8 +39,20 @@ export const SalesAccessGuard = ({
   const navigate = useNavigate();
   const { shopCode } = useAuth();
   const { data: shopDetailData, refresh } = useShopDetailData();
+  const { t } = useAdminTranslation();
+
   const { mutateAsync: loginSales } = usePostLoginSales({
     ignoreGlobalErrors: [401],
+    options: {
+      onError: (error) => {
+        if (error.response?.status === 401) {
+          openConfirmDialog({
+            title: t('인증 실패'),
+            content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
+          });
+        }
+      },
+    },
   });
 
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -174,6 +188,7 @@ export const SalesAccessGuard = ({
           onClose={handleClose}
           onSubmit={handleSalesAuthSubmit}
           onSuccess={handleSalesAuthSuccess}
+          type="sales"
         />
       )}
     </>

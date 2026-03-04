@@ -12,6 +12,8 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/constants/routes';
 import { AdminAccessPasswordModal } from '@/feature/AdminAccessPasswordModal';
+import { useAdminTranslation } from '@/config/i18n';
+import { openConfirmDialog } from '@repo/feature/utils';
 
 interface SettingsAccessGuardProps {
   children: ReactNode;
@@ -27,9 +29,20 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
   // 관리자 인증 완료 여부 (인증 성공 시 true로 설정되어 페이지 접근 허용)
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useAdminTranslation();
 
   const { mutateAsync: loginMenuboardAdmin } = usePostLoginMenuboardAdmin({
     ignoreGlobalErrors: [401],
+    options: {
+      onError: (error) => {
+        if (error.response?.status === 401) {
+          openConfirmDialog({
+            title: t('인증 실패'),
+            content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
+          });
+        }
+      },
+    },
   });
 
   const isNative = CapacitorApp.isNative();
@@ -98,6 +111,7 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
           onClose={handleClose}
           onSubmit={handleAdminAuthSubmit}
           onSuccess={handleAdminAuthSuccess}
+          type="settings"
         />
       )}
     </>

@@ -62,7 +62,7 @@ export const Price = styled.p`
   }
 `;
 
-export const Description = styled.p`
+export const Description = styled.div`
   display: flex;
   align-items: center;
   gap: 2px;

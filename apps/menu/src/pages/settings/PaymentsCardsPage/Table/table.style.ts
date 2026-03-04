@@ -26,7 +26,7 @@ export const Tbody = styled(UIStyles.setting.Tbody)<{
     padding: 0px;
   }
 
-  & > tr > td:nth-child(5) {
+  & > tr > td:nth-of-type(5) {
     flex: 1 1 0;
   }
 
@@ -41,7 +41,7 @@ export const Tbody = styled(UIStyles.setting.Tbody)<{
 `;
 
 export const Thead = styled(UIStyles.setting.Thead)`
-  & > tr > th:nth-child(5) {
+  & > tr > th:nth-of-type(5) {
     flex: 1 1 0;
   }
 `;

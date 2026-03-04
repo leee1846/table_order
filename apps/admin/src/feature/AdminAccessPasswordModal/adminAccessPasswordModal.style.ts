@@ -54,6 +54,7 @@ export const Header = styled.div`
 export const Title = styled.p`
   ${TYPOGRAPHY.MT_3}
   color: ${({ theme }) => theme.mode.grey[100]};
+  white-space: pre-line;
 `;
 
 export const Content = styled.div`
