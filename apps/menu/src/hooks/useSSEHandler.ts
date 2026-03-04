@@ -60,7 +60,7 @@ type DeviceDataSyncDeps = {
   setDataAsync: (data: Partial<IDevice>) => void | Promise<void>;
   refreshDeviceData: () => Promise<IDevice | undefined>;
   postDeviceDetail: (req: IPostDeviceDetailRequest) => Promise<unknown>;
-  t: TFunction;
+  tRef: { current: TFunction };
 };
 
 /** POS 동기화 상태 API: 502 + code -102 = 동기화 진행 중 */
@@ -94,8 +94,9 @@ async function collectDeviceInfoAndSyncToServer(
     setDataAsync,
     refreshDeviceData,
     postDeviceDetail,
-    t,
+    tRef,
   } = syncDeps;
+  const t = tRef.current;
   const existingStoreSnapshot = deviceStoreDataRef.current ?? {};
   const { ipAddress, androidId, appInfo } = await getDeviceInfo({ t });
 
@@ -164,6 +165,8 @@ export const useSSEHandler = () => {
   const { tableNum: tableNumFromParams } = useParams();
   const queryClient = useQueryClient();
   const { t } = useCustomerTranslation();
+  const tRef = useRef(t);
+  tRef.current = t;
 
   const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
   const {
@@ -221,7 +224,7 @@ export const useSSEHandler = () => {
     setDataAsync,
     refreshDeviceData,
     postDeviceDetail,
-    t,
+    tRef,
   };
 
   // ----- Refetch 콜백 (handlersRef에 주입되어 핸들러에서 사용) -----
@@ -362,7 +365,7 @@ export const useSSEHandler = () => {
       await refreshShopDetailData();
       useModalStore.getState().closeAllModals();
       useDialogStore.getState().closeAllDialogs();
-      toast(t('매장정보가 업데이트 되었습니다.'), {
+      toast(tRef.current('매장정보가 업데이트 되었습니다.'), {
         position: 'center-center',
         duration: 1500,
       });
@@ -397,7 +400,7 @@ export const useSSEHandler = () => {
       }
 
       useModalStore.getState().closeMenuDetail();
-      toast(t('메뉴정보가 업데이트 되었습니다.'), {
+      toast(tRef.current('메뉴정보가 업데이트 되었습니다.'), {
         position: 'center-center',
         duration: 1500,
       });
@@ -430,7 +433,7 @@ export const useSSEHandler = () => {
             );
 
         if (isCurrentTableRemoved) {
-          toast(t('존재하지 않는 테이블입니다.'), {
+          toast(tRef.current('존재하지 않는 테이블입니다.'), {
             position: 'center-center',
             duration: 1500,
           });
@@ -566,9 +569,11 @@ export const useSSEHandler = () => {
 
     handleLogoutMessage: () => {
       openConfirmDialog({
-        title: t('로그아웃'),
-        content: t('비밀번호가 변경되었습니다. 다시 로그인 해주세요.'),
-        primaryText: t('확인'),
+        title: tRef.current('로그아웃'),
+        content: tRef.current(
+          '비밀번호가 변경되었습니다. 다시 로그인 해주세요.'
+        ),
+        primaryText: tRef.current('확인'),
         onConfirm: async () => {
           await clearAuthData();
           window.location.replace(ROUTES.LOGIN.generate());
@@ -634,7 +639,7 @@ export const useSSEHandler = () => {
           useDialogStore.getState().closeAllDialogs();
         }
 
-        toast(t('동기화가 완료되었습니다.'), {
+        toast(tRef.current('동기화가 완료되었습니다.'), {
           position: 'center-center',
           duration: 1500,
         });
