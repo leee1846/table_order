@@ -12,7 +12,7 @@ import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useModalStore } from '@/stores/useModalStore';
-import { SystemControl } from '@repo/util/app';
+import { useShopThemePage } from '@/hooks/useShopThemePage';
 
 /**
  * 터치 감지 및 자동 리셋 타이머를 관리하는 커스텀 훅
@@ -30,6 +30,7 @@ export const useTouchDetectTimer = () => {
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData();
   const { refresh: refreshTableGroupData } = useTableGroupData();
+  const { refresh: refreshShopThemePageData } = useShopThemePage();
 
   const refreshShopDetailDataRef = useRef(refreshShopDetailData);
   const refreshCategoriesDataRef = useRef(refreshCategoriesData);
@@ -38,12 +39,14 @@ export const useTouchDetectTimer = () => {
     refreshTableOrderHistoriesData
   );
   const refreshTableGroupDataRef = useRef(refreshTableGroupData);
+  const refreshShopThemePageDataRef = useRef(refreshShopThemePageData);
 
   refreshShopDetailDataRef.current = refreshShopDetailData;
   refreshCategoriesDataRef.current = refreshCategoriesData;
   refreshDeviceDataRef.current = refreshDeviceData;
   refreshTableOrderHistoriesDataRef.current = refreshTableOrderHistoriesData;
   refreshTableGroupDataRef.current = refreshTableGroupData;
+  refreshShopThemePageDataRef.current = refreshShopThemePageData;
 
   const { data: cartData, clearCart } = useCartStore();
   const { clearData: clearLanguageData } = useCustomerLanguageStore();
@@ -66,6 +69,7 @@ export const useTouchDetectTimer = () => {
         await refreshCategoriesDataRef.current();
         await refreshTableGroupDataRef.current();
         await refreshDeviceDataRef.current();
+        await refreshShopThemePageDataRef.current();
 
         // 장바구니 비우기
         clearCart();
@@ -81,7 +85,7 @@ export const useTouchDetectTimer = () => {
           showInitialPage();
         }
 
-        await SystemControl.deepCleanAndReload();
+        // await SystemControl.deepCleanAndReload();
       } catch {
         // TimerManager는 async 콜백의 Promise를 await하지 않으므로
         // throw가 나면 Unhandled Rejection → 웹뷰 앱 종료로 이어질 수 있음
