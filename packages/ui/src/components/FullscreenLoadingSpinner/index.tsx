@@ -1,5 +1,5 @@
-import { useContext } from 'react';
-import Lottie from 'lottie-react';
+import { useContext, useEffect, useRef } from 'react';
+import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import * as S from './fullscreenLoadingSpinner.style';
 import { loadingBlueIcon, loadingGreyIcon } from '@repo/ui/icons';
 import {
@@ -27,13 +27,26 @@ const getThemeMode = (): ThemeMode => {
 export const FullscreenLoadingSpinner = ({ size = 300 }: { size?: number }) => {
   const context = useContext(ThemeModeContext);
   const contextMode = context?.mode;
+  const lottieRef = useRef<LottieRefCurrentProps | null>(null);
 
   const mode = contextMode ?? getThemeMode();
+
+  useEffect(() => {
+    const ref = lottieRef;
+    return () => {
+      try {
+        ref.current?.destroy?.();
+      } catch {
+        // unmount 후 destroy 실패 시 무시 (triggerEvent 등 내부 에러 방지)
+      }
+    };
+  }, []);
 
   return (
     <S.Container>
       <S.SpinnerWrapper size={size}>
         <Lottie
+          lottieRef={lottieRef}
           animationData={mode === 'dark' ? loadingGreyIcon : loadingBlueIcon}
           loop={true}
         />
