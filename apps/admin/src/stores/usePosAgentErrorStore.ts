@@ -2,6 +2,7 @@ import { create } from '@repo/feature/zustand';
 
 interface IPosAgentErrorStore {
   isOpen: boolean;
+  closeTrigger: boolean;
   openError: () => void;
   closeError: () => void;
 }
@@ -11,10 +12,11 @@ interface IPosAgentErrorStore {
  */
 export const usePosAgentErrorStore = create<IPosAgentErrorStore>((set) => ({
   isOpen: false,
+  closeTrigger: false,
   openError: () => {
     set({ isOpen: true });
   },
   closeError: () => {
-    set({ isOpen: false });
+    set((state) => ({ isOpen: false, closeTrigger: !state.closeTrigger }));
   },
 }));

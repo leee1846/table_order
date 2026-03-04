@@ -20,7 +20,12 @@ export const useSSEHandler = (tableNumber?: string) => {
   const { clearAuth, tokenPayload } = useAuthStore();
   const { openAlert } = useTheftAlertStore();
   const { openError } = usePosErrorStore();
-  const { openError: openAgentError } = usePosAgentErrorStore();
+  const {
+    openError: openAgentError,
+    closeError: closeAgentError,
+    closeTrigger,
+    isOpen,
+  } = usePosAgentErrorStore();
   const { data: shopDetailData } = useShopDetailData();
   const agentPingCheckTimeoutRef = useRef<number | null>(null); // AGENT_PING 체크 타이머
 
@@ -40,22 +45,24 @@ export const useSSEHandler = (tableNumber?: string) => {
     SSE_KEYS.MAIN_CONNECTION
   );
 
-  // AGENT_PING 타이머 정리를 위한 effect
-  //처음엔 조건 만족(앱 + 포스연동)
+  //처음엔 조건 만족(앱 + 포스연동)하면 타이머 등록
   useEffect(() => {
     const isApp = CapacitorApp.isNative();
     const isPosIntegrated =
       shopDetailData?.shopSetting?.shopPosCode &&
       shopDetailData.shopSetting.shopPosCode === 'OKPOS';
 
-    //관리자가 포스 설정을 선택안함으로 바꾸거나 앱이 아니면 타이머 정리
-    if (!isApp || !isPosIntegrated) {
-      if (agentPingCheckTimeoutRef.current) {
-        clearTimeout(agentPingCheckTimeoutRef.current);
-        agentPingCheckTimeoutRef.current = null;
-      }
+    if (agentPingCheckTimeoutRef.current) {
+      clearTimeout(agentPingCheckTimeoutRef.current);
+      agentPingCheckTimeoutRef.current = null;
     }
-  }, [shopDetailData]);
+
+    if (isApp && isPosIntegrated) {
+      agentPingCheckTimeoutRef.current = window.setTimeout(() => {
+        openAgentError();
+      }, 40000);
+    }
+  }, [shopDetailData, openAgentError, closeTrigger]);
 
   // 컴포넌트 언마운트 시 타이머 정리
   useEffect(() => {
@@ -123,11 +130,14 @@ export const useSSEHandler = (tableNumber?: string) => {
     }
 
     if (sseMessage?.type === 'AGENT_PING') {
-      // 기존 타이머 취소
+      // 정상 신호 수신 - 타이머 취소 및 모달 닫기
       if (agentPingCheckTimeoutRef.current) {
         clearTimeout(agentPingCheckTimeoutRef.current);
+        agentPingCheckTimeoutRef.current = null;
+        if (isOpen) {
+          closeAgentError();
+        }
       }
-
       // 새로운 타이머 설정 (40초 후 체크)
       agentPingCheckTimeoutRef.current = window.setTimeout(() => {
         openAgentError();
@@ -155,6 +165,8 @@ export const useSSEHandler = (tableNumber?: string) => {
     //     }
     //   }
     // }
+    //isOpen 의존성 배열에 추가 경고뜨는 데 넣으면 모달 열릴때마다 useEffect 재실행 됨, 의도적으로 제외함
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     sseMessage,
     shopCode,
@@ -163,5 +175,6 @@ export const useSSEHandler = (tableNumber?: string) => {
     openAlert,
     openError,
     openAgentError,
+    closeAgentError,
   ]);
 };
