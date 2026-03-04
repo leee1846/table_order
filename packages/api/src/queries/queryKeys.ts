@@ -5,6 +5,8 @@ export const queryKeys = {
   common: {
     all: ['common'] as const,
     holidays: () => [...queryKeys.common.all, 'holidays'] as const,
+    posSyncStatus: (shopCode: string) =>
+      [...queryKeys.common.all, 'posSyncStatus', shopCode] as const,
   },
 
   app: {

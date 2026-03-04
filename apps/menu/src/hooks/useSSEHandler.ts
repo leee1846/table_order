@@ -12,13 +12,14 @@ import type {
 } from '@repo/api/types';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
-import { getLatestAppVersion } from '@repo/api/fetchers';
+import { getLatestAppVersion, getPosSyncStatus } from '@repo/api/fetchers';
 import { useSSE } from '@repo/feature/hooks';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useDialogStore } from '@repo/feature/stores';
 import { SystemControl, Installer } from '@repo/util/app';
-import { SSE_KEYS } from '@/constants/keys';
+import { SSE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import { ROUTES } from '@/constants/routes';
+import { globalTimerManager } from '@/utils/timerManager';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { clearAuthData } from '@/utils/auth';
@@ -39,6 +40,7 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
+import { usePosSyncOverlayStore } from '@/stores/usePosSyncOverlayStore';
 
 type DeviceDetailPayload = Record<string, unknown> & {
   deviceType?: TDeviceType | null;
@@ -60,6 +62,24 @@ type DeviceDataSyncDeps = {
   postDeviceDetail: (req: IPostDeviceDetailRequest) => Promise<unknown>;
   t: TFunction;
 };
+
+/** POS 동기화 상태 API: 502 + code -102 = 동기화 진행 중 */
+const POS_SYNC_POLL_INTERVAL_MS = 60 * 1000;
+const POS_SYNC_HTTP_502 = 502;
+const POS_SYNC_ERROR_CODE_IN_PROGRESS = -102;
+
+function isPosSyncInProgressError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+  const err = error as {
+    response?: { status?: number; data?: { status?: { code?: number } } };
+  };
+  return (
+    err.response?.status === POS_SYNC_HTTP_502 &&
+    err.response?.data?.status?.code === POS_SYNC_ERROR_CODE_IN_PROGRESS
+  );
+}
 
 /**
  * 디바이스 정보 수집 → 스토어/ref 반영 → 서버 POST
@@ -222,10 +242,41 @@ export const useSSEHandler = () => {
     [queryClient]
   );
 
+  const stopPosSyncPolling = useCallback(() => {
+    globalTimerManager.clear(TIMER_KEYS.POS_SYNC_POLLING);
+  }, []);
+
+  const startPosSyncPolling = useCallback(
+    (shopCode: string) => {
+      globalTimerManager.setTimeout(
+        TIMER_KEYS.POS_SYNC_POLLING,
+        () => {
+          void (async () => {
+            try {
+              await getPosSyncStatus(shopCode, [POS_SYNC_HTTP_502]);
+              stopPosSyncPolling();
+              await handlersRef.current.handlePosSyncEndMessage();
+            } catch (e) {
+              if (isPosSyncInProgressError(e)) {
+                startPosSyncPolling(shopCode);
+              } else {
+                startPosSyncPolling(shopCode);
+              }
+            }
+          })();
+        },
+        POS_SYNC_POLL_INTERVAL_MS
+      );
+    },
+    [stopPosSyncPolling]
+  );
+
   // ----- SSE 메시지 핸들러 Ref (의존성 변경 없이 최신 로직 참조) -----
   const handlersRef = useRef({
     refetchCurrentTableList,
     refetchDeviceList,
+    stopPosSyncPolling,
+    startPosSyncPolling,
 
     handleOrderMessage: async (shopCode: string, message: ISseMessage) => {
       // 현재 테이블 목록 먼저 새로고침
@@ -309,7 +360,12 @@ export const useSSEHandler = () => {
         return;
       }
       await refreshShopDetailData();
-      await SystemControl.deepCleanAndReload();
+      useModalStore.getState().closeAllModals();
+      useDialogStore.getState().closeAllDialogs();
+      toast(t('매장정보가 업데이트 되었습니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
     },
 
     // MENU 메시지 핸들러: 메뉴 정보 업데이트 처리
@@ -547,6 +603,43 @@ export const useSSEHandler = () => {
         completeWithFailure();
       }
     },
+
+    handlePosSyncStartMessage: () => {
+      usePosSyncOverlayStore.getState().show();
+      const shopCode = sseHandlerDataRef.current.currentShopData?.shopCode;
+      if (shopCode) {
+        handlersRef.current.startPosSyncPolling(shopCode);
+      }
+    },
+
+    handlePosSyncEndMessage: async () => {
+      handlersRef.current.stopPosSyncPolling();
+      const { currentShopData } = sseHandlerDataRef.current;
+      const shopCode = currentShopData?.shopCode;
+
+      try {
+        if (shopCode) {
+          await handlersRef.current.handleTableMessage(shopCode);
+        }
+        handlersRef.current.handleMenuMessage();
+      } finally {
+        const { locationPathname } = sseHandlerDataRef.current;
+        if (locationPathname !== ROUTES.LOGIN.path) {
+          await refreshShopDetailData();
+        }
+        usePosSyncOverlayStore.getState().hide();
+
+        if (locationPathname === ROUTES.ROOT.path) {
+          useModalStore.getState().closeAllModals();
+          useDialogStore.getState().closeAllDialogs();
+        }
+
+        toast(t('동기화가 완료되었습니다.'), {
+          position: 'center-center',
+          duration: 1500,
+        });
+      }
+    },
   });
 
   // ----- Effect: deviceStoreData → deviceStoreDataRef 동기화 -----
@@ -598,6 +691,42 @@ export const useSSEHandler = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- shopCode 기준 1회 실행
   }, [currentShopData?.shopCode]);
+
+  // ----- Effect: 앱 시작 시 POS 동기화 상태 1회 조회 (동기화 중이면 모달+1분 폴링, 아니면 모달 제거) -----
+  useEffect(() => {
+    const shopCode = currentShopData?.shopCode;
+    if (!shopCode) {
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        await getPosSyncStatus(shopCode, [POS_SYNC_HTTP_502]);
+
+        if (!cancelled) {
+          usePosSyncOverlayStore.getState().hide();
+          stopPosSyncPolling();
+        }
+      } catch (e) {
+        if (cancelled) {
+          return;
+        }
+
+        if (isPosSyncInProgressError(e)) {
+          usePosSyncOverlayStore.getState().show();
+          startPosSyncPolling(shopCode);
+        } else {
+          stopPosSyncPolling();
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      stopPosSyncPolling();
+    };
+  }, [currentShopData?.shopCode, stopPosSyncPolling, startPosSyncPolling]);
 
   // ----- Effect: refetch 콜백 → handlersRef 동기화 -----
   useEffect(() => {
@@ -667,6 +796,12 @@ export const useSSEHandler = () => {
         break;
       case 'POS_ERROR':
         handlersRef.current.handlePosErrorMessage(sseMessage);
+        break;
+      case 'POS_SYNC_START':
+        handlersRef.current.handlePosSyncStartMessage();
+        break;
+      case 'POS_SYNC_END':
+        handlersRef.current.handlePosSyncEndMessage();
         break;
       default:
         break;

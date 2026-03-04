@@ -52,6 +52,8 @@ export const TIMER_KEYS = {
   LAST_ORDER_REMAINING_TIME_UPDATE: 'last-order-remaining-time-update',
   /** 헤더 알림 문구 업데이트 타이머 키 */
   HEADER_ALERT_MESSAGE_UPDATE: 'header-alert-message-update',
+  /** POS 동기화 상태 폴링 타이머 키 */
+  POS_SYNC_POLLING: 'pos-sync-polling',
   /** 초기 화면 스와이퍼 자동 재생 타이머 키 */
   INITIAL_PAGE_SWIPER_AUTOPLAY: 'initial-page-swiper-autoplay',
 };
