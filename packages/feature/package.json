@@ -1,0 +1,54 @@
+{
+  "name": "@repo/feature",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./src/index.ts" },
+    "./package.json": "./package.json",
+    "./components": { "types": "./dist/components/index.d.ts", "default": "./src/components/index.ts" },
+    "./hooks": { "types": "./dist/hooks/index.d.ts", "default": "./src/hooks/index.ts" },
+    "./utils": { "types": "./dist/utils/index.d.ts", "default": "./src/utils/index.ts" },
+    "./stores": { "types": "./dist/stores/index.d.ts", "default": "./src/stores/index.ts" },
+    "./zustand": { "types": "./dist/zustand.d.ts", "default": "./src/zustand.ts" }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.1.0",
+    "@dnd-kit/sortable": "^8.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@repo/api": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@repo/util": "workspace:*",
+    "i18next": "^25.6.3",
+    "react-i18next": "16.3.5",
+    "react-router-dom": "^7.9.4",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "eslint": "^9.34.0",
+    "prettier": "^3.6.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "~5.9.3"
+  },
+  "peerDependencies": {
+    "react": "^19.0.1",
+    "react-dom": "^19.1.1"
+  },
+  "prettier": "@repo/prettier-config"
+}

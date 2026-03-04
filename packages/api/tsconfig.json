@@ -1,0 +1,10 @@
+{
+  "extends": "@repo/typescript-config/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "ESNext",
+    "moduleResolution": "bundler"
+  },
+  "include": ["src/**/*", "src/vite-env.d.ts", "src/types/axios.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

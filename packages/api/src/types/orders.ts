@@ -1,0 +1,421 @@
+import type { IApiResponse, TVoidApiResponse } from './common';
+import { TPaymentType } from './sales';
+
+/**
+ * 픽업 알림 전송 요청 타입
+ */
+export interface ISendPickupNotificationRequest {
+  orderId: string;
+  message: string;
+}
+
+/**
+ * 픽업 알림 전송 응답 타입
+ */
+export interface ISendPickupNotificationData {
+  success: boolean;
+  message?: string;
+}
+
+export type TOrderType =
+  | 'MENU'
+  | 'ORDER_POS'
+  | 'POS_APP'
+  | 'POS'
+  | 'PREPAYMENT';
+
+/**
+ * 픽업 알림 전송 응답 타입 (IApiResponse 래핑)
+ */
+export type TSendPickupNotificationResponse =
+  IApiResponse<ISendPickupNotificationData>;
+
+export interface ISelectedOption {
+  optionSeq: number;
+  optionGroupSeq: number;
+  optionName: string;
+  optionPrice: number;
+  quantity: number;
+}
+
+export interface IOrder {
+  menuSeq: number;
+  menuName: string;
+  menuPrice: number;
+  quantity: number;
+  selectedOptions: ISelectedOption[];
+}
+
+export interface ICreateTableOrderRequest {
+  shopCode: string;
+  tableNumber: string;
+  orderType: TOrderType;
+  customerCount: number;
+  kidsCustomerCount: number;
+  totalAmount: string;
+  orders: IOrder[];
+}
+
+export interface ICreateTableOrderData {
+  orderGroupUuid: string;
+  orderInfoList: IOrderInfo[];
+}
+
+export type TCreateTableOrderResponse = IApiResponse<ICreateTableOrderData>;
+
+export interface ICreateOrderGroupRequest {
+  shopCode: string;
+  tableNumber: string;
+  customerCount: number;
+  kidsCustomerCount: number;
+}
+
+/**
+ * 주문 그룹 상태 정보
+ */
+export interface IOrderGroupStatus {
+  orderGroupUuid: string;
+  orderGroupCode: string;
+  orderGroupStatus: TOrderGroupStatus;
+  isCleared: boolean;
+  discountRate: number;
+  updateDate: string;
+}
+
+/**
+ * 주문 그룹 상태 코드
+ */
+export type TOrderGroupStatus =
+  | 'OCCUPIED'
+  | 'CLEARED'
+  | 'MOVED'
+  | 'SHARED'
+  | 'CANCELED_ALL';
+
+/**
+ * 주문 그룹 상태 타입 (별칭)
+ */
+export type TOrderStatus = IOrderGroupStatus;
+
+/**
+ * 주문 상태 코드
+ */
+export type TOrderStatusCode =
+  | 'RECEIVED'
+  | 'COMPLETE'
+  | 'CANCEL'
+  | 'POS_CANCEL';
+
+/**
+ * 주문 결제 상태 코드
+ */
+export type TOrderPaymentStatus = 'UNPAID' | 'PAID' | 'REFUND';
+
+/**
+ * 주문 상태 정보
+ */
+export interface IOrderStatus {
+  orderUuid: string;
+  shopSeq: number;
+  status: TOrderStatusCode;
+  orderCode: string;
+  createDate: string;
+  updateDate: string;
+}
+
+/**
+ * 주문 상세 옵션 정보
+ */
+export interface IOrderDetailOption {
+  orderDetailOptionSeq: number;
+  orderDetailMenuSeq: number;
+  optionSeq: number;
+  optionName: string;
+  optionPrice: number;
+  optionGroupName: string;
+  optionQuantity: number;
+  createDate: string;
+}
+
+/**
+ * 주문 상세 메뉴 정보
+ */
+export interface IOrderDetailMenu {
+  orderDetailMenuSeq: number;
+  orderUuid: string;
+  menuSeq: number;
+  menuName: string;
+  menuPrice: number;
+  menuQuantity: number;
+  finalPrice: number;
+  canceledQuantity: number;
+  createDate: string;
+  orderDetailOptionList: IOrderDetailOption[];
+}
+
+/**
+ * 주문 정보
+ */
+export interface IOrderInfo {
+  orderUuid: string;
+  orderGroupUuid: string;
+  shopSeq: number;
+  tableSeq: number;
+  tableNumber: string;
+  orderType: TOrderType;
+  totalAmount: number;
+  createDate: string;
+  status: IOrderStatus;
+  orderDetailMenuList: IOrderDetailMenu[];
+}
+
+export interface ICreateOrderGroupData {
+  orderGroupUuid: string;
+  customerCount: number;
+  kidsCustomerCount: number;
+  shopSeq: number;
+  tableNumber: string;
+  tableName: string;
+  tableSeq: number;
+  createDate: string;
+  status: TOrderStatus;
+  orderInfoList: IOrderInfo[];
+}
+
+export type TCreateOrderGroupResponse = IApiResponse<ICreateOrderGroupData>;
+
+export interface IOrderHistoryOption {
+  orderDetailOptionSeq: number;
+  optionName: string;
+  optionPrice: number;
+  optionGroupName: string;
+  optionQuantity: number;
+}
+
+export interface IOrderHistory {
+  orderGroupUuid: string;
+  menuSeq: number;
+  orderDetailMenuSeq: number;
+  menuName: string;
+  menuPrice: number;
+  menuQuantity: number;
+  menuCreateDate: string;
+  optionList: IOrderHistoryOption[];
+}
+
+export type TGetTableOrderHistoriesResponse = IApiResponse<ICurrentTable>;
+
+export interface IGetTableOrderHistoriesParams {
+  shopCode: string;
+  tableNumber: string;
+}
+
+/**
+ * 테이블 현재 상태 옵션 정보
+ */
+export interface ITableCurrentStatusOption {
+  orderDetailOptionSeq: number;
+  optionName: string;
+  optionPrice: number;
+  optionGroupName: string;
+  optionQuantity: number;
+  localeOptionName: {
+    RU: string;
+    KO: string;
+    CH: string;
+    JP: string;
+    EN: string;
+  };
+}
+
+/**
+ * 테이블 현재 상태 메뉴 정보
+ */
+export interface ITableCurrentStatus {
+  orderGroupUuid: string;
+  orderDetailMenuSeq: number;
+  menuSeq: number;
+  menuName: string;
+  menuPrice: number;
+  menuQuantity: number;
+  menuCreateDate: string;
+  optionList: ITableCurrentStatusOption[];
+  localeMenuName: {
+    RU: string;
+    KO: string;
+    CH: string;
+    JP: string;
+    EN: string;
+  };
+}
+
+/**
+ * 결제 내역 정보
+ */
+export interface IPayment {
+  /** 결제 SEQ */
+  paymentSeq?: number;
+  /** 주문그룹 UUID */
+  orderGroupUuid: string;
+  /** 결제수단 (CASH : 현금, CARD : 카드) */
+  paymentType: TPaymentType;
+  /** 결제금액 */
+  transactionAmount: number;
+  /** (카드결제) 거래고유번호 */
+  transactionNumber?: string;
+  /** (카드결제) 거래승인번호 */
+  approvalNumber?: string;
+  /** (카드결제) 카드번호 */
+  cardNumber?: string;
+  /** (카드결제) 카드발급사 */
+  issuerCompany?: string;
+  /** (카드결제) 카드매입사 */
+  acquirerCompany?: string;
+  /** (카드결제) 할부개월수 */
+  installmentMonths?: string;
+  /** (카드결제) 거래승인일시 */
+  transactionDate?: string;
+  /** 취소 여부 */
+  isCanceled: boolean;
+  /** 취소일시 */
+  cancelDate?: string;
+  /** 취소 거래고유번호 */
+  cancelTransactionNumber?: string;
+  /** 생성일시 */
+  createDate?: string;
+  /** 주문 UUID */
+  orderUuid?: string;
+}
+
+/**
+ * 현재 테이블 정보 (GET /order/{shopCode} 응답)
+ */
+export interface ICurrentTable {
+  tableName: string;
+  tableNumber: string;
+  createDate: string;
+  updateDate: string;
+  discountRate: number | null;
+  totalAmount: number | null;
+  customerCount: number | null;
+  kidsCustomerCount: number | null;
+  orderDetailMenuList: ITableCurrentStatus[];
+  paymentList: IPayment[];
+}
+
+/**
+ * 현재 테이블 목록 조회 응답 타입
+ */
+export type TGetCurrentTableListResponse = IApiResponse<ICurrentTable[]>;
+
+/**
+ * 현재 테이블 목록 조회 파라미터
+ */
+export interface IGetCurrentTableListParams {
+  shopCode: string;
+}
+
+export interface IGetOrderLogParams {
+  shopCode: string;
+  pageNumber?: number;
+  pageSize?: number;
+}
+
+/**
+ * 주문 테이블 이동/합석 요청 파라미터
+ */
+export interface IUpdateOrderTableRequest {
+  shopCode: string;
+  originalTableNumber: string;
+  targetTableNumber: string;
+}
+
+/**
+ * 주문 테이블 이동/합석 응답 타입
+ */
+export type TUpdateOrderTableResponse = IApiResponse<ICreateOrderGroupData>;
+
+/**
+ * 메뉴 선택 취소 요청 파라미터
+ */
+export interface ICancelOrderMenuItem {
+  orderDetailMenuSeq: number;
+  canceledQuantity: number;
+}
+
+/**
+ * 메뉴 선택 취소 요청 파라미터
+ */
+export type ICancelOrderMenuRequest = ICancelOrderMenuItem[];
+
+/**
+ * 전체 메뉴 취소 요청 파라미터
+ */
+export interface ICancelOrderAllRequest {
+  shopCode: string;
+  tableNumber: string;
+}
+
+/**
+ * 테이블 주문을 초기화해서 빈 테이블로 만듭니다.
+ */
+export interface IClearOrderRequest {
+  shopCode: string;
+  tableNumber: string;
+}
+
+/**
+ * 금액 변경 요청 파라미터
+ */
+export interface IPostCustomAmountRequest {
+  orderGroupUuid: string;
+  amount: number;
+  type: TCustomAmountType;
+  orderDetailMenuSeq?: number;
+}
+
+export type TCustomAmountType =
+  | 'AMOUNT_CHANGE'
+  | 'GROUP_DISCOUNT'
+  | 'MENU_SERVICE';
+
+/**
+ * 픽업 메시지 전송 요청 타입
+ */
+export interface IPostPickupMessageRequest {
+  shopCode: string;
+  tableNumber: string;
+  message: string;
+}
+
+/**
+ * 픽업 메시지 전송 응답 타입
+ */
+export type TPostPickupMessageResponse = TVoidApiResponse;
+
+export interface IOrderLogItem {
+  orderUuid: string;
+  orderGroupUuid: string;
+  shopSeq: number;
+  tableSeq: number;
+  tableNumber: string;
+  tableName: string;
+  orderType: TOrderType;
+  totalAmount: number;
+  orderCode: string;
+  status: TOrderStatusCode;
+  paymentStatus: TOrderPaymentStatus;
+  customerCount: number | null;
+  kidsCustomerCount: number | null;
+  createDate: string | number;
+  updateDate: string | number;
+  orderDetailMenuList: IOrderDetailMenu[];
+}
+
+export interface IOrderLog {
+  currentPageNumber: number;
+  totalPageNumber: number;
+  orderLog: IOrderLogItem[];
+}
+
+export type TGetOrderLogResponse = IApiResponse<IOrderLog>;

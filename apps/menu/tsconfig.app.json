@@ -1,0 +1,21 @@
+{
+  "extends": "@repo/typescript-config/vite-react-app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "baseUrl": ".",
+    "jsxImportSource": "@emotion/react",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@repo/api": ["../../packages/api/src/index.ts"],
+      "@repo/api/*": ["../../packages/api/src/*"],
+      "@repo/util": ["../../packages/util/src/index.ts"],
+      "@repo/util/*": ["../../packages/util/src/*"],
+      "@repo/feature": ["../../packages/feature/src/index.ts"],
+      "@repo/feature/*": ["../../packages/feature/src/*"],
+      "@repo/ui": ["../../packages/ui/src/index.ts"],
+      "@repo/ui/*": ["../../packages/ui/src/*"]
+    },
+    "types": ["@emotion/react/types/css-prop"]
+  },
+  "include": ["src/**/*", "emotion.d.ts"]
+}

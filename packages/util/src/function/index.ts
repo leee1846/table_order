@@ -1,0 +1,227 @@
+import { jwtDecode } from 'jwt-decode';
+
+/**
+ * 주어진 시간 동안 추가 호출이 없을 때만 콜백을 실행합니다.
+ *
+ * @param callback - 디바운스할 함수
+ * @param delay - 지연 시간 (밀리초)
+ * @returns 디바운스된 함수와 정리 함수
+ *
+ * @example
+ * ```tsx
+ * const { debouncedFn, cleanup } = createDebounce(() => {
+ *   console.log('Debounced!');
+ * }, 300);
+ *
+ * // 사용
+ * debouncedFn();
+ *
+ * // cleanup
+ * useEffect(() => cleanup, []);
+ * ```
+ */
+export const createDebounce = <T extends (...args: unknown[]) => void>(
+  callback: T,
+  delay: number
+) => {
+  let timerId: ReturnType<typeof setTimeout> | null = null;
+
+  const debouncedFn = (...args: Parameters<T>) => {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+
+    timerId = setTimeout(() => {
+      callback(...args);
+      timerId = null;
+    }, delay);
+  };
+
+  const cleanup = () => {
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = null;
+    }
+  };
+
+  return { debouncedFn, cleanup };
+};
+
+/**
+ * 주어진 시간 동안 최대 한 번만 콜백을 실행합니다.
+ *
+ * @param callback - 쓰로틀할 함수
+ * @param delay - 지연 시간 (밀리초)
+ * @returns 쓰로틀된 함수와 정리 함수
+ *
+ * @example
+ * ```tsx
+ * const { throttledFn, cleanup } = createThrottle(() => {
+ *   console.log('Throttled!');
+ * }, 300);
+ *
+ * // 사용
+ * throttledFn();
+ * ```
+ */
+export const createThrottle = <T extends (...args: unknown[]) => void>(
+  callback: T,
+  delay: number
+) => {
+  let timerId: ReturnType<typeof setTimeout> | null = null;
+  let lastRun = 0;
+
+  const throttledFn = (...args: Parameters<T>) => {
+    const now = Date.now();
+
+    if (now - lastRun >= delay) {
+      callback(...args);
+      lastRun = now;
+    } else {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+      timerId = setTimeout(
+        () => {
+          callback(...args);
+          lastRun = Date.now();
+          timerId = null;
+        },
+        delay - (now - lastRun)
+      );
+    }
+  };
+
+  const cleanup = () => {
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = null;
+    }
+  };
+
+  return { throttledFn, cleanup };
+};
+
+/**
+ * JWT 토큰을 디코드하여 페이로드를 반환합니다.
+ * 토큰 검증은 하지 않으며, 단순히 페이로드를 파싱합니다.
+ *
+ * @param token - 디코드할 JWT 토큰 문자열
+ * @returns 디코드된 페이로드 객체, 실패 시 null
+ *
+ * @example
+ * ```ts
+ * const payload = decodeJwtToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+ * if (payload) {
+ *   console.log(payload.exp); // 만료 시간
+ *   console.log(payload.sub); // 사용자 ID
+ * }
+ * ```
+ */
+export const decodeJwtToken = <T = Record<string, unknown>>(
+  token: string
+): T | null => {
+  try {
+    return jwtDecode(token) as T;
+  } catch (error) {
+    console.error('Failed to decode JWT token:', error);
+    return null;
+  }
+};
+
+/**
+ * Storage 유틸리티
+ * localStorage와 sessionStorage 중 선택하여 사용 가능
+ */
+type TStorage = 'local' | 'session';
+
+/**
+ * 스토리지 타입에 따라 적절한 Storage 객체 반환
+ */
+const getStorage = (type: TStorage): Storage => {
+  return type === 'local' ? localStorage : sessionStorage;
+};
+
+/**
+ * 스토리지 인터페이스 생성
+ */
+const createStorageInterface = (type: TStorage) => ({
+  /**
+   * 스토리지에 데이터 저장
+   */
+  save: <T>(key: string, data: T): boolean => {
+    try {
+      getStorage(type).setItem(key, JSON.stringify(data));
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  /**
+   * 스토리지에서 데이터 로드
+   */
+  load: <T>(key: string): T | null => {
+    try {
+      const item = getStorage(type).getItem(key);
+      return item ? JSON.parse(item) : null;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * 스토리지에서 데이터 삭제
+   */
+  remove: (key: string): void => {
+    try {
+      getStorage(type).removeItem(key);
+    } catch {
+      // ignore
+    }
+  },
+
+  /**
+   * 전체 스토리지 초기화
+   */
+  clear: (): void => {
+    try {
+      getStorage(type).clear();
+    } catch {
+      // ignore
+    }
+  },
+});
+
+/**
+ * Storage 유틸리티 객체
+ * localStorage와 sessionStorage를 사용할 수 있는 인터페이스를 제공합니다.
+ *
+ * @example
+ * ```ts
+ * import { storage } from '@repo/util/function';
+ *
+ * // localStorage 사용
+ * storage.local.save('key', data);
+ * const data = storage.local.load('key');
+ * storage.local.remove('key');
+ *
+ * // sessionStorage 사용
+ * storage.session.save('key', data);
+ * const data = storage.session.load('key');
+ * storage.session.remove('key');
+ * ```
+ */
+export const storage = {
+  /**
+   * localStorage 사용
+   * 예: storage.local.save('key', data)
+   */
+  local: createStorageInterface('local'),
+
+  /**
+   * sessionStorage 사용
+   * 예: storage.session.save('key', data)
+   */
+  session: createStorageInterface('session'),
+};

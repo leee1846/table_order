@@ -1,0 +1,49 @@
+{
+  "name": "@repo/ui",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./src/index.ts" },
+    "./package.json": "./package.json",
+    "./components": { "types": "./dist/components/index.d.ts", "default": "./src/components/index.ts" },
+    "./icons": { "types": "./dist/icons/index.d.ts", "default": "./src/icons/index.ts" },
+    "./utils": { "types": "./dist/utils/index.d.ts", "default": "./src/utils/index.ts" },
+    "./styles": { "types": "./dist/styles/index.d.ts", "default": "./src/styles/index.ts" },
+    "./styles/*": "./src/styles/*.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "generate:component": "turbo gen react-component",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "eslint": "^9.34.0",
+    "prettier": "^3.6.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "5.9.2",
+    "i18next": "^25.6.3",
+    "react-i18next": "16.3.5"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@repo/util": "workspace:*",
+    "lottie-react": "^2.4.1"
+  },
+  "peerDependencies": {
+    "react": "^19.0.1",
+    "react-dom": "^19.1.1"
+  },
+  "prettier": "@repo/prettier-config"
+}

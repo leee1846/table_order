@@ -1,0 +1,111 @@
+import { useRef, useEffect } from 'react';
+import * as S from './noticesForm.style';
+import {
+  BOARD_TYPE_OPTIONS,
+  type NoticesFormData,
+} from '@/feature/backoffice/Notices/constants';
+import { Input, Dropdown } from '@/feature/backoffice/components';
+
+type Mode = 'create' | 'edit' | 'detail';
+
+interface Props {
+  mode: Mode;
+  formData: NoticesFormData;
+  updateFormData: (updates: Partial<NoticesFormData>) => void;
+}
+
+export const NoticesForm = ({ mode, formData, updateFormData }: Props) => {
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const isReadOnly = mode === 'detail';
+
+  // detail 모드일 때 textarea 높이를 내용에 맞게 자동 조절
+  useEffect(() => {
+    if (isReadOnly && textAreaRef.current) {
+      textAreaRef.current.style.height = 'auto';
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
+    }
+  }, [formData.content, isReadOnly]);
+
+  return (
+    <S.Container>
+      <S.Section>
+        <S.FormContent>
+          <S.FieldGroup>
+            <S.Label>
+              유형 <span>*</span>
+            </S.Label>
+            <Dropdown
+              options={BOARD_TYPE_OPTIONS}
+              value={formData.boardType}
+              onChange={(value) =>
+                updateFormData({ boardType: value as string })
+              }
+              disabled={isReadOnly}
+              placeholder="유형 선택"
+            />
+          </S.FieldGroup>
+
+          <S.FieldGroup>
+            <S.Label>
+              제목 <span>*</span>
+            </S.Label>
+            <Input
+              placeholder="제목을 입력하세요"
+              value={formData.title}
+              onChange={(value) => updateFormData({ title: value })}
+              disabled={isReadOnly}
+              maxLength={200}
+            />
+          </S.FieldGroup>
+
+          <S.FieldGroup>
+            <S.Label>
+              내용 <span>*</span>
+            </S.Label>
+            <S.TextAreaWrapper>
+              <S.TextArea
+                ref={textAreaRef}
+                placeholder="내용을 입력하세요"
+                value={formData.content}
+                onChange={(e) =>
+                  updateFormData({ content: e.target.value.slice(0, 200) })
+                }
+                maxLength={200}
+                disabled={isReadOnly}
+                isDetail={isReadOnly}
+              />
+              <S.TextAreaCount>{formData.content.length}/200</S.TextAreaCount>
+            </S.TextAreaWrapper>
+          </S.FieldGroup>
+
+          {(mode === 'edit' || mode === 'detail') && (
+            <S.HorizontalLayout>
+              <S.FieldGroup>
+                <S.Label>생성일자</S.Label>
+                <Input
+                  placeholder="생성일자"
+                  value={formData.createdAt || ''}
+                  onChange={() => {
+                    // readOnly
+                  }}
+                  disabled
+                />
+              </S.FieldGroup>
+              <S.FieldGroup>
+                <S.Label>수정일자</S.Label>
+                <Input
+                  placeholder="수정일자"
+                  value={formData.updatedAt || ''}
+                  onChange={() => {
+                    // readOnly
+                  }}
+                  disabled
+                />
+              </S.FieldGroup>
+            </S.HorizontalLayout>
+          )}
+        </S.FormContent>
+      </S.Section>
+    </S.Container>
+  );
+};

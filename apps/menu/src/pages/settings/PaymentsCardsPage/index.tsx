@@ -1,0 +1,227 @@
+import { useMemo, useState } from 'react';
+import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import { Calender, Dropdown, Pagination } from '@repo/ui/components';
+import * as UIStyles from '@repo/ui/styles';
+import * as S from './paymentsCardsPage.style';
+import { theme } from '@repo/ui';
+import { CalendarMonthIcon } from '@repo/ui/icons';
+import { Table } from '@/pages/settings/PaymentsCardsPage/Table';
+import { useShopDetailData } from '@/hooks/useShopDetailData';
+import {
+  getDateRangeByPreset,
+  toYYYYMMDDRange,
+  type TDateRangePreset,
+} from '@repo/util/date';
+import { formatCurrency } from '@repo/util/string';
+import { useGetCardApprovalHistory } from '@repo/api/queries';
+import { useShopData } from '@/hooks/useShopData';
+
+const PAGE_SIZE = 7;
+
+export const PaymentsCardsPage = () => {
+  const { t } = useAdminTranslation();
+  const { data: shopDetailData } = useShopDetailData();
+  const { shopSetting } = shopDetailData ?? {};
+  const { shopData } = useShopData({ skipInitialRequest: true });
+  const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
+  const dateRangeOptions: { value: TDateRangePreset; label: string }[] =
+    useMemo(
+      () => [
+        { value: 'today', label: t('오늘') },
+        { value: 'yesterday', label: t('어제') },
+        { value: 'thisWeek', label: t('이번주') },
+        { value: 'thisMonth', label: t('이번달') },
+        { value: '3Months', label: t('3개월') },
+      ],
+      [t]
+    );
+
+  const cardCompanyOptions = useMemo(
+    () => [
+      { value: 'all', label: t('전체 카드사') },
+      { value: 'KM', label: t('국민카드') },
+      { value: 'LT', label: t('롯데카드') },
+      { value: 'BC', label: t('비씨카드') },
+      { value: 'SS', label: t('삼성카드') },
+      { value: 'SH', label: t('신한카드') },
+      { value: 'HD', label: t('현대카드') },
+      { value: 'NH', label: t('NH농협카드') },
+      { value: 'HN', label: t('하나카드') },
+      { value: 'WR', label: t('우리카드') },
+      { value: 'ETC', label: t('기타카드') },
+    ],
+    [t]
+  );
+
+  const [showCalender, setShowCalender] = useState<boolean>(false);
+  const [selectedPreset, setSelectedPreset] = useState<TDateRangePreset | null>(
+    'today'
+  );
+  const [startDate, setStartDate] = useState<string>(
+    defaultDateRange.startDate
+  );
+  const [endDate, setEndDate] = useState<string>(defaultDateRange.endDate);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedCardCode, setSelectedCardCode] = useState<string>('all');
+
+  const { startDate: apiStartDate, endDate: apiEndDate } = useMemo(
+    () => toYYYYMMDDRange({ startDate, endDate }),
+    [startDate, endDate]
+  );
+
+  const { data: cardApprovalHistoryResponse } = useGetCardApprovalHistory(
+    {
+      shopCode: shopData?.shopCode ?? '',
+      cardCode: selectedCardCode === 'all' ? undefined : selectedCardCode,
+      startDate: apiStartDate,
+      endDate: apiEndDate,
+      pageNumber: currentPage - 1,
+      pageSize: PAGE_SIZE,
+    },
+    {
+      enabled: !!shopData?.shopCode && !!apiStartDate && !!apiEndDate,
+    }
+  );
+
+  const cardApprovalData = cardApprovalHistoryResponse?.data;
+  const cardApprovalHistory = cardApprovalData?.cardApprovalHistory ?? [];
+  const totalPagesFromResponse = cardApprovalData?.totalPageNumber;
+  const hasNextPage = cardApprovalHistory.length === PAGE_SIZE;
+  const totalPages = Math.max(
+    totalPagesFromResponse ?? (hasNextPage ? currentPage + 1 : currentPage),
+    1
+  );
+  const totalSalesAmount = cardApprovalData?.totalSalesAmount ?? 0;
+  const totalCount = cardApprovalData?.totalCount ?? 0;
+
+  const onSelectDate = (startDate: string, endDate: string) => {
+    setStartDate(startDate);
+    setEndDate(endDate);
+    setSelectedPreset(null);
+    setCurrentPage(1);
+  };
+
+  const handlePresetChange = (value: string | number) => {
+    const preset = value as TDateRangePreset;
+    const range = getDateRangeByPreset(preset);
+
+    setSelectedPreset(preset);
+    setStartDate(range.startDate);
+    setEndDate(range.endDate);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleCardCodeChange = (value: string | number) => {
+    setSelectedCardCode(value as string);
+    setCurrentPage(1);
+  };
+
+  const formatCalendarText = (date: string) => {
+    if (!date) {
+      return t('날짜 선택');
+    }
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
+  };
+
+  return (
+    <>
+      <UIStyles.setting.TablePageContainer>
+        <S.Container>
+          <S.Title>
+            {t('매출 관리')}
+
+            <div />
+            <span>{t('카드승인내역')}</span>
+          </S.Title>
+
+          <S.Filters>
+            <Dropdown
+              options={cardCompanyOptions}
+              value={selectedCardCode}
+              onChange={handleCardCodeChange}
+            />
+
+            <S.FiltersRight>
+              <S.DateRange>
+                <S.DateButton
+                  type="button"
+                  onClick={() => setShowCalender(true)}
+                >
+                  <CalendarMonthIcon
+                    width={25}
+                    height={25}
+                    color={theme.colors.grey[700]}
+                  />
+                  <S.DateText>{formatCalendarText(startDate)}</S.DateText>
+                </S.DateButton>
+
+                <S.RangeDivider>~</S.RangeDivider>
+
+                <S.DateButton
+                  type="button"
+                  onClick={() => setShowCalender(true)}
+                >
+                  <CalendarMonthIcon
+                    width={25}
+                    height={25}
+                    color={theme.colors.grey[700]}
+                  />
+                  <S.DateText>{formatCalendarText(endDate)}</S.DateText>
+                </S.DateButton>
+              </S.DateRange>
+              <Dropdown
+                options={dateRangeOptions}
+                value={selectedPreset}
+                onChange={handlePresetChange}
+              />
+            </S.FiltersRight>
+          </S.Filters>
+
+          <Table items={cardApprovalHistory} pageSize={PAGE_SIZE} />
+        </S.Container>
+
+        <UIStyles.setting.Footer>
+          {shopSetting?.isSalesTotalVisible !== false ? (
+            <UIStyles.setting.FooterContents>
+              <p>
+                <span>{t('총 매출:')}</span> {formatCurrency(totalSalesAmount)}
+              </p>
+              <p>
+                <span>{`${t('건 수')}: `}</span>
+                {totalCount}
+              </p>
+            </UIStyles.setting.FooterContents>
+          ) : (
+            <div />
+          )}
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </UIStyles.setting.Footer>
+      </UIStyles.setting.TablePageContainer>
+
+      {showCalender && (
+        <Calender
+          type="range"
+          onClose={() => setShowCalender(false)}
+          startDate={startDate}
+          endDate={endDate}
+          onSelectDate={onSelectDate}
+          beforeYears={1}
+          afterYears={1}
+          i18nInstance={adminI18n}
+        />
+      )}
+    </>
+  );
+};

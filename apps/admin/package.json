@@ -1,0 +1,52 @@
+{
+  "name": "admin",
+  "private": true,
+  "version": "1.0.8",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --mode development --host",
+    "dev:prod": "vite --mode production",
+    "dev:stage": "vite --mode stage --host",
+    "build:dev": "turbo run _build:dev --filter=admin --force",
+    "_build:dev": "tsc --noEmit -p tsconfig.app.check.json && tsc --noEmit -p tsconfig.node.json && vite build --mode development",
+    "build:prod": "turbo run _build:prod --filter=admin --force",
+    "_build:prod": "tsc --noEmit -p tsconfig.app.check.json && tsc --noEmit -p tsconfig.node.json && vite build --mode production",
+    "build:stage": "turbo run _build:stage --filter=admin --force",
+    "_build:stage": "tsc --noEmit -p tsconfig.app.check.json && tsc --noEmit -p tsconfig.node.json && vite build --mode stage",
+    "preview": "vite preview",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "check-types": "turbo run _check-types --filter=admin --force",
+    "_check-types": "tsc --noEmit -p tsconfig.app.check.json && tsc --noEmit -p tsconfig.node.json"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@lglab/react-qr-code": "^1.4.9",
+    "@repo/api": "workspace:*",
+    "@repo/feature": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@repo/util": "workspace:*",
+    "i18next": "^25.6.3",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-i18next": "16.3.5",
+    "react-router-dom": "^7.9.4",
+    "swiper": "^12.0.3"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/prettier-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.4",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9.34.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.7"
+  },
+  "prettier": "@repo/prettier-config"
+}

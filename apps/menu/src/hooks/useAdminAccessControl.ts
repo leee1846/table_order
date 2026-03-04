@@ -1,0 +1,125 @@
+import { useEffect, useRef } from 'react';
+import type { AxiosError } from '@repo/api/axios';
+import type { IDevice } from '@repo/api/types';
+import { useTableGroupData } from '@/hooks/useTableGroupData';
+import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
+import { toast } from '@repo/feature/utils';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+
+interface DeviceDataResult {
+  data: Partial<IDevice> | null;
+  isInitialized: boolean;
+  error: AxiosError | null;
+  clearData: () => void;
+  setDataAsync: (data: Partial<IDevice>) => void;
+  refresh: () => Promise<IDevice | undefined>;
+}
+
+interface UseAdminAccessControlReturn {
+  showAdminAccessPasswordModal: boolean;
+  setShowAdminAccessPasswordModal: (show: boolean) => void;
+}
+
+/**
+ * 관리자 접근 제어를 관리하는 커스텀 훅
+ *
+ * @description
+ * - 테이블이 없거나 유효하지 않을 경우 관리자 비밀번호 모달을 표시합니다
+ * - 디바이스 초기화가 완료된 후에만 모달을 표시합니다 (깜빡임 방지)
+ * - 테이블이 삭제되었는지 확인하고, 존재하지 않으면 모달을 표시합니다
+ *
+ * @param deviceDataResult - 디바이스 데이터 결과
+ * @returns 관리자 접근 비밀번호 모달 노출 여부 및 제어 함수
+ */
+export const useAdminAccessControl = (
+  deviceDataResult: DeviceDataResult
+): UseAdminAccessControlReturn => {
+  const { t } = useCustomerTranslation();
+  const { data: tableGroupData } = useTableGroupData();
+
+  const showAdminAccessPasswordModal = useRequestAdminAccessModalStore(
+    (s) => s.show
+  );
+  const setShowAdminAccessPasswordModal = useRequestAdminAccessModalStore(
+    (s) => s.setShow
+  );
+
+  const {
+    data: deviceData,
+    isInitialized: isDeviceDataInitialized,
+    error: deviceDataError,
+    clearData: clearDeviceData,
+    setDataAsync: setDeviceDataAsync,
+  } = deviceDataResult;
+
+  // tableNumber 변경을 감지하기 위한 ref
+  const prevTableNumberRef = useRef<string | null | undefined>(undefined);
+
+  useEffect(() => {
+    // API가 초기화되기 전까지는 모달을 표시하지 않음 (깜빡임 방지)
+    if (!isDeviceDataInitialized) {
+      return;
+    }
+
+    // 선택한 테이블이 존재하지 않을 경우 모달 노출
+    if (deviceDataError?.response?.status === 404) {
+      clearDeviceData();
+      setShowAdminAccessPasswordModal(true);
+      prevTableNumberRef.current = null;
+      return;
+    }
+
+    if (!deviceData) {
+      return;
+    }
+
+    // tableNumber가 실제로 변경되었을 때만 로직 실행
+    const currentTableNumber = deviceData.tableNumber ?? null;
+    if (prevTableNumberRef.current === currentTableNumber) {
+      return; // tableNumber가 변경되지 않았으면 아무것도 하지 않음
+    }
+
+    prevTableNumberRef.current = currentTableNumber;
+
+    // tableNumber가 없으면 모달 표시
+    if (!currentTableNumber) {
+      setShowAdminAccessPasswordModal(true);
+      return;
+    }
+
+    // 테이블이 삭제되었는지 확인
+    if (
+      !!tableGroupData &&
+      !tableGroupData
+        .map((tableGroup) => tableGroup.tableList)
+        .flat()
+        .some((table) => table?.tableNumber === currentTableNumber)
+    ) {
+      toast(t('존재하지 않는 테이블입니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
+      setDeviceDataAsync({
+        ...deviceData,
+        tableNumber: null,
+      });
+      setShowAdminAccessPasswordModal(true);
+      return;
+    }
+
+    setShowAdminAccessPasswordModal(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    isDeviceDataInitialized,
+    deviceData?.tableNumber,
+    deviceDataError,
+    clearDeviceData,
+    tableGroupData,
+    setDeviceDataAsync,
+  ]);
+
+  return {
+    showAdminAccessPasswordModal,
+    setShowAdminAccessPasswordModal,
+  };
+};
