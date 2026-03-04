@@ -695,7 +695,12 @@ export const useSSEHandler = () => {
   // ----- Effect: 앱 시작 시 POS 동기화 상태 1회 조회 (동기화 중이면 모달+1분 폴링, 아니면 모달 제거) -----
   useEffect(() => {
     const shopCode = currentShopData?.shopCode;
-    if (!shopCode) {
+    const isPosLinked =
+      !!shopDetailData?.shopSetting?.shopPosCode &&
+      shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
+    if (!shopCode || !isPosLinked) {
+      usePosSyncOverlayStore.getState().hide();
+      stopPosSyncPolling();
       return;
     }
 
@@ -726,7 +731,12 @@ export const useSSEHandler = () => {
       cancelled = true;
       stopPosSyncPolling();
     };
-  }, [currentShopData?.shopCode, stopPosSyncPolling, startPosSyncPolling]);
+  }, [
+    currentShopData?.shopCode,
+    shopDetailData?.shopSetting?.shopPosCode,
+    stopPosSyncPolling,
+    startPosSyncPolling,
+  ]);
 
   // ----- Effect: refetch 콜백 → handlersRef 동기화 -----
   useEffect(() => {
