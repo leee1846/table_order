@@ -716,5 +716,6 @@
   "에이전트 프로그램을 확인해주세요.": "Please check the agent program.",
   "상단 QR코드를 스캔하면 채널톡 서비스로 연결됩니다.": "Scanning the QR code at the top will connect you to Channel Talk service.",
   "관리자 비밀번호 4자리를 입력해 주세요": "Enter the 4-digit\nadministrator password",
-  "매출 비밀번호 4자리를 입력해 주세요": "Enter the 4-digit\nsales password"
+  "매출 비밀번호 4자리를 입력해 주세요": "Enter the 4-digit\nsales password",
+  "목록": "List"
 }

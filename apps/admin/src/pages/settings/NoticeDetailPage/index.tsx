@@ -53,6 +53,7 @@ export const NoticeDetailPage = () => {
                 height={24}
                 color={theme.colors.grey[600]}
               />
+              <span>{t('목록')}</span>
             </S.BackButton>
           </S.HeaderLeft>
         </S.Header>
