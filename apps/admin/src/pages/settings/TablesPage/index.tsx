@@ -59,6 +59,8 @@ export const TablesPage = () => {
     if (!selectedTableGroupId) {
       return null;
     }
+
+    setSelectedTable(null);
     return tableGroups.find(
       (group) => group.tableGroupSeq === selectedTableGroupId
     );
