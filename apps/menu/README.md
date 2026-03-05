@@ -101,3 +101,4 @@ pnpm --filter menu preview
 
 - **반응형 디자인**: 태블릿 화면 크기에 최적화되어 있습니다
 - **React Compiler**: 성능 최적화를 위해 React Compiler를 사용합니다
+- 특정 기능에 대한 상세 설명과 플로우는 `docs/` 폴더에서 확인할 수 있습니다
