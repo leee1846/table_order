@@ -4,6 +4,7 @@ import {
   useIsFetching,
   useIsMutating,
 } from '@repo/api/tanstack-query';
+import { queryKeys } from '@repo/api/queries';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSEReconnecting } from '@repo/feature/hooks';
 import { useState, type ReactNode } from 'react';
@@ -17,7 +18,9 @@ interface Props {
  */
 function GlobalLoadingIndicator() {
   const isFetching = useIsFetching();
-  const isMutating = useIsMutating();
+  const isMutating =
+    useIsMutating() -
+    useIsMutating({ mutationKey: queryKeys.device.postDetail }); // usePostDeviceDetail 제외
   const isSSEReconnecting = useSSEReconnecting();
   const isLoading = isFetching > 0 || isMutating > 0 || isSSEReconnecting;
 

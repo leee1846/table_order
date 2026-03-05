@@ -3,6 +3,7 @@ import { IApiError, TVoidApiResponse } from '../../types/common';
 import { IPostDeviceDetailRequest } from '../../types/device';
 import { AxiosError } from 'axios';
 import { postDeviceDetail } from '../../fetchers/device';
+import { queryKeys } from '../queryKeys';
 
 interface Props {
   options?: Omit<
@@ -24,6 +25,7 @@ export const usePostDeviceDetail = (params?: Props) => {
     IPostDeviceDetailRequest
   >({
     mutationFn: (params) => postDeviceDetail(params),
+    mutationKey: queryKeys.device.postDetail,
     ...options,
   });
 };
