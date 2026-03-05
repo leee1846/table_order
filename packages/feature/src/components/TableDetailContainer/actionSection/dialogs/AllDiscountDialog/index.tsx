@@ -13,6 +13,8 @@ import { toast } from '@repo/feature/utils';
 import type { TCustomAmountType } from '@repo/api/types';
 import type { i18n as I18nInstance } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { handleNumericKeyDown } from '@repo/util/function';
+import { isOnlyNumbers } from '@repo/util/string';
 
 const { colors } = theme;
 
@@ -59,6 +61,12 @@ export const AllDiscountDialog = ({
     setSelectedDiscount(value);
     if (value !== 'custom') {
       setCustomDiscount('');
+    }
+  };
+
+  const handleCustomDiscountChange = (value: string) => {
+    if (isOnlyNumbers(value)) {
+      setCustomDiscount(value);
     }
   };
 
@@ -133,14 +141,17 @@ export const AllDiscountDialog = ({
                 >
                   <S.OptionLabel>{option.label}</S.OptionLabel>
                 </RadioButton>
+                
                 {isCustomSelected && option.value === 'custom' && (
                   <S.InputWrapper>
                     <Input
                       value={customDiscount}
-                      onChange={setCustomDiscount}
+                      onChange={handleCustomDiscountChange}
                       placeholder=""
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
                       rightComponent={<S.PercentSymbol>%</S.PercentSymbol>}
+                      onKeyDown={handleNumericKeyDown}
                     />
                   </S.InputWrapper>
                 )}
