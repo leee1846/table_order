@@ -301,6 +301,7 @@ export const useSSEHandler = () => {
           (tableOrderHistoriesData?.orderDetailMenuList?.length > 0 ||
             tableOrderHistoriesData?.orderDetailMenuList?.length < 1);
 
+        // pos or 관리자앱에서 주문을 모두 취소 or 테이블 비우기 했을 경우
         if (hasExistingOrders) {
           refreshTableOrderHistoriesData();
           clearInitialPage();
