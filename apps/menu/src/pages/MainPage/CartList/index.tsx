@@ -165,6 +165,23 @@ export const CartList = ({
       }
     }
 
+    // 품절 메뉴 검증
+    for (const cartMenu of cartData.menus) {
+      const originalMenu = categories
+        .find((category) => category.categorySeq === cartMenu.categorySeq)
+        ?.menuInfoList.find((menu) => menu.menuSeq === cartMenu.menuSeq);
+
+      if (originalMenu?.isOutOfStock) {
+        toast(
+          t('{{menuName}} 메뉴가 품절되었습니다.', {
+            menuName: cartMenu.menuName,
+          }),
+          { position: 'center-center', duration: 1500 }
+        );
+        return;
+      }
+    }
+
     // 최소 주문 수량 검증
     for (const cartMenu of cartData.menus) {
       const originalMenu = categories
