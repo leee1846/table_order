@@ -38,20 +38,13 @@ export const Notice = styled.li<{
     }
   `
       : ''}
-
-  ${({ isOpen }) =>
-    !isOpen
-      ? `
-    height: 9.9%;
-  `
-      : ''}
 `;
 
 export const Header = styled.button<{ isOpen: boolean }>`
   display: flex;
   align-items: ${({ isOpen }) => (isOpen ? 'flex-start' : 'center')};
   justify-content: space-between;
-  padding: 14px 16px 14px 0;
+  padding: 14px 16px 12px 0;
   cursor: pointer;
 `;
 
@@ -65,16 +58,22 @@ export const LeftContainer = styled('div', {
   overflow: hidden;
 `;
 
-export const Num = styled.p`
+export const Num = styled('p', {
+  shouldForwardProp: (propName) => propName !== 'isOpen',
+})<{ isOpen?: boolean }>`
   ${TYPOGRAPHY.ST_4}
   color: ${theme.colors.grey[700]};
   width: 100%;
   max-width: 5rem;
   text-align: center;
   padding: 0 6px;
+  padding-top: ${({ isOpen }) => (isOpen ? '1px' : '0')};
 `;
 
-export const Status = styled.p<{ boardType?: TNoticeBoardType }>`
+export const Status = styled('p', {
+  shouldForwardProp: (propName) =>
+    propName !== 'isOpen' && propName !== 'boardType',
+})<{ boardType?: TNoticeBoardType; isOpen?: boolean }>`
   ${TYPOGRAPHY.ST_4}
   color: ${({ boardType }) =>
     boardType === 'GENERAL'
@@ -84,6 +83,7 @@ export const Status = styled.p<{ boardType?: TNoticeBoardType }>`
   max-width: 5rem;
   text-align: center;
   padding: 0 6px;
+  padding-top: ${({ isOpen }) => (isOpen ? '1px' : '0')};
 `;
 
 export const Title = styled('p', {
@@ -123,7 +123,9 @@ export const RightContainer = styled.div<{ isOpen: boolean }>`
   }
 `;
 
-export const CreatedAt = styled.p`
+export const CreatedAt = styled('p', {
+  shouldForwardProp: (propName) => propName !== 'isOpen',
+})<{ isOpen?: boolean }>`
   ${TYPOGRAPHY.ST_4}
   color: ${theme.colors.grey[700]};
   width: 100%;
@@ -131,6 +133,7 @@ export const CreatedAt = styled.p`
   text-align: center;
   padding: 0 6px;
   white-space: nowrap;
+  padding-top: ${({ isOpen }) => (isOpen ? '1px' : '0')};
 `;
 
 export const Content = styled.div`
