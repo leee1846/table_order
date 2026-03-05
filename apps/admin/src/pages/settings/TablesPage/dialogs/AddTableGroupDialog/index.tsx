@@ -28,7 +28,7 @@ export const AddTableGroupDialog = ({
   const { shopCode, shopSeq } = useAuth();
   const handleSubmit = async () => {
     if (groupName.trim() === '') {
-      toast(t('테이블 그룹 이름을 입력하세요'));
+      toast(t('테이블 그룹 이름을 입력해주세요.'));
       return;
     }
     await createTableGroup({
@@ -72,7 +72,7 @@ export const AddTableGroupDialog = ({
                 setGroupName(value);
               }
             }}
-            placeholder={t('테이블 그룹 이름을 입력하세요')}
+            placeholder={t('테이블 그룹 이름을 입력해주세요')}
           />
         </S.ModalBody>
         <S.ModalFooter>

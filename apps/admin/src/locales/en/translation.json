@@ -216,7 +216,7 @@
   "테이블 ${tableNumber}번 메뉴판 기기": "Menu device for table ${tableNumber}",
   "테이블 그룹 삭제에 실패했습니다.": "Failed to delete table group.",
   "테이블 그룹 수정에 실패했습니다.": "Failed to edit table group.",
-  "테이블 그룹 이름을 입력하세요": "Enter the table group name",
+  "테이블 그룹 이름을 입력해주세요.": "Please enter the table group name.",
   "테이블 그룹 추가에 실패했습니다.": "Failed to add table group.",
   "테이블 그룹을 선택해주세요.": "Please select a table group.",
   "테이블 그룹이 삭제되었습니다.": "Table group deleted.",
