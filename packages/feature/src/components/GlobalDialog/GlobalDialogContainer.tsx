@@ -74,11 +74,7 @@ export const GlobalDialogContainer = () => {
         };
 
         return (
-          <ModalBackground
-            key={modal.id}
-            position={modal.position || 'center'}
-            onClick={handleClose}
-          >
+          <ModalBackground key={modal.id} position={modal.position || 'center'}>
             {renderModalContent()}
           </ModalBackground>
         );

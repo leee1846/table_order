@@ -8,20 +8,9 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const ModalBackground = ({
-  position = 'center',
-  onClick,
-  children,
-}: Props) => {
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    if (onClick) {
-      onClick();
-    }
-  };
-
+export const ModalBackground = ({ position = 'center', children }: Props) => {
   return (
-    <S.Container position={position} onClick={handleClick}>
+    <S.Container position={position}>
       <div onClick={(e) => e.stopPropagation()}>{children}</div>
     </S.Container>
   );
