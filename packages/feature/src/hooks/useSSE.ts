@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { openConfirmDialog } from '../utils/dialog';
+import { openConfirmDialog, closeDialog } from '../utils/dialog';
+
+const RETRY_AFTER_DIALOG_MS = 30 * 1000; // 30초
 
 /**
  * SSE 연결 상태를 나타내는 타입
@@ -24,6 +26,10 @@ type TSSEConnectionState<T> = {
   >;
   reconnectAttempts: number;
   reconnectTimeoutId: ReturnType<typeof setTimeout> | null;
+  /** 다이얼로그 노출 중 30초마다 재시도하는 타이머 (다이얼로그가 보일 때만 동작) */
+  retryAfterDialogTimeoutId: ReturnType<typeof setTimeout> | null;
+  /** 연결 오류 다이얼로그 ID (재연결 성공 시 닫기 위해 보관) */
+  connectionErrorDialogId: string | null;
 };
 
 /**
@@ -96,6 +102,8 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       setIsReconnectingCallbacks: new Set(),
       reconnectAttempts: 0,
       reconnectTimeoutId: null,
+      retryAfterDialogTimeoutId: null,
+      connectionErrorDialogId: null,
     };
     sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
   }
@@ -112,10 +120,17 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
   state.eventSource = eventSource;
 
   eventSource.onopen = () => {
-    // 기존 재연결 타임아웃이 있으면 정리
     if (state.reconnectTimeoutId) {
       clearTimeout(state.reconnectTimeoutId);
       state.reconnectTimeoutId = null;
+    }
+    if (state.retryAfterDialogTimeoutId) {
+      clearTimeout(state.retryAfterDialogTimeoutId);
+      state.retryAfterDialogTimeoutId = null;
+    }
+    if (state.connectionErrorDialogId) {
+      closeDialog(state.connectionErrorDialogId);
+      state.connectionErrorDialogId = null;
     }
 
     state.isConnected = true;
@@ -187,12 +202,15 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       // 재시도 횟수 증가
       state.reconnectAttempts += 1;
 
-      // 5번 이상 시도했으면 다이얼로그 표시
+      // 5번 이상 시도했으면 다이얼로그 표시 후 30초마다 재시도 (타이머는 다이얼로그 노출 중에만 동작)
       if (state.reconnectAttempts > 5) {
-        // 기존 재연결 타임아웃이 있으면 정리
         if (state.reconnectTimeoutId) {
           clearTimeout(state.reconnectTimeoutId);
           state.reconnectTimeoutId = null;
+        }
+        if (state.retryAfterDialogTimeoutId) {
+          clearTimeout(state.retryAfterDialogTimeoutId);
+          state.retryAfterDialogTimeoutId = null;
         }
 
         state.isReconnecting = false;
@@ -200,22 +218,43 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
         state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
         notifyReconnectingChange();
 
-        openConfirmDialog({
-          title: '연결 오류',
-          content: '네트워크가 끊어졌습니다. 다시 시도하시겠습니까?',
-          confirmText: '확인',
-          onConfirm: () => {
-            if (state.url) {
-              state.isReconnecting = true;
-              state.reconnectAttempts = 0;
-              state.setIsReconnectingCallbacks.forEach((callback) =>
-                callback(true)
-              );
-              notifyReconnectingChange();
-              connectSSE(key, state.url);
+        // 이미 연결 오류 다이얼로그가 떠 있으면 새로 열지 않고 타이머만 (재)시작 (중복 다이얼로그·state 꼬임 방지)
+        if (!state.connectionErrorDialogId) {
+          const dialogId = openConfirmDialog({
+            title: '연결 오류',
+            content: '네트워크가 끊어졌습니다. 다시 시도하시겠습니까?',
+            confirmText: '확인',
+            onConfirm: () => {
+              if (state.retryAfterDialogTimeoutId) {
+                clearTimeout(state.retryAfterDialogTimeoutId);
+                state.retryAfterDialogTimeoutId = null;
+              }
+              state.connectionErrorDialogId = null;
+              if (state.url) {
+                state.isReconnecting = true;
+                state.reconnectAttempts = 0;
+                state.setIsReconnectingCallbacks.forEach((callback) =>
+                  callback(true)
+                );
+                notifyReconnectingChange();
+                connectSSE(key, state.url);
+              }
+            },
+          });
+          state.connectionErrorDialogId = dialogId;
+        }
+
+        state.retryAfterDialogTimeoutId = setTimeout(() => {
+          const s = sseConnectionMap.get(key) as
+            | TSSEConnectionState<unknown>
+            | undefined;
+          if (s) {
+            s.retryAfterDialogTimeoutId = null;
+            if (s.url) {
+              connectSSE(key, s.url);
             }
-          },
-        });
+          }
+        }, RETRY_AFTER_DIALOG_MS);
         return;
       }
 
@@ -264,10 +303,17 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 export const disconnectSSE = (key: string): void => {
   const state = sseConnectionMap.get(key);
   if (state) {
-    // 기존 재연결 타임아웃이 있으면 정리
     if (state.reconnectTimeoutId) {
       clearTimeout(state.reconnectTimeoutId);
       state.reconnectTimeoutId = null;
+    }
+    if (state.retryAfterDialogTimeoutId) {
+      clearTimeout(state.retryAfterDialogTimeoutId);
+      state.retryAfterDialogTimeoutId = null;
+    }
+    if (state.connectionErrorDialogId) {
+      closeDialog(state.connectionErrorDialogId);
+      state.connectionErrorDialogId = null;
     }
 
     // EventSource 종료
@@ -327,6 +373,8 @@ export const useSSEData = <T = unknown>(key: string) => {
         setIsReconnectingCallbacks: new Set(),
         reconnectAttempts: 0,
         reconnectTimeoutId: null,
+        retryAfterDialogTimeoutId: null,
+        connectionErrorDialogId: null,
       };
       sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
     }
