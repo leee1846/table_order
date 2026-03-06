@@ -4,14 +4,12 @@ import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSEHandler } from '@/hooks/useSSEHandler';
 import { useSystemStatusMonitor } from '@/hooks/useSystemStatusMonitor';
 import { useDeviceStore } from '@/stores/useDeviceStore';
-import { useAppVersionCheck } from '@repo/feature/hooks';
 import { PosSyncOverlayModal } from '@/feature/PosSyncOverlayModal';
 
 /** 디바이스 스토어 hydration 이후에만 마운트 → useSSEHandler/useSystemStatusMonitor가 항상 채워진 data 참조 */
 const AppContent = () => {
   useSSEHandler();
   useSystemStatusMonitor();
-  useAppVersionCheck();
 
   return (
     <div>
