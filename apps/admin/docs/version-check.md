@@ -27,11 +27,11 @@ flowchart LR
 
 ## 빌드 시 동작
 
-| 단계 | 위치 | 설명 |
-|------|------|------|
-| 1 | `package.json` | `version` 필드 (예: `1.0.8-test.4`)가 단일 소스 |
-| 2 | `vite.config.ts` | `generateVersionJson(pkg.version)` 플러그인으로 빌드 결과물에 `version.json` 생성 |
-| 3 | `vite.config.ts` | `define: { __APP_VERSION__: JSON.stringify(pkg.version) }`로 런타임에 주입 |
+| 단계 | 위치             | 설명                                                                              |
+| ---- | ---------------- | --------------------------------------------------------------------------------- |
+| 1    | `package.json`   | `version` 필드 (예: `1.0.8`)가 단일 소스                                          |
+| 2    | `vite.config.ts` | `generateVersionJson(pkg.version)` 플러그인으로 빌드 결과물에 `version.json` 생성 |
+| 3    | `vite.config.ts` | `define: { __APP_VERSION__: JSON.stringify(pkg.version) }`로 런타임에 주입        |
 
 ### version.json 생성 (vite.config.ts)
 
