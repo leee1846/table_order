@@ -79,8 +79,15 @@ export const SalesReportPage = () => {
     [dailySalesRes?.data]
   );
 
-  const menuRows: IMenuSalesHistoryItem[] = menuSalesRes?.data ?? [];
-  const hourlyRows: IHourlySalesItem[] = hourlySalesRes?.data ?? [];
+  const menuRows: IMenuSalesHistoryItem[] = useMemo(
+    () => menuSalesRes?.data ?? [],
+    [menuSalesRes?.data]
+  );
+
+  const hourlyRows: IHourlySalesItem[] = useMemo(
+    () => hourlySalesRes?.data ?? [],
+    [hourlySalesRes?.data]
+  );
 
   const mappedDailyRows: TDailySalesHistoryRow[] = useMemo(
     () =>
