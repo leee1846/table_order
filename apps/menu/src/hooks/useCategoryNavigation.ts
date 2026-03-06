@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createDebounce } from '@repo/util/function';
 import { getMinFromArray } from '@repo/util/array';
 import { DOM_IDS } from '@/constants/keys';
@@ -338,21 +338,21 @@ export function useCategoryNavigation({
       : undefined;
 
   // 활성화 함수: Sidebar/Contents가 렌더링될 때 호출
-  const activate = () => {
+  const activate = useCallback(() => {
     // 이미 활성화되었으면 중복 호출 방지 (무한 렌더링 방지)
     if (isActivated) {
       return;
     }
     setIsActivated(true);
-  };
+  }, [isActivated]);
 
   // 비활성화 함수: 다른 화면으로 전환될 때 호출
-  const deactivate = () => {
+  const deactivate = useCallback(() => {
     if (!isActivated) {
       return;
     }
     setIsActivated(false);
-  };
+  }, [isActivated]);
 
   return {
     selectedCategorySeq,

@@ -5,8 +5,8 @@ import type { ICategoryWithMenus, IMenu } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
 import { Thumbnail } from '@/feature/Thumbnail';
 import { useCartStore } from '@/stores/useCartStore';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 import { toast } from '@repo/feature/utils';
-import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
@@ -42,12 +42,23 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
     (image) => image.imageIndex === 0
   )[0];
 
-  const { data: modalData, openMenuDetail, closeMenuDetail } = useModalStore();
+  // 이 메뉴의 모달 열림 여부만 구독
+  const isMenuDetailOpen = useModalStore(
+    (s) => s.data.openedMenuDetailSeq === menu.menuSeq
+  );
+  const openMenuDetail = useModalStore((s) => s.openMenuDetail);
+  const closeMenuDetail = useModalStore((s) => s.closeMenuDetail);
 
-  const { addToCart, updateCartItemQuantity, data: cartData } = useCartStore();
-  const { firstOrderRequiredCategories } = useCategoriesData();
+  // 액션만 구독
+  const addToCart = useCartStore((s) => s.addToCart);
+  const updateCartItemQuantity = useCartStore((s) => s.updateCartItemQuantity);
 
   const onClickMenu = () => {
+    const cartData = useCartStore.getState().data;
+    const firstOrderRequiredCategories = useCategoryStore
+      .getState()
+      .data.visibleCategories.filter((c) => c.isFirstOrderRequired);
+
     // 품절되었을경우
     if (menu.isOutOfStock) {
       toast(t('메뉴가 품절되었습니다.'), {
@@ -153,19 +164,17 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
         </S.Content>
       </S.Container>
 
-      {modalData.openedMenuDetailSeq === menu.menuSeq &&
-        menu.optionGroupList.length < 1 && (
-          <MenuDetailModal onClose={closeMenuDetail} menu={menu} />
-        )}
+      {isMenuDetailOpen && menu.optionGroupList.length < 1 && (
+        <MenuDetailModal onClose={closeMenuDetail} menu={menu} />
+      )}
 
-      {modalData.openedMenuDetailSeq === menu.menuSeq &&
-        menu.optionGroupList.length > 0 && (
-          <MenuDetailWithOptionsModal
-            onClose={closeMenuDetail}
-            menu={menu}
-            category={category}
-          />
-        )}
+      {isMenuDetailOpen && menu.optionGroupList.length > 0 && (
+        <MenuDetailWithOptionsModal
+          onClose={closeMenuDetail}
+          menu={menu}
+          category={category}
+        />
+      )}
     </>
   );
 };

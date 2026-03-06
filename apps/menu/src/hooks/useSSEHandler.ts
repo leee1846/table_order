@@ -420,31 +420,35 @@ export const useSSEHandler = () => {
       const currentTableNumber = currentDeviceData.tableNumber;
 
       // 데이터 업데이트 후 테이블 존재 여부 확인을 위해 약간의 지연
-      setTimeout(() => {
-        const updatedTableGroupData =
-          useTableGroupStore.getState()?.data || tableGroupData;
-        const isCurrentTableRemoved =
-          !!updatedTableGroupData &&
-          !updatedTableGroupData
-            .map((tableGroup: ITableGroup) => tableGroup.tableList)
-            .flat()
-            .some(
-              (table: ITableInfo | undefined) =>
-                table?.tableNumber === currentTableNumber
-            );
+      globalTimerManager.setTimeout(
+        TIMER_KEYS.TABLE_REMOVAL_CHECK,
+        () => {
+          const updatedTableGroupData =
+            useTableGroupStore.getState()?.data || tableGroupData;
+          const isCurrentTableRemoved =
+            !!updatedTableGroupData &&
+            !updatedTableGroupData
+              .map((tableGroup: ITableGroup) => tableGroup.tableList)
+              .flat()
+              .some(
+                (table: ITableInfo | undefined) =>
+                  table?.tableNumber === currentTableNumber
+              );
 
-        if (isCurrentTableRemoved) {
-          toast(tRef.current('존재하지 않는 테이블입니다.'), {
-            position: 'center-center',
-            duration: 1500,
-          });
-          setDataAsync({
-            ...currentDeviceData,
-            tableNumber: null,
-          });
-          useRequestAdminAccessModalStore.getState().setShow(true);
-        }
-      }, 100);
+          if (isCurrentTableRemoved) {
+            toast(tRef.current('존재하지 않는 테이블입니다.'), {
+              position: 'center-center',
+              duration: 1500,
+            });
+            setDataAsync({
+              ...currentDeviceData,
+              tableNumber: null,
+            });
+            useRequestAdminAccessModalStore.getState().setShow(true);
+          }
+        },
+        100
+      );
     },
 
     handleDeviceMessage: (shopCode: string) => {
@@ -684,15 +688,22 @@ export const useSSEHandler = () => {
     if (!currentShopData?.shopCode) {
       return;
     }
+
+    let cancelled = false;
+
     const run = async () => {
       await collectDeviceInfoAndSyncToServer(
         deviceDataSyncDeps,
         currentShopData.shopCode
       );
+      // shopCode가 변경되어 cleanup이 실행된 경우 이전 run이 SSE를 재연결하지 않도록 차단
+      if (cancelled) return;
       await initializeSseConnection();
     };
     run();
     return () => {
+      cancelled = true;
+      globalTimerManager.clear(TIMER_KEYS.TABLE_REMOVAL_CHECK);
       disconnectSse();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- shopCode 기준 1회 실행
