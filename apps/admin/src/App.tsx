@@ -8,7 +8,7 @@ import { usePosErrorStore } from '@/stores/usePosErrorStore';
 import { usePosAgentErrorStore } from '@/stores/usePosAgentErrorStore';
 import { useSSEHandler } from './hooks/useSSEHandler';
 import { useSystemStatusMonitor } from './hooks/useSystemStatusMonitor';
-import { useVersionCheck } from '@repo/feature/hooks';
+import { useAppVersionCheck } from '@repo/feature/hooks';
 
 const App = () => {
   const { isOpen, tableNumber, closeAlert } = useTheftAlertStore();
@@ -24,7 +24,7 @@ const App = () => {
 
   useSSEHandler();
   useSystemStatusMonitor();
-  useVersionCheck();
+  useAppVersionCheck();
 
   return (
     <div>
