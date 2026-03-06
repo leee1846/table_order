@@ -18,7 +18,7 @@ const PAYMENT_TABS: { key: TPaymentTab; labelKey: string }[] = [
   { key: null, labelKey: '전체' },
   { key: 'CARD', labelKey: '카드' },
   { key: 'CASH', labelKey: '현금' },
-  { key: 'PARTIAL', labelKey: '부분' },
+  { key: 'PARTIAL', labelKey: '분할' },
 ];
 
 const formatTransactionTime = (time: string, saleDate: string): string => {
