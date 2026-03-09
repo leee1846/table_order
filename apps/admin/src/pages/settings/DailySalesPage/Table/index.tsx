@@ -79,6 +79,8 @@ export const DailySalesTable = ({ rows }: Props) => {
         return t('부분취소');
       case 'NORMAL':
         return t('일반');
+      case 'CANCELED_ALL':
+       return t('결제 전 취소');
       default:
         return status || '-';
     }
