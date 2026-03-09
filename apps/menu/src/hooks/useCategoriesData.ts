@@ -86,17 +86,6 @@ export const useCategoriesData = (options?: Props) => {
     (c) => c.isFirstOrderRequired
   );
 
-  // ===== 유틸리티 함수 =====
-
-  /**
-   * 카테고리의 보이는 메뉴 목록 반환 (isHidden 필터링)
-   * @param category - 카테고리 객체
-   * @returns 보이는 메뉴 목록
-   */
-  const getVisibleMenus = (category: ICategoryWithMenus): IMenu[] => {
-    return category.menuInfoList.filter((menu) => !menu.isHidden);
-  };
-
   return {
     // 원본 데이터
     categories: storeData,
@@ -107,8 +96,6 @@ export const useCategoriesData = (options?: Props) => {
     nonStaffCallCategories,
     firstOrderRequiredCategories,
 
-    // 유틸리티
-    getVisibleMenus,
     refresh,
   };
 };

@@ -4,7 +4,6 @@ import * as S from '@/pages/MainPage/Contents/CategoryItem/categoryItem.style';
 import { NoContent } from '@/feature/NoContent';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
-import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
 
 interface Props {
@@ -27,8 +26,6 @@ export const CategoryItem = ({ category }: Props) => {
   const currentLanguage = useCustomerLanguageStore(
     (s) => s.data.currentLanguage
   );
-  const { getVisibleMenus } = useCategoriesData();
-
   return (
     <S.Container>
       <div>
@@ -47,7 +44,7 @@ export const CategoryItem = ({ category }: Props) => {
       )}
 
       <S.Categories layout={layout}>
-        {getVisibleMenus(category).map((menu) => (
+        {category.menuInfoList.filter((menu) => !menu.isHidden).map((menu) => (
           <MenuItem
             layout={layout}
             key={menu.menuSeq}
