@@ -58,7 +58,7 @@ export const useSSEHandler = (tableNumber?: string) => {
           },
         });
       }
-    }, 40000);
+    }, 60000);
   }, [t]);
 
   //처음엔 조건 만족(앱 + 포스연동)하면 타이머 등록
