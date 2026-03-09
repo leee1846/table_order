@@ -191,7 +191,7 @@ export const isValidEmail = (email: string): boolean => {
   }
 
   // 기본적인 이메일 형식 검증: 로컬파트@도메인.최상위도메인
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
   return emailRegex.test(email.trim());
 };
 
