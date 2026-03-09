@@ -24,18 +24,20 @@ export const CategoryItem = ({ category }: Props) => {
   })();
 
   const { t } = useCustomerTranslation();
-  const { data: languageData } = useCustomerLanguageStore();
+  const currentLanguage = useCustomerLanguageStore(
+    (s) => s.data.currentLanguage
+  );
   const { getVisibleMenus } = useCategoriesData();
 
   return (
     <S.Container>
       <div>
         <S.CategoryName>
-          {category.localeCategoryName?.[languageData.currentLanguage] ??
+          {category.localeCategoryName?.[currentLanguage] ??
             category.categoryName}
         </S.CategoryName>
         <S.CategoryDescription>
-          {category.localeCategoryDescription?.[languageData.currentLanguage] ??
+          {category.localeCategoryDescription?.[currentLanguage] ??
             category.categoryDescription}
         </S.CategoryDescription>
       </div>

@@ -32,7 +32,9 @@ interface Props {
 }
 export const MenuItem = ({ layout, category, menu }: Props) => {
   const { t } = useCustomerTranslation();
-  const { data: languageData } = useCustomerLanguageStore();
+  const currentLanguage = useCustomerLanguageStore(
+    (s) => s.data.currentLanguage
+  );
   // useShopDetailData() 대신 selector로 직접 읽어 QueryObserver·useShopStore 구독 생성 방지
   const currencySetting = useShopDetailStore(
     (s) => s.data?.shopSetting?.currencySetting
@@ -134,11 +136,9 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
     openMenuDetail(menu.menuSeq);
   };
 
-  const menuName =
-    menu.localeMenuName?.[languageData.currentLanguage] || menu.menuName;
+  const menuName = menu.localeMenuName?.[currentLanguage] || menu.menuName;
   const menuDescription =
-    menu.localeMenuDescription?.[languageData.currentLanguage] ||
-    menu.menuDescription;
+    menu.localeMenuDescription?.[currentLanguage] || menu.menuDescription;
   const priceText = `${currencySymbol}${formatCurrency(menu.menuPrice)}`;
   const ariaLabel = menu.isOutOfStock
     ? `${t('품절된 메뉴')}: ${menuName}, ${priceText}`
