@@ -30,6 +30,8 @@ type TSSEConnectionState<T> = {
   retryAfterDialogTimeoutId: ReturnType<typeof setTimeout> | null;
   /** 연결 오류 다이얼로그 ID (재연결 성공 시 닫기 위해 보관) */
   connectionErrorDialogId: string | null;
+  /** processMessageQueue에서 스케줄된 rAF ID (disconnectSSE 시 취소용) */
+  pendingRafId: ReturnType<typeof requestAnimationFrame> | null;
 };
 
 /**
@@ -104,6 +106,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       reconnectTimeoutId: null,
       retryAfterDialogTimeoutId: null,
       connectionErrorDialogId: null,
+      pendingRafId: null,
     };
     sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
   }
@@ -161,7 +164,8 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 
       // 다음 메시지 처리 (React 상태 업데이트가 완료되도록 충분한 지연)
       // requestAnimationFrame을 사용하여 브라우저 렌더링 사이클과 동기화
-      requestAnimationFrame(() => {
+      state.pendingRafId = requestAnimationFrame(() => {
+        state.pendingRafId = null;
         setTimeout(() => {
           state.isProcessingQueue = false;
           processMessageQueue();
@@ -322,6 +326,12 @@ export const disconnectSSE = (key: string): void => {
       state.eventSource = null;
     }
 
+    // 스케줄된 rAF 취소 (메시지 큐 처리 체인이 disconnect 이후에도 실행되지 않도록)
+    if (state.pendingRafId !== null) {
+      cancelAnimationFrame(state.pendingRafId);
+      state.pendingRafId = null;
+    }
+
     state.isConnected = false;
     state.isReconnecting = false;
     state.reconnectAttempts = 0;
@@ -375,6 +385,7 @@ export const useSSEData = <T = unknown>(key: string) => {
         reconnectTimeoutId: null,
         retryAfterDialogTimeoutId: null,
         connectionErrorDialogId: null,
+        pendingRafId: null,
       };
       sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
     }

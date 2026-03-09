@@ -55,6 +55,10 @@ export const useTouchDetectTimer = () => {
   const { showCartReminder } = useCartReminderStore();
   const { isAllModalsClosed } = useModalStore();
 
+  // cartData는 장바구니 변경마다 새 객체가 생성되어 effect가 재실행되어 타이머/리스너가 불필요하게 재등록되는 문제 방지
+  const cartDataRef = useRef(cartData);
+  cartDataRef.current = cartData;
+
   useEffect(() => {
     const timerCallback = async () => {
       globalTimerManager.clear(TIMER_KEYS.API_RESET_TIMEOUT);
@@ -116,7 +120,7 @@ export const useTouchDetectTimer = () => {
     };
 
     const startOrderReminderTimer = () => {
-      if (cartData.menus.length < 1) {
+      if (cartDataRef.current.menus.length < 1) {
         return;
       }
 
@@ -152,7 +156,8 @@ export const useTouchDetectTimer = () => {
       globalTimerManager.clear(TIMER_KEYS.CART_ORDER_REMINDER);
     };
   }, [
-    cartData,
+    // 객체 참조만 바뀌는 경우에는 effect가 불필요하게 재실행되지 않도록 함
+    cartData.menus.length,
     isAllModalsClosed,
     showCartReminder,
     showInitialPage,

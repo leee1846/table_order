@@ -263,7 +263,8 @@ export const useSSEHandler = () => {
               if (isPosSyncInProgressError(e)) {
                 startPosSyncPolling(shopCode);
               } else {
-                startPosSyncPolling(shopCode);
+                // 싱크 진행 중 에러가 아닌 경우 폴링을 중단하여 무한 루프 방지
+                stopPosSyncPolling();
               }
             }
           })();
@@ -697,7 +698,9 @@ export const useSSEHandler = () => {
         currentShopData.shopCode
       );
       // shopCode가 변경되어 cleanup이 실행된 경우 이전 run이 SSE를 재연결하지 않도록 차단
-      if (cancelled) return;
+      if (cancelled) {
+        return;
+      }
       await initializeSseConnection();
     };
     run();
