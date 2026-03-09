@@ -7,7 +7,7 @@ import { Thumbnail } from '@/feature/Thumbnail';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { toast } from '@repo/feature/utils';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -33,10 +33,11 @@ interface Props {
 export const MenuItem = ({ layout, category, menu }: Props) => {
   const { t } = useCustomerTranslation();
   const { data: languageData } = useCustomerLanguageStore();
-  const { data: shopDetailData } = useShopDetailData();
-
-  const currencySymbol =
-    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
+  // useShopDetailData() 대신 selector로 직접 읽어 QueryObserver·useShopStore 구독 생성 방지
+  const currencySetting = useShopDetailStore(
+    (s) => s.data?.shopSetting?.currencySetting
+  );
+  const currencySymbol = CURRENCY_SYMBOL[currencySetting ?? 'KRW'];
 
   const firstImage = menu.menuImageList?.filter(
     (image) => image.imageIndex === 0
@@ -93,7 +94,9 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
     // 수량선택이 불가능한경우
     if (!category.isQuantitySelectable && menu.optionGroupList.length < 1) {
       // 주문하기 사용 === false 인 경우
-      if (!shopDetailData?.shopSetting?.isMenuboardOrderable) {
+      if (
+        !useShopDetailStore.getState().data?.shopSetting?.isMenuboardOrderable
+      ) {
         return;
       }
 
