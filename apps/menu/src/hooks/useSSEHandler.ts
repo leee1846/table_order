@@ -180,9 +180,6 @@ export const useSSEHandler = () => {
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
     SSE_KEYS.MAIN_CONNECTION
   );
-  const { data: currentDeviceData } = useDeviceData({
-    skipInitialRequest: true,
-  });
   const { data: shopDetailData, refresh: refreshShopDetailData } =
     useShopDetailData({ skipInitialRequest: true });
   const {
@@ -207,7 +204,7 @@ export const useSSEHandler = () => {
   // ----- Refs: 최신 값 참조용 (핸들러/effect 내부에서 사용) -----
   const deviceStoreDataRef = useRef(deviceStoreData);
   const sseHandlerDataRef = useRef({
-    currentDeviceData: null as typeof currentDeviceData,
+    currentDeviceData: null as typeof deviceStoreData,
     currentShopData: null as typeof currentShopData,
     shopDetailData: null as typeof shopDetailData,
     tableOrderHistoriesData: null as typeof tableOrderHistoriesData,
@@ -660,7 +657,7 @@ export const useSSEHandler = () => {
 
   // ----- Effect: 데이터/경로 → sseHandlerDataRef 동기화 -----
   useEffect(() => {
-    sseHandlerDataRef.current.currentDeviceData = currentDeviceData;
+    sseHandlerDataRef.current.currentDeviceData = deviceStoreData;
     sseHandlerDataRef.current.currentShopData = currentShopData;
     sseHandlerDataRef.current.shopDetailData = shopDetailData;
     sseHandlerDataRef.current.tableOrderHistoriesData = tableOrderHistoriesData;
@@ -669,7 +666,7 @@ export const useSSEHandler = () => {
     sseHandlerDataRef.current.locationPathname = location.pathname;
     sseHandlerDataRef.current.tableNumFromParams = tableNumFromParams;
   }, [
-    currentDeviceData,
+    deviceStoreData,
     currentShopData,
     shopDetailData,
     tableOrderHistoriesData,
