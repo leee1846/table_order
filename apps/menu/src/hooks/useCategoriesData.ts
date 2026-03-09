@@ -3,7 +3,6 @@ import { useCategoryStore } from '@/stores/useCategoryStore';
 import { useEffect } from 'react';
 import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
-import type { ICategoryWithMenus, IMenu } from '@repo/api/types';
 
 interface Props {
   /**
