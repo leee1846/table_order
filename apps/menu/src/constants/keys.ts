@@ -58,6 +58,8 @@ export const TIMER_KEYS = {
   INITIAL_PAGE_SWIPER_AUTOPLAY: 'initial-page-swiper-autoplay',
   /** 테이블 제거 여부 확인 지연 타이머 키 */
   TABLE_REMOVAL_CHECK: 'table-removal-check',
+  /** 관리자 접근 모달 닫기 지연 타이머 키 */
+  ADMIN_ACCESS_MODAL_HIDE: 'admin-access-modal-hide',
 };
 
 export const SSE_KEYS = {

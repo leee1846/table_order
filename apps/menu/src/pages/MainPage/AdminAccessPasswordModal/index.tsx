@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CloseIcon, UnlockedIcon, ArrowBackIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
@@ -10,7 +10,8 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { ROUTES } from '@/constants/routes';
-import { STORAGE_KEYS } from '@/constants/keys';
+import { STORAGE_KEYS, TIMER_KEYS } from '@/constants/keys';
+import { globalTimerManager } from '@/utils/timerManager';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import * as S from '@/pages/MainPage/AdminAccessPasswordModal/adminAccessPasswordModal.style';
 
@@ -56,12 +57,22 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
 
     // 페이지가 이동되는 동안 모달이 닫혀 깜빡임이 생김
     // modal상태는 500ms 뒤에 닫히도록 설정
-    setTimeout(() => {
-      setShowAdminAccessModal(false);
-    }, 500);
+    globalTimerManager.setTimeout(
+      TIMER_KEYS.ADMIN_ACCESS_MODAL_HIDE,
+      () => {
+        setShowAdminAccessModal(false);
+      },
+      500
+    );
 
     navigate(ROUTES.TABLES.generate());
   };
+
+  useEffect(() => {
+    return () => {
+      globalTimerManager.clear(TIMER_KEYS.ADMIN_ACCESS_MODAL_HIDE);
+    };
+  }, []);
 
   const handlePasswordComplete = async (completedPassword: string) => {
     const shopCode = shopData?.shopCode;

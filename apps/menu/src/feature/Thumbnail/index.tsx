@@ -55,6 +55,7 @@ export const Thumbnail = ({ menu, image, width = '100%' }: Props) => {
         <img
           src={image.imagePath ?? ''}
           alt={image.imageName || t('메뉴 이미지')}
+          loading="lazy"
           onLoad={() => setImageLoaded(true)}
           onError={() => {
             setImageError(true);
