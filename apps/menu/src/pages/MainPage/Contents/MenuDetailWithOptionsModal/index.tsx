@@ -2,7 +2,9 @@ import { createPortal } from 'react-dom';
 import { useState, useMemo } from 'react';
 import { css } from '@emotion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination } from 'swiper/modules';
 import 'swiper/css';
+import 'swiper/css/pagination';
 import {
   BasicButton,
   CheckButton,
@@ -573,6 +575,7 @@ export const MenuDetailWithOptionsModal = ({
 
   return createPortal(
     <ModalBackground onClick={onClose}>
+      
       <S.Container
         role="dialog"
         aria-modal="true"
@@ -588,23 +591,27 @@ export const MenuDetailWithOptionsModal = ({
 
         {/* Menu Information */}
         <S.MenuInfoContainer>
+          
           {hasImages ? (
-            <S.SwiperContainer role="region" aria-label={t('메뉴 이미지')}>
-              <Swiper
-                spaceBetween={0}
-                slidesPerView={1}
-                loop={menuImages.length >= 2}
-                observer={true}
-                observeParents={true}
-              >
-                {menuImages.map((image) => (
-                  <SwiperSlide key={image.imageSeq}>
-                    <Thumbnail menu={menu} image={image} width="100%" />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </S.SwiperContainer>
+          <S.SwiperContainer role="region" aria-label={t('메뉴 이미지')}>
+             <Swiper
+               spaceBetween={0}
+               slidesPerView={1}
+               loop={menuImages.length >= 2}
+               observer={true}
+               observeParents={true}
+               modules={[Pagination]}
+               pagination={{ clickable: true }}
+             >
+               {menuImages.map((image) => (
+                 <SwiperSlide key={image.imageSeq}>
+                   <Thumbnail menu={menu} image={image} width="100%" />
+                 </SwiperSlide>
+               ))}
+             </Swiper>
+           </S.SwiperContainer>
           ) : (
+            
             <Thumbnail menu={menu} image={undefined} width="100%" />
           )}
 

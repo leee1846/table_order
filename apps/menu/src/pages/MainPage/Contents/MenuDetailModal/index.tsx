@@ -8,7 +8,9 @@ import type { IMenu } from '@repo/api/types';
 import { Thumbnail } from '@/feature/Thumbnail';
 import { formatCurrency } from '@repo/util/string';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination } from 'swiper/modules';
 import 'swiper/css';
+import 'swiper/css/pagination';
 import { useState } from 'react';
 import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
@@ -115,6 +117,8 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
               spaceBetween={0}
               slidesPerView={1}
               loop={images.length >= 2}
+              modules={[Pagination]}
+              pagination={{ clickable: true }}
             >
               {images.map((image) => (
                 <SwiperSlide key={image.imageSeq}>
