@@ -13,30 +13,24 @@ interface LazyCategorySectionProps {
 }
 
 /**
- * 스크롤 컨테이너 내에서 뷰포트 근처에 들어올 때 CategoryItem을 마운트하고,
- * 이후 절대 언마운트하지 않습니다.
+ * 뷰포트 기준 2000px 이내일 때 CategoryItem을 마운트하고,
+ * 벗어나면 언마운트하여 이미지 비트맵 메모리를 해제합니다.
  *
- * IntersectionObserver root를 실제 스크롤 컨테이너(overflow-y: auto 고정 div)로 지정하여
- * overflow 내부에서도 rootMargin이 정확하게 동작합니다.
- * 네비게이션 Observer가 관찰하는 상위 section div는 항상 DOM에 존재하므로
- * 카테고리 네비게이션 동작에 영향을 주지 않습니다.
+ * containerRef div는 항상 DOM에 유지되므로 useCategoryNavigation의
+ * IntersectionObserver(바깥 section div 관찰)에 영향을 주지 않습니다.
  */
 const LazyCategorySection = ({ category }: LazyCategorySectionProps) => {
   const [isMounted, setIsMounted] = useState(false);
-  const placeholderRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measuredHeightRef = useRef(600);
+  const isMountedRef = useRef(false);
 
   useEffect(() => {
-    if (isMounted) {
-      return;
-    }
-
-    const el = placeholderRef.current;
+    const el = containerRef.current;
     if (!el) {
       return;
     }
 
-    // 실제 스크롤 컨테이너를 root로 지정해야 overflow 내부에서 rootMargin이 정확히 동작함
-    // null 폴백 시 viewport 기준으로 동작 (기능은 유지되나 preload margin이 줄어들 수 있음)
     const scrollContainer = document.getElementById(
       DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER
     );
@@ -44,28 +38,44 @@ const LazyCategorySection = ({ category }: LazyCategorySectionProps) => {
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (entry?.isIntersecting) {
+        if (!entry) {
+          return;
+        }
+
+        if (entry.isIntersecting) {
+          isMountedRef.current = true;
           setIsMounted(true);
-          observer.disconnect();
+        } else {
+          if (isMountedRef.current) {
+            const h = el.getBoundingClientRect().height;
+            if (h > 0) {
+              measuredHeightRef.current = h;
+            }
+          }
+          isMountedRef.current = false;
+          setIsMounted(false);
         }
       },
       {
         root: scrollContainer,
-        // 스크롤 컨테이너 기준으로 200px 앞에서 미리 마운트
-        rootMargin: '200px 0px',
+        rootMargin: '2000px 0px',
       }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [isMounted]);
+  }, []);
 
-  if (isMounted) {
-    return <CategoryItem category={category} />;
-  }
-
-  // 마운트 전: 레이아웃 높이를 유지하는 placeholder
-  return <div ref={placeholderRef} style={{ minHeight: '400px' }} />;
+  return (
+    <div
+      ref={containerRef}
+      style={
+        !isMounted ? { minHeight: `${measuredHeightRef.current}px` } : undefined
+      }
+    >
+      {isMounted && <CategoryItem category={category} />}
+    </div>
+  );
 };
 
 export const ScrollContent = ({ categories }: Props) => {
