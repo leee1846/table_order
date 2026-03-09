@@ -27,14 +27,20 @@ export const Sidebar = ({
 }: Props) => {
   const { t } = useCustomerTranslation();
 
-  const { data: modalData, setModalData } = useModalStore();
+  const isStaffCallModalOpened = useModalStore(
+    (s) => s.data.isStaffCallModalOpened
+  );
+  const isLanguageSelectorModalOpened = useModalStore(
+    (s) => s.data.isLanguageSelectorModalOpened
+  );
 
-  const { data: languageData } = useCustomerLanguageStore();
+  const currentLanguage = useCustomerLanguageStore(
+    (s) => s.data.currentLanguage
+  );
   const { data: disableStaffCallData } = useDisableStaffCallStore();
   const { data: shopDetailData } = useShopDetailData();
 
-  const currentLanguageIcon =
-    LANGUAGE_CONFIG[languageData.currentLanguage].flag;
+  const currentLanguageIcon = LANGUAGE_CONFIG[currentLanguage].flag;
 
   const handleStaffCallClick = () => {
     if (disableStaffCallData.disableStaffCall) {
@@ -45,7 +51,7 @@ export const Sidebar = ({
       return;
     }
 
-    setModalData('isStaffCallModalOpened', true);
+    useModalStore.getState().setModalData('isStaffCallModalOpened', true);
   };
 
   return (
@@ -53,7 +59,7 @@ export const Sidebar = ({
       <S.Container role="navigation" aria-label={t('메뉴 카테고리')}>
         {categories.map((category) => {
           const categoryName =
-            category.localeCategoryName?.[languageData.currentLanguage] ??
+            category.localeCategoryName?.[currentLanguage] ??
             category.categoryName;
 
           return (
@@ -83,9 +89,8 @@ export const Sidebar = ({
                   width={30}
                   height={30}
                 />
-                {staffCallCategory.localeCategoryName?.[
-                  languageData.currentLanguage
-                ] ?? staffCallCategory.categoryName}
+                {staffCallCategory.localeCategoryName?.[currentLanguage] ??
+                  staffCallCategory.categoryName}
               </button>
             </S.StaffCall>
           )}
@@ -95,7 +100,9 @@ export const Sidebar = ({
                 <button
                   type="button"
                   onClick={() =>
-                    setModalData('isLanguageSelectorModalOpened', true)
+                    useModalStore
+                      .getState()
+                      .setModalData('isLanguageSelectorModalOpened', true)
                   }
                   aria-label={t('언어 선택하기')}
                 >
@@ -107,16 +114,22 @@ export const Sidebar = ({
         </S.FloatingContainer>
       </S.Container>
 
-      {modalData.isStaffCallModalOpened && staffCallCategory && (
+      {isStaffCallModalOpened && staffCallCategory && (
         <StaffCallModal
-          onClose={() => setModalData('isStaffCallModalOpened', false)}
+          onClose={() =>
+            useModalStore.getState().setModalData('isStaffCallModalOpened', false)
+          }
           category={staffCallCategory}
         />
       )}
 
-      {modalData.isLanguageSelectorModalOpened && (
+      {isLanguageSelectorModalOpened && (
         <LanguageSelectorModal
-          onClose={() => setModalData('isLanguageSelectorModalOpened', false)}
+          onClose={() =>
+            useModalStore
+              .getState()
+              .setModalData('isLanguageSelectorModalOpened', false)
+          }
         />
       )}
     </>

@@ -51,7 +51,9 @@ export const Header = ({
     return table?.tableName ?? '';
   });
 
-  const { data: modalData, setModalData } = useModalStore();
+  const isOrderHistoryModalOpened = useModalStore(
+    (s) => s.data.isOrderHistoryModalOpened
+  );
 
   // 각 effect deps에서 객체 전체 대신 primitive 필드만 참조하여 불필요한 effect 재실행 방지
   const {
@@ -267,7 +269,7 @@ export const Header = ({
     if (!shopDetailData?.shopSetting?.isMenuboardOrderable) {
       return;
     }
-    setModalData('isOrderHistoryModalOpened', true);
+    useModalStore.getState().setModalData('isOrderHistoryModalOpened', true);
   };
 
   return (
@@ -333,10 +335,12 @@ export const Header = ({
         </S.RightContent>
       </S.Header>
 
-      {modalData.isOrderHistoryModalOpened && (
+      {isOrderHistoryModalOpened && (
         <OrderHistoryModal
           orderHistories={orderHistories}
-          onClose={() => setModalData('isOrderHistoryModalOpened', false)}
+          onClose={() =>
+            useModalStore.getState().setModalData('isOrderHistoryModalOpened', false)
+          }
         />
       )}
     </>

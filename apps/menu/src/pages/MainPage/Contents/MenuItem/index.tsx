@@ -49,8 +49,6 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   const isMenuDetailOpen = useModalStore(
     (s) => s.data.openedMenuDetailSeq === menu.menuSeq
   );
-  const openMenuDetail = useModalStore((s) => s.openMenuDetail);
-  const closeMenuDetail = useModalStore((s) => s.closeMenuDetail);
 
   // 액션만 구독
   const addToCart = useCartStore((s) => s.addToCart);
@@ -133,7 +131,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
       return;
     }
 
-    openMenuDetail(menu.menuSeq);
+    useModalStore.getState().openMenuDetail(menu.menuSeq);
   };
 
   const menuName = menu.localeMenuName?.[currentLanguage] || menu.menuName;
@@ -168,12 +166,15 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
       </S.Container>
 
       {isMenuDetailOpen && menu.optionGroupList.length < 1 && (
-        <MenuDetailModal onClose={closeMenuDetail} menu={menu} />
+        <MenuDetailModal
+          onClose={() => useModalStore.getState().closeMenuDetail()}
+          menu={menu}
+        />
       )}
 
       {isMenuDetailOpen && menu.optionGroupList.length > 0 && (
         <MenuDetailWithOptionsModal
-          onClose={closeMenuDetail}
+          onClose={() => useModalStore.getState().closeMenuDetail()}
           menu={menu}
           category={category}
         />
