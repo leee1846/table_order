@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CloseIcon, UnlockedIcon, ArrowBackIcon } from '@repo/ui/icons';
+import { CloseIcon,  ArrowBackIcon, PasswordIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
 import { AppStorage } from '@repo/util/app';
@@ -126,32 +126,46 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
           <CloseIcon width={42} height={42} color={theme.mode.grey[400]} />
         </S.CloseButton>
       )}
+      <S.InnerContainer>
+<S.Header>
+  <S.Title id="password-title">{t('관리자 비밀번호 4자리를 입력해 주세요')}</S.Title>
+</S.Header>
 
       <S.Content>
-        <UnlockedIcon
-          width={80}
-          height={80}
-          color={theme.mode.grey[400]}
-          aria-hidden="true"
-        />
-        <S.Title id="password-title">{t('비밀번호를 입력해 주세요')}</S.Title>
+        
         <S.PasswordContainer
           role="status"
           aria-live="polite"
           aria-label={t('비밀번호')}
         >
-          <li aria-label={isPasswordDigitFilled(0) ? t('입력됨') : t('미입력')}>
-            {isPasswordDigitFilled(0) && <span />}
-          </li>
-          <li aria-label={isPasswordDigitFilled(1) ? t('입력됨') : t('미입력')}>
-            {isPasswordDigitFilled(1) && <span />}
-          </li>
-          <li aria-label={isPasswordDigitFilled(2) ? t('입력됨') : t('미입력')}>
-            {isPasswordDigitFilled(2) && <span />}
-          </li>
-          <li aria-label={isPasswordDigitFilled(3) ? t('입력됨') : t('미입력')}>
-            {isPasswordDigitFilled(3) && <span />}
-          </li>
+          <S.PasswordItem
+          isFilled={isPasswordDigitFilled(0)}
+          aria-label={isPasswordDigitFilled(0) ? t('입력됨') : t('미입력')}
+          key={`${0}`}
+          >
+            {isPasswordDigitFilled(0) && <PasswordIcon width={18} height={18} color={theme.mode.grey[50]} />}
+          </S.PasswordItem>
+          <S.PasswordItem
+          isFilled={isPasswordDigitFilled(1)}
+          aria-label={isPasswordDigitFilled(1) ? t('입력됨') : t('미입력')}
+          key={`${1}`}
+          >
+            {isPasswordDigitFilled(1) && <PasswordIcon width={18} height={18} color={theme.mode.grey[50]} />}
+          </S.PasswordItem>
+          <S.PasswordItem
+          isFilled={isPasswordDigitFilled(2)}
+          aria-label={isPasswordDigitFilled(2) ? t('입력됨') : t('미입력')}
+          key={`${2}`}
+          >
+            {isPasswordDigitFilled(2) && <PasswordIcon width={18} height={18} color={theme.mode.grey[50]} />}
+          </S.PasswordItem>
+          <S.PasswordItem
+          isFilled={isPasswordDigitFilled(3)}
+          aria-label={isPasswordDigitFilled(3) ? t('입력됨') : t('미입력')}
+          key={`${3}`}
+          >
+            {isPasswordDigitFilled(3) && <PasswordIcon width={18} height={18} color={theme.mode.grey[50]} />}
+          </S.PasswordItem>
         </S.PasswordContainer>
         <Keypad
           onNumberPress={handleNumberPress}
@@ -162,6 +176,7 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
           customStyle={S.KeypadCss(theme)}
         />
       </S.Content>
+      </S.InnerContainer>
     </S.Container>
   );
 };

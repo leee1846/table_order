@@ -100,7 +100,7 @@ export const AdminAccessPasswordModal = (
       aria-labelledby="password-title"
     >
       <S.CloseButton type="button" onClick={onClose} aria-label={t('닫기')}>
-        <CloseIcon width={32} height={32} color={theme.mode.grey[50]} />
+        <CloseIcon width={42} height={42} color={theme.mode.grey[50]} />
       </S.CloseButton>
       <S.InnerContainer>
         <S.Header>
