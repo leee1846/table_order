@@ -11,8 +11,7 @@ import { toast } from '@repo/feature/utils';
 import { MenuSelectionView } from './MenuSelectionView';
 import { OptionSelectionView } from './OptionSelectionView';
 import { validateOptionGroups } from './optionValidation';
-import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys, usePostTableOrder } from '@repo/api/queries';
+import {  usePostTableOrder } from '@repo/api/queries';
 import { calculateTotalAmount } from '@repo/util/calculation';
 import { useTranslation } from 'react-i18next';
 import type { Order } from '../../../orderSection/types';
@@ -61,7 +60,6 @@ export const AddMenuDialog = ({
   onOrderCreated,
 }: AddMenuDialogProps) => {
   const { t } = useTranslation('admin', { i18n: i18nInstance });
-  const queryClient = useQueryClient();
   const { mutateAsync: createTableOrder, isPending } = usePostTableOrder();
   const [viewMode, setViewMode] = useState<'menu' | 'option'>('menu');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);

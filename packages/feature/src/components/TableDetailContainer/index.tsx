@@ -277,7 +277,7 @@ export const TableDetailContainer = ({
       totalPrice: data.totalAmount || 0,
       paymentList: data.paymentList ?? [],
     };
-  }, [orderHistoriesResponse, tableNumber]);
+  }, [orderHistoriesResponse]);
 
   const handleAllCancel = () => {
     if (order.items.length === 0) {

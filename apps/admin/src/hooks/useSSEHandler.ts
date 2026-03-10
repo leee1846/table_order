@@ -20,6 +20,7 @@ export const useSSEHandler = (tableNumber?: string) => {
   const { data: shopDetailData } = useShopDetailData();
   const agentPingCheckTimeoutRef = useRef<number | null>(null);
   const agentErrorDialogIdRef = useRef<string | null>(null);
+  const posErrorDialogIdRef = useRef<string | null>(null);
   const { t } = useAdminTranslation();
 
   // 로그인/로그아웃 시 SSE 연결 관리
@@ -113,11 +114,18 @@ export const useSSEHandler = (tableNumber?: string) => {
     }
 
     if (sseMessage?.type === 'POS_ERROR') {
-      openConfirmDialog({
-        title: t('포스 오류'),
-        content: t('포스 오류가 발생했습니다.'),
+      
+      if (posErrorDialogIdRef.current) {
+        return;
+      }
+      posErrorDialogIdRef.current = openConfirmDialog({
+        title: t('POS 오류'),
+        content: t('주문 접수에 실패했습니다. 포스를 확인해주세요.'),
         confirmText: t('확인'),
         size: 'xsmall',
+        onConfirm: () => {
+          posErrorDialogIdRef.current = null;
+        },
       });
       return;
     }

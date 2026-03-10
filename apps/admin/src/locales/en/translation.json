@@ -720,5 +720,7 @@
   "매출 비밀번호 4자리를 입력해 주세요": "Enter the 4-digit\nsales password",
   "목록": "List",
   "수정할 테이블을 선택해주세요.": "Please select a table to edit.",
-  "삭제할 테이블을 선택해주세요.": "Please select a table to delete."
+  "삭제할 테이블을 선택해주세요.": "Please select a table to delete.",
+  "POS 오류": "POS Error",
+  "주문 접수에 실패했습니다. 포스를 확인해주세요.": "Failed to receive order. Please check the POS."
 }
