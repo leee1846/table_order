@@ -23,6 +23,7 @@ const BOARD_TYPE_LABELS: Record<TNoticeBoardType, string> = {
 export const Notices = ({ notices, pageSize }: NoticesProps) => {
   const [openNoticeId, setOpenNoticeId] = useState<number | null>(null);
   const navigate = useNavigate();
+  const appIsNative = CapacitorApp.isNative();
 
   useEffect(() => {
     if (openNoticeId === null) {
@@ -81,6 +82,7 @@ export const Notices = ({ notices, pageSize }: NoticesProps) => {
               type="button"
               onClick={() => handleOpenNotice(notice.noticeSeq)}
               isOpen={isOpen}
+              appIsNative={appIsNative}
             >
               <S.LeftContainer isOpen={isOpen}>
                 <S.Num isOpen={isOpen}>{notice.noticeSeq}</S.Num>
