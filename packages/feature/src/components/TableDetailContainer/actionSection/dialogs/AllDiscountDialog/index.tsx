@@ -14,7 +14,7 @@ import type { TCustomAmountType } from '@repo/api/types';
 import type { i18n as I18nInstance } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { handleNumericKeyDown } from '@repo/util/function';
-import { isOnlyNumbers } from '@repo/util/string';
+import { clampNumericToMax, isOnlyNumbers } from '@repo/util/string';
 
 const { colors } = theme;
 
@@ -66,7 +66,7 @@ export const AllDiscountDialog = ({
 
   const handleCustomDiscountChange = (value: string) => {
     if (isOnlyNumbers(value)) {
-      setCustomDiscount(value);
+      setCustomDiscount(clampNumericToMax(value, 100).toString());
     }
   };
 
