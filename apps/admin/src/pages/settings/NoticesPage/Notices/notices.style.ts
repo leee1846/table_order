@@ -29,23 +29,31 @@ export const Notice = styled.li<{
   background-color: ${({ isOpen }) =>
     isOpen ? theme.colors.grey[50] : theme.colors.white};
   border-bottom: 1px solid ${theme.colors.grey[200]};
-
+  justify-content: center;
   ${({ pageSize, noticesLength }) =>
     pageSize && noticesLength && pageSize === noticesLength
       ? `
     &:last-child {
-      border-bottom: none;
+     border-bottom: none;
     }
   `
       : ''}
+
+  ${({ isOpen }) => !isOpen ? 
+`
+  height: 10%;
+`
+      : ''}
+}
+
 `;
 
-export const Header = styled.button<{ isOpen: boolean }>`
+export const Header = styled.button<{ isOpen: boolean, appIsNative?: boolean }>`
   display: flex;
   align-items: ${({ isOpen }) => (isOpen ? 'flex-start' : 'center')};
-  justify-content: space-between;
-  padding: 14px 16px 12px 0;
+  justify-content: center;
   cursor: pointer;
+  padding: ${({ appIsNative }) => appIsNative ? '18px 0 14px 0' : '0'};
 `;
 
 export const LeftContainer = styled('div', {
