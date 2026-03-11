@@ -203,12 +203,12 @@ export const TablesPage = () => {
         id: table.tableSeq,
         tableNumber: table.tableNumber,
         tableName: table.tableName ?? '',
-        wifiSignal: deviceForTable?.wifiSignal ?? null,
         totalAmount: tableOrderData?.totalAmount ?? null,
         remainingAmount,
         orderTime,
         menuItems,
         hasOrder,
+        hasCustomer :!!deviceForTable?.tableNumber,
       };
     }
   );

@@ -93,8 +93,7 @@ export const useTablesData = ({
     return groupTables.map((table) => {
       const orderInfo = orderMap.get(table.tableNumber);
       const deviceInfo = menuDeviceMap.get(table.tableNumber);
-
-      const wifiSignal = deviceInfo?.wifiSignal ?? null;
+      const hasCustomer  = !!deviceInfo?.tableNumber ;
 
       const hasOrder = !!orderInfo && !!orderInfo.orderDetailMenuList;
       // 주문 정보가 있는 경우
@@ -134,7 +133,7 @@ export const useTablesData = ({
           id: table.tableSeq, // tableSeq를 id로 사용
           tableNumber: table.tableNumber,
           tableName: table.tableName ?? '',
-          wifiSignal,
+          hasCustomer,
           totalAmount: orderInfo.totalAmount ?? null,
           remainingAmount,
           orderTime,
@@ -148,7 +147,7 @@ export const useTablesData = ({
         id: table.tableSeq,
         tableNumber: table.tableNumber,
         tableName: table.tableName ?? '',
-        wifiSignal,
+        hasCustomer,
         totalAmount: null,
         remainingAmount: null,
         orderTime: null,

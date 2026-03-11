@@ -28,14 +28,14 @@ export const TableCard = ({
   const displayAmount = table.remainingAmount ?? table.totalAmount;
 
   return (
-    <S.CardContainer onClick={onClick} isUsed={table.wifiSignal !== null}>
+    <S.CardContainer onClick={onClick} isUsed={table.hasCustomer}>
       <S.CardHeader>
         <S.TableNumber isEmpty={table.menuItems === null}>
           {table.tableName}
         </S.TableNumber>
         <div>
           <S.OrderTime>{orderTime}</S.OrderTime>
-          {table.wifiSignal && (
+          {table.hasCustomer  && (
             <S.WifiSignal>
               <p>{t('이용 중')}</p>
             </S.WifiSignal>
