@@ -30,10 +30,10 @@ import {
   INSTALLMENT_LUMP_SUM,
   formatInstallmentMonthsToString,
 } from '@/feature/Installment';
-import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useTableGroupStore } from '@/stores/useTableGroupStore';
 
 interface Props {
   onClose: () => void;
@@ -811,7 +811,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    */
   const hasAnyPayment = paidMenuIds.size > 0 || paidPersonIds.size > 0;
 
-  const { data: tableGroupsData } = useTableGroupData();
+  const tableGroupsData = useTableGroupStore((s) => s.data);
   const tableName = tableGroupsData?.map((tableGroup) => {
     const table = tableGroup.tableList?.find(
       (table) => table.tableNumber === deviceData?.tableNumber

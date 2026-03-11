@@ -17,7 +17,7 @@ import type { UseBreakTimeReturn } from '@/hooks/useBreakTime';
 import type { UseShopClosureReturn } from '@/hooks/useShopClosure';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
-import { useTableGroupData } from '@/hooks/useTableGroupData';
+import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
@@ -40,7 +40,7 @@ export const Header = ({
 
   const { data: deviceData } = useDeviceData();
   const shopDetailData = useShopDetailStore((s) => s.data);
-  const { data: tableGroupsData } = useTableGroupData();
+  const tableGroupsData = useTableGroupStore((s) => s.data);
   const { data: shopPageSettingData } = useShopThemePage();
 
   const { shopThemeData } = shopPageSettingData;

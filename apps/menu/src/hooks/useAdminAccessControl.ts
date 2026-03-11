@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import type { AxiosError } from '@repo/api/axios';
 import type { IDevice } from '@repo/api/types';
-import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { toast } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useTableGroupStore } from '@/stores/useTableGroupStore';
 
 interface DeviceDataResult {
   data: Partial<IDevice> | null;
@@ -35,7 +35,7 @@ export const useAdminAccessControl = (
   deviceDataResult: DeviceDataResult
 ): UseAdminAccessControlReturn => {
   const { t } = useCustomerTranslation();
-  const { data: tableGroupData } = useTableGroupData();
+  const tableGroupData = useTableGroupStore((s) => s.data);
 
   const showAdminAccessPasswordModal = useRequestAdminAccessModalStore(
     (s) => s.show

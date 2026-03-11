@@ -1,11 +1,11 @@
 import { getTodayDateString } from '@repo/util/date';
 import { formatCurrency } from '@repo/util/string';
 import { printerIcon } from '@repo/ui/icons';
-import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import * as S from './cashPaymentInducement.style';
 import { useModalStore } from '@/stores/useModalStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useTableGroupStore } from '@/stores/useTableGroupStore';
 
 /**
  * 현금 결제 유도 UI
@@ -15,7 +15,7 @@ export const CashPaymentInducement = () => {
   const { t } = useCustomerTranslation();
   const { data: modalData } = useModalStore();
   const { data: deviceData } = useDeviceData();
-  const { data: tableGroupsData } = useTableGroupData();
+  const tableGroupsData = useTableGroupStore((s) => s.data);
   const tableName = tableGroupsData?.map((tableGroup) => {
     const table = tableGroup.tableList?.find(
       (table) => table.tableNumber === deviceData?.tableNumber

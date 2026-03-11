@@ -31,9 +31,11 @@ import { CustomerCountSelector } from '@/pages/MainPage/CustomerCountSelector';
 import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
 import { CartReminder } from '@/pages/MainPage/CartReminder';
 import { LastOrder } from '@/pages/MainPage/LastOrder';
+import { useTableGroupData } from '@/hooks/useTableGroupData';
 
 export const MainPage = () => {
   useShopData();
+  useTableGroupData();
   const { data: shopDetailData } = useShopDetailData();
   const deviceDataResult = useDeviceData();
   const {
