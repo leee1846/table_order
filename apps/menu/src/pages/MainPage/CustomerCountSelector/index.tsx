@@ -8,9 +8,9 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { usePostOrderGroup } from '@repo/api/queries';
 import { useDeviceData } from '@/hooks/useDeviceData';
-import { useShopData } from '@/hooks/useShopData';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
+import { useShopStore } from '@/stores/useShopStore';
 
 export const CustomerCountSelector = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ export const CustomerCountSelector = () => {
   const { data: shopDetailData } = useShopDetailData();
   const { setData: setCustomerCountData } = useCustomerCountStore();
   const { data: deviceData } = useDeviceData();
-  const { shopData } = useShopData();
+  const { data: shopData } = useShopStore();
 
   const useOnlyAdult =
     !!shopDetailData?.shopSetting?.useCustomerCount &&

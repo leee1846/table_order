@@ -26,7 +26,6 @@ import { clearAuthData } from '@/utils/auth';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
-import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
@@ -41,6 +40,7 @@ import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { usePosSyncOverlayStore } from '@/stores/usePosSyncOverlayStore';
+import { useShopStore } from '@/stores/useShopStore';
 
 type DeviceDetailPayload = Record<string, unknown> & {
   deviceType?: TDeviceType | null;
@@ -174,9 +174,7 @@ export const useSSEHandler = () => {
     setDataAsync,
     refresh: refreshDeviceData,
   } = useDeviceData({ skipInitialRequest: true });
-  const { shopData: currentShopData } = useShopData({
-    skipInitialRequest: true,
-  });
+  const { data: currentShopData } = useShopStore();
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
     SSE_KEYS.MAIN_CONNECTION
   );

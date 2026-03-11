@@ -12,7 +12,6 @@ import { useModalStore } from '@/stores/useModalStore';
 // import { CardPaymentProgressModal } from '../CardPaymentProgressModal';
 import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
-import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
@@ -30,6 +29,7 @@ import {
   DialogContainer,
   CloseButton,
 } from '@/feature/Installment';
+import { useShopStore } from '@/stores/useShopStore';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 // const PAYMENT_EVENT_NAME = 'paymentEvent';
@@ -84,7 +84,7 @@ export const CardPaymentInstallmentModal = ({
   const navigate = useNavigate();
   const modalStore = useModalStore();
 
-  const { shopData } = useShopData();
+  const { data: shopData } = useShopStore();
   const { data: shopDetailData } = useShopDetailData();
   const { data: deviceData } = useDeviceData();
   const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);

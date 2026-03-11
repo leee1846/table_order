@@ -1,14 +1,14 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { TableDetailContainer } from '@repo/feature/components';
 import type { TOrderType } from '@repo/api/types';
-import { useShopData } from '@/hooks/useShopData';
 import * as S from '@/pages/TableDetailPage/tableDetailPage.style';
 import adminI18n from '@/config/i18n/admin.i18n';
+import { useShopStore } from '@/stores/useShopStore';
 
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
   const [searchParams] = useSearchParams();
-  const { shopData } = useShopData({ skipInitialRequest: true });
+  const { data: shopData } = useShopStore();
   const shopCode = shopData?.shopCode ?? 0;
 
   const orderType: TOrderType =

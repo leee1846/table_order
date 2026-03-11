@@ -32,7 +32,6 @@ import { ROUTES } from '@/constants/routes';
 import { STORAGE_KEYS, TABLE_GROUP_STORAGE_KEY } from '@/constants/keys';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
-import { useShopData } from '@/hooks/useShopData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
@@ -44,6 +43,7 @@ import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { Sidebar } from '@/pages/TablesPage/Sidebar';
 import { getDeviceInfo } from '@/utils/deviceInfo';
+import { useShopStore } from '@/stores/useShopStore';
 
 // 헬퍼 함수: 주문 시간 포맷팅
 const formatOrderTime = (
@@ -90,7 +90,7 @@ export const TablesPage = () => {
   const { t } = useAdminTranslation();
   const navigate = useNavigate();
 
-  const { shopData } = useShopData();
+  const { data: shopData } = useShopStore();
   const { data: shopDetailData } = useShopDetailData();
   const { data: deviceData, setDataAsync: setDeviceData } = useDeviceData();
   const { setIsInitialized: setDeviceInitialized } = useDeviceStore();

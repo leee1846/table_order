@@ -22,7 +22,6 @@ import {
 } from '@repo/util/app';
 import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
 import type { IOrder } from '@repo/api/types';
-import { useShopData } from '@/hooks/useShopData';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useNavigate } from 'react-router-dom';
@@ -34,6 +33,7 @@ import {
 } from '@/feature/Installment';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
+import { useShopStore } from '@/stores/useShopStore';
 
 interface Props {
   onClose: () => void;
@@ -198,7 +198,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const { data: cartData, clearCart } = useCartStore();
   const { data: shopDetailData } = useShopDetailData();
   const { data: modalData, setModalData } = useModalStore();
-  const { shopData } = useShopData();
+  const { data: shopData } = useShopStore();
   const { data: customerCountData } = useCustomerCountStore();
   const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
 

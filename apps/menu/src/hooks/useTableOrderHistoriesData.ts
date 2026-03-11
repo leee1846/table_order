@@ -2,10 +2,10 @@ import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStor
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { useGetTableOrderHistories } from '@repo/api/queries';
 import { useEffect } from 'react';
-import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useShopStore } from '@/stores/useShopStore';
 
 interface Props {
   /**
@@ -30,7 +30,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
   const { t } = useCustomerTranslation();
 
-  const { shopData } = useShopData({ skipInitialRequest: true });
+  const { data: shopData } = useShopStore();
   const { data: deviceData, setDataAsync: setDeviceDataAsync } = useDeviceData({
     skipInitialRequest: true,
   });
@@ -86,13 +86,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
           t('알 수 없는 오류가 발생했습니다.'),
       });
     }
-  }, [
-    error,
-    t,
-    deviceData,
-    setDeviceDataAsync,
-    setShowAdminAccessModal,
-  ]);
+  }, [error, t, deviceData, setDeviceDataAsync, setShowAdminAccessModal]);
 
   useEffect(() => {
     if (skipInitialRequest) {

@@ -7,13 +7,13 @@ import { usePostDeviceDetail } from '@repo/api/queries';
 import type { IPostDeviceDetailRequest, TDeviceType } from '@repo/api/types';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useDeviceData } from '@/hooks/useDeviceData';
-import { useShopData } from '@/hooks/useShopData';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { Account } from '@/pages/settings/MiscellaneousPage/Account';
 import { Detail } from '@/pages/settings/MiscellaneousPage/Detail';
 import { DeviceManagement } from '@/pages/settings/MiscellaneousPage/DeviceManagement';
 import { Payment } from '@/pages/settings/MiscellaneousPage/Payment';
 import * as S from '@/pages/settings/MiscellaneousPage/MiscellaneousPage.style';
+import { useShopStore } from '@/stores/useShopStore';
 
 const MAX_ORDER_POS_NUMBER = 999;
 const TOAST_OPTIONS = {
@@ -25,7 +25,7 @@ export const MiscellaneousPage = () => {
   const { t } = useAdminTranslation();
 
   const { data: deviceData, setDataAsync: setDeviceData } = useDeviceData();
-  const { shopData } = useShopData({ skipInitialRequest: true });
+  const { data: shopData } = useShopStore();
   const { mutateAsync: saveDeviceDetail } = usePostDeviceDetail();
 
   const [isOrderPosMode, setIsOrderPosMode] = useState(false);

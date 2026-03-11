@@ -1,10 +1,10 @@
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useEffect } from 'react';
 import { useGetDeviceDetail } from '@repo/api/queries';
-import { useShopData } from './useShopData';
 import type { TDeviceType } from '@repo/api/types';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import { useShopStore } from '@/stores/useShopStore';
 
 interface Props {
   /**
@@ -29,7 +29,7 @@ export const useDeviceData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
   const { t } = useAdminTranslation();
-  const { shopData } = useShopData({ skipInitialRequest: true });
+  const { data: shopData } = useShopStore();
   const {
     data: storeData,
     isInitialized: isInitializedStoreData,

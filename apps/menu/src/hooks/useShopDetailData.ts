@@ -1,7 +1,7 @@
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
-import { useShopData } from './useShopData';
 import { useGetShopDetail } from '@repo/api/queries';
 import { useEffect } from 'react';
+import { useShopStore } from '@/stores/useShopStore';
 
 interface Props {
   /**
@@ -25,7 +25,7 @@ interface Props {
 export const useShopDetailData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
-  const { shopData } = useShopData({ skipInitialRequest: true });
+  const { data: shopData } = useShopStore();
   const { data: storeData, setData: setShopDetailData } = useShopDetailStore();
 
   const enabled = !!shopData?.shopCode && !storeData && !skipInitialRequest;

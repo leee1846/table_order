@@ -14,7 +14,7 @@ import {
 } from '@repo/util/date';
 import { formatCurrency } from '@repo/util/string';
 import { useGetCardApprovalHistory } from '@repo/api/queries';
-import { useShopData } from '@/hooks/useShopData';
+import { useShopStore } from '@/stores/useShopStore';
 
 const PAGE_SIZE = 7;
 
@@ -22,7 +22,7 @@ export const PaymentsCardsPage = () => {
   const { t } = useAdminTranslation();
   const { data: shopDetailData } = useShopDetailData();
   const { shopSetting } = shopDetailData ?? {};
-  const { shopData } = useShopData({ skipInitialRequest: true });
+  const { data: shopData } = useShopStore();
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
   const dateRangeOptions: { value: TDateRangePreset; label: string }[] =
     useMemo(

@@ -1,7 +1,7 @@
 import { useGetTableGroupList } from '@repo/api/queries';
-import { useShopData } from '@/hooks/useShopData';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useEffect } from 'react';
+import { useShopStore } from '@/stores/useShopStore';
 
 interface Props {
   /**
@@ -24,7 +24,7 @@ interface Props {
 export const useTableGroupData = (options?: Props) => {
   const { skipInitialRequest = false } = options || {};
 
-  const { shopData } = useShopData({ skipInitialRequest: true });
+  const { data: shopData } = useShopStore();
   const { data: storeData, setData: setTableGroupsStoreData } =
     useTableGroupStore();
 

@@ -17,6 +17,7 @@ import * as S from '@/pages/MainPage/CartButton/cartButton.style';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useShopStore } from '@/stores/useShopStore';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -30,7 +31,7 @@ export const CartButton = ({ categories }: Props) => {
   const { mutateAsync: createTableOrder } = usePostTableOrder({
     ignoreGlobalErrors: [400],
   });
-  const { shopData } = useShopData();
+  const { data: shopData } = useShopStore();
   const { data: deviceData } = useDeviceData();
   const { data: customerCountData } = useCustomerCountStore();
   const { data: shopDetailData } = useShopDetailData();

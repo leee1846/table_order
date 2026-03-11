@@ -7,13 +7,13 @@ import type { ICategoryWithMenus, IMenuBase } from '@repo/api/types';
 import { useState } from 'react';
 import type { ICartMenu } from '@/types/cart';
 import { usePostTableOrder } from '@repo/api/queries';
-import { useShopData } from '@/hooks/useShopData';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useShopStore } from '@/stores/useShopStore';
 
 interface Props {
   onClose: () => void;
@@ -105,7 +105,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
     }
   };
 
-  const { shopData } = useShopData();
+  const { data: shopData } = useShopStore();
 
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const { data: customerCountData } = useCustomerCountStore();

@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { SystemControl, type SystemStatus } from '@repo/util/app';
 import { useDeviceData } from '@/hooks/useDeviceData';
-import { useShopData } from '@/hooks/useShopData';
 import { usePostDeviceDetail } from '@repo/api/queries';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import { useShopStore } from '@/stores/useShopStore';
 
 /**
  * WiFi 신호 모니터링 및 서버 동기화를 담당하는 커스텀 훅
@@ -21,7 +21,7 @@ export const useSystemStatusMonitor = () => {
   const { data: deviceData, refresh: refreshDeviceData } = useDeviceData({
     skipInitialRequest: true,
   });
-  const { shopData } = useShopData({ skipInitialRequest: true });
+  const { data: shopData } = useShopStore();
   const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
   const { isInitialized, setDataAsync } = useDeviceStore();
 
