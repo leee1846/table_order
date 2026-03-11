@@ -1,7 +1,7 @@
 {
   "name": "menu",
   "private": true,
-  "version": "1.0.8",
+  "version": "1.0.9",
   "type": "module",
   "scripts": {
     "dev": "vite --mode development --host",
@@ -27,6 +27,7 @@
     "@repo/ui": "workspace:*",
     "@repo/util": "workspace:*",
     "i18next": "^25.6.3",
+    "lottie-react": "^2.4.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-i18next": "16.3.5",

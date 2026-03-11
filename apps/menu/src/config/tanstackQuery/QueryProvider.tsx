@@ -4,6 +4,7 @@ import {
   useIsFetching,
   useIsMutating,
 } from '@repo/api/tanstack-query';
+import { queryKeys } from '@repo/api/queries';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSEReconnecting } from '@repo/feature/hooks';
 import { useState, type ReactNode } from 'react';
@@ -17,11 +18,17 @@ interface Props {
  * QueryClientProvider 내부에서 전역 loading 상태를 감지하는 컴포넌트
  */
 function GlobalLoadingIndicator() {
-  const isFetching = useIsFetching();
-  const isMutating = useIsMutating();
+  const isFetching =
+    useIsFetching() -
+    useIsFetching({ queryKey: [...queryKeys.device.all, 'detail'] }); // useGetDeviceDetail 제외
+  const isMutating =
+    useIsMutating() -
+    useIsMutating({ mutationKey: queryKeys.device.postDetail }); // usePostDeviceDetail 제외
   const isSSEReconnecting = useSSEReconnecting();
-  const isWaitingForOrderComplete =
-    useOrderPendingPosStore((s) => s.isWaitingForOrderComplete);
+  const isWaitingForOrderComplete = useOrderPendingPosStore(
+    (s) => s.isWaitingForOrderComplete
+  );
+
   const isLoading =
     isFetching > 0 ||
     isMutating > 0 ||

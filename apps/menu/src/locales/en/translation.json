@@ -47,6 +47,7 @@
   "최소 주문 수량은 {{minQuantity}}개 입니다.": "Minimum order quantity is {{minQuantity}} items.",
   "{{menuName}}의 최소 주문 수량은 {{minQuantity}}개 입니다.": "The minimum order quantity for {{menuName}} is {{minQuantity}} items.",
   "메뉴가 품절되었습니다.": "Menu item is out of stock.",
+  "{{menuName}} 메뉴가 품절되었습니다.": "{{menuName}} is out of stock.",
   "메뉴가 담겼습니다.": "Item added to cart.",
   "메뉴를 주문할까요?": "Would you like to place an order?",
   "주방 접수된 이후에는 취소가 불가능해요.": "Cancellation is not possible after kitchen acceptance.",
@@ -157,11 +158,13 @@
   "잠시만 기다려주세요": "Please wait a moment",
   "카드를 투입구에 넣어주세요": "Please insert your card",
   "카드를 투입구에 넣는 모습": "Inserting card into card reader",
-  "주문이 마감됩니다.": "Orders will be closed.",
+  "{{minutes}}분 후 <span>주문이 마감됩니다.</span>": "In {{minutes}} min <span>Orders will be closed.</span>",
   "메인 홈": "Main Home",
   "카테고리를 먼저 등록해주세요.": "Please register categories first.",
   "메뉴정보가 업데이트 되었습니다.": "Menu information has been updated.",
   "매장정보가 업데이트 되었습니다.": "Store information has been updated.",
+  "동기화가 완료되었습니다.": "Sync completed.",
+  "최신 데이터를 불러오는 중": "Loading latest data",
   "메뉴 추가": "Add Menu",
   "선택 취소": "Cancel Selection",
   "전체 취소": "Cancel All",
@@ -303,5 +306,6 @@
   "수량을 {{count}}개 이상 입력해주세요.": "Please enter a quantity of at least {{count}}.",
   "POS 오류": "POS Error",
   "주문 요청에 실패했습니다. 사장님에게 문의해주세요.": "Order request failed. Please contact the store owner.",
-  "주문 처리에 실패했습니다. 사장님에게 문의해주세요.": "Order processing failed. Please contact the store owner."
+  "주문 처리에 실패했습니다. 사장님에게 문의해주세요.": "Order processing failed. Please contact the store owner.",
+  "관리자 비밀번호 4자리를 입력해 주세요": "Enter the 4-digit\nadministrator password"
 }

@@ -225,3 +225,41 @@ export const storage = {
    */
   session: createStorageInterface('session'),
 };
+
+
+/**
+ * 입력 필드에서 숫자만 입력 가능하도록 제어하는 KeyDown 이벤트 핸들러
+ * 숫자 키와 특정 제어 키(Backspace, Delete, Tab, 화살표 등)만 허용하고 나머지는 차단합니다.
+ *
+ * @param e - React 키보드 이벤트 객체
+ *
+ * @example
+ * ```tsx
+ * import { handleNumericKeyDown } from '@repo/util/function';
+ *
+ * <input
+ *   type="text"
+ *   inputMode="numeric"
+ *   onKeyDown={handleNumericKeyDown}
+ * />
+ * ```
+ */
+
+export const handleNumericKeyDown = (
+  e: { key: string; preventDefault: () => void }
+) => {
+  const allowedKeys = [
+    'Backspace',
+    'Delete',
+    'Tab',
+    'ArrowLeft',
+    'ArrowRight',
+    'Home',
+    'End',
+  ];
+  const isNumber = /^[0-9]$/.test(e.key);
+
+  if (!isNumber && !allowedKeys.includes(e.key)) {
+    e.preventDefault();
+  }
+};

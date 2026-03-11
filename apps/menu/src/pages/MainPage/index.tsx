@@ -211,11 +211,6 @@ export const MainPage = () => {
     return <PickupAlarm />;
   }
 
-  /** 장바구니 메뉴 주문 리마인더 표시 */
-  if (pageStates.cartReminder.show) {
-    return <CartReminder />;
-  }
-
   return (
     <S.Container>
       <Header
@@ -241,6 +236,10 @@ export const MainPage = () => {
 
         <CartButton categories={visibleCategories} />
       </S.MainContent>
+
+      {/* 장바구니 메뉴 주문 리마인더 표시 */}
+      {/* Sidebar/Contents 상태(선택 카테고리, 스크롤) 유지하기 위하여 현재 위치에 표시 */}
+      {pageStates.cartReminder.show && <CartReminder />}
     </S.Container>
   );
 };

@@ -216,7 +216,7 @@
   "테이블 ${tableNumber}번 메뉴판 기기": "Menu device for table ${tableNumber}",
   "테이블 그룹 삭제에 실패했습니다.": "Failed to delete table group.",
   "테이블 그룹 수정에 실패했습니다.": "Failed to edit table group.",
-  "테이블 그룹 이름을 입력하세요": "Enter the table group name",
+  "테이블 그룹 이름을 입력해주세요.": "Please enter the table group name.",
   "테이블 그룹 추가에 실패했습니다.": "Failed to add table group.",
   "테이블 그룹을 선택해주세요.": "Please select a table group.",
   "테이블 그룹이 삭제되었습니다.": "Table group deleted.",
@@ -280,6 +280,7 @@
   "결제 수단": "Payment method",
   "결제 완료 객수": "Paid guest count",
   "결제 전 매출:": "Sales before payment:",
+  "결제 전 취소": "Cancel before payment",
   "결제금액": "Payment amount",
   "결제수단": "Payment method",
   "카드": "Card",
@@ -715,6 +716,9 @@
   "포스 에이전트와의 연결이 원활하지 않습니다.": "Connection to the POS agent is not stable.",
   "에이전트 프로그램을 확인해주세요.": "Please check the agent program.",
   "상단 QR코드를 스캔하면 채널톡 서비스로 연결됩니다.": "Scanning the QR code at the top will connect you to Channel Talk service.",
-  "관리자 비밀번호 4자리를": "Enter the 4-digit administrator password",
-  "입력해 주세요": "Please enter"
+  "관리자 비밀번호 4자리를 입력해 주세요": "Enter the 4-digit\nadministrator password",
+  "매출 비밀번호 4자리를 입력해 주세요": "Enter the 4-digit\nsales password",
+  "목록": "List",
+  "수정할 테이블을 선택해주세요.": "Please select a table to edit.",
+  "삭제할 테이블을 선택해주세요.": "Please select a table to delete."
 }

@@ -34,10 +34,18 @@ export const AmountChangeDialog = ({
     usePostCustomAmount();
 
   const handleNumberPress = (number: number) => {
+    const MAX_AMOUNT = 99999999999; // 백억 자리수 (11자리)
+
     if (amount === '0') {
       setAmount(number.toString());
     } else {
-      setAmount((prev) => prev + number.toString());
+      const newAmount = amount + number.toString();
+      const numericValue = parseInt(newAmount, 10);
+      
+      // 99,999,999,999를 초과하는 경우 입력 무시
+      if (numericValue <= MAX_AMOUNT) {
+        setAmount(newAmount);
+      }
     }
   };
 

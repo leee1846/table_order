@@ -44,9 +44,15 @@ export const ImageGrid = styled.ul`
   list-style: none;
   overflow: auto;
   height: 80%;
+
+  > li{
+   height : 155px;
+  }
 `;
 
 export const ImageButton = styled.button<{ selected: boolean }>`
+  width : 100%;
+  height : 100%;
   position: relative;
   border: 2px solid
     ${({ selected }) =>

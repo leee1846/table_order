@@ -21,12 +21,14 @@ export const Contents = ({
 }: Props) => {
   const { t } = useCustomerTranslation();
 
+  const { activate, deactivate } = categoryNavigation;
+
   useEffect(() => {
-    categoryNavigation.activate();
+    activate();
     return () => {
-      categoryNavigation.deactivate();
+      deactivate();
     };
-  }, [categoryNavigation]);
+  }, [activate, deactivate]);
 
   if (categories.length < 1) {
     return (
@@ -39,7 +41,7 @@ export const Contents = ({
       <TabContent selectedCategory={categoryNavigation.selectedCategory} />
     </S.Container>
   ) : (
-    <S.Container>
+    <S.Container id={DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER}>
       <ScrollContent categories={categories} />
     </S.Container>
   );

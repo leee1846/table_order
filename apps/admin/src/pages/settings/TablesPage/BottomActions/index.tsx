@@ -36,6 +36,12 @@ export const BottomActions = ({
 
   // 테이블 수정
   const handleEdit = () => {
+
+    if (!table) {
+      toast(t('수정할 테이블을 선택해주세요.'));
+      return;
+    }
+
     setIsTableEditDialogOpen(true);
   };
 
@@ -46,6 +52,7 @@ export const BottomActions = ({
   // 테이블 삭제
   const handleDelete = () => {
     if (!table) {
+      toast(t('삭제할 테이블을 선택해주세요.'));
       return;
     }
     openDualActionDialog({

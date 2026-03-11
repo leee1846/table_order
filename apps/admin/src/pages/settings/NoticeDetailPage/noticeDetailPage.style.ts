@@ -78,6 +78,12 @@ export const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+
+  span{
+    ${TYPOGRAPHY.MT_9}
+    color: ${theme.colors.grey[800]};
+    margin-left: 15px;
+  }
 `;
 
 export const BackButton = styled.button`

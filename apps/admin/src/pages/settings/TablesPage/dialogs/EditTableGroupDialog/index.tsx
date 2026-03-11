@@ -39,6 +39,12 @@ export const EditTableGroupDialog = forwardRef<
       return;
     }
 
+
+    if (groupName.trim() === '') {
+      toast(t('테이블 그룹 이름을 입력해주세요.'));
+      return;
+    }
+
     if (groupName.trim() !== '') {
       await updateTableGroup({
         tableGroupSeq: tableGroup.tableGroupSeq,
@@ -82,7 +88,7 @@ export const EditTableGroupDialog = forwardRef<
                 setGroupName(value);
               }
             }}
-            placeholder={t('테이블 그룹 이름을 입력하세요')}
+            placeholder={t('테이블 그룹 이름을 입력해주세요')}
           />
         </S.ModalBody>
         <S.ModalFooter>

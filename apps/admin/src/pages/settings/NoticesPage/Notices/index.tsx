@@ -83,8 +83,11 @@ export const Notices = ({ notices, pageSize }: NoticesProps) => {
               isOpen={isOpen}
             >
               <S.LeftContainer isOpen={isOpen}>
-                <S.Num>{notice.noticeSeq}</S.Num>
-                <S.Status boardType={notice.boardType as TNoticeBoardType}>
+                <S.Num isOpen={isOpen}>{notice.noticeSeq}</S.Num>
+                <S.Status
+                  boardType={notice.boardType as TNoticeBoardType}
+                  isOpen={isOpen}
+                >
                   {notice.boardType
                     ? BOARD_TYPE_LABELS[notice.boardType]
                     : t('일반')}
@@ -92,7 +95,7 @@ export const Notices = ({ notices, pageSize }: NoticesProps) => {
                 <S.Title isOpen={isOpen}>{notice.noticeTitle}</S.Title>
               </S.LeftContainer>
               <S.RightContainer isOpen={isOpen}>
-                <S.CreatedAt>
+                <S.CreatedAt isOpen={isOpen}>
                   {formatDateTime(notice.createDate, 'YYYY.MM.DD HH:mm')}
                 </S.CreatedAt>
                 {CapacitorApp.isNative() && (

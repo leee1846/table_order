@@ -5,9 +5,9 @@ import type { ICategoryWithMenus, IMenu } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
 import { Thumbnail } from '@/feature/Thumbnail';
 import { useCartStore } from '@/stores/useCartStore';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 import { toast } from '@repo/feature/utils';
-import { useCategoriesData } from '@/hooks/useCategoriesData';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -32,22 +32,34 @@ interface Props {
 }
 export const MenuItem = ({ layout, category, menu }: Props) => {
   const { t } = useCustomerTranslation();
-  const { data: languageData } = useCustomerLanguageStore();
-  const { data: shopDetailData } = useShopDetailData();
-
-  const currencySymbol =
-    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
+  const currentLanguage = useCustomerLanguageStore(
+    (s) => s.data.currentLanguage
+  );
+  // useShopDetailData() 대신 selector로 직접 읽어 QueryObserver·useShopStore 구독 생성 방지
+  const currencySetting = useShopDetailStore(
+    (s) => s.data?.shopSetting?.currencySetting
+  );
+  const currencySymbol = CURRENCY_SYMBOL[currencySetting ?? 'KRW'];
 
   const firstImage = menu.menuImageList?.filter(
     (image) => image.imageIndex === 0
   )[0];
 
-  const { data: modalData, openMenuDetail, closeMenuDetail } = useModalStore();
+  // 이 메뉴의 모달 열림 여부만 구독
+  const isMenuDetailOpen = useModalStore(
+    (s) => s.data.openedMenuDetailSeq === menu.menuSeq
+  );
 
-  const { addToCart, updateCartItemQuantity, data: cartData } = useCartStore();
-  const { firstOrderRequiredCategories } = useCategoriesData();
+  // 액션만 구독
+  const addToCart = useCartStore((s) => s.addToCart);
+  const updateCartItemQuantity = useCartStore((s) => s.updateCartItemQuantity);
 
   const onClickMenu = () => {
+    const cartData = useCartStore.getState().data;
+    const firstOrderRequiredCategories = useCategoryStore
+      .getState()
+      .data.visibleCategories.filter((c) => c.isFirstOrderRequired);
+
     // 품절되었을경우
     if (menu.isOutOfStock) {
       toast(t('메뉴가 품절되었습니다.'), {
@@ -82,7 +94,9 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
     // 수량선택이 불가능한경우
     if (!category.isQuantitySelectable && menu.optionGroupList.length < 1) {
       // 주문하기 사용 === false 인 경우
-      if (!shopDetailData?.shopSetting?.isMenuboardOrderable) {
+      if (
+        !useShopDetailStore.getState().data?.shopSetting?.isMenuboardOrderable
+      ) {
         return;
       }
 
@@ -117,14 +131,12 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
       return;
     }
 
-    openMenuDetail(menu.menuSeq);
+    useModalStore.getState().openMenuDetail(menu.menuSeq);
   };
 
-  const menuName =
-    menu.localeMenuName?.[languageData.currentLanguage] || menu.menuName;
+  const menuName = menu.localeMenuName?.[currentLanguage] || menu.menuName;
   const menuDescription =
-    menu.localeMenuDescription?.[languageData.currentLanguage] ||
-    menu.menuDescription;
+    menu.localeMenuDescription?.[currentLanguage] || menu.menuDescription;
   const priceText = `${currencySymbol}${formatCurrency(menu.menuPrice)}`;
   const ariaLabel = menu.isOutOfStock
     ? `${t('품절된 메뉴')}: ${menuName}, ${priceText}`
@@ -153,19 +165,20 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
         </S.Content>
       </S.Container>
 
-      {modalData.openedMenuDetailSeq === menu.menuSeq &&
-        menu.optionGroupList.length < 1 && (
-          <MenuDetailModal onClose={closeMenuDetail} menu={menu} />
-        )}
+      {isMenuDetailOpen && menu.optionGroupList.length < 1 && (
+        <MenuDetailModal
+          onClose={() => useModalStore.getState().closeMenuDetail()}
+          menu={menu}
+        />
+      )}
 
-      {modalData.openedMenuDetailSeq === menu.menuSeq &&
-        menu.optionGroupList.length > 0 && (
-          <MenuDetailWithOptionsModal
-            onClose={closeMenuDetail}
-            menu={menu}
-            category={category}
-          />
-        )}
+      {isMenuDetailOpen && menu.optionGroupList.length > 0 && (
+        <MenuDetailWithOptionsModal
+          onClose={() => useModalStore.getState().closeMenuDetail()}
+          menu={menu}
+          category={category}
+        />
+      )}
     </>
   );
 };

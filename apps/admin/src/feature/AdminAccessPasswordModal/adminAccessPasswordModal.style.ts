@@ -22,7 +22,6 @@ export const Container = styled.div`
   bottom: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
   z-index: ${({ theme }) => theme.zIndex.notification};
   background-color: ${({ theme }) => theme.mode.grey[700]};
   padding: 90px 0;
@@ -54,6 +53,7 @@ export const Header = styled.div`
 export const Title = styled.p`
   ${TYPOGRAPHY.MT_3}
   color: ${({ theme }) => theme.mode.grey[100]};
+  white-space: pre-line;
 `;
 
 export const Content = styled.div`
@@ -72,9 +72,6 @@ export const PasswordContainer = styled.ul`
   justify-content: center;
   align-items: center;
   margin-bottom: 60px;
-
-  & > li {
-  }
 `;
 
 export const PasswordItem = styled.li<{ isFilled: boolean }>`

@@ -1,4 +1,0 @@
-{
-  // 필수 확장 프로그램
-  "recommendations": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
-}

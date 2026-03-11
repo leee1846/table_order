@@ -69,7 +69,7 @@ export const OrderItemRow = styled.div<{ $isSelected?: boolean }>`
   background-color: ${({ $isSelected }) =>
     $isSelected ? colors.grey[200] : 'transparent'};
 
-  > div:nth-child(1) {
+  > div:nth-of-type(1) {
     display: flex;
     flex-direction: row;
     margin-bottom: 12px;
@@ -110,13 +110,13 @@ export const OptionRow = styled.div`
     color: ${colors.grey[500]};
     ${TYPOGRAPHY.ST_4}
   }
-  > div:nth-child(1) {
+  > div:nth-of-type(1) {
     p {
       transform: translateY(-6px);
     }
   }
 
-  > div:nth-child(2) {
+  > div:nth-of-type(2) {
     flex: 1;
     justify-content: flex-end;
     align-items: center;

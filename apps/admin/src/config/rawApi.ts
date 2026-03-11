@@ -17,7 +17,13 @@ rawApi.interceptors.response.use(
   (error: AxiosError) => {
     // app에서 로그 확인용
     if (!error.response) {
-      console.error('rawApi interceptor error:', error);
+      // app 로그 확인용
+      console.error('rawApi request failed:', {
+        message: error.message,
+        code: error.code,
+        url: error.config?.url,
+        method: error.config?.method,
+      });
     }
     return Promise.reject(error);
   }

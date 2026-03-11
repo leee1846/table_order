@@ -39,6 +39,27 @@ export const allowOnlyNumbers = (value: string): string => {
 };
 
 /**
+ * 문자열이 숫자만 포함하는지 검증합니다.
+ * 빈 문자열이거나 숫자만 포함된 경우 true를 반환합니다.
+ *
+ * @param value - 검증할 문자열
+ * @returns 빈 문자열이거나 숫자만 포함하면 true, 아니면 false
+ *
+ * @example
+ * ```ts
+ * isOnlyNumbers('123') // true
+ * isOnlyNumbers('') // true
+ * isOnlyNumbers('abc') // false
+ * isOnlyNumbers('123abc') // false
+ * isOnlyNumbers('12.34') // false
+ * isOnlyNumbers('+123') // false
+ * ```
+ */
+export const isOnlyNumbers = (value: string): boolean => {
+  return value === '' || /^[0-9]+$/.test(value);
+};
+
+/**
  * 숫자만 허용하고 최대값으로 제한한 값을 반환합니다.
  * 입력 문자열에서 숫자가 아닌 문자를 제거한 뒤, max를 초과하면 max로 clamping합니다.
  *
@@ -170,7 +191,7 @@ export const isValidEmail = (email: string): boolean => {
   }
 
   // 기본적인 이메일 형식 검증: 로컬파트@도메인.최상위도메인
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
   return emailRegex.test(email.trim());
 };
 

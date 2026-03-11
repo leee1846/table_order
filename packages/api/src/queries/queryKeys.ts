@@ -5,6 +5,8 @@ export const queryKeys = {
   common: {
     all: ['common'] as const,
     holidays: () => [...queryKeys.common.all, 'holidays'] as const,
+    posSyncStatus: (shopCode: string) =>
+      [...queryKeys.common.all, 'posSyncStatus', shopCode] as const,
   },
 
   app: {
@@ -129,6 +131,9 @@ export const queryKeys = {
         pageNumber,
         pageSize,
       ] as const,
+
+    /** 디바이스 상세 전송 mutation (usePostDeviceDetail) */
+    postDetail: ['device', 'postDetail'] as const,
   },
 
   notice: {

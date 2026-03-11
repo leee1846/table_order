@@ -34,10 +34,17 @@ export const useCategoryVisibilityManager = (
       return;
     }
 
+    let cancelled = false;
+
     /** 카테고리 노출 여부를 업데이트하는 함수 */
     const updateCategoryVisibility = async () => {
       // 타이머로 실행될 때마다 최신 공휴일 정보 가져오기
       await refetchHoliday();
+
+      // cleanup이 실행된 이후에 재개된 경우 중단
+      if (cancelled) {
+        return;
+      }
 
       const currentCategories = useCategoryStore.getState().data.categories;
       const updateAllVisibility =
@@ -86,7 +93,9 @@ export const useCategoryVisibilityManager = (
         globalTimerManager.setTimeout(
           TIMER_KEYS.CATEGORY_VISIBILITY_UPDATE,
           () => {
-            updateCategoryVisibility();
+            if (!cancelled) {
+              updateCategoryVisibility();
+            }
           },
           earliestNextChangeMs
         );
@@ -98,6 +107,7 @@ export const useCategoryVisibilityManager = (
 
     // cleanup: 데이터 변경 또는 언마운트 시 타이머 정리
     return () => {
+      cancelled = true;
       globalTimerManager.clear(TIMER_KEYS.CATEGORY_VISIBILITY_UPDATE);
     };
   }, [categories, refetchHoliday]);

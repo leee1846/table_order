@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { readFileSync } from 'fs';
@@ -8,20 +8,6 @@ const pkg = JSON.parse(
 ) as {
   version: string;
 };
-
-/** 빌드 결과물에 /version.json을 생성하는 플러그인 */
-function generateVersionJson(version: string): Plugin {
-  return {
-    name: 'generate-version-json',
-    generateBundle() {
-      this.emitFile({
-        type: 'asset',
-        fileName: 'version.json',
-        source: JSON.stringify({ version }),
-      });
-    },
-  };
-}
 
 // React Compiler 설정
 // https://ko.react.dev/learn/react-compiler
@@ -37,7 +23,6 @@ export default defineConfig({
         plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
       },
     }),
-    generateVersionJson(pkg.version),
   ],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),

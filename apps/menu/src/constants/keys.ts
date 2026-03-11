@@ -52,8 +52,14 @@ export const TIMER_KEYS = {
   LAST_ORDER_REMAINING_TIME_UPDATE: 'last-order-remaining-time-update',
   /** 헤더 알림 문구 업데이트 타이머 키 */
   HEADER_ALERT_MESSAGE_UPDATE: 'header-alert-message-update',
+  /** POS 동기화 상태 폴링 타이머 키 */
+  POS_SYNC_POLLING: 'pos-sync-polling',
   /** 초기 화면 스와이퍼 자동 재생 타이머 키 */
   INITIAL_PAGE_SWIPER_AUTOPLAY: 'initial-page-swiper-autoplay',
+  /** 테이블 제거 여부 확인 지연 타이머 키 */
+  TABLE_REMOVAL_CHECK: 'table-removal-check',
+  /** 관리자 접근 모달 닫기 지연 타이머 키 */
+  ADMIN_ACCESS_MODAL_HIDE: 'admin-access-modal-hide',
 };
 
 export const SSE_KEYS = {
@@ -69,6 +75,8 @@ export const DOM_IDS = {
   CATEGORY_SECTION_PREFIX: 'category-',
   /** 카테고리 섹션 ID 생성 함수 */
   getCategorySectionId: (categorySeq: number) => `category-${categorySeq}`,
-  /** Contents 스크롤 컨테이너 ID */
+  /** Contents 스크롤 컨테이너 ID (탭 모드) */
   CONTENTS_SCROLL_CONTAINER: 'contents-scroll-container',
+  /** Contents 스크롤 컨테이너 ID (스크롤 모드) */
+  CONTENTS_SCROLL_MODE_CONTAINER: 'contents-scroll-mode-container',
 } as const;

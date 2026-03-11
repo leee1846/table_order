@@ -44,12 +44,17 @@ publicApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // app에서 로그 확인용
-    console.error('publicApi interceptor error:', error);
-
     // 나머지 모든 error dialog 처리
     let content: string;
     if (!error.response) {
+      // app 로그 확인용
+      console.error('publicApi request failed:', {
+        message: error.message,
+        code: error.code,
+        url: error.config?.url,
+        method: error.config?.method,
+      });
+
       content = 'API 요청에 실패하였습니다.';
     } else if (error.response.status === 500) {
       content = '알 수 없는 서버 에러가 발생했습니다.';

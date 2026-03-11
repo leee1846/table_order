@@ -6,6 +6,7 @@ import type { THistoryCode } from '../types/admin';
 export const ENDPOINTS = {
   COMMON: {
     HOLIDAYS: '/holidays',
+    POS_SYNC_STATUS: (shopCode: string) => `/pos/sync/status/${shopCode}`,
   },
 
   APP: {

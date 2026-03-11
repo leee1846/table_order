@@ -59,6 +59,8 @@ export const TablesPage = () => {
     if (!selectedTableGroupId) {
       return null;
     }
+
+    setSelectedTable(null);
     return tableGroups.find(
       (group) => group.tableGroupSeq === selectedTableGroupId
     );
@@ -118,7 +120,11 @@ export const TablesPage = () => {
               key={table.tableSeq}
               table={table}
               isSelected={selectedTable?.tableSeq === table.tableSeq}
-              onSelect={() => setSelectedTable(table)}
+              onSelect={() =>
+                setSelectedTable(
+                  selectedTable?.tableSeq === table.tableSeq ? null : table
+                )
+              }
             />
           ))}
         </S.GridContainer>

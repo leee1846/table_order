@@ -12,6 +12,8 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/constants/routes';
 import { AdminAccessPasswordModal } from '@/feature/AdminAccessPasswordModal';
+import { useAdminTranslation } from '@/config/i18n';
+import { openConfirmDialog } from '@repo/feature/utils';
 
 interface SettingsAccessGuardProps {
   children: ReactNode;
@@ -27,9 +29,20 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
   // 관리자 인증 완료 여부 (인증 성공 시 true로 설정되어 페이지 접근 허용)
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useAdminTranslation();
 
   const { mutateAsync: loginMenuboardAdmin } = usePostLoginMenuboardAdmin({
     ignoreGlobalErrors: [401],
+    options: {
+      onError: (error) => {
+        if (error.response?.status === 401) {
+          openConfirmDialog({
+            title: t('인증 실패'),
+            content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
+          });
+        }
+      },
+    },
   });
 
   const isNative = CapacitorApp.isNative();
@@ -44,18 +57,17 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
   }, []); // 초기 마운트 시 한 번만 실행
 
   useEffect(() => {
+    // requireAuth가 변경되면 인증 상태 리셋
     if (!requireAuth) {
       setIsUnlocked(true);
+      setIsModalOpen(false);
       return;
     }
 
-    // 이미 인증 완료된 경우 모달을 다시 띄우지 않음
-    if (isUnlocked) {
-      return;
-    }
-
+    // 인증이 필요하면 모달 표시
+    setIsUnlocked(false);
     setIsModalOpen(true);
-  }, [requireAuth, isUnlocked]);
+  }, [requireAuth]);
 
   const handleAdminAuthSubmit = useCallback(
     async (password: string) => {
@@ -98,6 +110,7 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
           onClose={handleClose}
           onSubmit={handleAdminAuthSubmit}
           onSuccess={handleAdminAuthSuccess}
+          type="settings"
         />
       )}
     </>

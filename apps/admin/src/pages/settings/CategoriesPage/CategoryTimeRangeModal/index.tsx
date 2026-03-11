@@ -7,6 +7,7 @@ import { useId, useState, useEffect, useCallback } from 'react';
 import type { ICategory } from '@repo/api/types';
 import { parseTimeString, formatTimeString } from '@repo/util/time';
 import { allowOnlyNumbers } from '@repo/util/string';
+import { handleNumericKeyDown } from '@repo/util/function';
 
 interface Props {
   onClose: () => void;
@@ -60,24 +61,6 @@ export const CategoryTimeRangeModal = ({
     };
   };
 
-  // 숫자만 입력 가능하도록 제어, 입력을 차단함
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowedKeys = [
-      'Backspace',
-      'Delete',
-      'Tab',
-      'ArrowLeft',
-      'ArrowRight',
-      'Home',
-      'End',
-    ];
-    const isNumber = /^[0-9]$/.test(e.key);
-
-    if (!isNumber && !allowedKeys.includes(e.key)) {
-      e.preventDefault();
-    }
-  };
-
   const handleClose = () => {
     initializeTimeValues();
     onClose();
@@ -108,7 +91,7 @@ export const CategoryTimeRangeModal = ({
                 id={SALE_START_HOUR_ID}
                 value={startHour}
                 onChange={createTimeInputHandler(setStartHour, 23)}
-                onKeyDown={handleKeyDown}
+                onKeyDown={handleNumericKeyDown}
                 type="text"
                 inputMode="numeric"
                 placeholder="00"
@@ -119,7 +102,7 @@ export const CategoryTimeRangeModal = ({
                 id={SALE_START_MINUTE_ID}
                 value={startMinute}
                 onChange={createTimeInputHandler(setStartMinute, 59)}
-                onKeyDown={handleKeyDown}
+                onKeyDown={handleNumericKeyDown}
                 type="text"
                 placeholder="00"
               />
@@ -134,7 +117,7 @@ export const CategoryTimeRangeModal = ({
                 id={SALE_END_HOUR_ID}
                 value={endHour}
                 onChange={createTimeInputHandler(setEndHour, 23)}
-                onKeyDown={handleKeyDown}
+                onKeyDown={handleNumericKeyDown}
                 type="text"
                 inputMode="numeric"
                 placeholder="00"
@@ -145,7 +128,7 @@ export const CategoryTimeRangeModal = ({
                 id={SALE_END_MINUTE_ID}
                 value={endMinute}
                 onChange={createTimeInputHandler(setEndMinute, 59)}
-                onKeyDown={handleKeyDown}
+                onKeyDown={handleNumericKeyDown}
                 type="text"
                 placeholder="00"
               />

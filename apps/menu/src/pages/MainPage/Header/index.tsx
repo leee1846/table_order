@@ -51,7 +51,23 @@ export const Header = ({
     return table?.tableName ?? '';
   });
 
-  const { data: modalData, setModalData } = useModalStore();
+  const isOrderHistoryModalOpened = useModalStore(
+    (s) => s.data.isOrderHistoryModalOpened
+  );
+
+  // 각 effect deps에서 객체 전체 대신 primitive 필드만 참조하여 불필요한 effect 재실행 방지
+  const {
+    isBreakTimeLastOrderAlert,
+    isBreakTimeLastOrder,
+    lastOrderTime: breakLastOrderTime,
+    breakTimeStartTime,
+  } = breakTimeState;
+  const {
+    isClosureLastOrderAlert,
+    isClosureLastOrder,
+    lastOrderTime: closureLastOrderTime,
+    closureStartTime,
+  } = closureState;
 
   const clickCountRef = useRef(0);
   const descriptionWrapperRef = useRef<HTMLDivElement>(null);
@@ -62,10 +78,8 @@ export const Header = ({
   // 실시간 카운트다운 문구 생성 및 업데이트
   useEffect(() => {
     const isLastOrderAlert =
-      breakTimeState.isBreakTimeLastOrderAlert ||
-      closureState.isClosureLastOrderAlert;
-    const isLastOrder =
-      breakTimeState.isBreakTimeLastOrder || closureState.isClosureLastOrder;
+      isBreakTimeLastOrderAlert || isClosureLastOrderAlert;
+    const isLastOrder = isBreakTimeLastOrder || isClosureLastOrder;
     if (!isLastOrderAlert && !isLastOrder) {
       setAlertMessage('');
       return;
@@ -133,28 +147,22 @@ export const Header = ({
       let messagePrefix = '';
 
       // 라스트오더 알림 상태
-      if (
-        breakTimeState.isBreakTimeLastOrderAlert ||
-        closureState.isClosureLastOrderAlert
-      ) {
+      if (isBreakTimeLastOrderAlert || isClosureLastOrderAlert) {
         messagePrefix = '라스트오더';
-        targetTimeStr = breakTimeState.isBreakTimeLastOrderAlert
-          ? breakTimeState.lastOrderTime || ''
-          : closureState.lastOrderTime || '';
+        targetTimeStr = isBreakTimeLastOrderAlert
+          ? breakLastOrderTime || ''
+          : closureLastOrderTime || '';
       }
       // 라스트오더 상태
-      else if (
-        breakTimeState.isBreakTimeLastOrder ||
-        closureState.isClosureLastOrder
-      ) {
-        if (breakTimeState.isBreakTimeLastOrder) {
+      else if (isBreakTimeLastOrder || isClosureLastOrder) {
+        if (isBreakTimeLastOrder) {
           messagePrefix = '브레이크타임';
-        } else if (closureState.isClosureLastOrder) {
+        } else if (isClosureLastOrder) {
           messagePrefix = '영업마감';
         }
-        targetTimeStr = breakTimeState.isBreakTimeLastOrder
-          ? breakTimeState.breakTimeStartTime || ''
-          : closureState.closureStartTime || '';
+        targetTimeStr = isBreakTimeLastOrder
+          ? breakTimeStartTime || ''
+          : closureStartTime || '';
       }
       if (!targetTimeStr) {
         setAlertMessage('');
@@ -181,15 +189,22 @@ export const Header = ({
     return () => {
       globalTimerManager.clear(TIMER_KEYS.HEADER_ALERT_MESSAGE_UPDATE);
     };
-  }, [breakTimeState, closureState]);
+  }, [
+    isBreakTimeLastOrderAlert,
+    isClosureLastOrderAlert,
+    isBreakTimeLastOrder,
+    isClosureLastOrder,
+    breakLastOrderTime,
+    closureLastOrderTime,
+    breakTimeStartTime,
+    closureStartTime,
+  ]);
 
   // 텍스트가 컨테이너 너비를 넘치는지 확인하여 애니메이션 필요 여부 결정
   useEffect(() => {
     const isLastOrderAlert =
-      breakTimeState.isBreakTimeLastOrderAlert ||
-      closureState.isClosureLastOrderAlert;
-    const isLastOrder =
-      breakTimeState.isBreakTimeLastOrder || closureState.isClosureLastOrder;
+      isBreakTimeLastOrderAlert || isClosureLastOrderAlert;
+    const isLastOrder = isBreakTimeLastOrder || isClosureLastOrder;
 
     if (!isLastOrderAlert && !isLastOrder) {
       setIsTextOverflowing(false);
@@ -221,7 +236,7 @@ export const Header = ({
       clearTimeout(timeoutId);
       resizeObserver.disconnect();
     };
-  }, [alertMessage, breakTimeState, closureState]);
+  }, [alertMessage, isBreakTimeLastOrderAlert, isClosureLastOrderAlert, isBreakTimeLastOrder, isClosureLastOrder]);
 
   // 컴포넌트 언마운트 시 타이머 정리
   useEffect(() => {
@@ -254,7 +269,7 @@ export const Header = ({
     if (!shopDetailData?.shopSetting?.isMenuboardOrderable) {
       return;
     }
-    setModalData('isOrderHistoryModalOpened', true);
+    useModalStore.getState().setModalData('isOrderHistoryModalOpened', true);
   };
 
   return (
@@ -320,10 +335,12 @@ export const Header = ({
         </S.RightContent>
       </S.Header>
 
-      {modalData.isOrderHistoryModalOpened && (
+      {isOrderHistoryModalOpened && (
         <OrderHistoryModal
           orderHistories={orderHistories}
-          onClose={() => setModalData('isOrderHistoryModalOpened', false)}
+          onClose={() =>
+            useModalStore.getState().setModalData('isOrderHistoryModalOpened', false)
+          }
         />
       )}
     </>

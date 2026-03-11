@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Trans } from 'react-i18next';
 import * as S from '@/pages/MainPage/LastOrder/lastOrder.style';
 import { dishWashIcon } from '@repo/ui/icons';
 import { getDateFromTimeString } from '@repo/util/time';
@@ -14,7 +15,7 @@ interface Props {
   onClose: () => void;
 }
 export const LastOrder = ({ message, lastOrderTime, onClose }: Props) => {
-  const { t } = useCustomerTranslation();
+  const { t, i18n } = useCustomerTranslation();
 
   const [remainingMinutes, setRemainingMinutes] = useState<number>(0);
 
@@ -23,23 +24,36 @@ export const LastOrder = ({ message, lastOrderTime, onClose }: Props) => {
 
   useEffect(() => {
     const updateRemainingTime = () => {
-      const currentTime = new Date();
-      const lastOrderTime = getDateFromTimeString(timeString, currentTime);
-
-      const diffMs = lastOrderTime.getTime() - currentTime.getTime();
-      const diffMinutes = Math.max(0, Math.floor(diffMs / (1000 * 60)));
-      setRemainingMinutes(diffMinutes);
+      const now = new Date();
+      const targetDate = getDateFromTimeString(timeString, now);
+      const diffMs = targetDate.getTime() - now.getTime();
+      // 3분 초과 4분 이하 → 4분 표시 (올림). 1분 미만 → 1분 표시
+      const displayMinutes =
+        diffMs > 0 ? Math.max(1, Math.ceil(diffMs / (1000 * 60))) : 0;
+      setRemainingMinutes(displayMinutes);
     };
 
-    // 초기 업데이트
-    updateRemainingTime();
+    /** 다음 분이 바뀌는 시점(XX:XX:00)까지 ms */
+    const getMsUntilNextMinute = (date: Date) => {
+      const msIntoMinute = date.getSeconds() * 1000 + date.getMilliseconds();
+      return 60000 - msIntoMinute;
+    };
 
-    // 1분마다 업데이트 (자동으로 1분씩 줄어듦)
-    globalTimerManager.setInterval(
-      TIMER_KEYS.LAST_ORDER_REMAINING_TIME_UPDATE,
-      updateRemainingTime,
-      60000 // 1분
-    );
+    const scheduleNextUpdate = () => {
+      const now = new Date();
+      const delay = getMsUntilNextMinute(now);
+      globalTimerManager.setTimeout(
+        TIMER_KEYS.LAST_ORDER_REMAINING_TIME_UPDATE,
+        () => {
+          updateRemainingTime();
+          scheduleNextUpdate(); // 다음 갱신은 정확히 1분 후
+        },
+        delay
+      );
+    };
+
+    updateRemainingTime();
+    scheduleNextUpdate();
 
     return () => {
       globalTimerManager.clear(TIMER_KEYS.LAST_ORDER_REMAINING_TIME_UPDATE);
@@ -55,8 +69,12 @@ export const LastOrder = ({ message, lastOrderTime, onClose }: Props) => {
       <S.ContentWrapper>
         <S.Icon src={dishWashIcon} alt="" aria-hidden="true" />
         <S.Title id="last-order-title" role="timer" aria-live="polite">
-          {`${remainingMinutes}분 후`}
-          <span>{t('주문이 마감됩니다.')}</span>
+          <Trans
+            i18nKey="{{minutes}}분 후 <span>주문이 마감됩니다.</span>"
+            values={{ minutes: remainingMinutes }}
+            components={{ span: <span /> }}
+            i18n={i18n}
+          />
         </S.Title>
         <S.Description>{message}</S.Description>
         <BasicButton

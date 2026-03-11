@@ -19,7 +19,9 @@ export interface ISseMessage {
     | 'RING_BELL'
     | 'POS_ERROR'
     | 'ORDER_COMPLETE'
-    | 'AGENT_PING';
+    | 'AGENT_PING'
+    | 'POS_SYNC_START'
+    | 'POS_SYNC_END';
   data:
     | {
         [key: string]: number | string;

@@ -4,17 +4,18 @@ import * as S from '@/pages/MainPage/Contents/CategoryItem/categoryItem.style';
 import { NoContent } from '@/feature/NoContent';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
-import { useCategoriesData } from '@/hooks/useCategoriesData';
-import { useShopThemePage } from '@/hooks/useShopThemePage';
+import { useShopThemeStore } from '@/stores/useShopThemeStore';
 
 interface Props {
   category: ICategoryWithMenus;
 }
 export const CategoryItem = ({ category }: Props) => {
-  const { data: shopThemeData } = useShopThemePage();
+  const isMenuThreeColumnLayout = useShopThemeStore(
+    (s) => s.data.shopThemeData?.isMenuThreeColumnLayout ?? false
+  );
 
   const layout: 1 | 2 | 3 = (() => {
-    if (shopThemeData?.shopThemeData?.isMenuThreeColumnLayout) {
+    if (isMenuThreeColumnLayout) {
       return 3;
     }
     if (category.useTwoColumnLayout) {
@@ -24,18 +25,18 @@ export const CategoryItem = ({ category }: Props) => {
   })();
 
   const { t } = useCustomerTranslation();
-  const { data: languageData } = useCustomerLanguageStore();
-  const { getVisibleMenus } = useCategoriesData();
-
+  const currentLanguage = useCustomerLanguageStore(
+    (s) => s.data.currentLanguage
+  );
   return (
     <S.Container>
       <div>
         <S.CategoryName>
-          {category.localeCategoryName?.[languageData.currentLanguage] ??
+          {category.localeCategoryName?.[currentLanguage] ??
             category.categoryName}
         </S.CategoryName>
         <S.CategoryDescription>
-          {category.localeCategoryDescription?.[languageData.currentLanguage] ??
+          {category.localeCategoryDescription?.[currentLanguage] ??
             category.categoryDescription}
         </S.CategoryDescription>
       </div>
@@ -45,7 +46,7 @@ export const CategoryItem = ({ category }: Props) => {
       )}
 
       <S.Categories layout={layout}>
-        {getVisibleMenus(category).map((menu) => (
+        {category.menuInfoList.filter((menu) => !menu.isHidden).map((menu) => (
           <MenuItem
             layout={layout}
             key={menu.menuSeq}

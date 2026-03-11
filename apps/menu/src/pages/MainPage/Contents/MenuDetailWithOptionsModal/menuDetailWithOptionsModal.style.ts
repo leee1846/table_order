@@ -39,6 +39,16 @@ export const SwiperContainer = styled.div`
   width: 100%;
   border-radius: 0.5rem;
   overflow: hidden;
+
+  .swiper-pagination-bullet {
+    background-color: rgba(255, 255, 255,0.7);
+    opacity: 1;
+  }
+
+  .swiper-pagination-bullet-active {
+    background-color: ${({ theme }) => theme.mode.primary[500]};
+    ;
+  }
 `;
 
 export const MenuName = styled.p`

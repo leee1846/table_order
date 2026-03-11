@@ -1,5 +1,20 @@
 import styled from '@emotion/styled';
+import { css, keyframes } from '@emotion/react';
 import { TYPOGRAPHY, baseTheme } from '@repo/ui';
+
+const scrollText = keyframes`
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-50% - 1rem));
+  }
+`;
+
+const scrollTextStyle = css`
+  animation: ${scrollText} 20s linear infinite;
+  will-change: transform;
+`;
 
 export const Header = styled.header`
   position: fixed;
@@ -59,22 +74,7 @@ export const DescriptionContainer = styled.div`
 export const DescriptionWrapper = styled.div<{ $isOverflowing?: boolean }>`
   display: inline-flex;
   white-space: nowrap;
-  ${({ $isOverflowing }) =>
-    $isOverflowing
-      ? `
-    animation: scroll-text 20s linear infinite;
-    will-change: transform;
-  `
-      : ''}
-
-  @keyframes scroll-text {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(calc(-50% - 1rem));
-    }
-  }
+  ${({ $isOverflowing }) => ($isOverflowing ? scrollTextStyle : '')}
 `;
 
 export const Description = styled.span`

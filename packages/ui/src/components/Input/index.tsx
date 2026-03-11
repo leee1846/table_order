@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useCallback, useMemo, memo } from 'react';
 import * as S from './input.styles';
@@ -15,6 +15,7 @@ interface InputProps {
   rightComponent?: React.ReactNode; // 오른쪽 영역 자유롭게
   errorMessage?: string;
   inputMode?: 'text' | 'numeric';
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const InputComponent = ({
@@ -28,6 +29,7 @@ const InputComponent = ({
   rightComponent,
   errorMessage,
   inputMode = 'text',
+  onKeyDown,
 }: InputProps) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,6 +97,7 @@ const InputComponent = ({
             $isPassword={isPassword}
             $hasRightSpace={hasRightSpace}
             onCompositionStart={handleCompositionStart}
+            onKeyDown={onKeyDown}
           />
           {isPassword && (
             <S.PasswordOverlay $hasRightSpace={!!rightComponent}>

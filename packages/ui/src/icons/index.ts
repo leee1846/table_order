@@ -63,6 +63,7 @@ export { default as speechBubbleIcon } from './speech_bubble.svg';
 export { default as payAfterIcon } from './pay_after.svg';
 export { default as loadingBlueIcon } from './inside-loading-blue.json';
 export { default as loadingGreyIcon } from './inside-loading-lightGrey.json';
+export { default as loadingDotsIcon } from './loading-dots.json';
 export { default as waiterHandIcon } from './waiter_hand.svg';
 export { default as koFlagIcon } from './ko_flag.svg';
 export { default as usFlagIcon } from './us_flag.svg';

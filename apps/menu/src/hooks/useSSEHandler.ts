@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
-import { useSSE } from '@repo/feature/hooks';
-import { SSE_KEYS } from '@/constants/keys';
+import { useLocation, useParams, matchPath } from 'react-router-dom';
+import type { TFunction } from 'i18next';
 import type {
   IDevice,
   IPostDeviceDetailRequest,
@@ -11,34 +10,37 @@ import type {
   TDeviceType,
   TControlStatus,
 } from '@repo/api/types';
+import { useQueryClient } from '@repo/api/tanstack-query';
+import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
+import { getLatestAppVersion, getPosSyncStatus } from '@repo/api/fetchers';
+import { useSSE } from '@repo/feature/hooks';
+import { toast, openConfirmDialog } from '@repo/feature/utils';
+import { useDialogStore } from '@repo/feature/stores';
+import { SystemControl, Installer } from '@repo/util/app';
+import { SSE_KEYS, TIMER_KEYS } from '@/constants/keys';
+import { ROUTES } from '@/constants/routes';
+import { globalTimerManager } from '@/utils/timerManager';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
+import { clearAuthData } from '@/utils/auth';
+import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopData } from '@/hooks/useShopData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
-import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
-import { getLatestAppVersion } from '@repo/api/fetchers';
+import { useShopThemePage } from './useShopThemePage';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
-import { SystemControl, Installer } from '@repo/util/app';
 import { useModalStore } from '@/stores/useModalStore';
-import { toast, openConfirmDialog } from '@repo/feature/utils';
-import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
-import { useLocation, useParams, matchPath } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
-import { useShopThemePage } from './useShopThemePage';
-import { useDialogStore } from '@repo/feature/stores';
-import { clearAuthData } from '@/utils/auth';
-import { getDeviceInfo } from '@/utils/deviceInfo';
-import type { TFunction } from 'i18next';
+import { usePosSyncOverlayStore } from '@/stores/usePosSyncOverlayStore';
 
 type DeviceDetailPayload = Record<string, unknown> & {
   deviceType?: TDeviceType | null;
@@ -58,10 +60,30 @@ type DeviceDataSyncDeps = {
   setDataAsync: (data: Partial<IDevice>) => void | Promise<void>;
   refreshDeviceData: () => Promise<IDevice | undefined>;
   postDeviceDetail: (req: IPostDeviceDetailRequest) => Promise<unknown>;
-  t: TFunction;
+  tRef: { current: TFunction };
 };
 
-/** 디바이스 정보 수집 → 스토어/ref 반영 → 서버 POST */
+/** POS 동기화 상태 API: 502 + code -102 = 동기화 진행 중 */
+const POS_SYNC_POLL_INTERVAL_MS = 60 * 1000;
+const POS_SYNC_HTTP_502 = 502;
+const POS_SYNC_ERROR_CODE_IN_PROGRESS = -102;
+
+function isPosSyncInProgressError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+  const err = error as {
+    response?: { status?: number; data?: { status?: { code?: number } } };
+  };
+  return (
+    err.response?.status === POS_SYNC_HTTP_502 &&
+    err.response?.data?.status?.code === POS_SYNC_ERROR_CODE_IN_PROGRESS
+  );
+}
+
+/**
+ * 디바이스 정보 수집 → 스토어/ref 반영 → 서버 POST
+ */
 async function collectDeviceInfoAndSyncToServer(
   syncDeps: DeviceDataSyncDeps,
   shopCode: string,
@@ -72,8 +94,9 @@ async function collectDeviceInfoAndSyncToServer(
     setDataAsync,
     refreshDeviceData,
     postDeviceDetail,
-    t,
+    tRef,
   } = syncDeps;
+  const t = tRef.current;
   const existingStoreSnapshot = deviceStoreDataRef.current ?? {};
   const { ipAddress, androidId, appInfo } = await getDeviceInfo({ t });
 
@@ -129,22 +152,21 @@ async function collectDeviceInfoAndSyncToServer(
 /**
  * SSE(Server-Sent Events) 연결 및 실시간 메시지 처리를 담당하는 커스텀 훅
  *
- * @description
- * - 디바이스 정보를 초기화하고 서버와 SSE 연결을 설정합니다
- * - 서버로부터 수신된 실시간 메시지를 타입별로 처리합니다 (ORDER, SHOP, MENU, TABLE, DEVICE, PICKUP 등)
- * - useRef를 활용하여 불필요한 리렌더링을 방지합니다
- * - 컴포넌트 언마운트 시 SSE 연결을 자동으로 해제합니다
+ * - 디바이스 정보 초기화 후 서버와 SSE 연결
+ * - 수신 메시지 타입별 처리 (ORDER, SHOP, MENU, TABLE, DEVICE, PICKUP 등)
+ * - useRef로 최신 값 참조하여 불필요한 리렌더/의존성 방지
+ * - 언마운트 시 SSE 연결 해제
  *
- * @remarks
- * - 매장 코드가 존재할 때만 SSE 연결을 초기화합니다
- * - 모든 메시지 처리는 현재 매장의 shopCode와 일치하는 경우에만 수행됩니다
+ * 매장 코드(shopCode)가 있을 때만 SSE 연결을 초기화하며,
+ * 메시지 처리는 현재 매장 shopCode와 일치할 때만 수행합니다.
  */
 export const useSSEHandler = () => {
   const location = useLocation();
   const { tableNum: tableNumFromParams } = useParams();
   const queryClient = useQueryClient();
-  // i18n: 고객용 번역 함수
   const { t } = useCustomerTranslation();
+  const tRef = useRef(t);
+  tRef.current = t;
 
   const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
   const {
@@ -155,75 +177,20 @@ export const useSSEHandler = () => {
   const { shopData: currentShopData } = useShopData({
     skipInitialRequest: true,
   });
-
-  // 최신 deviceStoreData 값을 참조하기 위한 ref (비동기 함수에서 최신 값 참조용)
-  const deviceStoreDataRef = useRef(deviceStoreData);
-
-  // deviceStoreData 변경 시 ref 동기화 (렌더링 없이 최신 값 유지)
-  useEffect(() => {
-    deviceStoreDataRef.current = deviceStoreData;
-  }, [deviceStoreData]);
-
-  const deviceDataSyncDeps: DeviceDataSyncDeps = {
-    deviceStoreDataRef,
-    setDataAsync,
-    refreshDeviceData,
-    postDeviceDetail,
-    t,
-  };
-
-  // 초기 디바이스 데이터 설정 및 SSE 연결
-  useEffect(() => {
-    if (!currentShopData?.shopCode) {
-      return;
-    }
-
-    const run = async () => {
-      await collectDeviceInfoAndSyncToServer(
-        deviceDataSyncDeps,
-        currentShopData.shopCode
-      );
-      await initializeSseConnection();
-    };
-    run();
-
-    // cleanup: 컴포넌트 언마운트 또는 shopCode 변경 시 SSE 연결 해제
-    return () => {
-      disconnectSse();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentShopData?.shopCode]); // shopCode가 있을 때만 실행
-
-  // SSE 데이터 구독: 서버로부터 실시간으로 수신되는 메시지
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
     SSE_KEYS.MAIN_CONNECTION
   );
-
-  const { data: currentDeviceData } = useDeviceData({
-    skipInitialRequest: true,
-  });
-
   const { data: shopDetailData, refresh: refreshShopDetailData } =
-    useShopDetailData({
-      skipInitialRequest: true,
-    });
-
+    useShopDetailData({ skipInitialRequest: true });
   const {
     data: tableOrderHistoriesData,
     refresh: refreshTableOrderHistoriesData,
-  } = useTableOrderHistoriesData({
-    skipInitialRequest: true,
-  });
-
+  } = useTableOrderHistoriesData({ skipInitialRequest: true });
   const { refresh: refreshCategoriesData } = useCategoriesData({
     skipInitialRequest: true,
   });
-
   const { refresh: refreshTableGroupData, data: tableGroupData } =
-    useTableGroupData({
-      skipInitialRequest: true,
-    });
-
+    useTableGroupData({ skipInitialRequest: true });
   const { refresh: refreshShopThemePageData } = useShopThemePage({
     skipInitialRequest: true,
   });
@@ -234,10 +201,10 @@ export const useSSEHandler = () => {
   const { data: pickupAlarmData, setData: setPickupAlarm } =
     usePickupAlarmStore();
 
-  // 모든 동적 데이터를 ref로 관리하여 dependency 변경 방지
-  // 핸들러 함수에서 최신 데이터를 참조하되, useEffect dependency에 포함하지 않기 위함
-  const dataRefs = useRef({
-    currentDeviceData: null as typeof currentDeviceData,
+  // ----- Refs: 최신 값 참조용 (핸들러/effect 내부에서 사용) -----
+  const deviceStoreDataRef = useRef(deviceStoreData);
+  const sseHandlerDataRef = useRef({
+    currentDeviceData: null as typeof deviceStoreData,
     currentShopData: null as typeof currentShopData,
     shopDetailData: null as typeof shopDetailData,
     tableOrderHistoriesData: null as typeof tableOrderHistoriesData,
@@ -246,37 +213,18 @@ export const useSSEHandler = () => {
     locationPathname: location.pathname,
     tableNumFromParams: undefined as string | undefined,
   });
+  const pickupAlarmShowingRef = useRef(pickupAlarmData.showPickupAlarm);
 
-  // ref 업데이트 (렌더링을 트리거하지 않음)
-  // 데이터가 변경될 때마다 ref에 최신 값 반영 (비동기 핸들러에서 사용)
-  useEffect(() => {
-    dataRefs.current.currentDeviceData = currentDeviceData;
-    dataRefs.current.currentShopData = currentShopData;
-    dataRefs.current.shopDetailData = shopDetailData;
-    dataRefs.current.tableOrderHistoriesData = tableOrderHistoriesData;
-    dataRefs.current.tableGroupData = tableGroupData;
-    dataRefs.current.pickupAlarmData = pickupAlarmData;
-    dataRefs.current.locationPathname = location.pathname;
-    dataRefs.current.tableNumFromParams = tableNumFromParams;
-  }, [
-    currentDeviceData,
-    currentShopData,
-    shopDetailData,
-    tableOrderHistoriesData,
-    tableGroupData,
-    pickupAlarmData,
-    location.pathname,
-    tableNumFromParams,
-  ]);
+  // ----- 디바이스 동기화 의존성 (헬퍼 및 effect에서 사용) -----
+  const deviceDataSyncDeps: DeviceDataSyncDeps = {
+    deviceStoreDataRef,
+    setDataAsync,
+    refreshDeviceData,
+    postDeviceDetail,
+    tRef,
+  };
 
-  // 픽업 알림 상태를 ref로 관리 (중복 알림 방지용)
-  const pickupAlarmStateRef = useRef(pickupAlarmData.showPickupAlarm);
-
-  // 픽업 알림 표시 상태 변경 시 ref 동기화
-  useEffect(() => {
-    pickupAlarmStateRef.current = pickupAlarmData.showPickupAlarm;
-  }, [pickupAlarmData.showPickupAlarm]);
-
+  // ----- Refetch 콜백 (handlersRef에 주입되어 핸들러에서 사용) -----
   const refetchCurrentTableList = useCallback(
     (shopCode: string) => {
       queryClient.refetchQueries({
@@ -285,7 +233,6 @@ export const useSSEHandler = () => {
     },
     [queryClient]
   );
-
   const refetchDeviceList = useCallback(
     (shopCode: string) => {
       queryClient.refetchQueries({
@@ -295,19 +242,53 @@ export const useSSEHandler = () => {
     [queryClient]
   );
 
-  // 모든 handler 함수들을 ref로 관리하여 dependency 변경 방지
-  // useEffect dependency에 포함하지 않고도 최신 핸들러 함수를 참조할 수 있도록 함
+  const stopPosSyncPolling = useCallback(() => {
+    globalTimerManager.clear(TIMER_KEYS.POS_SYNC_POLLING);
+  }, []);
+
+  const startPosSyncPolling = useCallback(
+    (shopCode: string) => {
+      globalTimerManager.setTimeout(
+        TIMER_KEYS.POS_SYNC_POLLING,
+        () => {
+          void (async () => {
+            try {
+              await getPosSyncStatus(shopCode, [POS_SYNC_HTTP_502]);
+              stopPosSyncPolling();
+              await handlersRef.current.handlePosSyncEndMessage();
+            } catch (e) {
+              if (isPosSyncInProgressError(e)) {
+                startPosSyncPolling(shopCode);
+              } else {
+                // 싱크 진행 중 에러가 아닌 경우 폴링을 중단하여 무한 루프 방지
+                stopPosSyncPolling();
+              }
+            }
+          })();
+        },
+        POS_SYNC_POLL_INTERVAL_MS
+      );
+    },
+    [stopPosSyncPolling]
+  );
+
+  // ----- SSE 메시지 핸들러 Ref (의존성 변경 없이 최신 로직 참조) -----
   const handlersRef = useRef({
+    refetchCurrentTableList,
+    refetchDeviceList,
+    stopPosSyncPolling,
+    startPosSyncPolling,
+
     handleOrderMessage: async (shopCode: string, message: ISseMessage) => {
       // 현재 테이블 목록 먼저 새로고침
       handlersRef.current.refetchCurrentTableList(shopCode);
-      const { currentDeviceData, tableOrderHistoriesData } = dataRefs.current;
+      const { currentDeviceData, tableOrderHistoriesData } =
+        sseHandlerDataRef.current;
       if (!message.data || !currentDeviceData?.tableNumber) {
         return;
       }
 
       const currentTableNumber = currentDeviceData.tableNumber;
-      // 메시지 데이터: { [tableNumber]: sseUpdatedAt } 형태
       const orderDataByTable = message.data as { [key: string]: number };
 
       // 현재 테이블이 주문 목록에 없거나, 주문 그룹만 생성되어 있고, 주문이 없을 경우
@@ -318,18 +299,17 @@ export const useSSEHandler = () => {
           (tableOrderHistoriesData?.orderDetailMenuList?.length > 0 ||
             tableOrderHistoriesData?.orderDetailMenuList?.length < 1);
 
-        // 기존 주문이 있었다면 모든 상태 초기화
+        // pos or 관리자앱에서 주문을 모두 취소 or 테이블 비우기 했을 경우
         if (hasExistingOrders) {
-          refreshTableOrderHistoriesData(); // 주문 내역 새로고침
-          clearInitialPage(); // 초기 페이지 데이터 초기화
-          clearCart(); // 장바구니 초기화
-          clearCustomerCountData(); // 고객 수 초기화
-          useCustomerLanguageStore.getState().clearData(); // 언어 설정 초기화
-          useModalStore.getState().closeAllModals(); // 모든 모달 닫기
-          useDialogStore.getState().closeAllDialogs(); // 모든 다이얼로그 닫기
+          refreshTableOrderHistoriesData();
+          clearInitialPage();
+          clearCart();
+          clearCustomerCountData();
+          useCustomerLanguageStore.getState().clearData();
+          useModalStore.getState().closeAllModals();
+          useDialogStore.getState().closeAllDialogs();
           return;
         }
-
         return;
       }
 
@@ -345,9 +325,7 @@ export const useSSEHandler = () => {
         return;
       }
 
-      // 주문 내역 새로고침 (sseUpdatedAt 전달하여 서버에서 해당 시점 이후 데이터만 조회)
       const refreshResult = await refreshTableOrderHistoriesData(sseUpdatedAt);
-
       if (!refreshResult) {
         return;
       }
@@ -378,18 +356,18 @@ export const useSSEHandler = () => {
       }
     },
 
-    // SHOP 메시지 핸들러: 매장 정보 업데이트 처리
     handleShopMessage: async () => {
-      const { locationPathname } = dataRefs.current;
-
-      // 로그인 페이지에서는 처리하지 않음
+      const { locationPathname } = sseHandlerDataRef.current;
       if (locationPathname === ROUTES.LOGIN.path) {
         return;
       }
-
-      // 매장 상세 정보 새로고침 후 전체 페이지 리로드
       await refreshShopDetailData();
-      await SystemControl.deepCleanAndReload();
+      useModalStore.getState().closeAllModals();
+      useDialogStore.getState().closeAllDialogs();
+      toast(tRef.current('매장정보가 업데이트 되었습니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
     },
 
     // MENU 메시지 핸들러: 메뉴 정보 업데이트 처리
@@ -400,14 +378,12 @@ export const useSSEHandler = () => {
         locationPathname,
         tableNumFromParams: tableNum,
         currentShopData,
-      } = dataRefs.current;
+      } = sseHandlerDataRef.current;
 
-      // 현재 페이지가 테이블 상세인지 TABLE_DETAIL.path로 검증 (React Router matchPath 사용)
       const tableDetailMatch = matchPath(
         { path: ROUTES.TABLES.TABLE_DETAIL.path, end: true },
         locationPathname ?? ''
       );
-
       const isTableDetailPage =
         tableDetailMatch !== null && !!tableNum && !!currentShopData?.shopCode;
 
@@ -419,25 +395,22 @@ export const useSSEHandler = () => {
           ),
         });
       } else {
-        refreshCategoriesData(); // 그 외 페이지: 카테고리 데이터 새로고침
+        refreshCategoriesData();
       }
 
-      useModalStore.getState().closeMenuDetail(); // 메뉴 상세 모달 닫기
-      // 업데이트 알림 토스트 표시
-      toast(t('메뉴정보가 업데이트 되었습니다.'), {
+      useModalStore.getState().closeMenuDetail();
+      toast(tRef.current('메뉴정보가 업데이트 되었습니다.'), {
         position: 'center-center',
         duration: 1500,
       });
     },
 
-    // TABLE 메시지 핸들러: 테이블 정보 업데이트 처리
     handleTableMessage: async (shopCode: string) => {
-      await refreshTableGroupData(); // 테이블 그룹 데이터 새로고침
-      handlersRef.current.refetchCurrentTableList(shopCode); // 현재 테이블 목록 새로고침
-      handlersRef.current.refetchDeviceList(shopCode); // 디바이스 목록 새로고침
+      await refreshTableGroupData();
+      handlersRef.current.refetchCurrentTableList(shopCode);
+      handlersRef.current.refetchDeviceList(shopCode);
 
-      const { currentDeviceData, tableGroupData } = dataRefs.current;
-
+      const { currentDeviceData, tableGroupData } = sseHandlerDataRef.current;
       if (!currentDeviceData?.tableNumber) {
         return;
       }
@@ -445,111 +418,165 @@ export const useSSEHandler = () => {
       const currentTableNumber = currentDeviceData.tableNumber;
 
       // 데이터 업데이트 후 테이블 존재 여부 확인을 위해 약간의 지연
-      setTimeout(() => {
-        const updatedTableGroupData =
-          useTableGroupStore.getState()?.data || tableGroupData;
+      globalTimerManager.setTimeout(
+        TIMER_KEYS.TABLE_REMOVAL_CHECK,
+        () => {
+          const updatedTableGroupData =
+            useTableGroupStore.getState()?.data || tableGroupData;
+          const isCurrentTableRemoved =
+            !!updatedTableGroupData &&
+            !updatedTableGroupData
+              .map((tableGroup: ITableGroup) => tableGroup.tableList)
+              .flat()
+              .some(
+                (table: ITableInfo | undefined) =>
+                  table?.tableNumber === currentTableNumber
+              );
 
-        // 현재 테이블이 테이블 목록에 존재하지 않으면 (테이블 삭제됨)
-        if (
-          !!updatedTableGroupData &&
-          !updatedTableGroupData
-            .map((tableGroup: ITableGroup) => tableGroup.tableList)
-            .flat()
-            .some(
-              (table: ITableInfo | undefined) =>
-                table?.tableNumber === currentTableNumber
-            )
-        ) {
-          toast(t('존재하지 않는 테이블입니다.'), {
-            position: 'center-center',
-            duration: 1500,
-          });
-          setDataAsync({
-            ...currentDeviceData,
-            tableNumber: null,
-          });
-          useRequestAdminAccessModalStore.getState().setShow(true);
-        }
-      }, 100);
+          if (isCurrentTableRemoved) {
+            toast(tRef.current('존재하지 않는 테이블입니다.'), {
+              position: 'center-center',
+              duration: 1500,
+            });
+            setDataAsync({
+              ...currentDeviceData,
+              tableNumber: null,
+            });
+            useRequestAdminAccessModalStore.getState().setShow(true);
+          }
+        },
+        100
+      );
     },
 
-    // DEVICE 메시지 핸들러: 디바이스 정보 업데이트 처리
     handleDeviceMessage: (shopCode: string) => {
-      handlersRef.current.refetchDeviceList(shopCode); // 디바이스 목록 새로고침
+      handlersRef.current.refetchDeviceList(shopCode);
     },
 
-    // PICKUP 메시지 핸들러: 픽업 알림 처리
     handlePickupMessage: (message: ISseMessage) => {
-      const { shopDetailData, currentDeviceData } = dataRefs.current;
-      // 매장 설정에서 픽업 알림 사용 여부 확인
+      const { shopDetailData, currentDeviceData } = sseHandlerDataRef.current;
       const usePickupAlert =
         shopDetailData?.shopSetting?.usePickupAlert ?? false;
 
       if (!usePickupAlert) {
         return;
       }
-
       if (!currentDeviceData?.tableNumber || !message?.data) {
         return;
       }
-
       // 이미 알림이 표시 중이면 중복 표시 방지
-      if (pickupAlarmStateRef.current) {
+      if (pickupAlarmShowingRef.current) {
         return;
       }
 
       const currentTableNumber = currentDeviceData.tableNumber;
-      // 메시지 데이터: { [tableNumber]: alertMessage } 형태
       const pickupDataByTable = message.data as { [key: string]: string };
-
-      // 현재 테이블에 대한 픽업 알림이 없으면 처리하지 않음
       if (!(currentTableNumber in pickupDataByTable)) {
         return;
       }
 
       const pickupAlertMessage = pickupDataByTable[currentTableNumber] ?? '';
-
-      // 픽업 알림 상태 설정
       setPickupAlarm({
         showPickupAlarm: true,
         pickupAlertMessage,
       });
-      // 알림 사운드 재생
       SystemControl.playSound({ type: 'dingdong' });
     },
 
-    // 디바이스 제어 메시지 핸들러: 공통 로직 (DEVICE_OFF, DEVICE_RESTART 등)
     handleDeviceControlMessage: (
       controlAction: () => void,
       message: ISseMessage
     ) => {
-      const { currentDeviceData } = dataRefs.current;
-
+      const { currentDeviceData } = sseHandlerDataRef.current;
       if (!message.data || !currentDeviceData?.androidId) {
         return;
       }
-
-      // 메시지 데이터: 대상 디바이스 ID 배열
       const targetDeviceIds = message.data as string[];
       const currentAndroidId = currentDeviceData.androidId;
-
-      // 현재 기기가 대상 목록에 포함되어 있으면 제어 액션 실행
       if (targetDeviceIds.includes(currentAndroidId)) {
         controlAction();
       }
     },
 
-    // SHOP_THEME_PAGE/MENU 메시지 핸들러: 매장 테마 정보 업데이트 처리
-    handleShopThemeMessage: () => {
-      refreshShopThemePageData(); // 매장 테마 페이지 데이터 새로고침
+    handleAppOffMessage: (message: ISseMessage) => {
+      handlersRef.current.handleDeviceControlMessage(
+        () => SystemControl.shutdown(),
+        message
+      );
     },
 
-    // LOGOUT 메시지 핸들러: 로그아웃 처리
+    handleDeviceRestartMessage: (message: ISseMessage) => {
+      handlersRef.current.handleDeviceControlMessage(async () => {
+        try {
+          await SystemControl.reboot();
+        } catch (e) {
+          console.error('DEVICE_RESTART error:', e);
+          const { currentShopData } = sseHandlerDataRef.current;
+          if (currentShopData?.shopCode) {
+            await collectDeviceInfoAndSyncToServer(
+              deviceDataSyncDeps,
+              currentShopData.shopCode,
+              'FAIL'
+            );
+          }
+        }
+      }, message);
+    },
+
+    handleDeviceAppUpdateMessage: async (message: ISseMessage) => {
+      const { currentDeviceData, currentShopData } = sseHandlerDataRef.current;
+      if (!message.data || !currentDeviceData?.androidId) {
+        return;
+      }
+      const targetDeviceIds = message.data as string[];
+      const currentAndroidId = currentDeviceData.androidId;
+      if (!targetDeviceIds.includes(currentAndroidId)) {
+        return;
+      }
+      const response = await getLatestAppVersion('MENU');
+      const { downloadPath, checksum } = response.data || {};
+      if (!downloadPath || !checksum) {
+        return;
+      }
+      try {
+        await Installer.startUpdate(downloadPath, checksum);
+      } catch (e) {
+        if (currentShopData?.shopCode) {
+          console.error('DEVICE_APP_UPDATE error:', e);
+          await collectDeviceInfoAndSyncToServer(
+            deviceDataSyncDeps,
+            currentShopData.shopCode,
+            'FAIL'
+          );
+        }
+      }
+    },
+
+    handleDeviceScreenOffMessage: (message: ISseMessage) => {
+      handlersRef.current.handleDeviceControlMessage(
+        () => SystemControl.lockScreen(),
+        message
+      );
+    },
+
+    handleDeviceScreenOnMessage: (message: ISseMessage) => {
+      handlersRef.current.handleDeviceControlMessage(
+        () => SystemControl.wakeScreen(),
+        message
+      );
+    },
+
+    handleShopThemeMessage: () => {
+      refreshShopThemePageData();
+    },
+
     handleLogoutMessage: () => {
       openConfirmDialog({
-        title: t('로그아웃'),
-        content: t('비밀번호가 변경되었습니다. 다시 로그인 해주세요.'),
-        primaryText: t('확인'),
+        title: tRef.current('로그아웃'),
+        content: tRef.current(
+          '비밀번호가 변경되었습니다. 다시 로그인 해주세요.'
+        ),
+        primaryText: tRef.current('확인'),
         onConfirm: async () => {
           await clearAuthData();
           window.location.replace(ROUTES.LOGIN.generate());
@@ -557,188 +584,254 @@ export const useSSEHandler = () => {
       });
     },
 
-    // refetch 함수들 (ref에 저장하여 핸들러에서 사용)
-    refetchCurrentTableList,
-    refetchDeviceList,
+    handleOrderCompleteMessage: (message: ISseMessage) => {
+      const orderGroupUuidData =
+        typeof message.data === 'string' ? message.data : null;
+      const { pendingOrderGroupUuid, completeWithSuccess } =
+        useOrderPendingPosStore.getState();
+      if (
+        orderGroupUuidData &&
+        pendingOrderGroupUuid &&
+        orderGroupUuidData === pendingOrderGroupUuid
+      ) {
+        completeWithSuccess();
+      }
+    },
+
+    handlePosErrorMessage: (message: ISseMessage) => {
+      const orderGroupUuidData =
+        typeof message.data === 'string' ? message.data : null;
+      const { pendingOrderGroupUuid, completeWithFailure } =
+        useOrderPendingPosStore.getState();
+      if (
+        orderGroupUuidData &&
+        pendingOrderGroupUuid &&
+        orderGroupUuidData === pendingOrderGroupUuid
+      ) {
+        completeWithFailure();
+      }
+    },
+
+    handlePosSyncStartMessage: () => {
+      usePosSyncOverlayStore.getState().show();
+      const shopCode = sseHandlerDataRef.current.currentShopData?.shopCode;
+      if (shopCode) {
+        handlersRef.current.startPosSyncPolling(shopCode);
+      }
+    },
+
+    handlePosSyncEndMessage: async () => {
+      handlersRef.current.stopPosSyncPolling();
+      const { currentShopData } = sseHandlerDataRef.current;
+      const shopCode = currentShopData?.shopCode;
+
+      try {
+        if (shopCode) {
+          await handlersRef.current.handleTableMessage(shopCode);
+        }
+        handlersRef.current.handleMenuMessage();
+      } finally {
+        const { locationPathname } = sseHandlerDataRef.current;
+        if (locationPathname !== ROUTES.LOGIN.path) {
+          await refreshShopDetailData();
+        }
+        usePosSyncOverlayStore.getState().hide();
+
+        if (locationPathname === ROUTES.ROOT.path) {
+          useModalStore.getState().closeAllModals();
+          useDialogStore.getState().closeAllDialogs();
+        }
+
+        toast(tRef.current('동기화가 완료되었습니다.'), {
+          position: 'center-center',
+          duration: 1500,
+        });
+      }
+    },
   });
 
-  // handler ref 업데이트 (필요한 함수들만)
-  // useCallback으로 생성된 refetch 함수들이 변경될 때 ref에 반영
+  // ----- Effect: deviceStoreData → deviceStoreDataRef 동기화 -----
+  useEffect(() => {
+    deviceStoreDataRef.current = deviceStoreData;
+  }, [deviceStoreData]);
+
+  // ----- Effect: 데이터/경로 → sseHandlerDataRef 동기화 -----
+  useEffect(() => {
+    sseHandlerDataRef.current.currentDeviceData = deviceStoreData;
+    sseHandlerDataRef.current.currentShopData = currentShopData;
+    sseHandlerDataRef.current.shopDetailData = shopDetailData;
+    sseHandlerDataRef.current.tableOrderHistoriesData = tableOrderHistoriesData;
+    sseHandlerDataRef.current.tableGroupData = tableGroupData;
+    sseHandlerDataRef.current.pickupAlarmData = pickupAlarmData;
+    sseHandlerDataRef.current.locationPathname = location.pathname;
+    sseHandlerDataRef.current.tableNumFromParams = tableNumFromParams;
+  }, [
+    deviceStoreData,
+    currentShopData,
+    shopDetailData,
+    tableOrderHistoriesData,
+    tableGroupData,
+    pickupAlarmData,
+    location.pathname,
+    tableNumFromParams,
+  ]);
+
+  // ----- Effect: 픽업 알림 표시 여부 → pickupAlarmShowingRef 동기화 -----
+  useEffect(() => {
+    pickupAlarmShowingRef.current = pickupAlarmData.showPickupAlarm;
+  }, [pickupAlarmData.showPickupAlarm]);
+
+  // ----- Effect: 디바이스 동기화 + SSE 연결 (shopCode 있을 때만) -----
+  useEffect(() => {
+    if (!currentShopData?.shopCode) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const run = async () => {
+      await collectDeviceInfoAndSyncToServer(
+        deviceDataSyncDeps,
+        currentShopData.shopCode
+      );
+      // shopCode가 변경되어 cleanup이 실행된 경우 이전 run이 SSE를 재연결하지 않도록 차단
+      if (cancelled) {
+        return;
+      }
+      await initializeSseConnection();
+    };
+    run();
+    return () => {
+      cancelled = true;
+      globalTimerManager.clear(TIMER_KEYS.TABLE_REMOVAL_CHECK);
+      disconnectSse();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- shopCode 기준 1회 실행
+  }, [currentShopData?.shopCode]);
+
+  // ----- Effect: 앱 시작 시 POS 동기화 상태 1회 조회 (동기화 중이면 모달+1분 폴링, 아니면 모달 제거) -----
+  useEffect(() => {
+    const shopCode = currentShopData?.shopCode;
+    const isPosLinked =
+      !!shopDetailData?.shopSetting?.shopPosCode &&
+      shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
+    if (!shopCode || !isPosLinked) {
+      usePosSyncOverlayStore.getState().hide();
+      stopPosSyncPolling();
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        await getPosSyncStatus(shopCode, [POS_SYNC_HTTP_502]);
+
+        if (!cancelled) {
+          usePosSyncOverlayStore.getState().hide();
+          stopPosSyncPolling();
+        }
+      } catch (e) {
+        if (cancelled) {
+          return;
+        }
+
+        if (isPosSyncInProgressError(e)) {
+          usePosSyncOverlayStore.getState().show();
+          startPosSyncPolling(shopCode);
+        } else {
+          stopPosSyncPolling();
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      stopPosSyncPolling();
+    };
+  }, [
+    currentShopData?.shopCode,
+    shopDetailData?.shopSetting?.shopPosCode,
+    stopPosSyncPolling,
+    startPosSyncPolling,
+  ]);
+
+  // ----- Effect: refetch 콜백 → handlersRef 동기화 -----
   useEffect(() => {
     handlersRef.current.refetchCurrentTableList = refetchCurrentTableList;
     handlersRef.current.refetchDeviceList = refetchDeviceList;
   }, [refetchCurrentTableList, refetchDeviceList]);
 
-  // SSE 메시지 처리 (sseMessage만 dependency에 포함)
-  // 서버로부터 수신된 메시지에 따라 적절한 핸들러 함수 호출
+  // ----- Effect: SSE 메시지 수신 시 타입별 핸들러 실행 -----
   useEffect(() => {
-    // sseMessage가 없으면 처리하지 않음
     if (!sseMessage) {
       return;
     }
 
-    const { currentShopData, currentDeviceData } = dataRefs.current;
-
-    // 필수 데이터 검증
+    const { currentShopData, currentDeviceData } = sseHandlerDataRef.current;
     if (!currentDeviceData || !currentShopData || !currentShopData.shopCode) {
       return;
     }
-
-    // shopCode 일치 확인
     if (sseMessage.shopCode !== currentShopData.shopCode) {
       return;
     }
 
     const shopCode = currentShopData.shopCode;
 
-    // 메시지 타입에 따라 적절한 핸들러 함수 호출
     switch (sseMessage.type) {
       case 'ORDER':
         handlersRef.current.handleOrderMessage(shopCode, sseMessage);
         break;
-
       case 'SHOP':
         handlersRef.current.handleShopMessage();
         break;
-
       case 'MENU':
         handlersRef.current.handleMenuMessage();
         break;
-
       case 'TABLE':
         handlersRef.current.handleTableMessage(shopCode);
         break;
-
       case 'DEVICE':
         handlersRef.current.handleDeviceMessage(shopCode);
         break;
-
       case 'PICKUP':
         handlersRef.current.handlePickupMessage(sseMessage);
         break;
-
       case 'APP_OFF':
-        // 앱 종료 제어
-        handlersRef.current.handleDeviceControlMessage(() => {
-          SystemControl.shutdown();
-        }, sseMessage);
+        handlersRef.current.handleAppOffMessage(sseMessage);
         break;
-
       case 'DEVICE_RESTART':
-        // 기기 재시작 제어
-        handlersRef.current.handleDeviceControlMessage(async () => {
-          try {
-            await SystemControl.reboot();
-          } catch (e) {
-            console.error('DEVICE_RESTART error:', e);
-            const { currentShopData } = dataRefs.current;
-            if (currentShopData?.shopCode) {
-              await collectDeviceInfoAndSyncToServer(
-                deviceDataSyncDeps,
-                currentShopData.shopCode,
-                'FAIL'
-              );
-            }
-          }
-        }, sseMessage);
+        handlersRef.current.handleDeviceRestartMessage(sseMessage);
         break;
-
       case 'DEVICE_APP_UPDATE':
-        // 앱 업데이트 제어
-        (async () => {
-          const { currentDeviceData, currentShopData } = dataRefs.current;
-
-          if (!sseMessage.data || !currentDeviceData?.androidId) {
-            return;
-          }
-
-          // 메시지 데이터: 대상 디바이스 ID 배열
-          const targetDeviceIds = sseMessage.data as string[];
-          const currentAndroidId = currentDeviceData.androidId;
-
-          // 현재 기기가 대상 목록에 포함되어 있으면 업데이트 실행
-          if (!targetDeviceIds.includes(currentAndroidId)) {
-            return;
-          }
-
-          const response = await getLatestAppVersion('MENU');
-          const { downloadPath, checksum } = response.data || {};
-
-          if (!downloadPath || !checksum) {
-            return;
-          }
-
-          try {
-            await Installer.startUpdate(downloadPath, checksum);
-          } catch (e) {
-            if (currentShopData?.shopCode) {
-              console.error('DEVICE_APP_UPDATE error:', e);
-              await collectDeviceInfoAndSyncToServer(
-                deviceDataSyncDeps,
-                currentShopData.shopCode,
-                'FAIL'
-              );
-            }
-          }
-        })();
+        handlersRef.current.handleDeviceAppUpdateMessage(sseMessage);
         break;
-
       case 'DEVICE_SCREEN_OFF':
-        // 화면 잠금 제어
-        handlersRef.current.handleDeviceControlMessage(() => {
-          SystemControl.lockScreen();
-        }, sseMessage);
+        handlersRef.current.handleDeviceScreenOffMessage(sseMessage);
         break;
-
       case 'DEVICE_SCREEN_ON':
-        // 화면 깨우기 제어
-        handlersRef.current.handleDeviceControlMessage(() => {
-          SystemControl.wakeScreen();
-        }, sseMessage);
+        handlersRef.current.handleDeviceScreenOnMessage(sseMessage);
         break;
-
       case 'SHOP_THEME_PAGE':
       case 'SHOP_THEME_MENU':
         handlersRef.current.handleShopThemeMessage();
         break;
-
       case 'LOGOUT':
         handlersRef.current.handleLogoutMessage();
         break;
-
-      case 'ORDER_COMPLETE': {
-        const orderGroupUuidData =
-          typeof sseMessage.data === 'string' ? sseMessage.data : null;
-        const { pendingOrderGroupUuid, completeWithSuccess } =
-          useOrderPendingPosStore.getState();
-        if (
-          orderGroupUuidData &&
-          pendingOrderGroupUuid &&
-          orderGroupUuidData === pendingOrderGroupUuid
-        ) {
-          completeWithSuccess();
-        }
+      case 'ORDER_COMPLETE':
+        handlersRef.current.handleOrderCompleteMessage(sseMessage);
         break;
-      }
-
-      case 'POS_ERROR': {
-        const orderGroupUuidData =
-          typeof sseMessage.data === 'string' ? sseMessage.data : null;
-        const { pendingOrderGroupUuid, completeWithFailure } =
-          useOrderPendingPosStore.getState();
-        if (
-          orderGroupUuidData &&
-          pendingOrderGroupUuid &&
-          orderGroupUuidData === pendingOrderGroupUuid
-        ) {
-          completeWithFailure();
-        }
+      case 'POS_ERROR':
+        handlersRef.current.handlePosErrorMessage(sseMessage);
         break;
-      }
-
+      case 'POS_SYNC_START':
+        handlersRef.current.handlePosSyncStartMessage();
+        break;
+      case 'POS_SYNC_END':
+        handlersRef.current.handlePosSyncEndMessage();
+        break;
       default:
         break;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- postDeviceDetail 등은 ref로 참조하므로 의존성에서 제외
   }, [sseMessage]);
 };

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { initializeSseConnection, disconnectSse } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
 import { SSE_KEYS } from '@/constants/keys';
@@ -7,22 +7,20 @@ import { useAuth } from './useAuth';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { usePosErrorStore } from '@/stores/usePosErrorStore';
-import { usePosAgentErrorStore } from '@/stores/usePosAgentErrorStore';
-import { useTheftAlertStore } from '@/stores/useTheftAlertStore';
 import { ROUTES } from '@/constants/routes';
 import { SystemControl, CapacitorApp } from '@repo/util/app';
 import { useShopDetailData } from './useShopDetailData';
+import { openConfirmDialog, closeDialog } from '@repo/feature/utils';
+import { useAdminTranslation } from '@/config/i18n';
 
 export const useSSEHandler = (tableNumber?: string) => {
   const queryClient = useQueryClient();
   const { shopCode } = useAuth();
   const { clearAuth, tokenPayload } = useAuthStore();
-  const { openAlert } = useTheftAlertStore();
-  const { openError } = usePosErrorStore();
-  const { openError: openAgentError } = usePosAgentErrorStore();
   const { data: shopDetailData } = useShopDetailData();
-  const agentPingCheckTimeoutRef = useRef<number | null>(null); // AGENT_PING 체크 타이머
+  const agentPingCheckTimeoutRef = useRef<number | null>(null);
+  const agentErrorDialogIdRef = useRef<string | null>(null);
+  const { t } = useAdminTranslation();
 
   // 로그인/로그아웃 시 SSE 연결 관리
   useEffect(() => {
@@ -40,22 +38,44 @@ export const useSSEHandler = (tableNumber?: string) => {
     SSE_KEYS.MAIN_CONNECTION
   );
 
-  // AGENT_PING 타이머 정리를 위한 effect
-  //처음엔 조건 만족(앱 + 포스연동)
+  // 에이전트 핑 체크 타이머 시작 함수
+  const startAgentPingCheckTimer = useCallback(() => {
+    if (agentPingCheckTimeoutRef.current) {
+      clearTimeout(agentPingCheckTimeoutRef.current);
+      agentPingCheckTimeoutRef.current = null;
+    }
+
+    agentPingCheckTimeoutRef.current = window.setTimeout(() => {
+      if (!agentErrorDialogIdRef.current) {
+        agentErrorDialogIdRef.current = openConfirmDialog({
+          title: t('포스 에이전트 연결 오류'),
+          content: `${t('포스 에이전트와의 연결이 원활하지 않습니다.')}\n${t('에이전트 프로그램을 확인해주세요.')}`,
+          confirmText: t('확인'),
+          size: 'xsmall',
+          onConfirm: () => {
+            agentErrorDialogIdRef.current = null;
+            startAgentPingCheckTimer(); //재귀
+          },
+        });
+      }
+    }, 60000);
+  }, [t]);
+
+  //처음엔 조건 만족(앱 + 포스연동)하면 타이머 등록
   useEffect(() => {
     const isApp = CapacitorApp.isNative();
     const isPosIntegrated =
       shopDetailData?.shopSetting?.shopPosCode &&
       shopDetailData.shopSetting.shopPosCode === 'OKPOS';
 
-    //관리자가 포스 설정을 선택안함으로 바꾸거나 앱이 아니면 타이머 정리
-    if (!isApp || !isPosIntegrated) {
-      if (agentPingCheckTimeoutRef.current) {
-        clearTimeout(agentPingCheckTimeoutRef.current);
+    if (agentPingCheckTimeoutRef.current) {
+        clearTimeout(agentPingCheckTimeoutRef.current as number);
         agentPingCheckTimeoutRef.current = null;
-      }
     }
-  }, [shopDetailData]);
+    if (isApp && isPosIntegrated) {
+      startAgentPingCheckTimer();
+    }
+  }, [shopDetailData, startAgentPingCheckTimer]);
 
   // 컴포넌트 언마운트 시 타이머 정리
   useEffect(() => {
@@ -93,7 +113,12 @@ export const useSSEHandler = (tableNumber?: string) => {
     }
 
     if (sseMessage?.type === 'POS_ERROR') {
-      openError();
+      openConfirmDialog({
+        title: t('포스 오류'),
+        content: t('포스 오류가 발생했습니다.'),
+        confirmText: t('확인'),
+        size: 'xsmall',
+      });
       return;
     }
 
@@ -123,45 +148,28 @@ export const useSSEHandler = (tableNumber?: string) => {
     }
 
     if (sseMessage?.type === 'AGENT_PING') {
-      // 기존 타이머 취소
+      // 정상 신호 수신 - 타이머 취소 및 모달 닫기
       if (agentPingCheckTimeoutRef.current) {
         clearTimeout(agentPingCheckTimeoutRef.current);
+        agentPingCheckTimeoutRef.current = null;
+        if (agentErrorDialogIdRef.current) {
+          closeDialog(agentErrorDialogIdRef.current);
+          agentErrorDialogIdRef.current = null;
+        }
       }
 
-      // 새로운 타이머 설정 (40초 후 체크)
-      agentPingCheckTimeoutRef.current = window.setTimeout(() => {
-        openAgentError();
-      }, 40000);
+      startAgentPingCheckTimer();
 
       return;
     }
 
-    // 도난방지 팝업 테스트 필요
-    // if (sseMessage?.type === 'DEVICE_THEFT') {
-    //   // data는 DeviceVo 객체
-    //   if (
-    //     sseMessage.data &&
-    //     typeof sseMessage.data === 'object' &&
-    //     !Array.isArray(sseMessage.data)
-    //   ) {
-    //     const deviceData = sseMessage.data as unknown as IDevice;
 
-    //     // deviceType이 MENU인 경우만 처리
-    //     if (deviceData?.deviceType === 'MENU') {
-    //       // 도난 알림 팝업 열기
-    //       openAlert(deviceData.tableNumber || '');
-    //       // 도난 알림음 재생 (경고음)
-    //       SystemControl.playSound({ type: 'siren' });
-    //     }
-    //   }
-    // }
   }, [
     sseMessage,
     shopCode,
     tableNumber,
     queryClient,
-    openAlert,
-    openError,
-    openAgentError,
+    startAgentPingCheckTimer,
+    t,
   ]);
 };

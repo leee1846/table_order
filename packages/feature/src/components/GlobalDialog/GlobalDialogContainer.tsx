@@ -16,10 +16,7 @@ export const GlobalDialogContainer = () => {
   return (
     <>
       {dialogs.map((modal: DialogConfig) => {
-        const handleClose = () => {
-          // 태블릿 사용자 경험상 터치했을때 dialog노출과 모달 background가 같이 클릭되는 이슈가 있기때문에 주석처리
-          // closeDialog(modal.id);
-        };
+   
 
         const renderModalContent = () => {
           switch (modal.type) {
@@ -61,7 +58,7 @@ export const GlobalDialogContainer = () => {
                   content={modal.content}
                   confirmText={modal.confirmText}
                   size={modal.size}
-                  onClose={handleClose}
+                  onClose={() => closeDialog(modal.id)}
                   onConfirm={() => {
                     modal.onConfirm?.();
                     closeDialog(modal.id);
@@ -74,11 +71,7 @@ export const GlobalDialogContainer = () => {
         };
 
         return (
-          <ModalBackground
-            key={modal.id}
-            position={modal.position || 'center'}
-            onClick={handleClose}
-          >
+          <ModalBackground key={modal.id} position={modal.position || 'center'}>
             {renderModalContent()}
           </ModalBackground>
         );

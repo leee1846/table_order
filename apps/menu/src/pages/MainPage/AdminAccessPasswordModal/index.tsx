@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CloseIcon, UnlockedIcon, ArrowBackIcon } from '@repo/ui/icons';
+import { CloseIcon,  ArrowBackIcon, PasswordIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
 import { AppStorage } from '@repo/util/app';
@@ -10,7 +10,8 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { ROUTES } from '@/constants/routes';
-import { STORAGE_KEYS } from '@/constants/keys';
+import { STORAGE_KEYS, TIMER_KEYS } from '@/constants/keys';
+import { globalTimerManager } from '@/utils/timerManager';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import * as S from '@/pages/MainPage/AdminAccessPasswordModal/adminAccessPasswordModal.style';
 
@@ -56,12 +57,22 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
 
     // 페이지가 이동되는 동안 모달이 닫혀 깜빡임이 생김
     // modal상태는 500ms 뒤에 닫히도록 설정
-    setTimeout(() => {
-      setShowAdminAccessModal(false);
-    }, 500);
+    globalTimerManager.setTimeout(
+      TIMER_KEYS.ADMIN_ACCESS_MODAL_HIDE,
+      () => {
+        setShowAdminAccessModal(false);
+      },
+      500
+    );
 
     navigate(ROUTES.TABLES.generate());
   };
+
+  useEffect(() => {
+    return () => {
+      globalTimerManager.clear(TIMER_KEYS.ADMIN_ACCESS_MODAL_HIDE);
+    };
+  }, []);
 
   const handlePasswordComplete = async (completedPassword: string) => {
     const shopCode = shopData?.shopCode;
@@ -115,32 +126,46 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
           <CloseIcon width={42} height={42} color={theme.mode.grey[400]} />
         </S.CloseButton>
       )}
+      <S.InnerContainer>
+<S.Header>
+  <S.Title id="password-title">{t('관리자 비밀번호 4자리를 입력해 주세요')}</S.Title>
+</S.Header>
 
       <S.Content>
-        <UnlockedIcon
-          width={80}
-          height={80}
-          color={theme.mode.grey[400]}
-          aria-hidden="true"
-        />
-        <S.Title id="password-title">{t('비밀번호를 입력해 주세요')}</S.Title>
+        
         <S.PasswordContainer
           role="status"
           aria-live="polite"
           aria-label={t('비밀번호')}
         >
-          <li aria-label={isPasswordDigitFilled(0) ? t('입력됨') : t('미입력')}>
-            {isPasswordDigitFilled(0) && <span />}
-          </li>
-          <li aria-label={isPasswordDigitFilled(1) ? t('입력됨') : t('미입력')}>
-            {isPasswordDigitFilled(1) && <span />}
-          </li>
-          <li aria-label={isPasswordDigitFilled(2) ? t('입력됨') : t('미입력')}>
-            {isPasswordDigitFilled(2) && <span />}
-          </li>
-          <li aria-label={isPasswordDigitFilled(3) ? t('입력됨') : t('미입력')}>
-            {isPasswordDigitFilled(3) && <span />}
-          </li>
+          <S.PasswordItem
+          isFilled={isPasswordDigitFilled(0)}
+          aria-label={isPasswordDigitFilled(0) ? t('입력됨') : t('미입력')}
+          key={`${0}`}
+          >
+            {isPasswordDigitFilled(0) && <PasswordIcon width={18} height={18} color={theme.mode.grey[50]} />}
+          </S.PasswordItem>
+          <S.PasswordItem
+          isFilled={isPasswordDigitFilled(1)}
+          aria-label={isPasswordDigitFilled(1) ? t('입력됨') : t('미입력')}
+          key={`${1}`}
+          >
+            {isPasswordDigitFilled(1) && <PasswordIcon width={18} height={18} color={theme.mode.grey[50]} />}
+          </S.PasswordItem>
+          <S.PasswordItem
+          isFilled={isPasswordDigitFilled(2)}
+          aria-label={isPasswordDigitFilled(2) ? t('입력됨') : t('미입력')}
+          key={`${2}`}
+          >
+            {isPasswordDigitFilled(2) && <PasswordIcon width={18} height={18} color={theme.mode.grey[50]} />}
+          </S.PasswordItem>
+          <S.PasswordItem
+          isFilled={isPasswordDigitFilled(3)}
+          aria-label={isPasswordDigitFilled(3) ? t('입력됨') : t('미입력')}
+          key={`${3}`}
+          >
+            {isPasswordDigitFilled(3) && <PasswordIcon width={18} height={18} color={theme.mode.grey[50]} />}
+          </S.PasswordItem>
         </S.PasswordContainer>
         <Keypad
           onNumberPress={handleNumberPress}
@@ -151,6 +176,7 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
           customStyle={S.KeypadCss(theme)}
         />
       </S.Content>
+      </S.InnerContainer>
     </S.Container>
   );
 };
