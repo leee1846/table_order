@@ -5,7 +5,7 @@ export const Container = styled.div`
   position: relative;
   background-color: ${({ theme }) => theme.mode.grey[50]};
   border: 1px solid ${({ theme }) => theme.mode.grey[100]};
-  padding: 24px;
+  padding: 64px 24px 24px;
   border-radius: 1.25rem;
   width: 27.5rem;
   max-width: calc(100vw - 2rem);
@@ -67,8 +67,8 @@ export const SwiperContainer = styled.div`
   overflow: hidden;
 
   .swiper-pagination-bullet {
-    background-color: rgba(255, 255, 255, 0.7) ;
-    opacity: 1 ;
+    background-color: rgba(255, 255, 255, 0.7);
+    opacity: 1;
   }
 
   .swiper-pagination-bullet-active {
