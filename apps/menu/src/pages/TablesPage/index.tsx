@@ -324,7 +324,7 @@ export const TablesPage = () => {
       orderPosNumber: null,
       androidId: currentDeviceData.androidId!,
       battery: currentDeviceData?.battery ?? 0,
-      wifiSignal: currentDeviceData?.wifiSignal ?? '',
+      wifiSignal: currentDeviceData?.wifiSignal ?? '0',
       ipAddress: currentDeviceData.ipAddress!,
       version: currentDeviceData?.version ?? '',
       buildNumber: currentDeviceData?.buildNumber ?? '',

@@ -90,7 +90,7 @@ export const LoginPage = () => {
 
     const deviceData = {
       // App.tsx에서 app plugin을 통해 초기화한 디바이스 데이터
-      wifiSignal: deviceStoreData?.wifiSignal ?? '',
+      wifiSignal: deviceStoreData?.wifiSignal ?? '0',
       battery: deviceStoreData?.battery ?? 0,
       ipAddress,
       androidId,

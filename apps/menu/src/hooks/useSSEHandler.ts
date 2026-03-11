@@ -144,7 +144,7 @@ async function collectDeviceInfoAndSyncToServer(
       ? null
       : (mergedDeviceDetail.tableNumber ?? null),
     battery: mergedDeviceDetail.battery ?? 0,
-    wifiSignal: mergedDeviceDetail.wifiSignal ?? '',
+    wifiSignal: mergedDeviceDetail.wifiSignal ?? '0',
     controlStatus: mergedDeviceDetail.controlStatus ?? null,
   });
 }
@@ -168,7 +168,7 @@ export const useSSEHandler = () => {
   const tRef = useRef(t);
   tRef.current = t;
 
-  const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
+  const { mutateAsync: createDeviceDetail } = usePostDeviceDetail();
   const {
     data: deviceStoreData,
     setDataAsync,
@@ -218,7 +218,7 @@ export const useSSEHandler = () => {
     deviceStoreDataRef,
     setDeviceStoreDataAsync: setDataAsync,
     refetchDeviceApi: refreshDeviceData,
-    postDeviceDetail,
+    postDeviceDetail: createDeviceDetail,
     tRef,
   };
 

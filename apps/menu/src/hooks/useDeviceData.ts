@@ -70,7 +70,7 @@ export const useDeviceData = (options?: Props) => {
       orderPosNumber: apiData.data.orderPosNumber,
       tableNumber: apiData.data.tableNumber,
       battery: storeData?.battery ?? 0,
-      wifiSignal: storeData?.wifiSignal ?? '',
+      wifiSignal: storeData?.wifiSignal ?? '0',
       ipAddress: storeData?.ipAddress ?? '',
       version: storeData?.version ?? '',
       buildNumber: storeData?.buildNumber ?? '',
