@@ -25,7 +25,9 @@ import { useShopThemePage } from '@/hooks/useShopThemePage';
  */
 export const useTouchDetectTimer = () => {
   const { refresh: refreshShopDetailData } = useShopDetailData();
-  const { refresh: refreshCategoriesData } = useCategoriesData();
+  const { refresh: refreshCategoriesData } = useCategoriesData({
+    skipInitialRequest: true,
+  });
   const { refresh: refreshDeviceData } = useDeviceData();
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData();

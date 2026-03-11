@@ -2,6 +2,7 @@ import { create } from '@repo/feature/zustand';
 import type { ICategoryWithMenus } from '@repo/api/types';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
+import { isEqualByJson } from '@repo/util/function';
 
 /**
  * 카테고리 요일/시간 기반의 노출여부 상태 관리
@@ -68,7 +69,7 @@ const initialData = {
  * - isHidden과 visibilityMap을 기반으로 visibleCategories를 자동 계산합니다
  * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
-export const useCategoryStore = create<ICategoryStore>((set) => {
+export const useCategoryStore = create<ICategoryStore>((set, get) => {
   // 초기 데이터 로드 (비동기)
   AppStorage.loadData<ICategoryWithMenus[]>({
     key: STORAGE_KEYS.CATEGORIES,
@@ -98,6 +99,10 @@ export const useCategoryStore = create<ICategoryStore>((set) => {
     }: {
       categories: ICategoryWithMenus[];
     }) => {
+      if (isEqualByJson(get().data.categories, categories)) {
+        return Promise.resolve(true);
+      }
+
       return new Promise((resolve) => {
         AppStorage.saveData({
           key: STORAGE_KEYS.CATEGORIES,

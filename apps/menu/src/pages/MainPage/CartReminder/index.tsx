@@ -28,7 +28,9 @@ export const CartReminder = () => {
   const { clearData: clearCustomerLanguageData } = useCustomerLanguageStore();
   const { showInitialPage } = useInitialPageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
-  const { refresh: refreshCategoriesData } = useCategoriesData();
+  const { refresh: refreshCategoriesData } = useCategoriesData({
+    skipInitialRequest: true,
+  });
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData();
   const { refresh: refreshShopDetailData } = useShopDetailData();

@@ -16,11 +16,11 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 
 const TOAST_OPTIONS = {
   position: 'center-center' as const,
@@ -54,7 +54,6 @@ export const CartList = ({
     !!shopDetailData?.shopSetting?.shopPosCode &&
     shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
-  const { firstOrderRequiredCategories } = useCategoriesData();
   const {
     data: cartData,
     removeFromCart,
@@ -145,6 +144,9 @@ export const CartList = ({
 
     // 첫 주문 필수 항목이 있는 경우
     if (cartData.hasFirstOrderRequiredItems) {
+      const firstOrderRequiredCategories = useCategoryStore
+        .getState()
+        .data.visibleCategories.filter((c) => c.isFirstOrderRequired);
       const menusInCart = cartData.menus;
       const hasFirstOrderRequiredMenu = firstOrderRequiredCategories.some((c) =>
         menusInCart.some((m) => m.categorySeq === c.categorySeq)

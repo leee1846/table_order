@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useCartStore } from '@/stores/useCartStore';
-import { useCategoriesData } from '@/hooks/useCategoriesData';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 
 /**
  * 첫 주문 필수 카테고리 존재 여부를 확인하고 장바구니 옵션을 업데이트하는 커스텀 훅
@@ -10,7 +10,9 @@ import { useCategoriesData } from '@/hooks/useCategoriesData';
  * - 확인 결과를 장바구니 옵션에 저장하여 메뉴 추가 시 사용합니다
  */
 export const useFirstOrderRequiredCheck = (): void => {
-  const { visibleCategories } = useCategoriesData();
+  const visibleCategories = useCategoryStore(
+    (data) => data.data.visibleCategories
+  );
   const { setCartOptions } = useCartStore();
 
   useEffect(() => {
