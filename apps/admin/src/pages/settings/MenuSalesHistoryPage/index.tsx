@@ -246,6 +246,7 @@ export const MenuSalesHistoryPage = () => {
               value={sortBy}
               onChange={(value) => setSortBy(value as string)}
               placeholder={t('정렬 선택')}
+              customStyle={S.Dropdown}
             />
             <S.Actions>
               {/* <BasicButton

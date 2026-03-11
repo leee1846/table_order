@@ -32,10 +32,13 @@ export const Title = styled.div`
 
 export const FilterBar = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
   margin-bottom: 12px;
+`;
+
+export const Dropdown = css`
+  >ul{
+    overflow-x: hidden ;
+  }
 `;
 
 export const DateRange = styled.div`
