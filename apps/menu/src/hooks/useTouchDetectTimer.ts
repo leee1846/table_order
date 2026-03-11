@@ -32,7 +32,7 @@ export const useTouchDetectTimer = () => {
   });
   const { refresh: refreshDeviceData } = useDeviceData();
   const { refresh: refreshTableOrderHistoriesData } =
-    useTableOrderHistoriesData();
+    useTableOrderHistoriesData({ skipInitialRequest: true });
   const { refresh: refreshTableGroupData } = useTableGroupData({
     skipInitialRequest: true,
   });

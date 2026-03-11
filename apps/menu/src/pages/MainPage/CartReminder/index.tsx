@@ -32,7 +32,7 @@ export const CartReminder = () => {
     skipInitialRequest: true,
   });
   const { refresh: refreshTableOrderHistoriesData } =
-    useTableOrderHistoriesData();
+    useTableOrderHistoriesData({ skipInitialRequest: true });
   const { refresh: refreshShopDetailData } = useShopDetailData({
     skipInitialRequest: true,
   });

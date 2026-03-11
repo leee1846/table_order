@@ -2,6 +2,7 @@ import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
 import type { IOrderHistory } from '@repo/api/types';
 import { create } from '@repo/feature/zustand';
+import { isEqualByJson } from '@repo/util/function';
 
 export interface ITableOrderHistoriesData {
   sseUpdatedAt?: number | null;
@@ -32,7 +33,7 @@ export interface ITableOrderHistoriesStore {
  * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
 export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
-  (set) => {
+  (set, get) => {
     // 초기 데이터 로드 (비동기)
     AppStorage.loadData<ITableOrderHistoriesData>({
       key: STORAGE_KEYS.TABLE_ORDER_HISTORIES,
@@ -45,6 +46,10 @@ export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
     return {
       data: null,
       setDataAsync: (data) => {
+        if (isEqualByJson(get().data, data)) {
+          return Promise.resolve(true);
+        }
+
         return new Promise((resolve) => {
           AppStorage.saveData({
             key: STORAGE_KEYS.TABLE_ORDER_HISTORIES,
