@@ -199,21 +199,30 @@ export const SalesReportPage = () => {
         <S.Section>
           <S.SectionHeader>{t('일별 매출내역')}</S.SectionHeader>
           <S.TableWrapper>
-            <DailySalesHistoryTable rows={mappedDailyRows} />
+            <DailySalesHistoryTable 
+              rows={mappedDailyRows} 
+              key={`${appliedYearMonth.year}-${appliedYearMonth.month}`}
+            />
           </S.TableWrapper>
         </S.Section>
 
         <S.Section>
           <S.SectionHeader>{t('메뉴별 매출내역')}</S.SectionHeader>
           <S.TableWrapper>
-            <MenuSalesHistoryTable rows={menuRows} />
+            <MenuSalesHistoryTable 
+              rows={menuRows} 
+              key={`${appliedYearMonth.year}-${appliedYearMonth.month}`}
+            />
           </S.TableWrapper>
         </S.Section>
 
         <S.Section>
           <S.SectionHeader>{t('시간대별 매출내역')}</S.SectionHeader>
           <S.TableWrapper>
-            <HourlySalesTable rows={hourlyRows} />
+            <HourlySalesTable 
+              rows={hourlyRows} 
+              key={`${appliedYearMonth.year}-${appliedYearMonth.month}`}
+            />
           </S.TableWrapper>
         </S.Section>
       </S.Container>
