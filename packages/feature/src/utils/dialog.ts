@@ -23,9 +23,7 @@ type OpenDialogParams = Omit<DialogConfig, 'id'>;
  *   title: '알림',
  *   content: '정말 삭제하시겠습니까?',
  *   confirmText: '삭제',
- *   onConfirm: () => {
- *     console.log('삭제 확인됨');
- *   },
+ *   onConfirm: () => {},
  * });
  *
  * // 간단한 알림
@@ -67,12 +65,8 @@ export const openConfirmDialog = (
  *   content: '이 항목을 정말 삭제하시겠습니까?',
  *   primaryText: '삭제',
  *   secondaryText: '취소',
- *   onConfirm: () => {
- *     console.log('삭제됨');
- *   },
- *   onCancel: () => {
- *     console.log('취소됨');
- *   },
+ *   onConfirm: () => {},
+ *   onCancel: () => {},
  * });
  * ```
  */
@@ -112,9 +106,7 @@ export const openDualActionDialog = (
  *     </div>
  *   ),
  *   confirmText: '동의',
- *   onConfirm: () => {
- *     console.log('약관 동의됨');
- *   },
+ *   onConfirm: () => {},
  *   size: 'large',
  * });
  * ```

@@ -18,12 +18,16 @@ rawApi.interceptors.response.use(
     // app에서 로그 확인용
     if (!error.response) {
       // app 로그 확인용
-      console.error('rawApi request failed:', {
-        message: error.message,
-        code: error.code,
-        url: error.config?.url,
-        method: error.config?.method,
-      });
+      // eslint-disable-next-line no-console
+      console.log(
+        'rawApi request failed:',
+        JSON.stringify({
+          message: error.message,
+          code: error.code,
+          url: error.config?.url,
+          method: error.config?.method,
+        })
+      );
     }
     return Promise.reject(error);
   }

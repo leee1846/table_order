@@ -42,8 +42,8 @@ export interface UseLongPressReturn {
  * ```tsx
  * const { handlers } = useLongPress({
  *   delay: 500,
- *   onLongPress: () => console.log('길게 누름'),
- *   onClick: () => console.log('일반 클릭'),
+ *   onLongPress: () => {},
+ *   onClick: () => {},
  * });
  * <button {...handlers}>버튼</button>
  * ```

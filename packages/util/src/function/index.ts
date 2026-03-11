@@ -9,9 +9,7 @@ import { jwtDecode } from 'jwt-decode';
  *
  * @example
  * ```tsx
- * const { debouncedFn, cleanup } = createDebounce(() => {
- *   console.log('Debounced!');
- * }, 300);
+ * const { debouncedFn, cleanup } = createDebounce(() => {}, 300);
  *
  * // 사용
  * debouncedFn();
@@ -56,9 +54,7 @@ export const createDebounce = <T extends (...args: unknown[]) => void>(
  *
  * @example
  * ```tsx
- * const { throttledFn, cleanup } = createThrottle(() => {
- *   console.log('Throttled!');
- * }, 300);
+ * const { throttledFn, cleanup } = createThrottle(() => {}, 300);
  *
  * // 사용
  * throttledFn();
@@ -108,23 +104,13 @@ export const createThrottle = <T extends (...args: unknown[]) => void>(
  *
  * @param token - 디코드할 JWT 토큰 문자열
  * @returns 디코드된 페이로드 객체, 실패 시 null
- *
- * @example
- * ```ts
- * const payload = decodeJwtToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
- * if (payload) {
- *   console.log(payload.exp); // 만료 시간
- *   console.log(payload.sub); // 사용자 ID
- * }
- * ```
  */
 export const decodeJwtToken = <T = Record<string, unknown>>(
   token: string
 ): T | null => {
   try {
     return jwtDecode(token) as T;
-  } catch (error) {
-    console.error('Failed to decode JWT token:', error);
+  } catch {
     return null;
   }
 };

@@ -48,12 +48,16 @@ publicApi.interceptors.response.use(
     let content: string;
     if (!error.response) {
       // app 로그 확인용
-      console.error('publicApi request failed:', {
-        message: error.message,
-        code: error.code,
-        url: error.config?.url,
-        method: error.config?.method,
-      });
+      // eslint-disable-next-line no-console
+      console.log(
+        'publicApi request failed:',
+        JSON.stringify({
+          message: error.message,
+          code: error.code,
+          url: error.config?.url,
+          method: error.config?.method,
+        })
+      );
 
       content = 'API 요청에 실패하였습니다.';
     } else if (error.response.status === 500) {

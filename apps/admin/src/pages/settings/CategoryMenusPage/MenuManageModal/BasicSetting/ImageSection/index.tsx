@@ -286,8 +286,7 @@ export const ImageSection = () => {
         if (!newItems.length) {
           setHasMoreAlbum(false);
         }
-      } catch (error) {
-        console.error('Album load error:', error);
+      } catch {
         toast(t('갤러리를 불러오지 못했습니다.'));
         // 에러 발생 시 더 이상 불러올 이미지가 없다고 표시하여 무한 로딩 방지
         setHasMoreAlbum(false);
@@ -383,11 +382,10 @@ export const ImageSection = () => {
 
       try {
         await CameraManager.clearCache();
-      } catch (error) {
-        console.error('Failed to clear cache after upload:', error);
+      } catch {
+        // noop
       }
-    } catch (error) {
-      console.error('Gallery upload error:', error);
+    } catch {
       toast(t('이미지 업로드에 실패했습니다.'));
     }
     setIsAlbumUploading(false);
@@ -425,8 +423,7 @@ export const ImageSection = () => {
       }
 
       handleCaptureResult(file, target);
-    } catch (error) {
-      console.error('Camera error:', error);
+    } catch {
       toast(t('사진 촬영에 실패했습니다.'));
       resetCaptureTarget();
     }

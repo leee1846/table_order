@@ -115,12 +115,16 @@ privateApi.interceptors.response.use(
     let content: string;
     if (!error.response) {
       // app 로그 확인용
-      console.error('privateApi request failed:', {
-        message: error.message,
-        code: error.code,
-        url: error.config?.url,
-        method: error.config?.method,
-      });
+      // eslint-disable-next-line no-console
+      console.log(
+        'privateApi request failed:',
+        JSON.stringify({
+          message: error.message,
+          code: error.code,
+          url: error.config?.url,
+          method: error.config?.method,
+        })
+      );
 
       // 서버에 도달하지 못한 error (ex. timeout)
       content = t('API 요청에 실패하였습니다.');
