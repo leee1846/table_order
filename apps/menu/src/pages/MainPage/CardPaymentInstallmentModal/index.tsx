@@ -12,7 +12,7 @@ import { useModalStore } from '@/stores/useModalStore';
 // import { CardPaymentProgressModal } from '../CardPaymentProgressModal';
 import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
-import { useDeviceData } from '@/hooks/useDeviceData';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import type { IOrder } from '@repo/api/types';
@@ -85,7 +85,6 @@ export const CardPaymentInstallmentModal = ({
   const modalStore = useModalStore();
 
   const { data: shopData } = useShopStore();
-  const { data: deviceData } = useDeviceData();
   const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
 
   const { data: cartData } = useCartStore();
@@ -148,7 +147,7 @@ export const CardPaymentInstallmentModal = ({
 
     const orderResponse = await createTableOrder({
       shopCode: shopData?.shopCode ?? '',
-      tableNumber: deviceData?.tableNumber ?? '',
+      tableNumber: useDeviceStore.getState().data?.tableNumber ?? '',
       orderType: ORDER_TYPE_PREPAYMENT,
       customerCount: customerCountData?.adultCount ?? 1,
       kidsCustomerCount: customerCountData?.childCount ?? 0,

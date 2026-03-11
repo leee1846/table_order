@@ -2,8 +2,8 @@ import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/Detail/detail.style';
 import { ToggleButton } from '@repo/ui/components';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import { useDeviceData } from '@/hooks/useDeviceData';
 import { useGetLatestAppVersion } from '@repo/api/queries';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 
 interface Props {
   useOrderposMode: boolean;
@@ -19,7 +19,7 @@ export const Detail = ({
   handleOrderPosNumberChange,
 }: Props) => {
   const { t } = useAdminTranslation();
-  const { data: deviceData } = useDeviceData();
+  const deviceData = useDeviceStore((s) => s.data);
   const { data: latestVersionData } = useGetLatestAppVersion('MENU');
 
   return (

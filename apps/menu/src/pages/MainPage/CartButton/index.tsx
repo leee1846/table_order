@@ -3,7 +3,6 @@ import type { ICategoryWithMenus, IOrder } from '@repo/api/types';
 import { usePostTableOrder } from '@repo/api/queries';
 import type { ICartMenu } from '@/types/cart';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
-import { useDeviceData } from '@/hooks/useDeviceData';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useModalStore } from '@/stores/useModalStore';
@@ -17,6 +16,7 @@ import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -31,7 +31,6 @@ export const CartButton = ({ categories }: Props) => {
     ignoreGlobalErrors: [400],
   });
   const { data: shopData } = useShopStore();
-  const { data: deviceData } = useDeviceData();
   const { data: customerCountData } = useCustomerCountStore();
 
   /** 결제 방법 선택 모달 */
@@ -98,7 +97,7 @@ export const CartButton = ({ categories }: Props) => {
 
       const response = await createTableOrder({
         shopCode: shopData?.shopCode ?? '',
-        tableNumber: deviceData?.tableNumber ?? '',
+        tableNumber: useDeviceStore.getState().data?.tableNumber ?? '',
         orderType: 'MENU',
         // 객수 미사용시 1명으로 처리
         customerCount: customerCountData?.adultCount ?? 1,

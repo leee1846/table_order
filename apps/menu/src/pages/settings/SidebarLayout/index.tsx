@@ -2,11 +2,11 @@ import { SettingsSidebar } from '@repo/feature/components';
 import { getSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
-import { useDeviceData } from '@/hooks/useDeviceData';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export const SidebarLayout = () => {
     navigate(ROUTES.TABLES.generate());
   };
 
-  const { data: deviceData } = useDeviceData({ skipInitialRequest: true });
+  const deviceData = useDeviceStore((s) => s.data);
   const onClickHomeButton = () => {
     if (deviceData?.tableNumber) {
       AppStorage.removeData({

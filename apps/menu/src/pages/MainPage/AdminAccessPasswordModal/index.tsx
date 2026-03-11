@@ -7,13 +7,13 @@ import { AppStorage } from '@repo/util/app';
 import { usePostLoginMenuboardAdmin } from '@repo/api/queries';
 import { openConfirmDialog } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import { useDeviceData } from '@/hooks/useDeviceData';
 import { ROUTES } from '@/constants/routes';
 import { STORAGE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import { globalTimerManager } from '@/utils/timerManager';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import * as S from '@/pages/MainPage/AdminAccessPasswordModal/adminAccessPasswordModal.style';
 import { useShopStore } from '@/stores/useShopStore';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 
 const PASSWORD_MAX_LENGTH = 4;
 
@@ -28,7 +28,7 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
   const navigate = useNavigate();
   const { t } = useAdminTranslation();
   const { data: shopData } = useShopStore();
-  const { data: deviceData } = useDeviceData();
+  const deviceData = useDeviceStore((s) => s.data);
   const setShowAdminAccessModal = useRequestAdminAccessModalStore(
     (s) => s.setShow
   );

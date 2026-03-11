@@ -9,7 +9,7 @@ import { useThemeMode } from '@repo/ui';
 import { useCartStore } from '@/stores/useCartStore';
 import type { ICartMenuWithId, ICartMenu } from '@/types/cart';
 import { formatCurrency } from '@repo/util/string';
-import { useDeviceData } from '@/hooks/useDeviceData';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useModalStore } from '@/stores/useModalStore';
@@ -194,7 +194,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const { theme } = useThemeMode();
   const navigate = useNavigate();
 
-  const { data: deviceData } = useDeviceData();
+  const deviceData = useDeviceStore((s) => s.data);
   const { data: cartData, clearCart } = useCartStore();
   const { data: modalData, setModalData } = useModalStore();
   const { data: shopData } = useShopStore();

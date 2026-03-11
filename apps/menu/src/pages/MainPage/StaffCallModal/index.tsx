@@ -10,10 +10,10 @@ import { usePostTableOrder } from '@repo/api/queries';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
-import { useDeviceData } from '@/hooks/useDeviceData';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopStore } from '@/stores/useShopStore';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 
 interface Props {
   onClose: () => void;
@@ -109,7 +109,6 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
   const { mutateAsync: createTableOrder } = usePostTableOrder();
   const { data: customerCountData } = useCustomerCountStore();
-  const { data: deviceData } = useDeviceData();
   const requestOrder = () => {
     if (!shopData) {
       return;
@@ -131,7 +130,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
       onConfirm: async () => {
         await createTableOrder({
           shopCode: shopData.shopCode,
-          tableNumber: deviceData?.tableNumber ?? '',
+          tableNumber: useDeviceStore.getState().data?.tableNumber ?? '',
           orderType: 'MENU',
           // 객수 미사용시 1명으로 처리
           customerCount: customerCountData?.adultCount ?? 1,

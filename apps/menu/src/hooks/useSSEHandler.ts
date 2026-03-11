@@ -57,8 +57,8 @@ type DeviceStoreRef = {
 
 type DeviceDataSyncDeps = {
   deviceStoreDataRef: DeviceStoreRef;
-  setDataAsync: (data: Partial<IDevice>) => void | Promise<void>;
-  refreshDeviceData: () => Promise<IDevice | undefined>;
+  setDeviceStoreDataAsync: (data: Partial<IDevice>) => void | Promise<void>;
+  refetchDeviceApi: () => Promise<IDevice | undefined>;
   postDeviceDetail: (req: IPostDeviceDetailRequest) => Promise<unknown>;
   tRef: { current: TFunction };
 };
@@ -91,8 +91,8 @@ async function collectDeviceInfoAndSyncToServer(
 ): Promise<void> {
   const {
     deviceStoreDataRef,
-    setDataAsync,
-    refreshDeviceData,
+    setDeviceStoreDataAsync,
+    refetchDeviceApi,
     postDeviceDetail,
     tRef,
   } = syncDeps;
@@ -103,10 +103,10 @@ async function collectDeviceInfoAndSyncToServer(
   if (androidId && !existingStoreSnapshot.androidId) {
     const storeWithAndroidId = { ...existingStoreSnapshot, androidId };
     deviceStoreDataRef.current = storeWithAndroidId;
-    await setDataAsync(storeWithAndroidId as Partial<IDevice>);
+    await setDeviceStoreDataAsync(storeWithAndroidId as Partial<IDevice>);
   }
 
-  const deviceDetailFromApi = androidId ? await refreshDeviceData() : null;
+  const deviceDetailFromApi = androidId ? await refetchDeviceApi() : null;
   const mergedDeviceDetail = {
     ...existingStoreSnapshot,
     androidId,
@@ -125,7 +125,7 @@ async function collectDeviceInfoAndSyncToServer(
   } as DeviceDetailPayload;
 
   deviceStoreDataRef.current = mergedDeviceDetail;
-  await setDataAsync(mergedDeviceDetail as Partial<IDevice>);
+  await setDeviceStoreDataAsync(mergedDeviceDetail as Partial<IDevice>);
 
   const resolvedDeviceType = (mergedDeviceDetail.deviceType ??
     'MENU') as TDeviceType;
@@ -216,8 +216,8 @@ export const useSSEHandler = () => {
   // ----- 디바이스 동기화 의존성 (헬퍼 및 effect에서 사용) -----
   const deviceDataSyncDeps: DeviceDataSyncDeps = {
     deviceStoreDataRef,
-    setDataAsync,
-    refreshDeviceData,
+    setDeviceStoreDataAsync: setDataAsync,
+    refetchDeviceApi: refreshDeviceData,
     postDeviceDetail,
     tRef,
   };
@@ -508,7 +508,9 @@ export const useSSEHandler = () => {
         try {
           await SystemControl.reboot();
         } catch (e) {
-          console.error('DEVICE_RESTART error:', e);
+          // app 로그 확인용
+          // eslint-disable-next-line no-console
+          console.log('DEVICE_RESTART error:', JSON.stringify(e));
           const { currentShopData } = sseHandlerDataRef.current;
           if (currentShopData?.shopCode) {
             await collectDeviceInfoAndSyncToServer(
@@ -540,7 +542,9 @@ export const useSSEHandler = () => {
         await Installer.startUpdate(downloadPath, checksum);
       } catch (e) {
         if (currentShopData?.shopCode) {
-          console.error('DEVICE_APP_UPDATE error:', e);
+          // app 로그 확인용
+          // eslint-disable-next-line no-console
+          console.log('DEVICE_APP_UPDATE error:', JSON.stringify(e));
           await collectDeviceInfoAndSyncToServer(
             deviceDataSyncDeps,
             currentShopData.shopCode,

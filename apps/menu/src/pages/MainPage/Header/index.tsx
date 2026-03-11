@@ -8,7 +8,6 @@ import * as S from '@/pages/MainPage/Header/header.style';
 import { useState, useRef, useEffect } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
 import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
-import { useDeviceData } from '@/hooks/useDeviceData';
 import { useTouchDetectTimer } from '@/hooks/useTouchDetectTimer';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { globalTimerManager } from '@/utils/timerManager';
@@ -19,6 +18,7 @@ import { useModalStore } from '@/stores/useModalStore';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -38,7 +38,7 @@ export const Header = ({
   /** 첫 터치 후 2분30초 카운트 관리 */
   useTouchDetectTimer();
 
-  const { data: deviceData } = useDeviceData();
+  const deviceData = useDeviceStore((s) => s.data);
   const shopDetailData = useShopDetailStore((s) => s.data);
   const tableGroupsData = useTableGroupStore((s) => s.data);
   const { data: shopPageSettingData } = useShopThemePage();

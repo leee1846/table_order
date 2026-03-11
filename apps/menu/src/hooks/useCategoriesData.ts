@@ -1,8 +1,8 @@
 import { useGetCategoriesWithMenus } from '@repo/api/queries';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { useEffect } from 'react';
-import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopStore } from '@/stores/useShopStore';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 
 interface Props {
   /**
@@ -29,7 +29,7 @@ export const useCategoriesData = (options?: Props) => {
 
   const { data: shopData } = useShopStore();
 
-  const { data: deviceData } = useDeviceData({ skipInitialRequest: true });
+  const deviceData = useDeviceStore((s) => s.data);
 
   const {
     data: { categories: storeData, visibleCategories },

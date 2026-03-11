@@ -6,11 +6,11 @@ import { useState } from 'react';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { usePostOrderGroup } from '@repo/api/queries';
-import { useDeviceData } from '@/hooks/useDeviceData';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 
 export const CustomerCountSelector = () => {
   const navigate = useNavigate();
@@ -19,7 +19,6 @@ export const CustomerCountSelector = () => {
 
   const shopDetailData = useShopDetailStore((s) => s.data);
   const { setData: setCustomerCountData } = useCustomerCountStore();
-  const { data: deviceData } = useDeviceData();
   const { data: shopData } = useShopStore();
 
   const useOnlyAdult =
@@ -54,7 +53,7 @@ export const CustomerCountSelector = () => {
 
     createOrderGroup({
       shopCode: shopData?.shopCode ?? '',
-      tableNumber: deviceData?.tableNumber ?? '',
+      tableNumber: useDeviceStore.getState().data?.tableNumber ?? '',
       customerCount: adultCount + childCount,
       kidsCustomerCount: childCount,
     }).catch((error) => {
