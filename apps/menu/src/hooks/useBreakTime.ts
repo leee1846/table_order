@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { globalTimerManager } from '@/utils/timerManager';
 import { TIMER_KEYS } from '@/constants/keys';
 import { checkBreakTimeStatus } from '@/utils/breakTime';
-import { useShopDetailData } from './useShopDetailData';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 export interface UseBreakTimeReturn {
   /** 브레이크타임 화면 표시 여부 */
@@ -40,7 +40,7 @@ export interface UseBreakTimeReturn {
  * @returns 브레이크타임 상태 정보 및 제어 함수
  */
 export const useBreakTime = (): UseBreakTimeReturn => {
-  const { data: shopDetailData } = useShopDetailData();
+  const { data: shopDetailData } = useShopDetailStore();
 
   // 브레이크타임 화면 표시 여부
   const [showBreakTime, setShowBreakTime] = useState(false);

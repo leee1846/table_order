@@ -4,9 +4,9 @@ import { getTodayDateString } from '@repo/util/date';
 import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
 import { formatCurrency } from '@repo/util/string';
 import { NoContent } from '@/feature/NoContent';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -15,7 +15,7 @@ interface Props {
 export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
   const { t } = useCustomerTranslation();
 
-  const { data: shopDetailData } = useShopDetailData();
+  const shopDetailData = useShopDetailStore((s) => s.data);
   const currencySymbol =
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 

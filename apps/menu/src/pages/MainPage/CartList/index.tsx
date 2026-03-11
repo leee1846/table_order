@@ -15,7 +15,7 @@ import { MenuDetailWithOptionsModal } from '../Contents/MenuDetailWithOptionsMod
 import type { ICategoryWithMenus } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
@@ -47,12 +47,8 @@ export const CartList = ({
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
   const { data: modalData, setModalData } = useModalStore();
-  const { data: shopDetailData } = useShopDetailData();
+  const shopDetailData = useShopDetailStore((s) => s.data);
   const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
-
-  const isPosLinked =
-    !!shopDetailData?.shopSetting?.shopPosCode &&
-    shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
   const {
     data: cartData,
@@ -242,6 +238,10 @@ export const CartList = ({
           };
 
           if (response.result) {
+            const isPosLinked =
+              !!shopDetailData?.shopSetting?.shopPosCode &&
+              shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
+
             if (isPosLinked && response.orderGroupUuid) {
               const handleOrderCompleteFailure = () => {
                 openConfirmDialog({

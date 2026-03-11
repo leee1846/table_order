@@ -23,7 +23,6 @@ import {
 import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
 import type { IOrder } from '@repo/api/types';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -34,6 +33,7 @@ import {
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 import { useShopStore } from '@/stores/useShopStore';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
   onClose: () => void;
@@ -196,15 +196,10 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
   const { data: deviceData } = useDeviceData();
   const { data: cartData, clearCart } = useCartStore();
-  const { data: shopDetailData } = useShopDetailData();
   const { data: modalData, setModalData } = useModalStore();
   const { data: shopData } = useShopStore();
   const { data: customerCountData } = useCustomerCountStore();
   const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
-
-  const isPosLinked =
-    !!shopDetailData?.shopSetting?.shopPosCode &&
-    shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
   const { mutateAsync: createTableOrder } = usePostTableOrder({
     ignoreGlobalErrors: [HTTP_STATUS_BAD_REQUEST],
@@ -503,6 +498,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
       // 5. 서버에 결제 승인 정보 전송
       try {
+        const shopDetailData = useShopDetailStore.getState().data;
         await postPaymentApproval({
           params: {
             paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
@@ -617,6 +613,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       clearCart();
       onClose();
     };
+
+    const shopDetailData = useShopDetailStore.getState().data;
+    const isPosLinked =
+      !!shopDetailData?.shopSetting?.shopPosCode &&
+      shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
     // 전체 결제 완료: POS 연동 시 ORDER_COMPLETE 대기
     if (isPosLinked && orderGroupUuidFromPayment) {

@@ -9,7 +9,6 @@ import { useState, useRef, useEffect } from 'react';
 import { OrderHistoryModal } from '@/pages/MainPage/OrderHistoryModal';
 import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
 import { useDeviceData } from '@/hooks/useDeviceData';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTouchDetectTimer } from '@/hooks/useTouchDetectTimer';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { globalTimerManager } from '@/utils/timerManager';
@@ -19,6 +18,7 @@ import type { UseShopClosureReturn } from '@/hooks/useShopClosure';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -39,7 +39,7 @@ export const Header = ({
   useTouchDetectTimer();
 
   const { data: deviceData } = useDeviceData();
-  const { data: shopDetailData } = useShopDetailData();
+  const shopDetailData = useShopDetailStore((s) => s.data);
   const { data: tableGroupsData } = useTableGroupData();
   const { data: shopPageSettingData } = useShopThemePage();
 
@@ -236,7 +236,13 @@ export const Header = ({
       clearTimeout(timeoutId);
       resizeObserver.disconnect();
     };
-  }, [alertMessage, isBreakTimeLastOrderAlert, isClosureLastOrderAlert, isBreakTimeLastOrder, isClosureLastOrder]);
+  }, [
+    alertMessage,
+    isBreakTimeLastOrderAlert,
+    isClosureLastOrderAlert,
+    isBreakTimeLastOrder,
+    isClosureLastOrder,
+  ]);
 
   // 컴포넌트 언마운트 시 타이머 정리
   useEffect(() => {
@@ -339,7 +345,9 @@ export const Header = ({
         <OrderHistoryModal
           orderHistories={orderHistories}
           onClose={() =>
-            useModalStore.getState().setModalData('isOrderHistoryModalOpened', false)
+            useModalStore
+              .getState()
+              .setModalData('isOrderHistoryModalOpened', false)
           }
         />
       )}

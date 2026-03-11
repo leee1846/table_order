@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { globalTimerManager } from '@/utils/timerManager';
 import { TIMER_KEYS } from '@/constants/keys';
 import { checkShopClosureStatus } from '@/utils/shopClosure';
-import { useShopDetailData } from './useShopDetailData';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 export interface UseShopClosureReturn {
   showClosed: boolean;
@@ -29,7 +29,7 @@ export interface UseShopClosureReturn {
  * @returns 영업마감 상태 정보 및 제어 함수
  */
 export const useShopClosure = (): UseShopClosureReturn => {
-  const { data: shopDetailData } = useShopDetailData();
+  const { data: shopDetailData } = useShopDetailStore();
 
   const [showClosed, setShowClosed] = useState(false);
   const [isClosureLastOrder, setIsClosureLastOrder] = useState(false);

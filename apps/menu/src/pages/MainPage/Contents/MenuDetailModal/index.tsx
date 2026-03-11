@@ -14,10 +14,10 @@ import 'swiper/css/pagination';
 import { useState } from 'react';
 import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
   onClose: () => void;
@@ -33,7 +33,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
 
   const { addToCart } = useCartStore();
 
-  const { data: shopDetailData } = useShopDetailData();
+  const shopDetailData = useShopDetailStore((s) => s.data);
   const currencySymbol =
     CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 

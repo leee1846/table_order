@@ -35,7 +35,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   const currentLanguage = useCustomerLanguageStore(
     (s) => s.data.currentLanguage
   );
-  // useShopDetailData() 대신 selector로 직접 읽어 QueryObserver·useShopStore 구독 생성 방지
+
   const currencySetting = useShopDetailStore(
     (s) => s.data?.shopSetting?.currencySetting
   );

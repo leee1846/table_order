@@ -19,7 +19,6 @@ import type { IOrder } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 import {
   INSTALLMENT_MINIMUM_AMOUNT,
@@ -30,6 +29,7 @@ import {
   CloseButton,
 } from '@/feature/Installment';
 import { useShopStore } from '@/stores/useShopStore';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 // const PAYMENT_EVENT_NAME = 'paymentEvent';
@@ -85,13 +85,8 @@ export const CardPaymentInstallmentModal = ({
   const modalStore = useModalStore();
 
   const { data: shopData } = useShopStore();
-  const { data: shopDetailData } = useShopDetailData();
   const { data: deviceData } = useDeviceData();
   const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
-
-  const isPosLinked =
-    !!shopDetailData?.shopSetting?.shopPosCode &&
-    shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
   const { data: cartData } = useCartStore();
   const { data: customerCountData } = useCustomerCountStore();
@@ -197,7 +192,8 @@ export const CardPaymentInstallmentModal = ({
     try {
       await postPaymentApproval({
         params: {
-          paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
+          paymentMethodCode:
+            useShopDetailStore.getState().data?.shopSetting?.vanCode ?? 'EASY',
           orderGroupUuid,
           orderUuid,
         },
@@ -283,6 +279,12 @@ export const CardPaymentInstallmentModal = ({
   const handleConfirmPayment = async () => {
     try {
       const { orderGroupUuid } = await processPayment();
+
+      const shopDetailData = useShopDetailStore.getState().data;
+      const isPosLinked =
+        !!shopDetailData?.shopSetting?.shopPosCode &&
+        shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
+
       if (isPosLinked) {
         setPendingOrder(
           orderGroupUuid,

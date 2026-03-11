@@ -9,7 +9,6 @@ import {
 } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { openDualActionDialog, openConfirmDialog } from '@repo/feature/utils';
 import { useThemeMode } from '@repo/ui';
 import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
@@ -19,6 +18,7 @@ import { useModalStore } from '@/stores/useModalStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import type { ICartMenu } from '@/types/cart';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
   onClose: () => void;
@@ -43,7 +43,7 @@ export const PaymentsModal = ({
 }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
-  const { data: shopDetailData } = useShopDetailData();
+  const shopDetailData = useShopDetailStore((s) => s.data);
   const { data: modalData, setModalData } = useModalStore();
   const { data: cartData } = useCartStore();
   const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);

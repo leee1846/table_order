@@ -24,7 +24,9 @@ import { useShopThemePage } from '@/hooks/useShopThemePage';
  * - refresh 함수들은 ref로만 참조하여, device API 등 외부 리렌더로 인한 effect 재실행(타이머 재계산)을 방지합니다.
  */
 export const useTouchDetectTimer = () => {
-  const { refresh: refreshShopDetailData } = useShopDetailData();
+  const { refresh: refreshShopDetailData } = useShopDetailData({
+    skipInitialRequest: true,
+  });
   const { refresh: refreshCategoriesData } = useCategoriesData({
     skipInitialRequest: true,
   });

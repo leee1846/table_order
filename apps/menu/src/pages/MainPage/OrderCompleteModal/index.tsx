@@ -5,7 +5,7 @@ import * as S from '@/pages/MainPage/OrderCompleteModal/OrderCompleteModal.style
 import type { IOrder } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
   orderData: IOrder[];
@@ -19,7 +19,7 @@ export const OrderCompleteModal = ({
   onClose,
 }: Props) => {
   const { t } = useCustomerTranslation();
-  const { data: shopDetailData } = useShopDetailData();
+  const shopDetailData = useShopDetailStore((s) => s.data);
 
   return (
     <ModalBackground position="center" onClick={onClose}>

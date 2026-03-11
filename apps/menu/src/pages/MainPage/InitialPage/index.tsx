@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
@@ -10,11 +9,12 @@ import { NoContent } from '@/feature/NoContent';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { globalTimerManager } from '@/utils/timerManager';
 import { TIMER_KEYS } from '@/constants/keys';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 export const InitialPage = () => {
   const { t } = useCustomerTranslation();
 
-  const { data: shopDetailData } = useShopDetailData();
+  const shopDetailData = useShopDetailStore((s) => s.data);
   const { hideInitialPage } = useInitialPageStore();
   const { data: shopPageSettingData } = useShopThemePage();
   const { themePageData } = shopPageSettingData;

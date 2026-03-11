@@ -33,7 +33,9 @@ export const CartReminder = () => {
   });
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData();
-  const { refresh: refreshShopDetailData } = useShopDetailData();
+  const { refresh: refreshShopDetailData } = useShopDetailData({
+    skipInitialRequest: true,
+  });
   const { closeAllModals } = useModalStore();
 
   const [remainingSeconds, setRemainingSeconds] = useState(

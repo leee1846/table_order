@@ -1,7 +1,6 @@
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import { LANGUAGE_CONFIG } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useEffect, useState } from 'react';
 import type { TShopLanguage } from '@repo/api/types';
 import * as S from '@/pages/MainPage/LanguageSelectorModal/languageSelectorModal.style';
@@ -9,6 +8,7 @@ import { toast } from '@repo/feature/utils';
 import customerI18n, {
   useCustomerTranslation,
 } from '@/config/i18n/customer.i18n';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
   onClose: () => void;
@@ -17,7 +17,7 @@ interface Props {
 export const LanguageSelectorModal = ({ onClose }: Props) => {
   const { t } = useCustomerTranslation();
 
-  const { data: shopDetailData } = useShopDetailData();
+  const shopDetailData = useShopDetailStore((s) => s.data);
   const { data: languageData, setData: setLanguageData } =
     useCustomerLanguageStore();
 

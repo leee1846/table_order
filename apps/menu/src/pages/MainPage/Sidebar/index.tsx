@@ -7,10 +7,10 @@ import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { toast } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { LANGUAGE_CONFIG } from '@/constants/common';
 import { LanguageSelectorModal } from '@/pages/MainPage/LanguageSelectorModal';
 import { useModalStore } from '@/stores/useModalStore';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -38,7 +38,7 @@ export const Sidebar = ({
     (s) => s.data.currentLanguage
   );
   const { data: disableStaffCallData } = useDisableStaffCallStore();
-  const { data: shopDetailData } = useShopDetailData();
+  const shopDetailData = useShopDetailStore((s) => s.data);
 
   const currentLanguageIcon = LANGUAGE_CONFIG[currentLanguage].flag;
 
@@ -117,7 +117,9 @@ export const Sidebar = ({
       {isStaffCallModalOpened && staffCallCategory && (
         <StaffCallModal
           onClose={() =>
-            useModalStore.getState().setModalData('isStaffCallModalOpened', false)
+            useModalStore
+              .getState()
+              .setModalData('isStaffCallModalOpened', false)
           }
           category={staffCallCategory}
         />

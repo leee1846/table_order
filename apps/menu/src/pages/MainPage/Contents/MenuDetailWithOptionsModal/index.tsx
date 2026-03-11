@@ -29,9 +29,9 @@ import { useCartStore } from '@/stores/useCartStore';
 import type { ICartMenu, ICartOption } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
   onClose: () => void;
@@ -149,7 +149,7 @@ export const MenuDetailWithOptionsModal = ({
 
   const { data: languageData } = useCustomerLanguageStore();
   const { addToCart, updateCartItem } = useCartStore();
-  const { data: shopDetailData } = useShopDetailData();
+  const shopDetailData = useShopDetailStore((s) => s.data);
   const disabledOrderable = !shopDetailData?.shopSetting?.isMenuboardOrderable;
 
   const currencySymbol =
@@ -575,7 +575,6 @@ export const MenuDetailWithOptionsModal = ({
 
   return createPortal(
     <ModalBackground onClick={onClose}>
-      
       <S.Container
         role="dialog"
         aria-modal="true"
@@ -591,27 +590,25 @@ export const MenuDetailWithOptionsModal = ({
 
         {/* Menu Information */}
         <S.MenuInfoContainer>
-          
           {hasImages ? (
-          <S.SwiperContainer role="region" aria-label={t('메뉴 이미지')}>
-             <Swiper
-               spaceBetween={0}
-               slidesPerView={1}
-               loop={menuImages.length >= 2}
-               observer={true}
-               observeParents={true}
-               modules={[Pagination]}
-               pagination={{ clickable: true }}
-             >
-               {menuImages.map((image) => (
-                 <SwiperSlide key={image.imageSeq}>
-                   <Thumbnail menu={menu} image={image} width="100%" />
-                 </SwiperSlide>
-               ))}
-             </Swiper>
-           </S.SwiperContainer>
+            <S.SwiperContainer role="region" aria-label={t('메뉴 이미지')}>
+              <Swiper
+                spaceBetween={0}
+                slidesPerView={1}
+                loop={menuImages.length >= 2}
+                observer={true}
+                observeParents={true}
+                modules={[Pagination]}
+                pagination={{ clickable: true }}
+              >
+                {menuImages.map((image) => (
+                  <SwiperSlide key={image.imageSeq}>
+                    <Thumbnail menu={menu} image={image} width="100%" />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </S.SwiperContainer>
           ) : (
-            
             <Thumbnail menu={menu} image={undefined} width="100%" />
           )}
 

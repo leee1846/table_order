@@ -3,7 +3,6 @@ import type { ICategoryWithMenus, IOrder } from '@repo/api/types';
 import { usePostTableOrder } from '@repo/api/queries';
 import type { ICartMenu } from '@/types/cart';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
-import { useShopData } from '@/hooks/useShopData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
@@ -16,8 +15,8 @@ import { SplitPaymentModal } from '@/pages/MainPage/SplitPaymentModal';
 import * as S from '@/pages/MainPage/CartButton/cartButton.style';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useShopStore } from '@/stores/useShopStore';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -34,7 +33,6 @@ export const CartButton = ({ categories }: Props) => {
   const { data: shopData } = useShopStore();
   const { data: deviceData } = useDeviceData();
   const { data: customerCountData } = useCustomerCountStore();
-  const { data: shopDetailData } = useShopDetailData();
 
   /** 결제 방법 선택 모달 */
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
@@ -135,7 +133,9 @@ export const CartButton = ({ categories }: Props) => {
   };
 
   const handleCartButtonClick = () => {
-    if (!shopDetailData?.shopSetting?.isMenuboardOrderable) {
+    if (
+      !useShopDetailStore.getState().data?.shopSetting?.isMenuboardOrderable
+    ) {
       return;
     }
     setModalData('isCartListOpened', true);
