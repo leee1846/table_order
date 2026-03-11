@@ -67,15 +67,14 @@ export const useDeviceData = (options?: Props) => {
     const newDeviceData = {
       androidId: storeData?.androidId ?? apiData.data.androidId,
       deviceType: 'MENU' as TDeviceType,
+      orderPosNumber: apiData.data.orderPosNumber,
+      tableNumber: apiData.data.tableNumber,
+      battery: storeData?.battery ?? 0,
+      wifiSignal: storeData?.wifiSignal ?? '',
       ipAddress: storeData?.ipAddress ?? '',
       version: storeData?.version ?? '',
       buildNumber: storeData?.buildNumber ?? '',
-      battery: storeData?.battery ?? 0,
-      wifiSignal: storeData?.wifiSignal ?? '',
-
       shopCode: shopData?.shopCode ?? '',
-      tableNumber: apiData.data.tableNumber,
-      orderPosNumber: apiData.data.orderPosNumber,
       deviceSeq: apiData.data.deviceSeq,
       shopSeq: apiData.data.shopSeq,
     };

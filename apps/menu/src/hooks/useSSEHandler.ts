@@ -109,16 +109,16 @@ async function collectDeviceInfoAndSyncToServer(
   const deviceDetailFromApi = androidId ? await refreshDeviceData() : null;
   const mergedDeviceDetail = {
     ...existingStoreSnapshot,
-    ipAddress,
     androidId,
+    ipAddress,
     version: appInfo.version,
     buildNumber: appInfo.build,
     controlStatus,
     ...(deviceDetailFromApi && {
       deviceType: deviceDetailFromApi.deviceType,
+      orderPosNumber: deviceDetailFromApi.orderPosNumber,
       tableNumber:
         deviceDetailFromApi.tableNumber ?? existingStoreSnapshot.tableNumber,
-      orderPosNumber: deviceDetailFromApi.orderPosNumber,
       deviceSeq: deviceDetailFromApi.deviceSeq,
       shopSeq: deviceDetailFromApi.shopSeq,
     }),

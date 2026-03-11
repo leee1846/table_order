@@ -2,6 +2,7 @@ import { STORAGE_KEYS } from '@/constants/keys';
 import { create } from '@repo/feature/zustand';
 import { AppStorage } from '@repo/util/app';
 import type { IDevice } from '@repo/api/types';
+import { isEqualByJson } from '@repo/util/function';
 
 type IDevicePartial = Partial<IDevice>;
 
@@ -23,7 +24,7 @@ interface IDeviceStore {
  * - 초기화 상태를 추적하여 API 호출 여부를 결정합니다
  * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
-export const useDeviceStore = create<IDeviceStore>((set) => {
+export const useDeviceStore = create<IDeviceStore>((set, get) => {
   // 초기 데이터 로드 (비동기) — 완료 시점을 기다리기 위해 Promise 노출
   const hydrationPromise = AppStorage.loadData<IDevicePartial>({
     key: STORAGE_KEYS.DEVICE,
@@ -40,6 +41,10 @@ export const useDeviceStore = create<IDeviceStore>((set) => {
       set({ isInitialized });
     },
     setDataAsync: (data: IDevicePartial) => {
+      if (isEqualByJson(get().data, data)) {
+        return Promise.resolve(true);
+      }
+
       return new Promise((resolve) => {
         AppStorage.saveData({
           key: STORAGE_KEYS.DEVICE,

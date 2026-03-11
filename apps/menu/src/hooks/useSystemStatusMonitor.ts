@@ -102,11 +102,11 @@ export const useSystemStatusMonitor = () => {
       // 5. 요청한 정보만 스토어에 저장 (wifi, getDeviceInfo 결과)
       setDataAsync({
         ...(currentData ?? {}),
-        wifiSignal: newWifiSignal,
         androidId,
         ipAddress,
         version,
         buildNumber,
+        wifiSignal: newWifiSignal,
       });
 
       // 6. 로그인된 경우에만 POST API 호출
