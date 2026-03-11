@@ -1,7 +1,7 @@
 {
   "name": "menu",
   "private": true,
-  "version": "1.0.9",
+  "version": "1.0.9-test.1",
   "type": "module",
   "scripts": {
     "dev": "vite --mode development --host",
