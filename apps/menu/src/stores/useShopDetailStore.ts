@@ -2,6 +2,7 @@ import { create } from '@repo/feature/zustand';
 import type { IGetShop } from '@repo/api/types';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
+import { isEqualByJson } from '@repo/util/function';
 
 interface IShopDetailStore {
   data: IGetShop | null;
@@ -16,7 +17,7 @@ interface IShopDetailStore {
  * - 매장의 상세 정보(영업 시간, 설정 등)를 저장하고 관리합니다
  * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
-export const useShopDetailStore = create<IShopDetailStore>((set) => {
+export const useShopDetailStore = create<IShopDetailStore>((set, get) => {
   // 초기 데이터 로드 (비동기)
   AppStorage.loadData<IGetShop>({ key: STORAGE_KEYS.SHOP_DETAIL }).then(
     (data) => {
@@ -29,6 +30,10 @@ export const useShopDetailStore = create<IShopDetailStore>((set) => {
   return {
     data: null,
     setData: async (data: IGetShop) => {
+      if (isEqualByJson(get().data, data)) {
+        return;
+      }
+
       await AppStorage.saveData({
         key: STORAGE_KEYS.SHOP_DETAIL,
         value: data,
