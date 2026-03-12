@@ -4,6 +4,7 @@ import type { TOrderType } from '@repo/api/types';
 import * as S from '@/pages/TableDetailPage/tableDetailPage.style';
 import adminI18n from '@/config/i18n/admin.i18n';
 import { useShopStore } from '@/stores/useShopStore';
+import { setPendingOrder } from '@/hooks/useSSEHandler';
 
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
@@ -25,6 +26,9 @@ export const TableDetailPage = () => {
         tableNumber={tableNum}
         orderType={orderType}
         i18nInstance={adminI18n}
+        onOrderCreated={(orderGroupUuid) => {
+          setPendingOrder(orderGroupUuid);
+        }}
       />
     </S.Container>
   );

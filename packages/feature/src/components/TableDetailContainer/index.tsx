@@ -34,8 +34,7 @@ import {
   useGetCategoriesWithMenus,
   useGetShopDetail,
 } from '@repo/api/queries';
-import type { ICurrentTable, ISseMessage, TOrderType } from '@repo/api/types';
-import { useSSE } from '@repo/feature/hooks';
+import type { ICurrentTable, TOrderType } from '@repo/api/types';
 import type { Order, OrderItem } from './orderSection/types';
 import { useTranslation } from 'react-i18next';
 
@@ -46,6 +45,7 @@ export interface TableDetailContainerProps {
   tableNumber: string;
   orderType: TOrderType;
   i18nInstance?: I18nInstance;
+  onOrderCreated?: (orderGroupUuid: string) => void;
 }
 
 export const TableDetailContainer = ({
@@ -53,6 +53,7 @@ export const TableDetailContainer = ({
   tableNumber,
   orderType,
   i18nInstance,
+  onOrderCreated,
 }: TableDetailContainerProps) => {
   const { t } = useTranslation('admin', { i18n: i18nInstance as I18nInstance });
 
@@ -60,9 +61,6 @@ export const TableDetailContainer = ({
 
   // 렌더링 완료 상태 관리
   const [isReady, setIsReady] = useState(false);
-
-  // OKPOS 주문 완료 대기 상태
-  const pendingOrderGroupUuidRef = useRef<string | null>(null);
 
   useLayoutEffect(() => {
     // 다음 프레임에 렌더링 완료 후 표시
@@ -140,7 +138,7 @@ export const TableDetailContainer = ({
     }
   }, [orderHistoriesResponse?.data]);
 
-  const { data: menuboardResponse, refetch: refetchMenuboard } =
+  const { data: menuboardResponse } =
     useGetCategoriesWithMenus(
       {
         shopCode,
@@ -176,50 +174,6 @@ export const TableDetailContainer = ({
   const useTableOccupancyTime = useMemo(() => {
     return !!shopDetailResponse?.data?.shopSetting?.useTableOccupancyTime;
   }, [shopDetailResponse]);
-
-  // SSE 메시지 구독
-  const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
-    'sse-main-connection'
-  );
-
-  // ORDER SSE 이벤트 처리: 주문 내역 재수신
-  useEffect(() => {
-    if (!sseMessage || !shopCode || !tableNumber) {
-      return;
-    }
-
-    // shopCode가 일치하고 type이 ORDER인 경우
-    if (sseMessage.shopCode === shopCode && sseMessage.type === 'ORDER') {
-      refetchOrderHistories();
-
-      // OKPOS 매장: 대기 중인 orderGroupUuid 확인
-      if (pendingOrderGroupUuidRef.current) {
-        // SSE data에서 현재 테이블 번호가 있는지 확인
-        const hasTableUpdate =
-          sseMessage.data &&
-          typeof sseMessage.data === 'object' &&
-          tableNumber in (sseMessage.data as Record<string, unknown>);
-
-        // 해당 테이블에 대한 ORDER 이벤트가 왔고, 대기 중인 주문이 있으면 완료 처리
-        if (hasTableUpdate) {
-          toast(t('메뉴를 추가했어요.'));
-          pendingOrderGroupUuidRef.current = null;
-        }
-      }
-    }
-  }, [sseMessage, shopCode, tableNumber, refetchOrderHistories, t]);
-
-  // MENU SSE 이벤트 처리: 메뉴판 정보 재수신
-  useEffect(() => {
-    if (!sseMessage || !shopCode) {
-      return;
-    }
-
-    // shopCode가 일치하고 type이 MENU인 경우
-    if (sseMessage.shopCode === shopCode && sseMessage.type === 'MENU') {
-      refetchMenuboard();
-    }
-  }, [sseMessage, shopCode, refetchMenuboard]);
 
   const { mutateAsync: cancelOrderAll, isPending: isCancelAllPending } =
     usePutCancelOrderAll();
@@ -408,7 +362,7 @@ export const TableDetailContainer = ({
         currentOrder={order}
         shopPosCode={shopDetailResponse?.data?.shopSetting?.shopPosCode}
         onOrderCreated={(orderGroupUuid) => {
-          pendingOrderGroupUuidRef.current = orderGroupUuid;
+          onOrderCreated?.(orderGroupUuid);
         }}
       />
       {/* 선택 취소 모달 */}

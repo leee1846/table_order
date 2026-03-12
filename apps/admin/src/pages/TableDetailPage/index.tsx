@@ -4,6 +4,7 @@ import * as S from './tableDetailPage.style';
 import { useAuth } from '@/hooks/useAuth';
 import type { TOrderType } from '@repo/api/types';
 import adminI18n from '@/config/i18n';
+import { setPendingOrder } from '@/hooks/useSSEHandler';
 
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
@@ -22,6 +23,7 @@ export const TableDetailPage = () => {
         tableNumber={tableNum}
         orderType={orderType}
         i18nInstance={adminI18n}
+        onOrderCreated={(orderGroupUuid) => setPendingOrder(orderGroupUuid)}
       />
     </S.Container>
   );

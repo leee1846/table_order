@@ -63,6 +63,17 @@ type DeviceDataSyncDeps = {
   tRef: { current: TFunction };
 };
 
+// OKPOS 매장에서 주문한 경우, sse order에서 해당 주문이 포스에 접수되었는지 확인하기 위해 사용
+const pendingOrders = new Set<string>(); // orderGroupUuid 집합
+
+export const setPendingOrder = (orderGroupUuid: string) => {
+  pendingOrders.add(orderGroupUuid);
+};
+
+export const clearPendingOrder = (orderGroupUuid: string) => {
+  pendingOrders.delete(orderGroupUuid);
+};
+
 /** POS 동기화 상태 API: 502 + code -102 = 동기화 진행 중 */
 const POS_SYNC_POLL_INTERVAL_MS = 60 * 1000;
 const POS_SYNC_HTTP_502 = 502;
@@ -280,14 +291,24 @@ export const useSSEHandler = () => {
     handleOrderMessage: async (shopCode: string, message: ISseMessage) => {
       // 현재 테이블 목록 먼저 새로고침
       handlersRef.current.refetchCurrentTableList(shopCode);
-      const { currentDeviceData, tableOrderHistoriesData } =
+      const { currentDeviceData, tableOrderHistoriesData, tableNumFromParams } =
         sseHandlerDataRef.current;
-      if (!message.data || !currentDeviceData?.tableNumber) {
+
+        if(tableNumFromParams){
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.orders.tableOrderHistories(shopCode, tableNumFromParams),
+          });
+        }
+      
+        if (!message.data || !currentDeviceData?.tableNumber) {
         return;
       }
 
       const currentTableNumber = currentDeviceData.tableNumber;
       const orderDataByTable = message.data as { [key: string]: number };
+
+  
+
 
       // 현재 테이블이 주문 목록에 없거나, 주문 그룹만 생성되어 있고, 주문이 없을 경우
       if (!(currentTableNumber in orderDataByTable)) {
@@ -598,6 +619,13 @@ export const useSSEHandler = () => {
       ) {
         completeWithSuccess();
       }
+
+      // 상세페이지에서 주문 완료 대기 중인 경우
+      if (orderGroupUuidData && pendingOrders.has(orderGroupUuidData)) {
+        toast(tRef.current('메뉴를 추가했어요.'),{position: 'top-center'});
+        clearPendingOrder(orderGroupUuidData);
+      }
+    return;
     },
 
     handlePosErrorMessage: (message: ISseMessage) => {

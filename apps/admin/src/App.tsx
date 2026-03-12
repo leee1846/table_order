@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import { useSSEHandler } from './hooks/useSSEHandler';
 import { useSystemStatusMonitor } from './hooks/useSystemStatusMonitor';
 
 const App = () => {
+  const { tableNum } = useParams();
 
   useEffect(() => {
     if (localStorage.getItem('theme-mode')) {
@@ -11,7 +12,7 @@ const App = () => {
     }
   }, []);
 
-  useSSEHandler();
+  useSSEHandler(tableNum);
   useSystemStatusMonitor();
 
   return (

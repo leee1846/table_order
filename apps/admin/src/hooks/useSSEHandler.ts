@@ -10,8 +10,22 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { ROUTES } from '@/constants/routes';
 import { SystemControl, CapacitorApp } from '@repo/util/app';
 import { useShopDetailData } from './useShopDetailData';
-import { openConfirmDialog, closeDialog } from '@repo/feature/utils';
+import { openConfirmDialog, closeDialog, toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
+
+
+  // OKPOS 매장에서 주문한 경우, sse order에서 해당 주문이 포스에 접수되었는지 확인하기 위해 사용
+  const pendingOrders = new Set<string>(); // orderGroupUuid 집합
+
+  export const setPendingOrder = (orderGroupUuid: string) => {
+    pendingOrders.add(orderGroupUuid);
+  };
+  
+  export const clearPendingOrder = (orderGroupUuid: string) => {
+    pendingOrders.delete(orderGroupUuid);
+  };
+  
+  
 
 export const useSSEHandler = (tableNumber?: string) => {
   const queryClient = useQueryClient();
@@ -22,6 +36,7 @@ export const useSSEHandler = (tableNumber?: string) => {
   const agentErrorDialogIdRef = useRef<string | null>(null);
   const posErrorDialogIdRef = useRef<string | null>(null);
   const { t } = useAdminTranslation();
+
 
   // 로그인/로그아웃 시 SSE 연결 관리
   useEffect(() => {
@@ -110,6 +125,13 @@ export const useSSEHandler = (tableNumber?: string) => {
         queryKey: ['orders', 'orderLogList'],
       });
 
+
+      if(tableNumber){
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.orders.tableOrderHistories(shopCode, tableNumber),
+        });
+      }
+
       return;
     }
 
@@ -127,6 +149,28 @@ export const useSSEHandler = (tableNumber?: string) => {
           posErrorDialogIdRef.current = null;
         },
       });
+      return;
+    }
+
+  if(sseMessage?.type === 'MENU'){
+    if(tableNumber){
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.category.menuboardList(shopCode, tableNumber),
+      });
+    }
+    return;
+  }
+
+
+    if(sseMessage?.type === 'ORDER_COMPLETE') {
+      // SSE 메시지에서 orderGroupUuid 추출
+      const orderGroupUuidFromSse =
+        typeof sseMessage.data === 'string' ? sseMessage.data : null;
+      
+      if (orderGroupUuidFromSse && pendingOrders.has(orderGroupUuidFromSse)) {
+        toast(t('메뉴를 추가했어요.'));
+        clearPendingOrder(orderGroupUuidFromSse);
+      }
       return;
     }
 
