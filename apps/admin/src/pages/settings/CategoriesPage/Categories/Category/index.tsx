@@ -2,7 +2,7 @@ import { useAdminTranslation } from '@/config/i18n';
 import { useMemo } from 'react';
 import { BasicButton, ToggleButton } from '@repo/ui/components';
 import * as S from '@/pages/settings/CategoriesPage/Categories/Category/category.style';
-import { ChevronForwardIcon, DeleteIcon } from '@repo/ui/icons';
+import { DeleteIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { ICategory, TShopLanguage } from '@repo/api/types';
 import {
@@ -160,11 +160,6 @@ export const Category = ({
       <S.Header>
         <div>
           <span>{displayCategoryName}</span>
-          <ChevronForwardIcon
-            width={30}
-            height={30}
-            color={theme.colors.grey[400]}
-          />
         </div>
         <button
           type="button"
