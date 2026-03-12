@@ -1,0 +1,116 @@
+import type { AxiosError } from 'axios';
+import type { IApiError } from './types';
+
+export const ERROR_TYPES = {
+  NETWORK: 'network',
+  SERVER_500: 'server_500',
+  UNKNOWN: 'unknown',
+} as const;
+
+export interface ApiErrorDialogMessages {
+  network: string;
+  server500: string;
+  unknown: string;
+}
+
+/**
+ * 네트워크 문제(error.response 없음)이면서 GET 요청인지 여부.
+ * globalErrorHandler의 GET 네트워크 실패 시 다이얼로그 생략 조건과 동일.
+ * QueryClient retry 등에서 재시도 여부 판단에 사용.
+ */
+export function isNetworkErrorWithGetRequest(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const ax = error as { response?: unknown; config?: { method?: string } };
+  if (ax.response != null) {
+    return false;
+  }
+  return String(ax.config?.method ?? '').toUpperCase() === 'GET';
+}
+
+export interface HandleApiErrorDialogOptions {
+  openConfirmDialog: (params: {
+    title?: string;
+    content: string;
+    onConfirm?: () => void;
+  }) => void;
+  activeErrorTypes: Set<string>;
+  messages: ApiErrorDialogMessages;
+  logLabel: string;
+}
+
+/**
+ * API 응답 에러 시 공통 다이얼로그 처리 (네트워크/500/unknown/userMessage).
+ * activeErrorTypes로 중복 노출을 막고, GET 요청 네트워크 실패 시에는 다이얼로그를 띄우지 않음.
+ */
+export function handleApiErrorDialog(
+  error: AxiosError<IApiError>,
+  options: HandleApiErrorDialogOptions
+): void {
+  const { openConfirmDialog, activeErrorTypes, messages, logLabel } = options;
+
+  if (!error.response) {
+    // eslint-disable-next-line no-console
+    console.log(
+      logLabel,
+      JSON.stringify({
+        message: error.message,
+        code: error.code,
+        url: error.config?.url,
+        method: error.config?.method,
+      })
+    );
+
+    const content = messages.network;
+    const isGet = String(error.config?.method).toUpperCase() === 'GET';
+    if (!isGet && !activeErrorTypes.has(ERROR_TYPES.NETWORK)) {
+      activeErrorTypes.add(ERROR_TYPES.NETWORK);
+      openConfirmDialog({
+        title: 'Server Error',
+        content,
+        onConfirm: () => {
+          activeErrorTypes.delete(ERROR_TYPES.NETWORK);
+        },
+      });
+    }
+    return;
+  }
+
+  if (error.response.status === 500) {
+    const content = messages.server500;
+    if (!activeErrorTypes.has(ERROR_TYPES.SERVER_500)) {
+      activeErrorTypes.add(ERROR_TYPES.SERVER_500);
+      openConfirmDialog({
+        title: 'Server Error',
+        content,
+        onConfirm: () => {
+          activeErrorTypes.delete(ERROR_TYPES.SERVER_500);
+        },
+      });
+    }
+    return;
+  }
+
+  if (!error.response?.data?.status?.userMessage) {
+    const content = messages.unknown;
+    if (!activeErrorTypes.has(ERROR_TYPES.UNKNOWN)) {
+      activeErrorTypes.add(ERROR_TYPES.UNKNOWN);
+      openConfirmDialog({
+        title: 'Server Error',
+        content,
+        onConfirm: () => {
+          activeErrorTypes.delete(ERROR_TYPES.UNKNOWN);
+        },
+      });
+    }
+    return;
+  }
+
+  const content = error.response.data.status.userMessage;
+  openConfirmDialog({
+    title: 'Server Error',
+    content,
+  });
+}

@@ -8,14 +8,9 @@ import type {
 } from '@repo/api/axios';
 import type { IApiError } from '@repo/api/types';
 import { openConfirmDialog } from '@repo/feature/utils';
+import { handleApiErrorDialog } from '@repo/api/globalErrorHandler';
 
 const activeErrorTypes = new Set<string>();
-
-const ERROR_TYPES = {
-  NETWORK: 'network',
-  SERVER_500: 'server_500',
-  UNKNOWN: 'unknown',
-} as const;
 
 export const publicApi = createAxiosInstance({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -48,63 +43,16 @@ publicApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    let content: string;
-    if (!error.response) {
-      // app 로그 확인용
-      // eslint-disable-next-line no-console
-      console.log(
-        'publicApi request failed:',
-        JSON.stringify({
-          message: error.message,
-          code: error.code,
-          url: error.config?.url,
-          method: error.config?.method,
-        })
-      );
-
-      content = t('API 요청에 실패하였습니다.');
-      if (!activeErrorTypes.has(ERROR_TYPES.NETWORK)) {
-        activeErrorTypes.add(ERROR_TYPES.NETWORK);
-        openConfirmDialog({
-          title: 'Server Error',
-          content,
-          onConfirm: () => {
-            activeErrorTypes.delete(ERROR_TYPES.NETWORK);
-          },
-        });
-      }
-    } else if (error.response.status === 500) {
-      content = t('알 수 없는 서버 에러가 발생했습니다.');
-      if (!activeErrorTypes.has(ERROR_TYPES.SERVER_500)) {
-        activeErrorTypes.add(ERROR_TYPES.SERVER_500);
-        openConfirmDialog({
-          title: 'Server Error',
-          content,
-          onConfirm: () => {
-            activeErrorTypes.delete(ERROR_TYPES.SERVER_500);
-          },
-        });
-      }
-    } else if (!error.response?.data?.status?.userMessage) {
-      content = t('알 수 없는 오류가 발생했습니다.');
-      if (!activeErrorTypes.has(ERROR_TYPES.UNKNOWN)) {
-        activeErrorTypes.add(ERROR_TYPES.UNKNOWN);
-        openConfirmDialog({
-          title: 'Server Error',
-          content,
-          onConfirm: () => {
-            activeErrorTypes.delete(ERROR_TYPES.UNKNOWN);
-          },
-        });
-      }
-    } else {
-      // userMessage가 있는 경우는 항상 모달 표시 (중첩 방지 없음)
-      content = error.response.data.status.userMessage;
-      openConfirmDialog({
-        title: 'Server Error',
-        content,
-      });
-    }
+    handleApiErrorDialog(error, {
+      openConfirmDialog,
+      activeErrorTypes,
+      messages: {
+        network: t('네트워크 환경이 원활하지 않습니다. 다시 시도해주세요.'),
+        server500: t('알 수 없는 서버 에러가 발생했습니다.'),
+        unknown: t('알 수 없는 오류가 발생했습니다.'),
+      },
+      logLabel: 'publicApi request failed:',
+    });
     return Promise.reject(error);
   }
 );

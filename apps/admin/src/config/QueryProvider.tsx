@@ -5,6 +5,7 @@ import {
   useIsMutating,
 } from '@repo/api/tanstack-query';
 import { queryKeys } from '@repo/api/queries';
+import { isNetworkErrorWithGetRequest } from '@repo/api/globalErrorHandler';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSEReconnecting } from '@repo/feature/hooks';
 import { useState, type ReactNode } from 'react';
@@ -45,7 +46,8 @@ export function QueryProvider({ children }: Props) {
           queries: {
             staleTime: 0,
             refetchOnWindowFocus: false,
-            retry: 0,
+            retry: (failureCount, error) =>
+              failureCount < 3 && isNetworkErrorWithGetRequest(error),
             networkMode: 'always',
           },
           mutations: {
