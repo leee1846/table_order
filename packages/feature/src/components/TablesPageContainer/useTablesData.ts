@@ -93,7 +93,7 @@ export const useTablesData = ({
     return groupTables.map((table) => {
       const orderInfo = orderMap.get(table.tableNumber);
       const deviceInfo = menuDeviceMap.get(table.tableNumber);
-      const hasCustomer  = !!deviceInfo?.tableNumber ;
+      const hasCustomer  = !!deviceInfo?.tableNumber;
 
       const hasOrder = !!orderInfo && !!orderInfo.orderDetailMenuList;
       // 주문 정보가 있는 경우

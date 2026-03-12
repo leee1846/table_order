@@ -8,6 +8,14 @@ import type {
 import { openConfirmDialog } from '@repo/feature/utils';
 import type { IApiError } from '@repo/api/types';
 
+const activeErrorTypes = new Set<string>();
+
+const ERROR_TYPES = {
+  NETWORK: 'network',
+  SERVER_500: 'server_500',
+  UNKNOWN: 'unknown',
+} as const;
+
 /**
  * 인증 없이 요청하고싶을때 사용
  */
@@ -60,17 +68,48 @@ publicApi.interceptors.response.use(
       );
 
       content = 'API 요청에 실패하였습니다.';
+      if (!activeErrorTypes.has(ERROR_TYPES.NETWORK)) {
+        activeErrorTypes.add(ERROR_TYPES.NETWORK);
+        openConfirmDialog({
+          title: 'Server Error',
+          content,
+          onConfirm: () => {
+            activeErrorTypes.delete(ERROR_TYPES.NETWORK);
+          },
+        });
+      }
     } else if (error.response.status === 500) {
       content = '알 수 없는 서버 에러가 발생했습니다.';
+      if (!activeErrorTypes.has(ERROR_TYPES.SERVER_500)) {
+        activeErrorTypes.add(ERROR_TYPES.SERVER_500);
+        openConfirmDialog({
+          title: 'Server Error',
+          content,
+          onConfirm: () => {
+            activeErrorTypes.delete(ERROR_TYPES.SERVER_500);
+          },
+        });
+      }
     } else if (!error.response?.data?.status?.userMessage) {
       content = '알 수 없는 오류가 발생했습니다.';
+      if (!activeErrorTypes.has(ERROR_TYPES.UNKNOWN)) {
+        activeErrorTypes.add(ERROR_TYPES.UNKNOWN);
+        openConfirmDialog({
+          title: 'Server Error',
+          content,
+          onConfirm: () => {
+            activeErrorTypes.delete(ERROR_TYPES.UNKNOWN);
+          },
+        });
+      }
     } else {
+      // userMessage가 있는 경우는 항상 모달 표시 (중첩 방지 없음)
       content = error.response.data.status.userMessage;
+      openConfirmDialog({
+        title: 'Server Error',
+        content,
+      });
     }
-    openConfirmDialog({
-      title: 'Server Error',
-      content,
-    });
     return Promise.reject(error);
   }
 );
