@@ -294,21 +294,21 @@ export const useSSEHandler = () => {
       const { currentDeviceData, tableOrderHistoriesData, tableNumFromParams } =
         sseHandlerDataRef.current;
 
-        if(tableNumFromParams){
-          queryClient.invalidateQueries({
-            queryKey: queryKeys.orders.tableOrderHistories(shopCode, tableNumFromParams),
-          });
-        }
-      
-        if (!message.data || !currentDeviceData?.tableNumber) {
+      if (tableNumFromParams) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.orders.tableOrderHistories(
+            shopCode,
+            tableNumFromParams
+          ),
+        });
+      }
+
+      if (!message.data || !currentDeviceData?.tableNumber) {
         return;
       }
 
       const currentTableNumber = currentDeviceData.tableNumber;
       const orderDataByTable = message.data as { [key: string]: number };
-
-  
-
 
       // 현재 테이블이 주문 목록에 없거나, 주문 그룹만 생성되어 있고, 주문이 없을 경우
       if (!(currentTableNumber in orderDataByTable)) {
@@ -610,35 +610,61 @@ export const useSSEHandler = () => {
     handleOrderCompleteMessage: (message: ISseMessage) => {
       const orderGroupUuidData =
         typeof message.data === 'string' ? message.data : null;
+      if (!orderGroupUuidData) {
+        return;
+      }
+
+      // Root경로에서 주문 완료 대기 중인 경우
       const { pendingOrderGroupUuid, completeWithSuccess } =
         useOrderPendingPosStore.getState();
+      const { locationPathname } = sseHandlerDataRef.current;
       if (
-        orderGroupUuidData &&
         pendingOrderGroupUuid &&
-        orderGroupUuidData === pendingOrderGroupUuid
+        orderGroupUuidData === pendingOrderGroupUuid &&
+        locationPathname === ROUTES.ROOT.path
       ) {
         completeWithSuccess();
+        return;
       }
 
       // 상세페이지에서 주문 완료 대기 중인 경우
-      if (orderGroupUuidData && pendingOrders.has(orderGroupUuidData)) {
-        toast(tRef.current('메뉴를 추가했어요.'),{position: 'top-center'});
+      // 관리자app과 공통으로 사용하는 컴포넌트 TableDetailContainer 로직에 맞추기 위해 사용
+      if (pendingOrders.has(orderGroupUuidData)) {
+        toast(tRef.current('메뉴를 추가했어요.'), { position: 'top-center' });
         clearPendingOrder(orderGroupUuidData);
       }
-    return;
     },
 
     handlePosErrorMessage: (message: ISseMessage) => {
       const orderGroupUuidData =
         typeof message.data === 'string' ? message.data : null;
+      if (!orderGroupUuidData) {
+        return;
+      }
+
       const { pendingOrderGroupUuid, completeWithFailure } =
         useOrderPendingPosStore.getState();
+      const { locationPathname } = sseHandlerDataRef.current;
+      // Root경로에서 주문 실패 대기 중인 경우
       if (
-        orderGroupUuidData &&
         pendingOrderGroupUuid &&
-        orderGroupUuidData === pendingOrderGroupUuid
+        orderGroupUuidData === pendingOrderGroupUuid &&
+        locationPathname === ROUTES.ROOT.path
       ) {
         completeWithFailure();
+        return;
+      }
+
+      // 상세페이지에서 주문 실패 대기 중인 경우
+      // 관리자app과 공통으로 사용하는 컴포넌트 TableDetailContainer 로직에 맞추기 위해 사용
+      if (pendingOrders.has(orderGroupUuidData)) {
+        openConfirmDialog({
+          title: t('POS 오류'),
+          content: t('주문 접수에 실패했습니다. 포스를 확인해주세요.'),
+          confirmText: t('확인'),
+          size: 'xsmall',
+        });
+        clearPendingOrder(orderGroupUuidData);
       }
     },
 

@@ -11,7 +11,7 @@ import { toast } from '@repo/feature/utils';
 import { MenuSelectionView } from './MenuSelectionView';
 import { OptionSelectionView } from './OptionSelectionView';
 import { validateOptionGroups } from './optionValidation';
-import {  usePostTableOrder } from '@repo/api/queries';
+import { usePostTableOrder } from '@repo/api/queries';
 import { calculateTotalAmount } from '@repo/util/calculation';
 import { useTranslation } from 'react-i18next';
 import type { Order } from '../../../orderSection/types';
@@ -389,6 +389,8 @@ export const AddMenuDialog = ({
 
     // OKPOS 연동 매장: SSE 이벤트 대기를 위해 orderGroupUuid 전달
     if (isOkPos && response?.data?.orderGroupUuid) {
+      // TODO
+      // 주문 넣고 POS연동 상태일경우 약 10초동안 SSE 대기할텐데 loading UI를 넣어야 하지 않을까?
       onOrderCreated?.(response.data.orderGroupUuid);
 
       // 모달 닫기

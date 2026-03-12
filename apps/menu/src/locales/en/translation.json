@@ -307,5 +307,6 @@
   "POS 오류": "POS Error",
   "주문 요청에 실패했습니다. 사장님에게 문의해주세요.": "Order request failed. Please contact the store owner.",
   "주문 처리에 실패했습니다. 사장님에게 문의해주세요.": "Order processing failed. Please contact the store owner.",
+  "주문 접수에 실패했습니다. 포스를 확인해주세요.": "Order acceptance failed. Please check the POS.",
   "관리자 비밀번호 4자리를 입력해 주세요": "Enter the 4-digit\nadministrator password"
 }

@@ -13,19 +13,16 @@ import { useShopDetailData } from './useShopDetailData';
 import { openConfirmDialog, closeDialog, toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
 
+// OKPOS 매장에서 주문한 경우, sse order에서 해당 주문이 포스에 접수되었는지 확인하기 위해 사용
+const pendingOrders = new Set<string>(); // orderGroupUuid 집합
 
-  // OKPOS 매장에서 주문한 경우, sse order에서 해당 주문이 포스에 접수되었는지 확인하기 위해 사용
-  const pendingOrders = new Set<string>(); // orderGroupUuid 집합
+export const setPendingOrder = (orderGroupUuid: string) => {
+  pendingOrders.add(orderGroupUuid);
+};
 
-  export const setPendingOrder = (orderGroupUuid: string) => {
-    pendingOrders.add(orderGroupUuid);
-  };
-  
-  export const clearPendingOrder = (orderGroupUuid: string) => {
-    pendingOrders.delete(orderGroupUuid);
-  };
-  
-  
+export const clearPendingOrder = (orderGroupUuid: string) => {
+  pendingOrders.delete(orderGroupUuid);
+};
 
 export const useSSEHandler = (tableNumber?: string) => {
   const queryClient = useQueryClient();
@@ -36,7 +33,6 @@ export const useSSEHandler = (tableNumber?: string) => {
   const agentErrorDialogIdRef = useRef<string | null>(null);
   const posErrorDialogIdRef = useRef<string | null>(null);
   const { t } = useAdminTranslation();
-
 
   // 로그인/로그아웃 시 SSE 연결 관리
   useEffect(() => {
@@ -85,8 +81,8 @@ export const useSSEHandler = (tableNumber?: string) => {
       shopDetailData.shopSetting.shopPosCode === 'OKPOS';
 
     if (agentPingCheckTimeoutRef.current) {
-        clearTimeout(agentPingCheckTimeoutRef.current as number);
-        agentPingCheckTimeoutRef.current = null;
+      clearTimeout(agentPingCheckTimeoutRef.current as number);
+      agentPingCheckTimeoutRef.current = null;
     }
     if (isApp && isPosIntegrated) {
       startAgentPingCheckTimer();
@@ -125,8 +121,7 @@ export const useSSEHandler = (tableNumber?: string) => {
         queryKey: ['orders', 'orderLogList'],
       });
 
-
-      if(tableNumber){
+      if (tableNumber) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.orders.tableOrderHistories(shopCode, tableNumber),
         });
@@ -136,10 +131,15 @@ export const useSSEHandler = (tableNumber?: string) => {
     }
 
     if (sseMessage?.type === 'POS_ERROR') {
-      
+      // TODO
+      // POS_ERROR가 2번 오는경우가 있어서 방어코드를 넣은것인가??
       if (posErrorDialogIdRef.current) {
         return;
       }
+
+      // TODO
+      // 여기서는 clearPendingOrder를 하지 않아도 괜찮은가??
+      // prettier가 동작하지 않는가?? 왜 포멧이 달라지는가??
       posErrorDialogIdRef.current = openConfirmDialog({
         title: t('POS 오류'),
         content: t('주문 접수에 실패했습니다. 포스를 확인해주세요.'),
@@ -152,21 +152,20 @@ export const useSSEHandler = (tableNumber?: string) => {
       return;
     }
 
-  if(sseMessage?.type === 'MENU'){
-    if(tableNumber){
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.category.menuboardList(shopCode, tableNumber),
-      });
+    if (sseMessage?.type === 'MENU') {
+      if (tableNumber) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.category.menuboardList(shopCode, tableNumber),
+        });
+      }
+      return;
     }
-    return;
-  }
 
-
-    if(sseMessage?.type === 'ORDER_COMPLETE') {
+    if (sseMessage?.type === 'ORDER_COMPLETE') {
       // SSE 메시지에서 orderGroupUuid 추출
       const orderGroupUuidFromSse =
         typeof sseMessage.data === 'string' ? sseMessage.data : null;
-      
+
       if (orderGroupUuidFromSse && pendingOrders.has(orderGroupUuidFromSse)) {
         toast(t('메뉴를 추가했어요.'));
         clearPendingOrder(orderGroupUuidFromSse);
@@ -214,8 +213,6 @@ export const useSSEHandler = (tableNumber?: string) => {
 
       return;
     }
-
-
   }, [
     sseMessage,
     shopCode,
