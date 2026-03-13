@@ -37,7 +37,10 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
 
   const disabledOrderable = !shopDetailData?.shopSetting?.isMenuboardOrderable;
 
-  const images = menu.menuImageList?.filter((img) => img.imagePath) || [];
+  const images =
+    menu.menuImageList
+      ?.filter((img) => img.imagePath)
+      ?.sort((a, b) => a.imageIndex - b.imageIndex) || [];
 
   // 메뉴 수량 변경 핸들러
   const handleCountChange = (newQuantity: number) => {

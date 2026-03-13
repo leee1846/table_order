@@ -178,7 +178,10 @@ export const MenuDetailWithOptionsModal = ({
   };
 
   const menuImages = useMemo(
-    () => menu.menuImageList?.filter((img) => img.imagePath) || [],
+    () =>
+      menu.menuImageList
+        ?.filter((img) => img.imagePath)
+        ?.sort((a, b) => a.imageIndex - b.imageIndex) || [],
     [menu.menuImageList]
   );
 
