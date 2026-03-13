@@ -265,7 +265,7 @@ export const formatPaymentMethodLabel = (method?: string | null): string => {
     case 'CANCELED_ALL':
       return '전체 취소';
     case 'PARTIAL':
-      return '부분결제';
+      return '분할결제';
     default:
       return '기타';
   }
