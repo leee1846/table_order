@@ -169,7 +169,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
     setSelectedMenuList((currentList) =>
       currentList.filter((item) => visibleMenuSeqs.has(item.menuSeq))
     );
-  }, [category]);
+  }, [category.menuInfoList]);
 
   return (
     <ModalBackground onClick={onClose}>
