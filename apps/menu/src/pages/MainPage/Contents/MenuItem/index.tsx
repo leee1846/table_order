@@ -8,7 +8,6 @@ import { useCartStore } from '@/stores/useCartStore';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { toast } from '@repo/feature/utils';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
-import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
@@ -35,11 +34,6 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   const currentLanguage = useCustomerLanguageStore(
     (s) => s.data.currentLanguage
   );
-
-  const currencySetting = useShopDetailStore(
-    (s) => s.data?.shopSetting?.currencySetting
-  );
-  const currencySymbol = CURRENCY_SYMBOL[currencySetting ?? 'KRW'];
 
   const firstImage = menu.menuImageList?.filter(
     (image) => image.imageIndex === 0
@@ -137,7 +131,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   const menuName = menu.localeMenuName?.[currentLanguage] || menu.menuName;
   const menuDescription =
     menu.localeMenuDescription?.[currentLanguage] || menu.menuDescription;
-  const priceText = `${currencySymbol}${formatCurrency(menu.menuPrice)}`;
+  const priceText = `₩${formatCurrency(menu.menuPrice)}`;
   const ariaLabel = menu.isOutOfStock
     ? `${t('품절된 메뉴')}: ${menuName}, ${priceText}`
     : `${t('메뉴 선택')}: ${menuName}, ${priceText}`;

@@ -14,7 +14,7 @@ import 'swiper/css/pagination';
 import { useState } from 'react';
 import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
-import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
+import { MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
@@ -34,8 +34,6 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const { addToCart } = useCartStore();
 
   const shopDetailData = useShopDetailStore((s) => s.data);
-  const currencySymbol =
-    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
   const disabledOrderable = !shopDetailData?.shopSetting?.isMenuboardOrderable;
 
@@ -131,10 +129,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
           <Thumbnail menu={menu} image={undefined} width="100%" />
         )}
         <S.Name id="menu-detail-title">{menuName}</S.Name>
-        <S.Price>
-          {currencySymbol}
-          {formatCurrency(menu.menuPrice)}
-        </S.Price>
+        <S.Price>₩{formatCurrency(menu.menuPrice)}</S.Price>
         <S.Description>
           {menu.localeMenuDescription?.[languageData.currentLanguage] ??
             menu.menuDescription}
@@ -153,10 +148,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
         />
         <S.TotalContainer role="status" aria-live="polite">
           <h3>{t('합계')}</h3>
-          <p>
-            {currencySymbol}
-            {formatCurrency(menu.menuPrice * currentCount)}
-          </p>
+          <p>₩{formatCurrency(menu.menuPrice * currentCount)}</p>
         </S.TotalContainer>
         <BasicButton
           variant="Solid_Blue_2XL"

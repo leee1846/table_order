@@ -18,11 +18,6 @@ interface PaymentProps {
   onChange?: (value: MiscellaneousChange) => void;
 }
 
-const currencyOptions = [
-  { value: 'KRW', label: '₩' },
-  { value: 'USD', label: '$' },
-];
-
 export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
   const { t } = useAdminTranslation();
   const paymentTypeOptions = useMemo(
@@ -49,7 +44,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
   const [vanCode, setVanCode] = useState<TVanCode>('EASY');
   const [vanId, setVanId] = useState('');
   const [shopCardTerminal, setShopCardTerminal] = useState<string>('');
-  const [currencySetting, setCurrencySetting] = useState('');
+  // const [currencySetting, setCurrencySetting] = useState('');
   const [serviceChargeRate, setServiceChargeRate] = useState('');
   const [isSalesTotalVisible, setIsSalesTotalVisible] = useState(false);
   const [salesPassword, setSalesPassword] = useState('');
@@ -78,7 +73,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
     setVanCode('EASY');
     setVanId(shopSetting.vanId);
     setShopCardTerminal(shopSetting.shopCardTerminalCode ?? '');
-    setCurrencySetting(shopSetting.currencySetting ?? '');
+    // setCurrencySetting(shopSetting.currencySetting ?? '');
     setServiceChargeRate(
       shopSetting.serviceChargeRate !== undefined
         ? String(shopSetting.serviceChargeRate)
@@ -128,16 +123,16 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       shopSettingChanges.serviceChargeRate = serviceChargeRateValue;
     }
 
-    if (currencySetting) {
-      shopSettingChanges.currencySetting =
-        currencySetting as IShopSetting['currencySetting'];
-    }
+    // if (currencySetting) {
+    //   shopSettingChanges.currencySetting =
+    //     currencySetting as IShopSetting['currencySetting'];
+    // }
 
     onChange({
       shopSetting: shopSettingChanges,
     });
   }, [
-    currencySetting,
+    // currencySetting,
     isSalesDetailLocked,
     isSalesTotalVisible,
     onChange,
@@ -270,14 +265,14 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
         />
       </UIStyles.setting.ContentLayout> */}
 
-      <UIStyles.setting.ContentLayout>
+      {/* <UIStyles.setting.ContentLayout>
         <p>{t('통화설정')}</p>
         <Dropdown
           options={currencyOptions}
           value={currencySetting}
           onChange={(value) => setCurrencySetting(value as string)}
         />
-      </UIStyles.setting.ContentLayout>
+      </UIStyles.setting.ContentLayout> */}
       {/* <UIStyles.setting.ContentLayout>
          <p>봉사료율</p>
          <S.ServiceChargeInputWrapper>

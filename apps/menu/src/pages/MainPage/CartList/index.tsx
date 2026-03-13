@@ -16,7 +16,7 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
-import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
+import { MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
@@ -61,9 +61,6 @@ export const CartList = ({
   const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
     null
   );
-
-  const currencySymbol =
-    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
   const selectedMenuDetail = categories
     .find((category) => category.categorySeq === selectedMenu?.categorySeq)
@@ -369,10 +366,7 @@ export const CartList = ({
           {isOrderSheetTotalVisible && (
             <S.TotalInfo role="status" aria-live="polite">
               <h3>{t('합계')}</h3>
-              <p>
-                {currencySymbol}
-                {formatCurrency(calculateTotalPrice())}
-              </p>
+              <p>₩{formatCurrency(calculateTotalPrice())}</p>
             </S.TotalInfo>
           )}
           <BasicButton

@@ -28,7 +28,7 @@ import { toast } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
 import type { ICartMenu, ICartOption } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
-import { CURRENCY_SYMBOL, MENU_MAX_QUANTITY } from '@/constants/common';
+import { MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
@@ -151,9 +151,6 @@ export const MenuDetailWithOptionsModal = ({
   const { addToCart, updateCartItem } = useCartStore();
   const shopDetailData = useShopDetailStore((s) => s.data);
   const disabledOrderable = !shopDetailData?.shopSetting?.isMenuboardOrderable;
-
-  const currencySymbol =
-    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptionsMap>(
     () =>
@@ -613,10 +610,7 @@ export const MenuDetailWithOptionsModal = ({
           )}
 
           <S.MenuName id="menu-detail-options-title">{menuName}</S.MenuName>
-          <S.Price>
-            {currencySymbol}
-            {formatCurrency(menu.menuPrice)}
-          </S.Price>
+          <S.Price>₩{formatCurrency(menu.menuPrice)}</S.Price>
           <S.Description>
             {menu.localeMenuDescription?.[languageData.currentLanguage] ??
               menu.menuDescription}
@@ -681,10 +675,7 @@ export const MenuDetailWithOptionsModal = ({
           <S.TotalContainer>
             <S.TotalInfo role="status" aria-live="polite">
               <h3>{t('합계')}</h3>
-              <p>
-                {currencySymbol}
-                {formatCurrency(totalPrice)}
-              </p>
+              <p>₩{formatCurrency(totalPrice)}</p>
             </S.TotalInfo>
             <BasicButton
               variant="Solid_Blue_2XL"

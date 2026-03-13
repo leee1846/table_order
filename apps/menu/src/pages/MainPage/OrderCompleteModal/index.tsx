@@ -78,7 +78,7 @@ export const OrderCompleteModal = ({
             {shopDetailData?.shopSetting?.isOrderCompleteTotalVisible && (
               <div>
                 <h3>{t('합계')}</h3>
-                <p>{formatCurrency(totalPrice)}</p>
+                <p>₩{formatCurrency(totalPrice)}</p>
               </div>
             )}
             <BasicButton

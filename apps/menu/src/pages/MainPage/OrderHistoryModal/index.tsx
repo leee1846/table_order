@@ -4,7 +4,6 @@ import { getTodayDateString } from '@repo/util/date';
 import type { ITableOrderHistoriesData } from '@/stores/useTableOrderHistoriesStore';
 import { formatCurrency } from '@repo/util/string';
 import { NoContent } from '@/feature/NoContent';
-import { CURRENCY_SYMBOL } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
@@ -16,8 +15,6 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
   const { t } = useCustomerTranslation();
 
   const shopDetailData = useShopDetailStore((s) => s.data);
-  const currencySymbol =
-    CURRENCY_SYMBOL[shopDetailData?.shopSetting?.currencySetting ?? 'KRW'];
 
   return (
     <S.Background onClick={onClose}>
@@ -79,10 +76,7 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
           {shopDetailData?.shopSetting?.isOrderSheetTotalVisible && (
             <div>
               <h3>{t('합계')}</h3>
-              <p>
-                {currencySymbol}
-                {formatCurrency(orderHistories?.totalAmount ?? 0)}
-              </p>
+              <p>₩{formatCurrency(orderHistories?.totalAmount ?? 0)}</p>
             </div>
           )}
           <BasicButton

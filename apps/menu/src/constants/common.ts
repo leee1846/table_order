@@ -6,11 +6,6 @@ import {
   ruFlagIcon,
 } from '@repo/ui/icons';
 
-export const CURRENCY_SYMBOL: Record<'KRW' | 'USD', string> = {
-  KRW: '₩',
-  USD: '$',
-};
-
 export const LANGUAGE_CONFIG = {
   KO: {
     label: '한국어',
