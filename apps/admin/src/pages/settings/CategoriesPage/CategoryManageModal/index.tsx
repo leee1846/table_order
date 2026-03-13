@@ -289,8 +289,8 @@ export const CategoryManageModal = ({
 
           <S.Title>
             <p>
-              {t('카테고리')}
-              {isEdit ? t('수정') : t('추가')}
+              {' '}
+              {t('카테고리')} {isEdit ? t('수정') : t('추가')}{' '}
             </p>
           </S.Title>
 
