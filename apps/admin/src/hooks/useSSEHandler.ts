@@ -34,6 +34,10 @@ export const useSSEHandler = (tableNumber?: string) => {
   const posErrorDialogIdRef = useRef<string | null>(null);
   const { t } = useAdminTranslation();
 
+  // 최신 t 참조 - SSE 핸들러 effect가 t 변경에 반응하지 않도록
+  const tRef = useRef(t);
+  tRef.current = t;
+
   // 로그인/로그아웃 시 SSE 연결 관리
   useEffect(() => {
     // 토큰이 있을 때만 SSE 연결 시도
@@ -50,6 +54,14 @@ export const useSSEHandler = (tableNumber?: string) => {
     SSE_KEYS.MAIN_CONNECTION
   );
 
+  // SSE 핸들러 effect에서 참조하는 최신 값 모음
+  // shopCode/tableNumber가 바뀌어도 effect가 재실행되지 않도록 ref로 관리
+  const sseHandlerDataRef = useRef({ shopCode, tableNumber });
+  useEffect(() => {
+    sseHandlerDataRef.current.shopCode = shopCode;
+    sseHandlerDataRef.current.tableNumber = tableNumber;
+  }, [shopCode, tableNumber]);
+
   // 에이전트 핑 체크 타이머 시작 함수
   const startAgentPingCheckTimer = useCallback(() => {
     if (agentPingCheckTimeoutRef.current) {
@@ -60,9 +72,9 @@ export const useSSEHandler = (tableNumber?: string) => {
     agentPingCheckTimeoutRef.current = window.setTimeout(() => {
       if (!agentErrorDialogIdRef.current) {
         agentErrorDialogIdRef.current = openConfirmDialog({
-          title: t('포스 에이전트 연결 오류'),
-          content: `${t('포스 에이전트와의 연결이 원활하지 않습니다.')}\n${t('에이전트 프로그램을 확인해주세요.')}`,
-          confirmText: t('확인'),
+          title: tRef.current('포스 에이전트 연결 오류'),
+          content: `${tRef.current('포스 에이전트와의 연결이 원활하지 않습니다.')}\n${tRef.current('에이전트 프로그램을 확인해주세요.')}`,
+          confirmText: tRef.current('확인'),
           size: 'xsmall',
           onConfirm: () => {
             agentErrorDialogIdRef.current = null;
@@ -71,7 +83,11 @@ export const useSSEHandler = (tableNumber?: string) => {
         });
       }
     }, 60000);
-  }, [t]);
+  }, []);
+
+  // 최신 startAgentPingCheckTimer 참조 - SSE 핸들러 effect가 함수 재생성에 반응하지 않도록
+  const startAgentPingCheckTimerRef = useRef(startAgentPingCheckTimer);
+  startAgentPingCheckTimerRef.current = startAgentPingCheckTimer;
 
   //처음엔 조건 만족(앱 + 포스연동)하면 타이머 등록
   useEffect(() => {
@@ -108,11 +124,17 @@ export const useSSEHandler = (tableNumber?: string) => {
   }, [sseMessage, clearAuth]);
 
   useEffect(() => {
+    if (!sseMessage) {
+      return;
+    }
+
+    const { shopCode, tableNumber } = sseHandlerDataRef.current;
+
     if (!shopCode) {
       return;
     }
 
-    if (sseMessage?.type === 'ORDER') {
+    if (sseMessage.type === 'ORDER') {
       queryClient.invalidateQueries({
         queryKey: queryKeys.orders.currentTableList(shopCode),
       });
@@ -130,7 +152,7 @@ export const useSSEHandler = (tableNumber?: string) => {
       return;
     }
 
-    if (sseMessage?.type === 'POS_ERROR') {
+    if (sseMessage.type === 'POS_ERROR') {
       // TODO
       // POS_ERROR가 2번 오는경우가 있어서 방어코드를 넣은것인가??
       if (posErrorDialogIdRef.current) {
@@ -141,9 +163,9 @@ export const useSSEHandler = (tableNumber?: string) => {
       // 여기서는 clearPendingOrder를 하지 않아도 괜찮은가??
       // prettier가 동작하지 않는가?? 왜 포멧이 달라지는가??
       posErrorDialogIdRef.current = openConfirmDialog({
-        title: t('POS 오류'),
-        content: t('주문 접수에 실패했습니다. 포스를 확인해주세요.'),
-        confirmText: t('확인'),
+        title: tRef.current('POS 오류'),
+        content: tRef.current('주문 접수에 실패했습니다. 포스를 확인해주세요.'),
+        confirmText: tRef.current('확인'),
         size: 'xsmall',
         onConfirm: () => {
           posErrorDialogIdRef.current = null;
@@ -152,7 +174,7 @@ export const useSSEHandler = (tableNumber?: string) => {
       return;
     }
 
-    if (sseMessage?.type === 'MENU') {
+    if (sseMessage.type === 'MENU') {
       if (tableNumber) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.category.menuboardList(shopCode, tableNumber),
@@ -161,44 +183,43 @@ export const useSSEHandler = (tableNumber?: string) => {
       return;
     }
 
-    if (sseMessage?.type === 'ORDER_COMPLETE') {
+    if (sseMessage.type === 'ORDER_COMPLETE') {
       // SSE 메시지에서 orderGroupUuid 추출
       const orderGroupUuidFromSse =
         typeof sseMessage.data === 'string' ? sseMessage.data : null;
 
       if (orderGroupUuidFromSse && pendingOrders.has(orderGroupUuidFromSse)) {
-        toast(t('메뉴를 추가했어요.'));
+        toast(tRef.current('메뉴를 추가했어요.'));
         clearPendingOrder(orderGroupUuidFromSse);
       }
       return;
     }
 
-    if (sseMessage?.type === 'TABLE') {
+    if (sseMessage.type === 'TABLE') {
       queryClient.invalidateQueries({
         queryKey: queryKeys.table.groupList(shopCode),
       });
-
       return;
     }
 
-    if (sseMessage?.type === 'RING_BELL') {
+    if (sseMessage.type === 'RING_BELL') {
       SystemControl.playSound({ type: 'dingdong' });
       return;
     }
 
-    if (sseMessage?.type === 'DEVICE') {
+    if (sseMessage.type === 'DEVICE') {
       queryClient.invalidateQueries({
         queryKey: queryKeys.device.list(shopCode),
       });
     }
 
-    if (sseMessage?.type === 'SHOP') {
+    if (sseMessage.type === 'SHOP') {
       queryClient.invalidateQueries({
         queryKey: queryKeys.shop.detail(shopCode),
       });
     }
 
-    if (sseMessage?.type === 'AGENT_PING') {
+    if (sseMessage.type === 'AGENT_PING') {
       // 정상 신호 수신 - 타이머 취소 및 모달 닫기
       if (agentPingCheckTimeoutRef.current) {
         clearTimeout(agentPingCheckTimeoutRef.current);
@@ -209,16 +230,9 @@ export const useSSEHandler = (tableNumber?: string) => {
         }
       }
 
-      startAgentPingCheckTimer();
+      startAgentPingCheckTimerRef.current();
 
       return;
     }
-  }, [
-    sseMessage,
-    shopCode,
-    tableNumber,
-    queryClient,
-    startAgentPingCheckTimer,
-    t,
-  ]);
+  }, [sseMessage, queryClient]);
 };
