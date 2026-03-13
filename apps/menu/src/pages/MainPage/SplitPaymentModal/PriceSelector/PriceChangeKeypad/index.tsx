@@ -13,11 +13,11 @@ interface Props {
   onClose: () => void;
 }
 
-export const PriceChangeKeypad = ({ 
-  totalPrice, 
+export const PriceChangeKeypad = ({
+  totalPrice,
   remainingPersonCount,
-  onApply, 
-  onClose 
+  onApply,
+  onClose,
 }: Props) => {
   const { theme } = useThemeMode();
   const { t } = useCustomerTranslation();
@@ -30,12 +30,12 @@ export const PriceChangeKeypad = ({
   /**
    * 입력 가능한 최대 금액 계산
    * 현재 인원을 제외한 나머지 인원들이 최소 10원 이상 받을 수 있도록 제한
-   * 
+   *
    * 계산식:
    * - 나머지 인원 수 = 전체 인원 수 - 1 (현재 편집 중인 인원 제외)
    * - 나머지 인원이 받을 최소 금액 = 나머지 인원 수 × 10원
    * - 최대 입력 가능 금액 = 전체 금액 - 나머지 인원 최소 금액
-   * 
+   *
    * 예: 전체 100원, 3명
    * - 나머지 인원: 2명
    * - 나머지 인원 최소 금액: 2 × 10 = 20원
@@ -104,11 +104,7 @@ export const PriceChangeKeypad = ({
 
         <S.Title>{t('금액 변경하기')}</S.Title>
 
-        <S.Price>
-          {t('{{amount}}원', {
-            amount: formatCurrency(inputPrice),
-          })}
-        </S.Price>
+        <S.Price>₩{formatCurrency(inputPrice)}</S.Price>
 
         <div>
           <Keypad
@@ -130,7 +126,8 @@ export const PriceChangeKeypad = ({
           <div>
             <span />
             <p>
-              {t('10원-{{maxAmount}}원까지 적용할 수 있어요.', {
+              {t('₩{{minAmount}} ~ ₩{{maxAmount}}까지 적용할 수 있어요.', {
+                minAmount: formatCurrency(MIN_AMOUNT),
                 maxAmount: formatCurrency(maxAllowedAmount),
               })}
             </p>

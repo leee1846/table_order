@@ -44,7 +44,7 @@ export const OrderCompleteModal = ({
                 <S.MenuInfo>
                   <h3>{order.menuName}</h3>
                   <p>{formatCurrency(order.quantity)}</p>
-                  <p>{formatCurrency(order.menuPrice * order.quantity)}</p>
+                  <p>₩{formatCurrency(order.menuPrice * order.quantity)}</p>
                 </S.MenuInfo>
 
                 <S.OptionList role="list">
@@ -60,6 +60,7 @@ export const OrderCompleteModal = ({
                           {formatCurrency(option.quantity * order.quantity)}
                         </p>
                         <p>
+                          ₩
                           {formatCurrency(
                             option.optionPrice *
                               option.quantity *

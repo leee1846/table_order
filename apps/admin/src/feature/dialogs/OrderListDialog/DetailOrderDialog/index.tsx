@@ -118,10 +118,7 @@ const DetailOrderDialog = ({
       <S.Footer>
         <S.TotalLabel>{t('합계 금액')}</S.TotalLabel>
         <S.TotalQty>{totalQuantity}</S.TotalQty>
-        <S.TotalPrice>
-          {formatCurrency(totalPrice)}
-          {t('원')}
-        </S.TotalPrice>
+        <S.TotalPrice>₩{formatCurrency(totalPrice)}</S.TotalPrice>
       </S.Footer>
     </S.DetailOrderDialog>
   );

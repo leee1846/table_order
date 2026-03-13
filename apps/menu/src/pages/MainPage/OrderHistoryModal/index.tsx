@@ -43,6 +43,7 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
                 <p>{orderHistory.menuName}</p>
                 <p>{formatCurrency(orderHistory.menuQuantity)}</p>
                 <p>
+                  ₩
                   {formatCurrency(
                     orderHistory.menuPrice * orderHistory.menuQuantity
                   )}
@@ -60,6 +61,7 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
                     <div>
                       <p>{formatCurrency(option.optionQuantity)}</p>
                       <p>
+                        ₩
                         {formatCurrency(
                           option.optionPrice * option.optionQuantity
                         )}

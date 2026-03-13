@@ -37,9 +37,7 @@ export const InstallmentModalContent = ({
       <S.PaymentInfoSection>
         <S.PaymentInfoRow>
           <S.PaymentLabel>{t('결제 금액')}</S.PaymentLabel>
-          <S.PaymentAmount>
-            {t('{{amount}}원', { amount: formatCurrency(totalPrice) })}
-          </S.PaymentAmount>
+          <S.PaymentAmount>₩{formatCurrency(totalPrice)}</S.PaymentAmount>
         </S.PaymentInfoRow>
       </S.PaymentInfoSection>
 

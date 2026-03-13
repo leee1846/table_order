@@ -95,11 +95,7 @@ export const MenuSelector = ({
                   <S.MenuName>{menu.menuName}</S.MenuName>
                 </CheckButton>
                 <S.ButtonRightContainer>
-                  <p>
-                    {t('{{amount}}원', {
-                      amount: formatCurrency(menuPrice),
-                    })}
-                  </p>
+                  <p>₩{formatCurrency(menuPrice)}</p>
                   {menu.selectedOptions.length > 0 && (
                     <div onClick={(e) => handleOptionDetailClick(e, menu.id)}>
                       {t('옵션')}

@@ -98,7 +98,7 @@ export const MenuSelectionView = ({
                           {item.menu.localeMenuName?.[currentLan]}
                         </S.ItemName>
                         <S.ItemPrice>
-                          {formatCurrency(item.menu.menuPrice * item.quantity)}
+                          ₩{formatCurrency(item.menu.menuPrice * item.quantity)}
                         </S.ItemPrice>
                       </S.ItemHeader>
                       {item.selectedOptions.length > 0 && (
@@ -109,6 +109,7 @@ export const MenuSelectionView = ({
                                 ㄴ{option.localeOptionName?.[currentLan]}
                               </S.OptionItemName>
                               <S.OptionItemPrice>
+                                ₩
                                 {formatCurrency(
                                   option.optionPrice *
                                     option.selectedQuantity *
@@ -142,10 +143,9 @@ export const MenuSelectionView = ({
                           onChange={(value) => {
                             if (value > MENU_MAX_QUANTITY) {
                               toast(
-                                t(
-                                  '최대 {{count}}개까지 선택 가능합니다.',
-                                  { count: MENU_MAX_QUANTITY }
-                                ),
+                                t('최대 {{count}}개까지 선택 가능합니다.', {
+                                  count: MENU_MAX_QUANTITY,
+                                }),
                                 { position: 'center-center', duration: 1500 }
                               );
                               return;
@@ -165,13 +165,13 @@ export const MenuSelectionView = ({
             {selectedMenus.length > 0 && (
               <A.TotalSection>
                 <A.TotalLabel>{t('합계')}</A.TotalLabel>
-                <A.TotalPrice>{formatCurrency(totalAmount)}</A.TotalPrice>
+                <A.TotalPrice>₩{formatCurrency(totalAmount)}</A.TotalPrice>
               </A.TotalSection>
             )}
             <A.PanelFooter>
-              <BasicButton 
-                variant="Solid_Navy_2XL" 
-                onClick={onAdd} 
+              <BasicButton
+                variant="Solid_Navy_2XL"
+                onClick={onAdd}
                 fullWidth
                 disabled={isLoading}
               >
@@ -201,7 +201,7 @@ export const MenuSelectionView = ({
                     {menu.localeMenuName?.[currentLan]}
                   </S.MenuTitle>
                   <S.MenuPrice isOutOfStock={menu.isOutOfStock}>
-                    {formatCurrency(menu.menuPrice)}
+                    ₩{formatCurrency(menu.menuPrice)}
                   </S.MenuPrice>
                 </S.MenuCard>
               ))

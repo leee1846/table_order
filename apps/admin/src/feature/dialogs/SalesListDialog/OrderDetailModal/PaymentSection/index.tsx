@@ -179,8 +179,7 @@ export const PaymentSection = ({ order }: Props) => {
                   <br />[{payment.issuerCompany ?? '-'}]
                 </td>
                 <td>
-                  {formatCurrency(payment.transactionAmount ?? 0)}
-                  {t('원')}
+                  ₩{formatCurrency(payment.transactionAmount ?? 0)}
                   <br />-
                 </td>
                 {/* <td>

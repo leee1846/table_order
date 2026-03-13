@@ -77,7 +77,7 @@ export function OrderItemsTable({
             </Cell>
             <Cell className="qty">{it.qty}</Cell>
             <Cell className="price">
-              {formatCurrency(it.unitPrice * it.qty)}
+              ₩{formatCurrency(it.unitPrice * it.qty)}
             </Cell>
           </Row>
           {it.options?.map((option) => (
@@ -90,7 +90,7 @@ export function OrderItemsTable({
               </Cell>
               <Cell className="qty">{option.qty}</Cell>
               <Cell className="price">
-                {formatCurrency(option.unitPrice * option.qty)}
+                ₩{formatCurrency(option.unitPrice * option.qty)}
               </Cell>
             </Row>
           ))}

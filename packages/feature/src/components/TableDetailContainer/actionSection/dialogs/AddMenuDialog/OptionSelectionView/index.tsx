@@ -176,11 +176,7 @@ export const OptionSelectionView = ({
                             ㄴ{option.localeOptionName?.[currentLan]}
                           </S.OptionItemName>
                           <S.OptionItemPrice>
-                            {t('(+{{price}})', {
-                              price: t('{{price}}원', {
-                                price: formatCurrency(option.optionPrice),
-                              }),
-                            })}
+                            (+ ₩{formatCurrency(option.optionPrice)})
                           </S.OptionItemPrice>
                           {quantity >= 2 && (
                             <S.OptionItemQuantity>
@@ -208,13 +204,15 @@ export const OptionSelectionView = ({
             <S.TotalMountSection>
               <S.TotalMountLabel>{t('합계')}</S.TotalMountLabel>
               <S.TotalMountValue>
-                {t('{{price}}원', {
-                  price: formatCurrency(totalPrice),
-                })}
+                ₩{formatCurrency(totalPrice)}
               </S.TotalMountValue>
             </S.TotalMountSection>
             <A.PanelFooter>
-              <BasicButton variant="Solid_Navy_2XL" onClick={handleAddClick} fullWidth>
+              <BasicButton
+                variant="Solid_Navy_2XL"
+                onClick={handleAddClick}
+                fullWidth
+              >
                 {t('추가하기')}
               </BasicButton>
             </A.PanelFooter>

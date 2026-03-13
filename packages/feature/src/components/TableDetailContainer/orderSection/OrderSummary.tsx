@@ -36,7 +36,7 @@ export function OrderSummary({
       <Row>
         <Cell className="name">{t('총 결제금액')}</Cell>
         <Cell className="qty">{totalCount}</Cell>
-        <Cell className="price">{formatCurrency(remainingPrice)}</Cell>
+        <Cell className="price">₩{formatCurrency(remainingPrice)}</Cell>
       </Row>
     </SummaryWrap>
   );

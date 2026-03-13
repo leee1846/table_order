@@ -246,11 +246,7 @@ export const PriceSelector = ({
                     }
                   `}
                 >
-                  <S.Price>
-                    {t('{{amount}}원', {
-                      amount: formatCurrency(personPrice),
-                    })}
-                  </S.Price>
+                  <S.Price>₩{formatCurrency(personPrice)}</S.Price>
                 </CheckButton>
 
                 {/* 10원 초과이고 인원이 2명 이상일 때만 금액 변경 버튼 표시 (항목 1개일 때는 비노출) */}

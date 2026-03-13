@@ -51,7 +51,10 @@ export const Summary = ({ summary }: Props) => {
           <p>{bestMenu?.menuName ?? t('데이터가 없습니다.')}</p>
           <p>
             {bestMenu
-              ? `${formatCurrency(bestMenu.totalPrice)}원 / ${formatCurrency(bestMenu.quantity)}건`
+              ? t('₩{{totalPrice}} / {{quantity}}건', {
+                  totalPrice: formatCurrency(bestMenu.totalPrice),
+                  quantity: formatCurrency(bestMenu.quantity),
+                })
               : '-'}
           </p>
         </S.BestMenuInfo>
@@ -67,7 +70,7 @@ export const Summary = ({ summary }: Props) => {
         <S.TotalMenuInfo>
           <p>{t('총 판매 금액')}</p>
           <S.TotalMenuPrice color={theme.colors.grey[800]}>
-            {`${formatCurrency(totalSalesAmount)}원`}
+            ₩{formatCurrency(totalSalesAmount)}
           </S.TotalMenuPrice>
         </S.TotalMenuInfo>
       </S.TotalMenu>

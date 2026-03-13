@@ -118,7 +118,7 @@ export const ServiceAmountDialog = ({
           </S.Header>
 
           <S.AmountDisplay $isPlaceholder={amount === '0'}>
-            {t('{{amount}}원', { amount: formatCurrency(numericAmount) })}
+            ₩{formatCurrency(numericAmount)}
           </S.AmountDisplay>
 
           <S.KeypadWrapper>

@@ -101,10 +101,7 @@ export const SalesSummaryPage = () => {
       <S.List>
         <S.Item>
           <S.SubTitle>{t('매출(결제완료)')}</S.SubTitle>
-          <S.Price>
-            {formatCurrency(paidSales)}
-            <span>{t('원')}</span>
-          </S.Price>
+          <S.Price>₩{formatCurrency(paidSales)}</S.Price>
           <S.Description>
             <S.IconWrapper
               ref={averagePricePerCustomerIconWrapperRef}
@@ -124,17 +121,12 @@ export const SalesSummaryPage = () => {
                 </S.Tooltip>
               )}
             </S.IconWrapper>
-            {t('객단가')}
-            {formatCurrency(averagePricePerCustomer)}
-            {t('원')}
+            {t('객단가')}₩{formatCurrency(averagePricePerCustomer)}
           </S.Description>
         </S.Item>
         <S.Item>
           <S.SubTitle>{t('매출(결제 전)')}</S.SubTitle>
-          <S.Price>
-            {formatCurrency(unpaidSales)}
-            <span>{t('원')}</span>
-          </S.Price>
+          <S.Price>₩{formatCurrency(unpaidSales)}</S.Price>
         </S.Item>
         <S.Item>
           <S.SubTitle>{t('테이블 수(결제완료)')}</S.SubTitle>

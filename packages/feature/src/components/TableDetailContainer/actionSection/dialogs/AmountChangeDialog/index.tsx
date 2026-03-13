@@ -41,7 +41,7 @@ export const AmountChangeDialog = ({
     } else {
       const newAmount = amount + number.toString();
       const numericValue = parseInt(newAmount, 10);
-      
+
       // 99,999,999,999를 초과하는 경우 입력 무시
       if (numericValue <= MAX_AMOUNT) {
         setAmount(newAmount);
@@ -117,9 +117,7 @@ export const AmountChangeDialog = ({
           </S.Header>
 
           <S.AmountDisplay $isPlaceholder={amount === '0'}>
-            {amount === '0'
-              ? '+/-0'
-              : t('{{price}}원', { price: formatCurrency(finalAmount) })}
+            {amount === '0' ? '+/-0' : `₩${formatCurrency(finalAmount)}`}
           </S.AmountDisplay>
 
           <S.KeypadWrapper>

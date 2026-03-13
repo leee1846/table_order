@@ -66,7 +66,7 @@ const getLocalizedGroupName = (
 };
 
 const formatPriceText = (price: number): string => {
-  return price > 0 ? ` (+${formatCurrency(price)})` : '';
+  return price > 0 ? ` (+ ₩${formatCurrency(price)})` : '';
 };
 
 const calculateGroupTotalQuantity = (

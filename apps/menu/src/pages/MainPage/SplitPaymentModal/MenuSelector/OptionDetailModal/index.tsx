@@ -41,7 +41,7 @@ export const OptionDetailModal = ({ menu, onClose }: Props) => {
           <S.MenuInfo>
             <p>{menu.menuName}</p>
             <p>{formatCurrency(menu.quantity)}</p>
-            <p>{formatCurrency(menu.menuPrice)}</p>
+            <p>₩{formatCurrency(menu.menuPrice)}</p>
           </S.MenuInfo>
 
           <S.OptionList>
@@ -54,7 +54,7 @@ export const OptionDetailModal = ({ menu, onClose }: Props) => {
 
                 <div>
                   <p>{formatCurrency(option.quantity)}</p>
-                  <p>{formatCurrency(option.optionPrice * option.quantity)}</p>
+                  <p>₩{formatCurrency(option.optionPrice * option.quantity)}</p>
                 </div>
               </li>
             ))}
@@ -64,7 +64,7 @@ export const OptionDetailModal = ({ menu, onClose }: Props) => {
         <S.TotalContainer>
           <S.TotalInfo>
             <p>{t('합계')}</p>
-            <p>{t('{{amount}}원', { amount: formatCurrency(totalPrice) })}</p>
+            <p>₩{formatCurrency(totalPrice)}</p>
           </S.TotalInfo>
           <BasicButton variant="Solid_Blue_2XL" onClick={onClose}>
             {t('확인')}

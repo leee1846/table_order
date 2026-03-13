@@ -887,17 +887,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
               <S.SelectorTotalContainer role="region" aria-live="polite">
                 <S.TotalInfo>
                   <h3>{t('총 결제금액')}</h3>
-                  <p>
-                    {t('{{amount}}원', { amount: formatCurrency(totalPrice) })}
-                  </p>
+                  <p>₩{formatCurrency(totalPrice)}</p>
                 </S.TotalInfo>
                 <S.RemainingAmount>
                   <h3>{t('남은 결제 금액')}</h3>
-                  <p>
-                    {t('{{amount}}원', {
-                      amount: formatCurrency(currentRemainingPrice),
-                    })}
-                  </p>
+                  <p>₩{formatCurrency(currentRemainingPrice)}</p>
                 </S.RemainingAmount>
               </S.SelectorTotalContainer>
             </S.SelectorContainer>
@@ -947,11 +941,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
               <BasicButton
                 variant="Solid_Blue_2XL"
                 onClick={handlePayment}
-                aria-label={t('{{amount}}원 카드 결제', {
+                aria-label={t('₩{{amount}} 카드 결제', {
                   amount: formatCurrency(currentSelectedPrice),
                 })}
               >
-                {t('{{amount}}원 카드 결제', {
+                {t('₩{{amount}} 카드 결제', {
                   amount: formatCurrency(currentSelectedPrice),
                 })}
               </BasicButton>

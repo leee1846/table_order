@@ -210,7 +210,7 @@ export const CartList = ({
       totalMenuAmount < firstOrderMinAmount
     ) {
       toast(
-        t('최소 주문 금액은 {{minAmount}}원 입니다.', {
+        t('최소 주문 금액은 ₩{{minAmount}} 입니다.', {
           minAmount: formatCurrency(firstOrderMinAmount),
         }),
         TOAST_OPTIONS
@@ -305,7 +305,7 @@ export const CartList = ({
               <S.OrderItem key={`order-${index + 1}`} role="listitem">
                 <S.OrderMenu>
                   <h3>{menu.menuName}</h3>
-                  <p>{formatCurrency(menu.menuPrice * menu.quantity)}</p>
+                  <p>₩{formatCurrency(menu.menuPrice * menu.quantity)}</p>
                 </S.OrderMenu>
 
                 {hasOptions && (
@@ -321,6 +321,7 @@ export const CartList = ({
                             {formatCurrency(option.quantity * menu.quantity)}
                           </p>
                           <p>
+                            ₩
                             {formatCurrency(
                               option.optionPrice *
                                 option.quantity *
