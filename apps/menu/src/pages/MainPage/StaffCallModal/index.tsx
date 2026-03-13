@@ -4,7 +4,7 @@ import { CloseIcon, DeleteIcon } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
 import type { ICategoryWithMenus, IMenuBase } from '@repo/api/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { ICartMenu } from '@/types/cart';
 import { usePostTableOrder } from '@repo/api/queries';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
@@ -156,6 +156,20 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
       },
     });
   };
+
+  // 목록에 보이지 않는 메뉴(isHidden, isOutOfStock)는 선택 목록에서 제거
+  // 선택중 메뉴 정보가 바뀌는 경우
+  useEffect(() => {
+    const visibleMenuSeqs = new Set(
+      category.menuInfoList
+        .filter((menu) => !menu.isHidden && !menu.isOutOfStock)
+        .map((menu) => menu.menuSeq)
+    );
+
+    setSelectedMenuList((currentList) =>
+      currentList.filter((item) => visibleMenuSeqs.has(item.menuSeq))
+    );
+  }, [category]);
 
   return (
     <ModalBackground onClick={onClose}>
