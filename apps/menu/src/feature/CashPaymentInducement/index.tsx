@@ -35,7 +35,7 @@ export const CashPaymentInducement = () => {
         <S.Date>{getTodayDateString()}</S.Date>
         <S.PaymentContainer>
           <p>{t('결제할 금액')}</p>
-          <p>{formatCurrency(modalData.cashPaymentInducementTotalPrice)}</p>
+          <p>₩{formatCurrency(modalData.cashPaymentInducementTotalPrice)}</p>
         </S.PaymentContainer>
       </S.RightContainer>
     </S.Container>
