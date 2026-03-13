@@ -390,7 +390,7 @@ export const AddMenuDialog = ({
     // OKPOS 연동 매장: SSE 이벤트 대기를 위해 orderGroupUuid 전달
     if (isOkPos && response?.data?.orderGroupUuid) {
       // TODO
-      // 주문 넣고 POS연동 상태일경우 약 10초동안 SSE 대기할텐데 loading UI를 넣어야 하지 않을까?
+      // 주문 넣고 POS연동 상태일경우 실패까지 약 10초동안 SSE 대기할텐데 loading UI를 넣어야 하지 않을까?
       onOrderCreated?.(response.data.orderGroupUuid);
 
       // 모달 닫기

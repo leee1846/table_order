@@ -2,15 +2,17 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { TableDetailContainer } from '@repo/feature/components';
 import type { TOrderType } from '@repo/api/types';
 import * as S from '@/pages/TableDetailPage/tableDetailPage.style';
-import adminI18n from '@/config/i18n/admin.i18n';
+import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopStore } from '@/stores/useShopStore';
-import { setPendingOrder } from '@/hooks/useSSEHandler';
+import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
+import { openConfirmDialog, toast } from '@repo/feature/utils';
 
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
   const [searchParams] = useSearchParams();
   const { data: shopData } = useShopStore();
   const shopCode = shopData?.shopCode ?? 0;
+  const { t } = useAdminTranslation();
 
   const orderType: TOrderType =
     (searchParams.get('orderType') as TOrderType) || 'MENU';
@@ -19,6 +21,25 @@ export const TableDetailPage = () => {
     return null;
   }
 
+  const PosLinkedOrderHandler = (orderGroupUuid: string) => {
+    const orderSuccessCallback = () => {
+      toast(t('메뉴를 추가했어요.'), { position: 'top-center' });
+    };
+
+    const orderFailCallback = () => {
+      openConfirmDialog({
+        title: t('POS 오류'),
+        content: t('주문 접수에 실패했습니다. 포스를 확인해주세요.'),
+        confirmText: t('확인'),
+        size: 'xsmall',
+      });
+    };
+
+    useOrderPendingPosStore
+      .getState()
+      .setPendingOrder(orderGroupUuid, orderSuccessCallback, orderFailCallback);
+  };
+
   return (
     <S.Container>
       <TableDetailContainer
@@ -26,9 +47,7 @@ export const TableDetailPage = () => {
         tableNumber={tableNum}
         orderType={orderType}
         i18nInstance={adminI18n}
-        onOrderCreated={(orderGroupUuid) => {
-          setPendingOrder(orderGroupUuid);
-        }}
+        onOrderCreated={PosLinkedOrderHandler}
       />
     </S.Container>
   );

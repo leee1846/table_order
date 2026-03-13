@@ -63,17 +63,6 @@ type DeviceDataSyncDeps = {
   tRef: { current: TFunction };
 };
 
-// OKPOS 매장에서 주문한 경우, sse order에서 해당 주문이 포스에 접수되었는지 확인하기 위해 사용
-const pendingOrders = new Set<string>(); // orderGroupUuid 집합
-
-export const setPendingOrder = (orderGroupUuid: string) => {
-  pendingOrders.add(orderGroupUuid);
-};
-
-export const clearPendingOrder = (orderGroupUuid: string) => {
-  pendingOrders.delete(orderGroupUuid);
-};
-
 /** POS 동기화 상태 API: 502 + code -102 = 동기화 진행 중 */
 const POS_SYNC_POLL_INTERVAL_MS = 60 * 1000;
 const POS_SYNC_HTTP_502 = 502;
@@ -289,12 +278,21 @@ export const useSSEHandler = () => {
     startPosSyncPolling,
 
     handleOrderMessage: async (shopCode: string, message: ISseMessage) => {
+      if (!message.data) {
+        return;
+      }
+
       // 현재 테이블 목록 먼저 새로고침
       handlersRef.current.refetchCurrentTableList(shopCode);
-      const { currentDeviceData, tableOrderHistoriesData, tableNumFromParams } =
-        sseHandlerDataRef.current;
+      const tableNumbersFromSse = message.data as { [key: string]: number };
 
-      if (tableNumFromParams) {
+      const { shopDetailData, tableNumFromParams } = sseHandlerDataRef.current;
+      const isPosLinked =
+        !!shopDetailData?.shopSetting?.shopPosCode &&
+        shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
+      // 테이블 상세 페이지
+      // 포스 연동이 아닐경우
+      if (tableNumFromParams && !isPosLinked) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.orders.tableOrderHistories(
             shopCode,
@@ -303,21 +301,23 @@ export const useSSEHandler = () => {
         });
       }
 
-      if (!message.data || !currentDeviceData?.tableNumber) {
+      const { currentDeviceData } = sseHandlerDataRef.current;
+      // 관리자 모드에서 테이블 선택을 안했을 경우
+      const currentTableNumber = currentDeviceData?.tableNumber;
+      if (!currentTableNumber) {
         return;
       }
 
-      const currentTableNumber = currentDeviceData.tableNumber;
-      const orderDataByTable = message.data as { [key: string]: number };
+      const { tableOrderHistoriesData } = sseHandlerDataRef.current;
 
-      // 현재 테이블이 주문 목록에 없거나, 주문 그룹만 생성되어 있고, 주문이 없을 경우
-      if (!(currentTableNumber in orderDataByTable)) {
+      // 현재 테이블의 주문이 없는 경우
+      // 주문 그룹만 생성되어 있고, 주문이 없는 경우
+      if (!(currentTableNumber in tableNumbersFromSse)) {
         const hasExistingOrders =
           tableOrderHistoriesData &&
           tableOrderHistoriesData !== 'isEmptyTable' &&
           (tableOrderHistoriesData?.orderDetailMenuList?.length > 0 ||
             tableOrderHistoriesData?.orderDetailMenuList?.length < 1);
-
         // pos or 관리자앱에서 주문을 모두 취소 or 테이블 비우기 했을 경우
         if (hasExistingOrders) {
           refreshTableOrderHistoriesData();
@@ -332,14 +332,13 @@ export const useSSEHandler = () => {
         return;
       }
 
-      // 현재 테이블의 주문 업데이트 시간
-      const sseUpdatedAt = orderDataByTable[currentTableNumber];
-      // 주문이 변경되지 않았으면 (중복 처리 방지)
+      const sseUpdatedAt = tableNumbersFromSse[currentTableNumber];
       const isOrderUnchanged =
         tableOrderHistoriesData &&
         tableOrderHistoriesData !== 'isEmptyTable' &&
         tableOrderHistoriesData?.sseUpdatedAt === sseUpdatedAt;
 
+      // 주문이 변경되지 않았으면 (중복 처리 방지)
       if (isOrderUnchanged) {
         return;
       }
@@ -360,17 +359,14 @@ export const useSSEHandler = () => {
         isSplitPaymentModalOpened ||
         isCardPaymentInstallmentModalOpened;
 
-      if (!isPaymentModalOpened) {
-        return;
-      }
-
       const totalAmount = refreshResult.totalAmount ?? 0;
       const paidAmount = refreshResult.paymentList
         .filter((payment) => !payment.isCanceled)
         .reduce((sum, payment) => sum + payment.transactionAmount, 0);
       const isFullyPaid = totalAmount - paidAmount === 0;
 
-      if (isFullyPaid) {
+      // 결제중이고 결제가 완료되었을 경우
+      if (isPaymentModalOpened && isFullyPaid) {
         useModalStore.getState().closeAllModals();
       }
     },
@@ -608,63 +604,39 @@ export const useSSEHandler = () => {
     },
 
     handleOrderCompleteMessage: (message: ISseMessage) => {
-      const orderGroupUuidData =
+      const orderGroupUuidFromSse =
         typeof message.data === 'string' ? message.data : null;
-      if (!orderGroupUuidData) {
+      if (!orderGroupUuidFromSse) {
         return;
       }
 
-      // Root경로에서 주문 완료 대기 중인 경우
+      // Root 페이지에서 주문 완료 대기 중인 경우
       const { pendingOrderGroupUuid, completeWithSuccess } =
         useOrderPendingPosStore.getState();
-      const { locationPathname } = sseHandlerDataRef.current;
       if (
         pendingOrderGroupUuid &&
-        orderGroupUuidData === pendingOrderGroupUuid &&
-        locationPathname === ROUTES.ROOT.path
+        orderGroupUuidFromSse === pendingOrderGroupUuid
       ) {
         completeWithSuccess();
         return;
       }
-
-      // 상세페이지에서 주문 완료 대기 중인 경우
-      // 관리자app과 공통으로 사용하는 컴포넌트 TableDetailContainer 로직에 맞추기 위해 사용
-      if (pendingOrders.has(orderGroupUuidData)) {
-        toast(tRef.current('메뉴를 추가했어요.'), { position: 'top-center' });
-        clearPendingOrder(orderGroupUuidData);
-      }
     },
 
     handlePosErrorMessage: (message: ISseMessage) => {
-      const orderGroupUuidData =
+      const orderGroupUuidFromSse =
         typeof message.data === 'string' ? message.data : null;
-      if (!orderGroupUuidData) {
+      if (!orderGroupUuidFromSse) {
         return;
       }
 
       const { pendingOrderGroupUuid, completeWithFailure } =
         useOrderPendingPosStore.getState();
-      const { locationPathname } = sseHandlerDataRef.current;
-      // Root경로에서 주문 실패 대기 중인 경우
       if (
         pendingOrderGroupUuid &&
-        orderGroupUuidData === pendingOrderGroupUuid &&
-        locationPathname === ROUTES.ROOT.path
+        orderGroupUuidFromSse === pendingOrderGroupUuid
       ) {
         completeWithFailure();
         return;
-      }
-
-      // 상세페이지에서 주문 실패 대기 중인 경우
-      // 관리자app과 공통으로 사용하는 컴포넌트 TableDetailContainer 로직에 맞추기 위해 사용
-      if (pendingOrders.has(orderGroupUuidData)) {
-        openConfirmDialog({
-          title: t('POS 오류'),
-          content: t('주문 접수에 실패했습니다. 포스를 확인해주세요.'),
-          confirmText: t('확인'),
-          size: 'xsmall',
-        });
-        clearPendingOrder(orderGroupUuidData);
       }
     },
 
