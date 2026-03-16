@@ -61,7 +61,7 @@ export const TableCard = ({
             <S.StatusText>{t('빈 테이블')}</S.StatusText>
           ) : (
             <S.TotalAmount title={formatCurrency(displayAmount ?? 0)}>
-              {formatCurrency(displayAmount ?? 0)}
+              ₩{formatCurrency(displayAmount ?? 0)}
             </S.TotalAmount>
           )}
         </S.CardFooterSide>
