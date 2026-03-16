@@ -87,27 +87,36 @@ export const OrderListDialog = ({
   const [openDetailOrderDialog, setOpenDetailOrderDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
 
-  const ORDER_CHANNEL_LABELS: Record<TOrderType, string> = {
-    MENU: t('메뉴판'),
-    ORDER_POS: t('오더포스'),
-    POS_APP: t('관리자'),
-    POS: t('연동포스'),
-    PREPAYMENT: t('메뉴판'),
-    ADMIN: t('관리자'),
-  };
+  const ORDER_CHANNEL_LABELS = useMemo(
+    () => ({
+      MENU: t('메뉴판'),
+      ORDER_POS: t('오더포스'),
+      POS_APP: t('관리자'),
+      POS: t('연동포스'),
+      PREPAYMENT: t('메뉴판'),
+      ADMIN: t('관리자'),
+    }),
+    [t]
+  );
 
-  const PAYMENT_STATUS_LABELS: Record<TOrderPaymentStatus, string> = {
-    UNPAID: t('후결제'),
-    PAID: t('선결제'),
-    REFUND: t('환불'),
-  };
+  const PAYMENT_STATUS_LABELS = useMemo(
+    () => ({
+      UNPAID: t('후결제'),
+      PAID: t('선결제'),
+      REFUND: t('환불'),
+    }),
+    [t]
+  );
 
-  const ORDER_STATUS_LABELS: Record<TOrderStatusCode, string> = {
-    RECEIVED: t('접수'),
-    COMPLETE: t('조리완료'),
-    CANCEL: t('취소'),
-    POS_CANCEL: t('포스 취소'),
-  };
+  const ORDER_STATUS_LABELS = useMemo(
+    () => ({
+      RECEIVED: t('접수'),
+      COMPLETE: t('조리완료'),
+      CANCEL: t('취소'),
+      POS_CANCEL: t('포스 취소'),
+    }),
+    [t]
+  );
 
   useEffect(() => {
     if (!isOpen) {
@@ -179,7 +188,7 @@ export const OrderListDialog = ({
         menuItems,
       };
     });
-  }, [orderLogData]);
+  }, [orderLogData, ORDER_CHANNEL_LABELS, ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS]);
 
   const displayedOrderItems = useMemo(
     () => orderItems.filter((order) => order.menuItems.length > 0),

@@ -62,6 +62,7 @@ export const CheckButtonCustomStyle = css`
   & > div {
     width: 28px;
     height: 28px;
+    aspect-ratio: 1/1;
   }
   & > input {
     display: none;
