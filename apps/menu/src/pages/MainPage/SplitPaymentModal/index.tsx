@@ -489,7 +489,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
           try {
             await Payment.cancel(pendingPaymentCancel);
           } catch {
-            throw new Error(t('결제 처리 중 오류가 발생했습니다.'));
+            throw new Error(t('환불 처리 중 오류가 발생했습니다.'));
           }
         }
         setPendingPaymentCancel(null);
