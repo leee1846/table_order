@@ -69,6 +69,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
       };
 
       getAppInfo();
+
       getAndroidInfo();
     }
   }, []);
@@ -80,7 +81,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
 
     setNetworkSetting(toNetworkSettingOption(shopNetwork.networkType));
     setSsid(shopNetwork.ssid ?? '');
-    setIpAddress(shopNetwork.ipAddress ?? '');
+    // setIpAddress(shopNetwork.ipAddress ?? '');
   }, [shopNetwork]);
 
   useEffect(() => {
