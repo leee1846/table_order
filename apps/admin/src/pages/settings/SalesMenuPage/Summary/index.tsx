@@ -64,7 +64,9 @@ export const Summary = ({ summary }: Props) => {
         <S.TotalMenuInfo>
           <p>{t('총 판매 메뉴')}</p>
           <S.TotalMenuPrice color={theme.colors.grey[600]}>
-            {`${formatCurrency(totalMenuItemsSold)}건`}
+            {t('{{total}} 건', {
+              total: formatCurrency(totalMenuItemsSold),
+            })}
           </S.TotalMenuPrice>
         </S.TotalMenuInfo>
         <S.TotalMenuInfo>

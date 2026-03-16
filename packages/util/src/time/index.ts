@@ -344,14 +344,31 @@ export interface TimeOption {
   label: string;
 }
 
-export const generateTimeOptions = (): TimeOption[] =>
+/**
+ * 시간 옵션을 생성합니다 (00:00 ~ 23:59, 30분 단위)
+ *
+ * @param t - 번역 함수 (key: string) => string
+ * @returns 시간 옵션 배열 (value: "HHMM", label: "HH시 MM분")
+ *
+ * @example
+ * ```ts
+ * const { t } = useTranslation();
+ * generateTimeOptions(t) // [{ value: "0000", label: "00시 00분" }, { value: "0030", label: "00시 30분" }, ...]
+ * ```
+ */
+export interface TimeOption {
+  value: string;
+  label: string;
+}
+
+export const generateTimeOptions = (t: (key: string) => string): TimeOption[] =>
   Array.from({ length: 24 }, (_, hour) =>
     [0, 30].map((minute) => {
       const hourStr = String(hour).padStart(2, '0');
       const minuteStr = String(minute).padStart(2, '0');
       return {
         value: `${hourStr}${minuteStr}`,
-        label: `${hourStr}시 ${minuteStr}분`,
+        label: `${hourStr}${t('시')} ${minuteStr}${t('분')}`,
       };
     })
   ).flat();

@@ -9,20 +9,20 @@ export const OrderInfoContainer = styled.div`
   flex-direction: column;
   gap: 6px;
   margin-bottom: 24px;
-
   & > div {
     ${TYPOGRAPHY.MT_9}
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 16px;
 
     > p {
-      width: 73px;
       color: ${theme.colors.grey[500]};
+      text-wrap: nowrap;
+    }
 
-      > span {
-        color: ${theme.colors.grey[900]};
-      }
+    > span {
+      color: ${theme.colors.grey[900]};
     }
   }
 `;

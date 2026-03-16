@@ -23,8 +23,10 @@ export const Table = ({ orders, onSelectOrder, pageSize }: Props) => {
   };
 
   const renderPaymentMethod = (item: IOrderHistoryItem) => {
-    return formatPaymentMethodLabel(
-      item.paymentMethod || item.paymentList?.[0]?.paymentType
+    return t(
+      formatPaymentMethodLabel(
+        item.paymentMethod || item.paymentList?.[0]?.paymentType
+      )
     );
   };
 

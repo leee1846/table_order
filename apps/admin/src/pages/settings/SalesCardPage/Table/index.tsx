@@ -134,7 +134,7 @@ export const Table = ({ items, pageSize }: Props) => {
             {t('카드번호')}
 
             <br />
-            {t('(승인번호)')}
+            {`(${t('승인번호')})`}
           </th>
           <th>{t('총거래금액')}</th>
 
@@ -148,7 +148,7 @@ export const Table = ({ items, pageSize }: Props) => {
             {t('매입사')}
 
             <br />
-            {t('(발급사)')}
+            {`(${t('발급사')})`}
           </th>
           <th>
             {t('공급가')}

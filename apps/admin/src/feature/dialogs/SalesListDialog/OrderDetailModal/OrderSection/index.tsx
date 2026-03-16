@@ -19,7 +19,7 @@ export const OrderSection = ({ order }: Props) => {
     0
   );
 
-  const paymentLabel = formatPaymentMethodLabel(order.paymentMethod);
+  const paymentLabel = t(formatPaymentMethodLabel(order.paymentMethod));
 
   return (
     <S.Container>

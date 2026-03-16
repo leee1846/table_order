@@ -38,10 +38,7 @@ export const RecommendedImageModal = ({
     () => images.map((category) => category.categoryCode),
     [images]
   );
-  const selectedIds = useMemo(
-    () => new Set(selectionOrder),
-    [selectionOrder]
-  );
+  const selectedIds = useMemo(() => new Set(selectionOrder), [selectionOrder]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -194,7 +191,7 @@ export const RecommendedImageModal = ({
                 onClick={handleConfirm}
                 disabled={selectedImages.length === 0}
               >
-                {`${selectedImages.length}개 ${t('선택 완료')}`}
+                {`${selectedImages.length} ${t('개 선택')}`}
               </BasicButton>
             </S.ButtonContainer>
           </S.Footer>

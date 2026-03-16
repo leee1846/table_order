@@ -43,8 +43,6 @@ interface BreakTimeRow {
   selectedDays: number[];
 }
 
-const TIME_OPTIONS = generateTimeOptions();
-
 /** 첫주문 금액 입력 최대값 (999,999,999원) */
 const MAX_FIRST_ORDER_MIN_AMOUNT = 999999999;
 
@@ -57,6 +55,8 @@ export const MenuAppFeature = ({
   onChange,
 }: MenuAppFeatureProps) => {
   const { t } = useAdminTranslation();
+  const timeOptions = useMemo(() => generateTimeOptions(t), [t]);
+
   const days = useMemo(() => getDays(t), [t]);
   const dayValues = useMemo(() => days.map(({ value }) => value), [days]);
   const [isOrderable, setIsOrderable] = useState(false);
@@ -616,23 +616,25 @@ export const MenuAppFeature = ({
                   <S.TimeDisplay>
                     <S.TimeSelectWrapper>
                       <Dropdown
-                        options={TIME_OPTIONS}
+                        options={timeOptions}
                         value={row.startTime || null}
                         onChange={(value) => {
                           updateRow({ startTime: String(value) });
                         }}
                         customStyle={S.TimeDropdownStyle}
+                        placeholder={t('선택')}
                       />
                     </S.TimeSelectWrapper>
                     <span>-</span>
                     <S.TimeSelectWrapper>
                       <Dropdown
-                        options={TIME_OPTIONS}
+                        options={timeOptions}
                         value={row.endTime || null}
                         onChange={(value) => {
                           updateRow({ endTime: String(value) });
                         }}
                         customStyle={S.TimeDropdownStyle}
+                        placeholder={t('선택')}
                       />
                     </S.TimeSelectWrapper>
                   </S.TimeDisplay>

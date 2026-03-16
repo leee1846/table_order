@@ -55,10 +55,10 @@ export const DeviceListDialog = ({
 }: DeviceListDialogProps) => {
   const { t } = useAdminTranslation();
   const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
-  
+
   // 각 디바이스의 이전 controlStatus를 추적 (useRef로 변경하여 의존성 문제 해결)
   const prevControlStatusRef = useRef<Record<string, string | null>>({});
-  
+
   // FAIL 표시 상태 (3초 동안 실패 유형과 함께 표시)
   const [showFailStatus, setShowFailStatus] = useState<
     Record<string, 'UPDATING' | 'REBOOTING' | null>
@@ -390,7 +390,7 @@ export const DeviceListDialog = ({
                     // FAIL 상태 표시 여부 확인
                     const failType = showFailStatus[device.androidId];
                     const isShowingFail = !!failType;
-                    
+
                     // controlStatus 결정: FAIL 표시 중에도 비활성화 유지
                     const isControlDisabled = isShowingFail
                       ? true // FAIL 표시 중(3초 동안)에도 카드 비활성화 유지
@@ -430,16 +430,14 @@ export const DeviceListDialog = ({
 
                         <S.CardSectionWrapper>
                           <S.CardSection>
-                            <S.SectionLabel>
-                              {t('와이파이 신호')}
-                            </S.SectionLabel>
+                            <S.SectionLabel>{t('Wi-Fi 신호')}</S.SectionLabel>
                             <S.SectionValue tone={wifiTone}>
                               {formatWifiSignal(device.wifiSignal, t)}
                             </S.SectionValue>
                           </S.CardSection>
 
                           <S.CardSection>
-                            <S.SectionLabel>{t('기기 버전')}</S.SectionLabel>
+                            <S.SectionLabel>{t('기기버전')}</S.SectionLabel>
                             <S.SectionValue>
                               {device.version ? `v.${device.version}` : '-'}
                             </S.SectionValue>
@@ -451,7 +449,7 @@ export const DeviceListDialog = ({
                             <S.FooterValue>{device.ipAddress}</S.FooterValue>
                           </S.FooterItem>
                           <S.FooterItem>
-                            <S.FooterLabel>{t('빌드 번호')}</S.FooterLabel>
+                            <S.FooterLabel>{t('빌드번호')}</S.FooterLabel>
                             <S.FooterValue>
                               {device.buildNumber || '-'}
                             </S.FooterValue>

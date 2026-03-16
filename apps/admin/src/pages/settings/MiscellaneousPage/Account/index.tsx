@@ -65,7 +65,7 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
             <S.UserId>{userId}</S.UserId>
             <S.SID>
               {/* SID =  shopCode*/}
-              <span>매장 아이디</span>
+              <span>{t('매장 아이디')}</span>
               <span>{shopCode}</span>
             </S.SID>
           </S.Content>

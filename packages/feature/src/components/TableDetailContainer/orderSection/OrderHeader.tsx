@@ -122,7 +122,11 @@ export function OrderHeader({
     <Header>
       <LeftBox>
         <Title>{title}</Title>
-        {useCustomerCount && <GuestCount>인원: {numberOfPeople}</GuestCount>}
+        {useCustomerCount && (
+          <GuestCount>
+            {t('인원')} : {numberOfPeople}
+          </GuestCount>
+        )}
       </LeftBox>
       <RightBox>
         {useTableOccupancyTime ? (

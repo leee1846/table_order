@@ -1,7 +1,7 @@
 'use client';
 
 import type { i18n as I18nInstance } from 'i18next';
-import { useState, useMemo, useEffect, useLayoutEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as S from './tableDetailContainer.styles';
 import { OrderPanel } from './orderSection/OrderPanel';
@@ -241,7 +241,7 @@ export const TableDetailContainer = ({
 
     openDualActionDialog({
       title: t('전체 메뉴를 삭제하시겠어요?'),
-      primaryText: t('네'),
+      primaryText: t('예'),
       secondaryText: t('아니오'),
       onConfirm: async () => {
         //중복 요청 방지

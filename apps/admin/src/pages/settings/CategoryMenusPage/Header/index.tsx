@@ -45,11 +45,11 @@ export const Header = ({
               '메뉴 일괄 번역 기능을 사용하면 모든 메뉴가 영어, 중국어, 일어, 러시아어로 자동 번역됩니다. 번역된 내용 중 일부는 실제 의미와 다르게 번역될 수 있으며, 수동으로 수정이 가능합니다. 메뉴 자동 번역을 사용하시겠습니까?'
             )}
           </S.Content>
-          <S.Span>*현재 러시아어는 지원하지 않습니다.</S.Span>
+          <S.Span>*{t('현재 러시아어는 지원하지 않습니다.')}</S.Span>
         </S.ModalContent>
       ),
       primaryText: t('번역하기'),
-      secondaryText: '취소',
+      secondaryText: t('취소'),
       onConfirm: async () => {
         if (!shopCode) {
           return;

@@ -71,7 +71,7 @@ export const Sidebar = () => {
     openDualActionDialog({
       title: t('앱을 종료하시겠습니까?'),
       primaryText: t('예'),
-      secondaryText: t('아니요'),
+      secondaryText: t('아니오'),
       size: 'small',
       onConfirm: async () => {
         await SystemControl.exitApp();

@@ -30,7 +30,7 @@ export const PaymentSection = ({ order }: Props) => {
   const paidAmount = totalAmount - canceledAmount;
 
   // 현금과 카드가 모두 있는 경우 복합결제
-  const paymentLabel = formatPaymentMethodLabel(order.paymentMethod);
+  const paymentLabel = t(formatPaymentMethodLabel(order.paymentMethod));
 
   return (
     <S.Container>

@@ -67,7 +67,7 @@ export const Menu = ({
       title: t('메뉴 삭제'),
       content: `"${menu.menuName}" 메뉴를 삭제하시겠습니까?`,
       primaryText: t('예'),
-      secondaryText: t('아니요'),
+      secondaryText: t('아니오'),
       size: 'xsmall',
       onConfirm: () => {
         deleteMenuMutation.mutate(
