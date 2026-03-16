@@ -68,6 +68,7 @@ const Row = styled.div`
     font-weight: 700;
     line-height: 35.998px; /* 138.462% */
     letter-spacing: -0.65px;
+    text-wrap: nowrap;
   }
 `;
 
