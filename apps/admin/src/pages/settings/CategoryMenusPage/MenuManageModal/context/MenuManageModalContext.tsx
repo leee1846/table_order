@@ -237,6 +237,18 @@ export const MenuManageModalProvider = ({
       return;
     }
 
+    const files = images.getFiles();
+    const hasSvgFile = files.some(
+      (file) =>
+        file.name.toLowerCase().endsWith('.svg') ||
+        file.type === 'image/svg+xml'
+    );
+
+    if (hasSvgFile) {
+      toast(t('파일 확장자는 .jpg, .jpeg, .png, .webp 만 지원합니다.'));
+      return;
+    }
+
     setIsSaving(true);
 
     try {
