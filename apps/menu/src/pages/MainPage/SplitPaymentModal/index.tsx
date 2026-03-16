@@ -44,6 +44,7 @@ const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 const HTTP_STATUS_BAD_REQUEST = 400;
 const HTTP_STATUS_SERVER_ERROR = 500;
 const HTTP_STATUS_NOT_FOUND = 404;
+const HTTP_STATUS_METHOD_NOT_ALLOWED = 405;
 const TOAST_DURATION = 1500;
 const TOAST_POSITION = 'center-center' as const;
 const INITIAL_PERSON_COUNT = 2;
@@ -202,7 +203,12 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
 
   const { mutateAsync: createTableOrder } = usePostTableOrder({
-    ignoreGlobalErrors: [HTTP_STATUS_BAD_REQUEST],
+    ignoreGlobalErrors: [
+      HTTP_STATUS_BAD_REQUEST,
+      HTTP_STATUS_SERVER_ERROR,
+      HTTP_STATUS_NOT_FOUND,
+      HTTP_STATUS_METHOD_NOT_ALLOWED,
+    ],
   });
   const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
 
@@ -431,11 +437,6 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
     // 5. UUID가 없으면 에러 처리
     if (!orderGroupUuid || !orderUuid) {
-      openConfirmDialog({
-        title: t('오류'),
-        content: t('주문 생성에 실패했습니다.'),
-        confirmText: t('확인'),
-      });
       throw new Error('주문 생성에 실패했습니다.');
     }
 
@@ -494,9 +495,18 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       });
 
       // 4. 주문 생성 또는 재사용 (첫 결제 시에만 생성)
-      const { orderGroupUuid, orderUuid } = await ensureOrderCreated();
+      let orderGroupUuid: string;
+      let orderUuid: string;
+      try {
+        const orderResult = await ensureOrderCreated();
+        orderGroupUuid = orderResult.orderGroupUuid;
+        orderUuid = orderResult.orderUuid;
+      } catch {
+        await Payment.cancel(paymentResult);
+        throw new Error(t('결제 처리 중 오류가 발생했습니다.'));
+      }
 
-      // 5. 서버에 결제 승인 정보 전송
+      // 5. 서버에 결제 승인 정보 전송 (실패 시 에러 무시)
       try {
         const shopDetailData = useShopDetailStore.getState().data;
         await postPaymentApproval({
@@ -513,15 +523,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
           ],
         });
       } catch {
-        // postPaymentApproval 실패 시 앱 결제 취소 요청
-        await Payment.cancel({
-          amount: paymentAmount,
-          orgApprNum: paymentResult.APPROVAL_NUM,
-          orgApprDate: paymentResult.APPROVAL_DATE.substring(0, 6),
-          tranNo: paymentResult.TRAN_NO,
-        });
-
-        throw new Error(t('결제 처리 중 오류가 발생했습니다.'));
+        // postPaymentApproval 실패는 무시
       }
 
       // 6. 성공 콜백 실행 (setState 반영 전에 사용하기 위해 orderGroupUuid 인자로 전달)

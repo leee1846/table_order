@@ -12,24 +12,16 @@ export interface IPaymentEventData {
  * 결제 승인 요청 옵션
  */
 export interface IPaymentApproveOptions {
-  /** 결제 금액 (필수) */
+  /** 총 결제 금액 (필수) */
   amount: string | number;
-  /** 할부 개월 (00:일시불, 02~24: 2~24개월, 36/48/60: 해당 개월) */
+  /** 부가세 금액 (필수). 미입력 시 총액의 10% 자동 계산 */
+  tax?: string | number;
+  /** 봉사료 금액 (필수). 미입력 시 "0" */
+  tip?: string | number;
+  /** 할부유무 (필수): "0" 일시불, "02"~"24" 등 N개월 */
   installment?: string;
-}
-
-/**
- * 결제 취소 요청 옵션
- */
-export interface IPaymentCancelOptions {
-  /** 취소 금액 (필수) */
-  amount: string | number;
-  /** 원승인번호 (필수) */
-  orgApprNum: string;
-  /** 원승인일자 YYMMDD 형식 (필수) */
-  orgApprDate: string;
-  /** 원 거래번호 (필수) */
-  tranNo: string;
+  /** 단말기구분 (필수): '40' 일반거래. 미입력 시 '40' */
+  terminalType?: '40' | 'TK' | 'RD' | 'BU' | 'VP' | 'MP' | 'HP';
 }
 
 /**
@@ -49,22 +41,53 @@ export interface IDownloadMerchantOptions {
 }
 
 /**
- * 결제 요청 파라미터 (네이티브로 전달되는 형식)
+ * 결제 요청 파라미터 (네이티브 전달 형식, 소문자)
+ * - D1: 승인, D4: 당일/전일취소, RB: 직전거래통신취소(망취소)
  */
 interface IPaymentRequestParams {
-  tran_type: 'D1' | 'D4';
+  /** tran_type 거래구분자 (ESSENTIAL) */
+  tran_type: 'D1' | 'D4' | 'RB';
+  /** terminal_type 단말기구분 (ESSENTIAL): '40' 일반거래 등 */
+  terminal_type?: string;
+  /** total_amount 총 결제 금액 (ESSENTIAL, 9 BYTE) */
   amount: string;
+  /** tax 부가세 금액 (ESSENTIAL, 9 BYTE) */
   tax?: string;
+  /** tip 봉사료 금액 (ESSENTIAL, 9 BYTE) */
+  tip?: string;
+  /** installment 할부유무 (ESSENTIAL): "0" 일시불, "N" N개월 */
   installment: string;
-  tran_no: string;
+  /** tran_no 거래번호 (OPTIONAL). RB 취소 시 해당 거래 구분 */
+  tran_no?: string;
+  /** approval_num 승인번호 (OPTIONAL). D4 취소 시 필수 */
   approval_num?: string;
+  /** approval_date 승인일자 (OPTIONAL). D4 취소 시 필수 */
   approval_date?: string;
+  /** cancel 시 원거래 응답 전체 전달 */
+  tran_serial_no?: string;
+  card_num?: string;
+  card_name?: string;
+  issuer_code?: string;
+  result_code?: string;
+  result_msg?: string;
+  acquirer_code?: string;
+  acquirer_name?: string;
+  ad1?: string;
+  ad2?: string;
+  merchant_num?: string;
+  shop_tid?: string;
+  shop_biz_num?: string;
+  cashamount?: string;
+  tpk?: string;
+  shop_name?: string;
+  version?: string;
 }
 
 /**
  * 결제 응답 데이터
  */
 export interface IPaymentResponse {
+  TRAN_SERIALNO: string;
   TRAN_NO: string;
   TRAN_TYPE: string;
   CARD_NUM: string;
@@ -80,9 +103,13 @@ export interface IPaymentResponse {
   APPROVAL_DATE: string;
   ACQUIRER_CODE: string;
   ACQUIRER_NAME: string;
+  AD1: string;
+  AD2: string;
   MERCHANT_NUM: string;
   SHOP_TID: string;
   SHOP_BIZ_NUM: string;
+  CASHAMOUNT: string;
+  TPK: string;
   SHOP_NAME: string;
   VERSION: string;
 }
@@ -159,14 +186,11 @@ export interface IPayment {
   approve(options: IPaymentApproveOptions): Promise<IPaymentResponse>;
 
   /**
-   * [취소 요청] 신용카드 취소 (D4)
-   * @param options - 취소 옵션
-   * @param options.amount - 취소 금액 (필수)
-   * @param options.orgApprNum - 원승인번호 (필수)
-   * @param options.orgApprDate - 원승인일자 YYMMDD 형식 (필수)
+   * [취소 요청] 직전거래 통신취소 (RB) - approve() 반환값으로 취소
+   * @param approvalResult - approve() 호출 시 반환된 결제 응답 (TRAN_NO로 거래 취소)
    * @returns 취소 성공 데이터
    */
-  cancel(options: IPaymentCancelOptions): Promise<IPaymentResponse>;
+  cancel(approvalResult: IPaymentResponse): Promise<IPaymentResponse>;
 
   /**
    * [결제 중단] 진행 중인 결제 프로세스 강제 종료 (STOP)
@@ -207,23 +231,21 @@ export const Payment: IPayment = {
     const amt = options.amount.toString();
 
     const result = await NativePayment.requestPaymentActivity({
-      // 부가세 자동 계산 (옵션 없으면 10% 자동)
       tran_type: 'D1',
+      terminal_type: options.terminalType ?? '40',
       amount: amt,
-      installment: options.installment || '00',
-      tran_no: Date.now().toString(),
+      installment: options.installment ?? '00',
     });
     return result;
   },
 
-  cancel: async (options) => {
+  cancel: async (approvalResult) => {
     const result = await NativePayment.requestPaymentActivity({
-      tran_type: 'D4',
-      amount: options.amount.toString(),
-      approval_num: options.orgApprNum,
-      approval_date: options.orgApprDate, // YYMMDD 형식
-      installment: '00', // 취소는 항상 일시불 처리
-      tran_no: options.tranNo,
+      tran_type: 'RB',
+      terminal_type: '40',
+      amount: approvalResult.TOTAL_AMOUNT,
+      installment: approvalResult.INSTALLMENT,
+      tran_no: approvalResult.TRAN_NO,
     });
     return result;
   },

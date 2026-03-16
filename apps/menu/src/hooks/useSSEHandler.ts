@@ -728,7 +728,9 @@ export const useSSEHandler = () => {
       }
       await initializeSseConnection();
     };
+
     run();
+
     return () => {
       cancelled = true;
       globalTimerManager.clear(TIMER_KEYS.TABLE_REMOVAL_CHECK);

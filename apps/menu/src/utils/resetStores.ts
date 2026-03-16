@@ -18,6 +18,9 @@ import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStore';
+import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
+import { usePosSyncOverlayStore } from '@/stores/usePosSyncOverlayStore';
+import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 
 const storesWithClearData = [
   useShopStore,
@@ -43,4 +46,7 @@ export const resetAllStores = () => {
   useShopThemeStore.getState().clearShopThemeData();
   useCartStore.getState().clearCart();
   useModalStore.getState().closeAllModals();
+  useRequestAdminAccessModalStore.getState().setShow(false);
+  usePosSyncOverlayStore.getState().hide();
+  useOrderPendingPosStore.getState().clearPendingOrder();
 };

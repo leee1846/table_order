@@ -36,6 +36,7 @@ const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 const HTTP_STATUS_BAD_REQUEST = 400;
 const HTTP_STATUS_SERVER_ERROR = 500;
 const HTTP_STATUS_NOT_FOUND = 404;
+const HTTP_STATUS_METHOD_NOT_ALLOWED = 405;
 
 interface CardPaymentInstallmentModalProps {
   onClose: () => void;
@@ -92,7 +93,12 @@ export const CardPaymentInstallmentModal = ({
   const { clearCart } = useCartStore();
 
   const { mutateAsync: createTableOrder } = usePostTableOrder({
-    ignoreGlobalErrors: [HTTP_STATUS_BAD_REQUEST],
+    ignoreGlobalErrors: [
+      HTTP_STATUS_BAD_REQUEST,
+      HTTP_STATUS_SERVER_ERROR,
+      HTTP_STATUS_NOT_FOUND,
+      HTTP_STATUS_METHOD_NOT_ALLOWED,
+    ],
   });
   const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
 
@@ -164,11 +170,6 @@ export const CardPaymentInstallmentModal = ({
     const orderUuid = orderResponse?.data?.orderInfoList[0]?.orderUuid;
 
     if (!orderGroupUuid || !orderUuid) {
-      openConfirmDialog({
-        title: t('오류'),
-        content: t('주문 생성에 실패했습니다.'),
-        confirmText: t('확인'),
-      });
       throw new Error('주문 생성에 실패했습니다.');
     }
 
@@ -186,7 +187,15 @@ export const CardPaymentInstallmentModal = ({
       installment: formatInstallmentMonthsToString(selectedInstallmentMonths),
     });
 
-    const { orderGroupUuid, orderUuid } = await createOrder();
+    let orderResult;
+    try {
+      orderResult = await createOrder();
+    } catch {
+      await Payment.cancel(paymentResult);
+      throw new Error('결제 처리 중 오류가 발생했습니다.');
+    }
+
+    const { orderGroupUuid, orderUuid } = orderResult;
 
     try {
       await postPaymentApproval({
@@ -204,15 +213,7 @@ export const CardPaymentInstallmentModal = ({
         ],
       });
     } catch {
-      // postPaymentApproval 실패 시 앱 결제 취소 요청
-      await Payment.cancel({
-        amount: totalPrice,
-        orgApprNum: paymentResult.APPROVAL_NUM,
-        orgApprDate: paymentResult.APPROVAL_DATE.substring(0, 6),
-        tranNo: paymentResult.TRAN_NO,
-      });
-
-      throw new Error('결제 처리 중 오류가 발생했습니다.');
+      // postPaymentApproval 실패는 무시
     }
 
     return { paymentResult, orderGroupUuid };
