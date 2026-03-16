@@ -245,6 +245,7 @@ export interface IOneDaySales {
   cancelAmount: number;
   status: string;
   paymentMethod: string;
+  tableName: string;
 }
 
 export interface IGetOneDaySalesParams {

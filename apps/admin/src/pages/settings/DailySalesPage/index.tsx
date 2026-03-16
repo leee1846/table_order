@@ -34,6 +34,7 @@ const buildPaymentRows = (
   oneDaySales: Array<{
     transactionTime: string;
     tableNumber: string;
+    tableName: string;
     totalSales: number;
     actualSales: number;
     discountAmount: number;
@@ -56,7 +57,7 @@ const buildPaymentRows = (
     return {
       id: `${saleDate}-${index}`,
       paymentTime,
-      tableName: sale.tableNumber,
+      tableName: sale.tableName,
       totalSales: sale.totalSales,
       actualSales: sale.actualSales,
       discountAmount: sale.discountAmount,
