@@ -234,6 +234,10 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const [selectedInstallmentMonths, setSelectedInstallmentMonths] =
     useState<number>(INSTALLMENT_LUMP_SUM);
 
+  /** 결제만 완료된 미연결 결제. ensureOrderCreated 실패 후 cancel 실패 시 세팅, 다음 결제 시 RB 취소 후 제거 */
+  const [pendingPaymentCancel, setPendingPaymentCancel] =
+    useState<IPaymentResponse | null>(null);
+
   // 할부 선택 모달 상태
   const [isInstallmentModalOpen, setIsInstallmentModalOpen] =
     useState<boolean>(false);
@@ -479,6 +483,18 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     onSuccess: (orderGroupUuidFromPayment: string) => void
   ): Promise<void> => {
     try {
+      // 결제만 완료된 미연결 결제(이전 재시도 실패 분)가 있으면 RB 취소 후 제거 (중복 결제 방지)
+      if (pendingPaymentCancel) {
+        if (pendingPaymentCancel.TRAN_NO) {
+          try {
+            await Payment.cancel(pendingPaymentCancel);
+          } catch {
+            throw new Error(t('결제 처리 중 오류가 발생했습니다.'));
+          }
+        }
+        setPendingPaymentCancel(null);
+      }
+
       // 1. 결제 진행 모달 표시
       setModalData('isCardPaymentProgressModalOpened', true);
 
@@ -502,7 +518,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         orderGroupUuid = orderResult.orderGroupUuid;
         orderUuid = orderResult.orderUuid;
       } catch {
-        await Payment.cancel(paymentResult);
+        try {
+          await Payment.cancel(paymentResult);
+        } catch {
+          setPendingPaymentCancel(paymentResult);
+        }
         throw new Error(t('결제 처리 중 오류가 발생했습니다.'));
       }
 

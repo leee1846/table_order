@@ -106,6 +106,9 @@ export const CardPaymentInstallmentModal = ({
   //   useState<string>('');
   const [selectedInstallmentMonths, setSelectedInstallmentMonths] =
     useState<number>(INSTALLMENT_LUMP_SUM);
+  /** 결제만 완료된 미연결 결제. createOrder 실패 후 cancel 실패 시 세팅, 다음 결제 시 RB 취소 후 제거 */
+  const [pendingPaymentCancel, setPendingPaymentCancel] =
+    useState<IPaymentResponse | null>(null);
 
   // const paymentListenerRef = useRef<{ remove: () => Promise<void> } | null>(
   //   null
@@ -180,6 +183,18 @@ export const CardPaymentInstallmentModal = ({
     paymentResult: IPaymentResponse;
     orderGroupUuid: string;
   }> => {
+    // 결제만 완료된 미연결 결제(이전 재시도 실패 분)가 있으면 RB 취소 후 제거 (중복 결제 방지)
+    if (pendingPaymentCancel && pendingPaymentCancel.TRAN_NO) {
+      try {
+        await Payment.cancel(pendingPaymentCancel);
+      } catch {
+        // 취소 실패 시 pending 유지 → 사용자에게 에러 후 재시도 시 다시 취소 시도
+        throw new Error('환불 처리 중 오류가 발생했습니다.');
+      }
+
+      setPendingPaymentCancel(null);
+    }
+
     modalStore.setModalData('isCardPaymentProgressModalOpened', true);
 
     const paymentResult: IPaymentResponse = await Payment.approve({
@@ -191,7 +206,12 @@ export const CardPaymentInstallmentModal = ({
     try {
       orderResult = await createOrder();
     } catch {
-      await Payment.cancel(paymentResult);
+      try {
+        await Payment.cancel(paymentResult);
+      } catch {
+        // 취소 실패(네트워크 끊김 등) 시 state에 보관 → 모달에서 재시도 시 위에서 RB 취소
+        setPendingPaymentCancel(paymentResult);
+      }
       throw new Error('결제 처리 중 오류가 발생했습니다.');
     }
 
