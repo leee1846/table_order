@@ -22,7 +22,8 @@ export type TOrderType =
   | 'ORDER_POS'
   | 'POS_APP'
   | 'POS'
-  | 'PREPAYMENT';
+  | 'PREPAYMENT'
+  | 'ADMIN';
 
 /**
  * 픽업 알림 전송 응답 타입 (IApiResponse 래핑)

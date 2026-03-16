@@ -90,9 +90,10 @@ export const OrderListDialog = ({
   const ORDER_CHANNEL_LABELS: Record<TOrderType, string> = {
     MENU: t('메뉴판'),
     ORDER_POS: t('오더포스'),
-    POS_APP: t('포스앱'),
+    POS_APP: t('관리자'),
     POS: t('연동포스'),
     PREPAYMENT: t('메뉴판'),
+    ADMIN: t('관리자'),
   };
 
   const PAYMENT_STATUS_LABELS: Record<TOrderPaymentStatus, string> = {
