@@ -109,14 +109,14 @@ export const Header = ({
     };
 
     /**
-     * 남은 시간을 계산하여 "MM분SS초" 형식으로 반환
+     * 남은 시간을 계산하여 "MM분SS초" 형식으로 반환 (현재 언어 기준)
      */
     const formatRemainingTime = (targetDate: Date): string => {
       const now = new Date();
       const diffMs = targetDate.getTime() - now.getTime();
 
       if (diffMs <= 0) {
-        return '0초';
+        return `0${t('초')}`;
       }
 
       const totalSeconds = Math.floor(diffMs / 1000);
@@ -125,18 +125,18 @@ export const Header = ({
 
       // 0분일 경우 "초"만 표시
       if (minutes === 0) {
-        return `${seconds}초`;
+        return `${seconds}${t('초')}`;
       }
 
-      return `${minutes}분${seconds}초`;
+      return `${minutes}${t('분')}${seconds}${t('초')}`;
     };
 
     /**
-     * 시간을 "HH시MM분" 형식으로 반환
+     * 시간을 "HH시MM분" 형식으로 반환 (현재 언어 기준)
      */
     const formatTimeToHHMM = (timeStr: string): string => {
       const [hours, minutes] = timeStr.split(':').map(Number);
-      return `${String(hours).padStart(2, '0')}시${String(minutes).padStart(2, '0')}분`;
+      return `${String(hours).padStart(2, '0')}${t('시')}${String(minutes).padStart(2, '0')}${t('시간 분')}`;
     };
 
     /**
@@ -144,11 +144,12 @@ export const Header = ({
      */
     const updateMessage = () => {
       let targetTimeStr = '';
-      let messagePrefix = '';
+      let messagePrefixKey: '라스트오더' | '브레이크타임' | '영업마감' | '' =
+        '';
 
       // 라스트오더 알림 상태
       if (isBreakTimeLastOrderAlert || isClosureLastOrderAlert) {
-        messagePrefix = '라스트오더';
+        messagePrefixKey = '라스트오더';
         targetTimeStr = isBreakTimeLastOrderAlert
           ? breakLastOrderTime || ''
           : closureLastOrderTime || '';
@@ -156,15 +157,15 @@ export const Header = ({
       // 라스트오더 상태
       else if (isBreakTimeLastOrder || isClosureLastOrder) {
         if (isBreakTimeLastOrder) {
-          messagePrefix = '브레이크타임';
+          messagePrefixKey = '브레이크타임';
         } else if (isClosureLastOrder) {
-          messagePrefix = '영업마감';
+          messagePrefixKey = '영업마감';
         }
         targetTimeStr = isBreakTimeLastOrder
           ? breakTimeStartTime || ''
           : closureStartTime || '';
       }
-      if (!targetTimeStr) {
+      if (!targetTimeStr || !messagePrefixKey) {
         setAlertMessage('');
         return;
       }
@@ -172,8 +173,16 @@ export const Header = ({
       const targetDate = parseTimeString(targetTimeStr);
       const remainingTime = formatRemainingTime(targetDate);
       const formattedTime = formatTimeToHHMM(targetTimeStr);
-
-      const message = `${messagePrefix}까지 ${remainingTime}남았습니다. ${messagePrefix} 시간은 ${formattedTime}입니다.`;
+      const messageKey =
+        messagePrefixKey === '라스트오더'
+          ? '라스트오더까지 {{remaining}}남았습니다. 라스트오더 시간은 {{time}}입니다.'
+          : messagePrefixKey === '브레이크타임'
+            ? '브레이크타임까지 {{remaining}}남았습니다. 브레이크타임 시간은 {{time}}입니다.'
+            : '영업마감까지 {{remaining}}남았습니다. 영업마감 시간은 {{time}}입니다.';
+      const message = t(messageKey, {
+        remaining: remainingTime,
+        time: formattedTime,
+      });
       setAlertMessage(message);
     };
     // 초기 문구 설정
@@ -190,6 +199,7 @@ export const Header = ({
       globalTimerManager.clear(TIMER_KEYS.HEADER_ALERT_MESSAGE_UPDATE);
     };
   }, [
+    t,
     isBreakTimeLastOrderAlert,
     isClosureLastOrderAlert,
     isBreakTimeLastOrder,
