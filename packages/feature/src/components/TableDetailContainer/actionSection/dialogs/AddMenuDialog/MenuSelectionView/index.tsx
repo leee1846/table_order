@@ -209,15 +209,17 @@ export const MenuSelectionView = ({
           </S.MenuGrid>
           {/* 중앙 사이드바 - 카테고리 */}
           <S.Sidebar>
-            {categories.map((category) => (
-              <S.CategoryItem
-                key={category.categorySeq}
-                onClick={() => onCategoryChange(category.categorySeq)}
-                isActive={selectedCategory === category.categorySeq}
-              >
-                {category.categoryName}
-              </S.CategoryItem>
-            ))}
+            <S.CategoryList>
+              {categories.map((category) => (
+                <S.CategoryItem
+                  key={category.categorySeq}
+                  onClick={() => onCategoryChange(category.categorySeq)}
+                  isActive={selectedCategory === category.categorySeq}
+                >
+                  {category.categoryName}
+                </S.CategoryItem>
+              ))}
+            </S.CategoryList>
           </S.Sidebar>
         </S.ContentWrapper>
       </A.DialogContainer>

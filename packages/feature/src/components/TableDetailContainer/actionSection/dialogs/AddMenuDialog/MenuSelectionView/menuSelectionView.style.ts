@@ -11,12 +11,17 @@ export const ContentWrapper = styled.div`
 
 export const Sidebar = styled.div`
   flex: 1;
-  padding: 70px 24px 40px;
+  padding: 70px 22px 40px;
+  background-color: ${colors.grey[200]};
+`;
+
+export const CategoryList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  overflow-y: auto;
-  background-color: ${colors.grey[200]};
+  overflow-y: scroll;
+  height: 100%;
+  background-color: transparent;
 `;
 
 export const CategoryItem = styled.button<{ isActive: boolean }>`
@@ -107,7 +112,6 @@ export const SelectedItemsList = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
 `;
 
 export const SelectedItem = styled.div`
