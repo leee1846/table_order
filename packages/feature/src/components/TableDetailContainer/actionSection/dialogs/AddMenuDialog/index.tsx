@@ -395,13 +395,7 @@ export const AddMenuDialog = ({
       onOrderCreated?.(response.data.orderGroupUuid);
 
       // 모달 닫기
-      setSelectedMenus([]);
-      setSelectedCategory(defaultCategorySeq);
-      setSelectedMenu(null);
-      setSelectedOptions(new Map());
-      setMenuQuantity(1);
-      setViewMode('menu');
-      onClose();
+      handleClose();
       return;
     }
 
