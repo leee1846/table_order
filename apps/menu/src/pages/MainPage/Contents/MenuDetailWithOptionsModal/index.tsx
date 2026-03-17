@@ -386,7 +386,7 @@ export const MenuDetailWithOptionsModal = ({
         {quantityInfo && ` ${quantityInfo}`}
         {hasQuantityConstraint && (
           <span>
-            {minQuantity > 0 && '필수 / '}
+            {minQuantity > 0 && `${t('필수')} / `}
             {t('수량제한')}
           </span>
         )}
