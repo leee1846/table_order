@@ -1,4 +1,4 @@
-import { t } from '@/config/i18n';
+import { useAdminTranslation } from '@/config/i18n';
 import {
   AddIcon,
   HomeFilledIcon,
@@ -40,6 +40,7 @@ export const Sidebar = ({
   onTableGroupSelect,
   isPosLinked,
 }: SidebarProps) => {
+  const { t, i18n } = useAdminTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { mutateAsync: deleteTableGroup } = useDeleteTableGroup();
@@ -250,6 +251,7 @@ export const Sidebar = ({
       <S.AddGroupButtonContainer>
         <S.AddGroupButton
           type="button"
+          $isKorean={i18n.language === 'KO'}
           onClick={() => {
             if (isPosLinked) {
               return;

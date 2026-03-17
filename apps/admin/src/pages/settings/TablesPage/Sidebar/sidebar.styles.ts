@@ -1,4 +1,4 @@
-﻿import { SidebarContainer, Logo } from '@repo/ui/components';
+import { SidebarContainer, Logo } from '@repo/ui/components';
 import { theme, TYPOGRAPHY } from '@repo/ui';
 import styled from '@emotion/styled';
 
@@ -108,17 +108,21 @@ export const AddGroupButtonContainer = styled.div`
   flex-shrink: 0;
 `;
 
-export const AddGroupButton = styled.button`
+export const AddGroupButton = styled.button<{ $isKorean?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
   cursor: pointer;
-  white-space: nowrap;
+  text-wrap: ${({ $isKorean }) => ($isKorean ? 'nowrap' : 'pretty')};
   ${TYPOGRAPHY.ST_3}
   background-color: ${colors.grey[700]};
   padding: 10px 16px;
   border-radius: 12px;
+
+  > svg {
+    flex-shrink: 0;
+  }
 
   span {
     color: ${colors.white};

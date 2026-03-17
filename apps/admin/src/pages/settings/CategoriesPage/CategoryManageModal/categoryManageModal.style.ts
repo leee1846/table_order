@@ -17,6 +17,7 @@ export const Container = styled.div`
   position: relative;
   background-color: ${theme.colors.white};
   width: auto;
+  max-width: 100vw;
   padding: 24px;
   border-radius: 1rem;
 `;
