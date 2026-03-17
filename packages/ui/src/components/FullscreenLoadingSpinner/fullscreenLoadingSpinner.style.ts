@@ -14,18 +14,10 @@ export const Container = styled.div`
   background-color: transparent;
 `;
 
-const colorFilterMap: Record<string, string> = {
-  green: 'hue-rotate(120deg)',
-  orange: 'hue-rotate(30deg)',
-  purple: 'hue-rotate(270deg)',
-  red: 'hue-rotate(330deg)',
-};
-
-export const SpinnerWrapper = styled.div<{ size: number; color?: string }>`
+export const SpinnerWrapper = styled.div<{ size: number }>`
   width: ${({ size }) => size}px;
   height: ${({ size }) => size}px;
   display: flex;
   justify-content: center;
   align-items: center;
-  ${({ color }) => color && colorFilterMap[color] && `filter: ${colorFilterMap[color]};`}
 `;

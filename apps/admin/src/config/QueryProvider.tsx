@@ -34,17 +34,11 @@ function GlobalLoadingIndicator() {
     isSSEReconnecting ||
     isWaitingForPosOrderComplete;
 
-  const loadingColor = isWaitingForPosOrderComplete
-    ? 'orange'
-    : isSSEReconnecting
-      ? 'green'
-      : undefined;
-
   if (!isLoading) {
     return null;
   }
 
-  return <FullscreenLoadingSpinner color={loadingColor} />;
+  return <FullscreenLoadingSpinner />;
 }
 
 export function QueryProvider({ children }: Props) {
