@@ -283,3 +283,19 @@ export const postOrderOnboardingTest = async (
 
   return response.data;
 };
+
+export const getOrderPosCallbackCheck = async (
+  shopCode: string,
+  orderUuid: string
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'GET',
+    url: ENDPOINTS.ORDER.ORDER_POS_CALLBACK_CHECK(shopCode),
+    params: {
+      orderUuid,
+    },
+  });
+
+  return response.data;
+};

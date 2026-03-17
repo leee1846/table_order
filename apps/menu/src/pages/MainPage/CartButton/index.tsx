@@ -88,6 +88,7 @@ export const CartButton = ({ categories }: Props) => {
    */
   const executePostpaidOrder = async (): Promise<{
     orderGroupUuid: string;
+    orderUuid: string;
     result: boolean;
     totalPrice: number;
   }> => {
@@ -120,12 +121,14 @@ export const CartButton = ({ categories }: Props) => {
       return {
         result: true,
         orderGroupUuid: response?.data?.orderGroupUuid ?? '',
+        orderUuid: response?.data?.orderInfoList.at(-1)?.orderUuid ?? '',
         totalPrice,
       };
     } catch (_error) {
       return {
         result: false,
         orderGroupUuid: '',
+        orderUuid: '',
         totalPrice: 0,
       };
     }

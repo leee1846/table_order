@@ -19,7 +19,7 @@ import type { IOrder } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
-import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
+import { usePosOrderStore } from '@repo/feature/stores';
 import {
   INSTALLMENT_MINIMUM_AMOUNT,
   INSTALLMENT_LUMP_SUM,
@@ -86,7 +86,6 @@ export const CardPaymentInstallmentModal = ({
   const modalStore = useModalStore();
 
   const { data: shopData } = useShopStore();
-  const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
 
   const { data: cartData } = useCartStore();
   const { data: customerCountData } = useCustomerCountStore();
@@ -170,7 +169,7 @@ export const CardPaymentInstallmentModal = ({
     });
 
     const orderGroupUuid = orderResponse?.data?.orderGroupUuid;
-    const orderUuid = orderResponse?.data?.orderInfoList[0]?.orderUuid;
+    const orderUuid = orderResponse?.data?.orderInfoList.at(-1)?.orderUuid;
 
     if (!orderGroupUuid || !orderUuid) {
       throw new Error('주문 생성에 실패했습니다.');
@@ -182,6 +181,7 @@ export const CardPaymentInstallmentModal = ({
   const processPayment = async (): Promise<{
     paymentResult: IPaymentResponse;
     orderGroupUuid: string;
+    orderUuid: string;
   }> => {
     // 결제만 완료된 미연결 결제(이전 재시도 실패 분)가 있으면 RB 취소 후 제거 (중복 결제 방지)
     if (pendingPaymentCancel && pendingPaymentCancel.TRAN_NO) {
@@ -247,7 +247,7 @@ export const CardPaymentInstallmentModal = ({
       // postPaymentApproval 실패는 무시
     }
 
-    return { paymentResult, orderGroupUuid };
+    return { paymentResult, orderGroupUuid, orderUuid };
   };
 
   const handlePaymentSuccess = () => {
@@ -317,7 +317,7 @@ export const CardPaymentInstallmentModal = ({
 
   const handleConfirmPayment = async () => {
     try {
-      const { orderGroupUuid } = await processPayment();
+      const { paymentResult, orderUuid } = await processPayment();
 
       const shopDetailData = useShopDetailStore.getState().data;
       const isPosLinked =
@@ -325,10 +325,19 @@ export const CardPaymentInstallmentModal = ({
         shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
       if (isPosLinked) {
-        setPendingOrder(
-          orderGroupUuid,
+        const shopCode = String(shopData?.shopCode ?? '');
+        usePosOrderStore.getState().register(
+          orderUuid,
+          shopCode,
           handlePaymentSuccess,
-          handleOrderCompleteFailure
+          async () => {
+            try {
+              await Payment.cancel(paymentResult);
+            } catch {
+              // 취소 실패 시 무시 (이미 승인된 결제이므로 수동 처리 필요)
+            }
+            handleOrderCompleteFailure();
+          }
         );
         return;
       }

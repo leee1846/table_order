@@ -15,7 +15,7 @@ import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
 import { getLatestAppVersion, getPosSyncStatus } from '@repo/api/fetchers';
 import { useSSE } from '@repo/feature/hooks';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
-import { useDialogStore } from '@repo/feature/stores';
+import { useDialogStore, usePosOrderStore } from '@repo/feature/stores';
 import { SystemControl, Installer } from '@repo/util/app';
 import { SSE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import { ROUTES } from '@/constants/routes';
@@ -31,7 +31,6 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useShopThemePage } from './useShopThemePage';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
-import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 import { useModalStore } from '@/stores/useModalStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartStore } from '@/stores/useCartStore';
@@ -604,40 +603,12 @@ export const useSSEHandler = () => {
     },
 
     handleOrderCompleteMessage: (message: ISseMessage) => {
-      const orderGroupUuidFromSse =
+      const orderUuidFromSse =
         typeof message.data === 'string' ? message.data : null;
-      if (!orderGroupUuidFromSse) {
+      if (!orderUuidFromSse) {
         return;
       }
-
-      // Root 페이지에서 주문 완료 대기 중인 경우
-      const { pendingOrderGroupUuid, completeWithSuccess } =
-        useOrderPendingPosStore.getState();
-      if (
-        pendingOrderGroupUuid &&
-        orderGroupUuidFromSse === pendingOrderGroupUuid
-      ) {
-        completeWithSuccess();
-        return;
-      }
-    },
-
-    handlePosErrorMessage: (message: ISseMessage) => {
-      const orderGroupUuidFromSse =
-        typeof message.data === 'string' ? message.data : null;
-      if (!orderGroupUuidFromSse) {
-        return;
-      }
-
-      const { pendingOrderGroupUuid, completeWithFailure } =
-        useOrderPendingPosStore.getState();
-      if (
-        pendingOrderGroupUuid &&
-        orderGroupUuidFromSse === pendingOrderGroupUuid
-      ) {
-        completeWithFailure();
-        return;
-      }
+      usePosOrderStore.getState().handleOrderComplete(orderUuidFromSse);
     },
 
     handlePosSyncStartMessage: () => {
@@ -850,9 +821,6 @@ export const useSSEHandler = () => {
         break;
       case 'ORDER_COMPLETE':
         handlersRef.current.handleOrderCompleteMessage(sseMessage);
-        break;
-      case 'POS_ERROR':
-        handlersRef.current.handlePosErrorMessage(sseMessage);
         break;
       case 'POS_SYNC_START':
         handlersRef.current.handlePosSyncStartMessage();

@@ -9,7 +9,7 @@ import { isNetworkErrorWithGetRequest } from '@repo/api/globalErrorHandler';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSEReconnecting } from '@repo/feature/hooks';
 import { useState, type ReactNode } from 'react';
-import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
+import { usePosOrderStore } from '@repo/feature/stores';
 
 interface Props {
   children: ReactNode;
@@ -26,15 +26,15 @@ function GlobalLoadingIndicator() {
     useIsMutating() -
     useIsMutating({ mutationKey: queryKeys.device.postDetail }); // usePostDeviceDetail 제외
   const isSSEReconnecting = useSSEReconnecting();
-  const isWaitingForOrderComplete = useOrderPendingPosStore(
-    (s) => s.isWaitingForOrderComplete
+  const isWaitingForPosOrderComplete = usePosOrderStore(
+    (s) => s.isWaitingForPosOrderComplete
   );
 
   const isLoading =
     isFetching > 0 ||
     isMutating > 0 ||
     isSSEReconnecting ||
-    isWaitingForOrderComplete;
+    isWaitingForPosOrderComplete;
 
   if (!isLoading) {
     return null;

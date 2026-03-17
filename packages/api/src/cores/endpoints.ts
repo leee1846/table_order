@@ -51,6 +51,8 @@ export const ENDPOINTS = {
     ORDER_LOG_LIST: (shopCode: string) => `/order/log/${shopCode}`,
     ORDER_ONBOARDING_TEST: (shopCode: string) =>
       `/order/on-boarding/test/${shopCode}`,
+    ORDER_POS_CALLBACK_CHECK: (shopCode: string) =>
+      `/order/pos-callback-check/${shopCode}`,
   },
 
   CATEGORY: {

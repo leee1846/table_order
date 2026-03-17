@@ -40,7 +40,7 @@ interface AddMenuDialogProps {
   i18nInstance?: I18nInstance;
   currentOrder?: Order | null;
   shopPosCode?: TShopPosCode;
-  onOrderCreated?: (orderGroupUuid: string) => void;
+  onOrderCreated?: (orderUuid: string) => void;
 }
 
 export const AddMenuDialog = ({
@@ -392,7 +392,7 @@ export const AddMenuDialog = ({
     if (isOkPos && response?.data?.orderGroupUuid) {
       // TODO
       // 주문 넣고 POS연동 상태일경우 실패까지 약 10초동안 SSE 대기할텐데 loading UI를 넣어야 하지 않을까?
-      onOrderCreated?.(response.data.orderGroupUuid);
+      onOrderCreated?.(response.data.orderInfoList.at(-1)?.orderUuid ?? '');
 
       // 모달 닫기
       handleClose();

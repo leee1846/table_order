@@ -1,0 +1,89 @@
+import { create } from 'zustand';
+import { startPosCallbackPoller } from '../utils/startPosCallbackPoller';
+
+type Callback = () => void;
+
+interface PendingEntry {
+  onSuccess: Callback;
+  onFailure: Callback;
+  stopPoller: Callback;
+}
+
+interface IPosOrderStore {
+  /** POS 주문 접수 완료 대기 중 여부 (로딩 스피너 표시용) */
+  isWaitingForPosOrderComplete: boolean;
+
+  /**
+   * POS 주문 등록: 폴러를 시작하고 ORDER_COMPLETE 대기 상태로 전환
+   * @param orderUuid - 주문 UUID
+   * @param shopCode - 매장 코드
+   * @param onSuccess - 성공 처리 콜백 (ORDER_COMPLETE SSE 또는 폴링 601)
+   * @param onFailure - 실패 처리 콜백 (폴링 603 또는 에러)
+   */
+  register: (
+    orderUuid: string,
+    shopCode: string,
+    onSuccess: Callback,
+    onFailure: Callback
+  ) => void;
+
+  /**
+   * SSE ORDER_COMPLETE 수신 시 호출
+   * 해당 주문을 성공 처리하고 폴러를 중단
+   */
+  handleOrderComplete: (orderUuid: string) => void;
+
+  /**
+   * 강제 정리 (로그아웃 등)
+   * 폴러를 중단하고 상태를 초기화 (콜백 미실행)
+   */
+  clearAll: () => void;
+}
+
+export const usePosOrderStore = create<IPosOrderStore>((set) => {
+  const pendingOrders = new Map<string, PendingEntry>();
+
+  const resolveOrder = (orderUuid: string, type: 'success' | 'failure') => {
+    const entry = pendingOrders.get(orderUuid);
+    if (!entry) {
+      return;
+    }
+    entry.stopPoller();
+    pendingOrders.delete(orderUuid);
+    set({ isWaitingForPosOrderComplete: pendingOrders.size > 0 });
+    if (type === 'success') {
+      entry.onSuccess();
+    } else {
+      entry.onFailure();
+    }
+  };
+
+  return {
+    isWaitingForPosOrderComplete: false,
+
+    register: (orderUuid, shopCode, onSuccess, onFailure) => {
+      // 동일 orderUuid가 이미 등록된 경우 기존 폴러 중단 후 재등록
+      pendingOrders.get(orderUuid)?.stopPoller();
+
+      const { stop } = startPosCallbackPoller({
+        shopCode,
+        orderUuid,
+        onSuccess: () => resolveOrder(orderUuid, 'success'),
+        onFailure: () => resolveOrder(orderUuid, 'failure'),
+      });
+
+      pendingOrders.set(orderUuid, { onSuccess, onFailure, stopPoller: stop });
+      set({ isWaitingForPosOrderComplete: true });
+    },
+
+    handleOrderComplete: (orderUuid) => {
+      resolveOrder(orderUuid, 'success');
+    },
+
+    clearAll: () => {
+      pendingOrders.forEach((entry) => entry.stopPoller());
+      pendingOrders.clear();
+      set({ isWaitingForPosOrderComplete: false });
+    },
+  };
+});

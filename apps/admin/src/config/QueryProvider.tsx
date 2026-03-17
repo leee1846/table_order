@@ -8,6 +8,7 @@ import { queryKeys } from '@repo/api/queries';
 import { isNetworkErrorWithGetRequest } from '@repo/api/globalErrorHandler';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { useSSEReconnecting } from '@repo/feature/hooks';
+import { usePosOrderStore } from '@repo/feature/stores';
 import { useState, type ReactNode } from 'react';
 
 interface Props {
@@ -23,7 +24,15 @@ function GlobalLoadingIndicator() {
     useIsMutating() -
     useIsMutating({ mutationKey: queryKeys.device.postDetail }); // usePostDeviceDetail 제외
   const isSSEReconnecting = useSSEReconnecting();
-  const isLoading = isFetching > 0 || isMutating > 0 || isSSEReconnecting;
+  const isWaitingForPosOrderComplete = usePosOrderStore(
+    (s) => s.isWaitingForPosOrderComplete
+  );
+
+  const isLoading =
+    isFetching > 0 ||
+    isMutating > 0 ||
+    isSSEReconnecting ||
+    isWaitingForPosOrderComplete;
 
   if (!isLoading) {
     return null;
@@ -32,12 +41,6 @@ function GlobalLoadingIndicator() {
   return <FullscreenLoadingSpinner />;
 }
 
-/**
- * React Query Provider 컴포넌트 예시시
- *
- * 앱 전체에서 React Query를 사용할 수 있도록 설정합니다.
- * QueryClient 옵션에서 공통 에러 처리를 설정할 수 있습니다.
- */
 export function QueryProvider({ children }: Props) {
   const [queryClient] = useState(
     () =>
