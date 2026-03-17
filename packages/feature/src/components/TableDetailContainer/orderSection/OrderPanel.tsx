@@ -65,6 +65,7 @@ export function OrderPanel({
       <OrderSummary
         totalCount={order.totalCount}
         totalPrice={order.totalPrice}
+        i18nInstance={i18nInstance}
         paymentList={order.paymentList ?? []}
       />
       <PaymentActions

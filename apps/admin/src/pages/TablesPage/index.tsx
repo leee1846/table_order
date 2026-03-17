@@ -256,6 +256,7 @@ export const TablesPage = () => {
         shopSetting={shopSetting}
         initialCustomerCount={0}
         initialKidsCustomerCount={0}
+        i18nInstance={adminI18n}
       />
     </DndContextWrapper>
   );

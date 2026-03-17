@@ -208,7 +208,7 @@ export const TablesPage = () => {
         orderTime,
         menuItems,
         hasOrder,
-        hasCustomer :!!deviceForTable?.tableNumber,
+        hasCustomer: !!deviceForTable?.tableNumber,
       };
     }
   );
@@ -582,6 +582,7 @@ export const TablesPage = () => {
           shopSetting={shopSetting}
           initialCustomerCount={0}
           initialKidsCustomerCount={0}
+          i18nInstance={adminI18n}
         />
       </>
     );
@@ -638,6 +639,7 @@ export const TablesPage = () => {
         shopSetting={shopSetting}
         initialCustomerCount={0}
         initialKidsCustomerCount={0}
+        i18nInstance={adminI18n}
       />
     </>
   );

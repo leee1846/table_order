@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { ModalBackground, BasicButton, NumberInput } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { IShopSetting } from '@repo/api/types';
 import * as S from './guestCountDialog.styles';
 import { toast } from '../../utils';
+import { i18n } from 'i18next';
 
 const { colors } = theme;
 
@@ -23,6 +23,7 @@ export type GuestCountDialogProps = {
   shopSetting?: IShopSetting;
   initialCustomerCount?: number;
   initialKidsCustomerCount?: number;
+  i18nInstance: i18n;
 };
 
 /**
@@ -37,6 +38,7 @@ export const GuestCountDialog = ({
   shopSetting,
   initialCustomerCount = 0,
   initialKidsCustomerCount = 0,
+  i18nInstance,
 }: GuestCountDialogProps) => {
   const [customerCount, setCustomerCount] = useState(initialCustomerCount);
   const [kidsCustomerCount, setKidsCustomerCount] = useState(
@@ -44,7 +46,7 @@ export const GuestCountDialog = ({
   );
 
   const useKidsCustomerCount = shopSetting?.useKidsCustomerCount ?? false;
-  const { t } = useTranslation();
+  const { t } = i18nInstance;
 
   // 모달이 열릴 때마다 초기값으로 리셋
   useEffect(() => {
