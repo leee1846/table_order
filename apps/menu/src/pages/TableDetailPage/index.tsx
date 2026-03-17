@@ -6,6 +6,8 @@ import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopStore } from '@/stores/useShopStore';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
+import { useQueryClient } from '@repo/api/tanstack-query';
+import { queryKeys } from '@repo/api/queries';
 
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
@@ -13,6 +15,7 @@ export const TableDetailPage = () => {
   const { data: shopData } = useShopStore();
   const shopCode = shopData?.shopCode ?? 0;
   const { t } = useAdminTranslation();
+  const queryClient = useQueryClient();
 
   const orderType: TOrderType =
     (searchParams.get('orderType') as TOrderType) || 'MENU';
@@ -24,6 +27,9 @@ export const TableDetailPage = () => {
   const PosLinkedOrderHandler = (orderUuid: string) => {
     const orderSuccessCallback = () => {
       toast(t('메뉴를 추가했어요.'), { position: 'top-center' });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.tableOrderHistories(shopCode, tableNum),
+      });
     };
 
     const orderFailCallback = () => {

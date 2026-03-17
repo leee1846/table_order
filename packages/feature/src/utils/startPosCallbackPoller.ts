@@ -22,7 +22,7 @@ const MAX_POLL_COUNT = 30;
  * POS 주문 콜백 상태를 폴링하는 유틸 함수
  *
  * @description
- * - 3초마다 POS 콜백 상태를 확인합니다 (setTimeout 기반 재귀)
+ * - 시작 후 3초 대기 후 첫 요청, 이후 3초 간격으로 재시도 (setTimeout 기반 재귀)
  * - 최대 30회까지 요청하며, 초과 시 onTimeout 호출 후 종료 (미전달 시 onFailure로 폴백)
  * - -601: 주문 성공 → onSuccess 호출 후 종료
  * - -602: 대기 중 → 3초 후 재시도 (최대 횟수 초과 시 onTimeout)
@@ -77,7 +77,7 @@ export const startPosCallbackPoller = (
     }
   };
 
-  poll();
+  timeoutId = setTimeout(poll, POLL_INTERVAL_MS);
 
   return {
     stop: () => {
