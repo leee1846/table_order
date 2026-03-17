@@ -29,6 +29,8 @@ export const STORAGE_KEYS = {
   SHOP_THEME_PAGE: 'shop-theme-page',
   /** 디바이스 리스트 data 키 */
   DEVICE_LIST: 'device-list',
+  /** 현금 결제 유도 모달 상태 (열림 여부, 총 가격) */
+  CASH_PAYMENT_INDUCEMENT_MODAL: 'cash-payment-inducement-modal',
 } as const;
 
 export const TIMER_KEYS = {

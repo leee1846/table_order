@@ -1,5 +1,7 @@
+import { STORAGE_KEYS } from '@/constants/keys';
 import { create } from '@repo/feature/zustand';
 import type { IOrder } from '@repo/api/types';
+import { AppStorage } from '@repo/util/app';
 
 interface IModalStore {
   data: {
@@ -51,6 +53,15 @@ interface IModalStore {
 
   /** 모든 모달이 닫혀있는지 확인 */
   isAllModalsClosed: () => boolean;
+
+  /** 현금 결제 유도 모달 열기/닫기 및 총 가격 설정 (AppStorage 동기화) */
+  setCashPaymentInducementModal: (
+    isOpened: boolean,
+    totalPrice: number
+  ) => void;
+
+  /** 현금 결제 유도 모달 정보 제거 (스토어 + AppStorage) */
+  clearCashPaymentInducementModal: () => void;
 }
 
 const initialData = {
@@ -79,45 +90,111 @@ const initialData = {
  * - 장바구니, 주문 내역, 결제, 직원 호출 등 다양한 모달을 관리합니다
  * - 모든 모달이 닫혀있는지 확인하는 유틸리티 함수를 제공합니다
  */
-export const useModalStore = create<IModalStore>((set, get) => ({
-  // 초기 상태
-  data: initialData,
+type CashPaymentInducementStored = {
+  isCashPaymentInducementModalOpened: boolean;
+  cashPaymentInducementTotalPrice: number;
+};
 
-  setModalData: <K extends keyof IModalStore['data']>(
-    dataKey: K,
-    value: IModalStore['data'][K]
-  ) => set((state) => ({ data: { ...state.data, [dataKey]: value } })),
+export const useModalStore = create<IModalStore>((set, get) => {
+  // AppStorage에서 현금 결제 유도 모달 상태 초기 로드
+  AppStorage.loadData<CashPaymentInducementStored>({
+    key: STORAGE_KEYS.CASH_PAYMENT_INDUCEMENT_MODAL,
+  }).then((result) => {
+    if (
+      result?.value &&
+      typeof result.value.isCashPaymentInducementModalOpened === 'boolean'
+    ) {
+      set((state) => ({
+        data: {
+          ...state.data,
+          isCashPaymentInducementModalOpened:
+            result?.value?.isCashPaymentInducementModalOpened ?? false,
+          cashPaymentInducementTotalPrice:
+            typeof result?.value?.cashPaymentInducementTotalPrice === 'number'
+              ? (result?.value?.cashPaymentInducementTotalPrice ?? 0)
+              : 0,
+        },
+      }));
+    }
+  });
 
-  // 메뉴 상세 모달 열기
-  openMenuDetail: (menuSeq: number) =>
-    set((state) => ({ data: { ...state.data, openedMenuDetailSeq: menuSeq } })),
+  return {
+    // 초기 상태
+    data: initialData,
 
-  // 메뉴 상세 모달 닫기
-  closeMenuDetail: () =>
-    set((state) => ({ data: { ...state.data, openedMenuDetailSeq: null } })),
+    setModalData: <K extends keyof IModalStore['data']>(
+      dataKey: K,
+      value: IModalStore['data'][K]
+    ) => set((state) => ({ data: { ...state.data, [dataKey]: value } })),
 
-  // 모든 모달 닫기
-  closeAllModals: () =>
-    set({
-      data: initialData,
-    }),
+    // 메뉴 상세 모달 열기
+    openMenuDetail: (menuSeq: number) =>
+      set((state) => ({
+        data: { ...state.data, openedMenuDetailSeq: menuSeq },
+      })),
 
-  // 모든 모달이 닫혀있는지 확인
-  isAllModalsClosed: () => {
-    const { data } = get();
-    return (
-      !data.isCartListOpened &&
-      !data.isCartMenuDetailModalOpened &&
-      !data.isOrderHistoryModalOpened &&
-      !data.isStaffCallModalOpened &&
-      !data.isLanguageSelectorModalOpened &&
-      data.openedMenuDetailSeq === null &&
-      !data.isPaymentsModalOpened &&
-      !data.isSplitPaymentModalOpened &&
-      !data.isCardPaymentInstallmentModalOpened &&
-      !data.isCardPaymentProgressModalOpened &&
-      !data.isOrderCompleteModalOpened &&
-      !data.isCashPaymentInducementModalOpened
-    );
-  },
-}));
+    // 메뉴 상세 모달 닫기
+    closeMenuDetail: () =>
+      set((state) => ({ data: { ...state.data, openedMenuDetailSeq: null } })),
+
+    setCashPaymentInducementModal: (isOpened: boolean, totalPrice: number) => {
+      set((state) => ({
+        data: {
+          ...state.data,
+          isCashPaymentInducementModalOpened: isOpened,
+          cashPaymentInducementTotalPrice: totalPrice,
+        },
+      }));
+      AppStorage.saveData({
+        key: STORAGE_KEYS.CASH_PAYMENT_INDUCEMENT_MODAL,
+        value: {
+          isCashPaymentInducementModalOpened: isOpened,
+          cashPaymentInducementTotalPrice: totalPrice,
+        },
+        isTemporary: false,
+      });
+    },
+
+    clearCashPaymentInducementModal: () => {
+      AppStorage.removeData({
+        key: STORAGE_KEYS.CASH_PAYMENT_INDUCEMENT_MODAL,
+      });
+      set((state) => ({
+        data: {
+          ...state.data,
+          isCashPaymentInducementModalOpened: false,
+          cashPaymentInducementTotalPrice: 0,
+        },
+      }));
+    },
+
+    // 모든 모달 닫기
+    closeAllModals: () => {
+      AppStorage.removeData({
+        key: STORAGE_KEYS.CASH_PAYMENT_INDUCEMENT_MODAL,
+      });
+      set({
+        data: initialData,
+      });
+    },
+
+    // 모든 모달이 닫혀있는지 확인
+    isAllModalsClosed: () => {
+      const { data } = get();
+      return (
+        !data.isCartListOpened &&
+        !data.isCartMenuDetailModalOpened &&
+        !data.isOrderHistoryModalOpened &&
+        !data.isStaffCallModalOpened &&
+        !data.isLanguageSelectorModalOpened &&
+        data.openedMenuDetailSeq === null &&
+        !data.isPaymentsModalOpened &&
+        !data.isSplitPaymentModalOpened &&
+        !data.isCardPaymentInstallmentModalOpened &&
+        !data.isCardPaymentProgressModalOpened &&
+        !data.isOrderCompleteModalOpened &&
+        !data.isCashPaymentInducementModalOpened
+      );
+    },
+  };
+});

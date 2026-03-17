@@ -13,7 +13,6 @@ import { openDualActionDialog, openConfirmDialog } from '@repo/feature/utils';
 import { useThemeMode } from '@repo/ui';
 import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
 import { CardPaymentInstallmentModal } from '../CardPaymentInstallmentModal';
-import { CashPaymentInducement } from '@/feature/CashPaymentInducement';
 import { useModalStore } from '@/stores/useModalStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
@@ -44,7 +43,11 @@ export const PaymentsModal = ({
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
   const shopDetailData = useShopDetailStore((s) => s.data);
-  const { data: modalData, setModalData } = useModalStore();
+  const {
+    data: modalData,
+    setModalData,
+    setCashPaymentInducementModal,
+  } = useModalStore();
   const { data: cartData } = useCartStore();
   const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
 
@@ -89,8 +92,7 @@ export const PaymentsModal = ({
             if (
               shopDetailData?.shopSetting?.usePrepaymentCashPaymentInducement
             ) {
-              setModalData('cashPaymentInducementTotalPrice', totalPrice);
-              setModalData('isCashPaymentInducementModalOpened', true);
+              setCashPaymentInducementModal(true, totalPrice);
               return;
             }
             setModalData('isOrderCompleteModalOpened', true);
@@ -262,11 +264,6 @@ export const PaymentsModal = ({
             totalPrice={totalPrice}
           />
         )}
-
-      {/* 현금 결제 유도 모달 */}
-      {modalData.isCashPaymentInducementModalOpened && (
-        <CashPaymentInducement />
-      )}
     </>
   );
 };

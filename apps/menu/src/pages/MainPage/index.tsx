@@ -32,6 +32,8 @@ import { PickupAlarm } from '@/pages/MainPage/PickAlarm';
 import { CartReminder } from '@/pages/MainPage/CartReminder';
 import { LastOrder } from '@/pages/MainPage/LastOrder';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
+import { CashPaymentInducement } from '@/feature/CashPaymentInducement';
+import { useModalStore } from '@/stores/useModalStore';
 
 export const MainPage = () => {
   useShopData();
@@ -83,6 +85,7 @@ export const MainPage = () => {
   const { data: initialPageData } = useInitialPageStore();
   const { data: pickUpAlarmData } = usePickupAlarmStore();
   const { data: cartReminderData } = useCartReminderStore();
+  const { data: modalData } = useModalStore();
 
   const breakTimeLastOrderState = {
     show:
@@ -135,6 +138,12 @@ export const MainPage = () => {
     },
     cartReminder: {
       show: cartReminderData.showCartReminder,
+    },
+    // 주문내역 로드 전/비어있을 때는 미표시 → AppStorage 복원 후 API 응답 대기 시 깜빡임 방지
+    cashPaymentInducement: {
+      show:
+        modalData.isCashPaymentInducementModalOpened &&
+        (orderHistories?.orderDetailMenuList?.length ?? 0) >= 1,
     },
   };
 
@@ -191,6 +200,11 @@ export const MainPage = () => {
         onClose={pageStates.closureLastOrder.onClose}
       />
     );
+  }
+
+  /** 현금 결제 유도 모달 표시 */
+  if (pageStates.cashPaymentInducement.show) {
+    return <CashPaymentInducement />;
   }
 
   /** 초기 화면 노출 */

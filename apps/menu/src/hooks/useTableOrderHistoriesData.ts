@@ -6,6 +6,7 @@ import { useDeviceData } from '@/hooks/useDeviceData';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopStore } from '@/stores/useShopStore';
+import { useModalStore } from '@/stores/useModalStore';
 
 interface Props {
   /**
@@ -106,15 +107,24 @@ export const useTableOrderHistoriesData = (options?: Props) => {
     // 테이블을 점유하고 주문은 하지 않았을경우
     if (apiData && apiData.data === null) {
       setTableOrderHistoriesData('isEmptyTable');
+
+      // 주문내역이 하나도 없으면 현금 결제 유도 모달 닫기
+      useModalStore.getState().clearCashPaymentInducementModal();
       return;
     }
 
+    const orderDetailMenuList = apiData?.data?.orderDetailMenuList ?? [];
     setTableOrderHistoriesData({
       sseUpdatedAt: null,
       discountRate: apiData?.data?.discountRate ?? 0,
       totalAmount: apiData?.data?.totalAmount ?? 0,
-      orderDetailMenuList: apiData?.data?.orderDetailMenuList ?? [],
+      orderDetailMenuList,
     });
+
+    // 주문내역이 하나도 없으면 현금 결제 유도 모달 닫기
+    if (orderDetailMenuList.length < 1) {
+      useModalStore.getState().clearCashPaymentInducementModal();
+    }
   }, [apiData, setTableOrderHistoriesData, storeData, skipInitialRequest]);
 
   const refresh = async (sseUpdatedAt?: number) => {
