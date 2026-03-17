@@ -52,7 +52,8 @@ export const MenuItem = styled.li<IMenuItem>`
 export const ActionButtons = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 12px;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 20px;
   margin-top: 30px;
 `;
@@ -66,8 +67,7 @@ export const ActionButton = styled.button`
 `;
 
 export const Line = styled.div`
-  width: 90%;
+  width: 75%;
   height: 1px;
   background-color: ${colors.grey[700]};
-  transform: translateX(5%);
 `;
