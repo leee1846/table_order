@@ -268,9 +268,16 @@ export const OptionSelectionView = ({
                           key={option.optionSeq}
                           isDisabled={isDisabled}
                         >
-                          <S.OptionName>
-                            {option.localeOptionName?.[currentLan]}
-                          </S.OptionName>
+                          <S.OptionNameContainer>
+                            <S.OptionName>
+                              {option.localeOptionName?.[currentLan]}
+                            </S.OptionName>
+                            {option.optionPrice > 0 && (
+                              <S.OptionPrice>
+                                (+ ₩{formatCurrency(option.optionPrice)})
+                              </S.OptionPrice>
+                            )}
+                          </S.OptionNameContainer>
 
                           <NumberInput
                             variant="rounded"
@@ -306,17 +313,26 @@ export const OptionSelectionView = ({
                           key={option.optionSeq}
                           isDisabled={isDisabled}
                         >
-                          <CheckButton
-                            key={option.optionSeq}
-                            checked={isChecked}
-                            onChange={() =>
-                              handleCheckboxToggle(option.optionSeq)
-                            }
-                            disabled={isDisabled}
-                            customStyle={S.checkboxCss}
-                          >
-                            {option.localeOptionName?.[currentLan]}
-                          </CheckButton>
+                          <S.OptionNameContainer>
+                            <S.OptionName>
+                              <CheckButton
+                                key={option.optionSeq}
+                                checked={isChecked}
+                                onChange={() =>
+                                  handleCheckboxToggle(option.optionSeq)
+                                }
+                                disabled={isDisabled}
+                                customStyle={S.checkboxCss}
+                              >
+                                {option.localeOptionName?.[currentLan]}
+                              </CheckButton>
+                            </S.OptionName>
+                            {option.optionPrice > 0 && (
+                              <S.OptionPrice>
+                                (+₩{formatCurrency(option.optionPrice)})
+                              </S.OptionPrice>
+                            )}
+                          </S.OptionNameContainer>
                         </S.OptionRow>
                       );
                     }
@@ -327,21 +343,30 @@ export const OptionSelectionView = ({
                         key={option.optionSeq}
                         isDisabled={isDisabled}
                       >
-                        <RadioButton
-                          key={option.optionSeq}
-                          value={String(option.optionSeq)}
-                          checked={isChecked}
-                          onChange={() =>
-                            handleRadioSelect(
-                              option.optionSeq,
-                              group.optionGroupSeq
-                            )
-                          }
-                          customStyle={S.radioCss}
-                          disabled={isDisabled}
-                        >
-                          {option.localeOptionName?.[currentLan]}
-                        </RadioButton>
+                        <S.OptionNameContainer>
+                          <S.OptionName>
+                            <RadioButton
+                              key={option.optionSeq}
+                              value={String(option.optionSeq)}
+                              checked={isChecked}
+                              onChange={() =>
+                                handleRadioSelect(
+                                  option.optionSeq,
+                                  group.optionGroupSeq
+                                )
+                              }
+                              customStyle={S.radioCss}
+                              disabled={isDisabled}
+                            >
+                              {option.localeOptionName?.[currentLan]}
+                            </RadioButton>
+                          </S.OptionName>
+                          {option.optionPrice > 0 && (
+                            <S.OptionPrice>
+                              (+₩{formatCurrency(option.optionPrice)})
+                            </S.OptionPrice>
+                          )}
+                        </S.OptionNameContainer>
                       </S.OptionRow>
                     );
                   })}

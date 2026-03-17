@@ -68,9 +68,22 @@ export const OptionRow = styled.div<{
   align-items: center;
 `;
 
+export const OptionNameContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+`;
+
 export const OptionName = styled.div`
   ${TYPOGRAPHY.MT_5}
   color: ${colors.grey[800]};
+`;
+
+export const OptionPrice = styled.div`
+  ${TYPOGRAPHY.ST_5}
+  color: ${colors.grey[600]};
+  text-wrap: nowrap;
 `;
 
 export const OptionRightPanel = styled(RightPanel)`
@@ -93,13 +106,16 @@ export const SelectedOptionItem = styled.div`
 
 export const OptionItemName = styled.div``;
 
-export const OptionItemPrice = styled.div``;
+export const OptionItemPrice = styled.div`
+  text-wrap: nowrap;
+`;
 
 export const OptionItemQuantity = styled.div``;
 
 export const optionQuantityInput = css`
-  max-width: 50%;
-  min-width: 50%;
+  max-width: 45%;
+  min-width: 45%;
+  margin-left: 5px;
 `;
 
 export const MenuQuantitySection = styled.div`
@@ -144,15 +160,20 @@ export const rightPanelMenuQuantityInput = css`
 
 export const checkboxCss = css`
   ${TYPOGRAPHY.MT_5}
+  max-width: 200px;
+  word-break: break-word;
 
   & > div {
     width: 30px;
     height: 30px;
+    aspect-ratio: 1/1;
   }
 `;
 
 export const radioCss = css`
   ${TYPOGRAPHY.MT_5}
+  max-width: 200px;
+  word-break: break-word;
 
   & > div {
     width: 30px;
