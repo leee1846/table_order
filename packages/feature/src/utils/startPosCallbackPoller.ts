@@ -5,6 +5,8 @@ interface IPosCallbackPollerOptions {
   orderUuid: string;
   onSuccess: () => void;
   onFailure: () => void;
+  /** 최대 횟수 초과 시 호출. 미전달 시 onFailure로 폴백 */
+  onTimeout?: () => void;
 }
 
 const POS_CALLBACK_CODE = {
@@ -21,16 +23,16 @@ const MAX_POLL_COUNT = 30;
  *
  * @description
  * - 3초마다 POS 콜백 상태를 확인합니다 (setTimeout 기반 재귀)
- * - 최대 30회까지 요청하며, 초과 시 onFailure 호출 후 종료
+ * - 최대 30회까지 요청하며, 초과 시 onTimeout 호출 후 종료 (미전달 시 onFailure로 폴백)
  * - -601: 주문 성공 → onSuccess 호출 후 종료
- * - -602: 대기 중 → 3초 후 재시도 (최대 횟수 초과 시 onFailure)
+ * - -602: 대기 중 → 3초 후 재시도 (최대 횟수 초과 시 onTimeout)
  * - -603 또는 API 에러: 주문 실패 → onFailure 호출 후 종료
  * - stop() 호출 시 즉시 중단
  */
 export const startPosCallbackPoller = (
   options: IPosCallbackPollerOptions
 ): { stop: () => void } => {
-  const { shopCode, orderUuid, onSuccess, onFailure } = options;
+  const { shopCode, orderUuid, onSuccess, onFailure, onTimeout } = options;
   let stopped = false;
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
   let pollCount = 0;
@@ -60,9 +62,9 @@ export const startPosCallbackPoller = (
         return;
       }
 
-      // -602: 대기 중 → 최대 횟수 초과 시 실패 처리, 아니면 재시도
+      // -602: 대기 중 → 최대 횟수 초과 시 타임아웃 처리, 아니면 재시도
       if (pollCount >= MAX_POLL_COUNT) {
-        onFailure();
+        (onTimeout ?? onFailure)();
         return;
       }
 

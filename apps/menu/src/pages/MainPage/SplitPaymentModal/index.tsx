@@ -605,18 +605,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   };
 
   /**
-   * POS 실패 시 실행할 처리
-   * 분할 결제로 완료된 모든 카드 결제를 순차적으로 취소(환불)한 후 오류 다이얼로그를 표시
+   * POS 오류 공통 처리: 다이얼로그 표시 및 모달 닫기
    */
-  const handleOrderCompleteFailure = async (): Promise<void> => {
-    for (const result of completedPaymentResultsRef.current) {
-      try {
-        await Payment.cancel(result);
-      } catch {
-        // 개별 취소 실패 시 무시하고 다음 건 진행
-      }
-    }
-
+  const closePosErrorModals = (): void => {
     openConfirmDialog({
       title: t('POS 오류'),
       content: t('주문 요청에 실패했습니다. 사장님에게 문의해주세요.'),
@@ -627,6 +618,30 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     setModalData('isPaymentsModalOpened', false);
     setModalData('isCartListOpened', false);
     onClose();
+  };
+
+  /**
+   * POS 타임아웃(최대 횟수 초과) 시 실행할 처리
+   * POS 응답 미확인 상태이므로 환불하지 않음
+   */
+  const handleOrderCompleteTimeout = (): void => {
+    closePosErrorModals();
+  };
+
+  /**
+   * POS 실패(-603 또는 API 에러) 시 실행할 처리
+   * 분할 결제로 완료된 모든 카드 결제를 순차적으로 취소(환불)한 후 오류 처리
+   */
+  const handleOrderCompleteFailure = async (): Promise<void> => {
+    for (const result of completedPaymentResultsRef.current) {
+      try {
+        await Payment.cancel(result);
+      } catch {
+        // 개별 취소 실패 시 무시하고 다음 건 진행
+      }
+    }
+
+    closePosErrorModals();
   };
 
   /**
@@ -679,14 +694,14 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     // 전체 결제 완료: POS 연동 시 ORDER_COMPLETE 대기 및 폴링
     if (isPosLinked && orderUuidFromPayment) {
       const shopCode = String(shopData?.shopCode ?? '');
-      usePosOrderStore
-        .getState()
-        .register(
-          orderUuidFromPayment,
-          shopCode,
-          runFullSuccess,
-          handleOrderCompleteFailure
-        );
+      usePosOrderStore.getState().register(
+        orderUuidFromPayment,
+        shopCode,
+        runFullSuccess,
+        handleOrderCompleteFailure,
+        // 타임아웃(최대 횟수 초과)은 POS 응답 미확인 상태이므로 환불하지 않음
+        handleOrderCompleteTimeout
+      );
       return;
     }
 

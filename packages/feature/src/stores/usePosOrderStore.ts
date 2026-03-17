@@ -6,6 +6,8 @@ type Callback = () => void;
 interface PendingEntry {
   onSuccess: Callback;
   onFailure: Callback;
+  /** 미전달 시 onFailure로 폴백 */
+  onTimeout?: Callback;
   stopPoller: Callback;
 }
 
@@ -17,14 +19,16 @@ interface IPosOrderStore {
    * POS 주문 등록: 폴러를 시작하고 ORDER_COMPLETE 대기 상태로 전환
    * @param orderUuid - 주문 UUID
    * @param shopCode - 매장 코드
-   * @param onSuccess - 성공 처리 콜백 (ORDER_COMPLETE SSE 또는 폴링 601)
-   * @param onFailure - 실패 처리 콜백 (폴링 603 또는 에러)
+   * @param onSuccess - 성공 처리 콜백 (ORDER_COMPLETE SSE 또는 폴링 -601)
+   * @param onFailure - 실패 처리 콜백 (폴링 -603 또는 에러)
+   * @param onTimeout - 최대 횟수 초과 시 콜백. 미전달 시 onFailure로 폴백
    */
   register: (
     orderUuid: string,
     shopCode: string,
     onSuccess: Callback,
-    onFailure: Callback
+    onFailure: Callback,
+    onTimeout?: Callback
   ) => void;
 
   /**
@@ -43,7 +47,7 @@ interface IPosOrderStore {
 export const usePosOrderStore = create<IPosOrderStore>((set) => {
   const pendingOrders = new Map<string, PendingEntry>();
 
-  const resolveOrder = (orderUuid: string, type: 'success' | 'failure') => {
+  const resolveOrder = (orderUuid: string, type: 'success' | 'failure' | 'timeout') => {
     const entry = pendingOrders.get(orderUuid);
     if (!entry) {
       return;
@@ -53,6 +57,8 @@ export const usePosOrderStore = create<IPosOrderStore>((set) => {
     set({ isWaitingForPosOrderComplete: pendingOrders.size > 0 });
     if (type === 'success') {
       entry.onSuccess();
+    } else if (type === 'timeout') {
+      (entry.onTimeout ?? entry.onFailure)();
     } else {
       entry.onFailure();
     }
@@ -61,7 +67,7 @@ export const usePosOrderStore = create<IPosOrderStore>((set) => {
   return {
     isWaitingForPosOrderComplete: false,
 
-    register: (orderUuid, shopCode, onSuccess, onFailure) => {
+    register: (orderUuid, shopCode, onSuccess, onFailure, onTimeout) => {
       // 동일 orderUuid가 이미 등록된 경우 기존 폴러 중단 후 재등록
       pendingOrders.get(orderUuid)?.stopPoller();
 
@@ -70,9 +76,10 @@ export const usePosOrderStore = create<IPosOrderStore>((set) => {
         orderUuid,
         onSuccess: () => resolveOrder(orderUuid, 'success'),
         onFailure: () => resolveOrder(orderUuid, 'failure'),
+        onTimeout: onTimeout ? () => resolveOrder(orderUuid, 'timeout') : undefined,
       });
 
-      pendingOrders.set(orderUuid, { onSuccess, onFailure, stopPoller: stop });
+      pendingOrders.set(orderUuid, { onSuccess, onFailure, onTimeout, stopPoller: stop });
       set({ isWaitingForPosOrderComplete: true });
     },
 

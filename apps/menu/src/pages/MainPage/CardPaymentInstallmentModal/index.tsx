@@ -337,7 +337,9 @@ export const CardPaymentInstallmentModal = ({
               // 취소 실패 시 무시 (이미 승인된 결제이므로 수동 처리 필요)
             }
             handleOrderCompleteFailure();
-          }
+          },
+          // 타임아웃(최대 횟수 초과)은 POS 응답 미확인 상태이므로 환불하지 않음
+          handleOrderCompleteFailure
         );
         return;
       }
