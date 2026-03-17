@@ -2,6 +2,7 @@ import {
   setStorageAdminLanguage,
   useAdminTranslation,
   getInitialLanguage,
+  t as i18nT,
 } from '@/config/i18n';
 import { storage } from '@repo/util/function';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -226,7 +227,7 @@ export const MiscellaneousPage = () => {
       updateCategoryFirstOrderMutation.mutateAsync(categoryPayload),
     ]);
 
-    setStorageAdminLanguage(adminLanguage);
+    await setStorageAdminLanguage(adminLanguage);
 
     if (shopCode) {
       await queryClient.invalidateQueries({
@@ -238,9 +239,11 @@ export const MiscellaneousPage = () => {
       queryKey: queryKeys.category.list(),
     });
 
-    toast(t('설정이 저장되었습니다.'));
     changesRef.current = {};
     setComponentKey((prev) => prev + 1); // 강제 리마운트로 확실하게 업데이트
+    toast(i18nT('설정이 저장되었습니다.'));
+
+    toast(i18nT('설정이 저장되었습니다.'));
   }, [
     adminLanguage,
     categories,
