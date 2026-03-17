@@ -79,8 +79,8 @@ export const PaymentSection = ({ order }: Props) => {
               <th>{t('주문번호')}</th>
               <th>{t('거래일자')}</th>
               <th>{t('거래금액')}</th>
-              <th>{t('현금영수증')}</th>
-              <th>{t('현금영수증 발행')}</th>
+              {/* <th>{t('현금영수증')}</th>
+              <th>{t('현금영수증 발행')}</th> */}
               {/* <th>{t('거래취소')}</th> */}
             </tr>
           </UIStyles.setting.Thead>
@@ -103,8 +103,7 @@ export const PaymentSection = ({ order }: Props) => {
                   ) || '-'}
                 </td>
                 <td>{formatCurrency(payment.transactionAmount ?? 0)}</td>
-                <td>-</td>
-                <td>-</td>
+                {/* <td>-</td> */}
                 {/* <td>
                   <BasicButton
                     variant="Outline_Navy_M"
