@@ -94,6 +94,7 @@ export const Content = styled.div`
   align-items: flex-start;
   flex: 1;
   min-width: 0;
+  width: 100%;
 `;
 
 export const MenuName = styled.p`

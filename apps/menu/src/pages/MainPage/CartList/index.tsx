@@ -16,10 +16,11 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useShopStore } from '@/stores/useShopStore';
 import { MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
-import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
+import { usePosOrderStore } from '@repo/feature/stores';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 
 const TOAST_OPTIONS = {
@@ -32,6 +33,7 @@ interface Props {
   categories: ICategoryWithMenus[];
   executePostpaidOrder: () => Promise<{
     orderGroupUuid: string;
+    orderUuid: string;
     result: boolean;
     totalPrice: number;
   }>;
@@ -48,7 +50,6 @@ export const CartList = ({
   const { theme } = useThemeMode();
   const { data: modalData, setModalData } = useModalStore();
   const shopDetailData = useShopDetailStore((s) => s.data);
-  const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
 
   const {
     data: cartData,
@@ -239,7 +240,7 @@ export const CartList = ({
               !!shopDetailData?.shopSetting?.shopPosCode &&
               shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
-            if (isPosLinked && response.orderGroupUuid) {
+            if (isPosLinked && response.orderUuid) {
               const handleOrderCompleteFailure = () => {
                 openConfirmDialog({
                   title: t('POS 오류'),
@@ -251,8 +252,12 @@ export const CartList = ({
                 onClose();
               };
 
-              setPendingOrder(
-                response.orderGroupUuid,
+              const shopCode = String(
+                useShopStore.getState().data?.shopCode ?? ''
+              );
+              usePosOrderStore.getState().register(
+                response.orderUuid,
+                shopCode,
                 handleOrderCompleteSuccess,
                 handleOrderCompleteFailure
               );

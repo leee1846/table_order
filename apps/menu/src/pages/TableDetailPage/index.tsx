@@ -4,7 +4,7 @@ import type { TOrderType } from '@repo/api/types';
 import * as S from '@/pages/TableDetailPage/tableDetailPage.style';
 import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopStore } from '@/stores/useShopStore';
-import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
+import { usePosOrderStore } from '@repo/feature/stores';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
 
 export const TableDetailPage = () => {
@@ -21,7 +21,7 @@ export const TableDetailPage = () => {
     return null;
   }
 
-  const PosLinkedOrderHandler = (orderGroupUuid: string) => {
+  const PosLinkedOrderHandler = (orderUuid: string) => {
     const orderSuccessCallback = () => {
       toast(t('메뉴를 추가했어요.'), { position: 'top-center' });
     };
@@ -35,9 +35,10 @@ export const TableDetailPage = () => {
       });
     };
 
-    useOrderPendingPosStore
+    const shopCode = String(shopData?.shopCode ?? '');
+    usePosOrderStore
       .getState()
-      .setPendingOrder(orderGroupUuid, orderSuccessCallback, orderFailCallback);
+      .register(orderUuid, shopCode, orderSuccessCallback, orderFailCallback);
   };
 
   return (

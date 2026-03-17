@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { initializeSseConnection, disconnectSse } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
+import { usePosOrderStore } from '@repo/feature/stores';
 import { SSE_KEYS } from '@/constants/keys';
 import type { ISseMessage } from '@repo/api/types';
 import { useAuth } from './useAuth';
@@ -10,19 +11,8 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { ROUTES } from '@/constants/routes';
 import { SystemControl, CapacitorApp } from '@repo/util/app';
 import { useShopDetailData } from './useShopDetailData';
-import { openConfirmDialog, closeDialog, toast } from '@repo/feature/utils';
+import { openConfirmDialog, closeDialog } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
-
-// OKPOS 매장에서 주문한 경우, sse order에서 해당 주문이 포스에 접수되었는지 확인하기 위해 사용
-const pendingOrders = new Set<string>(); // orderGroupUuid 집합
-
-export const setPendingOrder = (orderGroupUuid: string) => {
-  pendingOrders.add(orderGroupUuid);
-};
-
-export const clearPendingOrder = (orderGroupUuid: string) => {
-  pendingOrders.delete(orderGroupUuid);
-};
 
 export const useSSEHandler = (tableNumber?: string) => {
   const queryClient = useQueryClient();
@@ -31,7 +21,6 @@ export const useSSEHandler = (tableNumber?: string) => {
   const { data: shopDetailData } = useShopDetailData();
   const agentPingCheckTimeoutRef = useRef<number | null>(null);
   const agentErrorDialogIdRef = useRef<string | null>(null);
-  const posErrorDialogIdRef = useRef<string | null>(null);
   const { t } = useAdminTranslation();
 
   // 최신 t 참조 - SSE 핸들러 effect가 t 변경에 반응하지 않도록
@@ -152,28 +141,6 @@ export const useSSEHandler = (tableNumber?: string) => {
       return;
     }
 
-    if (sseMessage.type === 'POS_ERROR') {
-      // TODO
-      // POS_ERROR가 2번 오는경우가 있어서 방어코드를 넣은것인가??
-      if (posErrorDialogIdRef.current) {
-        return;
-      }
-
-      // TODO
-      // 여기서는 clearPendingOrder를 하지 않아도 괜찮은가??
-      // prettier가 동작하지 않는가?? 왜 포멧이 달라지는가??
-      posErrorDialogIdRef.current = openConfirmDialog({
-        title: tRef.current('POS 오류'),
-        content: tRef.current('주문 접수에 실패했습니다. 포스를 확인해주세요.'),
-        confirmText: tRef.current('확인'),
-        size: 'xsmall',
-        onConfirm: () => {
-          posErrorDialogIdRef.current = null;
-        },
-      });
-      return;
-    }
-
     if (sseMessage.type === 'MENU') {
       if (tableNumber) {
         queryClient.invalidateQueries({
@@ -184,13 +151,10 @@ export const useSSEHandler = (tableNumber?: string) => {
     }
 
     if (sseMessage.type === 'ORDER_COMPLETE') {
-      // SSE 메시지에서 orderGroupUuid 추출
-      const orderGroupUuidFromSse =
+      const orderUuidFromSse =
         typeof sseMessage.data === 'string' ? sseMessage.data : null;
-
-      if (orderGroupUuidFromSse && pendingOrders.has(orderGroupUuidFromSse)) {
-        toast(tRef.current('메뉴를 추가했어요.'));
-        clearPendingOrder(orderGroupUuidFromSse);
+      if (orderUuidFromSse) {
+        usePosOrderStore.getState().handleOrderComplete(orderUuidFromSse);
       }
       return;
     }

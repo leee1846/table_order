@@ -45,7 +45,7 @@ export interface TableDetailContainerProps {
   tableNumber: string;
   orderType: TOrderType;
   i18nInstance?: I18nInstance;
-  onOrderCreated?: (orderGroupUuid: string) => void;
+  onOrderCreated?: (orderUuid: string) => void;
 }
 
 export const TableDetailContainer = ({
@@ -361,8 +361,8 @@ export const TableDetailContainer = ({
         i18nInstance={i18nInstance}
         currentOrder={order}
         shopPosCode={shopDetailResponse?.data?.shopSetting?.shopPosCode}
-        onOrderCreated={(orderGroupUuid) => {
-          onOrderCreated?.(orderGroupUuid);
+        onOrderCreated={(orderUuid) => {
+          onOrderCreated?.(orderUuid);
         }}
       />
       {/* 선택 취소 모달 */}

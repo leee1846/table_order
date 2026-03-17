@@ -20,7 +20,7 @@ import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { usePosSyncOverlayStore } from '@/stores/usePosSyncOverlayStore';
-import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
+import { usePosOrderStore } from '@repo/feature/stores';
 
 const storesWithClearData = [
   useShopStore,
@@ -48,5 +48,5 @@ export const resetAllStores = () => {
   useModalStore.getState().closeAllModals();
   useRequestAdminAccessModalStore.getState().setShow(false);
   usePosSyncOverlayStore.getState().hide();
-  useOrderPendingPosStore.getState().clearPendingOrder();
+  usePosOrderStore.getState().clearAll();
 };

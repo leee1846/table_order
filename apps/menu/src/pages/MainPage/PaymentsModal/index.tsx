@@ -11,10 +11,11 @@ import { css } from '@emotion/react';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { openDualActionDialog, openConfirmDialog } from '@repo/feature/utils';
 import { useThemeMode } from '@repo/ui';
-import { useOrderPendingPosStore } from '@/stores/useOrderPendingPosStore';
+import { usePosOrderStore } from '@repo/feature/stores';
 import { CardPaymentInstallmentModal } from '../CardPaymentInstallmentModal';
 import { useModalStore } from '@/stores/useModalStore';
 import { useCartStore } from '@/stores/useCartStore';
+import { useShopStore } from '@/stores/useShopStore';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import type { ICartMenu } from '@/types/cart';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
@@ -28,6 +29,7 @@ interface Props {
   openNextModal: () => void;
   executePostpaidOrder: () => Promise<{
     orderGroupUuid: string;
+    orderUuid: string;
     result: boolean;
     totalPrice: number;
   }>;
@@ -49,7 +51,6 @@ export const PaymentsModal = ({
     setCashPaymentInducementModal,
   } = useModalStore();
   const { data: cartData } = useCartStore();
-  const setPendingOrder = useOrderPendingPosStore((s) => s.setPendingOrder);
 
   const isPosLinked =
     !!shopDetailData?.shopSetting?.shopPosCode &&
@@ -100,7 +101,7 @@ export const PaymentsModal = ({
           };
 
           if (response.result) {
-            if (isPosLinked && response.orderGroupUuid) {
+            if (isPosLinked && response.orderUuid) {
               const handleOrderCompleteFailure = () => {
                 openConfirmDialog({
                   title: t('POS 오류'),
@@ -112,11 +113,17 @@ export const PaymentsModal = ({
                 onClose();
               };
 
-              setPendingOrder(
-                response.orderGroupUuid,
-                handleOrderCompleteSuccess,
-                handleOrderCompleteFailure
+              const shopCode = String(
+                useShopStore.getState().data?.shopCode ?? ''
               );
+              usePosOrderStore
+                .getState()
+                .register(
+                  response.orderUuid,
+                  shopCode,
+                  handleOrderCompleteSuccess,
+                  handleOrderCompleteFailure
+                );
               return;
             }
 
@@ -136,7 +143,7 @@ export const PaymentsModal = ({
         onConfirm: async () => {
           const response = await executePostpaidOrder();
           if (response.result) {
-            if (isPosLinked && response.orderGroupUuid) {
+            if (isPosLinked && response.orderUuid) {
               const handleOrderCompleteSuccess = () => {
                 setModalData('isOrderCompleteModalOpened', true);
                 onClose();
@@ -151,11 +158,18 @@ export const PaymentsModal = ({
                 });
                 onClose();
               };
-              setPendingOrder(
-                response.orderGroupUuid,
-                handleOrderCompleteSuccess,
-                handleOrderCompleteFailure
+
+              const shopCode = String(
+                useShopStore.getState().data?.shopCode ?? ''
               );
+              usePosOrderStore
+                .getState()
+                .register(
+                  response.orderUuid,
+                  shopCode,
+                  handleOrderCompleteSuccess,
+                  handleOrderCompleteFailure
+                );
               return;
             }
 
