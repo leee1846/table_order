@@ -24,7 +24,13 @@ const getThemeMode = (): ThemeMode => {
   return 'light';
 };
 
-export const FullscreenLoadingSpinner = ({ size = 300 }: { size?: number }) => {
+export const FullscreenLoadingSpinner = ({
+  size = 300,
+  color,
+}: {
+  size?: number;
+  color?: string;
+}) => {
   const context = useContext(ThemeModeContext);
   const contextMode = context?.mode;
   const lottieRef = useRef<LottieRefCurrentProps | null>(null);
@@ -44,7 +50,7 @@ export const FullscreenLoadingSpinner = ({ size = 300 }: { size?: number }) => {
 
   return (
     <S.Container>
-      <S.SpinnerWrapper size={size}>
+      <S.SpinnerWrapper size={size} color={color}>
         <Lottie
           lottieRef={lottieRef}
           animationData={mode === 'dark' ? loadingGreyIcon : loadingBlueIcon}
