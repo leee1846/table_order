@@ -188,8 +188,12 @@ export const CardPaymentInstallmentModal = ({
       try {
         await Payment.cancel(pendingPaymentCancel);
       } catch {
-        // 취소 실패 시 pending 유지 → 사용자에게 에러 후 재시도 시 다시 취소 시도
-        throw new Error('환불 처리 중 오류가 발생했습니다.');
+        // 환불 실패 시 → 사용자에게 재시도 환불 진행 안내 처리
+        const err = new Error('환불 처리 중 오류가 발생했습니다.');
+        (
+          err as Error & { hasPendingPaymentCancel?: boolean }
+        ).hasPendingPaymentCancel = true;
+        throw err;
       }
 
       setPendingPaymentCancel(null);
@@ -211,6 +215,13 @@ export const CardPaymentInstallmentModal = ({
       } catch {
         // 취소 실패(네트워크 끊김 등) 시 state에 보관 → 모달에서 재시도 시 위에서 RB 취소
         setPendingPaymentCancel(paymentResult);
+
+        // 환불 실패 시 → 사용자에게 재시도 환불 진행 안내 처리
+        const err = new Error('결제 처리 중 오류가 발생했습니다.');
+        (
+          err as Error & { hasPendingPaymentCancel?: boolean }
+        ).hasPendingPaymentCancel = true;
+        throw err;
       }
       throw new Error('결제 처리 중 오류가 발생했습니다.');
     }
@@ -273,9 +284,17 @@ export const CardPaymentInstallmentModal = ({
         ? error.message
         : t('결제 처리 중 오류가 발생했습니다.');
 
+    const hasPendingPaymentCancel =
+      error instanceof Error &&
+      (error as Error & { hasPendingPaymentCancel?: boolean })
+        .hasPendingPaymentCancel === true;
+    const content = hasPendingPaymentCancel
+      ? `${errorMessage}\n\n${t('다시 결제를 시도하시면 이전 결제 내역이 환불된 후 결제가 진행됩니다.')}`
+      : errorMessage;
+
     openConfirmDialog({
       title: t('오류'),
-      content: errorMessage,
+      content,
       confirmText: t('확인'),
     });
   };

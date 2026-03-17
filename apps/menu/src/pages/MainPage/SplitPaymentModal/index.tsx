@@ -484,14 +484,18 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   ): Promise<void> => {
     try {
       // 결제만 완료된 미연결 결제(이전 재시도 실패 분)가 있으면 RB 취소 후 제거 (중복 결제 방지)
-      if (pendingPaymentCancel) {
-        if (pendingPaymentCancel.TRAN_NO) {
-          try {
-            await Payment.cancel(pendingPaymentCancel);
-          } catch {
-            throw new Error(t('환불 처리 중 오류가 발생했습니다.'));
-          }
+      if (pendingPaymentCancel && pendingPaymentCancel.TRAN_NO) {
+        try {
+          await Payment.cancel(pendingPaymentCancel);
+        } catch {
+          // 환불 실패 시 → 사용자에게 재시도 환불 진행 안내 처리
+          const err = new Error(t('환불 처리 중 오류가 발생했습니다.'));
+          (
+            err as Error & { hasPendingPaymentCancel?: boolean }
+          ).hasPendingPaymentCancel = true;
+          throw err;
         }
+
         setPendingPaymentCancel(null);
       }
 
@@ -522,6 +526,12 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
           await Payment.cancel(paymentResult);
         } catch {
           setPendingPaymentCancel(paymentResult);
+          // 환불 실패 시 → 사용자에게 재시도 환불 진행 안내 처리
+          const err = new Error(t('결제 처리 중 오류가 발생했습니다.'));
+          (
+            err as Error & { hasPendingPaymentCancel?: boolean }
+          ).hasPendingPaymentCancel = true;
+          throw err;
         }
         throw new Error(t('결제 처리 중 오류가 발생했습니다.'));
       }
@@ -571,9 +581,17 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         ? error.message
         : t('결제 처리 중 오류가 발생했습니다.');
 
+    const hasPendingPaymentCancel =
+      error instanceof Error &&
+      (error as Error & { hasPendingPaymentCancel?: boolean })
+        .hasPendingPaymentCancel === true;
+    const content = hasPendingPaymentCancel
+      ? `${errorMessage}\n\n${t('다시 결제를 시도하시면 이전 결제 내역이 환불된 후 결제가 진행됩니다.')}`
+      : errorMessage;
+
     openConfirmDialog({
       title: t('오류'),
-      content: errorMessage,
+      content,
       confirmText: t('확인'),
     });
   };
