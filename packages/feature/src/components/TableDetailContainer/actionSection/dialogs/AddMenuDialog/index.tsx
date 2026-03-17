@@ -309,6 +309,7 @@ export const AddMenuDialog = ({
   // 최종 추가 핸들러
   const handleAdd = async () => {
     if (selectedMenus.length < 1) {
+      toast(t('메뉴를 선택해주세요.'));
       return;
     }
 
