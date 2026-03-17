@@ -16,7 +16,7 @@ export const dayCss = css`
 export const Container = styled.div`
   position: relative;
   background-color: ${theme.colors.white};
-  width: 40rem;
+  width: auto;
   padding: 24px;
   border-radius: 1rem;
 `;

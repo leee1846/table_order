@@ -14,6 +14,7 @@ import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { getDays } from '@/constants/days';
 import { formatTimeDisplay } from '@repo/util/time';
 import { useQueryClient } from '@repo/api/tanstack-query';
+import { css } from '@emotion/react';
 
 interface Props {
   category: ICategory;
@@ -213,6 +214,9 @@ export const Category = ({
           <BasicButton
             variant="Solid_Navy_L"
             onClick={() => onOpenTableAssign(category)}
+            customStyle={css`
+              width: auto !important;
+            `}
           >
             {t('테이블 지정')}
           </BasicButton>
