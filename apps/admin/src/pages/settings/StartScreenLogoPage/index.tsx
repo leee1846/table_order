@@ -11,7 +11,7 @@ import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/pages/settings/StartScreenLogoPage/Logo';
-import { generateId } from '@repo/util/string';
+import { generateId, hasInvalidImageFile } from '@repo/util/string';
 import * as S from './startScreenLogoPage.style';
 import * as UIStyles from '@repo/ui/styles';
 
@@ -109,6 +109,11 @@ export const StartScreenLogoPage = () => {
 
     if (!shopSeq) {
       toast(t('매장 정보를 불러오지 못했습니다.'));
+      return;
+    }
+
+    if (currentLogoFile && hasInvalidImageFile([currentLogoFile])) {
+      toast(t('파일 확장자는 .jpg, .jpeg, .png, .webp 만 지원합니다.'));
       return;
     }
 

@@ -20,6 +20,7 @@ import {
 import { Logo } from '@/pages/settings/MenuScreenPage/Logo';
 import { Template } from '@/pages/settings/MenuScreenPage/Template';
 import * as S from './menuScreenPage.style';
+import { hasInvalidImageFile } from '@repo/util/string';
 
 export const MenuScreenPage = () => {
   const queryClient = useQueryClient();
@@ -79,6 +80,11 @@ export const MenuScreenPage = () => {
     const shopSeq = themeMenu?.shopSeq ?? shopSeqFromAuth;
     if (!shopSeq) {
       toast(t('매장 정보를 불러오지 못했습니다.'));
+      return;
+    }
+
+    if (logoFile && hasInvalidImageFile([logoFile])) {
+      toast(t('파일 확장자는 .jpg, .jpeg, .png, .webp 만 지원합니다.'));
       return;
     }
 

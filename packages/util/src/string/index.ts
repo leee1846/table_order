@@ -270,3 +270,50 @@ export const formatPaymentMethodLabel = (method?: string | null): string => {
       return '기타';
   }
 };
+
+/**
+ * 파일이 허용된 이미지 확장자를 가지고 있는지 검증합니다.
+ * .jpg, .jpeg, .png, .webp 확장자만 허용됩니다.
+ *
+ * @param file - 검증할 파일 객체
+ * @returns 허용된 확장자면 true, 아니면 false
+ *
+ * @example
+ * ```ts
+ * const file = new File([''], 'image.jpg');
+ * hasValidImageExtension(file) // true
+ *
+ * const file2 = new File([''], 'document.pdf');
+ * hasValidImageExtension(file2) // false
+ * ```
+ */
+export const hasValidImageExtension = (file: File): boolean => {
+  const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
+  const fileName = file.name.toLowerCase();
+  return ALLOWED_EXTENSIONS.some((ext) => fileName.endsWith(ext));
+};
+
+/**
+ * 파일 배열에 유효하지 않은 이미지 확장자를 가진 파일이 있는지 확인합니다.
+ *
+ * @param files - 검증할 파일 배열
+ * @returns 유효하지 않은 파일이 하나라도 있으면 true, 모두 유효하면 false
+ *
+ * @example
+ * ```ts
+ * const files = [
+ *   new File([''], 'image1.jpg'),
+ *   new File([''], 'image2.png'),
+ * ];
+ * hasInvalidImageFile(files) // false
+ *
+ * const files2 = [
+ *   new File([''], 'image.jpg'),
+ *   new File([''], 'document.pdf'),
+ * ];
+ * hasInvalidImageFile(files2) // true
+ * ```
+ */
+export const hasInvalidImageFile = (files: File[]): boolean => {
+  return files.some((file) => !hasValidImageExtension(file));
+};
