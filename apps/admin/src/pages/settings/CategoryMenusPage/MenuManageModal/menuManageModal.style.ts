@@ -74,10 +74,14 @@ export const RightScrollable = styled.div`
 export const Titles = styled.div`
   display: flex;
   align-items: center;
+  justify-content: start;
+  width: 100%;
 
   & > p {
     color: ${theme.colors.grey[800]};
     ${TYPOGRAPHY.MT_1}
+    text-wrap: pretty;
+    flex-shrink: 0;
   }
 
   & > span {
@@ -98,11 +102,13 @@ export const Titles = styled.div`
     & > p {
       color: ${theme.colors.grey[600]};
       ${TYPOGRAPHY.ST_1}
+      text-wrap: pretty;
     }
 
     & > p:last-child {
       color: ${theme.colors.primary[500]};
       ${TYPOGRAPHY.ST_1}
+      flex-shrink: 0;
     }
   }
 `;
