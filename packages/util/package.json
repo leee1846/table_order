@@ -37,7 +37,6 @@
     "@anuradev/capacitor-background-mode": "6",
     "@capacitor/app": "^6.0.3",
     "@capacitor/core": "^6.2.1",
-    "@capacitor/splash-screen": "^6.0.2",
     "dayjs": "^1.11.19",
     "jwt-decode": "^4.0.0"
   }

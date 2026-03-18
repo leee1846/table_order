@@ -1,5 +1,4 @@
 import { registerPlugin, type Plugin } from '@capacitor/core';
-import { SplashScreen } from '@capacitor/splash-screen';
 import { BackgroundMode } from '@anuradev/capacitor-background-mode';
 
 /**
@@ -129,7 +128,7 @@ export interface ISystemControl {
   exitApp(): Promise<void>;
 
   /**
-   * 스플래시 스크린 숨기기 (Capacitor @capacitor/splash-screen)
+   * 스플래시 스크린 숨기기
    * 앱 준비가 완료되면 호출합니다.
    */
   hideSplash(): Promise<void>;
@@ -221,10 +220,10 @@ export const SystemControl: ISystemControl = {
   },
 
   /**
-   * 스플래시 스크린 숨기기 (Capacitor @capacitor/splash-screen API 사용)
+   * 스플래시 스크린 숨기기
    * 앱 준비가 완료되면 호출하여 스플래시를 닫습니다.
    */
   hideSplash: async () => {
-    await SplashScreen.hide();
+    await NativeSystem.hideSplash();
   },
 };
