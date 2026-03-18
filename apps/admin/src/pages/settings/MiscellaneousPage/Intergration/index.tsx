@@ -41,7 +41,7 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
 
   const posOptions = useMemo(
     () => [
-      { value: 'NONE', label: t('선택 안함') },
+      // { value: 'NONE', label: t('선택 안함') },
       { value: 'OKPOS', label: t('오케이포스') },
     ],
     [t]
@@ -92,6 +92,7 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
           onChange={(value) => {
             setShopPosCode(String(value));
           }}
+          disabled={true}
         />
       </UIStyles.setting.ContentLayout>
       {shopPosCode === 'OKPOS' && (
