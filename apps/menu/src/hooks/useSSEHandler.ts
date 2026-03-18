@@ -281,16 +281,20 @@ export const useSSEHandler = () => {
         return;
       }
 
-      // 현재 테이블 목록 먼저 새로고침
-      handlersRef.current.refetchCurrentTableList(shopCode);
-      const tableNumbersFromSse = message.data as { [key: string]: number };
+      // 테이블 목록 페이지
+      // 현재 테이블 목록 새로고침
+      const { locationPathname } = sseHandlerDataRef.current;
+      if (locationPathname === ROUTES.TABLES.generate()) {
+        handlersRef.current.refetchCurrentTableList(shopCode);
+        return;
+      }
 
       const { shopDetailData, tableNumFromParams } = sseHandlerDataRef.current;
       const isPosLinked =
         !!shopDetailData?.shopSetting?.shopPosCode &&
         shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
       // 테이블 상세 페이지
-      // 포스 연동이 아닐경우
+      // 포스 연동이 아닐경우 (포스 연동일 경우 ORDER_COMPLETE에서 처리리)
       if (tableNumFromParams && !isPosLinked) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.orders.tableOrderHistories(
@@ -298,16 +302,18 @@ export const useSSEHandler = () => {
             tableNumFromParams
           ),
         });
+        return;
       }
 
       const { currentDeviceData } = sseHandlerDataRef.current;
-      // 관리자 모드에서 테이블 선택을 안했을 경우
+      // 관리자 모드에서 테이블 선택을 안한 상태
       const currentTableNumber = currentDeviceData?.tableNumber;
       if (!currentTableNumber) {
         return;
       }
 
       const { tableOrderHistoriesData } = sseHandlerDataRef.current;
+      const tableNumbersFromSse = message.data as { [key: string]: number };
 
       // 현재 테이블의 주문이 없는 경우
       // 주문 그룹만 생성되어 있고, 주문이 없는 경우

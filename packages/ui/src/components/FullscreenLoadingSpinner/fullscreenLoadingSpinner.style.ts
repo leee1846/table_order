@@ -12,6 +12,7 @@ export const Container = styled.div`
   align-items: center;
   z-index: ${zIndex.popover};
   background-color: transparent;
+  pointer-events: none;
 `;
 
 export const SpinnerWrapper = styled.div<{ size: number }>`
