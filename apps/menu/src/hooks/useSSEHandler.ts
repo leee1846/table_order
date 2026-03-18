@@ -474,11 +474,15 @@ export const useSSEHandler = () => {
     },
 
     handlePickupMessage: (message: ISseMessage) => {
-      const { shopDetailData, currentDeviceData } = sseHandlerDataRef.current;
+      const { shopDetailData, currentDeviceData, locationPathname } =
+        sseHandlerDataRef.current;
       const usePickupAlert =
         shopDetailData?.shopSetting?.usePickupAlert ?? false;
 
       if (!usePickupAlert) {
+        return;
+      }
+      if (locationPathname !== ROUTES.ROOT.path) {
         return;
       }
       if (!currentDeviceData?.tableNumber || !message?.data) {

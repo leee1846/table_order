@@ -238,10 +238,12 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     useState<IPaymentResponse | null>(null);
 
   /**
-   * POS 실패 시 환불 처리를 위해 누적된 완료된 카드 결제 결과 목록
+   * POS 실패 시 환불 처리를 위한 직전 완료된 카드 결제 결과
    * ref 사용 이유: handleOrderCompleteFailure가 register에 전달될 때 스테일 클로저를 피하기 위함
+   * 각 차수 결제는 ORDER_COMPLETE를 받은 후에야 다음 결제로 진행되므로
+   * POS 실패 시 환불 대상은 현재 차수(직전 결제) 단건만 해당됨
    */
-  const completedPaymentResultsRef = useRef<IPaymentResponse[]>([]);
+  const completedPaymentResultsRef = useRef<IPaymentResponse | null>(null);
 
   // 할부 선택 모달 상태
   const [isInstallmentModalOpen, setIsInstallmentModalOpen] =
@@ -630,14 +632,14 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
   /**
    * POS 실패(-603 또는 API 에러) 시 실행할 처리
-   * 분할 결제로 완료된 모든 카드 결제를 순차적으로 취소(환불)한 후 오류 처리
+   * 직전 완료된 카드 결제 단건을 취소(환불)한 후 오류 처리
    */
   const handleOrderCompleteFailure = async (): Promise<void> => {
-    for (const result of completedPaymentResultsRef.current) {
+    if (completedPaymentResultsRef.current) {
       try {
-        await Payment.cancel(result);
+        await Payment.cancel(completedPaymentResultsRef.current);
       } catch {
-        // 개별 취소 실패 시 무시하고 다음 건 진행
+        // 취소 실패 시 무시
       }
     }
 
@@ -649,20 +651,44 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * @param isAllPaid - 전체 결제 완료 여부
    * @param orderUuidFromPayment - executePayment에서 전달한 주문 UUID (setState 비동기 이슈 방지)
    *
-   * - 부분 결제 시: 성공 메시지만 표시
+   * - 부분 결제 시: POS 연동이면 ORDER_COMPLETE 대기 후 성공 메시지 표시, 미연동이면 즉시 표시
    * - 전체 결제 완료 시: 주문 완료 모달 표시, 장바구니 비우기
    */
   const handlePaymentSuccess = (
     isAllPaid: boolean,
     orderUuidFromPayment?: string
   ): void => {
-    // 부분 결제 완료
-    if (!isAllPaid) {
+    const handleOrderCompleteSuccess = () => {
       setModalData('isCardPaymentProgressModalOpened', false);
       toast(t('결제를 성공했습니다.'), {
         duration: TOAST_DURATION,
         position: TOAST_POSITION,
       });
+    };
+
+    // 부분 결제 완료
+    if (!isAllPaid) {
+      const shopDetailData = useShopDetailStore.getState().data;
+      const isPosLinked =
+        !!shopDetailData?.shopSetting?.shopPosCode &&
+        shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
+
+      // 부분 결제 완료: POS 연동 시 ORDER_COMPLETE 대기 및 폴링
+      if (isPosLinked && orderUuidFromPayment) {
+        const shopCode = String(shopData?.shopCode ?? '');
+        usePosOrderStore.getState().register(
+          orderUuidFromPayment,
+          shopCode,
+          handleOrderCompleteSuccess,
+          handleOrderCompleteFailure,
+          // 타임아웃(최대 횟수 초과)은 POS 응답 미확인 상태이므로 환불하지 않음
+          handleOrderCompleteTimeout
+        );
+        return;
+      }
+
+      // 부분 결제 완료 (POS 미연동)
+      handleOrderCompleteSuccess();
       return;
     }
 
@@ -768,10 +794,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     await executePayment(
       paymentAmount,
       (orderUuidFromPayment, paymentResult) => {
-        completedPaymentResultsRef.current = [
-          ...completedPaymentResultsRef.current,
-          paymentResult,
-        ];
+        completedPaymentResultsRef.current = paymentResult;
         setPaidMenuIds((prevIds) => new Set([...prevIds, ...selectedMenuIds]));
         setSelectedMenus([]);
         handlePaymentSuccess(isAllPaid, orderUuidFromPayment);
@@ -817,10 +840,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     await executePayment(
       paymentAmount,
       (orderUuidFromPayment, paymentResult) => {
-        completedPaymentResultsRef.current = [
-          ...completedPaymentResultsRef.current,
-          paymentResult,
-        ];
+        completedPaymentResultsRef.current = paymentResult;
 
         // 결제 완료된 인원 ID 저장
         setPaidPersonIds(

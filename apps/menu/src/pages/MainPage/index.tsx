@@ -222,11 +222,6 @@ export const MainPage = () => {
     return <CustomerCountSelector />;
   }
 
-  /** 픽업 알림 표시 */
-  if (pageStates.pickupAlarm.show) {
-    return <PickupAlarm />;
-  }
-
   return (
     <S.Container>
       <Header
@@ -256,6 +251,13 @@ export const MainPage = () => {
       {/* 장바구니 메뉴 주문 리마인더 표시 */}
       {/* Sidebar/Contents 상태(선택 카테고리, 스크롤) 유지하기 위하여 현재 위치에 표시 */}
       {pageStates.cartReminder.show && <CartReminder />}
+
+      {/* 픽업 알림: 메인 컨텐츠 위에 덮어씌움. 장바구니/결제 등 모달은 zIndex.modalBackdrop(400) 이상으로 이 위에 노출됨 */}
+      {pageStates.pickupAlarm.show && (
+        <S.PickupAlarmOverlay>
+          <PickupAlarm />
+        </S.PickupAlarmOverlay>
+      )}
     </S.Container>
   );
 };
