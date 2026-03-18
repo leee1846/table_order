@@ -15,6 +15,7 @@ import {
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
+import { hasInvalidImageFile } from '@repo/util/string';
 import { useAdminTranslation } from '@/config/i18n';
 import type {
   FormValues,
@@ -238,13 +239,8 @@ export const MenuManageModalProvider = ({
     }
 
     const files = images.getFiles();
-    const hasSvgFile = files.some(
-      (file) =>
-        file.name.toLowerCase().endsWith('.svg') ||
-        file.type === 'image/svg+xml'
-    );
 
-    if (hasSvgFile) {
+    if (hasInvalidImageFile(files)) {
       toast(t('파일 확장자는 .jpg, .jpeg, .png, .webp 만 지원합니다.'));
       return;
     }
@@ -260,7 +256,15 @@ export const MenuManageModalProvider = ({
     } finally {
       setIsSaving(false);
     }
-  }, [isSaving, mode, handleCreate, handleUpdate, formValues.menuName, t]);
+  }, [
+    isSaving,
+    mode,
+    handleCreate,
+    handleUpdate,
+    formValues.menuName,
+    images,
+    t,
+  ]);
 
   /**
    * Context에 제공할 값들을 메모이제이션
