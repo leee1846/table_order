@@ -33,6 +33,7 @@ import {
   usePutClearOrder,
   useGetCategoriesWithMenus,
   useGetShopDetail,
+  useGetTableGroupList,
 } from '@repo/api/queries';
 import type { ICurrentTable, TOrderType } from '@repo/api/types';
 import type { Order, OrderItem } from './orderSection/types';
@@ -138,16 +139,15 @@ export const TableDetailContainer = ({
     }
   }, [orderHistoriesResponse?.data]);
 
-  const { data: menuboardResponse } =
-    useGetCategoriesWithMenus(
-      {
-        shopCode,
-        tableNumber,
-      },
-      {
-        enabled: !!shopCode && !!tableNumber,
-      }
-    );
+  const { data: menuboardResponse } = useGetCategoriesWithMenus(
+    {
+      shopCode,
+      tableNumber,
+    },
+    {
+      enabled: !!shopCode && !!tableNumber,
+    }
+  );
   const menuboardCategories = menuboardResponse?.data ?? [];
 
   // 매장 상세 정보 조회
@@ -181,10 +181,31 @@ export const TableDetailContainer = ({
   const { mutateAsync: clearOrder, isPending: isClearOrderPending } =
     usePutClearOrder();
 
+  const { data: tableGroupListResponse } = useGetTableGroupList(
+    { shopCode },
+    {
+      enabled: !!shopCode,
+    }
+  );
+
+  const currentTableName = useMemo(() => {
+    if (!tableGroupListResponse?.data || !tableNumber) {
+      return orderHistoriesResponse?.data?.tableName ?? '';
+    }
+
+    // flatMap으로 모든 테이블을 평탄화하여 검색
+    const foundTable = tableGroupListResponse.data
+      .flatMap((group) => group.tableList || [])
+      .find((table) => table.tableNumber === tableNumber);
+
+    // 찾은 경우 현재 테이블 이름, 못 찾은 경우 히스토리의 tableName 또는 tableNumber 사용
+    return foundTable?.tableName || orderHistoriesResponse?.data?.tableName;
+  }, [orderHistoriesResponse, tableGroupListResponse, tableNumber]);
+
   const order: Order | null = useMemo(() => {
     if (!orderHistoriesResponse?.data) {
       return {
-        tableName: orderHistoriesResponse?.data?.tableName ?? '',
+        tableName: currentTableName ?? '',
         discountRate: 0,
         numberOfPeople: orderHistoriesResponse?.data?.customerCount ?? 0,
         items: [],
@@ -221,7 +242,7 @@ export const TableDetailContainer = ({
       }) || [];
 
     return {
-      tableName: data.tableName ?? '',
+      tableName: currentTableName ?? '',
       discountRate: data.discountRate || 0,
       numberOfPeople: orderHistoriesResponse?.data?.customerCount ?? 0,
       items,
@@ -231,7 +252,7 @@ export const TableDetailContainer = ({
       totalPrice: data.totalAmount || 0,
       paymentList: data.paymentList ?? [],
     };
-  }, [orderHistoriesResponse]);
+  }, [orderHistoriesResponse, currentTableName]);
 
   const handleAllCancel = () => {
     if (order.items.length === 0) {
