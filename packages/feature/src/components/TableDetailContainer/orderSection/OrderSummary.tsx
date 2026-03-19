@@ -54,9 +54,8 @@ const Row = styled.div`
   line-height: 31.998px; /* 133.333% */
   letter-spacing: -0.6px;
   display: grid;
-  grid-template-columns: 1fr minmax(0, 5rem) 8rem;
+  grid-template-columns: 1fr minmax(0, 5rem) 9rem;
   min-width: 0;
-
   .name,
   .qty {
     color: ${colors.grey[600]};

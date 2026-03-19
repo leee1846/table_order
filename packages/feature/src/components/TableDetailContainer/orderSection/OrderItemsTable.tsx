@@ -126,7 +126,7 @@ const TableWrap = styled.div`
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 1fr 5rem 8rem;
+  grid-template-columns: 1fr 5rem 9rem;
   cursor: pointer;
 
   &.no-click {
