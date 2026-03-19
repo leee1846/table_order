@@ -303,6 +303,18 @@ export const TableDetailContainer = ({
     return remainingAmount === 0;
   }, [order.paymentList, order.totalPrice]);
 
+  const handleSelectCancelSuccess = async () => {
+    const { data: updatedData } = await refetchOrderHistories();
+    if (
+      !updatedData?.data?.orderDetailMenuList ||
+      updatedData.data.orderDetailMenuList.length === 0
+    ) {
+      toast(t('테이블을 정리했어요.'));
+      setIsNavigatingAway(true);
+      navigate('/tables');
+    }
+  };
+
   const handleClearTable = async () => {
     await refetchOrderHistories();
 
@@ -391,7 +403,7 @@ export const TableDetailContainer = ({
         isOpen={isSelectCancelDialogOpen}
         onClose={() => setIsSelectCancelDialogOpen(false)}
         items={order.items}
-        onCancelSuccess={() => refetchOrderHistories()}
+        onCancelSuccess={handleSelectCancelSuccess}
         i18nInstance={i18nInstance}
       />
       {/* 금액 변경 모달 */}
