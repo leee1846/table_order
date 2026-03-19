@@ -702,6 +702,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
       setModalData('orderCompleteData', orderData);
       setModalData('orderCompleteTotalPrice', totalPrice);
+      setModalData('isOrderCompleteFromPrepaidCardOrFinalSplit', true);
       setModalData('isOrderCompleteModalOpened', true);
 
       setModalData('isCardPaymentProgressModalOpened', false);

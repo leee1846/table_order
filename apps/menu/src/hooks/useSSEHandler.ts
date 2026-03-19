@@ -20,6 +20,7 @@ import { SystemControl, Installer } from '@repo/util/app';
 import { SSE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import { ROUTES } from '@/constants/routes';
 import { globalTimerManager } from '@/utils/timerManager';
+import { applyMenuboardStateAfterTableOrderHistoriesCleared } from '@/utils/applyMenuboardStateAfterTableOrderHistoriesCleared';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { clearAuthData } from '@/utils/auth';
@@ -32,10 +33,6 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useShopThemePage } from './useShopThemePage';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { useModalStore } from '@/stores/useModalStore';
-import { useInitialPageStore } from '@/stores/useInitialPageStore';
-import { useCartStore } from '@/stores/useCartStore';
-import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
-import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { usePosSyncOverlayStore } from '@/stores/usePosSyncOverlayStore';
@@ -192,9 +189,6 @@ export const useSSEHandler = () => {
     skipInitialRequest: true,
   });
 
-  const { clearData: clearInitialPage } = useInitialPageStore();
-  const { clearCart } = useCartStore();
-  const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { data: pickupAlarmData, setData: setPickupAlarm } =
     usePickupAlarmStore();
 
@@ -325,22 +319,14 @@ export const useSSEHandler = () => {
             tableOrderHistoriesData?.orderDetailMenuList?.length < 1);
         // pos or 관리자앱에서 주문을 모두 취소 or 테이블 비우기 했을 경우
         if (hasExistingOrders) {
-          refreshTableOrderHistoriesData();
-          clearInitialPage();
-          clearCart();
-          clearCustomerCountData();
-          // 매장의 기본 언어로 재설정
-          const { shopDetailData } = sseHandlerDataRef.current;
-          if (shopDetailData?.shopSetting?.shopLanguage) {
-            useCustomerLanguageStore.getState().setData({
-              currentLanguage: shopDetailData.shopSetting.shopLanguage,
-              isSelected: false,
-            });
-          } else {
-            useCustomerLanguageStore.getState().clearData();
+          // 메뉴판에서 주문을 넣었을경우 ORDER_COMPLETE에서 처리하기 때문에 중복 처리 방지
+          if (usePosOrderStore.getState().isWaitingForPosOrderComplete) {
+            return;
           }
-          useModalStore.getState().closeAllModals();
-          useDialogStore.getState().closeAllDialogs();
+          refreshTableOrderHistoriesData();
+          applyMenuboardStateAfterTableOrderHistoriesCleared(
+            sseHandlerDataRef.current.shopDetailData
+          );
           return;
         }
         return;
@@ -479,6 +465,10 @@ export const useSSEHandler = () => {
     },
 
     handleDeviceMessage: (shopCode: string) => {
+      const { locationPathname } = sseHandlerDataRef.current;
+      if (locationPathname !== ROUTES.TABLES.generate()) {
+        return;
+      }
       handlersRef.current.refetchDeviceList(shopCode);
     },
 

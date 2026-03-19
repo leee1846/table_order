@@ -261,6 +261,7 @@ export const CardPaymentInstallmentModal = ({
     // 주문 완료 모달을 위한 데이터 저장
     modalStore.setModalData('orderCompleteData', orderData);
     modalStore.setModalData('orderCompleteTotalPrice', totalPrice);
+    modalStore.setModalData('isOrderCompleteFromPrepaidCardOrFinalSplit', true);
     modalStore.setModalData('isOrderCompleteModalOpened', true);
 
     // 모든 모달 닫기

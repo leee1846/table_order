@@ -31,6 +31,11 @@ interface IModalStore {
     orderCompleteData: IOrder[] | null;
     /** 주문 완료 모달 총 가격 */
     orderCompleteTotalPrice: number;
+    /**
+     * 선불 카드 단일 결제 또는 분할 결제 마지막 차수로 연 주문 완료 모달인지
+     * (모달 닫을 때 선불 자동 리셋 등 분기용, 그 외 경로에서는 false)
+     */
+    isOrderCompleteFromPrepaidCardOrFinalSplit: boolean;
     /** 현금 결제 유도 모달 */
     isCashPaymentInducementModalOpened: boolean;
     /** 현금 결제 유도 모달 총 가격 */
@@ -78,6 +83,7 @@ const initialData = {
   isOrderCompleteModalOpened: false,
   orderCompleteData: null,
   orderCompleteTotalPrice: 0,
+  isOrderCompleteFromPrepaidCardOrFinalSplit: false,
   isCashPaymentInducementModalOpened: false,
   cashPaymentInducementTotalPrice: 0,
 };

@@ -47,7 +47,10 @@ interface IPosOrderStore {
 export const usePosOrderStore = create<IPosOrderStore>((set) => {
   const pendingOrders = new Map<string, PendingEntry>();
 
-  const resolveOrder = (orderUuid: string, type: 'success' | 'failure' | 'timeout') => {
+  const resolveOrder = (
+    orderUuid: string,
+    type: 'success' | 'failure' | 'timeout'
+  ) => {
     const entry = pendingOrders.get(orderUuid);
     if (!entry) {
       return;
@@ -76,10 +79,17 @@ export const usePosOrderStore = create<IPosOrderStore>((set) => {
         orderUuid,
         onSuccess: () => resolveOrder(orderUuid, 'success'),
         onFailure: () => resolveOrder(orderUuid, 'failure'),
-        onTimeout: onTimeout ? () => resolveOrder(orderUuid, 'timeout') : undefined,
+        onTimeout: onTimeout
+          ? () => resolveOrder(orderUuid, 'timeout')
+          : undefined,
       });
 
-      pendingOrders.set(orderUuid, { onSuccess, onFailure, onTimeout, stopPoller: stop });
+      pendingOrders.set(orderUuid, {
+        onSuccess,
+        onFailure,
+        onTimeout,
+        stopPoller: stop,
+      });
       set({ isWaitingForPosOrderComplete: true });
     },
 

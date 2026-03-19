@@ -85,6 +85,7 @@ export const SettingInfoTab = ({ formData, updateFormData }: Props) => {
               onChange={(value) =>
                 updateSettingInfo({ posLinkType: value as 'NONE' | 'OKPOS' })
               }
+              disabled
               placeholder="포스연동방식을 선택하세요"
             />
           </S.FieldGroup>
