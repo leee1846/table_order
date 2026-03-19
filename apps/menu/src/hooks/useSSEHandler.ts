@@ -329,7 +329,16 @@ export const useSSEHandler = () => {
           clearInitialPage();
           clearCart();
           clearCustomerCountData();
-          useCustomerLanguageStore.getState().clearData();
+          // 매장의 기본 언어로 재설정
+          const { shopDetailData } = sseHandlerDataRef.current;
+          if (shopDetailData?.shopSetting?.shopLanguage) {
+            useCustomerLanguageStore.getState().setData({
+              currentLanguage: shopDetailData.shopSetting.shopLanguage,
+              isSelected: false,
+            });
+          } else {
+            useCustomerLanguageStore.getState().clearData();
+          }
           useModalStore.getState().closeAllModals();
           useDialogStore.getState().closeAllDialogs();
           return;
