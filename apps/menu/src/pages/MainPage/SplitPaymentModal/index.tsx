@@ -20,8 +20,13 @@ import {
   type IPaymentResponse,
   // type IPaymentEventData,
 } from '@repo/util/app';
-import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
-import type { IOrder } from '@repo/api/types';
+import {
+  usePostPaymentApproval,
+  usePostTableOrder,
+  usePutCancelOrderMenu,
+  usePutPaymentCancel,
+} from '@repo/api/queries';
+import type { IOrder, ICancelOrderMenuRequest } from '@repo/api/types';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
@@ -210,6 +215,8 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     ],
   });
   const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
+  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
 
   // 결제 방식 상태
   const [isPaymentByMenu, setIsPaymentByMenu] = useState(true);
@@ -244,6 +251,25 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * POS 실패 시 환불 대상은 현재 차수(직전 결제) 단건만 해당됨
    */
   const completedPaymentResultsRef = useRef<IPaymentResponse | null>(null);
+
+  /**
+   * POS 실패/타임아웃 시 주문 취소를 위한 요청 데이터
+   * ref 사용 이유: completedPaymentResultsRef와 동일 (스테일 클로저 방지)
+   * 주문은 첫 번째 결제 시 한 번만 생성되므로 이후 분할 결제에도 동일한 데이터 사용
+   */
+  const cancelOrderMenuRequestRef = useRef<ICancelOrderMenuRequest>([]);
+
+  /**
+   * POS 실패 시 환불 정보 전송을 위한 결제 seq
+   * ref 사용 이유: completedPaymentResultsRef와 동일 (스테일 클로저 방지)
+   */
+  const paymentSeqRef = useRef<number>(0);
+
+  /**
+   * POS 실패 시 환불 정보 전송을 위한 주문 그룹 UUID
+   * ref 사용 이유: completedPaymentResultsRef와 동일 (스테일 클로저 방지)
+   */
+  const orderGroupUuidRef = useRef<string>('');
 
   // 할부 선택 모달 상태
   const [isInstallmentModalOpen, setIsInstallmentModalOpen] =
@@ -451,6 +477,14 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       throw new Error('주문 생성에 실패했습니다.');
     }
 
+    // 6. 주문 취소 요청 데이터 추출 후 ref에 저장 (POS 실패/타임아웃 시 사용)
+    const orderDetailMenuList =
+      orderResponse?.data?.orderInfoList.at(-1)?.orderDetailMenuList ?? [];
+    cancelOrderMenuRequestRef.current = orderDetailMenuList.map((menu) => ({
+      orderDetailMenuSeq: menu.orderDetailMenuSeq,
+      canceledQuantity: menu.menuQuantity,
+    }));
+
     return { orderGroupUuid, orderUuid };
   };
 
@@ -460,15 +494,16 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * @returns 주문 UUID 정보
    */
   const ensureOrderCreated = async (): Promise<PaymentResult> => {
-    // 이미 생성된 주문이 있으면 재사용
+    // 이미 생성된 주문이 있으면 재사용 (cancelOrderMenuRequest는 ref에 이미 저장됨)
     if (orderGroupUuid && orderUuid) {
       return { orderGroupUuid, orderUuid };
     }
 
-    // 신규 주문 생성 및 상태 저장
+    // 신규 주문 생성 및 상태 저장 (cancelOrderMenuRequestRef는 createOrder 내부에서 저장)
     const result = await createOrder();
     setOrderGroupUuid(result.orderGroupUuid);
     setOrderUuid(result.orderUuid);
+    orderGroupUuidRef.current = result.orderGroupUuid;
     return result;
   };
 
@@ -537,7 +572,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         } catch {
           setPendingPaymentCancel(paymentResult);
           // 환불 실패 시 → 사용자에게 재시도 환불 진행 안내 처리
-          const err = new Error(t('결제 처리 중 오류가 발생했습니다.'));
+          const err = new Error(t('결제 환불 중 오류가 발생했습니다.'));
           (
             err as Error & { hasPendingPaymentCancel?: boolean }
           ).hasPendingPaymentCancel = true;
@@ -547,9 +582,10 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       }
 
       // 5. 서버에 결제 승인 정보 전송 (실패 시 에러 무시)
+      paymentSeqRef.current = 0;
       try {
         const shopDetailData = useShopDetailStore.getState().data;
-        await postPaymentApproval({
+        const approvalResponse = await postPaymentApproval({
           params: {
             paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
             orderGroupUuid,
@@ -562,6 +598,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
             HTTP_STATUS_NOT_FOUND,
           ],
         });
+        paymentSeqRef.current = approvalResponse.data ?? 0;
       } catch {
         // postPaymentApproval 실패는 무시
       }
@@ -623,23 +660,32 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   };
 
   /**
-   * POS 타임아웃(최대 횟수 초과) 시 실행할 처리
-   * POS 응답 미확인 상태이므로 환불하지 않음
+   * POS 실패(-603 / API 에러 / 타임아웃) 시 실행할 처리
+   * 환불 → 환불 정보 전송 → 주문 취소 순서로 처리
+   * 주문 API를 요청한 첫 번째 결제 라운드에서만 취소 (이후 라운드는 ref가 비어있음)
    */
-  const handleOrderCompleteTimeout = (): void => {
-    closePosErrorModals();
-  };
-
-  /**
-   * POS 실패(-603 또는 API 에러) 시 실행할 처리
-   * 직전 완료된 카드 결제 단건을 취소(환불)한 후 오류 처리
-   */
-  const handleOrderCompleteFailure = async (): Promise<void> => {
+  const handlePosOrderFailure = async (): Promise<void> => {
     if (completedPaymentResultsRef.current) {
       try {
-        await Payment.cancel(completedPaymentResultsRef.current);
+        const cancelResult = await Payment.cancel(
+          completedPaymentResultsRef.current
+        );
+        if (paymentSeqRef.current > 0) {
+          const shopDetailData = useShopDetailStore.getState().data;
+          await putPaymentCancel({
+            params: {
+              paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
+              orderGroupUuid: orderGroupUuidRef.current ?? '',
+              paymentSeq: paymentSeqRef.current,
+            },
+            data: cancelResult,
+          });
+        }
+        if (cancelOrderMenuRequestRef.current.length > 0) {
+          await cancelOrderMenu(cancelOrderMenuRequestRef.current);
+        }
       } catch {
-        // 취소 실패 시 무시
+        // 카드 취소 실패 시 무시
       }
     }
 
@@ -659,6 +705,8 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     orderUuidFromPayment?: string
   ): void => {
     const handleOrderCompleteSuccess = () => {
+      // POS가 주문을 정상 접수했으므로 이후 라운드에서는 주문 취소 불필요
+      cancelOrderMenuRequestRef.current = [];
       setModalData('isCardPaymentProgressModalOpened', false);
       toast(t('결제를 성공했습니다.'), {
         duration: TOAST_DURATION,
@@ -676,14 +724,14 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       // 부분 결제 완료: POS 연동 시 ORDER_COMPLETE 대기 및 폴링
       if (isPosLinked && orderUuidFromPayment) {
         const shopCode = String(shopData?.shopCode ?? '');
-        usePosOrderStore.getState().register(
-          orderUuidFromPayment,
-          shopCode,
-          handleOrderCompleteSuccess,
-          handleOrderCompleteFailure,
-          // 타임아웃(최대 횟수 초과)은 POS 응답 미확인 상태이므로 환불하지 않음
-          handleOrderCompleteTimeout
-        );
+        usePosOrderStore
+          .getState()
+          .register(
+            orderUuidFromPayment,
+            shopCode,
+            handleOrderCompleteSuccess,
+            handlePosOrderFailure
+          );
         return;
       }
 
@@ -721,14 +769,14 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     // 전체 결제 완료: POS 연동 시 ORDER_COMPLETE 대기 및 폴링
     if (isPosLinked && orderUuidFromPayment) {
       const shopCode = String(shopData?.shopCode ?? '');
-      usePosOrderStore.getState().register(
-        orderUuidFromPayment,
-        shopCode,
-        runFullSuccess,
-        handleOrderCompleteFailure,
-        // 타임아웃(최대 횟수 초과)은 POS 응답 미확인 상태이므로 환불하지 않음
-        handleOrderCompleteTimeout
-      );
+      usePosOrderStore
+        .getState()
+        .register(
+          orderUuidFromPayment,
+          shopCode,
+          runFullSuccess,
+          handlePosOrderFailure
+        );
       return;
     }
 

@@ -12,7 +12,10 @@ import {
 import { useCartStore } from '@/stores/useCartStore';
 import { formatCurrency } from '@repo/util/string';
 import { MenuDetailWithOptionsModal } from '../Contents/MenuDetailWithOptionsModal';
-import type { ICategoryWithMenus } from '@repo/api/types';
+import type {
+  ICategoryWithMenus,
+  ICancelOrderMenuRequest,
+} from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
@@ -22,6 +25,7 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { useCategoryStore } from '@/stores/useCategoryStore';
+import { usePutCancelOrderMenu } from '@repo/api/queries';
 
 const TOAST_OPTIONS = {
   position: 'center-center' as const,
@@ -36,6 +40,7 @@ interface Props {
     orderUuid: string;
     result: boolean;
     totalPrice: number;
+    cancelOrderMenuRequest: ICancelOrderMenuRequest;
   }>;
   openPaymentsModal: () => void;
 }
@@ -50,6 +55,7 @@ export const CartList = ({
   const { theme } = useThemeMode();
   const { data: modalData, setModalData } = useModalStore();
   const shopDetailData = useShopDetailStore((s) => s.data);
+  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
 
   const {
     data: cartData,
@@ -230,43 +236,49 @@ export const CartList = ({
         // 총 금액이 0원이거나 선불이 아닌 경우 후불 처리
         if (totalPrice === 0 || !shopDetailData?.shopSetting?.usePrepayment) {
           const response = await executePostpaidOrder();
+
           const handleOrderCompleteSuccess = () => {
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
           };
 
-          if (response.result) {
-            const isPosLinked =
-              !!shopDetailData?.shopSetting?.shopPosCode &&
-              shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
+          const isPosLinked =
+            !!shopDetailData?.shopSetting?.shopPosCode &&
+            shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
-            if (isPosLinked && response.orderUuid) {
-              const handleOrderCompleteFailure = () => {
-                openConfirmDialog({
-                  title: t('POS 오류'),
-                  content: t(
-                    '주문 요청에 실패했습니다. 사장님에게 문의해주세요.'
-                  ),
-                  confirmText: t('확인'),
-                });
-                onClose();
-              };
+          if (response.result && isPosLinked && response.orderUuid) {
+            const handlePosOrderFailure = async () => {
+              try {
+                await cancelOrderMenu(response.cancelOrderMenuRequest);
+              } catch {
+                // 주문 취소 실패 시 무시
+              }
+              openConfirmDialog({
+                title: t('POS 오류'),
+                content: t(
+                  '주문 요청에 실패했습니다. 사장님에게 문의해주세요.'
+                ),
+                confirmText: t('확인'),
+              });
+              onClose();
+            };
 
-              const shopCode = String(
-                useShopStore.getState().data?.shopCode ?? ''
-              );
-              usePosOrderStore.getState().register(
+            const shopCode = String(
+              useShopStore.getState().data?.shopCode ?? ''
+            );
+            usePosOrderStore
+              .getState()
+              .register(
                 response.orderUuid,
                 shopCode,
                 handleOrderCompleteSuccess,
-                handleOrderCompleteFailure
+                handlePosOrderFailure
               );
 
-              return;
-            }
-
-            handleOrderCompleteSuccess();
+            return;
           }
+
+          handleOrderCompleteSuccess();
           return;
         }
 

@@ -19,6 +19,8 @@ import { useShopStore } from '@/stores/useShopStore';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import type { ICartMenu } from '@/types/cart';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import type { ICancelOrderMenuRequest } from '@repo/api/types';
+import { usePutCancelOrderMenu } from '@repo/api/queries';
 
 interface Props {
   onClose: () => void;
@@ -32,6 +34,7 @@ interface Props {
     orderUuid: string;
     result: boolean;
     totalPrice: number;
+    cancelOrderMenuRequest: ICancelOrderMenuRequest;
   }>;
 }
 
@@ -51,6 +54,7 @@ export const PaymentsModal = ({
     setCashPaymentInducementModal,
   } = useModalStore();
   const { data: cartData } = useCartStore();
+  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
 
   const isPosLinked =
     !!shopDetailData?.shopSetting?.shopPosCode &&
@@ -100,35 +104,38 @@ export const PaymentsModal = ({
             onClose();
           };
 
-          if (response.result) {
-            if (isPosLinked && response.orderUuid) {
-              const handleOrderCompleteFailure = () => {
-                openConfirmDialog({
-                  title: t('POS 오류'),
-                  content: t(
-                    '주문 요청에 실패했습니다. 사장님에게 문의해주세요.'
-                  ),
-                  confirmText: t('확인'),
-                });
-                onClose();
-              };
+          if (response.result && isPosLinked && response.orderUuid) {
+            const handlePosOrderFailure = async () => {
+              try {
+                await cancelOrderMenu(response.cancelOrderMenuRequest);
+              } catch {
+                // 주문 취소 실패 시 무시
+              }
+              openConfirmDialog({
+                title: t('POS 오류'),
+                content: t(
+                  '주문 요청에 실패했습니다. 사장님에게 문의해주세요.'
+                ),
+                confirmText: t('확인'),
+              });
+              onClose();
+            };
 
-              const shopCode = String(
-                useShopStore.getState().data?.shopCode ?? ''
+            const shopCode = String(
+              useShopStore.getState().data?.shopCode ?? ''
+            );
+            usePosOrderStore
+              .getState()
+              .register(
+                response.orderUuid,
+                shopCode,
+                handleOrderCompleteSuccess,
+                handlePosOrderFailure
               );
-              usePosOrderStore
-                .getState()
-                .register(
-                  response.orderUuid,
-                  shopCode,
-                  handleOrderCompleteSuccess,
-                  handleOrderCompleteFailure
-                );
-              return;
-            }
-
-            handleOrderCompleteSuccess();
+            return;
           }
+
+          handleOrderCompleteSuccess();
         },
       });
       return;
@@ -142,40 +149,53 @@ export const PaymentsModal = ({
         secondaryText: t('취소'),
         onConfirm: async () => {
           const response = await executePostpaidOrder();
-          if (response.result) {
-            if (isPosLinked && response.orderUuid) {
-              const handleOrderCompleteSuccess = () => {
-                setModalData('isOrderCompleteModalOpened', true);
-                onClose();
-              };
-              const handleOrderCompleteFailure = () => {
-                openConfirmDialog({
-                  title: t('POS 오류'),
-                  content: t(
-                    '주문 요청에 실패했습니다. 사장님에게 문의해주세요.'
-                  ),
-                  confirmText: t('확인'),
-                });
-                onClose();
-              };
 
-              const shopCode = String(
-                useShopStore.getState().data?.shopCode ?? ''
-              );
-              usePosOrderStore
-                .getState()
-                .register(
-                  response.orderUuid,
-                  shopCode,
-                  handleOrderCompleteSuccess,
-                  handleOrderCompleteFailure
-                );
-              return;
-            }
+          if (!response.result) {
+            openConfirmDialog({
+              title: t('오류'),
+              content: t('주문에 실패했습니다. 다시 시도해주세요.'),
+              confirmText: t('확인'),
+            });
+            return;
+          }
 
+          const handleOrderCompleteSuccess = () => {
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
+          };
+
+          if (isPosLinked && response.orderUuid) {
+            const handlePosOrderFailure = async () => {
+              try {
+                await cancelOrderMenu(response.cancelOrderMenuRequest);
+              } catch {
+                // 주문 취소 실패 시 무시
+              }
+              openConfirmDialog({
+                title: t('POS 오류'),
+                content: t(
+                  '주문 요청에 실패했습니다. 사장님에게 문의해주세요.'
+                ),
+                confirmText: t('확인'),
+              });
+              onClose();
+            };
+
+            const shopCode = String(
+              useShopStore.getState().data?.shopCode ?? ''
+            );
+            usePosOrderStore
+              .getState()
+              .register(
+                response.orderUuid,
+                shopCode,
+                handleOrderCompleteSuccess,
+                handlePosOrderFailure
+              );
+            return;
           }
+
+          handleOrderCompleteSuccess();
         },
       });
       return;

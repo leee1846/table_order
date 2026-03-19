@@ -18,3 +18,9 @@ export interface IPostPaymentApprovalRequestParams {
   orderGroupUuid: string;
   orderUuid: string;
 }
+
+export interface IPutPaymentCancelRequestParams {
+  paymentMethodCode: TVanCode;
+  orderGroupUuid: string;
+  paymentSeq: number;
+}

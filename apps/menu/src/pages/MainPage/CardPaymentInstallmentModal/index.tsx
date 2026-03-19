@@ -10,12 +10,17 @@ import {
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 // import { CardPaymentProgressModal } from '../CardPaymentProgressModal';
-import { usePostPaymentApproval, usePostTableOrder } from '@repo/api/queries';
+import {
+  usePostPaymentApproval,
+  usePostTableOrder,
+  usePutCancelOrderMenu,
+  usePutPaymentCancel,
+} from '@repo/api/queries';
+import type { ICancelOrderMenuRequest, IOrder } from '@repo/api/types';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
-import type { IOrder } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
@@ -100,6 +105,8 @@ export const CardPaymentInstallmentModal = ({
     ],
   });
   const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
+  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
 
   // const [paymentProgressMessage, setPaymentProgressMessage] =
   //   useState<string>('');
@@ -149,7 +156,11 @@ export const CardPaymentInstallmentModal = ({
     };
   }, [isPaymentProgressModalOpen]);
 
-  const createOrder = async () => {
+  const createOrder = async (): Promise<{
+    orderGroupUuid: string;
+    orderUuid: string;
+    cancelOrderMenuRequest: ICancelOrderMenuRequest;
+  }> => {
     const orders = getOrdersFromCart();
     const adjustedOrders = adjustOrderOptionQuantities(orders);
 
@@ -175,13 +186,23 @@ export const CardPaymentInstallmentModal = ({
       throw new Error('주문 생성에 실패했습니다.');
     }
 
-    return { orderGroupUuid, orderUuid };
+    const orderDetailMenuList =
+      orderResponse?.data?.orderInfoList.at(-1)?.orderDetailMenuList ?? [];
+    const cancelOrderMenuRequest: ICancelOrderMenuRequest =
+      orderDetailMenuList.map((menu) => ({
+        orderDetailMenuSeq: menu.orderDetailMenuSeq,
+        canceledQuantity: menu.menuQuantity,
+      }));
+
+    return { orderGroupUuid, orderUuid, cancelOrderMenuRequest };
   };
 
   const processPayment = async (): Promise<{
     paymentResult: IPaymentResponse;
     orderGroupUuid: string;
     orderUuid: string;
+    cancelOrderMenuRequest: ICancelOrderMenuRequest;
+    paymentSeq: number;
   }> => {
     // 결제만 완료된 미연결 결제(이전 재시도 실패 분)가 있으면 RB 취소 후 제거 (중복 결제 방지)
     if (pendingPaymentCancel && pendingPaymentCancel.TRAN_NO) {
@@ -226,10 +247,11 @@ export const CardPaymentInstallmentModal = ({
       throw new Error('결제 처리 중 오류가 발생했습니다.');
     }
 
-    const { orderGroupUuid, orderUuid } = orderResult;
+    const { orderGroupUuid, orderUuid, cancelOrderMenuRequest } = orderResult;
 
+    let paymentSeq = 0;
     try {
-      await postPaymentApproval({
+      const approvalResponse = await postPaymentApproval({
         params: {
           paymentMethodCode:
             useShopDetailStore.getState().data?.shopSetting?.vanCode ?? 'EASY',
@@ -243,11 +265,18 @@ export const CardPaymentInstallmentModal = ({
           HTTP_STATUS_NOT_FOUND,
         ],
       });
+      paymentSeq = approvalResponse.data ?? 0;
     } catch {
       // postPaymentApproval 실패는 무시
     }
 
-    return { paymentResult, orderGroupUuid, orderUuid };
+    return {
+      paymentResult,
+      orderGroupUuid,
+      orderUuid,
+      cancelOrderMenuRequest,
+      paymentSeq,
+    };
   };
 
   const handlePaymentSuccess = () => {
@@ -318,7 +347,13 @@ export const CardPaymentInstallmentModal = ({
 
   const handleConfirmPayment = async () => {
     try {
-      const { paymentResult, orderUuid } = await processPayment();
+      const {
+        paymentResult,
+        orderUuid,
+        cancelOrderMenuRequest,
+        orderGroupUuid,
+        paymentSeq,
+      } = await processPayment();
 
       const shopDetailData = useShopDetailStore.getState().data;
       const isPosLinked =
@@ -327,21 +362,30 @@ export const CardPaymentInstallmentModal = ({
 
       if (isPosLinked) {
         const shopCode = String(shopData?.shopCode ?? '');
-        usePosOrderStore.getState().register(
-          orderUuid,
-          shopCode,
-          handlePaymentSuccess,
-          async () => {
+        usePosOrderStore
+          .getState()
+          .register(orderUuid, shopCode, handlePaymentSuccess, async () => {
+            // POS 실패(-603 또는 API 에러) / 타임아웃: 환불 → 환불 정보 전송 → 주문 취소
             try {
-              await Payment.cancel(paymentResult);
+              const cancelResult = await Payment.cancel(paymentResult);
+              if (paymentSeq > 0) {
+                await putPaymentCancel({
+                  params: {
+                    paymentMethodCode:
+                      useShopDetailStore.getState().data?.shopSetting
+                        ?.vanCode ?? 'EASY',
+                    orderGroupUuid,
+                    paymentSeq,
+                  },
+                  data: cancelResult,
+                });
+              }
+              await cancelOrderMenu(cancelOrderMenuRequest);
             } catch {
-              // 취소 실패 시 무시 (이미 승인된 결제이므로 수동 처리 필요)
+              // 카드 취소 실패 시 무시 (이미 승인된 결제이므로 수동 처리 필요)
             }
             handleOrderCompleteFailure();
-          },
-          // 타임아웃(최대 횟수 초과)은 POS 응답 미확인 상태이므로 환불하지 않음
-          handleOrderCompleteFailure
-        );
+          });
         return;
       }
 

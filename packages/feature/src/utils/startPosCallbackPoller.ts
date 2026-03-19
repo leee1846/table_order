@@ -15,7 +15,7 @@ const POS_CALLBACK_CODE = {
   FAILURE: -603,
 } as const;
 
-const POLL_INTERVAL_MS = 3000;
+const POLL_INTERVAL_MS = 2000;
 const MAX_POLL_COUNT = 30;
 
 /**

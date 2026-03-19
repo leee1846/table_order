@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ICategoryWithMenus, IOrder } from '@repo/api/types';
+import type { ICategoryWithMenus, IOrder, ICancelOrderMenuRequest } from '@repo/api/types';
 import { usePostTableOrder } from '@repo/api/queries';
 import type { ICartMenu } from '@/types/cart';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -99,6 +99,7 @@ export const CartButton = ({ categories }: Props) => {
     orderUuid: string;
     result: boolean;
     totalPrice: number;
+    cancelOrderMenuRequest: ICancelOrderMenuRequest;
   }> => {
     try {
       const orders = convertCartDataToOrders();
@@ -121,6 +122,14 @@ export const CartButton = ({ categories }: Props) => {
         }
       });
 
+      const orderDetailMenuList =
+        response?.data?.orderInfoList.at(-1)?.orderDetailMenuList ?? [];
+      const cancelOrderMenuRequest: ICancelOrderMenuRequest =
+        orderDetailMenuList.map((menu) => ({
+          orderDetailMenuSeq: menu.orderDetailMenuSeq,
+          canceledQuantity: menu.menuQuantity,
+        }));
+
       setModalData('orderCompleteData', orders);
       setModalData('orderCompleteTotalPrice', totalPrice);
       clearCart();
@@ -131,6 +140,7 @@ export const CartButton = ({ categories }: Props) => {
         orderGroupUuid: response?.data?.orderGroupUuid ?? '',
         orderUuid: response?.data?.orderInfoList.at(-1)?.orderUuid ?? '',
         totalPrice,
+        cancelOrderMenuRequest,
       };
     } catch (_error) {
       return {
@@ -138,6 +148,7 @@ export const CartButton = ({ categories }: Props) => {
         orderGroupUuid: '',
         orderUuid: '',
         totalPrice: 0,
+        cancelOrderMenuRequest: [],
       };
     }
   };

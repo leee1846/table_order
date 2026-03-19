@@ -139,6 +139,8 @@ export const ENDPOINTS = {
     PAYMENT: '/payment',
     APPROVAL_METHOD_CODE: (paymentMethodCode: string) =>
       `/payment/approval/${paymentMethodCode}`,
+    CANCEL_METHOD_CODE: (paymentMethodCode: string) =>
+      `/payment/cancel/${paymentMethodCode}`,
   },
 
   ADMIN: {
