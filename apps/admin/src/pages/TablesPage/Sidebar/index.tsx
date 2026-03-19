@@ -109,32 +109,38 @@ export const Sidebar = () => {
         <ActionButton onClick={handleClose}>{t('종료')}</ActionButton>
       </ActionButtons>
 
-      <OrderListDialog
-        isOpen={isOrderListDialogOpen}
-        onClose={() => {
-          setIsOrderListDialogOpen(false);
-          setSelectedMenu('');
-        }}
-        shopCode={shopCode ?? undefined}
-      />
+      {isOrderListDialogOpen && (
+        <OrderListDialog
+          isOpen={isOrderListDialogOpen}
+          onClose={() => {
+            setIsOrderListDialogOpen(false);
+            setSelectedMenu('');
+          }}
+          shopCode={shopCode ?? undefined}
+        />
+      )}
 
-      <SalesListDialogWithGuard
-        shopCode={shopCode ?? undefined}
-        isOpen={isSalesDialogOpen}
-        onClose={() => {
-          setIsSalesDialogOpen(false);
-          setSelectedMenu('');
-        }}
-      />
+      {isSalesDialogOpen && (
+        <SalesListDialogWithGuard
+          shopCode={shopCode ?? undefined}
+          isOpen={isSalesDialogOpen}
+          onClose={() => {
+            setIsSalesDialogOpen(false);
+            setSelectedMenu('');
+          }}
+        />
+      )}
 
-      <DeviceListDialog
-        shopCode={shopCode ?? undefined}
-        isOpen={isDeviceDialogOpen}
-        onClose={() => {
-          setIsDeviceDialogOpen(false);
-          setSelectedMenu('');
-        }}
-      />
+      {isDeviceDialogOpen && (
+        <DeviceListDialog
+          shopCode={shopCode ?? undefined}
+          isOpen={isDeviceDialogOpen}
+          onClose={() => {
+            setIsDeviceDialogOpen(false);
+            setSelectedMenu('');
+          }}
+        />
+      )}
     </SidebarContainer>
   );
 };
