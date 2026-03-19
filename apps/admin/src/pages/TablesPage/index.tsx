@@ -13,6 +13,7 @@ import {
   type TableWithStatus,
   TableCard,
 } from '@repo/feature/components';
+import { useScrollToSelectedItem } from '@repo/feature/hooks';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Sidebar } from './Sidebar';
 import { useNavigate } from 'react-router-dom';
@@ -52,6 +53,11 @@ export const TablesPage = () => {
   const { tables, tableGroupListResponse } = useTablesData({
     shopCode: shopCode ?? '',
     selectedTableGroupSeq,
+  });
+
+  // 스크롤 위치 자동 저장/복원
+  const { containerRef } = useScrollToSelectedItem({
+    isDataLoaded: !!tableGroupListResponse?.data,
   });
 
   // 테이블 그룹 선택값을 세션 스토리지에 저장해, 페이지 재진입 시 유지
@@ -207,7 +213,7 @@ export const TablesPage = () => {
         <Sidebar />
         <TableCardsArea>
           <TableGroupWrapper>
-            <TableGroupList>
+            <TableGroupList ref={containerRef}>
               {tableGroupListResponse?.data?.map((group) => (
                 <TableGroup key={group.tableGroupSeq}>
                   <TableGroupButton

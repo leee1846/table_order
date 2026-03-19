@@ -44,6 +44,7 @@ import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { Sidebar } from '@/pages/TablesPage/Sidebar';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useShopStore } from '@/stores/useShopStore';
+import { useScrollToSelectedItem } from '@repo/feature/hooks';
 
 // 헬퍼 함수: 주문 시간 포맷팅
 const formatOrderTime = (
@@ -103,6 +104,10 @@ export const TablesPage = () => {
     refreshTableGroupsData();
   }, [refreshTableGroupsData]);
 
+  const { containerRef } = useScrollToSelectedItem({
+    isDataLoaded: !!tableGroupsData,
+  });
+
   // 디바이스 타입 확인
   const isOrderPosDevice = deviceData?.deviceType === 'ORDER_POS';
 
@@ -114,6 +119,7 @@ export const TablesPage = () => {
     return saved ? Number(saved) : null;
   });
   const [isGuestCountDialogOpen, setIsGuestCountDialogOpen] = useState(false);
+
   const [selectedTableForGuestCount, setSelectedTableForGuestCount] =
     useState<TableWithStatus | null>(null);
 
@@ -499,7 +505,7 @@ export const TablesPage = () => {
             <Sidebar />
             <TableCardsArea>
               <TableGroupWrapper>
-                <TableGroupList>
+                <TableGroupList ref={containerRef}>
                   {tableGroupsData?.map((tableGroup) => (
                     <TableGroup key={tableGroup.tableGroupSeq}>
                       <TableGroupButton
@@ -543,7 +549,7 @@ export const TablesPage = () => {
               <Sidebar />
               <TableCardsArea>
                 <TableGroupWrapper>
-                  <TableGroupList>
+                  <TableGroupList ref={containerRef}>
                     {tableGroupsData?.map((tableGroup) => (
                       <TableGroup key={tableGroup.tableGroupSeq}>
                         <TableGroupButton
@@ -596,7 +602,7 @@ export const TablesPage = () => {
 
         <TableCardsArea>
           <TableGroupWrapper>
-            <TableGroupList>
+            <TableGroupList ref={containerRef}>
               {tableGroupsData?.map((tableGroup) => (
                 <TableGroup key={tableGroup.tableGroupSeq}>
                   <TableGroupButton

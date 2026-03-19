@@ -7,6 +7,11 @@ export type {
   UseLongPressReturn,
   UseLongPressHandlers,
 } from './useLongPress';
+export { useScrollToSelectedItem } from './useScrollToSelectedItem';
+export type {
+  UseScrollToSelectedItemOptions,
+  UseScrollToSelectedItemReturn,
+} from './useScrollToSelectedItem';
 
 // Re-export dnd-kit core utilities
 export {
