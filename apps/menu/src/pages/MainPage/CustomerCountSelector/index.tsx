@@ -88,12 +88,14 @@ export const CustomerCountSelector = () => {
                     color={theme.mode.grey[400]}
                   />
                 </button>
+
                 <input
                   type="tel"
                   value={adultCount}
                   onChange={(e) =>
                     handleAdultCountChange(Number(e.target.value))
                   }
+                  disabled={true}
                   aria-label={t('인원수')}
                 />
                 <button
@@ -159,6 +161,7 @@ export const CustomerCountSelector = () => {
                     handleAdultCountChange(Number(e.target.value))
                   }
                   aria-label={t('성인')}
+                  disabled={true}
                 />
                 <button
                   type="button"
@@ -194,6 +197,7 @@ export const CustomerCountSelector = () => {
                     handleChildCountChange(Number(e.target.value))
                   }
                   aria-label={t('아동')}
+                  disabled={true}
                 />
                 <button
                   type="button"
