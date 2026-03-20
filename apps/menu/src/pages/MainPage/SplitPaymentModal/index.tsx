@@ -39,6 +39,7 @@ import { usePosOrderStore } from '@repo/feature/stores';
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
+import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 
 interface Props {
   onClose: () => void;
@@ -202,9 +203,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
   const deviceData = useDeviceStore((s) => s.data);
   const { data: cartData, clearCart } = useCartStore();
-  const { data: modalData, setModalData } = useModalStore();
+  const { setModalData } = useModalStore();
   const { data: shopData } = useShopStore();
   const { data: customerCountData } = useCustomerCountStore();
+  const { refresh: refreshTableOrderHistoriesData } =
+    useTableOrderHistoriesData({ skipInitialRequest: true });
 
   const { mutateAsync: createTableOrder } = usePostTableOrder({
     ignoreGlobalErrors: [
@@ -239,10 +242,6 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   // 할부 선택
   const [selectedInstallmentMonths, setSelectedInstallmentMonths] =
     useState<number>(INSTALLMENT_LUMP_SUM);
-
-  /** 결제만 완료된 미연결 결제. ensureOrderCreated 실패 후 cancel 실패 시 세팅, 다음 결제 시 RB 취소 후 제거 */
-  const [pendingPaymentCancel, setPendingPaymentCancel] =
-    useState<IPaymentResponse | null>(null);
 
   /**
    * POS 실패 시 환불 처리를 위한 직전 완료된 카드 결제 결과
@@ -411,10 +410,6 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   // ----------------------------------------------------------------------------
 
   useEffect(() => {
-    if (!modalData.isCardPaymentProgressModalOpened) {
-      return;
-    }
-
     // let paymentListener: { remove: () => Promise<void> } | null = null;
 
     // const setupPaymentListener = async () => {
@@ -435,7 +430,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       //   paymentListener.remove();
       // }
     };
-  }, [modalData.isCardPaymentProgressModalOpened]);
+  }, []);
 
   // ----------------------------------------------------------------------------
   // 주문 생성 및 결제 처리 함수
@@ -528,24 +523,8 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     ) => void
   ): Promise<void> => {
     try {
-      // 결제만 완료된 미연결 결제(이전 재시도 실패 분)가 있으면 RB 취소 후 제거 (중복 결제 방지)
-      if (pendingPaymentCancel && pendingPaymentCancel.TRAN_NO) {
-        try {
-          await Payment.cancel(pendingPaymentCancel);
-        } catch {
-          // 환불 실패 시 → 사용자에게 재시도 환불 진행 안내 처리
-          const err = new Error(t('환불 처리 중 오류가 발생했습니다.'));
-          (
-            err as Error & { hasPendingPaymentCancel?: boolean }
-          ).hasPendingPaymentCancel = true;
-          throw err;
-        }
-
-        setPendingPaymentCancel(null);
-      }
-
       // 1. 결제 진행 모달 표시
-      setModalData('isCardPaymentProgressModalOpened', true);
+      // setModalData('isCardPaymentProgressModalOpened', true);
 
       // 2. 할부 개월 수 결정 (5만원 미만은 일시불 강제)
       const installmentMonths =
@@ -570,13 +549,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         try {
           await Payment.cancel(paymentResult);
         } catch {
-          setPendingPaymentCancel(paymentResult);
-          // 환불 실패 시 → 사용자에게 재시도 환불 진행 안내 처리
-          const err = new Error(t('결제 환불 중 오류가 발생했습니다.'));
-          (
-            err as Error & { hasPendingPaymentCancel?: boolean }
-          ).hasPendingPaymentCancel = true;
-          throw err;
+          // 카드 취소 실패 시 무시
         }
         throw new Error(t('결제 처리 중 오류가 발생했습니다.'));
       }
@@ -608,7 +581,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     } catch (error) {
       // 사용자가 결제를 취소한 경우
       if (isUserCancelError(error)) {
-        setModalData('isCardPaymentProgressModalOpened', false);
+        // setModalData('isCardPaymentProgressModalOpened', false);
         return;
       }
       // 기타 오류 처리
@@ -621,42 +594,18 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * 오류 메시지를 사용자에게 표시
    */
   const handlePaymentError = (error: unknown): void => {
-    setModalData('isCardPaymentProgressModalOpened', false);
+    // setModalData('isCardPaymentProgressModalOpened', false);
 
     const errorMessage =
       error instanceof Error
         ? error.message
         : t('결제 처리 중 오류가 발생했습니다.');
 
-    const hasPendingPaymentCancel =
-      error instanceof Error &&
-      (error as Error & { hasPendingPaymentCancel?: boolean })
-        .hasPendingPaymentCancel === true;
-    const content = hasPendingPaymentCancel
-      ? `${errorMessage}\n\n${t('다시 결제를 시도하시면 이전 결제 내역이 환불된 후 결제가 진행됩니다.')}`
-      : errorMessage;
-
     openConfirmDialog({
       title: t('오류'),
-      content,
+      content: errorMessage,
       confirmText: t('확인'),
     });
-  };
-
-  /**
-   * POS 오류 공통 처리: 다이얼로그 표시 및 모달 닫기
-   */
-  const closePosErrorModals = (): void => {
-    openConfirmDialog({
-      title: t('POS 오류'),
-      content: t('주문 요청에 실패했습니다. 사장님에게 문의해주세요.'),
-      confirmText: t('확인'),
-    });
-
-    setModalData('isCardPaymentProgressModalOpened', false);
-    setModalData('isPaymentsModalOpened', false);
-    setModalData('isCartListOpened', false);
-    onClose();
   };
 
   /**
@@ -665,6 +614,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * 주문 API를 요청한 첫 번째 결제 라운드에서만 취소 (이후 라운드는 ref가 비어있음)
    */
   const handlePosOrderFailure = async (): Promise<void> => {
+    // 첫 번째 결제인지 여부를 미리 확인 (주문 API를 요청했으면 cancelOrderMenuRequest에 값이 있음)
+    const isFirstPayment = cancelOrderMenuRequestRef.current.length > 0;
+
     if (completedPaymentResultsRef.current) {
       try {
         const cancelResult = await Payment.cancel(
@@ -681,7 +633,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
             data: cancelResult,
           });
         }
-        if (cancelOrderMenuRequestRef.current.length > 0) {
+        if (isFirstPayment) {
           await cancelOrderMenu(cancelOrderMenuRequestRef.current);
         }
       } catch {
@@ -689,7 +641,21 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       }
     }
 
-    closePosErrorModals();
+    // 첫 번째 결제 실패: 주문이 취소됐으므로 재시도 시 새 주문을 생성할 수 있도록 상태 초기화
+    if (isFirstPayment) {
+      cancelOrderMenuRequestRef.current = [];
+      setOrderGroupUuid(null);
+      setOrderUuid(null);
+      orderGroupUuidRef.current = '';
+      setPaidMenuIds(new Set());
+      setPaidPersonIds(new Set());
+    }
+
+    openConfirmDialog({
+      title: t('POS 오류'),
+      content: t('주문 요청에 실패했습니다. 사장님에게 문의해주세요.'),
+      confirmText: t('확인'),
+    });
   };
 
   /**
@@ -702,16 +668,37 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    */
   const handlePaymentSuccess = (
     isAllPaid: boolean,
-    orderUuidFromPayment?: string
+    orderUuidFromPayment?: string,
+    paidMenuIds?: string[],
+    paidPersonsData?: { id: string; price: number }[]
   ): void => {
-    const handleOrderCompleteSuccess = () => {
+    const handleOrderCompleteSuccess = async () => {
       // POS가 주문을 정상 접수했으므로 이후 라운드에서는 주문 취소 불필요
       cancelOrderMenuRequestRef.current = [];
-      setModalData('isCardPaymentProgressModalOpened', false);
+
+      // POS 성공 확정 후에만 결제 완료 상태 업데이트
+      if (paidMenuIds && paidMenuIds.length > 0) {
+        setPaidMenuIds((prevIds) => new Set([...prevIds, ...paidMenuIds]));
+        setSelectedMenus([]);
+      }
+      if (paidPersonsData && paidPersonsData.length > 0) {
+        const personIds = paidPersonsData.map((p) => p.id);
+        setPaidPersonIds((prevIds) => new Set([...prevIds, ...personIds]));
+        setPersons((prevPersons) =>
+          prevPersons.map((person) => {
+            const paidPerson = paidPersonsData.find((p) => p.id === person.id);
+            return paidPerson
+              ? { ...person, paidAmount: paidPerson.price }
+              : person;
+          })
+        );
+      }
+
       toast(t('결제를 성공했습니다.'), {
         duration: TOAST_DURATION,
         position: TOAST_POSITION,
       });
+      await refreshTableOrderHistoriesData();
     };
 
     // 부분 결제 완료
@@ -740,7 +727,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       return;
     }
 
-    const runFullSuccess = (): void => {
+    const runFullSuccess = async (): Promise<void> => {
       const orderData = convertCartMenusToOrders(cartData.menus);
 
       toast(t('결제를 성공했습니다.'), {
@@ -753,12 +740,13 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       setModalData('isOrderCompleteFromPrepaidCardOrFinalSplit', true);
       setModalData('isOrderCompleteModalOpened', true);
 
-      setModalData('isCardPaymentProgressModalOpened', false);
+      // setModalData('isCardPaymentProgressModalOpened', false);
       setModalData('isPaymentsModalOpened', false);
       setModalData('isCartListOpened', false);
 
       clearCart();
       onClose();
+      await refreshTableOrderHistoriesData();
     };
 
     const shopDetailData = useShopDetailStore.getState().data;
@@ -844,9 +832,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       paymentAmount,
       (orderUuidFromPayment, paymentResult) => {
         completedPaymentResultsRef.current = paymentResult;
-        setPaidMenuIds((prevIds) => new Set([...prevIds, ...selectedMenuIds]));
-        setSelectedMenus([]);
-        handlePaymentSuccess(isAllPaid, orderUuidFromPayment);
+        handlePaymentSuccess(isAllPaid, orderUuidFromPayment, selectedMenuIds);
       }
     );
   };
@@ -891,30 +877,17 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       (orderUuidFromPayment, paymentResult) => {
         completedPaymentResultsRef.current = paymentResult;
 
-        // 결제 완료된 인원 ID 저장
-        setPaidPersonIds(
-          (prevIds) =>
-            new Set([...prevIds, ...selectedPersonsData.map((p) => p.id)])
-        );
-
-        // 결제 완료된 인원의 paidAmount 저장 (합계 계산용)
+        // 결제 시도 후 인원 선택 해제 (POS 결과와 무관한 UI 처리)
         setPersons((prevPersons) =>
-          prevPersons.map((person) => {
-            const paidPerson = selectedPersonsData.find(
-              (p) => p.id === person.id
-            );
-            if (paidPerson) {
-              return {
-                ...person,
-                isSelected: false,
-                paidAmount: paidPerson.price,
-              };
-            }
-            return { ...person, isSelected: false };
-          })
+          prevPersons.map((person) => ({ ...person, isSelected: false }))
         );
 
-        handlePaymentSuccess(isAllPaid, orderUuidFromPayment);
+        handlePaymentSuccess(
+          isAllPaid,
+          orderUuidFromPayment,
+          undefined,
+          selectedPersonsData
+        );
       }
     );
   };

@@ -15,6 +15,7 @@ import { MenuDetailWithOptionsModal } from '../Contents/MenuDetailWithOptionsMod
 import type {
   ICategoryWithMenus,
   ICancelOrderMenuRequest,
+  IOrder,
 } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
@@ -26,6 +27,7 @@ import { useModalStore } from '@/stores/useModalStore';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { usePutCancelOrderMenu } from '@repo/api/queries';
+import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 
 const TOAST_OPTIONS = {
   position: 'center-center' as const,
@@ -40,6 +42,7 @@ interface Props {
     orderUuid: string;
     result: boolean;
     totalPrice: number;
+    orders: IOrder[];
     cancelOrderMenuRequest: ICancelOrderMenuRequest;
   }>;
   openPaymentsModal: () => void;
@@ -56,12 +59,15 @@ export const CartList = ({
   const { data: modalData, setModalData } = useModalStore();
   const shopDetailData = useShopDetailStore((s) => s.data);
   const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  const { refresh: refreshTableOrderHistoriesData } = useTableOrderHistoriesData(
+    { skipInitialRequest: true }
+  );
 
   const {
     data: cartData,
     removeFromCart,
     updateCartItemQuantity,
-    // clearCart,
+    clearCart,
   } = useCartStore();
 
   const [selectedMenu, setSelectedMenu] = useState<ICartMenu | null>(null);
@@ -237,9 +243,13 @@ export const CartList = ({
         if (totalPrice === 0 || !shopDetailData?.shopSetting?.usePrepayment) {
           const response = await executePostpaidOrder();
 
-          const handleOrderCompleteSuccess = () => {
+          const handleOrderCompleteSuccess = async () => {
+            setModalData('orderCompleteData', response.orders);
+            setModalData('orderCompleteTotalPrice', response.totalPrice);
+            clearCart();
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
+            await refreshTableOrderHistoriesData();
           };
 
           const isPosLinked =
@@ -249,7 +259,9 @@ export const CartList = ({
           if (response.result && isPosLinked && response.orderUuid) {
             const handlePosOrderFailure = async () => {
               try {
-                await cancelOrderMenu(response.cancelOrderMenuRequest);
+                if (response.cancelOrderMenuRequest.length > 0) {
+                  await cancelOrderMenu(response.cancelOrderMenuRequest);
+                }
               } catch {
                 // 주문 취소 실패 시 무시
               }

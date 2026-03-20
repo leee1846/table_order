@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { startPosCallbackPoller } from '../utils/startPosCallbackPoller';
 
-type Callback = () => void;
+type Callback = () => void | Promise<void>;
 
 interface PendingEntry {
   onSuccess: Callback;
@@ -47,7 +47,7 @@ interface IPosOrderStore {
 export const usePosOrderStore = create<IPosOrderStore>((set) => {
   const pendingOrders = new Map<string, PendingEntry>();
 
-  const resolveOrder = (
+  const resolveOrder = async (
     orderUuid: string,
     type: 'success' | 'failure' | 'timeout'
   ) => {
@@ -57,13 +57,19 @@ export const usePosOrderStore = create<IPosOrderStore>((set) => {
     }
     entry.stopPoller();
     pendingOrders.delete(orderUuid);
-    set({ isWaitingForPosOrderComplete: pendingOrders.size > 0 });
+
     if (type === 'success') {
-      entry.onSuccess();
-    } else if (type === 'timeout') {
-      (entry.onTimeout ?? entry.onFailure)();
+      // 성공: 콜백(refreshTableOrderHistoriesData 포함) 완전히 끝난 뒤 대기 상태 해제
+      await entry.onSuccess();
+      set({ isWaitingForPosOrderComplete: pendingOrders.size > 0 });
     } else {
-      entry.onFailure();
+      // 실패/타임아웃: 콜백(cancelOrderMenu 등 비동기 포함) 완전히 끝난 뒤 대기 상태 해제
+      const callback =
+        type === 'timeout'
+          ? (entry.onTimeout ?? entry.onFailure)
+          : entry.onFailure;
+      await callback();
+      set({ isWaitingForPosOrderComplete: pendingOrders.size > 0 });
     }
   };
 

@@ -35,6 +35,7 @@ import {
 } from '@/feature/Installment';
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 // const PAYMENT_EVENT_NAME = 'paymentEvent';
@@ -95,6 +96,9 @@ export const CardPaymentInstallmentModal = ({
   const { data: cartData } = useCartStore();
   const { data: customerCountData } = useCustomerCountStore();
   const { clearCart } = useCartStore();
+  const { refresh: refreshTableOrderHistoriesData } = useTableOrderHistoriesData(
+    { skipInitialRequest: true }
+  );
 
   const { mutateAsync: createTableOrder } = usePostTableOrder({
     ignoreGlobalErrors: [
@@ -112,17 +116,12 @@ export const CardPaymentInstallmentModal = ({
   //   useState<string>('');
   const [selectedInstallmentMonths, setSelectedInstallmentMonths] =
     useState<number>(INSTALLMENT_LUMP_SUM);
-  /** 결제만 완료된 미연결 결제. createOrder 실패 후 cancel 실패 시 세팅, 다음 결제 시 RB 취소 후 제거 */
-  const [pendingPaymentCancel, setPendingPaymentCancel] =
-    useState<IPaymentResponse | null>(null);
 
   // const paymentListenerRef = useRef<{ remove: () => Promise<void> } | null>(
   //   null
   // );
 
   const shouldShowInstallmentSection = totalPrice >= INSTALLMENT_MINIMUM_AMOUNT;
-  const isPaymentProgressModalOpen =
-    modalStore.data.isCardPaymentProgressModalOpened;
 
   const getOrdersFromCart = (): IOrder[] => {
     return convertCartMenusToOrders(cartData.menus);
@@ -130,9 +129,9 @@ export const CardPaymentInstallmentModal = ({
 
   // 결제 진행 모달 오픈 시 결제 이벤트 리스너 설정
   useEffect(() => {
-    if (!isPaymentProgressModalOpen) {
-      return;
-    }
+    // if (!isPaymentProgressModalOpen) {
+    //   return;
+    // }
 
     // let paymentListener: { remove: () => Promise<void> } | null = null;
 
@@ -154,7 +153,7 @@ export const CardPaymentInstallmentModal = ({
       //   paymentListener.remove();
       // }
     };
-  }, [isPaymentProgressModalOpen]);
+  }, []);
 
   const createOrder = async (): Promise<{
     orderGroupUuid: string;
@@ -204,23 +203,7 @@ export const CardPaymentInstallmentModal = ({
     cancelOrderMenuRequest: ICancelOrderMenuRequest;
     paymentSeq: number;
   }> => {
-    // 결제만 완료된 미연결 결제(이전 재시도 실패 분)가 있으면 RB 취소 후 제거 (중복 결제 방지)
-    if (pendingPaymentCancel && pendingPaymentCancel.TRAN_NO) {
-      try {
-        await Payment.cancel(pendingPaymentCancel);
-      } catch {
-        // 환불 실패 시 → 사용자에게 재시도 환불 진행 안내 처리
-        const err = new Error('환불 처리 중 오류가 발생했습니다.');
-        (
-          err as Error & { hasPendingPaymentCancel?: boolean }
-        ).hasPendingPaymentCancel = true;
-        throw err;
-      }
-
-      setPendingPaymentCancel(null);
-    }
-
-    modalStore.setModalData('isCardPaymentProgressModalOpened', true);
+    // modalStore.setModalData('isCardPaymentProgressModalOpened', true);
 
     const paymentResult: IPaymentResponse = await Payment.approve({
       amount: totalPrice,
@@ -234,15 +217,7 @@ export const CardPaymentInstallmentModal = ({
       try {
         await Payment.cancel(paymentResult);
       } catch {
-        // 취소 실패(네트워크 끊김 등) 시 state에 보관 → 모달에서 재시도 시 위에서 RB 취소
-        setPendingPaymentCancel(paymentResult);
-
-        // 환불 실패 시 → 사용자에게 재시도 환불 진행 안내 처리
-        const err = new Error('결제 처리 중 오류가 발생했습니다.');
-        (
-          err as Error & { hasPendingPaymentCancel?: boolean }
-        ).hasPendingPaymentCancel = true;
-        throw err;
+        // 카드 취소 실패 시 무시
       }
       throw new Error('결제 처리 중 오류가 발생했습니다.');
     }
@@ -279,7 +254,7 @@ export const CardPaymentInstallmentModal = ({
     };
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
     const orderData = getOrdersFromCart();
 
     toast(t('결제를 성공했습니다.'), {
@@ -294,7 +269,7 @@ export const CardPaymentInstallmentModal = ({
     modalStore.setModalData('isOrderCompleteModalOpened', true);
 
     // 모든 모달 닫기
-    modalStore.setModalData('isCardPaymentProgressModalOpened', false);
+    // modalStore.setModalData('isCardPaymentProgressModalOpened', false);
     modalStore.setModalData('isPaymentsModalOpened', false);
     modalStore.setModalData('isCartListOpened', false);
     modalStore.setModalData('isCardPaymentInstallmentModalOpened', false);
@@ -304,27 +279,20 @@ export const CardPaymentInstallmentModal = ({
 
     // 현재 모달 닫기
     onClose();
+    await refreshTableOrderHistoriesData();
   };
 
   const handlePaymentError = (error: unknown) => {
-    modalStore.setModalData('isCardPaymentProgressModalOpened', false);
+    // modalStore.setModalData('isCardPaymentProgressModalOpened', false);
 
     const errorMessage =
       error instanceof Error
         ? error.message
         : t('결제 처리 중 오류가 발생했습니다.');
 
-    const hasPendingPaymentCancel =
-      error instanceof Error &&
-      (error as Error & { hasPendingPaymentCancel?: boolean })
-        .hasPendingPaymentCancel === true;
-    const content = hasPendingPaymentCancel
-      ? `${errorMessage}\n\n${t('다시 결제를 시도하시면 이전 결제 내역이 환불된 후 결제가 진행됩니다.')}`
-      : errorMessage;
-
     openConfirmDialog({
       title: t('오류'),
-      content,
+      content: errorMessage,
       confirmText: t('확인'),
     });
   };
@@ -335,14 +303,6 @@ export const CardPaymentInstallmentModal = ({
       content: t('주문 요청에 실패했습니다. 사장님에게 문의해주세요.'),
       confirmText: t('확인'),
     });
-
-    // 모든 모달 닫기
-    modalStore.setModalData('isCardPaymentProgressModalOpened', false);
-    modalStore.setModalData('isPaymentsModalOpened', false);
-    modalStore.setModalData('isCartListOpened', false);
-    modalStore.setModalData('isCardPaymentInstallmentModalOpened', false);
-    // 현재 모달 닫기
-    onClose();
   };
 
   const handleConfirmPayment = async () => {

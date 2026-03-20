@@ -363,7 +363,7 @@ export const useSSEHandler = () => {
       const paidAmount = refreshResult.paymentList
         .filter((payment) => !payment.isCanceled)
         .reduce((sum, payment) => sum + payment.transactionAmount, 0);
-      const isFullyPaid = totalAmount - paidAmount === 0;
+      const isFullyPaid = totalAmount > 0 && totalAmount - paidAmount === 0;
 
       // 결제중이고 결제가 완료되었을 경우
       if (isPaymentModalOpened && isFullyPaid) {
@@ -469,6 +469,7 @@ export const useSSEHandler = () => {
       if (locationPathname !== ROUTES.TABLES.generate()) {
         return;
       }
+
       handlersRef.current.refetchDeviceList(shopCode);
     },
 

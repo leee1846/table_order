@@ -19,8 +19,9 @@ import { useShopStore } from '@/stores/useShopStore';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import type { ICartMenu } from '@/types/cart';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
-import type { ICancelOrderMenuRequest } from '@repo/api/types';
+import type { ICancelOrderMenuRequest, IOrder } from '@repo/api/types';
 import { usePutCancelOrderMenu } from '@repo/api/queries';
+import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 
 interface Props {
   onClose: () => void;
@@ -34,6 +35,7 @@ interface Props {
     orderUuid: string;
     result: boolean;
     totalPrice: number;
+    orders: IOrder[];
     cancelOrderMenuRequest: ICancelOrderMenuRequest;
   }>;
 }
@@ -53,8 +55,11 @@ export const PaymentsModal = ({
     setModalData,
     setCashPaymentInducementModal,
   } = useModalStore();
-  const { data: cartData } = useCartStore();
+  const { data: cartData, clearCart } = useCartStore();
   const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  const { refresh: refreshTableOrderHistoriesData } = useTableOrderHistoriesData(
+    { skipInitialRequest: true }
+  );
 
   const isPosLinked =
     !!shopDetailData?.shopSetting?.shopPosCode &&
@@ -92,22 +97,29 @@ export const PaymentsModal = ({
         secondaryText: t('취소'),
         onConfirm: async () => {
           const response = await executePostpaidOrder();
-          const handleOrderCompleteSuccess = () => {
+          const handleOrderCompleteSuccess = async () => {
+            setModalData('orderCompleteData', response.orders);
+            setModalData('orderCompleteTotalPrice', response.totalPrice);
+            clearCart();
+            setModalData('isCartListOpened', false);
             // 현금 결제 유도 설정이 활성화되어 있으면 전체 화면 다이얼로그 열기
             if (
               shopDetailData?.shopSetting?.usePrepaymentCashPaymentInducement
             ) {
               setCashPaymentInducementModal(true, totalPrice);
-              return;
+            } else {
+              setModalData('isOrderCompleteModalOpened', true);
+              onClose();
             }
-            setModalData('isOrderCompleteModalOpened', true);
-            onClose();
+            await refreshTableOrderHistoriesData();
           };
 
           if (response.result && isPosLinked && response.orderUuid) {
             const handlePosOrderFailure = async () => {
               try {
-                await cancelOrderMenu(response.cancelOrderMenuRequest);
+                if (response.cancelOrderMenuRequest.length > 0) {
+                  await cancelOrderMenu(response.cancelOrderMenuRequest);
+                }
               } catch {
                 // 주문 취소 실패 시 무시
               }
@@ -118,7 +130,6 @@ export const PaymentsModal = ({
                 ),
                 confirmText: t('확인'),
               });
-              onClose();
             };
 
             const shopCode = String(
@@ -159,15 +170,22 @@ export const PaymentsModal = ({
             return;
           }
 
-          const handleOrderCompleteSuccess = () => {
+          const handleOrderCompleteSuccess = async () => {
+            setModalData('orderCompleteData', response.orders);
+            setModalData('orderCompleteTotalPrice', response.totalPrice);
+            clearCart();
+            setModalData('isCartListOpened', false);
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
+            await refreshTableOrderHistoriesData();
           };
 
           if (isPosLinked && response.orderUuid) {
             const handlePosOrderFailure = async () => {
               try {
-                await cancelOrderMenu(response.cancelOrderMenuRequest);
+                if (response.cancelOrderMenuRequest.length > 0) {
+                  await cancelOrderMenu(response.cancelOrderMenuRequest);
+                }
               } catch {
                 // 주문 취소 실패 시 무시
               }
@@ -178,7 +196,6 @@ export const PaymentsModal = ({
                 ),
                 confirmText: t('확인'),
               });
-              onClose();
             };
 
             const shopCode = String(

@@ -30,7 +30,7 @@ interface Props {
 export const CartButton = ({ categories }: Props) => {
   const navigate = useNavigate();
   const { t } = useCustomerTranslation();
-  const { data: cartData, clearCart } = useCartStore();
+  const { data: cartData } = useCartStore();
   const { data: modalData, setModalData } = useModalStore();
   const { mutateAsync: createTableOrder } = usePostTableOrder({
     ignoreGlobalErrors: [400],
@@ -99,6 +99,7 @@ export const CartButton = ({ categories }: Props) => {
     orderUuid: string;
     result: boolean;
     totalPrice: number;
+    orders: IOrder[];
     cancelOrderMenuRequest: ICancelOrderMenuRequest;
   }> => {
     try {
@@ -130,16 +131,12 @@ export const CartButton = ({ categories }: Props) => {
           canceledQuantity: menu.menuQuantity,
         }));
 
-      setModalData('orderCompleteData', orders);
-      setModalData('orderCompleteTotalPrice', totalPrice);
-      clearCart();
-      setModalData('isCartListOpened', false);
-
       return {
         result: true,
         orderGroupUuid: response?.data?.orderGroupUuid ?? '',
         orderUuid: response?.data?.orderInfoList.at(-1)?.orderUuid ?? '',
         totalPrice,
+        orders,
         cancelOrderMenuRequest,
       };
     } catch (_error) {
@@ -148,6 +145,7 @@ export const CartButton = ({ categories }: Props) => {
         orderGroupUuid: '',
         orderUuid: '',
         totalPrice: 0,
+        orders: [],
         cancelOrderMenuRequest: [],
       };
     }
