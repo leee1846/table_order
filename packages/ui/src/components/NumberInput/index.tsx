@@ -136,7 +136,7 @@ export const NumberInput = ({
         onChange={handleInputChange}
         onFocus={handleInputFocus}
         onKeyDown={handleInputKeyDown}
-        disabled={disabled}
+        disabled={true}
         onClick={(e) => e.stopPropagation()}
       />
       <button
