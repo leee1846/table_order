@@ -441,64 +441,69 @@ const createSettingsRoutes = () => [
 
 export const router = createBrowserRouter([
   {
-    path: ROUTES.LOGIN.path,
-    element: createRoute(LoginPage),
-    loader: loginPageLoader,
-  },
-  {
-    loader: checkAuthenticationLoader,
     element: <App />,
     children: [
       {
-        // 루트 경로 → role에 따라 리디렉트
-        path: '/',
-        loader: rootRouteLoader,
+        path: ROUTES.LOGIN.path,
+        element: createRoute(LoginPage),
+        loader: loginPageLoader,
       },
       {
-        path: ROUTES.BACKOFFICE.path,
-        loader: requireWebLoader,
-        element: createRoute(StoresSidebar),
-        children: createBackofficeRoutes(),
-      },
-      {
-        // /tables
-        path: ROUTES.TABLES.path,
-        loader: requireNativeLoader,
-        element: createRoute(TablesPage),
-      },
-      {
-        // /tables/:tableNum
-        path: ROUTES.TABLE_DETAIL.path,
-        loader: requireNativeLoader,
-        element: createRoute(TableDetailPage),
-      },
-      {
-        path: ROUTES.SETTINGS.path,
-        element: (
-          <SettingsAccessGuard>
-            <Outlet />
-          </SettingsAccessGuard>
-        ),
+        loader: checkAuthenticationLoader,
+        element: <Outlet />,
         children: [
           {
-            path: '',
-            element: <SettingSidebar />,
-            children: createSettingsRoutes(),
+            // 루트 경로 → role에 따라 리디렉트
+            path: '/',
+            loader: rootRouteLoader,
           },
           {
-            path: ROUTES.SETTINGS.TABLES.path,
-            element: createRoute(SettingsTablesPage),
+            path: ROUTES.BACKOFFICE.path,
+            loader: requireWebLoader,
+            element: createRoute(StoresSidebar),
+            children: createBackofficeRoutes(),
+          },
+          {
+            // /tables
+            path: ROUTES.TABLES.path,
+            loader: requireNativeLoader,
+            element: createRoute(TablesPage),
+          },
+          {
+            // /tables/:tableNum
+            path: ROUTES.TABLE_DETAIL.path,
+            loader: requireNativeLoader,
+            element: createRoute(TableDetailPage),
+          },
+          {
+            path: ROUTES.SETTINGS.path,
+            element: (
+              <SettingsAccessGuard>
+                <Outlet />
+              </SettingsAccessGuard>
+            ),
+            children: [
+              {
+                path: '',
+                element: <SettingSidebar />,
+                children: createSettingsRoutes(),
+              },
+              {
+                path: ROUTES.SETTINGS.TABLES.path,
+                element: createRoute(SettingsTablesPage),
+              },
+            ],
+          },
+          {
+            path: ROUTES.NOT_FOUND.path,
+            element: createRoute(NotFoundPage),
+          },
+          {
+            // 존재하지 않는 모든 경로를 404 페이지로 리디렉트
+            path: '*',
+            element: createRoute(NotFoundPage),
           },
         ],
-      },
-      {
-        path: ROUTES.NOT_FOUND.path,
-        element: createRoute(NotFoundPage),
-      },
-      {
-        // 존재하지 않는 모든 경로를 404 페이지로 리디렉트
-        path: '*',
-        element: createRoute(NotFoundPage),
       },
     ],
   },
