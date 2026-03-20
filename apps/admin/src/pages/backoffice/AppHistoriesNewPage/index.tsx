@@ -37,13 +37,13 @@ export const AppHistoriesNewPage = () => {
 
   const handleSave = async (
     data: AppHistoriesFormData,
-    apkFile?: File | null
+    appFile?: File | null
   ) => {
-    if (!validateAppHistoriesData(data, { apkFile, requireApk: true })) {
+    if (!validateAppHistoriesData(data, { appFile, requireAppFile: true })) {
       return;
     }
 
-    if (!apkFile) {
+    if (!appFile) {
       return;
     }
 
@@ -51,7 +51,7 @@ export const AppHistoriesNewPage = () => {
     const result = await createAppVersion(params);
 
     const appVersionSeq = result.data?.appVersionSeq;
-    await postAppVersionFile({ appVersionSeq, file: apkFile });
+    await postAppVersionFile({ appVersionSeq, file: appFile });
 
     toast('릴리즈 노트 생성이 완료되었습니다.');
     navigate(ROUTES.BACKOFFICE.APP_HISTORIES.generate());

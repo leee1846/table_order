@@ -85,9 +85,9 @@ export const AppHistoriesEditPage = () => {
 
   const handleSave = async (
     formData: AppHistoriesFormData,
-    apkFile?: File | null
+    appFile?: File | null
   ) => {
-    if (!validateAppHistoriesData(formData, { apkFile })) {
+    if (!validateAppHistoriesData(formData, { appFile })) {
       return;
     }
 
@@ -99,10 +99,10 @@ export const AppHistoriesEditPage = () => {
     const params = convertToUpdateParams(formData);
     await updateAppVersion({ ...params, appVersionSeq: formData.id });
 
-    if (apkFile) {
+    if (appFile) {
       await postAppVersionFile({
         appVersionSeq: formData.id,
-        file: apkFile,
+        file: appFile,
       });
     }
 

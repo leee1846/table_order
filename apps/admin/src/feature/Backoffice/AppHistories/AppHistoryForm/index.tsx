@@ -15,9 +15,9 @@ interface Props {
   mode: Mode;
   formData: AppHistoriesFormData;
   updateFormData: (updates: Partial<AppHistoriesFormData>) => void;
-  apkFile?: File | null;
-  onSelectApkClick?: () => void;
-  onRemoveApk?: () => void;
+  appFile?: File | null;
+  onSelectAppFileClick?: () => void;
+  onRemoveAppFile?: () => void;
 }
 
 const TYPE_OPTIONS: Array<{ value: TAppType; label: string }> = [
@@ -45,9 +45,9 @@ export const AppHistoryForm = ({
   mode,
   formData,
   updateFormData,
-  apkFile,
-  onSelectApkClick,
-  onRemoveApk,
+  appFile,
+  onSelectAppFileClick,
+  onRemoveAppFile,
 }: Props) => {
   const [showCalender, setShowCalender] = useState<boolean>(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -331,27 +331,27 @@ export const AppHistoryForm = ({
                 <S.Label>
                   APP 업로드 <span>*</span>
                 </S.Label>
-                <S.ApkUploadRow>
+                <S.AppFileUploadRow>
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={onSelectApkClick}
-                    disabled={!!apkFile}
+                    onClick={onSelectAppFileClick}
+                    disabled={!!appFile}
                   >
                     파일 선택
                   </Button>
-                  <S.ApkFileNameGroup>
-                    <S.ApkFileName>
-                      {apkFile
-                        ? apkFile.name
+                  <S.AppFileNameGroup>
+                    <S.AppFileName>
+                      {appFile
+                        ? appFile.name
                         : mode === 'edit' && formData.downloadPath
                           ? formData.downloadPath.replace(/^.*\//, '')
                           : '선택된 파일 없음'}
-                    </S.ApkFileName>
-                    {apkFile && (
-                      <S.ApkRemoveButton
+                    </S.AppFileName>
+                    {appFile && (
+                      <S.AppFileRemoveButton
                         type="button"
-                        onClick={onRemoveApk}
+                        onClick={onRemoveAppFile}
                         aria-label="선택한 파일 제거"
                       >
                         <CloseIcon
@@ -359,11 +359,13 @@ export const AppHistoryForm = ({
                           height={18}
                           color={theme.colors.grey[600]}
                         />
-                      </S.ApkRemoveButton>
+                      </S.AppFileRemoveButton>
                     )}
-                  </S.ApkFileNameGroup>
-                </S.ApkUploadRow>
-                <S.ApkHint>APK 파일을 업로드 해주세요.</S.ApkHint>
+                  </S.AppFileNameGroup>
+                </S.AppFileUploadRow>
+                <S.AppFileHint>
+                  APK 또는 ZIP 파일을 업로드 해주세요.
+                </S.AppFileHint>
               </S.FieldGroup>
             )}
 

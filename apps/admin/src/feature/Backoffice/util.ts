@@ -109,7 +109,7 @@ export const validateMemberData = (
 
 export const validateAppHistoriesData = (
   appHistoriesData: AppHistoriesFormData,
-  options?: { apkFile?: File | null; requireApk?: boolean }
+  options?: { appFile?: File | null; requireAppFile?: boolean }
 ): boolean => {
   if (!appHistoriesData.type || !appHistoriesData.type.trim()) {
     toast('app 구분을 선택해주세요.');
@@ -146,8 +146,8 @@ export const validateAppHistoriesData = (
     return false;
   }
 
-  // 생성 시에만 APK 파일 필수 (수정 시에는 선택)
-  if (options?.requireApk && !options.apkFile) {
+  // 생성 시에만 앱 아카이브 파일 필수 (수정 시에는 선택)
+  if (options?.requireAppFile && !options.appFile) {
     toast('APP 파일을 선택해주세요.');
     return false;
   }

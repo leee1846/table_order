@@ -149,14 +149,14 @@ export const TextArea = styled.textarea<{ isDetail?: boolean }>`
   }
 `;
 
-export const ApkUploadRow = styled.div`
+export const AppFileUploadRow = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 `;
 
-export const ApkFileNameGroup = styled.div`
+export const AppFileNameGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
@@ -164,7 +164,7 @@ export const ApkFileNameGroup = styled.div`
   min-width: 0;
 `;
 
-export const ApkFileName = styled.span`
+export const AppFileName = styled.span`
   font-size: 14px;
   color: ${theme.colors.grey[600]};
   font-weight: 400;
@@ -176,7 +176,7 @@ export const ApkFileName = styled.span`
   white-space: nowrap;
 `;
 
-export const ApkRemoveButton = styled.button`
+export const AppFileRemoveButton = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -200,7 +200,7 @@ export const ApkRemoveButton = styled.button`
   }
 `;
 
-export const ApkHint = styled.p`
+export const AppFileHint = styled.p`
   margin: 4px 0 0;
   font-size: 12px;
   color: ${theme.colors.grey[500]};

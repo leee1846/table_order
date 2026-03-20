@@ -11,12 +11,17 @@ import { Button } from '@/feature/backoffice/components';
 
 type Mode = 'create' | 'edit' | 'detail';
 
-const APK_ACCEPT = '.apk';
+const APP_ARCHIVE_ACCEPT = '.apk,.zip';
+
+const isAllowedAppArchiveFile = (fileName: string): boolean => {
+  const lower = fileName.toLowerCase();
+  return lower.endsWith('.apk') || lower.endsWith('.zip');
+};
 
 interface Props {
   mode: Mode;
   initialData?: AppHistoriesFormData;
-  onSave?: (data: AppHistoriesFormData, apkFile?: File | null) => Promise<void>;
+  onSave?: (data: AppHistoriesFormData, appFile?: File | null) => Promise<void>;
 }
 
 export const AppHistories = ({ mode, initialData, onSave }: Props) => {
@@ -24,7 +29,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
     DEFAULT_APP_HISTORIES_DATA
   );
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
-  const [apkFile, setApkFile] = useState<File | null>(null);
+  const [appFile, setAppFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -39,36 +44,36 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
 
   const handleSave = async () => {
     if (onSave) {
-      await onSave(formData, apkFile);
+      await onSave(formData, appFile);
     }
   };
 
-  const handleApkFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAppFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
-      setApkFile(null);
+      setAppFile(null);
       return;
     }
 
-    if (!file.name.toLowerCase().endsWith('.apk')) {
-      toast('APK 파일만 업로드 가능합니다.');
-      setApkFile(null);
+    if (!isAllowedAppArchiveFile(file.name)) {
+      toast('APK 또는 ZIP 파일만 업로드 가능합니다.');
+      setAppFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
       return;
     }
 
-    setApkFile(file);
+    setAppFile(file);
     e.target.value = '';
   };
 
-  const handleSelectApkClick = () => {
+  const handleSelectAppFileClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleRemoveApk = () => {
-    setApkFile(null);
+  const handleRemoveAppFile = () => {
+    setAppFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -115,8 +120,8 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
         <input
           ref={fileInputRef}
           type="file"
-          accept={APK_ACCEPT}
-          onChange={handleApkFileChange}
+          accept={APP_ARCHIVE_ACCEPT}
+          onChange={handleAppFileChange}
           style={{ display: 'none' }}
           aria-hidden
         />
@@ -124,9 +129,9 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
           mode={mode}
           formData={formData}
           updateFormData={updateFormData}
-          apkFile={apkFile}
-          onSelectApkClick={handleSelectApkClick}
-          onRemoveApk={handleRemoveApk}
+          appFile={appFile}
+          onSelectAppFileClick={handleSelectAppFileClick}
+          onRemoveAppFile={handleRemoveAppFile}
         />
         <ChangeHistoryDialog
           isOpen={isHistoryDialogOpen}
