@@ -1,44 +1,9 @@
-import {
-  QueryClient,
-  QueryClientProvider,
-  useIsFetching,
-  useIsMutating,
-} from '@repo/api/tanstack-query';
-import { queryKeys } from '@repo/api/queries';
+import { QueryClient, QueryClientProvider } from '@repo/api/tanstack-query';
 import { isNetworkErrorWithGetRequest } from '@repo/api/globalErrorHandler';
-import { FullscreenLoadingSpinner } from '@repo/ui/components';
-import { useSSEReconnecting } from '@repo/feature/hooks';
-import { usePosOrderStore } from '@repo/feature/stores';
 import { useState, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
-}
-
-/**
- * QueryClientProvider 내부에서 전역 loading 상태를 감지하는 컴포넌트
- */
-function GlobalLoadingIndicator() {
-  const isFetching = useIsFetching();
-  const isMutating =
-    useIsMutating() -
-    useIsMutating({ mutationKey: queryKeys.device.postDetail }); // usePostDeviceDetail 제외
-  const isSSEReconnecting = useSSEReconnecting();
-  const isWaitingForPosOrderComplete = usePosOrderStore(
-    (s) => s.isWaitingForPosOrderComplete
-  );
-
-  const isLoading =
-    isFetching > 0 ||
-    isMutating > 0 ||
-    isSSEReconnecting ||
-    isWaitingForPosOrderComplete;
-
-  if (!isLoading) {
-    return null;
-  }
-
-  return <FullscreenLoadingSpinner />;
 }
 
 export function QueryProvider({ children }: Props) {
@@ -64,7 +29,6 @@ export function QueryProvider({ children }: Props) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <GlobalLoadingIndicator />
     </QueryClientProvider>
   );
 }

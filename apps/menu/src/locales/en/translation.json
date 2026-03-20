@@ -329,5 +329,7 @@
   "주문 접수에 실패했습니다. 포스를 확인해주세요.": "Order acceptance failed. Please check the POS.",
   "관리자 비밀번호 4자리를 입력해 주세요": "Enter the 4-digit\nadministrator password",
   "다시 결제를 시도하시면 이전 결제 내역이 환불된 후 결제가 진행됩니다.": "If you try to pay again, the previous payment will be refunded and then the payment will proceed.",
-  "가맹점 다운로드가 완료되었습니다.": "Franchise download has been completed."
+  "가맹점 다운로드가 완료되었습니다.": "Franchise download has been completed.",
+  "주문 대기 중": "Waiting for order",
+  "네트워크 연결 중": "Connecting to the network"
 }

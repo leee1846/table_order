@@ -735,5 +735,7 @@
   "(1280*800px 가로형 이미지 권장)": "(1280*800px landscape image recommended)",
   "이미지 등록을 저장했습니다.": "Image registration has been saved.",
   "현재 러시아어는 지원하지 않습니다.": "Russian is currently not supported.",
-  "파일 확장자는 .jpg, .jpeg, .png, .webp 만 지원합니다.": "Only .jpg, .jpeg, .png, .webp file extensions are supported."
+  "파일 확장자는 .jpg, .jpeg, .png, .webp 만 지원합니다.": "Only .jpg, .jpeg, .png, .webp file extensions are supported.",
+  "주문 대기 중": "Waiting for order",
+  "네트워크 연결 중": "Connecting to the network"
 }

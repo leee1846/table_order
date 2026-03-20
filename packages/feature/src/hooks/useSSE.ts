@@ -444,3 +444,27 @@ export const useSSEReconnecting = (): boolean => {
 
   return isReconnecting;
 };
+
+/**
+ * SSE 연결 오류를 강제로 발생시켜 자동 재연결을 트리거하는 함수 (테스트용)
+ * @param key - SSE 연결 키
+ */
+export const triggerSSEError = (key: string): void => {
+  const state = sseConnectionMap.get(key);
+  
+  if (!state || !state.eventSource) {
+    console.warn(`⚠️ SSE 연결이 없습니다: ${key}`);
+    return;
+  }
+
+  console.log(`🔌 SSE 오류 시뮬레이션 시작: ${key}`);
+  
+  // EventSource를 강제로 닫아서 onerror 이벤트를 트리거
+  state.eventSource.close();
+  
+  // onerror 핸들러를 수동으로 호출하여 재연결 로직 시작
+  if (state.eventSource.onerror) {
+    const errorEvent = new Event('error');
+    state.eventSource.onerror(errorEvent);
+  }
+};

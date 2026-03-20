@@ -42,6 +42,7 @@ export {
   GuestCountDialog,
   type GuestCountDialogProps,
 } from './GuestCountDialog';
+export { GlobalLoadingIndicator } from './GlobalLoadingIndicator';
 export type {
   OrderItem,
   OrderItemOption,

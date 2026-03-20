@@ -3,6 +3,7 @@ import { Outlet, useParams } from 'react-router-dom';
 import { SystemControl } from '@repo/util/app';
 import { useSSEHandler } from './hooks/useSSEHandler';
 import { useSystemStatusMonitor } from './hooks/useSystemStatusMonitor';
+import { AdminGlobalLoadingIndicator } from './feature/AdminGlobalLoadingIndicator';
 
 const App = () => {
   const { tableNum } = useParams();
@@ -26,6 +27,7 @@ const App = () => {
   return (
     <div>
       <Outlet />
+      <AdminGlobalLoadingIndicator />
     </div>
   );
 };
