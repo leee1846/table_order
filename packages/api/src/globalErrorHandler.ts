@@ -79,7 +79,11 @@ export function handleApiErrorDialog(
   }
 
   if (error.response.status === 500) {
-    const content = messages.server500;
+    const userMessage = error.response.data?.status?.userMessage;
+    const content =
+      typeof userMessage === 'string' && userMessage.trim().length > 0
+        ? userMessage
+        : messages.server500;
     if (!activeErrorTypes.has(ERROR_TYPES.SERVER_500)) {
       activeErrorTypes.add(ERROR_TYPES.SERVER_500);
       openConfirmDialog({
