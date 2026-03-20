@@ -42,7 +42,13 @@ export const TableGroup = styled.div`
 
 export const TableGroupButton = styled.button<{ isSelected: boolean }>`
   width: 100%;
+  min-width: 0;
   height: 100%;
+  box-sizing: border-box;
+  padding: 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   ${TYPOGRAPHY.MT_8}
   color: ${({ isSelected }) =>
     isSelected ? colors.grey[900] : colors.grey[500]};
