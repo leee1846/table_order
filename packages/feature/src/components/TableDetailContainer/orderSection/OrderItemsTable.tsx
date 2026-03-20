@@ -178,7 +178,6 @@ const Cell = styled.div`
 
   &.price {
     text-align: right;
-    word-break: break-all;
-    overflow-wrap: anywhere;
+    word-break: keep-all;
   }
 `;
