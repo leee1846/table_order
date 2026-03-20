@@ -212,7 +212,6 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const { mutateAsync: createTableOrder } = usePostTableOrder({
     ignoreGlobalErrors: [
       HTTP_STATUS_BAD_REQUEST,
-      HTTP_STATUS_SERVER_ERROR,
       HTTP_STATUS_NOT_FOUND,
       HTTP_STATUS_METHOD_NOT_ALLOWED,
     ],

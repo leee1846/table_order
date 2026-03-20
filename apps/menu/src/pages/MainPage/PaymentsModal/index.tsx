@@ -57,9 +57,8 @@ export const PaymentsModal = ({
   } = useModalStore();
   const { data: cartData, clearCart } = useCartStore();
   const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
-  const { refresh: refreshTableOrderHistoriesData } = useTableOrderHistoriesData(
-    { skipInitialRequest: true }
-  );
+  const { refresh: refreshTableOrderHistoriesData } =
+    useTableOrderHistoriesData({ skipInitialRequest: true });
 
   const isPosLinked =
     !!shopDetailData?.shopSetting?.shopPosCode &&
@@ -97,6 +96,16 @@ export const PaymentsModal = ({
         secondaryText: t('취소'),
         onConfirm: async () => {
           const response = await executePostpaidOrder();
+
+          if (!response.result) {
+            openConfirmDialog({
+              title: t('오류'),
+              content: t('주문에 실패했습니다. 다시 시도해주세요.'),
+              confirmText: t('확인'),
+            });
+            return;
+          }
+
           const handleOrderCompleteSuccess = async () => {
             setModalData('orderCompleteData', response.orders);
             setModalData('orderCompleteTotalPrice', response.totalPrice);

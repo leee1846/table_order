@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import type { ICategoryWithMenus, IOrder, ICancelOrderMenuRequest } from '@repo/api/types';
+import type {
+  ICategoryWithMenus,
+  IOrder,
+  ICancelOrderMenuRequest,
+} from '@repo/api/types';
 import { usePostTableOrder } from '@repo/api/queries';
 import type { ICartMenu } from '@/types/cart';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
@@ -37,9 +41,8 @@ export const CartButton = ({ categories }: Props) => {
   });
   const { data: shopData } = useShopStore();
   const { data: customerCountData } = useCustomerCountStore();
-  const { refresh: refreshTableOrderHistoriesData } = useTableOrderHistoriesData(
-    { skipInitialRequest: true }
-  );
+  const { refresh: refreshTableOrderHistoriesData } =
+    useTableOrderHistoriesData({ skipInitialRequest: true });
 
   /** 결제 방법 선택 모달 */
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
@@ -120,7 +123,9 @@ export const CartButton = ({ categories }: Props) => {
         if (error.response?.status === 400) {
           // 삭제된 테이블일경우
           navigate(ROUTES.TABLES.generate());
+          return;
         }
+        throw error;
       });
 
       const orderDetailMenuList =
