@@ -12,6 +12,7 @@ import { MenuGlobalLoadingIndicator } from '@/feature/MenuGlobalLoadingIndicator
 const AppContent = () => {
   useSystemStatusMonitor();
   useSSEHandler();
+
   return (
     <div>
       <Outlet />
