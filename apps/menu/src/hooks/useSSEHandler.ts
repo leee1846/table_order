@@ -288,7 +288,7 @@ export const useSSEHandler = () => {
         !!shopDetailData?.shopSetting?.shopPosCode &&
         shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
       // 테이블 상세 페이지
-      // 포스 연동이 아닐경우 (포스 연동일 경우 ORDER_COMPLETE에서 처리리)
+      // 포스 연동이 아닐경우 (포스 연동일 경우 ORDER_COMPLETE에서 처리)
       if (tableNumFromParams && !isPosLinked) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.orders.tableOrderHistories(
@@ -306,6 +306,10 @@ export const useSSEHandler = () => {
         return;
       }
 
+      if (usePosOrderStore.getState().isWaitingForPosOrderComplete) {
+        return;
+      }
+
       const { tableOrderHistoriesData } = sseHandlerDataRef.current;
       const tableNumbersFromSse = message.data as { [key: string]: number };
 
@@ -320,15 +324,6 @@ export const useSSEHandler = () => {
         // pos or 관리자앱에서 주문을 모두 취소 or 테이블 비우기 했을 경우
         if (hasExistingOrders) {
           refreshTableOrderHistoriesData();
-
-          // 메뉴판에서 주문을 넣었을경우 ORDER_COMPLETE에서 처리하기 때문에 중복 처리 방지
-          if (
-            usePosOrderStore.getState().isWaitingForPosOrderComplete ||
-            useModalStore.getState().data.isOrderCompleteModalOpened
-          ) {
-            return;
-          }
-
           applyMenuboardStateAfterTableOrderHistoriesCleared(
             sseHandlerDataRef.current.shopDetailData
           );
