@@ -1,10 +1,23 @@
-import { QueryClient, QueryClientProvider } from '@repo/api/tanstack-query';
-import { isNetworkErrorWithGetRequest } from '@repo/api/globalErrorHandler';
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from '@repo/api/tanstack-query';
+import {
+  handleQueryFinalGetNetworkErrorDialog,
+  isNetworkErrorWithGetRequest,
+} from '@repo/api/globalErrorHandler';
+import { openConfirmDialog } from '@repo/feature/utils';
 import { useState, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
 }
+
+/**
+ * GET 요청 네트워크 실패 시 다이얼로그 중복 노출 방지를 위한 Set
+ */
+const queryFinalGetNetworkActiveTypes = new Set<string>();
 
 /**
  * React Query Provider 컴포넌트
@@ -16,6 +29,18 @@ export function QueryProvider({ children }: Props) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
+        queryCache: new QueryCache({
+          onError: (error) => {
+            handleQueryFinalGetNetworkErrorDialog(error, {
+              openConfirmDialog,
+              activeErrorTypes: queryFinalGetNetworkActiveTypes,
+              messages: {
+                network:
+                  '네트워크 환경이 원활하지 않습니다. 다시 시도해주세요.',
+              },
+            });
+          },
+        }),
         defaultOptions: {
           queries: {
             staleTime: 0,

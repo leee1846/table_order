@@ -41,6 +41,42 @@ export interface HandleApiErrorDialogOptions {
   logLabel: string;
 }
 
+/** React Query `QueryCache`의 `onError` 등, 재시도 소진 후에만 호출할 때 사용 */
+export interface HandleQueryFinalGetNetworkErrorOptions {
+  openConfirmDialog: HandleApiErrorDialogOptions['openConfirmDialog'];
+  activeErrorTypes: Set<string>;
+  messages: Pick<ApiErrorDialogMessages, 'network'>;
+}
+
+/**
+ * useQuery 재시도를 모두 마친 뒤에만 호출한다고 가정한다.
+ * GET + 네트워크 실패(`response` 없음)일 때 네트워크 다이얼로그를 연다.
+ * (axios 인터셉터의 `handleApiErrorDialog`는 동일 케이스에서 다이얼로그를 생략한다.)
+ */
+export function handleQueryFinalGetNetworkErrorDialog(
+  error: unknown,
+  options: HandleQueryFinalGetNetworkErrorOptions
+): void {
+  if (!isNetworkErrorWithGetRequest(error)) {
+    return;
+  }
+
+  const { openConfirmDialog, activeErrorTypes, messages } = options;
+  // 중복 노출 방지
+  if (activeErrorTypes.has(ERROR_TYPES.NETWORK)) {
+    return;
+  }
+
+  activeErrorTypes.add(ERROR_TYPES.NETWORK);
+  openConfirmDialog({
+    title: 'Server Error',
+    content: messages.network,
+    onConfirm: () => {
+      activeErrorTypes.delete(ERROR_TYPES.NETWORK);
+    },
+  });
+}
+
 /**
  * API 응답 에러 시 공통 다이얼로그 처리 (네트워크/500/unknown/userMessage).
  * activeErrorTypes로 중복 노출을 막고, GET 요청 네트워크 실패 시에는 다이얼로그를 띄우지 않음.

@@ -8,6 +8,7 @@ export const createAxiosInstance = (
       'Content-Type': 'application/json',
     },
     ...config,
+    timeout: config?.timeout ?? 10_000,
   });
 
   return instance;
