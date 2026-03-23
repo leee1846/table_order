@@ -48,6 +48,7 @@ export const Header = ({
     const table = tableGroup.tableList?.find(
       (table) => table.tableNumber === deviceData?.tableNumber
     );
+
     return table?.tableName ?? '';
   });
 

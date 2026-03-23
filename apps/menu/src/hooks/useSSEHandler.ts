@@ -319,6 +319,8 @@ export const useSSEHandler = () => {
             tableOrderHistoriesData?.orderDetailMenuList?.length < 1);
         // pos or 관리자앱에서 주문을 모두 취소 or 테이블 비우기 했을 경우
         if (hasExistingOrders) {
+          refreshTableOrderHistoriesData();
+
           // 메뉴판에서 주문을 넣었을경우 ORDER_COMPLETE에서 처리하기 때문에 중복 처리 방지
           if (
             usePosOrderStore.getState().isWaitingForPosOrderComplete ||
@@ -327,7 +329,6 @@ export const useSSEHandler = () => {
             return;
           }
 
-          refreshTableOrderHistoriesData();
           applyMenuboardStateAfterTableOrderHistoriesCleared(
             sseHandlerDataRef.current.shopDetailData
           );
