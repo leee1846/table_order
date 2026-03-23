@@ -6,6 +6,7 @@ import * as UIStyles from '@repo/ui/styles';
 export const ColorTd = styled.td<{ color: string }>`
   color: ${({ color }) => color} !important;
   text-align: center !important;
+  text-wrap: pretty;
 `;
 
 export const cancelButtonCss = css`
