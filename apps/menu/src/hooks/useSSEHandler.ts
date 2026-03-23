@@ -381,7 +381,21 @@ export const useSSEHandler = () => {
         return;
       }
       await refreshShopDetailData();
-      useModalStore.getState().closeAllModals();
+
+      const {
+        isCashPaymentInducementModalOpened,
+        isSplitPaymentModalOpened,
+        isCardPaymentInstallmentModalOpened,
+      } = useModalStore.getState().data;
+
+      const isPaymentModalOpened =
+        isCashPaymentInducementModalOpened ||
+        isSplitPaymentModalOpened ||
+        isCardPaymentInstallmentModalOpened;
+
+      if (!isPaymentModalOpened) {
+        useModalStore.getState().closeAllModals();
+      }
       useDialogStore.getState().closeAllDialogs();
       toast(tRef.current('매장정보가 업데이트 되었습니다.'), {
         position: 'center-center',
