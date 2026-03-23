@@ -331,5 +331,7 @@
   "다시 결제를 시도하시면 이전 결제 내역이 환불된 후 결제가 진행됩니다.": "If you try to pay again, the previous payment will be refunded and then the payment will proceed.",
   "가맹점 다운로드가 완료되었습니다.": "Franchise download has been completed.",
   "주문 대기 중": "Waiting for order",
-  "네트워크 연결 중": "Connecting to the network"
+  "네트워크 연결 중": "Connecting to the network",
+  "일부 결제 내역이 있어 취소할 수 없습니다.": "Cannot cancel because there are some payment records.",
+  "일부 결제 내역이 있어 할인할 수 없습니다": "Cannot apply discount because there are some payment records."
 }
