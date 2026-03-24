@@ -415,7 +415,7 @@ export const Calender = ({
               width={yearInput.length}
             />
             {translationsData.year}
-            <div />
+            <span />
             {month}
             {translationsData.month}
           </p>

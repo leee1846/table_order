@@ -323,6 +323,8 @@
   "수량을 {{count}}개 이상 입력해주세요.": "Please enter a quantity of at least {{count}}.",
   "최소 {{count}}개 이상 선택해주세요.": "Please select at least {{count}} items.",
   "최대 {{count}}개까지 선택 가능합니다.": "You can select up to {{count}} items.",
+  "{{groupName}}에서 최소 {{count}}개 이상 선택해주세요.": "Select at least {{count}} from {{groupName}}.",
+  "{{groupName}}에서 최대 {{count}}개까지 선택 가능합니다.": "You can select up to {{count}} from {{groupName}}.",
   "POS 오류": "POS Error",
   "주문 요청에 실패했습니다. 사장님에게 문의해주세요.": "Order request failed. Please contact the store owner.",
   "주문 처리에 실패했습니다. 사장님에게 문의해주세요.": "Order processing failed. Please contact the store owner.",
