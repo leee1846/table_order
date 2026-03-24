@@ -283,13 +283,9 @@ export const useSSEHandler = () => {
         return;
       }
 
-      const { shopDetailData, tableNumFromParams } = sseHandlerDataRef.current;
-      const isPosLinked =
-        !!shopDetailData?.shopSetting?.shopPosCode &&
-        shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
+      const { tableNumFromParams } = sseHandlerDataRef.current;
       // 테이블 상세 페이지
-      // 포스 연동이 아닐경우 (포스 연동일 경우 ORDER_COMPLETE에서 처리)
-      if (tableNumFromParams && !isPosLinked) {
+      if (tableNumFromParams) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.orders.tableOrderHistories(
             shopCode,
