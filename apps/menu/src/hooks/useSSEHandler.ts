@@ -319,6 +319,11 @@ export const useSSEHandler = () => {
             tableOrderHistoriesData?.orderDetailMenuList?.length < 1);
         // pos or 관리자앱에서 주문을 모두 취소 or 테이블 비우기 했을 경우
         if (hasExistingOrders) {
+          // POS 콜백 폴링 중이거나 onSuccess/onFailure 처리 중이면 갱신 생략
+          if (usePosOrderStore.getState().isWaitingForPosOrderComplete) {
+            return;
+          }
+
           refreshTableOrderHistoriesData();
           applyMenuboardStateAfterTableOrderHistoriesCleared(
             sseHandlerDataRef.current.shopDetailData

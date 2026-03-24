@@ -238,10 +238,6 @@ export const useCartStore = create<ICartStore>((set, get) => {
         hasFirstOrderRequiredItems,
       };
 
-      if (isEqualByJson(get().data, clearedData)) {
-        return;
-      }
-
       AppStorage.saveData({
         key: STORAGE_KEYS.CART,
         value: clearedData,
