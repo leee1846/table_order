@@ -23,6 +23,17 @@ interface GlobalLoadingIndicatorProps {
    * - message prop을 받는 컴포넌트 전달
    */
   LoadingOverlay: React.ComponentType<{ message: string }>;
+  /**
+   * true이면 SSE 재연결 중일 때 오버레이를 표시하지 않음
+   * - SSE 재연결 중에도 UI를 그대로 유지해야 하는 페이지에서 사용
+   */
+  hideSSEReconnectingOverlay?: boolean;
+  /**
+   * true이면 API fetching 중 스피너를 표시하지 않음
+   * - 초기 로딩 화면 등 스피너 없이 자체 로딩 UX를 갖춘 페이지에서 사용
+   * - mutation 로딩은 이 옵션과 무관하게 동작
+   */
+  hideFetchingSpinner?: boolean;
 }
 
 /**
@@ -30,9 +41,9 @@ interface GlobalLoadingIndicatorProps {
  *
  * 우선순위 기반 로딩 UI 표시:
  * 1순위: POS 동기화 (isPosSyncVisible) → null 반환 (이미 다른 곳에서 표시 중)
- * 2순위: SSE 재연결 → LoadingOverlay with sseReconnectingMessage
+ * 2순위: SSE 재연결 → LoadingOverlay with sseReconnectingMessage (hideSSEReconnectingOverlay=true이면 null)
  * 3순위: POS 주문 완료 대기 → LoadingOverlay with posOrderWaitingMessage
- * 4순위: 일반 API 로딩 → FullscreenLoadingSpinner
+ * 4순위: 일반 API 로딩 → FullscreenLoadingSpinner (hideFetchingSpinner=true이면 fetching은 무시, mutation은 유지)
  *
  * @example
  * ```tsx
@@ -50,6 +61,8 @@ export function GlobalLoadingIndicator({
   sseReconnectingMessage,
   posOrderWaitingMessage,
   LoadingOverlay,
+  hideSSEReconnectingOverlay = false,
+  hideFetchingSpinner = false,
 }: GlobalLoadingIndicatorProps) {
   const isFetching =
     useIsFetching() -
@@ -67,8 +80,8 @@ export function GlobalLoadingIndicator({
     return null;
   }
 
-  // 2순위: SSE 재연결 중
-  if (isSSEReconnecting) {
+  // 2순위: SSE 재연결 중 (hideSSEReconnectingOverlay=true이면 오버레이 없이 통과)
+  if (isSSEReconnecting && !hideSSEReconnectingOverlay) {
     return <LoadingOverlay message={sseReconnectingMessage} />;
   }
 
@@ -77,8 +90,9 @@ export function GlobalLoadingIndicator({
     return <LoadingOverlay message={posOrderWaitingMessage} />;
   }
 
-  // 4순위: 일반 API 로딩
-  if (isFetching > 0 || isMutating > 0) {
+  // 4순위: 일반 API 로딩 (hideFetchingSpinner=true이면 fetching은 무시, mutation은 유지)
+  const isFetchingActive = hideFetchingSpinner ? false : isFetching > 0;
+  if (isFetchingActive || isMutating > 0) {
     return <FullscreenLoadingSpinner />;
   }
 

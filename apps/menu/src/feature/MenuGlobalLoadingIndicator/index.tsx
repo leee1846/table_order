@@ -28,6 +28,8 @@ export function MenuGlobalLoadingIndicator() {
       sseReconnectingMessage={t('네트워크 연결 중')}
       posOrderWaitingMessage={t('주문 대기 중')}
       LoadingOverlay={PosSyncOverlayModal}
+      hideSSEReconnectingOverlay
+      hideFetchingSpinner={isRootPage}
     />
   );
 }
