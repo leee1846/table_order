@@ -191,13 +191,15 @@ export const AddMenuDialog = ({
 
     const validation = validateOptionGroups(
       selectedMenu.optionGroupList || [],
-      selectedOptions
+      selectedOptions,
+      i18nInstance?.language
     );
 
     if (!validation.isValid) {
       const invalidResult = validation.results.find(
         (result) => !result.isValid
       );
+
       if (invalidResult?.messageKey) {
         toast(t(invalidResult.messageKey, invalidResult.messageOptions));
       } else {

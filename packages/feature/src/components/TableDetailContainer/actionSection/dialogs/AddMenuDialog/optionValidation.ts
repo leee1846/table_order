@@ -5,7 +5,7 @@ export interface OptionGroupValidationResult {
   optionGroupName: string;
   isValid: boolean;
   messageKey?: string;
-  messageOptions?: Record<string, number>;
+  messageOptions?: Record<string, string | number>;
   selectedCount: number;
   minRequired: number;
   maxAllowed: number;
@@ -30,7 +30,8 @@ const countSelectedByGroup = (
 
 export const validateOptionGroups = (
   optionGroups: IOptionGroup[],
-  selectedOptions: Map<number, number> // <optionSeq, quantity>
+  selectedOptions: Map<number, number>, // <optionSeq, quantity>
+  currentLanguage?: string
 ): OptionValidationResult => {
   const results: OptionGroupValidationResult[] = optionGroups.map(
     (optionGroup) => {
@@ -44,13 +45,21 @@ export const validateOptionGroups = (
 
       const maxAllowed = optionGroup.maxQuantity;
 
+      // 현재 언어에 맞는 옵션 그룹 이름 가져오기 (fallback: optionGroupName)
+      const localizedGroupName = 
+        (currentLanguage && optionGroup.localeOptionGroupName?.[currentLanguage]) || 
+        optionGroup.optionGroupName;
+
       if (minRequired > 0 && selectedCount < minRequired) {
         return {
           optionGroupSeq: optionGroup.optionGroupSeq,
           optionGroupName: optionGroup.optionGroupName,
           isValid: false,
-          messageKey: '최소 {{count}}개 이상 선택해주세요.',
-          messageOptions: { count: minRequired },
+          messageKey: '{{groupName}}에서 최소 {{count}}개 이상 선택해주세요.',
+          messageOptions: {
+            groupName: localizedGroupName,
+            count: minRequired,
+          },
           selectedCount,
           minRequired,
           maxAllowed,
@@ -62,8 +71,11 @@ export const validateOptionGroups = (
           optionGroupSeq: optionGroup.optionGroupSeq,
           optionGroupName: optionGroup.optionGroupName,
           isValid: false,
-          messageKey: '최대 {{count}}개까지 선택 가능합니다.',
-          messageOptions: { count: maxAllowed },
+          messageKey: '{{groupName}}에서 최대 {{count}}개까지 선택 가능합니다.',
+          messageOptions: {
+            groupName: localizedGroupName,
+            count: maxAllowed,
+          },
           selectedCount,
           minRequired,
           maxAllowed,
