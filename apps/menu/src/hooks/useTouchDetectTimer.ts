@@ -86,16 +86,12 @@ export const useTouchDetectTimer = () => {
         const newTableOrderHistoriesData =
           await refreshTableOrderHistoriesDataRef.current();
 
-        // 테이블이 점유되지 않았을경우
-        if (newTableOrderHistoriesData === null) {
-          // 객수 선택 초기화
-          clearCustomerCountData();
-        }
-
         const isNoExistingOrders =
           (newTableOrderHistoriesData?.orderDetailMenuList?.length ?? 0) < 1;
         // 이미 주문이 존재하면 언어·초기 화면을 리셋하지 않음
         if (isNoExistingOrders) {
+          // 객수 선택 초기화
+          clearCustomerCountData();
           // 매장 기본 언어로 초기화 (KO 고정 대신 shopLanguage 사용)
           setLanguageData({
             currentLanguage:
@@ -153,7 +149,6 @@ export const useTouchDetectTimer = () => {
         90000 // 1분 30초
       );
     };
-
     // 초기 시작
     startResetTimer();
     startOrderReminderTimer();

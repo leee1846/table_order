@@ -105,16 +105,12 @@ export const CartReminder = () => {
         clearCart();
         closeAllModals();
 
-        // 테이블이 점유되지 않았을경우
-        if (tableOrderHistoriesResponse === null) {
-          // 객수 선택 초기화
-          clearCustomerCountData();
-        }
-
         const isNoExistingOrders =
           (tableOrderHistoriesResponse?.orderDetailMenuList?.length ?? 0) < 1;
         // 이미 주문이 존재하면 언어·초기 화면을 리셋하지 않음
         if (isNoExistingOrders) {
+          // 객수 선택 초기화
+          clearCustomerCountData();
           // 매장 기본 언어로 초기화 (KO 고정 대신 shopLanguage 사용)
           setCustomerLanguageData({
             currentLanguage:
