@@ -40,6 +40,7 @@ import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { withKoreanMenuNames } from '@/utils/resolveMenuKoreanName';
 
 interface Props {
   onClose: () => void;
@@ -454,7 +455,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       customerCount: customerCountData?.adultCount ?? 1,
       kidsCustomerCount: customerCountData?.childCount ?? 0,
       totalAmount: totalPrice.toString(),
-      orders: adjustedOrders,
+      orders: withKoreanMenuNames(adjustedOrders),
     }).catch((error) => {
       // 테이블이 삭제된 경우 테이블 선택 페이지로 이동
       if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {

@@ -26,6 +26,7 @@ import {
   applyMenuboardStateAfterTableOrderHistoriesCleared,
   isRefetchedTableOrderHistoriesEmpty,
 } from '@/utils/applyMenuboardStateAfterTableOrderHistoriesCleared';
+import { withKoreanMenuNames } from '@/utils/resolveMenuKoreanName';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -118,7 +119,7 @@ export const CartButton = ({ categories }: Props) => {
         // 객수 미사용시 0명으로 처리
         kidsCustomerCount: customerCountData?.childCount ?? 0,
         totalAmount: totalPrice.toString(),
-        orders: adjustOptionQuantitiesForOrder(orders),
+        orders: withKoreanMenuNames(adjustOptionQuantitiesForOrder(orders)),
       }).catch((error) => {
         if (error.response?.status === 400) {
           // 삭제된 테이블일경우
