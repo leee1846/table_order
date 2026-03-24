@@ -28,7 +28,7 @@ export const CartReminder = () => {
 
   const { hideCartReminder } = useCartReminderStore();
   const { clearCart } = useCartStore();
-  const { clearData: clearCustomerLanguageData } = useCustomerLanguageStore();
+  const { setData: setCustomerLanguageData } = useCustomerLanguageStore();
   const { showInitialPage } = useInitialPageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { refresh: refreshCategoriesData } = useCategoriesData({
@@ -92,7 +92,7 @@ export const CartReminder = () => {
       globalTimerManager.clear(TIMER_KEYS.CART_REMINDER);
 
       try {
-        await refreshShopDetailDataRef.current();
+        const newShopDetailData = await refreshShopDetailDataRef.current();
         await refreshCategoriesDataRef.current();
         await refreshTableGroupDataRef.current();
         await refreshDeviceDataRef.current();
@@ -115,7 +115,12 @@ export const CartReminder = () => {
           (tableOrderHistoriesResponse?.orderDetailMenuList?.length ?? 0) < 1;
         // 이미 주문이 존재하면 언어·초기 화면을 리셋하지 않음
         if (isNoExistingOrders) {
-          clearCustomerLanguageData();
+          // 매장 기본 언어로 초기화 (KO 고정 대신 shopLanguage 사용)
+          setCustomerLanguageData({
+            currentLanguage:
+              newShopDetailData?.shopSetting?.shopLanguage ?? 'KO',
+            isSelected: false,
+          });
           showInitialPage();
         }
       } catch {
@@ -131,7 +136,7 @@ export const CartReminder = () => {
     clearCustomerCountData,
     hideCartReminder,
     clearCart,
-    clearCustomerLanguageData,
+    setCustomerLanguageData,
     showInitialPage,
     closeAllModals,
   ]);

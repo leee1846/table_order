@@ -58,7 +58,7 @@ export const useTouchDetectTimer = () => {
 
   const cartMenuCount = useCartStore((s) => s.data.menus.length);
   const clearCart = useCartStore((s) => s.clearCart);
-  const { clearData: clearLanguageData } = useCustomerLanguageStore();
+  const { setData: setLanguageData } = useCustomerLanguageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { showInitialPage } = useInitialPageStore();
   const { showCartReminder } = useCartReminderStore();
@@ -73,7 +73,7 @@ export const useTouchDetectTimer = () => {
           return;
         }
 
-        await refreshShopDetailDataRef.current();
+        const newShopDetailData = await refreshShopDetailDataRef.current();
         await refreshCategoriesDataRef.current();
         await refreshTableGroupDataRef.current();
         await refreshDeviceDataRef.current();
@@ -96,7 +96,12 @@ export const useTouchDetectTimer = () => {
           (newTableOrderHistoriesData?.orderDetailMenuList?.length ?? 0) < 1;
         // 이미 주문이 존재하면 언어·초기 화면을 리셋하지 않음
         if (isNoExistingOrders) {
-          clearLanguageData();
+          // 매장 기본 언어로 초기화 (KO 고정 대신 shopLanguage 사용)
+          setLanguageData({
+            currentLanguage:
+              newShopDetailData?.shopSetting?.shopLanguage ?? 'KO',
+            isSelected: false,
+          });
           showInitialPage();
         }
 
@@ -172,6 +177,6 @@ export const useTouchDetectTimer = () => {
     showInitialPage,
     clearCart,
     clearCustomerCountData,
-    clearLanguageData,
+    setLanguageData,
   ]);
 };

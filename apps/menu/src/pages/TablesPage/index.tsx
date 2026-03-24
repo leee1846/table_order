@@ -250,7 +250,7 @@ export const TablesPage = () => {
   // 스토어 훅
   const { clearCart } = useCartStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
-  const { clearData: clearLanguageData } = useCustomerLanguageStore();
+  const { setData: setLanguageData } = useCustomerLanguageStore();
   const { showInitialPage } = useInitialPageStore();
 
   // 테이블 그룹 선택값을 세션 스토리지에 저장해, 페이지 재진입 시 유지
@@ -297,14 +297,19 @@ export const TablesPage = () => {
 
     clearCart();
     showInitialPage();
-    clearLanguageData();
+    // 매장 기본 언어로 초기화 (KO 고정 대신 shopLanguage 사용)
+    setLanguageData({
+      currentLanguage: shopDetailData?.shopSetting?.shopLanguage ?? 'KO',
+      isSelected: false,
+    });
   }, [
     refreshCategoriesData,
     refreshTableOrderHistoriesData,
     clearCustomerCountData,
     clearCart,
     showInitialPage,
-    clearLanguageData,
+    setLanguageData,
+    shopDetailData,
   ]);
 
   // 디바이스 정보 업데이트 및 createDeviceDetail 호출
