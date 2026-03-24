@@ -737,13 +737,15 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       setModalData('orderCompleteData', orderData);
       setModalData('orderCompleteTotalPrice', totalPrice);
       setModalData('isOrderCompleteFromPrepaidCardOrFinalSplit', true);
-      setModalData('isOrderCompleteModalOpened', true);
+
+      // 장바구니 비우기
+      clearCart();
 
       // setModalData('isCardPaymentProgressModalOpened', false);
       setModalData('isPaymentsModalOpened', false);
       setModalData('isCartListOpened', false);
+      setModalData('isOrderCompleteModalOpened', true);
 
-      clearCart();
       onClose();
       await refreshTableOrderHistoriesData();
     };

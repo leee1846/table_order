@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { css } from '@emotion/react';
 import { Trans } from 'react-i18next';
 import { BasicButton } from '@repo/ui/components';
@@ -6,7 +6,10 @@ import { speechBubbleIcon } from '@repo/ui/icons';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { TIMER_KEYS } from '@/constants/keys';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
+import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
+import { useShopThemePage } from '@/hooks/useShopThemePage';
+import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useCartStore } from '@/stores/useCartStore';
@@ -31,12 +34,38 @@ export const CartReminder = () => {
   const { refresh: refreshCategoriesData } = useCategoriesData({
     skipInitialRequest: true,
   });
-  const { refresh: refreshTableOrderHistoriesData } =
-    useTableOrderHistoriesData({ skipInitialRequest: true });
+  const { refresh: refreshDeviceData } = useDeviceData({
+    skipInitialRequest: true,
+  });
   const { refresh: refreshShopDetailData } = useShopDetailData({
     skipInitialRequest: true,
   });
+  const { refresh: refreshShopThemePageData } = useShopThemePage({
+    skipInitialRequest: true,
+  });
+  const { refresh: refreshTableGroupData } = useTableGroupData({
+    skipInitialRequest: true,
+  });
+  const { refresh: refreshTableOrderHistoriesData } =
+    useTableOrderHistoriesData({ skipInitialRequest: true });
   const { closeAllModals } = useModalStore();
+
+  // refresh 함수들은 ref로 참조 — 외부 리렌더로 참조가 바뀌어도 effect 재실행 방지
+  const refreshShopDetailDataRef = useRef(refreshShopDetailData);
+  const refreshCategoriesDataRef = useRef(refreshCategoriesData);
+  const refreshTableGroupDataRef = useRef(refreshTableGroupData);
+  const refreshDeviceDataRef = useRef(refreshDeviceData);
+  const refreshShopThemePageDataRef = useRef(refreshShopThemePageData);
+  const refreshTableOrderHistoriesDataRef = useRef(
+    refreshTableOrderHistoriesData
+  );
+
+  refreshShopDetailDataRef.current = refreshShopDetailData;
+  refreshCategoriesDataRef.current = refreshCategoriesData;
+  refreshTableGroupDataRef.current = refreshTableGroupData;
+  refreshDeviceDataRef.current = refreshDeviceData;
+  refreshShopThemePageDataRef.current = refreshShopThemePageData;
+  refreshTableOrderHistoriesDataRef.current = refreshTableOrderHistoriesData;
 
   const [remainingSeconds, setRemainingSeconds] = useState(
     COUNTDOWN_INITIAL_SECONDS
@@ -62,38 +91,43 @@ export const CartReminder = () => {
     const resetToInitialState = async () => {
       globalTimerManager.clear(TIMER_KEYS.CART_REMINDER);
 
-      await refreshCategoriesData();
-      await refreshShopDetailData();
+      try {
+        await refreshShopDetailDataRef.current();
+        await refreshCategoriesDataRef.current();
+        await refreshTableGroupDataRef.current();
+        await refreshDeviceDataRef.current();
+        await refreshShopThemePageDataRef.current();
 
-      const tableOrderHistoriesResponse =
-        await refreshTableOrderHistoriesData();
+        const tableOrderHistoriesResponse =
+          await refreshTableOrderHistoriesDataRef.current();
 
-      const isTableNotOccupiedAndNoOrders =
-        tableOrderHistoriesResponse === null;
-      if (isTableNotOccupiedAndNoOrders) {
-        clearCustomerCountData();
+        hideCartReminder();
+        clearCart();
+        closeAllModals();
+
+        // 테이블이 점유되지 않았을경우
+        if (tableOrderHistoriesResponse === null) {
+          // 객수 선택 초기화
+          clearCustomerCountData();
+        }
+
+        const isNoExistingOrders =
+          (tableOrderHistoriesResponse?.orderDetailMenuList?.length ?? 0) < 1;
+        // 이미 주문이 존재하면 언어·초기 화면을 리셋하지 않음
+        if (isNoExistingOrders) {
+          clearCustomerLanguageData();
+          showInitialPage();
+        }
+      } catch {
+        // async 콜백에서 throw 발생 시 unhandled rejection → 웹뷰 앱 종료 방지
       }
-
-      hideCartReminder();
-      clearCart();
-      clearCustomerLanguageData();
-      closeAllModals();
-      showInitialPage();
     };
 
-    const handleCountdownComplete = async () => {
-      const isCountdownComplete = remainingSeconds === 0;
-      if (isCountdownComplete) {
-        await resetToInitialState();
-      }
-    };
-
-    handleCountdownComplete();
+    if (remainingSeconds === 0) {
+      resetToInitialState();
+    }
   }, [
     remainingSeconds,
-    refreshCategoriesData,
-    refreshShopDetailData,
-    refreshTableOrderHistoriesData,
     clearCustomerCountData,
     hideCartReminder,
     clearCart,

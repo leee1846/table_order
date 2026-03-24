@@ -62,7 +62,6 @@ export const useTouchDetectTimer = () => {
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { showInitialPage } = useInitialPageStore();
   const { showCartReminder } = useCartReminderStore();
-  const isAllModalsClosed = useModalStore((s) => s.isAllModalsClosed);
 
   useEffect(() => {
     const timerCallback = async () => {
@@ -70,7 +69,7 @@ export const useTouchDetectTimer = () => {
 
       try {
         // 모달이 하나라도 열려 있으면 새로고침하지 않음 (분할 결제 등 진행 중 방지)
-        if (!isAllModalsClosed()) {
+        if (!useModalStore.getState().isAllModalsClosed()) {
           return;
         }
 
@@ -82,6 +81,8 @@ export const useTouchDetectTimer = () => {
 
         // 장바구니 비우기
         clearCart();
+        useModalStore.getState().closeAllModals();
+
         const newTableOrderHistoriesData =
           await refreshTableOrderHistoriesDataRef.current();
 
@@ -89,7 +90,12 @@ export const useTouchDetectTimer = () => {
         if (newTableOrderHistoriesData === null) {
           // 객수 선택 초기화
           clearCustomerCountData();
-          // 언어 선택 초기화
+        }
+
+        const isNoExistingOrders =
+          (newTableOrderHistoriesData?.orderDetailMenuList?.length ?? 0) < 1;
+        // 이미 주문이 존재하면 언어·초기 화면을 리셋하지 않음
+        if (isNoExistingOrders) {
           clearLanguageData();
           showInitialPage();
         }
@@ -103,7 +109,7 @@ export const useTouchDetectTimer = () => {
 
     const startResetTimer = () => {
       // 모달이 열려 있으면 리셋 타이머를 시작하지 않음
-      if (!isAllModalsClosed()) {
+      if (!useModalStore.getState().isAllModalsClosed()) {
         return;
       }
       // 이미 타이머 실행 중이면 제거
@@ -118,7 +124,7 @@ export const useTouchDetectTimer = () => {
     const orderReminderTimerCallback = () => {
       globalTimerManager.clear(TIMER_KEYS.CART_ORDER_REMINDER);
       // 타이머 만료 시점에 다시 한 번 모달 상태 확인 (열린 모달 위에 노출 방지)
-      if (!isAllModalsClosed()) {
+      if (!useModalStore.getState().isAllModalsClosed()) {
         return;
       }
       showCartReminder();
@@ -130,7 +136,7 @@ export const useTouchDetectTimer = () => {
       }
 
       // 모든 modal이 닫혀있는지 확인
-      if (!isAllModalsClosed()) {
+      if (!useModalStore.getState().isAllModalsClosed()) {
         return;
       }
 
@@ -162,7 +168,6 @@ export const useTouchDetectTimer = () => {
     };
   }, [
     cartMenuCount,
-    isAllModalsClosed,
     showCartReminder,
     showInitialPage,
     clearCart,

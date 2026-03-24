@@ -264,16 +264,16 @@ export const CardPaymentInstallmentModal = ({
     modalStore.setModalData('orderCompleteData', orderData);
     modalStore.setModalData('orderCompleteTotalPrice', totalPrice);
     modalStore.setModalData('isOrderCompleteFromPrepaidCardOrFinalSplit', true);
-    modalStore.setModalData('isOrderCompleteModalOpened', true);
+
+    // 장바구니 비우기
+    clearCart();
 
     // 모든 모달 닫기
     // modalStore.setModalData('isCardPaymentProgressModalOpened', false);
     modalStore.setModalData('isPaymentsModalOpened', false);
     modalStore.setModalData('isCartListOpened', false);
     modalStore.setModalData('isCardPaymentInstallmentModalOpened', false);
-
-    // 장바구니 비우기
-    clearCart();
+    modalStore.setModalData('isOrderCompleteModalOpened', true);
 
     // 현재 모달 닫기
     onClose();
