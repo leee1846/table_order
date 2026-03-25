@@ -56,6 +56,9 @@ export const CartList = ({
   openPaymentsModal,
 }: Props) => {
   const { t } = useCustomerTranslation();
+  const currentLanguage = useCustomerLanguageStore(
+    (s) => s.data.currentLanguage
+  );
   const { theme } = useThemeMode();
   const { data: modalData, setModalData } = useModalStore();
   const shopDetailData = useShopDetailStore((s) => s.data);
@@ -131,6 +134,28 @@ export const CartList = ({
     setSelectedMenuIndex(null);
   };
 
+  // 판매 시간/요일/공휴일 검증 함수
+  const validateMenuAvailability = (): boolean => {
+    for (const cartMenu of cartData.menus) {
+      const category = categories.find(
+        (cat) => cat.categorySeq === cartMenu.categorySeq
+      );
+
+      if (!category) {
+        toast(
+          t('{{menuName}}는(은) 주문할 수 없는 메뉴입니다.', {
+            menuName:
+              cartMenu.localeMenuName?.[currentLanguage] ?? cartMenu.menuName,
+          }),
+          TOAST_OPTIONS
+        );
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleOrderSubmit = () => {
     if (cartData.menus.length < 1) {
       toast(t('현재 담긴 메뉴가 없어요.'), TOAST_OPTIONS);
@@ -161,7 +186,7 @@ export const CartList = ({
       // 카트에 첫 주문 필수 항목이 없는 경우
       if (!hasFirstOrderRequiredMenu) {
         const categoryName = firstOrderRequiredCategories
-          .map((c) => c.categoryName)
+          .map((c) => c.localeCategoryName?.[currentLanguage] ?? c.categoryName)
           .join(', ');
         toast(
           t('[{{categoryName}}]\n 메뉴 중 1개 이상 주문해주세요.', {
@@ -182,7 +207,8 @@ export const CartList = ({
       if (originalMenu?.isOutOfStock) {
         toast(
           t('{{menuName}} 메뉴가 품절되었습니다.', {
-            menuName: cartMenu.menuName,
+            menuName:
+              cartMenu.localeMenuName?.[currentLanguage] ?? cartMenu.menuName,
           }),
           { position: 'center-center', duration: 1500 }
         );
@@ -204,7 +230,8 @@ export const CartList = ({
       ) {
         toast(
           t('{{menuName}}의 최소 주문 수량은 {{minQuantity}}개 입니다.', {
-            menuName: cartMenu.menuName,
+            menuName:
+              cartMenu.localeMenuName?.[currentLanguage] ?? cartMenu.menuName,
             minQuantity: originalMenu.minQuantity,
           }),
           { position: 'center-center', duration: 1500 }
@@ -237,6 +264,12 @@ export const CartList = ({
       primaryText: t('주문하기'),
       secondaryText: t('이전으로'),
       onConfirm: async () => {
+        // 판매 시간/요일/공휴일 검증
+        const isValid = validateMenuAvailability();
+        if (!isValid) {
+          return;
+        }
+
         const totalPrice = calculateTotalPrice();
 
         // 총 금액이 0원이거나 선불이 아닌 경우 후불 처리
@@ -338,7 +371,9 @@ export const CartList = ({
             return (
               <S.OrderItem key={`order-${index + 1}`} role="listitem">
                 <S.OrderMenu>
-                  <h3>{menu.menuName}</h3>
+                  <h3>
+                    {menu.localeMenuName?.[currentLanguage] ?? menu.menuName}
+                  </h3>
                   <p>₩{formatCurrency(menu.menuPrice * menu.quantity)}</p>
                 </S.OrderMenu>
 
@@ -348,7 +383,8 @@ export const CartList = ({
                       <S.OptionItem key={option.optionSeq}>
                         <p>
                           <span />
-                          {option.optionName}
+                          {option.localeOptionName?.[currentLanguage] ??
+                            option.optionName}
                         </p>
                         <div>
                           <p>

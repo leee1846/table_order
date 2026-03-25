@@ -115,6 +115,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
           menuPrice: menu.menuPrice,
           quantity: 1,
           selectedOptions: [],
+          localeMenuName: menu.localeMenuName,
         });
       }
 
