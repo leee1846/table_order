@@ -51,8 +51,6 @@ export const OrderCompleteModalContainer = () => {
   }, [setModalData, refreshTableOrderHistoriesData]);
 
   // 1초마다 카운트다운 감소, 0이 되면 자동 닫기
-  // - 마운트 시 useState(CLOSE_COUNTDOWN_SECONDS)로 초기화되므로 별도 초기화 effect 불필요
-  // - MainPage에서 isOrderCompleteModalOpened 조건으로 마운트/언마운트되므로 해당 의존성 불필요
   useEffect(() => {
     if (countdown <= 0) {
       handleClose();

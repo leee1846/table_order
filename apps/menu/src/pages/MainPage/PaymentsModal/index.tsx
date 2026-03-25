@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/PaymentsModal/paymentsModal.style';
 import {
@@ -32,7 +33,7 @@ interface Props {
   onClose: () => void;
   selectedPaymentMethod: 'card' | 'cash' | 'split' | 'payAfter' | null;
   setSelectedPaymentMethod: (
-    method: 'card' | 'cash' | 'split' | 'payAfter'
+    method: 'card' | 'cash' | 'split' | 'payAfter' | null
   ) => void;
   openNextModal: () => void;
   executePostpaidOrder: () => Promise<{
@@ -54,6 +55,13 @@ export const PaymentsModal = ({
 }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
+
+  // 모달이 닫힐 때(언마운트 시) 선택된 결제 방법 초기화
+  useEffect(() => {
+    return () => {
+      setSelectedPaymentMethod(null);
+    };
+  }, [setSelectedPaymentMethod]);
   const shopDetailData = useShopDetailStore((s) => s.data);
   const {
     data: modalData,
