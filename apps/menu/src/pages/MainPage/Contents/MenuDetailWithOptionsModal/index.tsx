@@ -130,6 +130,7 @@ const convertSelectedOptionsToCartOptions = (
       optionName: getLocalizedOptionName(item.option, currentLanguage),
       optionPrice: item.option.optionPrice,
       quantity: item.quantity,
+      localeOptionName: item.option.localeOptionName,
     });
   });
 
@@ -475,6 +476,7 @@ export const MenuDetailWithOptionsModal = ({
       menuPrice: menu.menuPrice,
       quantity: menuQuantity,
       selectedOptions: cartOptions,
+      localeMenuName: menu.localeMenuName,
     };
 
     // cartItemIndex가 있으면 수정 모드, 없으면 추가 모드

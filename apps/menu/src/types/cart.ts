@@ -1,9 +1,12 @@
+import type { TLocale } from '@repo/api/types';
+
 export interface ICartOption {
   optionGroupSeq: number;
   optionSeq: number;
   optionName: string;
   optionPrice: number;
   quantity: number;
+  localeOptionName: TLocale;
 }
 
 export interface ICartMenu {
@@ -13,6 +16,7 @@ export interface ICartMenu {
   menuPrice: number;
   quantity: number;
   selectedOptions: ICartOption[];
+  localeMenuName: TLocale;
 }
 
 export interface ICartMenuWithId extends ICartMenu {

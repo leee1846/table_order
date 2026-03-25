@@ -84,6 +84,7 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
       menuPrice: menu.menuPrice,
       quantity: currentCount,
       selectedOptions: [],
+      localeMenuName: menu.localeMenuName,
     });
 
     toast(t('메뉴가 담겼습니다.'), {

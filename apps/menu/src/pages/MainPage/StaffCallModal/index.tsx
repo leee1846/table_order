@@ -76,6 +76,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
             menuPrice: sourceMenu.menuPrice,
             quantity: newQuantity,
             selectedOptions: [],
+            localeMenuName: sourceMenu.localeMenuName,
           };
           return [...currentList, newCartMenu];
         }
