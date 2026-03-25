@@ -81,19 +81,16 @@ export const Language = ({
     useLocaleBeforeOrder,
   ]);
 
-  const languageOptions = useMemo(
-    () => [
-      { value: 'KO' as TShopLanguage, label: t('한국어') },
-      { value: 'EN' as TShopLanguage, label: t('영어') },
-      { value: 'JP' as TShopLanguage, label: t('일본어') },
-      { value: 'CH' as TShopLanguage, label: t('중국어') },
-      {
-        value: 'RU' as TShopLanguage,
-        label: t('러시아어'),
-      },
-    ],
-    [t]
-  );
+  const languageOptions = [
+    { value: 'KO' as TShopLanguage, label: '한국어' },
+    { value: 'EN' as TShopLanguage, label: 'English' },
+    { value: 'JP' as TShopLanguage, label: '日本語' },
+    { value: 'CH' as TShopLanguage, label: '中文' },
+    {
+      value: 'RU' as TShopLanguage,
+      label: 'Русский',
+    },
+  ];
 
   const adminLanguageValue = adminLanguage ?? 'KO';
 
