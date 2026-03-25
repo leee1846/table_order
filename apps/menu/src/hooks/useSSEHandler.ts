@@ -571,6 +571,16 @@ export const useSSEHandler = () => {
       SystemControl.playSound({ type: 'dingdong' });
     },
 
+    handlePingMessage: () => {
+      const { currentDeviceData } = sseHandlerDataRef.current;
+      const { currentShopData } = sseHandlerDataRef.current;
+      if (!currentDeviceData?.androidId || !currentShopData?.shopCode) {
+        return;
+      }
+      const androidId = currentDeviceData.androidId;
+      const shopCode = currentShopData.shopCode;
+    },
+
     handleDeviceControlMessage: (
       controlAction: () => void,
       message: ISseMessage
@@ -853,6 +863,9 @@ export const useSSEHandler = () => {
     const shopCode = currentShopData.shopCode;
 
     switch (sseMessage.type) {
+      case 'PING':
+        handlersRef.current.handlePingMessage();
+        break;
       case 'ORDER':
         handlersRef.current.handleOrderMessage(shopCode, sseMessage);
         break;

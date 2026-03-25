@@ -1,6 +1,7 @@
 export interface ISseMessage {
   shopCode: string;
   type:
+    | 'PING'
     | 'ORDER'
     | 'SHOP'
     | 'MENU'
