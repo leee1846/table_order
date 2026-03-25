@@ -9,7 +9,11 @@ import {
 } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
-import { openDualActionDialog, openConfirmDialog } from '@repo/feature/utils';
+import {
+  openDualActionDialog,
+  openConfirmDialog,
+  toast,
+} from '@repo/feature/utils';
 import { useThemeMode } from '@repo/ui';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { CardPaymentInstallmentModal } from '../CardPaymentInstallmentModal';
@@ -89,6 +93,12 @@ export const PaymentsModal = ({
   const totalPrice = calculateTotalPrice();
 
   const onClickNext = () => {
+    if (selectedPaymentMethod === null) {
+      toast(t('결제 방법을 선택해주세요'), {
+        position: 'center-center',
+      });
+      return;
+    }
     if (selectedPaymentMethod === 'cash') {
       openDualActionDialog({
         title: t('현금 결제'),
