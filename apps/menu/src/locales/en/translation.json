@@ -1,5 +1,6 @@
 {
   "필수": "Required",
+  "선택": "Select",
   "선택 삭제": "Delete Selected",
   "알림 발송": "Send Notification",
   "총 주문내역": "Total Order History",

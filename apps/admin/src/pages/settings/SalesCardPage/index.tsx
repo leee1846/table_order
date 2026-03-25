@@ -201,6 +201,7 @@ export const SalesCardPage = () => {
                 options={dateRangeOptions}
                 value={selectedPreset}
                 onChange={handlePresetChange}
+                placeholder={t('선택')}
               />
             </S.FiltersRight>
           </S.Filters>

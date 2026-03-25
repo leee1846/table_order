@@ -145,6 +145,7 @@ export const SalesMenuPage = () => {
               options={dateRangeOptions}
               value={selectedPreset}
               onChange={handlePresetChange}
+              placeholder={t('선택')}
             />
           </S.Filters>
 

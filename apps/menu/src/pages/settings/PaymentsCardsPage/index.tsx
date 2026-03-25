@@ -181,6 +181,7 @@ export const PaymentsCardsPage = () => {
                 options={dateRangeOptions}
                 value={selectedPreset}
                 onChange={handlePresetChange}
+                placeholder={t('선택')}
               />
             </S.FiltersRight>
           </S.Filters>

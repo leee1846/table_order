@@ -173,6 +173,7 @@ export const SalesOrderPage = () => {
               options={ORDER_STATUS_OPTIONS}
               value={selectedPreset}
               onChange={handlePresetChange}
+              placeholder={t('선택')}
             />
           </S.Filters>
 
