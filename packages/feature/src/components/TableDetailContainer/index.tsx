@@ -124,6 +124,14 @@ export const TableDetailContainer = ({
       }
     );
 
+  // 테이블이 비워졌을 때 자동으로 나가기
+  useEffect(() => {
+    if (orderHistoriesResponse === null) {
+      toast(t('테이블을 정리했어요.'));
+      navigate('/tables');
+    }
+  }, [orderHistoriesResponse, navigate, t]);
+
   useEffect(() => {
     if (orderHistoriesResponse?.data?.createDate) {
       setOrderTime(

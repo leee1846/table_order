@@ -6,11 +6,13 @@ import type { TOrderType } from '@repo/api/types';
 import adminI18n from '@/config/i18n';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
 import { usePosOrderStore } from '@repo/feature/stores';
+import { useQueryClient } from '@repo/api/tanstack-query';
+import { queryKeys } from '@repo/api/queries';
 
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
   const { shopCode } = useAuth();
-
+  const queryClient = useQueryClient();
   const orderType: TOrderType = 'POS_APP';
 
   if (!shopCode || !tableNum) {
@@ -20,6 +22,9 @@ export const TableDetailPage = () => {
   const handleOrderCreated = (orderUuid: string) => {
     const onSuccess = () => {
       toast(adminI18n.t('메뉴를 추가했어요.'));
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.orders.tableOrderHistories(shopCode, tableNum),
+      });
     };
     const onFailure = () => {
       openConfirmDialog({

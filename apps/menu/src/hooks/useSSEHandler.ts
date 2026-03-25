@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { useLocation, useParams, matchPath } from 'react-router-dom';
+import {
+  useLocation,
+  useParams,
+  matchPath,
+  useNavigate,
+} from 'react-router-dom';
 import type { TFunction } from 'i18next';
 import type {
   IDevice,
@@ -9,6 +14,7 @@ import type {
   ITableInfo,
   TDeviceType,
   TControlStatus,
+  ICurrentTable,
 } from '@repo/api/types';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
@@ -159,10 +165,14 @@ async function collectDeviceInfoAndSyncToServer(
 export const useSSEHandler = () => {
   const location = useLocation();
   const { tableNum: tableNumFromParams } = useParams();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useCustomerTranslation();
   const tRef = useRef(t);
   tRef.current = t;
+
+  // ORDER SSE 데이터를 추적하기 위한 ref
+  const previousOrderDataRef = useRef<Record<string, number> | null>(null);
 
   const { mutateAsync: createDeviceDetail } = usePostDeviceDetail();
   const {
@@ -284,15 +294,54 @@ export const useSSEHandler = () => {
       }
 
       const { tableNumFromParams } = sseHandlerDataRef.current;
+
       // 테이블 상세 페이지
       if (tableNumFromParams) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.orders.tableOrderHistories(
-            shopCode,
-            tableNumFromParams
-          ),
-        });
+        const currentOrderData = message.data as Record<string, number>;
+        const currentTimestamp = currentOrderData[tableNumFromParams];
+        const previousTimestamp =
+          previousOrderDataRef.current?.[tableNumFromParams];
+
+        // 쿼리 캐시에서 현재 테이블의 주문 데이터 확인
+        const cachedOrderData = queryClient.getQueryData<{
+          data?: ICurrentTable;
+        }>(queryKeys.orders.tableOrderHistories(shopCode, tableNumFromParams));
+        const hasOrderInCache = Boolean(
+          cachedOrderData?.data &&
+          cachedOrderData.data.orderDetailMenuList &&
+          cachedOrderData.data.orderDetailMenuList.length > 0
+        );
+
+        // 케이스 1: 테이블이 비워짐 (SSE에 없고, 이전에는 있었거나 캐시에 있음)
+        if (!currentTimestamp && (previousTimestamp || hasOrderInCache)) {
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.orders.tableOrderHistories(
+              shopCode,
+              tableNumFromParams
+            ),
+          });
+          toast(t('테이블을 정리했어요.'));
+          navigate(ROUTES.TABLES.generate());
+        }
+        // 케이스 2: 주문이 있고, 타임스탬프가 변경되었거나 처음 받은 경우
+        else if (
+          currentTimestamp &&
+          (!previousTimestamp || currentTimestamp !== previousTimestamp)
+        ) {
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.orders.tableOrderHistories(
+              shopCode,
+              tableNumFromParams
+            ),
+          });
+        }
+
+        // 현재 ORDER 데이터를 저장
+        previousOrderDataRef.current = currentOrderData;
         return;
+      } else {
+        // 테이블 상세 페이지가 아니면 ref 초기화
+        previousOrderDataRef.current = null;
       }
 
       const { currentDeviceData } = sseHandlerDataRef.current;

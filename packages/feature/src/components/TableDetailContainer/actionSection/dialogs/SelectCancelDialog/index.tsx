@@ -165,7 +165,13 @@ export const SelectCancelDialog = ({
                       <S.ItemOptions>
                         {item.options.map((option, optIndex) => (
                           <div key={`${option.id}-${optIndex.toString()}`}>
-                            <span>{option.name}</span>
+                            <span>
+                              {
+                                option.localeOptionName?.[
+                                  i18nInstance?.language ?? ''
+                                ]
+                              }
+                            </span>
                             <span>{` x `}</span>
                             <span>{option.qty}</span>
                           </div>
