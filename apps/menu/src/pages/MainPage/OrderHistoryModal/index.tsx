@@ -6,6 +6,7 @@ import { formatCurrency } from '@repo/util/string';
 import { NoContent } from '@/feature/NoContent';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -13,9 +14,10 @@ interface Props {
 }
 export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
   const { t } = useCustomerTranslation();
-
   const shopDetailData = useShopDetailStore((s) => s.data);
-
+  const currentLanguage = useCustomerLanguageStore(
+    (s) => s.data.currentLanguage
+  );
   return (
     <S.Background onClick={onClose}>
       <S.Container
@@ -40,7 +42,10 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
           {orderHistories?.orderDetailMenuList?.map((orderHistory) => (
             <li key={orderHistory.orderGroupUuid} role="listitem">
               <S.MenuInfo>
-                <p>{orderHistory.menuName}</p>
+                <p>
+                  {orderHistory.localeMenuName?.[currentLanguage] ??
+                    orderHistory.menuName}
+                </p>
                 <p>{formatCurrency(orderHistory.menuQuantity)}</p>
                 <p>
                   ₩

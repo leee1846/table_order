@@ -1,6 +1,6 @@
 import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
-import type { IOrderHistory } from '@repo/api/types';
+import type { ITableCurrentStatus } from '@repo/api/types';
 import { create } from '@repo/feature/zustand';
 import { isEqualByJson } from '@repo/util/function';
 
@@ -8,7 +8,7 @@ export interface ITableOrderHistoriesData {
   sseUpdatedAt?: number | null;
   discountRate: number;
   totalAmount: number;
-  orderDetailMenuList: IOrderHistory[];
+  orderDetailMenuList: ITableCurrentStatus[];
 }
 
 export interface ITableOrderHistoriesStore {
