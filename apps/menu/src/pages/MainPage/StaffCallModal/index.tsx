@@ -14,7 +14,6 @@ import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopStore } from '@/stores/useShopStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
-import { withKoreanMenuNames } from '@/utils/resolveMenuKoreanName';
 
 interface Props {
   onClose: () => void;
@@ -139,15 +138,13 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
           kidsCustomerCount: customerCountData?.childCount ?? 0,
           // 직원호출 메뉴는 0원만 가능함
           totalAmount: '0',
-          orders: withKoreanMenuNames(
-            selectedMenuList.map((menu) => ({
-              menuSeq: menu.menuSeq,
-              menuName: menu.menuName,
-              menuPrice: 0,
-              quantity: menu.quantity,
-              selectedOptions: [],
-            }))
-          ),
+          orders: selectedMenuList.map((menu) => ({
+            menuSeq: menu.menuSeq,
+            menuName: menu.menuName,
+            menuPrice: 0,
+            quantity: menu.quantity,
+            selectedOptions: [],
+          })),
         });
 
         disableStaffCall();

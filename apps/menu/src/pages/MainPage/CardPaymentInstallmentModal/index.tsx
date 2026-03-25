@@ -36,7 +36,6 @@ import {
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
-import { withKoreanMenuNames } from '@/utils/resolveMenuKoreanName';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 // const PAYMENT_EVENT_NAME = 'paymentEvent';
@@ -169,7 +168,7 @@ export const CardPaymentInstallmentModal = ({
       customerCount: customerCountData?.adultCount ?? 1,
       kidsCustomerCount: customerCountData?.childCount ?? 0,
       totalAmount: totalPrice.toString(),
-      orders: withKoreanMenuNames(adjustedOrders),
+      orders: adjustedOrders,
     }).catch((error) => {
       // 테이블이 삭제된 경우
       if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
