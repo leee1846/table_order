@@ -18,7 +18,7 @@ export const CountdownBadge = styled.p`
   top: 12px;
   right: 14px;
   ${TYPOGRAPHY.ST_4}
-  color: ${({ theme }) => theme.mode.grey[500]};
+  color: ${({ theme }) => theme.mode.grey[800]};
   pointer-events: none;
   z-index: 1;
 `;
