@@ -1,6 +1,6 @@
 import { STORAGE_KEYS } from '@/constants/keys';
 import { create } from '@repo/feature/zustand';
-import type { IOrder } from '@repo/api/types';
+import type { IOrder, TShopLanguage } from '@repo/api/types';
 import { AppStorage } from '@repo/util/app';
 
 interface IModalStore {
@@ -31,6 +31,8 @@ interface IModalStore {
     orderCompleteData: IOrder[] | null;
     /** 주문 완료 모달 총 가격 */
     orderCompleteTotalPrice: number;
+    /** 주문 완료 모달이 열린 시점에 고정된 언어 */
+    orderCompleteLanguage: TShopLanguage;
     /**
      * 선불 카드 단일 결제 또는 분할 결제 마지막 차수로 연 주문 완료 모달인지
      * (모달 닫을 때 선불 자동 리셋 등 분기용, 그 외 경로에서는 false)
@@ -55,6 +57,9 @@ interface IModalStore {
 
   /** 모든 모달 닫기 */
   closeAllModals: () => void;
+
+  /** 주문 완료 모달 상태는 유지한 채 나머지 모달 닫기 */
+  closeAllModalsExceptOrderComplete: () => void;
 
   /** 모든 모달이 닫혀있는지 확인 */
   isAllModalsClosed: () => boolean;
@@ -83,6 +88,7 @@ const initialData = {
   isOrderCompleteModalOpened: false,
   orderCompleteData: null,
   orderCompleteTotalPrice: 0,
+  orderCompleteLanguage: 'KO' as TShopLanguage,
   isOrderCompleteFromPrepaidCardOrFinalSplit: false,
   isCashPaymentInducementModalOpened: false,
   cashPaymentInducementTotalPrice: 0,
@@ -182,6 +188,22 @@ export const useModalStore = create<IModalStore>((set, get) => {
       set({
         data: initialData,
       });
+    },
+
+    // 주문 완료 모달 상태는 유지한 채 나머지 모달 닫기
+    closeAllModalsExceptOrderComplete: () => {
+      AppStorage.removeData({
+        key: STORAGE_KEYS.CASH_PAYMENT_INDUCEMENT_MODAL,
+      });
+      set((state) => ({
+        data: {
+          ...initialData,
+          isOrderCompleteModalOpened: state.data.isOrderCompleteModalOpened,
+          orderCompleteData: state.data.orderCompleteData,
+          orderCompleteTotalPrice: state.data.orderCompleteTotalPrice,
+          orderCompleteLanguage: state.data.orderCompleteLanguage,
+        },
+      }));
     },
 
     // 모든 모달이 닫혀있는지 확인

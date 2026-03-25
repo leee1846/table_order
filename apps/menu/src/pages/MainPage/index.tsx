@@ -34,6 +34,7 @@ import { LastOrder } from '@/pages/MainPage/LastOrder';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { CashPaymentInducement } from '@/feature/CashPaymentInducement';
 import { useModalStore } from '@/stores/useModalStore';
+import { OrderCompleteModalContainer } from '@/pages/MainPage/OrderCompleteModalContainer';
 
 export const MainPage = () => {
   useShopData();
@@ -207,19 +208,20 @@ export const MainPage = () => {
     return <CashPaymentInducement />;
   }
 
-  /** 초기 화면 노출 */
-  if (pageStates.initialPage.show) {
-    return <InitialPage />;
-  }
-
-  /** 고객 메뉴판 언어 선택 */
-  if (pageStates.languageSelector.show) {
-    return <LanguageSelector />;
-  }
-
-  /** 고객 객수 선택 */
-  if (pageStates.customerCount.show) {
-    return <CustomerCountSelector />;
+  /** 초기 화면 / 언어 선택 / 객수 선택: 전체화면 페이지 위에 주문 완료 모달 노출 */
+  if (
+    pageStates.initialPage.show ||
+    pageStates.languageSelector.show ||
+    pageStates.customerCount.show
+  ) {
+    return (
+      <>
+        {pageStates.initialPage.show && <InitialPage />}
+        {pageStates.languageSelector.show && <LanguageSelector />}
+        {pageStates.customerCount.show && <CustomerCountSelector />}
+        <OrderCompleteModalContainer />
+      </>
+    );
   }
 
   return (
@@ -258,6 +260,8 @@ export const MainPage = () => {
           <PickupAlarm />
         </S.PickupAlarmOverlay>
       )}
+
+      <OrderCompleteModalContainer />
     </S.Container>
   );
 };

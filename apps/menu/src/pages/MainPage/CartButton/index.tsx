@@ -12,7 +12,6 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useModalStore } from '@/stores/useModalStore';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { CartList } from '@/pages/MainPage/CartList';
-import { OrderCompleteModal } from '@/pages/MainPage/OrderCompleteModal';
 import { PaymentsModal } from '@/pages/MainPage/PaymentsModal';
 import { SplitPaymentModal } from '@/pages/MainPage/SplitPaymentModal';
 import * as S from '@/pages/MainPage/CartButton/cartButton.style';
@@ -21,11 +20,6 @@ import { useNavigate } from 'react-router-dom';
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
-import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
-import {
-  applyMenuboardStateAfterTableOrderHistoriesCleared,
-  isRefetchedTableOrderHistoriesEmpty,
-} from '@/utils/applyMenuboardStateAfterTableOrderHistoriesCleared';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -41,9 +35,6 @@ export const CartButton = ({ categories }: Props) => {
   });
   const { data: shopData } = useShopStore();
   const { data: customerCountData } = useCustomerCountStore();
-  const { refresh: refreshTableOrderHistoriesData } =
-    useTableOrderHistoriesData({ skipInitialRequest: true });
-
   /** 결제 방법 선택 모달 */
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     'card' | 'cash' | 'split' | 'payAfter' | null
@@ -191,39 +182,6 @@ export const CartButton = ({ categories }: Props) => {
     setModalData('isSplitPaymentModalOpened', false);
   };
 
-  const handleOrderCompleteModalClose = (): void => {
-    const { data: modalState } = useModalStore.getState();
-    const wasPrepaidCardOrFinalSplit =
-      modalState.isOrderCompleteFromPrepaidCardOrFinalSplit;
-
-    setModalData('isOrderCompleteModalOpened', false);
-    setModalData('orderCompleteData', null);
-    setModalData('orderCompleteTotalPrice', 0);
-    setModalData('isOrderCompleteFromPrepaidCardOrFinalSplit', false);
-
-    if (!wasPrepaidCardOrFinalSplit) {
-      return;
-    }
-
-    void (async () => {
-      try {
-        const shopDetail = useShopDetailStore.getState().data;
-        if (!shopDetail?.shopSetting?.usePrepaymentAutoReset) {
-          return;
-        }
-
-        const tableData = await refreshTableOrderHistoriesData();
-        if (!isRefetchedTableOrderHistoriesEmpty(tableData)) {
-          return;
-        }
-
-        applyMenuboardStateAfterTableOrderHistoriesCleared(shopDetail);
-      } catch {
-        // refetch 실패 시 기존 화면 유지
-      }
-    })();
-  };
-
   const getTotalCartItemCount = (): number => {
     return cartData.menus.reduce((acc, curr) => acc + curr.quantity, 0);
   };
@@ -263,15 +221,6 @@ export const CartButton = ({ categories }: Props) => {
       {/* 분할 결제 모달 */}
       {modalData.isSplitPaymentModalOpened && (
         <SplitPaymentModal onClose={handleSplitPaymentModalClose} />
-      )}
-
-      {/* 주문 완료 모달 */}
-      {modalData.isOrderCompleteModalOpened && (
-        <OrderCompleteModal
-          onClose={() => handleOrderCompleteModalClose()}
-          orderData={modalData.orderCompleteData ?? []}
-          totalPrice={modalData.orderCompleteTotalPrice}
-        />
       )}
     </>
   );
