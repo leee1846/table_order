@@ -1,5 +1,5 @@
 import { useAdminTranslation } from '@/config/i18n';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type {
   IShopLocaleMap,
   IShopSetting,
