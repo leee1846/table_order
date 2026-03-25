@@ -219,7 +219,9 @@ export const MainPage = () => {
         {pageStates.initialPage.show && <InitialPage />}
         {pageStates.languageSelector.show && <LanguageSelector />}
         {pageStates.customerCount.show && <CustomerCountSelector />}
-        <OrderCompleteModalContainer />
+        {modalData.isOrderCompleteModalOpened && (
+          <OrderCompleteModalContainer />
+        )}
       </>
     );
   }
@@ -261,7 +263,7 @@ export const MainPage = () => {
         </S.PickupAlarmOverlay>
       )}
 
-      <OrderCompleteModalContainer />
+      {modalData.isOrderCompleteModalOpened && <OrderCompleteModalContainer />}
     </S.Container>
   );
 };

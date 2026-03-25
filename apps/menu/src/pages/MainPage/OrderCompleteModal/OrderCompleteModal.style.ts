@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.div`
+  position: relative;
   width: 60rem;
   max-width: calc(100vw - 2rem);
   height: 40rem;
@@ -10,6 +11,16 @@ export const Container = styled.div`
   background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
   border-radius: 1.25rem;
   overflow: hidden;
+`;
+
+export const CountdownBadge = styled.p`
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  ${TYPOGRAPHY.ST_4}
+  color: ${({ theme }) => theme.mode.grey[500]};
+  pointer-events: none;
+  z-index: 1;
 `;
 
 export const LeftContainer = styled.div`

@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from 'react';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
@@ -7,16 +8,15 @@ import {
   isRefetchedTableOrderHistoriesEmpty,
 } from '@/utils/applyMenuboardStateAfterTableOrderHistoriesCleared';
 
+const CLOSE_COUNTDOWN_SECONDS = 20;
+
 export const OrderCompleteModalContainer = () => {
   const { data: modalData, setModalData } = useModalStore();
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData({ skipInitialRequest: true });
+  const [countdown, setCountdown] = useState(CLOSE_COUNTDOWN_SECONDS);
 
-  if (!modalData.isOrderCompleteModalOpened) {
-    return null;
-  }
-
-  const handleClose = (): void => {
+  const handleClose = useCallback((): void => {
     const { data: modalState } = useModalStore.getState();
     const wasPrepaidCardOrFinalSplit =
       modalState.isOrderCompleteFromPrepaidCardOrFinalSplit;
@@ -48,13 +48,27 @@ export const OrderCompleteModalContainer = () => {
         // refetch 실패 시 기존 화면 유지
       }
     })();
-  };
+  }, [setModalData, refreshTableOrderHistoriesData]);
+
+  // 1초마다 카운트다운 감소, 0이 되면 자동 닫기
+  // - 마운트 시 useState(CLOSE_COUNTDOWN_SECONDS)로 초기화되므로 별도 초기화 effect 불필요
+  // - MainPage에서 isOrderCompleteModalOpened 조건으로 마운트/언마운트되므로 해당 의존성 불필요
+  useEffect(() => {
+    if (countdown <= 0) {
+      handleClose();
+      return;
+    }
+
+    const timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [countdown, handleClose]);
 
   return (
     <OrderCompleteModal
       onClose={handleClose}
       orderData={modalData.orderCompleteData ?? []}
       totalPrice={modalData.orderCompleteTotalPrice}
+      countdown={countdown}
     />
   );
 };

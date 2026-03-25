@@ -13,12 +13,14 @@ interface Props {
   orderData: IOrder[];
   totalPrice: number;
   onClose: () => void;
+  countdown: number;
 }
 
 export const OrderCompleteModal = ({
   orderData,
   totalPrice,
   onClose,
+  countdown,
 }: Props) => {
   // 모달이 열린 시점에 store에 캡처된 언어로 고정 — 리마운트·언어 변경에 무관
   const language = useModalStore.getState().data.orderCompleteLanguage;
@@ -35,6 +37,9 @@ export const OrderCompleteModal = ({
         aria-modal="true"
         aria-labelledby="order-complete-title"
       >
+        <S.CountdownBadge>
+          {t('{{count}}초 후 닫힘', { count: countdown })}
+        </S.CountdownBadge>
         <S.LeftContainer>
           <img src={apronIcon} alt={t('주문 완료!')} />
           <h2 id="order-complete-title">{t('주문 완료!')}</h2>
