@@ -152,6 +152,16 @@ export const validateAppHistoriesData = (
     return false;
   }
 
+  const fileName = options?.appFile?.name.toLowerCase();
+
+  if (
+    (appHistoriesData.type === 'MENU' && !fileName?.includes('menu')) ||
+    (appHistoriesData.type === 'POS_APP' && !fileName?.includes('admin'))
+  ) {
+    toast('잘못된 파일을 업로드하였습니다.\n 파일명을 확인해 주세요.');
+    return false;
+  }
+
   return true;
 };
 
