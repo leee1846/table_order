@@ -9,6 +9,7 @@ import {
 } from '@repo/util/app';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 // import { CardPaymentProgressModal } from '../CardPaymentProgressModal';
 import {
   usePostPaymentApproval,
@@ -273,6 +274,11 @@ export const CardPaymentInstallmentModal = ({
     modalStore.setModalData('isPaymentsModalOpened', false);
     modalStore.setModalData('isCartListOpened', false);
     modalStore.setModalData('isCardPaymentInstallmentModalOpened', false);
+    // 모달이 열리는 시점의 언어를 고정 — OrderCompleteModal에서 이 값으로 번역 표시
+    modalStore.setModalData(
+      'orderCompleteLanguage',
+      useCustomerLanguageStore.getState().data.currentLanguage
+    );
     modalStore.setModalData('isOrderCompleteModalOpened', true);
 
     // 현재 모달 닫기

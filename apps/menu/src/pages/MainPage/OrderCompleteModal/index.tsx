@@ -1,10 +1,12 @@
+import { useMemo } from 'react';
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import { apronIcon } from '@repo/ui/icons';
 import { getTodayDateString } from '@repo/util/date';
 import * as S from '@/pages/MainPage/OrderCompleteModal/OrderCompleteModal.style';
 import type { IOrder } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
-import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
+import customerI18n from '@/config/i18n/customer.i18n';
+import { useModalStore } from '@/stores/useModalStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 interface Props {
@@ -18,7 +20,12 @@ export const OrderCompleteModal = ({
   totalPrice,
   onClose,
 }: Props) => {
-  const { t } = useCustomerTranslation();
+  // 모달이 열린 시점에 store에 캡처된 언어로 고정 — 리마운트·언어 변경에 무관
+  const language = useModalStore.getState().data.orderCompleteLanguage;
+  const t = useMemo(
+    () => customerI18n.getFixedT(language, 'customer'),
+    [language]
+  );
   const shopDetailData = useShopDetailStore((s) => s.data);
 
   return (

@@ -13,6 +13,7 @@ import { useDeviceStore } from '@/stores/useDeviceStore';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useModalStore } from '@/stores/useModalStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 // import { CardPaymentProgressModal } from '@/pages/MainPage/CardPaymentProgressModal';
 import { SplitPaymentInstallmentModal } from './SplitPaymentInstallmentModal';
 import {
@@ -744,6 +745,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       // setModalData('isCardPaymentProgressModalOpened', false);
       setModalData('isPaymentsModalOpened', false);
       setModalData('isCartListOpened', false);
+      // 모달이 열리는 시점의 언어를 고정 — OrderCompleteModal에서 이 값으로 번역 표시
+      setModalData(
+        'orderCompleteLanguage',
+        useCustomerLanguageStore.getState().data.currentLanguage
+      );
       setModalData('isOrderCompleteModalOpened', true);
 
       onClose();

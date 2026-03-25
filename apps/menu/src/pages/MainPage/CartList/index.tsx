@@ -24,6 +24,7 @@ import { useShopStore } from '@/stores/useShopStore';
 import { MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { usePutCancelOrderMenu } from '@repo/api/queries';
@@ -59,9 +60,8 @@ export const CartList = ({
   const { data: modalData, setModalData } = useModalStore();
   const shopDetailData = useShopDetailStore((s) => s.data);
   const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
-  const { refresh: refreshTableOrderHistoriesData } = useTableOrderHistoriesData(
-    { skipInitialRequest: true }
-  );
+  const { refresh: refreshTableOrderHistoriesData } =
+    useTableOrderHistoriesData({ skipInitialRequest: true });
 
   const {
     data: cartData,
@@ -247,6 +247,11 @@ export const CartList = ({
             setModalData('orderCompleteData', response.orders);
             setModalData('orderCompleteTotalPrice', response.totalPrice);
             clearCart();
+            // 모달이 열리는 시점의 언어를 고정 — OrderCompleteModal에서 이 값으로 번역 표시
+            setModalData(
+              'orderCompleteLanguage',
+              useCustomerLanguageStore.getState().data.currentLanguage
+            );
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
             await refreshTableOrderHistoriesData();

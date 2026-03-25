@@ -43,6 +43,6 @@ export const applyMenuboardStateAfterTableOrderHistoriesCleared = (
     useCustomerLanguageStore.getState().clearData();
   }
 
-  useModalStore.getState().closeAllModals();
+  useModalStore.getState().closeAllModalsExceptOrderComplete();
   useDialogStore.getState().closeAllDialogs();
 };

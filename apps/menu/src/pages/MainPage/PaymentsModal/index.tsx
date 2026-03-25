@@ -14,6 +14,7 @@ import { useThemeMode } from '@repo/ui';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { CardPaymentInstallmentModal } from '../CardPaymentInstallmentModal';
 import { useModalStore } from '@/stores/useModalStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useShopStore } from '@/stores/useShopStore';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
@@ -117,6 +118,11 @@ export const PaymentsModal = ({
             ) {
               setCashPaymentInducementModal(true, totalPrice);
             } else {
+              // 모달이 열리는 시점의 언어를 고정 — OrderCompleteModal에서 이 값으로 번역 표시
+              setModalData(
+                'orderCompleteLanguage',
+                useCustomerLanguageStore.getState().data.currentLanguage
+              );
               setModalData('isOrderCompleteModalOpened', true);
               onClose();
             }
@@ -184,6 +190,11 @@ export const PaymentsModal = ({
             setModalData('orderCompleteTotalPrice', response.totalPrice);
             clearCart();
             setModalData('isCartListOpened', false);
+            // 모달이 열리는 시점의 언어를 고정 — OrderCompleteModal에서 이 값으로 번역 표시
+            setModalData(
+              'orderCompleteLanguage',
+              useCustomerLanguageStore.getState().data.currentLanguage
+            );
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
             await refreshTableOrderHistoriesData();

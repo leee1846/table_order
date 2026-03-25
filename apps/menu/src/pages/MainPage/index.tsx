@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import * as S from '@/pages/MainPage/mainPage.style';
 import { Sidebar } from '@/pages/MainPage/Sidebar';
 import { Header } from '@/pages/MainPage/Header';
@@ -34,10 +33,8 @@ import { CartReminder } from '@/pages/MainPage/CartReminder';
 import { LastOrder } from '@/pages/MainPage/LastOrder';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { CashPaymentInducement } from '@/feature/CashPaymentInducement';
-import { MainPageShellLoading } from '@/feature/MainPageShellLoading';
 import { useModalStore } from '@/stores/useModalStore';
-import { useShopStore } from '@/stores/useShopStore';
-import { useShopThemeStore } from '@/stores/useShopThemeStore';
+import { OrderCompleteModalContainer } from '@/pages/MainPage/OrderCompleteModalContainer';
 
 export const MainPage = () => {
   useShopData();
@@ -52,8 +49,6 @@ export const MainPage = () => {
   } = useCategoriesData();
   const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
   const { data: shopThemeData } = useShopThemePage();
-  const shopCode = useShopStore((s) => s.data?.shopCode ?? '');
-  const themeStoreData = useShopThemeStore((s) => s.data);
   const hasInitialPageDetailImages =
     (shopThemeData?.themePageData?.shopPageDetailList?.filter(
       (item) => item.pageDetailType === 'INIT_COMMON'
@@ -87,30 +82,6 @@ export const MainPage = () => {
   const adminAccessControl = useAdminAccessControl(deviceDataResult);
   useFirstOrderRequiredCheck();
   useBreakTimeCartClear(breakTimeState);
-
-  // 초기 렌더링 시 깜빡임 방지를 위한 셸 준비 상태 관리
-  // 준비되는동안 MainPageShellLoading 컴포넌트 UI 노출
-  const [mainPageShellReady, setMainPageShellReady] = useState(false);
-  useEffect(() => {
-    const themesReady =
-      !!shopCode &&
-      themeStoreData.themePageData != null &&
-      themeStoreData.shopThemeData != null;
-
-    setMainPageShellReady(
-      !!shopDetailData?.shopTime &&
-        deviceDataResult.isInitialized &&
-        tableOrderHistoriesData !== null &&
-        themesReady
-    );
-  }, [
-    shopDetailData?.shopTime,
-    deviceDataResult.isInitialized,
-    tableOrderHistoriesData,
-    shopCode,
-    themeStoreData.themePageData,
-    themeStoreData.shopThemeData,
-  ]);
 
   const { data: initialPageData } = useInitialPageStore();
   const { data: pickUpAlarmData } = usePickupAlarmStore();
@@ -181,10 +152,6 @@ export const MainPage = () => {
     adminAccessControl.setShowAdminAccessPasswordModal(true);
   };
 
-  if (!mainPageShellReady) {
-    return <MainPageShellLoading />;
-  }
-
   /** 관리자 접근 비밀번호 모달 노출 */
   if (pageStates.adminAccess.show) {
     return (
@@ -241,19 +208,20 @@ export const MainPage = () => {
     return <CashPaymentInducement />;
   }
 
-  /** 초기 화면 노출 */
-  if (pageStates.initialPage.show) {
-    return <InitialPage />;
-  }
-
-  /** 고객 메뉴판 언어 선택 */
-  if (pageStates.languageSelector.show) {
-    return <LanguageSelector />;
-  }
-
-  /** 고객 객수 선택 */
-  if (pageStates.customerCount.show) {
-    return <CustomerCountSelector />;
+  /** 초기 화면 / 언어 선택 / 객수 선택: 전체화면 페이지 위에 주문 완료 모달 노출 */
+  if (
+    pageStates.initialPage.show ||
+    pageStates.languageSelector.show ||
+    pageStates.customerCount.show
+  ) {
+    return (
+      <>
+        {pageStates.initialPage.show && <InitialPage />}
+        {pageStates.languageSelector.show && <LanguageSelector />}
+        {pageStates.customerCount.show && <CustomerCountSelector />}
+        <OrderCompleteModalContainer />
+      </>
+    );
   }
 
   return (
@@ -292,6 +260,8 @@ export const MainPage = () => {
           <PickupAlarm />
         </S.PickupAlarmOverlay>
       )}
+
+      <OrderCompleteModalContainer />
     </S.Container>
   );
 };
