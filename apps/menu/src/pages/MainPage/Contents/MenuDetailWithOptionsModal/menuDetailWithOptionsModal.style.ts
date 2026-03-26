@@ -14,9 +14,6 @@ export const Container = styled.div`
 `;
 
 export const CloseButton = styled.button`
-  position: absolute;
-  top: 24px;
-  right: 24px;
   width: 32px;
   height: 32px;
   display: flex;
@@ -41,13 +38,12 @@ export const SwiperContainer = styled.div`
   overflow: hidden;
 
   .swiper-pagination-bullet {
-    background-color: rgba(255, 255, 255,0.7);
+    background-color: rgba(255, 255, 255, 0.7);
     opacity: 1;
   }
 
   .swiper-pagination-bullet-active {
     background-color: ${({ theme }) => theme.mode.primary[500]};
-    ;
   }
 `;
 
@@ -80,6 +76,15 @@ export const RightWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+`;
+
+export const RightHeader = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  margin-right: 24px;
 `;
 
 export const OptionsContainer = styled.div`

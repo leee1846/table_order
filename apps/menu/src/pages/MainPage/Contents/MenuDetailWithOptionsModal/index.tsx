@@ -32,6 +32,8 @@ import { MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useIdleTimeout } from '@/hooks/useIdleTimeout';
+import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
 
 interface Props {
   onClose: () => void;
@@ -162,6 +164,8 @@ export const MenuDetailWithOptionsModal = ({
       )
   );
   const [menuQuantity, setMenuQuantity] = useState(initialQuantity);
+
+  const { remainingSeconds } = useIdleTimeout(onClose);
 
   // 메뉴 수량 변경 핸들러
   const handleMenuQuantityChange = (newQuantity: number) => {
@@ -582,14 +586,6 @@ export const MenuDetailWithOptionsModal = ({
         aria-modal="true"
         aria-labelledby="menu-detail-options-title"
       >
-        <S.CloseButton
-          type="button"
-          onClick={onClose}
-          aria-label={t('모달 닫기')}
-        >
-          <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
-        </S.CloseButton>
-
         {/* Menu Information */}
         <S.MenuInfoContainer>
           {hasImages ? (
@@ -639,6 +635,17 @@ export const MenuDetailWithOptionsModal = ({
         </S.MenuInfoContainer>
 
         <S.RightWrapper>
+          <S.RightHeader>
+            <IdleTimerMessage remainingSeconds={remainingSeconds} />
+            <S.CloseButton
+              type="button"
+              onClick={onClose}
+              aria-label={t('모달 닫기')}
+            >
+              <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
+            </S.CloseButton>
+          </S.RightHeader>
+
           {/* Options */}
           <S.OptionsContainer>
             {!hasOptionGroups && (

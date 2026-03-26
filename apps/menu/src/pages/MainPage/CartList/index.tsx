@@ -30,6 +30,8 @@ import { useCategoryStore } from '@/stores/useCategoryStore';
 import { usePutCancelOrderMenu } from '@repo/api/queries';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { localizeOrders } from '@/utils/localizeOrders';
+import { useIdleTimeout } from '@/hooks/useIdleTimeout';
+import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
 
 const TOAST_OPTIONS = {
   position: 'center-center' as const,
@@ -73,6 +75,8 @@ export const CartList = ({
     updateCartItemQuantity,
     clearCart,
   } = useCartStore();
+
+  const { startTimer, clearTimer, remainingSeconds } = useIdleTimeout(onClose);
 
   const [selectedMenu, setSelectedMenu] = useState<ICartMenu | null>(null);
   const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
@@ -259,11 +263,16 @@ export const CartList = ({
       return;
     }
 
+    clearTimer();
+
     openDualActionDialog({
       title: t('메뉴를 주문할까요?'),
       content: t('주방 접수된 이후에는 취소가 불가능해요.'),
       primaryText: t('주문하기'),
       secondaryText: t('이전으로'),
+      onCancel: () => {
+        startTimer();
+      },
       onConfirm: async () => {
         // 판매 시간/요일/공휴일 검증
         const isValid = validateMenuAvailability();
@@ -358,8 +367,12 @@ export const CartList = ({
         aria-modal="true"
         aria-labelledby="cart-title"
       >
-        <S.Title id="cart-title">{t('장바구니')}</S.Title>
-
+        <S.Title id="cart-title">
+          <S.TitleWrapper>
+            <span>{t('장바구니')}</span>
+            <IdleTimerMessage remainingSeconds={remainingSeconds} />
+          </S.TitleWrapper>
+        </S.Title>
         <S.OrderList role="list" aria-label={t('장바구니')}>
           {!hasMenusInCart && (
             <S.NoContent>

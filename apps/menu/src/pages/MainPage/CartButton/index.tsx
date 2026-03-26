@@ -161,6 +161,7 @@ export const CartButton = ({ categories }: Props) => {
   };
 
   const handlePaymentsModalOpen = () => {
+    handleCartListClose();
     setModalData('isPaymentsModalOpened', true);
   };
 

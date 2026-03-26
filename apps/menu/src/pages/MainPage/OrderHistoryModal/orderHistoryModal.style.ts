@@ -23,6 +23,12 @@ export const Container = styled.div`
   overflow: hidden;
 `;
 
+export const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 export const Header = styled.div`
   display: flex;
   flex-direction: column;
@@ -30,7 +36,7 @@ export const Header = styled.div`
   padding-bottom: 24px;
   border-bottom: 1px solid ${({ theme }) => theme.mode.grey[200]};
 
-  & > h2 {
+  & > div > h2 {
     ${TYPOGRAPHY.MT_4}
     color: ${({ theme }) => theme.mode.grey[900]};
   }

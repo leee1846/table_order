@@ -18,6 +18,8 @@ import { MENU_MAX_QUANTITY } from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useIdleTimeout } from '@/hooks/useIdleTimeout';
+import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
 
 interface Props {
   onClose: () => void;
@@ -34,6 +36,8 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
   const { addToCart } = useCartStore();
 
   const shopDetailData = useShopDetailStore((s) => s.data);
+
+  const { remainingSeconds } = useIdleTimeout(onClose);
 
   const disabledOrderable = !shopDetailData?.shopSetting?.isMenuboardOrderable;
 
@@ -105,14 +109,16 @@ export const MenuDetailModal = ({ onClose, menu }: Props) => {
         aria-modal="true"
         aria-labelledby="menu-detail-title"
       >
-        <S.CloseButton
-          type="button"
-          onClick={onClose}
-          aria-label={t('모달 닫기')}
-        >
-          <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
-        </S.CloseButton>
-
+        <S.RightHeader>
+          <IdleTimerMessage remainingSeconds={remainingSeconds} />
+          <S.CloseButton
+            type="button"
+            onClick={onClose}
+            aria-label={t('모달 닫기')}
+          >
+            <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
+          </S.CloseButton>
+        </S.RightHeader>
         {images.length > 0 ? (
           <S.SwiperContainer role="region" aria-label={t('메뉴 이미지')}>
             <Swiper

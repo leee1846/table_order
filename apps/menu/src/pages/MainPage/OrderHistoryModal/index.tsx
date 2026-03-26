@@ -7,6 +7,8 @@ import { NoContent } from '@/feature/NoContent';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
+import { useIdleTimeout } from '@/hooks/useIdleTimeout';
+import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -18,6 +20,9 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
   const currentLanguage = useCustomerLanguageStore(
     (s) => s.data.currentLanguage
   );
+
+  const { remainingSeconds } = useIdleTimeout(onClose);
+
   return (
     <S.Background onClick={onClose}>
       <S.Container
@@ -27,7 +32,10 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
         onClick={(e) => e.stopPropagation()}
       >
         <S.Header>
-          <h2 id="order-history-title">{t('주문내역')}</h2>
+          <S.TitleWrapper>
+            <h2 id="order-history-title">{t('주문내역')}</h2>
+            <IdleTimerMessage remainingSeconds={remainingSeconds} />
+          </S.TitleWrapper>
           <p>{getTodayDateString()}</p>
         </S.Header>
 

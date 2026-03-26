@@ -11,10 +11,15 @@ export const Container = styled.div`
   max-width: calc(100vw - 2rem);
 `;
 
+export const RightHeader = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+`;
+
 export const CloseButton = styled.button`
-  position: absolute;
-  top: 24px;
-  right: 24px;
   width: 32px;
   height: 32px;
   display: flex;

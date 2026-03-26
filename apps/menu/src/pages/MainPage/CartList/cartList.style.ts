@@ -26,6 +26,13 @@ export const Container = styled.div`
   overflow: hidden;
 `;
 
+export const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
 export const Title = styled.p`
   ${TYPOGRAPHY.MT_4}
   color: ${({ theme }) => theme.mode.grey[900]};
