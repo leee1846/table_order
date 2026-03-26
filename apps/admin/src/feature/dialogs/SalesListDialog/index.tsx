@@ -17,7 +17,6 @@ import {
 } from '@repo/util/date';
 import * as UIStyles from '@repo/ui/styles';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
-import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { SalesAccessGuard } from '@/feature/SalesAccessGuard';
 import * as S from './salesListDialog.style';
 import { Table } from './Table';
@@ -25,6 +24,7 @@ import { OrderDetailModal } from './OrderDetailModal';
 import { PAZE_SIZE } from '@/constants/keys';
 import { keepPreviousData } from '@repo/api/tanstack-query';
 import { usePaginationWithCache } from '@/hooks/usePaginationWithCache';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
 const { colors } = theme;
 
@@ -42,8 +42,7 @@ export const SalesListDialog = ({
   itemsPerPage = PAZE_SIZE,
 }: SalesListDialogProps) => {
   const { t } = useAdminTranslation();
-  const { data: shopDetailData } = useShopDetailData();
-  const { shopSetting } = shopDetailData ?? {};
+  const shopSetting = useShopDetailStore((state) => state.data?.shopSetting);
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
 
   const dateOptions: { value: TDateRangePreset; label: string }[] = [
@@ -180,6 +179,7 @@ export const SalesListDialog = ({
                 options={dateOptions}
                 value={selectedDateOption}
                 onChange={handlePresetChange}
+                placeholder={t('선택')}
               />
             </S.FilterContainer>
 
