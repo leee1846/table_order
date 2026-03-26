@@ -41,6 +41,7 @@ import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { localizeOrders } from '@/utils/localizeOrders';
 
 interface Props {
   onClose: () => void;
@@ -728,7 +729,12 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     }
 
     const runFullSuccess = async (): Promise<void> => {
-      const orderData = convertCartMenusToOrders(cartData.menus);
+      const language = useCustomerLanguageStore.getState().data.currentLanguage;
+      const orderData = localizeOrders(
+        convertCartMenusToOrders(cartData.menus),
+        cartData.menus,
+        language
+      );
 
       toast(t('결제를 성공했습니다.'), {
         duration: TOAST_DURATION,
@@ -746,10 +752,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       setModalData('isPaymentsModalOpened', false);
       setModalData('isCartListOpened', false);
       // 모달이 열리는 시점의 언어를 고정 — OrderCompleteModal에서 이 값으로 번역 표시
-      setModalData(
-        'orderCompleteLanguage',
-        useCustomerLanguageStore.getState().data.currentLanguage
-      );
+      setModalData('orderCompleteLanguage', language);
       setModalData('isOrderCompleteModalOpened', true);
 
       onClose();

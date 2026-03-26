@@ -28,6 +28,7 @@ import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import type { ICancelOrderMenuRequest, IOrder } from '@repo/api/types';
 import { usePutCancelOrderMenu } from '@repo/api/queries';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { localizeOrders } from '@/utils/localizeOrders';
 
 interface Props {
   onClose: () => void;
@@ -126,7 +127,12 @@ export const PaymentsModal = ({
           }
 
           const handleOrderCompleteSuccess = async () => {
-            setModalData('orderCompleteData', response.orders);
+            const language =
+              useCustomerLanguageStore.getState().data.currentLanguage;
+            setModalData(
+              'orderCompleteData',
+              localizeOrders(response.orders, cartData.menus, language)
+            );
             setModalData('orderCompleteTotalPrice', response.totalPrice);
             clearCart();
             setModalData('isCartListOpened', false);
@@ -137,10 +143,7 @@ export const PaymentsModal = ({
               setCashPaymentInducementModal(true, totalPrice);
             } else {
               // 모달이 열리는 시점의 언어를 고정 — OrderCompleteModal에서 이 값으로 번역 표시
-              setModalData(
-                'orderCompleteLanguage',
-                useCustomerLanguageStore.getState().data.currentLanguage
-              );
+              setModalData('orderCompleteLanguage', language);
               setModalData('isOrderCompleteModalOpened', true);
               onClose();
             }
@@ -204,15 +207,17 @@ export const PaymentsModal = ({
           }
 
           const handleOrderCompleteSuccess = async () => {
-            setModalData('orderCompleteData', response.orders);
+            const language =
+              useCustomerLanguageStore.getState().data.currentLanguage;
+            setModalData(
+              'orderCompleteData',
+              localizeOrders(response.orders, cartData.menus, language)
+            );
             setModalData('orderCompleteTotalPrice', response.totalPrice);
             clearCart();
             setModalData('isCartListOpened', false);
             // 모달이 열리는 시점의 언어를 고정 — OrderCompleteModal에서 이 값으로 번역 표시
-            setModalData(
-              'orderCompleteLanguage',
-              useCustomerLanguageStore.getState().data.currentLanguage
-            );
+            setModalData('orderCompleteLanguage', language);
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
             await refreshTableOrderHistoriesData();

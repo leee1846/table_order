@@ -37,6 +37,7 @@ import {
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { localizeOrders } from '@/utils/localizeOrders';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 // const PAYMENT_EVENT_NAME = 'paymentEvent';
@@ -254,7 +255,12 @@ export const CardPaymentInstallmentModal = ({
   };
 
   const handlePaymentSuccess = async () => {
-    const orderData = getOrdersFromCart();
+    const language = useCustomerLanguageStore.getState().data.currentLanguage;
+    const orderData = localizeOrders(
+      getOrdersFromCart(),
+      cartData.menus,
+      language
+    );
 
     toast(t('결제를 성공했습니다.'), {
       duration: 1500,
@@ -275,10 +281,7 @@ export const CardPaymentInstallmentModal = ({
     modalStore.setModalData('isCartListOpened', false);
     modalStore.setModalData('isCardPaymentInstallmentModalOpened', false);
     // 모달이 열리는 시점의 언어를 고정 — OrderCompleteModal에서 이 값으로 번역 표시
-    modalStore.setModalData(
-      'orderCompleteLanguage',
-      useCustomerLanguageStore.getState().data.currentLanguage
-    );
+    modalStore.setModalData('orderCompleteLanguage', language);
     modalStore.setModalData('isOrderCompleteModalOpened', true);
 
     // 현재 모달 닫기

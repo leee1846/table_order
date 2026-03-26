@@ -29,6 +29,7 @@ import { usePosOrderStore } from '@repo/feature/stores';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { usePutCancelOrderMenu } from '@repo/api/queries';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { localizeOrders } from '@/utils/localizeOrders';
 
 const TOAST_OPTIONS = {
   position: 'center-center' as const,
@@ -277,14 +278,16 @@ export const CartList = ({
           const response = await executePostpaidOrder();
 
           const handleOrderCompleteSuccess = async () => {
-            setModalData('orderCompleteData', response.orders);
+            const language =
+              useCustomerLanguageStore.getState().data.currentLanguage;
+            setModalData(
+              'orderCompleteData',
+              localizeOrders(response.orders, cartData.menus, language)
+            );
             setModalData('orderCompleteTotalPrice', response.totalPrice);
             clearCart();
             // 모달이 열리는 시점의 언어를 고정 — OrderCompleteModal에서 이 값으로 번역 표시
-            setModalData(
-              'orderCompleteLanguage',
-              useCustomerLanguageStore.getState().data.currentLanguage
-            );
+            setModalData('orderCompleteLanguage', language);
             setModalData('isOrderCompleteModalOpened', true);
             onClose();
             await refreshTableOrderHistoriesData();
