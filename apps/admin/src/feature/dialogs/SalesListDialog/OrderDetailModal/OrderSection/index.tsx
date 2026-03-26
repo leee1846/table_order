@@ -1,18 +1,23 @@
 import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
 import { formatDateTime } from '@repo/util/date';
 import { useAdminTranslation } from '@/config/i18n';
-import type { IOrderHistoryItem } from '@repo/api/types';
+import type { IOrderHistoryItem, TShopLanguage } from '@repo/api/types';
 import * as S from './orderSection.style';
+import { useMemo } from 'react';
 
 interface Props {
   order: IOrderHistoryItem;
 }
 
 export const OrderSection = ({ order }: Props) => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const orderLog = order.orderLog;
   const menus =
     orderLog?.orderInfoList?.flatMap((info) => info.orderDetailMenuList) ?? [];
+  const currentLanguage: TShopLanguage = useMemo(
+    () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
+    [i18n]
+  );
 
   const totalQuantity = menus.reduce(
     (sum, menu) => sum + (menu.menuQuantity ?? 0),
@@ -63,7 +68,9 @@ export const OrderSection = ({ order }: Props) => {
             return (
               <li key={menu.orderDetailMenuSeq}>
                 <S.MenuItem>
-                  <p>{menu.menuName}</p>
+                  <p>
+                    {menu.localeMenuName?.[currentLanguage] ?? menu.menuName}
+                  </p>
                   <p>{menu.menuQuantity ?? 0}</p>
                   <p>{formatCurrency(menu.finalPrice)}</p>
                 </S.MenuItem>
@@ -72,7 +79,9 @@ export const OrderSection = ({ order }: Props) => {
                     {options.map((option) => (
                       <S.OptionItem key={option.orderDetailOptionSeq}>
                         <p>
-                          <span /> {option.optionName}
+                          <span />
+                          {option.localeOptionName?.[currentLanguage] ??
+                            option.optionName}
                         </p>
                         <p>{option.optionQuantity ?? 0}</p>
                         <p>{formatCurrency(option.optionPrice ?? 0)}</p>

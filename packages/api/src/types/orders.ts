@@ -1,4 +1,5 @@
 import type { IApiResponse, TVoidApiResponse } from './common';
+import { TLocale } from './menu';
 import { TPaymentType } from './sales';
 
 /**
@@ -136,6 +137,7 @@ export interface IOrderDetailOption {
   optionGroupName: string;
   optionQuantity: number;
   createDate: string;
+  localeOptionName: TLocale;
 }
 
 /**
@@ -151,6 +153,7 @@ export interface IOrderDetailMenu {
   finalPrice: number;
   canceledQuantity: number;
   createDate: string;
+  localeMenuName: TLocale;
   orderDetailOptionList: IOrderDetailOption[];
 }
 
