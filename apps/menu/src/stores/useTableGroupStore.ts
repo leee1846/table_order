@@ -2,8 +2,6 @@ import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
 import type { ITableGroup } from '@repo/api/types';
 import { create } from '@repo/feature/zustand';
-import { isEqualByJson } from '@repo/util/function';
-
 export interface ITableGroupStore {
   data: ITableGroup[] | null;
   setData: (data: ITableGroup[]) => void;
@@ -30,10 +28,6 @@ export const useTableGroupStore = create<ITableGroupStore>((set, get) => {
   return {
     data: null,
     setData: (data: ITableGroup[]) => {
-      if (isEqualByJson(get().data, data)) {
-        return;
-      }
-
       AppStorage.saveData({
         key: STORAGE_KEYS.TABLE_GROUP,
         value: data,

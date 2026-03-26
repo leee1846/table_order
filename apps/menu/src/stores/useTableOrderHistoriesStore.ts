@@ -2,8 +2,6 @@ import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
 import type { ITableCurrentStatus } from '@repo/api/types';
 import { create } from '@repo/feature/zustand';
-import { isEqualByJson } from '@repo/util/function';
-
 export interface ITableOrderHistoriesData {
   sseUpdatedAt?: number | null;
   discountRate: number;
@@ -46,10 +44,6 @@ export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
     return {
       data: null,
       setDataAsync: (data) => {
-        if (isEqualByJson(get().data, data)) {
-          return Promise.resolve(true);
-        }
-
         return new Promise((resolve) => {
           AppStorage.saveData({
             key: STORAGE_KEYS.TABLE_ORDER_HISTORIES,

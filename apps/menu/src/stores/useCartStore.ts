@@ -3,8 +3,6 @@ import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
 import type { ICartMenu } from '@/types/cart';
 import { useCategoryStore } from '@/stores/useCategoryStore';
-import { isEqualByJson } from '@repo/util/function';
-
 export interface ICartOptions {
   /** 첫 주문 필수 항목이 있는지 여부 */
   hasFirstOrderRequiredItems: boolean;
@@ -63,15 +61,6 @@ export const useCartStore = create<ICartStore>((set, get) => {
     data: initialData,
 
     setCartOptions: (options: ICartOptions) => {
-      if (
-        isEqualByJson(
-          get().data.hasFirstOrderRequiredItems,
-          options.hasFirstOrderRequiredItems
-        )
-      ) {
-        return;
-      }
-
       const newData = {
         ...get().data,
         ...options,
@@ -132,10 +121,6 @@ export const useCartStore = create<ICartStore>((set, get) => {
         newMenus = [...currentMenus, item];
       }
 
-      if (isEqualByJson(get().data.menus, newMenus)) {
-        return;
-      }
-
       const newItems = {
         ...get().data,
         menus: newMenus,
@@ -158,10 +143,6 @@ export const useCartStore = create<ICartStore>((set, get) => {
         i === index ? { ...item, quantity: newQuantity } : item
       );
 
-      if (isEqualByJson(get().data.menus, newMenus)) {
-        return;
-      }
-
       const newData = {
         ...get().data,
         menus: newMenus,
@@ -182,9 +163,6 @@ export const useCartStore = create<ICartStore>((set, get) => {
       }
 
       const newMenus = menus.map((menu, i) => (i === index ? item : menu));
-      if (isEqualByJson(get().data.menus, newMenus)) {
-        return;
-      }
 
       const newData = {
         ...get().data,
@@ -207,10 +185,6 @@ export const useCartStore = create<ICartStore>((set, get) => {
 
       // 해당 인덱스의 메뉴만 삭제
       const newMenus = menus.filter((_, i) => i !== index);
-
-      if (isEqualByJson(get().data.menus, newMenus)) {
-        return;
-      }
 
       const newData = {
         ...get().data,

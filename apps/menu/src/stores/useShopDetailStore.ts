@@ -2,7 +2,6 @@ import { create } from '@repo/feature/zustand';
 import type { IGetShop } from '@repo/api/types';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
-import { isEqualByJson } from '@repo/util/function';
 
 interface IShopDetailStore {
   data: IGetShop | null;
@@ -30,10 +29,6 @@ export const useShopDetailStore = create<IShopDetailStore>((set, get) => {
   return {
     data: null,
     setData: async (data: IGetShop) => {
-      if (isEqualByJson(get().data, data)) {
-        return;
-      }
-
       await AppStorage.saveData({
         key: STORAGE_KEYS.SHOP_DETAIL,
         value: data,

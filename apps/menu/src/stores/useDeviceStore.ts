@@ -2,8 +2,6 @@ import { STORAGE_KEYS } from '@/constants/keys';
 import { create } from '@repo/feature/zustand';
 import { AppStorage } from '@repo/util/app';
 import type { IDevice } from '@repo/api/types';
-import { isEqualByJson } from '@repo/util/function';
-
 type IDevicePartial = Partial<IDevice>;
 
 interface IDeviceStore {
@@ -41,10 +39,6 @@ export const useDeviceStore = create<IDeviceStore>((set, get) => {
       set({ isInitialized });
     },
     setDataAsync: (data: IDevicePartial) => {
-      if (isEqualByJson(get().data, data)) {
-        return Promise.resolve(true);
-      }
-
       return new Promise((resolve) => {
         AppStorage.saveData({
           key: STORAGE_KEYS.DEVICE,

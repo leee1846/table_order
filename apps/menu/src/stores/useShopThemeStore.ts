@@ -2,8 +2,6 @@ import { create } from '@repo/feature/zustand';
 import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
 import type { IGetShopThemeMenu, IGetShopThemePage } from '@repo/api/types';
-import { isEqualByJson } from '@repo/util/function';
-
 interface IShopThemeStore {
   data: {
     themePageData: IGetShopThemePage | null;
@@ -47,10 +45,6 @@ export const useShopThemeStore = create<IShopThemeStore>((set, get) => {
       shopThemeData: null,
     },
     setThemePageData: (themePageData: IGetShopThemePage) => {
-      if (isEqualByJson(get().data.themePageData, themePageData)) {
-        return;
-      }
-
       AppStorage.saveData({
         key: STORAGE_KEYS.SHOP_THEME_PAGE,
         value: themePageData,
@@ -65,10 +59,6 @@ export const useShopThemeStore = create<IShopThemeStore>((set, get) => {
       set({ data: { ...get().data, themePageData: null } });
     },
     setShopThemeData: (shopThemeData: IGetShopThemeMenu) => {
-      if (isEqualByJson(get().data.shopThemeData, shopThemeData)) {
-        return;
-      }
-
       AppStorage.saveData({
         key: STORAGE_KEYS.SHOP_THEME_MENU,
         value: shopThemeData,

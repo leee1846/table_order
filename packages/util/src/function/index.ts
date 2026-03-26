@@ -249,33 +249,3 @@ export const handleNumericKeyDown = (e: {
     e.preventDefault();
   }
 };
-
-/**
- * 두 값을 JSON 직렬화한 문자열로 비교하여 완전히 동일한지 반환합니다.
- * 객체/배열의 깊은 비교가 필요할 때 사용합니다.
- *
- * @param a - 비교할 첫 번째 값
- * @param b - 비교할 두 번째 값
- * @returns JSON.stringify(a) === JSON.stringify(b)일 때 true. 직렬화 실패 시 false
- *
- * @remarks
- * - null, undefined 단독 값은 정상 비교됩니다.
- * - 직렬화 불가 값이 있으면 예외 대신 false를 반환합니다.
- * - NaN, Infinity는 JSON에서 null로 직렬화되므로 null과 동일하다고 판단됩니다.
- * - 객체 속성 값이 undefined인 경우 해당 키는 직렬화에서 누락됩니다.
- *
- * @example
- * ```ts
- * isEqualByJson({ a: 1, b: 2 }, { a: 1, b: 2 }); // true
- * isEqualByJson(null, null); // true
- * isEqualByJson(undefined, undefined); // true
- * isEqualByJson(null, { a: 1 }); // false
- * ```
- */
-export const isEqualByJson = <T>(a: T, b: T): boolean => {
-  try {
-    return JSON.stringify(a) === JSON.stringify(b);
-  } catch {
-    return false;
-  }
-};

@@ -2,8 +2,6 @@ import { create } from '@repo/feature/zustand';
 import type { ICategoryWithMenus } from '@repo/api/types';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { AppStorage } from '@repo/util/app';
-import { isEqualByJson } from '@repo/util/function';
-
 /**
  * 카테고리 요일/시간 기반의 노출여부 상태 관리
  * key: categorySeq, value: 카테고리가 현재 보이는지 여부
@@ -99,10 +97,6 @@ export const useCategoryStore = create<ICategoryStore>((set, get) => {
     }: {
       categories: ICategoryWithMenus[];
     }) => {
-      if (isEqualByJson(get().data.categories, categories)) {
-        return Promise.resolve(true);
-      }
-
       return new Promise((resolve) => {
         AppStorage.saveData({
           key: STORAGE_KEYS.CATEGORIES,
