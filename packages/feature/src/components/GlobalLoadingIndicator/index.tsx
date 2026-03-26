@@ -69,7 +69,8 @@ export function GlobalLoadingIndicator({
     useIsFetching({ queryKey: [...queryKeys.device.all, 'detail'] }); // useGetDeviceDetail 제외
   const isMutating =
     useIsMutating() -
-    useIsMutating({ mutationKey: queryKeys.device.postDetail }); // usePostDeviceDetail 제외
+    useIsMutating({ mutationKey: queryKeys.device.postDetail }) - // usePostDeviceDetail 제외
+    useIsMutating({ mutationKey: queryKeys.sse.postHeartbeatAck }); // usePostSseHeartbeatAck 제외
   const isSSEReconnecting = useSSEReconnecting();
   const isWaitingForPosOrderComplete = usePosOrderStore(
     (s) => s.isWaitingForPosOrderComplete
