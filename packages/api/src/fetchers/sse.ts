@@ -4,8 +4,7 @@ import type { IPostSseHeartbeatAckParams } from '../types/sse';
 import type { TVoidApiResponse } from '../types/common';
 
 export const postSseHeartbeatAck = async (
-  params: IPostSseHeartbeatAckParams,
-  ignoreGlobalErrors?: number[]
+  params: IPostSseHeartbeatAckParams
 ): Promise<TVoidApiResponse> => {
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TVoidApiResponse>({
@@ -15,7 +14,7 @@ export const postSseHeartbeatAck = async (
       shopCode: params.shopCode,
       androidId: params.androidId,
     },
-    ignoreGlobalErrors,
+    skipGlobalErrorHandling: true,
   });
 
   return response.data;

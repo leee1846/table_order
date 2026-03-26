@@ -109,6 +109,12 @@ privateApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    const skipGlobalErrorHandling =
+      (config as AxiosRequestConfig)?.skipGlobalErrorHandling === true;
+    if (skipGlobalErrorHandling) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401) {
       forceReLogin();
       throw new axios.Cancel('Invalid access token');
