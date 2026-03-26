@@ -13,7 +13,7 @@ import { SystemControl, CapacitorApp, AndroidInfo } from '@repo/util/app';
 import { useShopDetailData } from './useShopDetailData';
 import { openConfirmDialog, closeDialog, toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export const useSSEHandler = (tableNumber?: string) => {
   const queryClient = useQueryClient();
@@ -24,6 +24,7 @@ export const useSSEHandler = (tableNumber?: string) => {
   const agentErrorDialogIdRef = useRef<string | null>(null);
   const { t } = useAdminTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { mutateAsync: sendSseHeartbeatAckAsync } = usePostSseHeartbeatAck();
 
   // ORDER SSE 데이터를 추적하기 위한 ref
@@ -51,11 +52,12 @@ export const useSSEHandler = (tableNumber?: string) => {
 
   // SSE 핸들러 effect에서 참조하는 최신 값 모음
   // shopCode/tableNumber가 바뀌어도 effect가 재실행되지 않도록 ref로 관리
-  const sseHandlerDataRef = useRef({ shopCode, tableNumber });
+  const sseHandlerDataRef = useRef({ shopCode, tableNumber, locationPathname: location.pathname });
   useEffect(() => {
     sseHandlerDataRef.current.shopCode = shopCode;
     sseHandlerDataRef.current.tableNumber = tableNumber;
-  }, [shopCode, tableNumber]);
+    sseHandlerDataRef.current.locationPathname = location.pathname;
+  }, [shopCode, tableNumber, location.pathname]);
 
   // 에이전트 핑 체크 타이머 시작 함수
   const startAgentPingCheckTimer = useCallback(() => {
@@ -172,11 +174,23 @@ export const useSSEHandler = (tableNumber?: string) => {
       }
 
       const clearedTableNumber = sseMessage.data;
-      const { tableNumber: activeTableNumber } = sseHandlerDataRef.current;
-      if (
-        activeTableNumber == null ||
-        String(activeTableNumber) !== String(clearedTableNumber)
-      ) {
+      const { tableNumber: activeTableNumber, locationPathname } = sseHandlerDataRef.current;
+
+      // 테이블 목록 페이지
+      if (locationPathname === ROUTES.TABLES.generate()) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.orders.currentTableList(shopCode),
+        });
+        return;
+      }
+
+      // 테이블 상세 페이지가 아닌 경우 무시
+      if (activeTableNumber == null) {
+        return;
+      }
+
+      // 다른 테이블인 경우 무시
+      if (String(activeTableNumber) !== String(clearedTableNumber)) {
         return;
       }
 

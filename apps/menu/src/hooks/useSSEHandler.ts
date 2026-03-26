@@ -291,8 +291,14 @@ export const useSSEHandler = () => {
       }
 
       const clearedTableNumber = message.data;
-      const { tableNumFromParams, currentDeviceData } =
+      const { locationPathname, tableNumFromParams, currentDeviceData } =
         sseHandlerDataRef.current;
+
+      // 테이블 목록 페이지
+      if (locationPathname === ROUTES.TABLES.generate()) {
+        handlersRef.current.refetchCurrentTableList(shopCode);
+        return;
+      }
 
       // 테이블 상세 페이지
       if (
