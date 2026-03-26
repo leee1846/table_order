@@ -104,6 +104,12 @@ privateApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    const skipGlobalErrorHandling =
+      (config as AxiosRequestConfig)?.skipGlobalErrorHandling === true;
+    if (skipGlobalErrorHandling) {
+      return Promise.reject(error);
+    }
+
     // 토큰 만료
     if (error.response?.status === 401) {
       forceReLogin();

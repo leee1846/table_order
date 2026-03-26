@@ -17,5 +17,9 @@
     },
     "types": ["@emotion/react/types/css-prop"]
   },
-  "include": ["src/**/*", "emotion.d.ts"]
+  "include": [
+    "src/**/*",
+    "emotion.d.ts",
+    "../../packages/api/src/types/axios.d.ts"
+  ]
 }

@@ -3,11 +3,6 @@ export interface IPostSseHeartbeatAckParams {
   androidId: string;
 }
 
-export interface IPostSseHeartbeatAckMutationVariables
-  extends IPostSseHeartbeatAckParams {
-  ignoreGlobalErrors?: number[];
-}
-
 export interface ISseMessage {
   shopCode: string;
   type:
