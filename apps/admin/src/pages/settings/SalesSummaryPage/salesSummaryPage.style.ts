@@ -14,15 +14,19 @@ export const Title = styled.div`
   color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.MT_1}
 
-  & > div {
+  & > div:first-of-type {
     width: 0.125rem;
     height: 1.25rem;
     background-color: ${theme.colors.grey[800]};
   }
 
-  & > span {
-    color: ${theme.colors.grey[600]};
-    ${TYPOGRAPHY.ST_1}
+  & > div:last-of-type {
+    display: flex;
+    align-items: center;
+    & > span {
+      color: ${theme.colors.grey[600]};
+      ${TYPOGRAPHY.ST_1}
+    }
   }
 `;
 

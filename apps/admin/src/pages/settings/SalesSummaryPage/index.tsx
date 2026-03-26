@@ -21,6 +21,7 @@ export const SalesSummaryPage = () => {
   const { shopCode } = useAuth();
   const averagePriceTooltip = useTooltip();
   const paidCustomerTooltip = useTooltip();
+  const summaryTooltip = useTooltip();
 
   const defaultDateRange = useMemo(() => {
     const today = new Date();
@@ -55,7 +56,25 @@ export const SalesSummaryPage = () => {
     <S.Container data-container>
       <S.Title>
         {t('매출 관리')}
-        <div /> <span>{t('매출 요약')}</span>
+        <div />
+        <div>
+          <span>{t('매출 요약')}</span>
+          <S.IconWrapper
+            ref={summaryTooltip.anchorRef as Ref<HTMLDivElement>}
+            onClick={summaryTooltip.toggle}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              summaryTooltip.toggle();
+            }}
+          >
+            <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
+            {summaryTooltip.isVisible && (
+              <Tooltip tooltipRef={summaryTooltip.tooltipRef}>
+                {t('최근 7일 실적 기준 지표')}
+              </Tooltip>
+            )}
+          </S.IconWrapper>
+        </div>
       </S.Title>
       <S.List>
         <S.Item>

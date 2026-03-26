@@ -61,7 +61,7 @@ export const MenuSalesHistoryPage = () => {
     );
     // 미분류 카테고리를 맨 마지막에 추가
     return [...categoryNames, t('미분류')];
-  }, [categoryListResponse, t]);
+  }, [categoryListResponse, t, currentLanguage]);
 
   // 처음 카테고리 로드 시 전체 선택 (한 번만 실행)
   useEffect(() => {
