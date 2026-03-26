@@ -217,8 +217,8 @@ export const MainPage = () => {
     return (
       <>
         {pageStates.initialPage.show && <InitialPage />}
-        {pageStates.languageSelector.show && <LanguageSelector />}
         {pageStates.customerCount.show && <CustomerCountSelector />}
+        {pageStates.languageSelector.show && <LanguageSelector />}
         {modalData.isOrderCompleteModalOpened && (
           <OrderCompleteModalContainer />
         )}
