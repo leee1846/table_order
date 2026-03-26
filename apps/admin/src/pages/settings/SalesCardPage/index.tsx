@@ -19,7 +19,7 @@ import { formatCurrency } from '@repo/util/string';
 import { useGetCardApprovalHistory } from '@repo/api/queries';
 import { SALES_PAGE_SIZE } from '@/constants/keys';
 import { toast } from '@repo/feature/utils';
-import { keepPreviousData } from '@repo/api/tanstack-query';
+import { usePaginationWithCache } from '@/hooks/usePaginationWithCache';
 
 const PAGE_SIZE = SALES_PAGE_SIZE;
 
@@ -67,7 +67,7 @@ export const SalesCardPage = () => {
     defaultDateRange.startDate
   );
   const [endDate, setEndDate] = useState<string>(defaultDateRange.endDate);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [requestedPage, setRequestedPage] = useState<number>(1);
   const [selectedCardCode, setSelectedCardCode] = useState<string>('all');
 
   const { startDate: apiStartDate, endDate: apiEndDate } = useMemo(
@@ -75,29 +75,30 @@ export const SalesCardPage = () => {
     [startDate, endDate]
   );
 
-  const { data: cardApprovalHistoryResponse } = useGetCardApprovalHistory(
+  const cardApprovalHistoryQuery = useGetCardApprovalHistory(
     {
       shopCode: shopCode ?? '',
       cardCode: selectedCardCode === 'all' ? undefined : selectedCardCode,
       startDate: apiStartDate,
       endDate: apiEndDate,
-      pageNumber: currentPage - 1,
+      pageNumber: requestedPage - 1,
       pageSize: PAGE_SIZE,
     },
     {
       enabled: !!shopCode && !!apiStartDate && !!apiEndDate,
-      placeholderData: keepPreviousData,
     }
   );
 
-  const cardApprovalData = cardApprovalHistoryResponse?.data;
+  const pagination = usePaginationWithCache({
+    queryResult: cardApprovalHistoryQuery,
+    getTotalPages: (data) => data?.data?.totalPageNumber,
+    requestedPage,
+    onPageChange: setRequestedPage,
+    initialPage: 1,
+  });
+
+  const cardApprovalData = cardApprovalHistoryQuery.data?.data;
   const cardApprovalHistory = cardApprovalData?.cardApprovalHistory ?? [];
-  const totalPagesFromResponse = cardApprovalData?.totalPageNumber;
-  const hasNextPage = cardApprovalHistory.length === PAGE_SIZE;
-  const totalPages = Math.max(
-    totalPagesFromResponse ?? (hasNextPage ? currentPage + 1 : currentPage),
-    1
-  );
   const totalSalesAmount = cardApprovalData?.totalSalesAmount ?? 0;
   const totalCount = cardApprovalData?.totalCount ?? 0;
 
@@ -108,7 +109,7 @@ export const SalesCardPage = () => {
     }
     setStartDate(date);
     setSelectedPreset(null);
-    setCurrentPage(1);
+    pagination.resetPage();
   };
 
   const onSelectEndDate = (date: string) => {
@@ -118,7 +119,7 @@ export const SalesCardPage = () => {
     }
     setEndDate(date);
     setSelectedPreset(null);
-    setCurrentPage(1);
+    pagination.resetPage();
   };
 
   const handlePresetChange = (value: string | number) => {
@@ -128,16 +129,12 @@ export const SalesCardPage = () => {
     setSelectedPreset(preset);
     setStartDate(range.startDate);
     setEndDate(range.endDate);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    pagination.resetPage();
   };
 
   const handleCardCodeChange = (value: string | number) => {
     setSelectedCardCode(value as string);
-    setCurrentPage(1);
+    pagination.resetPage();
   };
 
   const formatCalendarText = (date: string) => {
@@ -224,9 +221,9 @@ export const SalesCardPage = () => {
             <div />
           )}
           <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
+            totalPages={pagination.totalPages}
+            currentPage={pagination.currentPage}
+            onPageChange={pagination.handlePageChange}
           />
         </UIStyles.setting.Footer>
       </UIStyles.setting.TablePageContainer>

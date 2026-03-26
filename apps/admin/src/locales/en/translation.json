@@ -531,6 +531,7 @@
   "주문 목록을 불러오는 중입니다.": "Loading order list...",
   "메뉴판": "Menu Board",
   "오더포스": "Order POS",
+  "연동포스": "Integrated POS",
   "포스앱": "POS App",
   "미결제": "Unpaid",
   "결제완료": "Paid",

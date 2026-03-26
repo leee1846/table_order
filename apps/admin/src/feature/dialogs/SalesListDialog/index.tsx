@@ -24,6 +24,7 @@ import { Table } from './Table';
 import { OrderDetailModal } from './OrderDetailModal';
 import { PAZE_SIZE } from '@/constants/keys';
 import { keepPreviousData } from '@repo/api/tanstack-query';
+import { usePaginationWithCache } from '@/hooks/usePaginationWithCache';
 
 const { colors } = theme;
 
@@ -60,14 +61,14 @@ export const SalesListDialog = ({
     defaultDateRange.startDate
   );
   const [endDate, setEndDate] = useState<string>(defaultDateRange.endDate);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [requestedPage, setRequestedPage] = useState<number>(1);
   const [selectedOrder, setSelectedOrder] = useState<IOrderHistoryItem | null>(
     null
   );
 
   useEffect(() => {
     if (!isOpen) {
-      setCurrentPage(1);
+      setRequestedPage(1);
       setSelectedOrder(null);
     }
   }, [isOpen, shopCode, itemsPerPage]);
@@ -77,18 +78,28 @@ export const SalesListDialog = ({
     [startDate, endDate]
   );
 
-  const { data: orderHistoryResponse, refetch } = useGetOrderHistory(
+  const orderHistoryQuery = useGetOrderHistory(
     {
       shopCode: shopCode ?? '',
       startDate: apiStartDate,
       endDate: apiEndDate,
-      pageNumber: currentPage - 1,
+      pageNumber: requestedPage - 1,
       pageSize: itemsPerPage,
     },
     {
       placeholderData: keepPreviousData,
     }
   );
+
+  const pagination = usePaginationWithCache({
+    queryResult: orderHistoryQuery,
+    getTotalPages: (data) => data?.data?.totalPageNumber,
+    requestedPage,
+    onPageChange: setRequestedPage,
+    initialPage: 1,
+  });
+
+  const { refetch } = orderHistoryQuery;
 
   useEffect(() => {
     if (!isOpen || !shopCode) {
@@ -99,16 +110,15 @@ export const SalesListDialog = ({
   }, [
     isOpen,
     shopCode,
-    currentPage,
+    requestedPage,
     itemsPerPage,
     startDate,
     endDate,
     refetch,
   ]);
 
-  const orderHistory = orderHistoryResponse?.data;
+  const orderHistory = orderHistoryQuery.data?.data;
   const orders = orderHistory?.orderHistory ?? [];
-  const totalPages = Math.max(orderHistory?.totalPageNumber ?? 1, 1);
   const totalSalesAmount = orderHistory?.totalSalesAmount ?? 0;
   const totalSalesCount = orderHistory?.totalSalesCount ?? 0;
   const prePaymentAmount = orderHistory?.prePaymentAmount ?? 0;
@@ -123,7 +133,7 @@ export const SalesListDialog = ({
     setSelectedDateOption(preset);
     setStartDate(range.startDate);
     setEndDate(range.endDate);
-    setCurrentPage(1);
+    pagination.resetPage();
   };
 
   const handleSelectDate = (start: string, end: string) => {
@@ -131,11 +141,7 @@ export const SalesListDialog = ({
     setEndDate(end);
     setSelectedDateOption(null);
     setShowCalendar(false);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    pagination.resetPage();
   };
 
   if (!isOpen) {
@@ -217,9 +223,9 @@ export const SalesListDialog = ({
             )}
 
             <Pagination
-              totalPages={totalPages}
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
+              totalPages={pagination.totalPages}
+              currentPage={pagination.currentPage}
+              onPageChange={pagination.handlePageChange}
             />
           </S.StyledFooter>
         </S.DialogContainer>
