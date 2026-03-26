@@ -58,6 +58,12 @@ export const SalesAccessGuard = ({
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const prevPathnameRef = useRef(location.pathname);
+  const prevRevalidateKeyRef = useRef(revalidateKey);
+  const shopDetailDataRef = useRef(shopDetailData);
+
+  useEffect(() => {
+    shopDetailDataRef.current = shopDetailData;
+  }, [shopDetailData]);
 
   const hasContent = Boolean(children);
   const isNative = CapacitorApp.isNative();
@@ -72,6 +78,7 @@ export const SalesAccessGuard = ({
   useEffect(() => {
     // children이 없으면 초기화하고 종료
     if (!hasContent) {
+      prevRevalidateKeyRef.current = revalidateKey;
       setIsUnlocked(false);
       setIsModalOpen(false);
       return;
@@ -94,14 +101,30 @@ export const SalesAccessGuard = ({
 
       // 웹 환경이면 인증 없이 바로 접근 허용
       if (!isNative) {
+        prevRevalidateKeyRef.current = revalidateKey;
         setIsUnlocked(true);
         setIsModalOpen(false);
         return;
       }
 
-      // 네이티브 환경: 최신 매장 설정 데이터를 새로고침
-      const refreshed = await refresh();
-      const latestSetting = (refreshed ?? shopDetailData)?.shopSetting;
+      // 네이티브: 모달 열림(revalidateKey false→true) 또는 경로 변경 시에만 네트워크 새로고침.
+      // (매번 refresh하면 useQuery 초기 fetch와 중복되고, Strict Mode에서 호출이 더 늘어남)
+      const revalidateEdge =
+        revalidateKey === true && prevRevalidateKeyRef.current !== true;
+      prevRevalidateKeyRef.current = revalidateKey;
+
+      const shouldNetworkRefresh =
+        isPageChanged ||
+        revalidateEdge ||
+        (shopDetailData === null && isNative);
+
+      let refreshed: Awaited<ReturnType<typeof refresh>> = null;
+      if (shouldNetworkRefresh) {
+        refreshed = await refresh();
+      }
+
+      const latestSetting =
+        (refreshed ?? shopDetailDataRef.current)?.shopSetting;
 
       // 컴포넌트가 언마운트되었으면 작업 중단
       if (isCancelled) {
@@ -135,9 +158,8 @@ export const SalesAccessGuard = ({
     isNative,
     location.pathname,
     revalidateKey,
-    shouldRequireAuth,
-    shopDetailData,
     refresh,
+    shopDetailData,
   ]);
 
   const handleSalesAuthSubmit = useCallback(

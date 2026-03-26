@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useGetShopDetail } from '@repo/api/queries';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,7 +28,7 @@ export const useShopDetailData = () => {
     setShopDetailData(shopDetailDataResponse.data);
   }, [shopDetailDataResponse, setShopDetailData]);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!shopCode) {
       return null;
     }
@@ -39,7 +39,7 @@ export const useShopDetailData = () => {
       return result.data.data;
     }
     return null;
-  };
+  }, [refetch, setShopDetailData, shopCode]);
 
   return {
     data: shopDetailData,
