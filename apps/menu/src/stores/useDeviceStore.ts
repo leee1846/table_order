@@ -22,7 +22,7 @@ interface IDeviceStore {
  * - 초기화 상태를 추적하여 API 호출 여부를 결정합니다
  * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
-export const useDeviceStore = create<IDeviceStore>((set, get) => {
+export const useDeviceStore = create<IDeviceStore>((set) => {
   // 초기 데이터 로드 (비동기) — 완료 시점을 기다리기 위해 Promise 노출
   const hydrationPromise = AppStorage.loadData<IDevicePartial>({
     key: STORAGE_KEYS.DEVICE,

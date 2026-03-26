@@ -31,7 +31,7 @@ export interface ITableOrderHistoriesStore {
  * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
 export const useTableOrderHistoriesStore = create<ITableOrderHistoriesStore>(
-  (set, get) => {
+  (set) => {
     // 초기 데이터 로드 (비동기)
     AppStorage.loadData<ITableOrderHistoriesData>({
       key: STORAGE_KEYS.TABLE_ORDER_HISTORIES,

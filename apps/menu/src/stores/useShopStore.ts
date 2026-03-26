@@ -17,7 +17,7 @@ export interface IShopStore {
  * - 매장의 기본 정보(매장 코드, 이름 등)를 저장하고 관리합니다
  * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
-export const useShopStore = create<IShopStore>((set, get) => {
+export const useShopStore = create<IShopStore>((set) => {
   // 초기 데이터 로드 (비동기)
   AppStorage.loadData<IGetShopItem>({ key: STORAGE_KEYS.SHOP }).then((data) => {
     if (data?.value) {

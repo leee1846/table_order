@@ -15,7 +15,7 @@ export interface ITableGroupStore {
  * - 테이블 그룹 목록과 각 그룹의 테이블 정보를 저장하고 관리합니다
  * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
-export const useTableGroupStore = create<ITableGroupStore>((set, get) => {
+export const useTableGroupStore = create<ITableGroupStore>((set) => {
   // 초기 데이터 로드 (비동기)
   AppStorage.loadData<ITableGroup[]>({ key: STORAGE_KEYS.TABLE_GROUP }).then(
     (data) => {

@@ -67,7 +67,7 @@ const initialData = {
  * - isHidden과 visibilityMap을 기반으로 visibleCategories를 자동 계산합니다
  * - 데이터를 AppStorage에 저장하여 새로고침 시에도 유지됩니다
  */
-export const useCategoryStore = create<ICategoryStore>((set, get) => {
+export const useCategoryStore = create<ICategoryStore>((set) => {
   // 초기 데이터 로드 (비동기)
   AppStorage.loadData<ICategoryWithMenus[]>({
     key: STORAGE_KEYS.CATEGORIES,
