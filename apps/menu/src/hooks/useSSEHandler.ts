@@ -17,7 +17,11 @@ import type {
   ICurrentTable,
 } from '@repo/api/types';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys, usePostDeviceDetail } from '@repo/api/queries';
+import {
+  queryKeys,
+  usePostDeviceDetail,
+  usePostSseHeartbeatAck,
+} from '@repo/api/queries';
 import { getLatestAppVersion, getPosSyncStatus } from '@repo/api/fetchers';
 import { useSSE } from '@repo/feature/hooks';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
@@ -198,6 +202,8 @@ export const useSSEHandler = () => {
   const { refresh: refreshShopThemePageData } = useShopThemePage({
     skipInitialRequest: true,
   });
+
+  const { mutateAsync: sendSseHeartbeatAckAsync } = usePostSseHeartbeatAck();
 
   const { data: pickupAlarmData, setData: setPickupAlarm } =
     usePickupAlarmStore();
@@ -579,6 +585,17 @@ export const useSSEHandler = () => {
       }
       const androidId = currentDeviceData.androidId;
       const shopCode = currentShopData.shopCode;
+
+      (async () => {
+        try {
+          await sendSseHeartbeatAckAsync({
+            shopCode,
+            androidId,
+          });
+        } catch {
+          // heartbeat ack 실패는 무시
+        }
+      })();
     },
 
     handleDeviceControlMessage: (

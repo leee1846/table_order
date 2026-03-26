@@ -6,10 +6,10 @@ import { SSE_KEYS } from '@/constants/keys';
 import type { ICurrentTable, ISseMessage } from '@repo/api/types';
 import { useAuth } from './useAuth';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys } from '@repo/api/queries';
+import { queryKeys, usePostSseHeartbeatAck } from '@repo/api/queries';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ROUTES } from '@/constants/routes';
-import { SystemControl, CapacitorApp } from '@repo/util/app';
+import { SystemControl, CapacitorApp, AndroidInfo } from '@repo/util/app';
 import { useShopDetailData } from './useShopDetailData';
 import { openConfirmDialog, closeDialog, toast } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n';
@@ -24,6 +24,7 @@ export const useSSEHandler = (tableNumber?: string) => {
   const agentErrorDialogIdRef = useRef<string | null>(null);
   const { t } = useAdminTranslation();
   const navigate = useNavigate();
+  const { mutateAsync: sendSseHeartbeatAckAsync } = usePostSseHeartbeatAck();
 
   // ORDER SSE 데이터를 추적하기 위한 ref
   const previousOrderDataRef = useRef<Record<string, number> | null>(null);
@@ -184,6 +185,25 @@ export const useSSEHandler = (tableNumber?: string) => {
         previousOrderDataRef.current = null;
       }
 
+      return;
+    }
+
+    if (sseMessage.type === 'PING') {
+      (async () => {
+        try {
+          const androidId = await AndroidInfo.getId();
+          const { shopCode: currentShopCode } = sseHandlerDataRef.current;
+          if (!androidId || !currentShopCode) {
+            return;
+          }
+          await sendSseHeartbeatAckAsync({
+            shopCode: currentShopCode,
+            androidId,
+          });
+        } catch {
+          // heartbeat ack 실패는 무시
+        }
+      })();
       return;
     }
 

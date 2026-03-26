@@ -111,6 +111,7 @@ export const ENDPOINTS = {
 
   SSE: {
     CONNECT_DEVICE: '/sse/connect/device',
+    HEARTBEAT_ACK: '/sse/heartbeat-ack',
   },
 
   NOTICE: {

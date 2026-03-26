@@ -110,6 +110,11 @@ export const queryKeys = {
       [...queryKeys.table.all, 'groupList', shopCode] as const,
   },
 
+  sse: {
+    all: ['sse'] as const,
+    postHeartbeatAck: ['sse', 'postHeartbeatAck'] as const,
+  },
+
   device: {
     all: ['device'] as const,
     /** 디바이스 상세 조회 */

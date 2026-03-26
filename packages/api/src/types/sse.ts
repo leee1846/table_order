@@ -1,3 +1,13 @@
+export interface IPostSseHeartbeatAckParams {
+  shopCode: string;
+  androidId: string;
+}
+
+export interface IPostSseHeartbeatAckMutationVariables
+  extends IPostSseHeartbeatAckParams {
+  ignoreGlobalErrors?: number[];
+}
+
 export interface ISseMessage {
   shopCode: string;
   type:
@@ -20,6 +30,7 @@ export interface ISseMessage {
     | 'RING_BELL'
     | 'POS_ERROR'
     | 'ORDER_COMPLETE'
+    | 'PING'
     | 'AGENT_PING'
     | 'POS_SYNC_START'
     | 'POS_SYNC_END';
