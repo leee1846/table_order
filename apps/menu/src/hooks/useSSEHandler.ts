@@ -14,7 +14,6 @@ import type {
   ITableInfo,
   TDeviceType,
   TControlStatus,
-  ICurrentTable,
 } from '@repo/api/types';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import {
@@ -159,7 +158,7 @@ async function collectDeviceInfoAndSyncToServer(
  * SSE(Server-Sent Events) 연결 및 실시간 메시지 처리를 담당하는 커스텀 훅
  *
  * - 디바이스 정보 초기화 후 서버와 SSE 연결
- * - 수신 메시지 타입별 처리 (ORDER, SHOP, MENU, TABLE, DEVICE, PICKUP 등)
+ * - 수신 메시지 타입별 처리 (ORDER, CLEAR, SHOP, MENU, TABLE, DEVICE, PICKUP 등)
  * - useRef로 최신 값 참조하여 불필요한 리렌더/의존성 방지
  * - 언마운트 시 SSE 연결 해제
  *
@@ -286,6 +285,46 @@ export const useSSEHandler = () => {
     stopPosSyncPolling,
     startPosSyncPolling,
 
+    handleClearTableMessage: (shopCode: string, message: ISseMessage) => {
+      if (typeof message.data !== 'string' || !message.data) {
+        return;
+      }
+
+      const clearedTableNumber = message.data;
+      const { tableNumFromParams, currentDeviceData } =
+        sseHandlerDataRef.current;
+
+      // 테이블 상세 페이지
+      if (
+        tableNumFromParams &&
+        String(tableNumFromParams) === String(clearedTableNumber)
+      ) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.orders.tableOrderHistories(
+            shopCode,
+            tableNumFromParams
+          ),
+        });
+        toast(tRef.current('테이블을 정리했어요.'));
+        navigate(ROUTES.TABLES.generate());
+        return;
+      }
+
+      // 관리자 모드에서 테이블 선택을 안한 상태
+      const currentTableNumber = currentDeviceData?.tableNumber;
+      if (
+        !currentTableNumber ||
+        String(currentTableNumber) !== String(clearedTableNumber)
+      ) {
+        return;
+      }
+
+      refreshTableOrderHistoriesData();
+      applyMenuboardStateAfterTableOrderHistoriesCleared(
+        sseHandlerDataRef.current.shopDetailData
+      );
+    },
+
     handleOrderMessage: async (shopCode: string, message: ISseMessage) => {
       if (!message.data) {
         return;
@@ -301,36 +340,14 @@ export const useSSEHandler = () => {
 
       const { tableNumFromParams } = sseHandlerDataRef.current;
 
-      // 테이블 상세 페이지
+      // 테이블 상세 페이지: 타임스탬프 변경 시 주문 히스토리 쿼리 무효화 (테이블 비우기는 CLEAR)
       if (tableNumFromParams) {
         const currentOrderData = message.data as Record<string, number>;
         const currentTimestamp = currentOrderData[tableNumFromParams];
         const previousTimestamp =
           previousOrderDataRef.current?.[tableNumFromParams];
 
-        // 쿼리 캐시에서 현재 테이블의 주문 데이터 확인
-        const cachedOrderData = queryClient.getQueryData<{
-          data?: ICurrentTable;
-        }>(queryKeys.orders.tableOrderHistories(shopCode, tableNumFromParams));
-        const hasOrderInCache = Boolean(
-          cachedOrderData?.data &&
-          cachedOrderData.data.orderDetailMenuList &&
-          cachedOrderData.data.orderDetailMenuList.length > 0
-        );
-
-        // 케이스 1: 테이블이 비워짐 (SSE에 없고, 이전에는 있었거나 캐시에 있음)
-        if (!currentTimestamp && (previousTimestamp || hasOrderInCache)) {
-          queryClient.invalidateQueries({
-            queryKey: queryKeys.orders.tableOrderHistories(
-              shopCode,
-              tableNumFromParams
-            ),
-          });
-          toast(t('테이블을 정리했어요.'));
-          navigate(ROUTES.TABLES.generate());
-        }
-        // 케이스 2: 주문이 있고, 타임스탬프가 변경되었거나 처음 받은 경우
-        else if (
+        if (
           currentTimestamp &&
           (!previousTimestamp || currentTimestamp !== previousTimestamp)
         ) {
@@ -342,7 +359,6 @@ export const useSSEHandler = () => {
           });
         }
 
-        // 현재 ORDER 데이터를 저장
         previousOrderDataRef.current = currentOrderData;
         return;
       } else {
@@ -351,59 +367,33 @@ export const useSSEHandler = () => {
       }
 
       const { currentDeviceData } = sseHandlerDataRef.current;
-      // 관리자 모드에서 테이블 선택을 안한 상태
       const currentTableNumber = currentDeviceData?.tableNumber;
+      // 관리자 모드에서 테이블 선택을 안한 상태
       if (!currentTableNumber) {
         return;
       }
-
       if (usePosOrderStore.getState().isWaitingForPosOrderComplete) {
         return;
       }
-
-      const { tableOrderHistoriesData } = sseHandlerDataRef.current;
       const tableNumbersFromSse = message.data as { [key: string]: number };
-
-      // 현재 테이블의 주문이 없는 경우
-      // 주문 그룹만 생성되어 있고, 주문이 없는 경우
+      // 테이블 비우기·맵에서 제외는 CLEAR로만 처리
       if (!(currentTableNumber in tableNumbersFromSse)) {
-        const hasExistingOrders =
-          tableOrderHistoriesData &&
-          tableOrderHistoriesData !== 'isEmptyTable' &&
-          (tableOrderHistoriesData?.orderDetailMenuList?.length > 0 ||
-            tableOrderHistoriesData?.orderDetailMenuList?.length < 1);
-        // pos or 관리자앱에서 주문을 모두 취소 or 테이블 비우기 했을 경우
-        if (hasExistingOrders) {
-          // POS 콜백 폴링 중이거나 onSuccess/onFailure 처리 중이면 갱신 생략
-          if (usePosOrderStore.getState().isWaitingForPosOrderComplete) {
-            return;
-          }
-
-          refreshTableOrderHistoriesData();
-          applyMenuboardStateAfterTableOrderHistoriesCleared(
-            sseHandlerDataRef.current.shopDetailData
-          );
-          return;
-        }
         return;
       }
-
+      const { tableOrderHistoriesData } = sseHandlerDataRef.current;
       const sseUpdatedAt = tableNumbersFromSse[currentTableNumber];
       const isOrderUnchanged =
         tableOrderHistoriesData &&
         tableOrderHistoriesData !== 'isEmptyTable' &&
         tableOrderHistoriesData?.sseUpdatedAt === sseUpdatedAt;
-
       // 주문이 변경되지 않았으면 (중복 처리 방지)
       if (isOrderUnchanged) {
         return;
       }
-
       const refreshResult = await refreshTableOrderHistoriesData(sseUpdatedAt);
       if (!refreshResult) {
         return;
       }
-
       const {
         isCashPaymentInducementModalOpened,
         isSplitPaymentModalOpened,
@@ -420,7 +410,6 @@ export const useSSEHandler = () => {
         .filter((payment) => !payment.isCanceled)
         .reduce((sum, payment) => sum + payment.transactionAmount, 0);
       const isFullyPaid = totalAmount > 0 && totalAmount - paidAmount === 0;
-
       // 결제중이고 결제가 완료되었을 경우
       if (isPaymentModalOpened && isFullyPaid) {
         useModalStore.getState().closeAllModals();
@@ -885,6 +874,9 @@ export const useSSEHandler = () => {
         break;
       case 'ORDER':
         handlersRef.current.handleOrderMessage(shopCode, sseMessage);
+        break;
+      case 'CLEAR':
+        handlersRef.current.handleClearTableMessage(shopCode, sseMessage);
         break;
       case 'SHOP':
         handlersRef.current.handleShopMessage();
