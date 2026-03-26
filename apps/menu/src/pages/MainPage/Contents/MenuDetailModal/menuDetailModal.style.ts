@@ -5,7 +5,7 @@ export const Container = styled.div`
   position: relative;
   background-color: ${({ theme }) => theme.mode.grey[50]};
   border: 1px solid ${({ theme }) => theme.mode.grey[100]};
-  padding: 64px 24px 24px;
+  padding: 24px 24px 24px;
   border-radius: 1.25rem;
   width: 27.5rem;
   max-width: calc(100vw - 2rem);
@@ -16,7 +16,7 @@ export const RightHeader = styled.div`
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
-  padding-bottom: 12px;
+  padding-bottom: 16px;
 `;
 
 export const CloseButton = styled.button`
