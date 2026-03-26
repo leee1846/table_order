@@ -21,7 +21,7 @@ import * as UIStyles from '@repo/ui/styles';
 import * as S from './salesOrderPage.style';
 import { SALES_PAGE_SIZE } from '@/constants/keys';
 import { toast } from '@repo/feature/utils';
-import { keepPreviousData } from '@repo/api/tanstack-query';
+import { usePaginationWithCache } from '@/hooks/usePaginationWithCache';
 
 const PAGE_SIZE = SALES_PAGE_SIZE;
 
@@ -52,7 +52,7 @@ export const SalesOrderPage = () => {
     defaultDateRange.startDate
   );
   const [endDate, setEndDate] = useState<string>(defaultDateRange.endDate);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [requestedPage, setRequestedPage] = useState<number>(1);
   const [selectedOrder, setSelectedOrder] = useState<IOrderHistoryItem | null>(
     null
   );
@@ -62,23 +62,29 @@ export const SalesOrderPage = () => {
     [startDate, endDate]
   );
 
-  const { data: orderHistoryResponse } = useGetOrderHistory(
+  const orderHistoryQuery = useGetOrderHistory(
     {
       shopCode: shopCode ?? '',
       startDate: apiStartDate,
       endDate: apiEndDate,
-      pageNumber: currentPage - 1,
+      pageNumber: requestedPage - 1,
       pageSize: PAGE_SIZE,
     },
     {
       enabled: !!shopCode && !!apiStartDate && !!apiEndDate,
-      placeholderData: keepPreviousData,
     }
   );
 
-  const orderHistory = orderHistoryResponse?.data;
+  const pagination = usePaginationWithCache({
+    queryResult: orderHistoryQuery,
+    getTotalPages: (data) => data?.data?.totalPageNumber,
+    requestedPage,
+    onPageChange: setRequestedPage,
+    initialPage: 1,
+  });
+
+  const orderHistory = orderHistoryQuery.data?.data;
   const orders = orderHistory?.orderHistory ?? [];
-  const totalPages = Math.max(orderHistory?.totalPageNumber ?? 1, 1);
   const totalSalesAmount = orderHistory?.totalSalesAmount ?? 0;
   const totalSalesCount = orderHistory?.totalSalesCount ?? 0;
   const prePaymentAmount = orderHistory?.prePaymentAmount ?? 0;
@@ -93,7 +99,7 @@ export const SalesOrderPage = () => {
     setSelectedPreset(preset);
     setStartDate(range.startDate);
     setEndDate(range.endDate);
-    setCurrentPage(1);
+    pagination.resetPage();
   };
 
   const onSelectStartDate = (date: string) => {
@@ -103,7 +109,7 @@ export const SalesOrderPage = () => {
     }
     setStartDate(date);
     setSelectedPreset(null);
-    setCurrentPage(1);
+    pagination.resetPage();
   };
 
   const onSelectEndDate = (date: string) => {
@@ -113,11 +119,7 @@ export const SalesOrderPage = () => {
     }
     setEndDate(date);
     setSelectedPreset(null);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    pagination.resetPage();
   };
 
   const formatCalendarText = (date: string) => {
@@ -214,9 +216,9 @@ export const SalesOrderPage = () => {
           )}
           <div />
           <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
+            totalPages={pagination.totalPages}
+            currentPage={pagination.currentPage}
+            onPageChange={pagination.handlePageChange}
           />
         </UIStyles.setting.Footer>
       </UIStyles.setting.TablePageContainer>
