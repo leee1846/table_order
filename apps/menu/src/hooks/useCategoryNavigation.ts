@@ -352,6 +352,7 @@ export function useCategoryNavigation({
       return;
     }
     setIsActivated(false);
+    setSelectedCategorySeq(categoriesRef.current[0]?.categorySeq || 0);
   }, [isActivated]);
 
   return {
