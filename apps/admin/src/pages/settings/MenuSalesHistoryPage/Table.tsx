@@ -3,15 +3,16 @@ import { InfoIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency } from '@repo/util/string';
-import type { IMenuSalesHistoryItem } from '@repo/api/types';
-import { useAdminTranslation } from '@/config/i18n';
+import type { IMenuSalesHistoryItem, TShopLanguage } from '@repo/api/types';
 import * as S from './menuSalesHistoryPage.style';
+import { useAdminTranslation } from '@/config/i18n';
 
 interface Props {
   rows: IMenuSalesHistoryItem[];
+  currentLanguage: TShopLanguage;
 }
 
-export const MenuSalesHistoryTable = ({ rows }: Props) => {
+export const MenuSalesHistoryTable = ({ rows, currentLanguage }: Props) => {
   const { t } = useAdminTranslation();
   const [showSalesCountTooltip, setShowSalesCountTooltip] = useState(false);
   const [showTotalSalesTooltip, setShowTotalSalesTooltip] = useState(false);
@@ -109,7 +110,9 @@ export const MenuSalesHistoryTable = ({ rows }: Props) => {
         isOption={row.isOption === 1}
       >
         <td>
-          <S.MenuName isOption={row.isOption === 1}>{row.menuName}</S.MenuName>
+          <S.MenuName isOption={row.isOption === 1}>
+            {row.localeMenuName?.[currentLanguage] ?? row.menuName}
+          </S.MenuName>
         </td>
         <td>{formatCurrency(row.unitPrice ?? 0)}</td>
         <td>{`${row.salesCount ?? 0}개`}</td>

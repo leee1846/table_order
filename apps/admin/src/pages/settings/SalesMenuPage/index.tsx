@@ -17,11 +17,16 @@ import { useAuth } from '@/hooks/useAuth';
 import * as S from '@/pages/settings/SalesMenuPage/salesMenuPage.style';
 import { Summary } from '@/pages/settings/SalesMenuPage/Summary';
 import { Table } from '@/pages/settings/SalesMenuPage/Table';
+import type { TShopLanguage } from '@repo/api/types';
 
 export const SalesMenuPage = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const { shopCode } = useAuth();
   const defaultRange = useMemo(() => getDateRangeByPreset('today'), []);
+  const currentLanguage: TShopLanguage = useMemo(
+    () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
+    [i18n]
+  );
   const dateRangeOptions: { value: TDateRangePreset; label: string }[] =
     useMemo(
       () => [
@@ -59,6 +64,7 @@ export const SalesMenuPage = () => {
   );
 
   const menuSalesSummary = menuSalesSummaryResponse?.data;
+
   const menuSalesList = menuSalesSummary?.menuSalesList ?? [];
 
   const handleSelectStartDate = (date: string) => {
@@ -150,9 +156,12 @@ export const SalesMenuPage = () => {
           </S.Filters>
 
           <S.TableWrapper>
-            <Summary summary={menuSalesSummary} />
+            <Summary
+              summary={menuSalesSummary}
+              currentLanguage={currentLanguage}
+            />
 
-            <Table items={menuSalesList} />
+            <Table items={menuSalesList} currentLanguage={currentLanguage} />
           </S.TableWrapper>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

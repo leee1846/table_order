@@ -1,4 +1,5 @@
 import type { IApiResponse } from './common';
+import { TLocale } from './menu';
 import type { ICreateOrderGroupData } from './orders';
 
 export interface IDailySalesSummary {
@@ -18,6 +19,7 @@ export interface ISalesSummary {
 
 export interface IMenuSalesSummaryItem {
   menuName: string;
+  localeMenuName?: Record<string, string> | null;
   unitPrice: number;
   quantity: number;
   totalPrice: number;
@@ -42,6 +44,7 @@ export interface IMenuSalesHistoryItem {
   unitPrice: number;
   salesCount: number;
   totalSalesAmount: number;
+  localeMenuName?: TLocale;
 }
 
 export interface ICalendarSalesHistoryItem {

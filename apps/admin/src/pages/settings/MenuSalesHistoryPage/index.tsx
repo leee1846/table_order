@@ -20,9 +20,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { useGetCategoryList, useGetMenuSalesHistory } from '@repo/api/queries';
 import { MenuSalesHistoryTable } from './Table';
 import * as S from './menuSalesHistoryPage.style';
+import type { TShopLanguage } from '@repo/api/types';
 
 export const MenuSalesHistoryPage = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const { shopCode, shopSeq } = useAuth();
   const defaultRange = useMemo(() => getDateRangeByPreset('today'), []);
 
@@ -37,6 +38,10 @@ export const MenuSalesHistoryPage = () => {
     useState<boolean>(false);
   const hasInitializedCategories = useRef(false);
   const categoryIconWrapperRef = useRef<HTMLDivElement>(null);
+  const currentLanguage: TShopLanguage = useMemo(
+    () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
+    [i18n]
+  );
 
   const { data: categoryListResponse } = useGetCategoryList(
     {
@@ -49,7 +54,11 @@ export const MenuSalesHistoryPage = () => {
 
   const categories = useMemo(() => {
     const categoryList = categoryListResponse?.data ?? [];
-    const categoryNames = categoryList.map((category) => category.categoryName);
+
+    const categoryNames = categoryList.map(
+      (category) =>
+        category.localeCategoryName?.[currentLanguage] ?? category.categoryName
+    );
     // 미분류 카테고리를 맨 마지막에 추가
     return [...categoryNames, t('미분류')];
   }, [categoryListResponse, t]);
@@ -346,6 +355,7 @@ export const MenuSalesHistoryPage = () => {
             <MenuSalesHistoryTable
               key={`${selectedCategories.join(',')}-${sortBy}`}
               rows={filteredItems}
+              currentLanguage={currentLanguage}
             />
           </S.TableCard>
         </S.Container>

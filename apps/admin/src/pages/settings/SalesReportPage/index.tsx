@@ -19,15 +19,19 @@ import type {
   IDailySalesHistoryItem,
   IMenuSalesHistoryItem,
   IHourlySalesItem,
+  TShopLanguage,
 } from '@repo/api/types';
 import * as S from './salesReportPage.style';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
 export const SalesReportPage = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const { shopCode } = useAuth();
-
+  const currentLanguage: TShopLanguage = useMemo(
+    () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
+    [i18n]
+  );
   const [year, setYear] = useState<number>(CURRENT_YEAR);
   const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
   const [appliedYearMonth, setAppliedYearMonth] = useState<{
@@ -199,8 +203,8 @@ export const SalesReportPage = () => {
         <S.Section>
           <S.SectionHeader>{t('일별 매출내역')}</S.SectionHeader>
           <S.TableWrapper>
-            <DailySalesHistoryTable 
-              rows={mappedDailyRows} 
+            <DailySalesHistoryTable
+              rows={mappedDailyRows}
               key={`${appliedYearMonth.year}-${appliedYearMonth.month}`}
             />
           </S.TableWrapper>
@@ -209,8 +213,9 @@ export const SalesReportPage = () => {
         <S.Section>
           <S.SectionHeader>{t('메뉴별 매출내역')}</S.SectionHeader>
           <S.TableWrapper>
-            <MenuSalesHistoryTable 
-              rows={menuRows} 
+            <MenuSalesHistoryTable
+              rows={menuRows}
+              currentLanguage={currentLanguage}
               key={`${appliedYearMonth.year}-${appliedYearMonth.month}`}
             />
           </S.TableWrapper>
@@ -219,8 +224,8 @@ export const SalesReportPage = () => {
         <S.Section>
           <S.SectionHeader>{t('시간대별 매출내역')}</S.SectionHeader>
           <S.TableWrapper>
-            <HourlySalesTable 
-              rows={hourlyRows} 
+            <HourlySalesTable
+              rows={hourlyRows}
               key={`${appliedYearMonth.year}-${appliedYearMonth.month}`}
             />
           </S.TableWrapper>

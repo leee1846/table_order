@@ -1,14 +1,16 @@
-import { t } from '@/config/i18n';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency } from '@repo/util/string';
 import * as S from './table.style';
-import type { IMenuSalesSummaryItem } from '@repo/api/types';
+import type { IMenuSalesSummaryItem, TShopLanguage } from '@repo/api/types';
+import { useAdminTranslation } from '@/config/i18n';
 
 interface Props {
   items: IMenuSalesSummaryItem[];
+  currentLanguage: TShopLanguage;
 }
 
-export const Table = ({ items }: Props) => {
+export const Table = ({ items, currentLanguage }: Props) => {
+  const { t } = useAdminTranslation();
   const renderRows = () => {
     if (!items || items.length === 0) {
       return (
@@ -27,7 +29,7 @@ export const Table = ({ items }: Props) => {
 
     return items.map((item, index) => (
       <S.MenuRow key={`${item.menuName}-${index.toString()}`}>
-        <td>{item.menuName}</td>
+        <td>{item.localeMenuName?.[currentLanguage] ?? item.menuName}</td>
         <td>{formatCurrency(item.unitPrice)}</td>
         <td>{formatCurrency(item.quantity)}</td>
         <td>{formatCurrency(item.totalPrice)}</td>

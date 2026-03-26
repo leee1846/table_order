@@ -1,13 +1,18 @@
-import { t } from '@/config/i18n';
 import { bestOnIcon } from '@repo/ui/icons';
 import { formatCurrency } from '@repo/util/string';
 import * as S from '@/pages/settings/SalesMenuPage/Summary/summary.style';
 import { theme } from '@repo/ui';
-import type { IMenuSalesSummary, IMenuSalesSummaryItem } from '@repo/api/types';
+import type {
+  IMenuSalesSummary,
+  IMenuSalesSummaryItem,
+  TShopLanguage,
+} from '@repo/api/types';
+import { useAdminTranslation } from '@/config/i18n';
 
 interface Props {
   summary?: IMenuSalesSummary;
   isLoading?: boolean;
+  currentLanguage: TShopLanguage;
 }
 
 const getBestMenu = (menuSalesList: IMenuSalesSummaryItem[] | undefined) => {
@@ -19,11 +24,12 @@ const getBestMenu = (menuSalesList: IMenuSalesSummaryItem[] | undefined) => {
     if (!best) {
       return current;
     }
-
+    // 개수 비교
     if (current.quantity > best.quantity) {
       return current;
     }
 
+    //개수가 같다면 금액 비교
     if (
       current.quantity === best.quantity &&
       current.totalPrice > best.totalPrice
@@ -35,7 +41,8 @@ const getBestMenu = (menuSalesList: IMenuSalesSummaryItem[] | undefined) => {
   }, null);
 };
 
-export const Summary = ({ summary }: Props) => {
+export const Summary = ({ summary, currentLanguage }: Props) => {
+  const { t } = useAdminTranslation();
   const totalMenuItemsSold = summary?.totalMenuItemsSold ?? 0;
   const totalSalesAmount = summary?.totalSalesAmount ?? 0;
   const bestMenu = getBestMenu(summary?.menuSalesList);
@@ -48,7 +55,10 @@ export const Summary = ({ summary }: Props) => {
         </div>
         <S.BestMenuTitle>{t('판매 1위 메뉴')}</S.BestMenuTitle>
         <S.BestMenuInfo>
-          <p>{bestMenu?.menuName ?? t('데이터가 없습니다.')}</p>
+          <p>
+            {bestMenu?.localeMenuName?.[currentLanguage] ??
+              t('데이터가 없습니다.')}
+          </p>
           <p>
             {bestMenu
               ? t('₩{{totalPrice}} / {{quantity}}건', {
