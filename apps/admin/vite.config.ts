@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { readFileSync } from 'fs';
@@ -22,6 +23,10 @@ export default defineConfig({
       babel: {
         plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
       },
+    }),
+    nodePolyfills({
+      // Buffer 및 process 자동 폴리필 활성화
+      globals: { Buffer: true, process: true },
     }),
   ],
   define: {

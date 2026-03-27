@@ -189,6 +189,11 @@ export const AppHistoryForm = ({
             <S.FieldGroup>
               <S.Label>
                 구분 <span>*</span>
+                {(mode === 'edit' || mode === 'create') && (
+                  <S.VersionEditHint>
+                    파일 업로드 시 자동으로 입력됩니다.
+                  </S.VersionEditHint>
+                )}
               </S.Label>
               <Dropdown
                 options={TYPE_OPTIONS}
@@ -196,7 +201,8 @@ export const AppHistoryForm = ({
                 onChange={(value) =>
                   updateFormData({ type: value as TAppType })
                 }
-                disabled={isReadOnly}
+                //disabled={isReadOnly}
+                disabled={true}
               />
             </S.FieldGroup>
 
@@ -268,14 +274,17 @@ export const AppHistoryForm = ({
               <S.Label>
                 버전 <span>*</span>
                 {(mode === 'edit' || mode === 'create') && (
-                  <S.VersionEditHint>수정이 불가능합니다.</S.VersionEditHint>
+                  <S.VersionEditHint>
+                    파일 업로드 시 자동으로 입력됩니다.
+                  </S.VersionEditHint>
                 )}
               </S.Label>
               <Input
                 placeholder="버전을 입력하세요 (예: 1.2.3)"
                 value={formData.version}
                 onChange={(value) => updateFormData({ version: value })}
-                disabled={isReadOnly || mode === 'edit'}
+                //disabled={isReadOnly || mode === 'edit'}
+                disabled={true}
               />
             </S.FieldGroup>
 
