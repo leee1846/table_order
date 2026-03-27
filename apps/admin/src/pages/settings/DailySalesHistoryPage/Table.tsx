@@ -269,9 +269,9 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
               <td>{`${totals.cancelCount}${t('건')}`}</td>
               <td>{`${totals.customerCount}${t('명')}`}</td>
               <td>
-                <S.Metric>
-                  <strong>{formatCurrency(totals.pricePerCustomer)}</strong>
-                </S.Metric>
+                {formatCurrency(
+                  Math.trunc(totals.actualSalesAmount / totals.customerCount)
+                )}
               </td>
               <td>
                 {renderMetric(totals.cardSalesCount, totals.cardSalesAmount, t)}
