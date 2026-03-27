@@ -71,7 +71,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
       void parser
         .parse()
         .then((result: ApkParser | IpaParser) => {
-          const metaDataArray = result.application.metaData || [];
+          const metaDataArray = result.application?.metaData ?? [];
           const typeMeta = metaDataArray.find(
             (meta: { name: string; value: string }) =>
               meta.name === 'OTA_APP_TYPE'
@@ -79,7 +79,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
           if ('versionName' in result) {
             updateFormData({
               version: result?.versionName,
-              type: typeMeta.value === 'ADMIN' ? 'POS_APP' : 'MENU',
+              type: typeMeta?.value === 'ADMIN' ? 'POS_APP' : 'MENU',
             });
           }
         })
