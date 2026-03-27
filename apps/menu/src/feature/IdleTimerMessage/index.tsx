@@ -12,7 +12,7 @@ export const IdleTimerMessage = ({ remainingSeconds }: Props) => {
   return (
     <S.Container textColor={theme.mode.grey[600]}>
       <Trans
-        i18nKey="closes_in" // JSON 번역 파일의 키 값
+        i18nKey="<0>{{seconds}}</0>초 후 닫힘" // JSON 번역 파일의 키 값
         values={{ seconds: remainingSeconds }} // {{seconds}}에 들어갈 실제 숫자
         components={[
           // 번역 파일의 <0></0> 태그가 아래 span으로 교체되며 색상이 적용됩니다.

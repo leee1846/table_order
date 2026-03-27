@@ -340,5 +340,5 @@
   "일부 결제 내역이 있어 할인할 수 없습니다": "Cannot apply discount because there are some payment records.",
   "선택 완료": "selected",
   "{{count}}초 후 닫힘": "Closes in {{count}}s",
-  "closes_in": "Closes in <0>{{seconds}}</0> seconds"
+  "<0>{{seconds}}</0>초 후 닫힘": "Closes in <0>{{seconds}}</0> seconds"
 }
