@@ -22,6 +22,7 @@ export const SalesSummaryPage = () => {
   const averagePriceTooltip = useTooltip();
   const paidCustomerTooltip = useTooltip();
   const summaryTooltip = useTooltip();
+  const paidSalesTooltip = useTooltip();
 
   const defaultDateRange = useMemo(() => {
     const today = new Date();
@@ -78,7 +79,27 @@ export const SalesSummaryPage = () => {
       </S.Title>
       <S.List>
         <S.Item>
-          <S.SubTitle>{t('매출(결제완료)')}</S.SubTitle>
+          <S.SubTitleWrapper>
+            <S.IconWrapper
+              ref={paidSalesTooltip.anchorRef as Ref<HTMLDivElement>}
+              onClick={paidSalesTooltip.toggle}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                paidSalesTooltip.toggle();
+              }}
+            >
+              <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
+              {paidSalesTooltip.isVisible && (
+                <Tooltip
+                  tooltipRef={paidSalesTooltip.tooltipRef}
+                  placement="top"
+                >
+                  {t('취소금액 및 할인이 반영된 금액')}
+                </Tooltip>
+              )}
+            </S.IconWrapper>
+            <S.SubTitle>{t('매출(결제완료)')}</S.SubTitle>
+          </S.SubTitleWrapper>
           <S.Price>₩{formatCurrency(paidSales)}</S.Price>
           <S.Description>
             <S.IconWrapper
@@ -96,7 +117,7 @@ export const SalesSummaryPage = () => {
                 </Tooltip>
               )}
             </S.IconWrapper>
-            {t('객단가')}₩{formatCurrency(averagePricePerCustomer)}
+            {t('실 객단가')} ₩{formatCurrency(averagePricePerCustomer)}
           </S.Description>
         </S.Item>
         <S.Item>
@@ -125,8 +146,7 @@ export const SalesSummaryPage = () => {
                 </Tooltip>
               )}
             </S.IconWrapper>
-            {t('결제 완료 객수')}
-            {formatCurrency(paidCustomerCount)}
+            {t('결제 완료 객수')} {formatCurrency(paidCustomerCount)}
             {t('명')}
           </S.Description>
         </S.Item>
