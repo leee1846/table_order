@@ -85,6 +85,7 @@ export const TableCard = styled.div`
 export const HeaderLabel = styled.div`
   display: inline-flex;
   align-items: center;
+  text-wrap: nowrap;
   gap: 4px;
   ${TYPOGRAPHY.ST_3}
   color: ${theme.colors.grey[600]};

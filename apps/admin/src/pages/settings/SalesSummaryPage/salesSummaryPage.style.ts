@@ -49,6 +49,11 @@ export const Item = styled.div`
   gap: 12px;
 `;
 
+export const SubTitleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 export const SubTitle = styled.p`
   color: ${theme.colors.grey[900]};
   ${TYPOGRAPHY.ST_4}

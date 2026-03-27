@@ -207,7 +207,7 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
               <th>{t('총 객수')}</th>
               <th>
                 <S.HeaderLabel>
-                  {t('객단가')}
+                  {t('총 객단가')}
                   <S.IconWrapper
                     ref={pricePerCustomerIconWrapperRef}
                     onClick={handlePricePerCustomerIconClick}
@@ -224,7 +224,9 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
                     {showPricePerCustomerTooltip && (
                       <S.Tooltip>
                         <S.TooltipText>
-                          {t('매출/객수(*객수 미사용 시, 매출/테이블 수)')}
+                          {t(
+                            '총 매출/총 객수(*객수 미사용 시, 매출/테이블 수)'
+                          )}
                         </S.TooltipText>
                         <S.TooltipArrow />
                       </S.Tooltip>
