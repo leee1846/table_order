@@ -29,6 +29,9 @@ export default defineConfig({
   },
   build: {
     target: 'chrome130',
+    // 별도 asset 파일 요청을 인터셉트하지 못하는 버그를 우회하기 위해
+    // 로고 PNG (~23KB)를 포함한 소형 이미지들을 base64 data URL로 인라인 처리
+    assetsInlineLimit: 25000,
   },
   esbuild: {
     target: 'chrome130',
