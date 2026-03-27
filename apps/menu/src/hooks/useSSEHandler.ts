@@ -684,18 +684,16 @@ export const useSSEHandler = () => {
       refreshShopThemePageData();
     },
 
-    handleLogoutMessage: () => {
+    handleLogoutMessage: async () => {
       openConfirmDialog({
         title: tRef.current('로그아웃'),
         content: tRef.current(
           '비밀번호가 변경되었습니다. 다시 로그인 해주세요.'
         ),
         primaryText: tRef.current('확인'),
-        onConfirm: async () => {
-          await clearAuthData();
-          window.location.replace(ROUTES.LOGIN.generate());
-        },
       });
+      await clearAuthData();
+      navigate(ROUTES.LOGIN.generate());
     },
 
     handleOrderCompleteMessage: (message: ISseMessage) => {
