@@ -272,7 +272,7 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
               <td>{`${totals.customerCount}${t('명')}`}</td>
               <td>
                 {formatCurrency(
-                  Math.trunc(totals.actualSalesAmount / totals.customerCount)
+                  Math.trunc(totals.totalSalesAmount / totals.customerCount)
                 )}
               </td>
               <td>
