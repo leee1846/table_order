@@ -24,6 +24,7 @@ export const getDeviceDetail = async (
       androidId,
     },
     ignoreGlobalErrors,
+    skipGlobalErrorHandling: true,
   });
 
   return response.data;
@@ -39,6 +40,7 @@ export const postDeviceDetail = async (
     method: 'POST',
     url: ENDPOINTS.DEVICE.SHOP(shopCode),
     data: rest,
+    skipGlobalErrorHandling: true,
   });
 
   return response.data;
@@ -78,10 +80,7 @@ export const postDeviceControl = async (
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TPostDeviceControlResponse>({
     method: 'POST',
-    url: ENDPOINTS.DEVICE.CONTROL(
-      params.shopCode,
-      params.deviceControlType
-    ),
+    url: ENDPOINTS.DEVICE.CONTROL(params.shopCode, params.deviceControlType),
     data: params.deviceList,
   });
 
