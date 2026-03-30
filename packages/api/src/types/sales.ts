@@ -220,6 +220,7 @@ export interface IHourlySalesItem {
   hour: string;
   actualSalesCount: number;
   actualSalesAmount: number;
+  totalSalesAmount: number;
   customerCount: number;
   pricePerCustomer: number;
   tableCount: number;

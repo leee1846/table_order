@@ -13,15 +13,9 @@ interface Props {
 
 export const HourlySalesTable = ({ rows }: Props) => {
   const { t } = useAdminTranslation();
-  const [showActualSalesTooltip, setShowActualSalesTooltip] = useState(false);
   const [showPricePerCustomerTooltip, setShowPricePerCustomerTooltip] =
     useState(false);
-  const actualSalesIconWrapperRef = useRef<HTMLDivElement>(null);
   const pricePerCustomerIconWrapperRef = useRef<HTMLDivElement>(null);
-
-  const handleActualSalesIconClick = () => {
-    setShowActualSalesTooltip(!showActualSalesTooltip);
-  };
 
   const handlePricePerCustomerIconClick = () => {
     setShowPricePerCustomerTooltip(!showPricePerCustomerTooltip);
@@ -29,13 +23,6 @@ export const HourlySalesTable = ({ rows }: Props) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showActualSalesTooltip &&
-        actualSalesIconWrapperRef.current &&
-        !actualSalesIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowActualSalesTooltip(false);
-      }
       if (
         showPricePerCustomerTooltip &&
         pricePerCustomerIconWrapperRef.current &&
@@ -45,14 +32,14 @@ export const HourlySalesTable = ({ rows }: Props) => {
       }
     };
 
-    if (showActualSalesTooltip || showPricePerCustomerTooltip) {
+    if (showPricePerCustomerTooltip) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showActualSalesTooltip, showPricePerCustomerTooltip]);
+  }, [showPricePerCustomerTooltip]);
 
   const renderRows = () => {
     if (!rows.length) {
@@ -66,7 +53,7 @@ export const HourlySalesTable = ({ rows }: Props) => {
     return rows.map((row) => (
       <tr key={row.hour}>
         <td>{row.hour}</td>
-        <td>{formatCurrency(row.actualSalesAmount ?? 0)}</td>
+        <td>{formatCurrency(row.totalSalesAmount ?? 0)}</td>
         <td>{`${row.customerCount ?? 0}${t('명')}`}</td>
         <td>{formatCurrency(row.pricePerCustomer ?? 0)}</td>
         <td>{`${row.tableCount ?? 0}${t('개')}`}</td>
