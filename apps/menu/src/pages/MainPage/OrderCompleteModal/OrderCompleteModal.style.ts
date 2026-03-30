@@ -18,9 +18,14 @@ export const CountdownBadge = styled.p`
   top: 12px;
   right: 14px;
   ${TYPOGRAPHY.ST_4}
-  color: ${({ theme }) => theme.mode.grey[800]};
+  color: ${({ theme }) => theme.mode.grey[600]};
   pointer-events: none;
   z-index: 1;
+`;
+
+export const CountdownHighlight = styled.span`
+  font-weight: 700;
+  color: ${({ theme }) => theme.mode.primary[500]};
 `;
 
 export const LeftContainer = styled.div`

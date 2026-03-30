@@ -68,13 +68,12 @@ pnpm --filter admin dev
 # menu 앱 실행
 pnpm --filter menu dev
 
-# 특정 패키지 개발서버버 빌드
+# 특정 패키지 개발서버 빌드
 pnpm --filter menu build:dev
 
 # 여러 프로젝트 동시 실행
 pnpm --filter admin --filter menu dev
 ```
-
 
 ## 📚 각 프로젝트 문서
 

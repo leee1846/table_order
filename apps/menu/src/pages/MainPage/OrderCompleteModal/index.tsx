@@ -8,6 +8,7 @@ import { formatCurrency } from '@repo/util/string';
 import customerI18n from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { Trans } from 'react-i18next';
 
 interface Props {
   orderData: IOrder[];
@@ -38,7 +39,17 @@ export const OrderCompleteModal = ({
         aria-labelledby="order-complete-title"
       >
         <S.CountdownBadge>
-          {t('{{count}}초 후 닫힘', { count: countdown })}
+          <Trans
+            i18n={customerI18n}
+            i18nKey="<0>{{seconds}}</0>초 후 닫힘"
+            values={{ seconds: countdown }}
+            lng={language}
+            components={[
+              <S.CountdownHighlight key="countdown-highlight">
+                {countdown}
+              </S.CountdownHighlight>,
+            ]}
+          />
         </S.CountdownBadge>
         <S.LeftContainer>
           <img src={apronIcon} alt={t('주문 완료!')} />
