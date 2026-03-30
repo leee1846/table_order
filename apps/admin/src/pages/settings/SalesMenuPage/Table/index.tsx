@@ -46,7 +46,7 @@ export const Table = ({ items, currentLanguage }: Props) => {
           <th>{t('메뉴이름')}</th>
           <th>{t('단위가격')}</th>
           <th>{t('수량')}</th>
-          <th>{t('총가격')}</th>
+          <th>{t('총 매출액')}</th>
           <th>{t('총 할인액')}</th>
           <th>{t('실 매출액')}</th>
         </tr>

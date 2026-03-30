@@ -80,36 +80,12 @@ export const HourlySalesTable = ({ rows }: Props) => {
         <tr>
           <th>{t('시간대')}</th>
           <th>
-            <S.HeaderLabel>
-              {t('실 매출')}
-              <S.IconWrapper
-                ref={actualSalesIconWrapperRef}
-                onClick={handleActualSalesIconClick}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  handleActualSalesIconClick();
-                }}
-              >
-                <InfoIcon
-                  width={18}
-                  height={18}
-                  color={theme.colors.grey[500]}
-                />
-                {showActualSalesTooltip && (
-                  <S.Tooltip>
-                    <S.TooltipText>
-                      {t('취소금액 및 할인이 반영된 금액')}
-                    </S.TooltipText>
-                    <S.TooltipArrow />
-                  </S.Tooltip>
-                )}
-              </S.IconWrapper>
-            </S.HeaderLabel>
+            <S.HeaderLabel>{t('총 매출')}</S.HeaderLabel>
           </th>
           <th>{t('총 객수')}</th>
           <th>
             <S.HeaderLabel>
-              {t('객단가')}
+              {t('총 객단가')}
               <S.IconWrapper
                 ref={pricePerCustomerIconWrapperRef}
                 onClick={handlePricePerCustomerIconClick}
