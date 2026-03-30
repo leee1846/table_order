@@ -30,6 +30,7 @@ export const refreshAccessToken = async () => {
     method: 'POST',
     url: ENDPOINTS.AUTH.TOKEN_REFRESH,
     ignoreGlobalErrors: [401],
+    skipGlobalErrorHandling: true,
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${getRefreshToken()}`,
