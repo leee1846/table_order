@@ -5,7 +5,7 @@ import { TLoginResponse } from '../../types/auth';
 import { IApiError } from '../../types/common';
 
 export const usePostLoginQr = () => {
-  return useMutation<TLoginResponse, AxiosError<IApiError>, { uuid: string }>({
+  return useMutation<TLoginResponse, AxiosError<IApiError>, { token: string }>({
     mutationFn: (params) => loginQr(params),
   });
 };

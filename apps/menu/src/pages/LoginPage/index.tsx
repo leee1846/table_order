@@ -177,9 +177,9 @@ export const LoginPage = () => {
       return;
     }
 
-    let uuid: string | null = null;
+    let token: string | null = null;
     try {
-      uuid = await CameraManager.scanQR();
+      token = await CameraManager.scanQR();
     } catch {
       openConfirmDialog({
         title: t('오류'),
@@ -187,11 +187,11 @@ export const LoginPage = () => {
       });
     }
 
-    if (!uuid) {
+    if (!token) {
       return;
     }
 
-    const loginResponse = await loginQr({ uuid });
+    const loginResponse = await loginQr({ token });
 
     // api는 성공 처리됨.
     if (!loginResponse.data.loginResult) {

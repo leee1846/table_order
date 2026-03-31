@@ -2,9 +2,7 @@ import { ModalBackground, BasicButton } from '@repo/ui/components';
 import { css } from '@emotion/react';
 import { ReactQRCode } from '@lglab/react-qr-code';
 import * as S from './QRCodeModal.style';
-import type { ITokenPayload } from '@repo/api/types';
 import { getAccessToken } from '@repo/api/auth';
-import { decodeJwtToken } from '@repo/util/function';
 import { useAdminTranslation } from '@/config/i18n';
 
 interface Props {
@@ -14,8 +12,7 @@ interface Props {
 export const QRCodeModal = ({ onClose }: Props) => {
   const { t } = useAdminTranslation();
 
-  const token = getAccessToken();
-  const payload = decodeJwtToken<ITokenPayload>(token ?? '');
+  const accessToken = getAccessToken() ?? '';
 
   return (
     <ModalBackground position="center">
@@ -24,7 +21,7 @@ export const QRCodeModal = ({ onClose }: Props) => {
 
         <S.QRCodeWrapper>
           <ReactQRCode
-            value={payload?.memberUuid ?? ''}
+            value={accessToken}
             size={280}
             level="M"
             background="#ffffff"
