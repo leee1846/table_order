@@ -35,7 +35,11 @@ import {
   useGetShopDetail,
   useGetTableGroupList,
 } from '@repo/api/queries';
-import type { ICurrentTable, TOrderType } from '@repo/api/types';
+import type {
+  ICancelOrderMenuRequest,
+  ICurrentTable,
+  TOrderType,
+} from '@repo/api/types';
 import type { Order, OrderItem } from './orderSection/types';
 import { useTranslation } from 'react-i18next';
 
@@ -46,7 +50,10 @@ export interface TableDetailContainerProps {
   tableNumber: string;
   orderType: TOrderType;
   i18nInstance?: I18nInstance;
-  onOrderCreated?: (orderUuid: string) => void;
+  onOrderCreated?: (
+    orderUuid: string,
+    cancelOrderMenuRequest?: ICancelOrderMenuRequest
+  ) => void;
 }
 
 export const TableDetailContainer = ({
@@ -402,8 +409,8 @@ export const TableDetailContainer = ({
         i18nInstance={i18nInstance}
         currentOrder={order}
         shopPosCode={shopDetailResponse?.data?.shopSetting?.shopPosCode}
-        onOrderCreated={(orderUuid) => {
-          onOrderCreated?.(orderUuid);
+        onOrderCreated={(orderUuid, cancelOrderMenuRequest) => {
+          onOrderCreated?.(orderUuid, cancelOrderMenuRequest);
         }}
       />
       {/* 선택 취소 모달 */}
