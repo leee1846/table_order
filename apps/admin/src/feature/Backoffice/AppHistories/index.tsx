@@ -65,8 +65,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
       setAppFile(null);
       return;
     }
-
-    if (file.type === 'application/vnd.android.package-archive') {
+    if (file.name?.toLowerCase().includes('.apk')) {
       const parser = new AppInfoParser(file);
       void parser
         .parse()
@@ -86,7 +85,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
         .catch((error: Error) => {
           console.error(error);
         });
-    } else if (file.type === 'application/x-zip-compressed') {
+    } else if (file.name?.toLowerCase().includes('.zip')) {
       const zip = new JSZip();
       try {
         // 1. zip 파일 로드
