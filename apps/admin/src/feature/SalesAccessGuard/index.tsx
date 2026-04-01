@@ -49,6 +49,7 @@ export const SalesAccessGuard = ({
           openConfirmDialog({
             title: t('인증 실패'),
             content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
+            confirmText: t('확인'),
           });
         }
       },
@@ -123,8 +124,8 @@ export const SalesAccessGuard = ({
         refreshed = await refresh();
       }
 
-      const latestSetting =
-        (refreshed ?? shopDetailDataRef.current)?.shopSetting;
+      const latestSetting = (refreshed ?? shopDetailDataRef.current)
+        ?.shopSetting;
 
       // 컴포넌트가 언마운트되었으면 작업 중단
       if (isCancelled) {

@@ -39,6 +39,7 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
           openConfirmDialog({
             title: t('인증 실패'),
             content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
+            confirmText: t('확인'),
           });
         }
       },
