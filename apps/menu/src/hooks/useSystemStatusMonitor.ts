@@ -22,7 +22,9 @@ interface Options {
  * - 배터리 정보는 무시하고 처리하지 않습니다
  * - network_recovered 이벤트 수신 시 onNetworkRecovered 콜백을 실행합니다
  */
-export const useSystemStatusMonitor = ({ onNetworkRecovered }: Options = {}) => {
+export const useSystemStatusMonitor = ({
+  onNetworkRecovered,
+}: Options = {}) => {
   const { t } = useAdminTranslation();
   const { data: deviceData, refresh: refreshDeviceData } = useDeviceData({
     skipInitialRequest: true,
@@ -64,7 +66,13 @@ export const useSystemStatusMonitor = ({ onNetworkRecovered }: Options = {}) => 
     postDeviceDetailRef.current = postDeviceDetail;
     refreshDeviceDataRef.current = refreshDeviceData;
     onNetworkRecoveredRef.current = onNetworkRecovered;
-  }, [setDataAsync, t, postDeviceDetail, refreshDeviceData, onNetworkRecovered]);
+  }, [
+    setDataAsync,
+    t,
+    postDeviceDetail,
+    refreshDeviceData,
+    onNetworkRecovered,
+  ]);
 
   // 모니터링은 마운트 시 한 번만 등록/해제
   useEffect(() => {

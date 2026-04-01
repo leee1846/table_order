@@ -65,6 +65,10 @@ export const useCategoriesData = (options?: Props) => {
   }, [storeData, apiData, setCategoriesAsync, skipInitialRequest]);
 
   const refresh = async () => {
+    if (!shopData?.shopCode || !deviceData?.tableNumber) {
+      return;
+    }
+
     const result = await refetch();
     if (result.data?.data) {
       await setCategoriesAsync({ categories: result.data.data });

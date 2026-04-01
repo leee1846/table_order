@@ -128,6 +128,10 @@ export const useTableOrderHistoriesData = (options?: Props) => {
   }, [apiData, setTableOrderHistoriesData, storeData, skipInitialRequest]);
 
   const refresh = async (sseUpdatedAt?: number) => {
+    if (!shopData?.shopCode || !deviceData?.tableNumber) {
+      return;
+    }
+
     const result = await refetch();
 
     // 테이블을 점유하지 않은 상태일경우

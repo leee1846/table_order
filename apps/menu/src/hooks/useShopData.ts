@@ -45,6 +45,10 @@ export const useShopData = (options?: Props) => {
   }, [apiData, setShopData, skipInitialRequest]);
 
   const refresh = async () => {
+    if (!getAccessToken()) {
+      return;
+    }
+
     const result = await refetch();
     if (result.data?.data && result.data.data.length > 0) {
       const firstShop = result.data.data[0];

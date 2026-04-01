@@ -71,6 +71,10 @@ export const useShopThemePage = (options?: Props) => {
   }, [ShopThemeDataResponse, setShopThemeData, skipInitialRequest]);
 
   const refresh = async () => {
+    if (!shopData?.shopCode) {
+      return;
+    }
+
     const result = await refetch();
     const logoResult = await refetchShopThemeData();
     if (result.data?.data && logoResult.data?.data) {

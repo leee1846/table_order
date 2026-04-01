@@ -97,6 +97,10 @@ export const useDeviceData = (options?: Props) => {
   ]);
 
   const refresh = async () => {
+    if (!shopData?.shopCode || !storeData?.androidId) {
+      return;
+    }
+
     const result = await refetch();
 
     if (!isInitializedStoreData) {

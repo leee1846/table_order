@@ -51,6 +51,10 @@ export const useShopDetailData = (options?: Props) => {
   }, [apiData, setShopDetailData, skipInitialRequest]);
 
   const refresh = async () => {
+    if (!shopData?.shopCode) {
+      return;
+    }
+
     const result = await refetch();
     if (result.data?.data) {
       await setShopDetailData(result.data.data);
