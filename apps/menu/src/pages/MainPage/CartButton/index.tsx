@@ -31,7 +31,7 @@ export const CartButton = ({ categories }: Props) => {
   const { data: cartData } = useCartStore();
   const { data: modalData, setModalData } = useModalStore();
   const { mutateAsync: createTableOrder } = usePostTableOrder({
-    ignoreGlobalErrors: [400],
+    skipGlobalErrorHandling: true,
   });
   const { data: shopData } = useShopStore();
   const { data: customerCountData } = useCustomerCountStore();

@@ -75,7 +75,11 @@ export const createTableOrder = async ({
   kidsCustomerCount,
   totalAmount,
   ignoreGlobalErrors,
-}: ICreateTableOrderRequest & { ignoreGlobalErrors?: number[] }) => {
+  skipGlobalErrorHandling,
+}: ICreateTableOrderRequest & {
+  ignoreGlobalErrors?: number[];
+  skipGlobalErrorHandling?: boolean;
+}) => {
   const axiosInstance = getAxiosInstance('private');
   const response = await axiosInstance<TCreateTableOrderResponse>({
     method: 'POST',
@@ -83,6 +87,7 @@ export const createTableOrder = async ({
     params: { orderType, customerCount, kidsCustomerCount, totalAmount },
     data: orders,
     ignoreGlobalErrors,
+    skipGlobalErrorHandling,
   });
 
   return response.data;

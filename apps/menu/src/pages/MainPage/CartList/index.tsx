@@ -286,6 +286,15 @@ export const CartList = ({
         if (totalPrice === 0 || !shopDetailData?.shopSetting?.usePrepayment) {
           const response = await executePostpaidOrder();
 
+          if (!response.result) {
+            openConfirmDialog({
+              title: t('오류'),
+              content: t('주문에 실패했습니다. 다시 시도해주세요.'),
+              confirmText: t('확인'),
+            });
+            return;
+          }
+
           const handleOrderCompleteSuccess = async () => {
             const language =
               useCustomerLanguageStore.getState().data.currentLanguage;
@@ -306,7 +315,7 @@ export const CartList = ({
             !!shopDetailData?.shopSetting?.shopPosCode &&
             shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
-          if (response.result && isPosLinked && response.orderUuid) {
+          if (isPosLinked && response.orderUuid) {
             const handlePosOrderFailure = async () => {
               try {
                 if (response.cancelOrderMenuRequest.length > 0) {

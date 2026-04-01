@@ -9,13 +9,20 @@ import { IApiError } from '../../types/common';
 
 export const usePostTableOrder = (options?: {
   ignoreGlobalErrors?: number[];
+  skipGlobalErrorHandling?: boolean;
 }) => {
-  const { ignoreGlobalErrors = [] } = options ?? {};
+  const { ignoreGlobalErrors = [], skipGlobalErrorHandling = false } =
+    options ?? {};
   return useMutation<
     TCreateTableOrderResponse,
     AxiosError<IApiError>,
     ICreateTableOrderRequest
   >({
-    mutationFn: (params) => createTableOrder({ ...params, ignoreGlobalErrors }),
+    mutationFn: (params) =>
+      createTableOrder({
+        ...params,
+        ignoreGlobalErrors,
+        skipGlobalErrorHandling,
+      }),
   });
 };
