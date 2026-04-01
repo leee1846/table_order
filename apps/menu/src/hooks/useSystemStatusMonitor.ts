@@ -7,6 +7,11 @@ import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopStore } from '@/stores/useShopStore';
 
+interface Options {
+  /** 네트워크 복구 이벤트 수신 시 실행할 콜백 */
+  onNetworkRecovered?: () => void;
+}
+
 /**
  * WiFi 신호 모니터링 및 서버 동기화를 담당하는 커스텀 훅
  *
@@ -15,8 +20,9 @@ import { useShopStore } from '@/stores/useShopStore';
  * - 로그인 여부와 상관없이 WiFi 변경 시 디바이스 정보(wifi, getDeviceInfo)를 요청하고 스토어에 저장합니다
  * - 로그인된 경우에만 POST API로 서버 동기화를 수행합니다
  * - 배터리 정보는 무시하고 처리하지 않습니다
+ * - network_recovered 이벤트 수신 시 onNetworkRecovered 콜백을 실행합니다
  */
-export const useSystemStatusMonitor = () => {
+export const useSystemStatusMonitor = ({ onNetworkRecovered }: Options = {}) => {
   const { t } = useAdminTranslation();
   const { data: deviceData, refresh: refreshDeviceData } = useDeviceData({
     skipInitialRequest: true,
@@ -33,6 +39,8 @@ export const useSystemStatusMonitor = () => {
   const tRef = useRef(t);
   const postDeviceDetailRef = useRef(postDeviceDetail);
   const refreshDeviceDataRef = useRef(refreshDeviceData);
+  // 비동기 콜백에서 최신 콜백을 참조하기 위한 ref
+  const onNetworkRecoveredRef = useRef(onNetworkRecovered);
 
   // deviceData 변경 시 ref 동기화 (렌더링 없이 최신 값 유지)
   useEffect(() => {
@@ -49,18 +57,24 @@ export const useSystemStatusMonitor = () => {
     isInitializedRef.current = isInitialized;
   }, [isInitialized]);
 
-  // effect는 []로 한 번만 실행되므로 handleStatusUpdate는 최신 t/postDeviceDetail 등을 쓸 수 있게 ref로만 갱신
+  // effect는 []로 한 번만 실행되므로 handleStatusUpdate는 최신 값을 쓸 수 있게 ref로만 갱신
   useEffect(() => {
     setDataAsyncRef.current = setDataAsync;
     tRef.current = t;
     postDeviceDetailRef.current = postDeviceDetail;
     refreshDeviceDataRef.current = refreshDeviceData;
-  }, [setDataAsync, t, postDeviceDetail, refreshDeviceData]);
+    onNetworkRecoveredRef.current = onNetworkRecovered;
+  }, [setDataAsync, t, postDeviceDetail, refreshDeviceData, onNetworkRecovered]);
 
   // 모니터링은 마운트 시 한 번만 등록/해제
   useEffect(() => {
     const handleStatusUpdate = async (status: SystemStatus) => {
-      // 1. WiFi 유효성 (배터리는 무시)
+      // 1. 네트워크 복구 이벤트 처리 (wifi와 함께 올 수 있으므로 아래 wifi 처리로 fall-through)
+      if (status.event === 'network_recovered') {
+        onNetworkRecoveredRef.current?.();
+      }
+
+      // 2. WiFi 유효성 (배터리는 무시)
       if (status.wifi === undefined || status.wifi === null) {
         return;
       }

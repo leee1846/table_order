@@ -35,7 +35,7 @@ export interface HandleApiErrorDialogOptions {
     title?: string;
     content: string;
     onConfirm?: () => void;
-  }) => void;
+  }) => string;
   activeErrorTypes: Set<string>;
   messages: ApiErrorDialogMessages;
   logLabel: string;
@@ -52,29 +52,33 @@ export interface HandleQueryFinalGetNetworkErrorOptions {
  * useQuery 재시도를 모두 마친 뒤에만 호출한다고 가정한다.
  * GET + 네트워크 실패(`response` 없음)일 때 네트워크 다이얼로그를 연다.
  * (axios 인터셉터의 `handleApiErrorDialog`는 동일 케이스에서 다이얼로그를 생략한다.)
+ *
+ * @returns 새로 열린 다이얼로그 ID, 조건 불충족 시 null
  */
 export function handleQueryFinalGetNetworkErrorDialog(
   error: unknown,
   options: HandleQueryFinalGetNetworkErrorOptions
-): void {
+): string | null {
   if (!isNetworkErrorWithGetRequest(error)) {
-    return;
+    return null;
   }
 
   const { openConfirmDialog, activeErrorTypes, messages } = options;
   // 중복 노출 방지
   if (activeErrorTypes.has(ERROR_TYPES.NETWORK)) {
-    return;
+    return null;
   }
 
   activeErrorTypes.add(ERROR_TYPES.NETWORK);
-  openConfirmDialog({
+  // 네트워크 복구 시 close를 위해 dialogId 반환
+  const dialogId = openConfirmDialog({
     title: 'Server Error',
     content: messages.network,
     onConfirm: () => {
       activeErrorTypes.delete(ERROR_TYPES.NETWORK);
     },
   });
+  return dialogId;
 }
 
 /**

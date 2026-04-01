@@ -4,13 +4,16 @@ import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import { SystemControl } from '@repo/util/app';
 import { useSSEHandler } from '@/hooks/useSSEHandler';
 import { useSystemStatusMonitor } from '@/hooks/useSystemStatusMonitor';
+import { useNetworkRecoveryRefresh } from '@/hooks/useNetworkRecoveryRefresh';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { PosSyncOverlayModal } from '@/feature/PosSyncOverlayModal';
 import { MenuGlobalLoadingIndicator } from '@/feature/MenuGlobalLoadingIndicator';
 
 /** 디바이스 스토어 hydration 이후에만 마운트 → useSSEHandler/useSystemStatusMonitor가 항상 채워진 data 참조 */
 const AppContent = () => {
-  useSystemStatusMonitor();
+  // 네트워크 복구 시 현재 페이지 GET API 재요청 후 에러 다이얼로그 자동 닫기
+  const { refreshAllAndCloseDialogOnSuccess } = useNetworkRecoveryRefresh();
+  useSystemStatusMonitor({ onNetworkRecovered: refreshAllAndCloseDialogOnSuccess });
   useSSEHandler();
 
   return (

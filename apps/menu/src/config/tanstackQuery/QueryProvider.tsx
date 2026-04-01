@@ -6,8 +6,9 @@ import {
 import {
   handleQueryFinalGetNetworkErrorDialog,
   isNetworkErrorWithGetRequest,
+  ERROR_TYPES,
 } from '@repo/api/globalErrorHandler';
-import { openConfirmDialog } from '@repo/feature/utils';
+import { openConfirmDialog, closeDialog } from '@repo/feature/utils';
 import { useState, type ReactNode } from 'react';
 
 interface Props {
@@ -18,6 +19,24 @@ interface Props {
  * GET 요청 네트워크 실패 시 다이얼로그 중복 노출 방지를 위한 Set
  */
 const queryFinalGetNetworkActiveTypes = new Set<string>();
+
+/**
+ * 현재 열려 있는 네트워크 에러 다이얼로그 ID
+ * 네트워크 복구 시 프로그래매틱하게 닫기 위해 추적
+ */
+let networkErrorDialogId: string | null = null;
+
+/**
+ * 네트워크 복구 시 에러 다이얼로그를 닫고 에러 상태를 초기화한다.
+ * useNetworkRecoveryRefresh 훅에서 모든 재요청 성공 후 호출한다.
+ */
+export const closeNetworkErrorDialogAndClearState = (): void => {
+  if (networkErrorDialogId) {
+    closeDialog(networkErrorDialogId);
+    networkErrorDialogId = null;
+  }
+  queryFinalGetNetworkActiveTypes.delete(ERROR_TYPES.NETWORK);
+};
 
 /**
  * React Query Provider 컴포넌트
@@ -31,7 +50,7 @@ export function QueryProvider({ children }: Props) {
       new QueryClient({
         queryCache: new QueryCache({
           onError: (error) => {
-            handleQueryFinalGetNetworkErrorDialog(error, {
+            const dialogId = handleQueryFinalGetNetworkErrorDialog(error, {
               openConfirmDialog,
               activeErrorTypes: queryFinalGetNetworkActiveTypes,
               messages: {
@@ -39,6 +58,10 @@ export function QueryProvider({ children }: Props) {
                   '네트워크 환경이 원활하지 않습니다. 다시 시도해주세요.',
               },
             });
+            // 복구 시 dialog를 닫기 위해 ID 보관
+            if (dialogId) {
+              networkErrorDialogId = dialogId;
+            }
           },
         }),
         defaultOptions: {

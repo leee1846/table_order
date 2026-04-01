@@ -9,7 +9,12 @@ import {
   type SystemStatus,
 } from '@repo/util/app';
 
-export const useSystemStatusMonitor = () => {
+interface Options {
+  /** 네트워크 복구 이벤트 수신 시 실행할 콜백 */
+  onNetworkRecovered?: () => void;
+}
+
+export const useSystemStatusMonitor = ({ onNetworkRecovered }: Options = {}) => {
   const { shopCode } = useAuth();
   const { mutateAsync: postDeviceDetail } = usePostDeviceDetail();
 
@@ -25,14 +30,17 @@ export const useSystemStatusMonitor = () => {
     buildNumber: '',
   });
 
-  //모니터링 true면 종료
   const isMonitoringRef = useRef(false);
   const shopCodeRef = useRef<string | null>(shopCode ?? null);
+  const onNetworkRecoveredRef = useRef(onNetworkRecovered);
 
-  // 컴포넌트 마운트, shopCode 변경 시 초기화
   useEffect(() => {
     shopCodeRef.current = shopCode ?? null;
   }, [shopCode]);
+
+  useEffect(() => {
+    onNetworkRecoveredRef.current = onNetworkRecovered;
+  }, [onNetworkRecovered]);
 
   //deviceDetail post 함수
   const tryPostDeviceDetail = useCallback(async () => {
@@ -95,9 +103,13 @@ export const useSystemStatusMonitor = () => {
     await tryPostDeviceDetail();
   }, [tryPostDeviceDetail]);
 
-  //상태 업데이트 함수
   const handleStatusUpdate = useCallback(
     async (status: SystemStatus) => {
+      // 네트워크 복구 이벤트 처리 (wifi와 함께 올 수 있으므로 아래 wifi 처리로 fall-through)
+      if (status.event === 'network_recovered') {
+        onNetworkRecoveredRef.current?.();
+      }
+
       // 배터리는 무시하고 WiFi만 처리
       if (status.wifi === undefined || status.wifi === null) {
         return;
