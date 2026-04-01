@@ -13,7 +13,9 @@ import { MenuGlobalLoadingIndicator } from '@/feature/MenuGlobalLoadingIndicator
 const AppContent = () => {
   // 네트워크 복구 시 현재 페이지 GET API 재요청 후 에러 다이얼로그 자동 닫기
   const { refreshAllAndCloseDialogOnSuccess } = useNetworkRecoveryRefresh();
-  useSystemStatusMonitor({ onNetworkRecovered: refreshAllAndCloseDialogOnSuccess });
+  useSystemStatusMonitor({
+    onNetworkRecovered: refreshAllAndCloseDialogOnSuccess,
+  });
   useSSEHandler();
 
   return (
