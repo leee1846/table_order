@@ -100,7 +100,7 @@ export function OrderItemsTable({
         <Row>
           <Cell className="name">{t('할인적용')}</Cell>
           <Cell className="qty">{discountRate}%</Cell>
-          <Cell className="price">{`-${formatCurrency(discountAmount)}`}</Cell>
+          <Cell className="price">{`-₩${formatCurrency(discountAmount)}`}</Cell>
         </Row>
       )}
       {paymentList.map((payment) => (
@@ -110,7 +110,7 @@ export function OrderItemsTable({
           </Cell>
           <Cell className="qty">{}</Cell>
           <Cell className="price">
-            {`-${formatCurrency(payment.transactionAmount)}`}
+            {`-₩${formatCurrency(payment.transactionAmount)}`}
           </Cell>
         </Row>
       ))}
