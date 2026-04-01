@@ -1051,7 +1051,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
                   <S.MenuInfo>
                     <h3>{menu.menuName}</h3>
                     <p>{formatCurrency(menu.quantity)}</p>
-                    <p>{formatCurrency(menu.menuPrice)}</p>
+                    <p>₩{formatCurrency(menu.menuPrice)}</p>
                   </S.MenuInfo>
 
                   <S.OptionList role="list">
@@ -1068,6 +1068,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
                         <div>
                           <p>{formatCurrency(option.quantity)}</p>
                           <p>
+                            ₩
                             {formatCurrency(
                               option.optionPrice * option.quantity
                             )}
