@@ -1,10 +1,16 @@
-import { QueryClient, QueryClientProvider } from '@repo/api/tanstack-query';
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from '@repo/api/tanstack-query';
 import {
   isNetworkErrorWithGetRequest,
   ERROR_TYPES,
+  handleQueryFinalGetNetworkErrorDialog,
 } from '@repo/api/globalErrorHandler';
-import { closeDialog } from '@repo/feature/utils';
 import { useState, type ReactNode } from 'react';
+import { openConfirmDialog, closeDialog } from '@repo/feature/utils';
+import { t } from '@/config/i18n';
 
 interface Props {
   children: ReactNode;
@@ -37,23 +43,23 @@ export function QueryProvider({ children }: Props) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
-        // queryCache: new QueryCache({
-        //   onError: (error) => {
-        //     const dialogId = handleQueryFinalGetNetworkErrorDialog(error, {
-        //       openConfirmDialog,
-        //       activeErrorTypes: queryFinalGetNetworkActiveTypes,
-        //       messages: {
-        //         network: t(
-        //           '네트워크 환경이 원활하지 않습니다. 다시 시도해주세요.'
-        //         ),
-        //       },
-        //     });
-        //     // 복구 시 dialog를 닫기 위해 ID 보관
-        //     if (dialogId) {
-        //       networkErrorDialogId = dialogId;
-        //     }
-        //   },
-        // }),
+        queryCache: new QueryCache({
+          onError: (error) => {
+            const dialogId = handleQueryFinalGetNetworkErrorDialog(error, {
+              openConfirmDialog,
+              activeErrorTypes: queryFinalGetNetworkActiveTypes,
+              messages: {
+                network: t(
+                  '네트워크 환경이 원활하지 않습니다. 다시 시도해주세요.'
+                ),
+              },
+            });
+            // 복구 시 dialog를 닫기 위해 ID 보관
+            if (dialogId) {
+              networkErrorDialogId = dialogId;
+            }
+          },
+        }),
         defaultOptions: {
           queries: {
             staleTime: 0,

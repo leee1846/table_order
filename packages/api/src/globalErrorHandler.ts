@@ -103,18 +103,18 @@ export function handleApiErrorDialog(
       })
     );
 
-    // const content = messages.network;
-    // const isGet = String(error.config?.method).toUpperCase() === 'GET';
-    // if (!isGet && !activeErrorTypes.has(ERROR_TYPES.NETWORK)) {
-    //   activeErrorTypes.add(ERROR_TYPES.NETWORK);
-    //   openConfirmDialog({
-    //     title: 'Server Error',
-    //     content,
-    //     onConfirm: () => {
-    //       activeErrorTypes.delete(ERROR_TYPES.NETWORK);
-    //     },
-    //   });
-    // }
+    const content = messages.network;
+    const isGet = String(error.config?.method).toUpperCase() === 'GET';
+    if (!isGet && !activeErrorTypes.has(ERROR_TYPES.NETWORK)) {
+      activeErrorTypes.add(ERROR_TYPES.NETWORK);
+      openConfirmDialog({
+        title: 'Server Error',
+        content,
+        onConfirm: () => {
+          activeErrorTypes.delete(ERROR_TYPES.NETWORK);
+        },
+      });
+    }
     return;
   }
 
