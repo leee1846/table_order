@@ -65,7 +65,10 @@ export const useCategoriesData = (options?: Props) => {
   }, [storeData, apiData, setCategoriesAsync, skipInitialRequest]);
 
   const refresh = async () => {
-    if (!shopData?.shopCode || !deviceData?.tableNumber) {
+    if (
+      !useShopStore.getState().data?.shopCode ||
+      !useDeviceStore.getState().data?.tableNumber
+    ) {
       return;
     }
 

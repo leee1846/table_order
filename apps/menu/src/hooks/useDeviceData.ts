@@ -97,7 +97,10 @@ export const useDeviceData = (options?: Props) => {
   ]);
 
   const refresh = async () => {
-    if (!shopData?.shopCode || !storeData?.androidId) {
+    if (
+      !useShopStore.getState().data?.shopCode ||
+      !useDeviceStore.getState().data?.androidId
+    ) {
       return;
     }
 

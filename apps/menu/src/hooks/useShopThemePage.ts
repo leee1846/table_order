@@ -71,7 +71,7 @@ export const useShopThemePage = (options?: Props) => {
   }, [ShopThemeDataResponse, setShopThemeData, skipInitialRequest]);
 
   const refresh = async () => {
-    if (!shopData?.shopCode) {
+    if (!useShopStore.getState().data?.shopCode) {
       return;
     }
 

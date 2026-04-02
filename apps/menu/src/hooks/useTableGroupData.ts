@@ -48,7 +48,7 @@ export const useTableGroupData = (options?: Props) => {
   }, [apiData, setTableGroupsStoreData, skipInitialRequest]);
 
   const refresh = async () => {
-    if (!shopData?.shopCode) {
+    if (!useShopStore.getState().data?.shopCode) {
       return;
     }
 

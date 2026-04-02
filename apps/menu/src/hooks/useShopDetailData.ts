@@ -51,7 +51,7 @@ export const useShopDetailData = (options?: Props) => {
   }, [apiData, setShopDetailData, skipInitialRequest]);
 
   const refresh = async () => {
-    if (!shopData?.shopCode) {
+    if (!useShopStore.getState().data?.shopCode) {
       return;
     }
 

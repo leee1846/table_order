@@ -338,7 +338,7 @@
   "네트워크 연결 중": "Connecting to the network",
   "일부 결제 내역이 있어 취소할 수 없습니다.": "Cannot cancel because there are some payment records.",
   "일부 결제 내역이 있어 할인할 수 없습니다": "Cannot apply discount because there are some payment records.",
-  "선택 완료": "selected",
+  "선택 완료": "Selected",
   "{{count}}초 후 닫힘": "Closes in {{count}}s",
   "<0>{{seconds}}</0>초 후 닫힘": "Closes in <0>{{seconds}}</0> seconds"
 }

@@ -7,6 +7,7 @@ import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopStore } from '@/stores/useShopStore';
 import { useModalStore } from '@/stores/useModalStore';
+import { useDeviceStore } from '@/stores/useDeviceStore';
 
 interface Props {
   /**
@@ -128,7 +129,10 @@ export const useTableOrderHistoriesData = (options?: Props) => {
   }, [apiData, setTableOrderHistoriesData, storeData, skipInitialRequest]);
 
   const refresh = async (sseUpdatedAt?: number) => {
-    if (!shopData?.shopCode || !deviceData?.tableNumber) {
+    if (
+      !useShopStore.getState().data?.shopCode ||
+      !useDeviceStore.getState().data?.tableNumber
+    ) {
       return;
     }
 
