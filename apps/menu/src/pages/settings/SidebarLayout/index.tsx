@@ -7,6 +7,7 @@ import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { useDeviceStore } from '@/stores/useDeviceStore';
+import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
@@ -20,6 +21,9 @@ export const SidebarLayout = () => {
 
   const deviceData = useDeviceStore((s) => s.data);
   const onClickHomeButton = () => {
+    // 메인 복귀 시 잠깐 잠금 UI 노출 방지
+    useRequestAdminAccessModalStore.getState().setShow(false);
+
     if (deviceData?.tableNumber) {
       AppStorage.removeData({
         key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
