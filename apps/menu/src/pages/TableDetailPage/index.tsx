@@ -7,7 +7,7 @@ import { useShopStore } from '@/stores/useShopStore';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys, usePutCancelOrderMenu } from '@repo/api/queries';
+import { queryKeys } from '@repo/api/queries';
 
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
@@ -16,7 +16,7 @@ export const TableDetailPage = () => {
   const shopCode = shopData?.shopCode ?? 0;
   const { t } = useAdminTranslation();
   const queryClient = useQueryClient();
-  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  // const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
 
   const orderType: TOrderType =
     (searchParams.get('orderType') as TOrderType) || 'MENU';
@@ -27,7 +27,7 @@ export const TableDetailPage = () => {
 
   const PosLinkedOrderHandler = (
     orderUuid: string,
-    cancelOrderMenuRequest?: ICancelOrderMenuRequest
+    _cancelOrderMenuRequest?: ICancelOrderMenuRequest
   ) => {
     const orderSuccessCallback = () => {
       toast(t('메뉴를 추가했어요.'), { position: 'top-center' });
@@ -37,13 +37,13 @@ export const TableDetailPage = () => {
     };
 
     const orderFailCallback = async () => {
-      try {
-        if (cancelOrderMenuRequest && cancelOrderMenuRequest.length > 0) {
-          await cancelOrderMenu(cancelOrderMenuRequest);
-        }
-      } catch {
-        // 주문 취소 실패 시 무시
-      }
+      // try {
+      //   if (cancelOrderMenuRequest && cancelOrderMenuRequest.length > 0) {
+      //     await cancelOrderMenu(cancelOrderMenuRequest);
+      //   }
+      // } catch {
+      //   // 주문 취소 실패 시 무시
+      // }
       openConfirmDialog({
         title: t('POS 오류'),
         content: t('주문 접수에 실패했습니다. 포스를 확인해주세요.'),
