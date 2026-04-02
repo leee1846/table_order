@@ -80,7 +80,7 @@ export const DailySalesTable = ({ rows }: Props) => {
       case 'NORMAL':
         return t('일반');
       case 'CANCELED_ALL':
-       return t('결제 전 취소');
+        return t('결제 전 취소');
       default:
         return status || '-';
     }
@@ -158,7 +158,7 @@ export const DailySalesTable = ({ rows }: Props) => {
                   {showTotalSalesTooltip && (
                     <S.Tooltip>
                       <S.TooltipText>
-                        {t('취소 매출을 제외한 총 매출')}
+                        {t('할인,취소 매출을 제외한 총 매출')}
                       </S.TooltipText>
                       <S.TooltipArrow />
                     </S.Tooltip>

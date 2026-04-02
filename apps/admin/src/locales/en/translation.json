@@ -640,6 +640,7 @@
   "결제시간": "Payment Time",
   "총 매출": "Total Sales",
   "취소 매출을 제외한 총 매출": "Total Sales Excluding Cancelled Sales",
+  "할인,취소 매출을 제외한 총 매출": "Total Sales Excluding Discounts and Cancelled Sales",
   "실 매출": "Actual Sales",
   "취소금액 및 할인이 반영된 금액": "Amount reflecting cancelled amounts and discounts",
   "할인 금액": "Discount Amount",
