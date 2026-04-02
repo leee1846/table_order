@@ -334,20 +334,23 @@ export const CardPaymentInstallmentModal = ({
           .register(orderUuid, shopCode, handlePaymentSuccess, async () => {
             // POS 실패(-603 또는 API 에러) / 타임아웃: 환불 → 환불 정보 전송 → 주문 취소
             try {
-              const cancelResult = await Payment.cancel(paymentResult);
-              if (paymentSeq > 0) {
-                await putPaymentCancel({
-                  params: {
-                    paymentMethodCode:
-                      useShopDetailStore.getState().data?.shopSetting
-                        ?.vanCode ?? 'EASY',
-                    orderGroupUuid,
-                    paymentSeq,
-                  },
-                  data: cancelResult,
-                });
-              }
-              await cancelOrderMenu(cancelOrderMenuRequest);
+              // TODO: 주문 취소 로직 주석처리
+              // 일시적 테스트용
+              await Payment.cancel(paymentResult);
+              // const cancelResult = await Payment.cancel(paymentResult);
+              // if (paymentSeq > 0) {
+              //   await putPaymentCancel({
+              //     params: {
+              //       paymentMethodCode:
+              //         useShopDetailStore.getState().data?.shopSetting
+              //           ?.vanCode ?? 'EASY',
+              //       orderGroupUuid,
+              //       paymentSeq,
+              //     },
+              //     data: cancelResult,
+              //   });
+              // }
+              // await cancelOrderMenu(cancelOrderMenuRequest);
             } catch {
               // 카드 취소 실패 시 무시 (이미 승인된 결제이므로 수동 처리 필요)
             }

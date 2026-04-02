@@ -620,23 +620,27 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
     if (completedPaymentResultsRef.current) {
       try {
-        const cancelResult = await Payment.cancel(
-          completedPaymentResultsRef.current
-        );
-        if (paymentSeqRef.current > 0) {
-          const shopDetailData = useShopDetailStore.getState().data;
-          await putPaymentCancel({
-            params: {
-              paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
-              orderGroupUuid: orderGroupUuidRef.current ?? '',
-              paymentSeq: paymentSeqRef.current,
-            },
-            data: cancelResult,
-          });
-        }
-        if (isFirstPayment) {
-          await cancelOrderMenu(cancelOrderMenuRequestRef.current);
-        }
+        await Payment.cancel(completedPaymentResultsRef.current);
+
+        // TODO: 주문 취소 로직 주석처리
+        // 일시적 테스트용
+        // const cancelResult = await Payment.cancel(
+        //   completedPaymentResultsRef.current
+        // );
+        // if (paymentSeqRef.current > 0) {
+        //   const shopDetailData = useShopDetailStore.getState().data;
+        //   await putPaymentCancel({
+        //     params: {
+        //       paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
+        //       orderGroupUuid: orderGroupUuidRef.current ?? '',
+        //       paymentSeq: paymentSeqRef.current,
+        //     },
+        //     data: cancelResult,
+        //   });
+        // }
+        // if (isFirstPayment) {
+        //   await cancelOrderMenu(cancelOrderMenuRequestRef.current);
+        // }
       } catch {
         // 카드 취소 실패 시 무시
       }

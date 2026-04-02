@@ -37,13 +37,15 @@ export const TableDetailPage = () => {
     };
 
     const orderFailCallback = async () => {
-      try {
-        if (cancelOrderMenuRequest && cancelOrderMenuRequest.length > 0) {
-          await cancelOrderMenu(cancelOrderMenuRequest);
-        }
-      } catch {
-        // 주문 취소 실패 시 무시
-      }
+      // TODO: 주문 취소 로직 주석처리
+      // 일시적 테스트용
+      // try {
+      //   if (cancelOrderMenuRequest && cancelOrderMenuRequest.length > 0) {
+      //     await cancelOrderMenu(cancelOrderMenuRequest);
+      //   }
+      // } catch {
+      //   // 주문 취소 실패 시 무시
+      // }
       openConfirmDialog({
         title: t('POS 오류'),
         content: t('주문 접수에 실패했습니다. 포스를 확인해주세요.'),
