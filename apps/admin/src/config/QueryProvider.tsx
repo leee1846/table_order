@@ -43,23 +43,23 @@ export function QueryProvider({ children }: Props) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
-        queryCache: new QueryCache({
-          onError: (error) => {
-            const dialogId = handleQueryFinalGetNetworkErrorDialog(error, {
-              openConfirmDialog,
-              activeErrorTypes: queryFinalGetNetworkActiveTypes,
-              messages: {
-                network: t(
-                  '네트워크 환경이 원활하지 않습니다. 다시 시도해주세요.'
-                ),
-              },
-            });
-            // 복구 시 dialog를 닫기 위해 ID 보관
-            if (dialogId) {
-              networkErrorDialogId = dialogId;
-            }
-          },
-        }),
+        // queryCache: new QueryCache({
+        //   onError: (error) => {
+        //     const dialogId = handleQueryFinalGetNetworkErrorDialog(error, {
+        //       openConfirmDialog,
+        //       activeErrorTypes: queryFinalGetNetworkActiveTypes,
+        //       messages: {
+        //         network: t(
+        //           '네트워크 환경이 원활하지 않습니다. 다시 시도해주세요.'
+        //         ),
+        //       },
+        //     });
+        //     // 복구 시 dialog를 닫기 위해 ID 보관
+        //     if (dialogId) {
+        //       networkErrorDialogId = dialogId;
+        //     }
+        //   },
+        // }),
         defaultOptions: {
           queries: {
             staleTime: 0,
