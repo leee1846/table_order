@@ -51,7 +51,6 @@ interface Props {
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 // const PAYMENT_EVENT_NAME = 'paymentEvent';
 const HTTP_STATUS_BAD_REQUEST = 400;
-const HTTP_STATUS_SERVER_ERROR = 500;
 const HTTP_STATUS_NOT_FOUND = 404;
 const HTTP_STATUS_METHOD_NOT_ALLOWED = 405;
 const TOAST_DURATION = 1500;
@@ -596,14 +595,17 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
             orderUuid,
           },
           data: paymentResult,
-          ignoreGlobalErrors: [
-            HTTP_STATUS_BAD_REQUEST,
-            HTTP_STATUS_SERVER_ERROR,
-            HTTP_STATUS_NOT_FOUND,
-          ],
         });
         paymentSeqRef.current = approvalResponse.data ?? 0;
       } catch {
+        try {
+          await Payment.cancel(paymentResult);
+        } catch {
+          // 카드 취소 실패 시 무시
+        }
+        throw new Error(
+          t('주문 요청에 실패했습니다. 사장님에게 문의해주세요.')
+        );
         // postPaymentApproval 실패는 무시
       }
 
