@@ -24,8 +24,8 @@ import {
 import {
   usePostPaymentApproval,
   usePostTableOrder,
-  usePutCancelOrderMenu,
-  usePutPaymentCancel,
+  // usePutCancelOrderMenu,
+  // usePutPaymentCancel,
 } from '@repo/api/queries';
 import type { IOrder, ICancelOrderMenuRequest } from '@repo/api/types';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
@@ -219,8 +219,8 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     ],
   });
   const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
-  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
-  const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
+  // const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  // const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
 
   // 결제 방식 상태
   const [isPaymentByMenu, setIsPaymentByMenu] = useState(true);

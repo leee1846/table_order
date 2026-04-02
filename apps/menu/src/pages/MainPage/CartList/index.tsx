@@ -27,7 +27,7 @@ import { useModalStore } from '@/stores/useModalStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { useCategoryStore } from '@/stores/useCategoryStore';
-import { usePutCancelOrderMenu } from '@repo/api/queries';
+// import { usePutCancelOrderMenu } from '@repo/api/queries';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { localizeOrders } from '@/utils/localizeOrders';
 import { useIdleTimeout } from '@/hooks/useIdleTimeout';
@@ -65,7 +65,7 @@ export const CartList = ({
   const { theme } = useThemeMode();
   const { data: modalData, setModalData } = useModalStore();
   const shopDetailData = useShopDetailStore((s) => s.data);
-  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  // const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData({ skipInitialRequest: true });
 

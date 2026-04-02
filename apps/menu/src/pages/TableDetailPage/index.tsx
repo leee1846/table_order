@@ -1,13 +1,15 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { TableDetailContainer } from '@repo/feature/components';
-import type { ICancelOrderMenuRequest, TOrderType } from '@repo/api/types';
+// import type { ICancelOrderMenuRequest, TOrderType } from '@repo/api/types';
+import type { TOrderType } from '@repo/api/types';
 import * as S from '@/pages/TableDetailPage/tableDetailPage.style';
 import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopStore } from '@/stores/useShopStore';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import { queryKeys, usePutCancelOrderMenu } from '@repo/api/queries';
+// import { queryKeys, usePutCancelOrderMenu } from '@repo/api/queries';
+import { queryKeys } from '@repo/api/queries';
 
 export const TableDetailPage = () => {
   const { tableNum } = useParams();
@@ -16,7 +18,7 @@ export const TableDetailPage = () => {
   const shopCode = shopData?.shopCode ?? 0;
   const { t } = useAdminTranslation();
   const queryClient = useQueryClient();
-  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  // const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
 
   const orderType: TOrderType =
     (searchParams.get('orderType') as TOrderType) || 'MENU';
@@ -26,8 +28,8 @@ export const TableDetailPage = () => {
   }
 
   const PosLinkedOrderHandler = (
-    orderUuid: string,
-    cancelOrderMenuRequest?: ICancelOrderMenuRequest
+    orderUuid: string
+    // cancelOrderMenuRequest?: ICancelOrderMenuRequest
   ) => {
     const orderSuccessCallback = () => {
       toast(t('메뉴를 추가했어요.'), { position: 'top-center' });

@@ -14,8 +14,8 @@ import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import {
   usePostPaymentApproval,
   usePostTableOrder,
-  usePutCancelOrderMenu,
-  usePutPaymentCancel,
+  // usePutCancelOrderMenu,
+  // usePutPaymentCancel,
 } from '@repo/api/queries';
 import type { ICancelOrderMenuRequest, IOrder } from '@repo/api/types';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
@@ -109,8 +109,8 @@ export const CardPaymentInstallmentModal = ({
     ],
   });
   const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
-  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
-  const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
+  // const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  // const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
 
   // const [paymentProgressMessage, setPaymentProgressMessage] =
   //   useState<string>('');
@@ -317,9 +317,9 @@ export const CardPaymentInstallmentModal = ({
       const {
         paymentResult,
         orderUuid,
-        cancelOrderMenuRequest,
-        orderGroupUuid,
-        paymentSeq,
+        // cancelOrderMenuRequest,
+        // orderGroupUuid,
+        // paymentSeq,
       } = await processPayment();
 
       const shopDetailData = useShopDetailStore.getState().data;
