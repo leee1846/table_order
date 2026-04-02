@@ -229,11 +229,21 @@ export const Payment: IPayment = {
 
   approve: async (options) => {
     const amt = options.amount.toString();
+    const tax =
+      options.tax === undefined || options.tax === null
+        ? undefined
+        : options.tax.toString();
+    const tip =
+      options.tip === undefined || options.tip === null
+        ? undefined
+        : options.tip.toString();
 
     const result = await NativePayment.requestPaymentActivity({
       tran_type: 'D1',
       terminal_type: options.terminalType ?? '40',
       amount: amt,
+      tax,
+      tip,
       installment: options.installment ?? '00',
     });
     return result;

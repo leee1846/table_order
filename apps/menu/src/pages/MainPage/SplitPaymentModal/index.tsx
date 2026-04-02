@@ -24,8 +24,8 @@ import {
 import {
   usePostPaymentApproval,
   usePostTableOrder,
-  // usePutCancelOrderMenu,
-  // usePutPaymentCancel,
+  usePutCancelOrderMenu,
+  usePutPaymentCancel,
 } from '@repo/api/queries';
 import type { IOrder, ICancelOrderMenuRequest } from '@repo/api/types';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
@@ -37,6 +37,7 @@ import {
   formatInstallmentMonthsToString,
 } from '@/feature/Installment';
 import { usePosOrderStore } from '@repo/feature/stores';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
@@ -89,6 +90,33 @@ const calculateTotalMenusPrice = (menus: ICartMenu[]): number => {
     (totalPrice, menu) => totalPrice + calculateSingleMenuPrice(menu),
     0
   );
+};
+
+/**
+ * 메뉴 목록의 부가세 금액 계산
+ * isTaxFree 메뉴를 제외한 과세 대상 금액에서 역산 (과세금액 / 11)
+ */
+const calculateMenusTaxAmount = (menus: ICartMenu[]): number => {
+  const categories = useCategoryStore.getState().data.categories;
+  const menuSeqToIsTaxFree = new Map<number, boolean>();
+  categories?.forEach((category) => {
+    category.menuInfoList.forEach((menu) => {
+      menuSeqToIsTaxFree.set(menu.menuSeq, menu.isTaxFree);
+    });
+  });
+
+  const taxableAmount = menus.reduce((sum, menu) => {
+    if (menuSeqToIsTaxFree.get(menu.menuSeq) === true) {
+      return sum;
+    }
+    const optionsTotal = menu.selectedOptions.reduce(
+      (optSum, opt) => optSum + opt.optionPrice * opt.quantity,
+      0
+    );
+    return sum + (menu.menuPrice + optionsTotal) * menu.quantity;
+  }, 0);
+
+  return Math.floor(taxableAmount / 11);
 };
 
 /**
@@ -219,8 +247,8 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     ],
   });
   const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
-  // const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
-  // const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
+  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
 
   // 결제 방식 상태
   const [isPaymentByMenu, setIsPaymentByMenu] = useState(true);
@@ -518,6 +546,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    */
   const executePayment = async (
     paymentAmount: number,
+    taxAmount: number,
     onSuccess: (
       orderUuidFromPayment: string,
       paymentResult: IPaymentResponse
@@ -536,6 +565,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       // 3. 카드 단말기 승인 요청
       const paymentResult: IPaymentResponse = await Payment.approve({
         amount: paymentAmount,
+        tax: taxAmount,
         installment: formatInstallmentMonthsToString(installmentMonths),
       });
 
@@ -622,25 +652,23 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       try {
         await Payment.cancel(completedPaymentResultsRef.current);
 
-        // TODO: 주문 취소 로직 주석처리
-        // 일시적 테스트용
-        // const cancelResult = await Payment.cancel(
-        //   completedPaymentResultsRef.current
-        // );
-        // if (paymentSeqRef.current > 0) {
-        //   const shopDetailData = useShopDetailStore.getState().data;
-        //   await putPaymentCancel({
-        //     params: {
-        //       paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
-        //       orderGroupUuid: orderGroupUuidRef.current ?? '',
-        //       paymentSeq: paymentSeqRef.current,
-        //     },
-        //     data: cancelResult,
-        //   });
-        // }
-        // if (isFirstPayment) {
-        //   await cancelOrderMenu(cancelOrderMenuRequestRef.current);
-        // }
+        const cancelResult = await Payment.cancel(
+          completedPaymentResultsRef.current
+        );
+        if (paymentSeqRef.current > 0) {
+          const shopDetailData = useShopDetailStore.getState().data;
+          await putPaymentCancel({
+            params: {
+              paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
+              orderGroupUuid: orderGroupUuidRef.current ?? '',
+              paymentSeq: paymentSeqRef.current,
+            },
+            data: cancelResult,
+          });
+        }
+        if (isFirstPayment) {
+          await cancelOrderMenu(cancelOrderMenuRequestRef.current);
+        }
       } catch {
         // 카드 취소 실패 시 무시
       }
@@ -835,6 +863,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
     const selectedMenuIds = selectedMenus.map((menu) => menu.id);
     const paymentAmount = selectedMenuPrice;
+    const taxAmount = calculateMenusTaxAmount(selectedMenus);
 
     // 전체 결제 완료 여부 판단
     const isAllPaid =
@@ -844,6 +873,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     // 결제 실행 및 성공 시 상태 업데이트
     await executePayment(
       paymentAmount,
+      taxAmount,
       (orderUuidFromPayment, paymentResult) => {
         completedPaymentResultsRef.current = paymentResult;
         handlePaymentSuccess(isAllPaid, orderUuidFromPayment, selectedMenuIds);
@@ -880,6 +910,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     }));
     const paymentAmount = selectedPersonPrice;
 
+    // 인원 수 분할은 금액 기준이므로 전체 부가세에서 결제 비율만큼 비례 배분
+    const totalTax = calculateMenusTaxAmount(cartData.menus);
+    const taxAmount =
+      totalPrice > 0 ? Math.floor((totalTax * paymentAmount) / totalPrice) : 0;
+
     // 전체 결제 완료 여부 판단
     const isAllPaid =
       remainingPersons.length === selectedPersons.length ||
@@ -888,6 +923,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     // 결제 실행 및 성공 시 상태 업데이트
     await executePayment(
       paymentAmount,
+      taxAmount,
       (orderUuidFromPayment, paymentResult) => {
         completedPaymentResultsRef.current = paymentResult;
 

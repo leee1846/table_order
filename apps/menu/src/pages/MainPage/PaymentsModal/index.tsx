@@ -152,15 +152,13 @@ export const PaymentsModal = ({
 
           if (response.result && isPosLinked && response.orderUuid) {
             const handlePosOrderFailure = async () => {
-              // TODO: 주문 취소 로직 주석처리
-              // 일시적 테스트용
-              // try {
-              //   if (response.cancelOrderMenuRequest.length > 0) {
-              //     await cancelOrderMenu(response.cancelOrderMenuRequest);
-              //   }
-              // } catch {
-              //   // 주문 취소 실패 시 무시
-              // }
+              try {
+                if (response.cancelOrderMenuRequest.length > 0) {
+                  await cancelOrderMenu(response.cancelOrderMenuRequest);
+                }
+              } catch {
+                // 주문 취소 실패 시 무시
+              }
               openConfirmDialog({
                 title: t('POS 오류'),
                 content: t(

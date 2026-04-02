@@ -27,7 +27,7 @@ import { useModalStore } from '@/stores/useModalStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { useCategoryStore } from '@/stores/useCategoryStore';
-// import { usePutCancelOrderMenu } from '@repo/api/queries';
+import { usePutCancelOrderMenu } from '@repo/api/queries';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { localizeOrders } from '@/utils/localizeOrders';
 import { useIdleTimeout } from '@/hooks/useIdleTimeout';
@@ -65,7 +65,7 @@ export const CartList = ({
   const { theme } = useThemeMode();
   const { data: modalData, setModalData } = useModalStore();
   const shopDetailData = useShopDetailStore((s) => s.data);
-  // const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData({ skipInitialRequest: true });
 
@@ -317,15 +317,13 @@ export const CartList = ({
 
           if (isPosLinked && response.orderUuid) {
             const handlePosOrderFailure = async () => {
-              // TODO: 주문 취소 로직 주석처리
-              // 일시적 테스트용
-              // try {
-              //   if (response.cancelOrderMenuRequest.length > 0) {
-              //     await cancelOrderMenu(response.cancelOrderMenuRequest);
-              //   }
-              // } catch {
-              //   // 주문 취소 실패 시 무시
-              // }
+              try {
+                if (response.cancelOrderMenuRequest.length > 0) {
+                  await cancelOrderMenu(response.cancelOrderMenuRequest);
+                }
+              } catch {
+                // 주문 취소 실패 시 무시
+              }
               openConfirmDialog({
                 title: t('POS 오류'),
                 content: t(
