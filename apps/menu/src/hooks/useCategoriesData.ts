@@ -73,6 +73,8 @@ export const useCategoriesData = (options?: Props) => {
     if (result.data?.data) {
       await setCategoriesAsync({ categories: result.data.data });
     }
+
+    return result.data?.data;
   };
 
   // ===== 카테고리 분류 =====

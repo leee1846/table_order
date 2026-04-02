@@ -46,6 +46,7 @@ import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { usePosSyncOverlayStore } from '@/stores/usePosSyncOverlayStore';
 import { useShopStore } from '@/stores/useShopStore';
+import { useCartStore } from '@/stores/useCartStore';
 
 type DeviceDetailPayload = Record<string, unknown> & {
   deviceType?: TDeviceType | null;
@@ -475,7 +476,76 @@ export const useSSEHandler = () => {
           ),
         });
       } else {
-        refreshCategoriesData();
+        void refreshCategoriesData().then((categories) => {
+          // 카테고리(=메뉴) 데이터가 갱신되면, 장바구니에 담긴 동일 menuSeq의
+          // 이름/가격/옵션 정보도 최신 데이터로 동기화한다.
+          // - 수량/선택옵션(quantity)은 유지
+          // - 매칭 실패 시 기존 값 유지
+          if (!categories || categories.length < 1) {
+            return;
+          }
+
+          const cartState = useCartStore.getState();
+          const cartMenus = cartState.data.menus;
+          if (!cartMenus || cartMenus.length < 1) {
+            return;
+          }
+
+          cartMenus.forEach((cartMenu, cartIndex) => {
+            const updatedMenu =
+              categories
+                .flatMap((c) => c.menuInfoList ?? [])
+                .find((m) => m.menuSeq === cartMenu.menuSeq) ?? null;
+
+            if (!updatedMenu) {
+              return;
+            }
+
+            const updatedOptions = cartMenu.selectedOptions.map((opt) => {
+              const latestOpt =
+                updatedMenu.optionGroupList
+                  ?.flatMap((g) => g.optionList ?? [])
+                  .find((o) => o.optionSeq === opt.optionSeq) ?? null;
+
+              if (!latestOpt) {
+                return opt;
+              }
+
+              return {
+                ...opt,
+                optionName: latestOpt.optionName,
+                optionPrice: latestOpt.optionPrice,
+                localeOptionName: latestOpt.localeOptionName,
+              };
+            });
+
+            const nextCartMenu = {
+              ...cartMenu,
+              menuName: updatedMenu.menuName,
+              menuPrice: updatedMenu.menuPrice,
+              localeMenuName: updatedMenu.localeMenuName,
+              selectedOptions: updatedOptions,
+            };
+
+            const changed =
+              nextCartMenu.menuName !== cartMenu.menuName ||
+              nextCartMenu.menuPrice !== cartMenu.menuPrice ||
+              nextCartMenu.localeMenuName !== cartMenu.localeMenuName ||
+              nextCartMenu.selectedOptions.some((o, i) => {
+                const prev = cartMenu.selectedOptions[i];
+                return (
+                  !prev ||
+                  o.optionName !== prev.optionName ||
+                  o.optionPrice !== prev.optionPrice ||
+                  o.localeOptionName !== prev.localeOptionName
+                );
+              });
+
+            if (changed) {
+              cartState.updateCartItem(cartIndex, nextCartMenu);
+            }
+          });
+        });
       }
 
       useModalStore.getState().closeMenuDetail();
