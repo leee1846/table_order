@@ -1,15 +1,9 @@
+import { QueryClient, QueryClientProvider } from '@repo/api/tanstack-query';
 import {
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from '@repo/api/tanstack-query';
-import {
-  handleQueryFinalGetNetworkErrorDialog,
   isNetworkErrorWithGetRequest,
   ERROR_TYPES,
 } from '@repo/api/globalErrorHandler';
-import { openConfirmDialog, closeDialog } from '@repo/feature/utils';
-import { t } from '@/config/i18n';
+import { closeDialog } from '@repo/feature/utils';
 import { useState, type ReactNode } from 'react';
 
 interface Props {
