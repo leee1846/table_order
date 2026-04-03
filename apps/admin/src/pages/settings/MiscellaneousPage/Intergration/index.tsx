@@ -27,11 +27,11 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
     }
 
     openDualActionDialog({
-      title: t('온보딩 테스트'),
+      title: t('운영 환경 테스트'),
       content: t(
         '오케이포스 동기화 후 정상 진행 가능합니다. \n오케이포스의 정보와 동기화된 상태인지 확인 후 진행하세요.'
       ),
-      primaryText: t('영수증 출력'),
+      primaryText: t('테스트 시작'),
       secondaryText: t('취소'),
       onConfirm: () => {
         postOrderOnboardingTest({ shopCode });
@@ -106,12 +106,12 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>{t('온보딩 테스트')}</p>
+            <p>{t('운영 환경 테스트')}</p>
             <BasicButton
               variant="Outline_Grey_M"
               onClick={handlePostOrderOnboardingTest}
             >
-              {t('영수증 출력')}
+              {t('테스트 시작')}
             </BasicButton>
           </UIStyles.setting.ContentLayout>
         </>
