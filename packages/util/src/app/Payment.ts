@@ -16,6 +16,8 @@ export interface IPaymentApproveOptions {
   amount: string | number;
   /** 부가세 금액 (필수). 미입력 시 총액의 10% 자동 계산 */
   tax?: string | number;
+  /** 부가세 계산 방식 (필수): 'M' 입력값으로 처리, 'A' 총 결제 금액에서 자동 계산(10%) */
+  taxOption?: 'M' | 'A';
   /** 봉사료 금액 (필수). 미입력 시 "0" */
   tip?: string | number;
   /** 할부유무 (필수): "0" 일시불, "02"~"24" 등 N개월 */
@@ -53,6 +55,7 @@ interface IPaymentRequestParams {
   amount: string;
   /** tax 부가세 금액 (ESSENTIAL, 9 BYTE) */
   tax?: string;
+  tax_option?: 'M' | 'A';
   /** tip 봉사료 금액 (ESSENTIAL, 9 BYTE) */
   tip?: string;
   /** installment 할부유무 (ESSENTIAL): "0" 일시불, "N" N개월 */
@@ -243,6 +246,7 @@ export const Payment: IPayment = {
       terminal_type: options.terminalType ?? '40',
       amount: amt,
       tax,
+      tax_option: options.taxOption ?? 'M',
       tip,
       installment: options.installment ?? '00',
     });

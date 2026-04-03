@@ -565,6 +565,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       const paymentResult: IPaymentResponse = await Payment.approve({
         amount: paymentAmount,
         tax: taxAmount,
+        taxOption: 'M',
         installment: formatInstallmentMonthsToString(installmentMonths),
       });
 

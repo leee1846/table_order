@@ -233,6 +233,7 @@ export const CardPaymentInstallmentModal = ({
     const paymentResult: IPaymentResponse = await Payment.approve({
       amount: totalPrice,
       tax: calculateCartTaxAmount(cartData.menus),
+      taxOption: 'M',
       installment: formatInstallmentMonthsToString(selectedInstallmentMonths),
     });
 
