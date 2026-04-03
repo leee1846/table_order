@@ -24,8 +24,8 @@ import {
 import {
   usePostPaymentApproval,
   usePostTableOrder,
-  usePutCancelOrderMenu,
-  usePutPaymentCancel,
+  // usePutCancelOrderMenu,
+  // usePutPaymentCancel,
 } from '@repo/api/queries';
 import type { IOrder, ICancelOrderMenuRequest } from '@repo/api/types';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
@@ -246,8 +246,8 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     ],
   });
   const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
-  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
-  const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
+  // const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  // const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
 
   // 결제 방식 상태
   const [isPaymentByMenu, setIsPaymentByMenu] = useState(true);
@@ -654,23 +654,23 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       try {
         await Payment.cancel(completedPaymentResultsRef.current);
 
-        const cancelResult = await Payment.cancel(
-          completedPaymentResultsRef.current
-        );
-        if (paymentSeqRef.current > 0) {
-          const shopDetailData = useShopDetailStore.getState().data;
-          await putPaymentCancel({
-            params: {
-              paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
-              orderGroupUuid: orderGroupUuidRef.current ?? '',
-              paymentSeq: paymentSeqRef.current,
-            },
-            data: cancelResult,
-          });
-        }
-        if (isFirstPayment) {
-          await cancelOrderMenu(cancelOrderMenuRequestRef.current);
-        }
+        // const cancelResult = await Payment.cancel(
+        //   completedPaymentResultsRef.current
+        // );
+        // if (paymentSeqRef.current > 0) {
+        //   const shopDetailData = useShopDetailStore.getState().data;
+        //   await putPaymentCancel({
+        //     params: {
+        //       paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
+        //       orderGroupUuid: orderGroupUuidRef.current ?? '',
+        //       paymentSeq: paymentSeqRef.current,
+        //     },
+        //     data: cancelResult,
+        //   });
+        // }
+        // if (isFirstPayment) {
+        //   await cancelOrderMenu(cancelOrderMenuRequestRef.current);
+        // }
       } catch {
         // 카드 취소 실패 시 무시
       }

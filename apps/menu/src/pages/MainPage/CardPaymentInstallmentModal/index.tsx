@@ -14,8 +14,8 @@ import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import {
   usePostPaymentApproval,
   usePostTableOrder,
-  usePutCancelOrderMenu,
-  usePutPaymentCancel,
+  // usePutCancelOrderMenu,
+  // usePutPaymentCancel,
 } from '@repo/api/queries';
 import type { ICancelOrderMenuRequest, IOrder } from '@repo/api/types';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
@@ -134,8 +134,8 @@ export const CardPaymentInstallmentModal = ({
     ],
   });
   const { mutateAsync: postPaymentApproval } = usePostPaymentApproval();
-  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
-  const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
+  // const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  // const { mutateAsync: putPaymentCancel } = usePutPaymentCancel();
 
   // const [paymentProgressMessage, setPaymentProgressMessage] =
   //   useState<string>('');
@@ -343,9 +343,9 @@ export const CardPaymentInstallmentModal = ({
       const {
         paymentResult,
         orderUuid,
-        cancelOrderMenuRequest,
-        orderGroupUuid,
-        paymentSeq,
+        // cancelOrderMenuRequest,
+        // orderGroupUuid,
+        // paymentSeq,
       } = await processPayment();
 
       const shopDetailData = useShopDetailStore.getState().data;
@@ -361,20 +361,20 @@ export const CardPaymentInstallmentModal = ({
             // POS 실패(-603 또는 API 에러) / 타임아웃: 환불 → 환불 정보 전송 → 주문 취소
             try {
               await Payment.cancel(paymentResult);
-              const cancelResult = await Payment.cancel(paymentResult);
-              if (paymentSeq > 0) {
-                await putPaymentCancel({
-                  params: {
-                    paymentMethodCode:
-                      useShopDetailStore.getState().data?.shopSetting
-                        ?.vanCode ?? 'EASY',
-                    orderGroupUuid,
-                    paymentSeq,
-                  },
-                  data: cancelResult,
-                });
-              }
-              await cancelOrderMenu(cancelOrderMenuRequest);
+              // const cancelResult = await Payment.cancel(paymentResult);
+              // if (paymentSeq > 0) {
+              //   await putPaymentCancel({
+              //     params: {
+              //       paymentMethodCode:
+              //         useShopDetailStore.getState().data?.shopSetting
+              //           ?.vanCode ?? 'EASY',
+              //       orderGroupUuid,
+              //       paymentSeq,
+              //     },
+              //     data: cancelResult,
+              //   });
+              // }
+              // await cancelOrderMenu(cancelOrderMenuRequest);
             } catch {
               // 카드 취소 실패 시 무시 (이미 승인된 결제이므로 수동 처리 필요)
             }

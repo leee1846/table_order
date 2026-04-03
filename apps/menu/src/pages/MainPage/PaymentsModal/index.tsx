@@ -26,7 +26,7 @@ import { calculateMenuTotalPrice } from '@/utils/calculation';
 import type { ICartMenu } from '@/types/cart';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import type { ICancelOrderMenuRequest, IOrder } from '@repo/api/types';
-import { usePutCancelOrderMenu } from '@repo/api/queries';
+// import { usePutCancelOrderMenu } from '@repo/api/queries';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { localizeOrders } from '@/utils/localizeOrders';
 
@@ -70,7 +70,7 @@ export const PaymentsModal = ({
     setCashPaymentInducementModal,
   } = useModalStore();
   const { data: cartData, clearCart } = useCartStore();
-  const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
+  // const { mutateAsync: cancelOrderMenu } = usePutCancelOrderMenu();
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData({ skipInitialRequest: true });
 
@@ -152,13 +152,13 @@ export const PaymentsModal = ({
 
           if (response.result && isPosLinked && response.orderUuid) {
             const handlePosOrderFailure = async () => {
-              try {
-                if (response.cancelOrderMenuRequest.length > 0) {
-                  await cancelOrderMenu(response.cancelOrderMenuRequest);
-                }
-              } catch {
-                // 주문 취소 실패 시 무시
-              }
+              // try {
+              //   if (response.cancelOrderMenuRequest.length > 0) {
+              //     await cancelOrderMenu(response.cancelOrderMenuRequest);
+              //   }
+              // } catch {
+              //   // 주문 취소 실패 시 무시
+              // }
               openConfirmDialog({
                 title: t('POS 오류'),
                 content: t(
@@ -225,13 +225,13 @@ export const PaymentsModal = ({
 
           if (isPosLinked && response.orderUuid) {
             const handlePosOrderFailure = async () => {
-              try {
-                if (response.cancelOrderMenuRequest.length > 0) {
-                  await cancelOrderMenu(response.cancelOrderMenuRequest);
-                }
-              } catch {
-                // 주문 취소 실패 시 무시
-              }
+              // try {
+              //   if (response.cancelOrderMenuRequest.length > 0) {
+              //     await cancelOrderMenu(response.cancelOrderMenuRequest);
+              //   }
+              // } catch {
+              //   // 주문 취소 실패 시 무시
+              // }
               openConfirmDialog({
                 title: t('POS 오류'),
                 content: t(
