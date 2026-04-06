@@ -17,6 +17,7 @@ import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
+import { useInitialAdStore } from '@/stores/useInitialAdStore';
 import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { usePosSyncOverlayStore } from '@/stores/usePosSyncOverlayStore';
@@ -31,6 +32,7 @@ const storesWithClearData = [
   useDeviceStore,
   useCustomerLanguageStore,
   useInitialPageStore,
+  useInitialAdStore,
   useTableOrderHistoriesStore,
   usePickupAlarmStore,
   useCartReminderStore,

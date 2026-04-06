@@ -14,6 +14,7 @@ import { useBreakTime } from '@/hooks/useBreakTime';
 import { useShopClosure } from '@/hooks/useShopClosure';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
+import { useInitialAdStore } from '@/stores/useInitialAdStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useAppThemeSettings } from '@/hooks/useAppThemeSettings';
 import { useCustomerLanguageSettings } from '@/hooks/useCustomerLanguageSettings';
@@ -36,9 +37,6 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { CashPaymentInducement } from '@/feature/CashPaymentInducement';
 import { useModalStore } from '@/stores/useModalStore';
 import { OrderCompleteModalContainer } from '@/pages/MainPage/OrderCompleteModalContainer';
-
-// TEST
-const SHOW_INITIAL_AD = true;
 
 export const MainPage = () => {
   useShopData();
@@ -88,6 +86,7 @@ export const MainPage = () => {
   useBreakTimeCartClear(breakTimeState);
 
   const { data: initialPageData } = useInitialPageStore();
+  const { data: initialAdData } = useInitialAdStore();
   const { data: pickUpAlarmData } = usePickupAlarmStore();
   const { data: cartReminderData } = useCartReminderStore();
   const { data: modalData } = useModalStore();
@@ -129,8 +128,8 @@ export const MainPage = () => {
     },
     breakTimeLastOrder: breakTimeLastOrderState,
     closureLastOrder: closureLastOrderState,
-    InitialAd: {
-      show: SHOW_INITIAL_AD,
+    initialAd: {
+      show: initialAdData.showInitialAd,
     },
     initialPage: {
       show: initialPageData.showInitialPage && hasInitialPageDetailImages,
@@ -217,14 +216,14 @@ export const MainPage = () => {
 
   /** 초기 화면 / 언어 선택 / 객수 선택: 전체화면 페이지 위에 주문 완료 모달 노출 */
   if (
-    pageStates.InitialAd.show ||
+    pageStates.initialAd.show ||
     pageStates.initialPage.show ||
     pageStates.languageSelector.show ||
     pageStates.customerCount.show
   ) {
     return (
       <>
-        {pageStates.InitialAd.show && <InitialAd />}
+        {pageStates.initialAd.show && <InitialAd />}
         {pageStates.initialPage.show && <InitialPage />}
         {pageStates.customerCount.show && <CustomerCountSelector />}
         {pageStates.languageSelector.show && <LanguageSelector />}

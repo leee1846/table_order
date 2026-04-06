@@ -1,5 +1,6 @@
 import { AdMediaSlider } from '@/pages/MainPage/InitialAd/AdMediaSlider';
 import * as S from '@/pages/MainPage/InitialAd/initialAd.style';
+import { useInitialAdStore } from '@/stores/useInitialAdStore';
 
 /** 임시 예시 슬라이드 — API 연동 시 교체 */
 export type AdSlide = { id: string; kind: 'image'; src: string; alt: string };
@@ -20,8 +21,15 @@ export const SAMPLE_AD_SLIDES: readonly AdSlide[] = [
 ];
 
 export const InitialAd = () => {
+  const { hideInitialAd } = useInitialAdStore();
+
   return (
-    <S.Container>
+    <S.Container
+      onClick={hideInitialAd}
+      role="button"
+      aria-label="광고 화면 닫기"
+      tabIndex={0}
+    >
       <S.AdContainer>
         <AdMediaSlider adList={SAMPLE_AD_SLIDES} />
       </S.AdContainer>

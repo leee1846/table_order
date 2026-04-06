@@ -10,6 +10,7 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
+import { useInitialAdStore } from '@/stores/useInitialAdStore';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
@@ -60,7 +61,6 @@ export const useTouchDetectTimer = () => {
   const clearCart = useCartStore((s) => s.clearCart);
   const { setData: setLanguageData } = useCustomerLanguageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
-  const { showInitialPage } = useInitialPageStore();
   const { showCartReminder } = useCartReminderStore();
 
   useEffect(() => {
@@ -98,7 +98,8 @@ export const useTouchDetectTimer = () => {
               newShopDetailData?.shopSetting?.shopLanguage ?? 'KO',
             isSelected: false,
           });
-          showInitialPage();
+          useInitialAdStore.getState().showInitialAd();
+          useInitialPageStore.getState().showInitialPage();
         }
 
         // await SystemControl.deepCleanAndReload();
@@ -169,7 +170,6 @@ export const useTouchDetectTimer = () => {
   }, [
     cartMenuCount,
     showCartReminder,
-    showInitialPage,
     clearCart,
     clearCustomerCountData,
     setLanguageData,
