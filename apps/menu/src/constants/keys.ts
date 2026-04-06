@@ -81,4 +81,6 @@ export const DOM_IDS = {
   CONTENTS_SCROLL_CONTAINER: 'contents-scroll-container',
   /** Contents 스크롤 컨테이너 ID (스크롤 모드) */
   CONTENTS_SCROLL_MODE_CONTAINER: 'contents-scroll-mode-container',
+  /** 컨텐츠 최상단 스크롤 앵커 ID */
+  CONTENTS_SCROLL_TOP_ANCHOR: 'contents-scroll-top-anchor',
 } as const;
