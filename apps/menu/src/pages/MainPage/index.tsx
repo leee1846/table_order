@@ -1,4 +1,5 @@
 import * as S from '@/pages/MainPage/mainPage.style';
+import { InitialAd } from '@/pages/MainPage/InitialAd';
 import { Sidebar } from '@/pages/MainPage/Sidebar';
 import { Header } from '@/pages/MainPage/Header';
 import { CartButton } from '@/pages/MainPage/CartButton';
@@ -13,6 +14,7 @@ import { useBreakTime } from '@/hooks/useBreakTime';
 import { useShopClosure } from '@/hooks/useShopClosure';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
+import { useInitialAdStore } from '@/stores/useInitialAdStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useAppThemeSettings } from '@/hooks/useAppThemeSettings';
 import { useCustomerLanguageSettings } from '@/hooks/useCustomerLanguageSettings';
@@ -84,6 +86,7 @@ export const MainPage = () => {
   useBreakTimeCartClear(breakTimeState);
 
   const { data: initialPageData } = useInitialPageStore();
+  const { data: initialAdData } = useInitialAdStore();
   const { data: pickUpAlarmData } = usePickupAlarmStore();
   const { data: cartReminderData } = useCartReminderStore();
   const { data: modalData } = useModalStore();
@@ -125,6 +128,9 @@ export const MainPage = () => {
     },
     breakTimeLastOrder: breakTimeLastOrderState,
     closureLastOrder: closureLastOrderState,
+    initialAd: {
+      show: initialAdData.showInitialAd,
+    },
     initialPage: {
       show: initialPageData.showInitialPage && hasInitialPageDetailImages,
     },
@@ -210,12 +216,14 @@ export const MainPage = () => {
 
   /** 초기 화면 / 언어 선택 / 객수 선택: 전체화면 페이지 위에 주문 완료 모달 노출 */
   if (
+    pageStates.initialAd.show ||
     pageStates.initialPage.show ||
     pageStates.languageSelector.show ||
     pageStates.customerCount.show
   ) {
     return (
       <>
+        {pageStates.initialAd.show && <InitialAd />}
         {pageStates.initialPage.show && <InitialPage />}
         {pageStates.customerCount.show && <CustomerCountSelector />}
         {pageStates.languageSelector.show && <LanguageSelector />}

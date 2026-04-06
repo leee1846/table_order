@@ -104,16 +104,13 @@ export function useCategoryNavigation({
     }, 800);
   });
 
-  // 탭 모드: 스크롤 컨테이너를 상단으로 이동
+  // 탭 모드: 최상단 앵커로 스크롤
   const scrollToTop = useRef(() => {
-    // Contents 컴포넌트의 스크롤 컨테이너 찾기
     requestAnimationFrame(() => {
-      const scrollContainer = document.getElementById(
-        DOM_IDS.CONTENTS_SCROLL_CONTAINER
+      const anchor = document.getElementById(
+        DOM_IDS.CONTENTS_SCROLL_TOP_ANCHOR
       );
-      if (scrollContainer) {
-        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      anchor?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
 
@@ -141,8 +138,17 @@ export function useCategoryNavigation({
       // 탭 모드: 스크롤 컨테이너를 상단으로 이동
       scrollToTop.current();
     } else {
-      // 스크롤 모드: 해당 섹션으로 스크롤 및 observer 일시 비활성화
-      scrollToCategorySection.current(category.categorySeq);
+      // 스크롤 모드: 첫 번째 카테고리면 최상단 앵커로, 그 외는 해당 섹션으로 스크롤
+      const isFirstCategory =
+        currentCategories[0]?.categorySeq === category.categorySeq;
+      if (isFirstCategory) {
+        const anchor = document.getElementById(
+          DOM_IDS.CONTENTS_SCROLL_TOP_ANCHOR
+        );
+        anchor?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        scrollToCategorySection.current(category.categorySeq);
+      }
       temporarilyDisableScrollObserver.current();
     }
   }).current;

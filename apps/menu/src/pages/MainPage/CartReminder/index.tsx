@@ -16,6 +16,7 @@ import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
+import { useInitialAdStore } from '@/stores/useInitialAdStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { useModalStore } from '@/stores/useModalStore';
 import * as S from './cartReminder.style';
@@ -29,7 +30,6 @@ export const CartReminder = () => {
   const { hideCartReminder } = useCartReminderStore();
   const { clearCart } = useCartStore();
   const { setData: setCustomerLanguageData } = useCustomerLanguageStore();
-  const { showInitialPage } = useInitialPageStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { refresh: refreshCategoriesData } = useCategoriesData({
     skipInitialRequest: true,
@@ -117,7 +117,8 @@ export const CartReminder = () => {
               newShopDetailData?.shopSetting?.shopLanguage ?? 'KO',
             isSelected: false,
           });
-          showInitialPage();
+          useInitialAdStore.getState().showInitialAd();
+          useInitialPageStore.getState().showInitialPage();
         }
       } catch {
         // async 콜백에서 throw 발생 시 unhandled rejection → 웹뷰 앱 종료 방지
@@ -133,7 +134,6 @@ export const CartReminder = () => {
     hideCartReminder,
     clearCart,
     setCustomerLanguageData,
-    showInitialPage,
     closeAllModals,
   ]);
 

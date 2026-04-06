@@ -41,6 +41,7 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
+import { useInitialAdStore } from '@/stores/useInitialAdStore';
 import { Sidebar } from '@/pages/TablesPage/Sidebar';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useShopStore } from '@/stores/useShopStore';
@@ -251,7 +252,6 @@ export const TablesPage = () => {
   const { clearCart } = useCartStore();
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { setData: setLanguageData } = useCustomerLanguageStore();
-  const { showInitialPage } = useInitialPageStore();
 
   // 테이블 그룹 선택값을 세션 스토리지에 저장해, 페이지 재진입 시 유지
   useEffect(() => {
@@ -296,7 +296,8 @@ export const TablesPage = () => {
     }
 
     clearCart();
-    showInitialPage();
+    useInitialAdStore.getState().showInitialAd();
+    useInitialPageStore.getState().showInitialPage();
     // 매장 기본 언어로 초기화 (KO 고정 대신 shopLanguage 사용)
     setLanguageData({
       currentLanguage: shopDetailData?.shopSetting?.shopLanguage ?? 'KO',
@@ -307,7 +308,6 @@ export const TablesPage = () => {
     refreshTableOrderHistoriesData,
     clearCustomerCountData,
     clearCart,
-    showInitialPage,
     setLanguageData,
     shopDetailData,
   ]);
