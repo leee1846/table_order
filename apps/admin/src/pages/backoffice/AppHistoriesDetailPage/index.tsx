@@ -1,10 +1,18 @@
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
+import styled from '@emotion/styled';
 import { AppHistories } from '@/feature/backoffice/AppHistories';
 import { useGetAppVersionDetail } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import type { AppHistoriesFormData } from '@/feature/backoffice/AppHistories/constants';
 import type { IAppVersion } from '@repo/api/types';
+
+// --- Emotion Styles ---
+const Container = styled.div`
+  background-color: #f4f7fa;
+  min-height: 100%;
+  padding: 40px;
+`;
 
 // IAppVersion을 AppHistoriesFormData로 변환
 const convertToFormData = (
@@ -51,5 +59,9 @@ export const AppHistoriesDetailPage = () => {
     return convertToFormData(data?.data);
   }, [data]);
 
-  return <AppHistories mode="detail" initialData={initialData} />;
+  return (
+    <Container>
+      <AppHistories mode="detail" initialData={initialData} />
+    </Container>
+  );
 };

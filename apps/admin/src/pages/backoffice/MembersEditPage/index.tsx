@@ -1,12 +1,11 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo, useEffect } from 'react';
+import styled from '@emotion/styled';
 import { Members } from '@/feature/backoffice/Members';
 import { validateMembersData } from '@/feature/backoffice/util';
-import {
-  toast,
-  openDualActionDialog,
-  openConfirmDialog,
-} from '@repo/feature/utils';
+import { openConfirmDialog } from '@repo/feature/utils';
+import { message } from 'antd';
+import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
 import { ROUTES } from '@/constants/routes';
 import {
   useGetAdminMember,
@@ -21,6 +20,13 @@ import type {
   IGetAdminMember,
   ICreateAdminMemberRequest,
 } from '@repo/api/types';
+
+// --- Emotion Styles ---
+const Container = styled.div`
+  background-color: #f4f7fa;
+  min-height: 100%;
+  padding: 40px;
+`;
 
 // IGetAdminMember를 MembersFormData로 변환
 const convertToFormData = (
@@ -51,6 +57,7 @@ const convertToFormData = (
 export const MembersEditPage = () => {
   const navigate = useNavigate();
   const { memberId } = useParams<{ memberId: string }>();
+  const { showConfirm } = useConfirmDialog();
 
   const { data, error } = useGetAdminMember({
     memberId: memberId || '',
@@ -87,18 +94,20 @@ export const MembersEditPage = () => {
 
   const handleDelete = async () => {
     if (!memberId) {
-      toast('관리자 ID가 없습니다.');
+      message.error('관리자 ID가 없습니다.');
       return;
     }
 
-    openDualActionDialog({
-      title: '관리자 삭제',
-      content: '정말 삭제하시겠습니까? (삭제 이후에도 조회는 가능합니다.)',
-      primaryText: '확인',
-      secondaryText: '취소',
+    showConfirm({
+      title: '회원 삭제',
+      content: (
+        <div>
+          정말 삭제하시겠습니까? <br /> (삭제 이후에도 조회는 가능합니다.){' '}
+        </div>
+      ),
       onConfirm: async () => {
         await deleteAdminMutation.mutateAsync(memberId);
-        toast('삭제가 완료되었습니다.');
+        message.success('삭제가 완료되었습니다.');
         navigate(ROUTES.BACKOFFICE.MEMBERS.generate());
       },
     });
@@ -122,36 +131,36 @@ export const MembersEditPage = () => {
 
     await updateAdminMutation.mutateAsync(params);
 
-    toast('관리자 수정이 완료되었습니다.');
+    message.success('관리자 수정이 완료되었습니다.');
     navigate(ROUTES.BACKOFFICE.MEMBERS.generate());
   };
 
   const handleResetPassword = async () => {
     if (!memberId) {
-      toast('관리자 ID가 없습니다.');
+      message.error('관리자 ID가 없습니다.');
       return;
     }
 
-    openDualActionDialog({
+    showConfirm({
       title: '비밀번호 초기화',
       content: '비밀번호를 초기화하시겠습니까?',
-      primaryText: '확인',
-      secondaryText: '취소',
       onConfirm: async () => {
         await resetPasswordMutation.mutateAsync({ memberId });
-        toast('비밀번호가 초기화되었습니다.');
+        message.success('비밀번호가 초기화되었습니다.');
         navigate(-1);
       },
     });
   };
 
   return (
-    <Members
-      mode="edit"
-      initialData={initialData}
-      onSave={handleSave}
-      onDelete={handleDelete}
-      onResetPassword={handleResetPassword}
-    />
+    <Container>
+      <Members
+        mode="edit"
+        initialData={initialData}
+        onSave={handleSave}
+        onDelete={handleDelete}
+        onResetPassword={handleResetPassword}
+      />
+    </Container>
   );
 };

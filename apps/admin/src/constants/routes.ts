@@ -73,6 +73,42 @@ export const ROUTES = {
       path: 'members/:memberId/edit',
       generate: (memberId: string) => `/backoffice/members/${memberId}/edit`,
     },
+    MEMBERS_DETAIL: {
+      path: 'members/:memberId',
+      generate: (memberId: string) => `/backoffice/members/${memberId}`,
+    },
+    CAMPAIGN: {
+      path: 'campaign',
+      generate: () => `/backoffice/campaign`,
+    },
+    CAMPAIGN_NEW: {
+      path: 'campaign/new',
+      generate: () => `/backoffice/campaign/new`,
+    },
+    CAMPAIGN_EDIT: {
+      path: '/backoffice/campaign/edit/:id', // 라우터에 등록할 때 사용할 path
+      generate: (id: string | number) => `/backoffice/campaign/edit/${id}`, // 페이지 이동 시 사용할 함수
+    },
+    MENU_GROUP: {
+      path: 'menu-group',
+      generate: () => `/backoffice/menu-group`,
+    },
+    STORE_GROUP: {
+      path: 'store-groups',
+      generate: () => `/backoffice/store-groups`,
+    },
+    STORE_GROUP_NEW: {
+      path: '/backoffice/store-groups/new',
+      generate: () => '/backoffice/store-groups/new',
+    },
+    STORE_GROUP_EDIT: {
+      path: '/backoffice/store-groups/:id',
+      generate: (id: string | number) => `/backoffice/store-groups/${id}`,
+    },
+    MENU_GROUP_STATUS: {
+      path: 'menu-group-status',
+      generate: () => `/backoffice/menu-group-status`,
+    },
   },
 
   SETTINGS: {

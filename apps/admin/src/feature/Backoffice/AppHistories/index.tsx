@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { toast } from '@repo/feature/utils';
+import { useNavigate } from 'react-router-dom';
+import { Button, Flex, message } from 'antd';
+import styled from '@emotion/styled';
 import { AppHistoryForm } from '@/feature/backoffice/AppHistories/AppHistoryForm';
 import { ChangeHistoryDialog } from '@/feature/backoffice/ChangeHistoryDialog';
-import * as S from '@/feature/backoffice/AppHistories/appHistories.style';
 import {
   type AppHistoriesFormData,
   DEFAULT_APP_HISTORIES_DATA,
 } from '@/feature/backoffice/AppHistories/constants';
-import { Button } from '@/feature/backoffice/components';
+import PageTitle from '@/feature/Backoffice/components/PageTitle';
 import AppInfoParser, { type ApkParser, type IpaParser } from 'app-info-parser';
 import JSZip from 'jszip';
 
@@ -26,6 +27,24 @@ interface Props {
   onSave?: (data: AppHistoriesFormData, appFile?: File | null) => Promise<void>;
 }
 
+const FormWrapper = styled.div`
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
 interface MenifestInfo {
   appName: string;
   version: string | undefined;
@@ -33,6 +52,7 @@ interface MenifestInfo {
 }
 
 export const AppHistories = ({ mode, initialData, onSave }: Props) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<AppHistoriesFormData>(
     DEFAULT_APP_HISTORIES_DATA
   );
@@ -108,7 +128,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
     }
 
     if (!isAllowedAppArchiveFile(file.name)) {
-      toast('APK 또는 ZIP 파일만 업로드 가능합니다.');
+      message.warning('APK 또는 ZIP 파일만 업로드 가능합니다.');
       setAppFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -125,6 +145,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
   };
 
   const handleRemoveAppFile = () => {
+    updateFormData({ version: '', type: '' });
     setAppFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -139,44 +160,32 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
     setIsHistoryDialogOpen(false);
   };
 
-  const getTitle = () => {
-    if (mode === 'create') {
-      return '생성';
-    }
-    if (mode === 'edit') {
-      return '수정';
-    }
+  const getSubtitle = () => {
+    if (mode === 'create') return '등록';
+    if (mode === 'edit') return '수정';
     return '상세';
   };
 
   return (
-    <S.PageWrapper>
-      <S.Container>
-        <S.TitleContainer>
-          <S.Title>
-            릴리즈 노트
-            <div />
-            <span>{getTitle()}</span>
-          </S.Title>
-          {mode === 'detail' ? (
-            <Button variant="outline" onClick={handleHistory}>
-              변경 이력
-            </Button>
-          ) : (
-            <Button variant="default" onClick={handleSave}>
-              저장
-            </Button>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Flex justify="space-between" align="center">
+        <PageTitle title="릴리즈 노트" subtitle={getSubtitle()} />
+        <ButtonGroup>
+          {mode !== 'create' && (
+            <Button onClick={handleHistory}>변경 이력</Button>
           )}
-        </S.TitleContainer>
+        </ButtonGroup>
+      </Flex>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={APP_ARCHIVE_ACCEPT}
-          onChange={handleAppFileChange}
-          style={{ display: 'none' }}
-          aria-hidden
-        />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={APP_ARCHIVE_ACCEPT}
+        onChange={handleAppFileChange}
+        style={{ display: 'none' }}
+        aria-hidden
+      />
+      <FormWrapper>
         <AppHistoryForm
           mode={mode}
           formData={formData}
@@ -185,18 +194,33 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
           onSelectAppFileClick={handleSelectAppFileClick}
           onRemoveAppFile={handleRemoveAppFile}
         />
-        <ChangeHistoryDialog
-          isOpen={isHistoryDialogOpen}
-          onClose={handleCloseHistoryDialog}
-          histories={[
-            {
-              code: 'APP_VERSION',
-              id: initialData?.id ?? '',
-              label: '앱 버전 변경 이력',
-            },
-          ]}
-        />
-      </S.Container>
-    </S.PageWrapper>
+
+        <ActionButtons>
+          <div />
+          <ButtonGroup>
+            <Button size="large" onClick={() => navigate(-1)}>
+              {mode === 'detail' ? '목록' : '취소'}
+            </Button>
+            {mode !== 'detail' && (
+              <Button size="large" type="primary" onClick={handleSave}>
+                {mode === 'create' ? '저장' : '수정'}
+              </Button>
+            )}
+          </ButtonGroup>
+        </ActionButtons>
+      </FormWrapper>
+
+      <ChangeHistoryDialog
+        isOpen={isHistoryDialogOpen}
+        onClose={handleCloseHistoryDialog}
+        histories={[
+          {
+            code: 'APP_VERSION',
+            id: initialData?.id ?? '',
+            label: '앱 버전 변경 이력',
+          },
+        ]}
+      />
+    </div>
   );
 };

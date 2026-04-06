@@ -1,13 +1,21 @@
 import { useState } from 'react';
-import { ModalBackground } from '@repo/ui/components';
-import { CloseIcon } from '@repo/ui/icons';
-import { theme } from '@repo/ui';
+import { Modal, Table, Tabs } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
+import styled from '@emotion/styled';
 import { useGetAdminHistoryList } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import type { THistoryCode } from '@repo/api/types';
-import * as S from './changeHistoryDialog.styles';
+
+const StyledTable = styled(Table<HistoryItem>)`
+  .ant-table-thead > tr > th {
+    background-color: #1d2a6d !important;
+    color: white !important;
+    border-bottom: none;
+  }
+`;
 
 export interface HistoryItem {
+  key: string;
   id: number;
   userId: number;
   updateDateTime: string; // 업데이트 일시
@@ -28,11 +36,12 @@ interface Props {
 }
 
 export const ChangeHistoryDialog = ({ isOpen, onClose, histories }: Props) => {
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [activeTabKey, setActiveTabKey] = useState('0');
 
+  const activeTabIndex = parseInt(activeTabKey, 10);
   const currentHistory = histories[activeTabIndex] as HistoryConfig;
 
-  const { data } = useGetAdminHistoryList(
+  const { data, isFetching } = useGetAdminHistoryList(
     currentHistory.code,
     currentHistory.id.toString(),
     {
@@ -41,7 +50,8 @@ export const ChangeHistoryDialog = ({ isOpen, onClose, histories }: Props) => {
   );
 
   const historyData: HistoryItem[] =
-    data?.data?.map((item) => ({
+    data?.data?.map((item, index) => ({
+      key: `${item.updateDate}-${index}`,
       id: item.updateDate,
       userId: item.updateMemberId,
       user: item.updateMemberName || '-',
@@ -49,73 +59,75 @@ export const ChangeHistoryDialog = ({ isOpen, onClose, histories }: Props) => {
       action: item.updateLog || '-',
     })) || [];
 
-  if (!isOpen) {
-    return null;
-  }
+  // 100개의 목업 데이터 생성
+  // const historyData: HistoryItem[] = Array.from({ length: 100 }, (_, i) => {
+  //   const timestamp = new Date().getTime() - i * 1000 * 60 * 60 * 3; // 3시간 간격
+  //   const date = new Date(timestamp);
+  //   return {
+  //     key: `mock-key-${i}`,
+  //     id: timestamp,
+  //     userId: 1000 + i,
+  //     user: `테스터${i + 1}`,
+  //     updateDateTime: formatDateTime(date.toISOString(), 'YYYY-MM-DD HH:mm:ss'),
+  //     action: `캠페인 정보를 수정했습니다. (항목 ${i + 1})`,
+  //   };
+  // });
 
-  const renderRows = () => {
-    if (!historyData || historyData.length === 0) {
-      return (
-        <S.Tr>
-          <S.Td colSpan={4} style={{ textAlign: 'center', padding: '48px 16px' }}>
-            변경 이력이 없습니다.
-          </S.Td>
-        </S.Tr>
-      );
-    }
-
-    return historyData.map((item) => (
-      <S.Tr key={item.id}>
-        <S.Td>{item.userId}</S.Td>
-        <S.Td>{item.user}</S.Td>
-        <S.Td>{item.updateDateTime}</S.Td>
-        <S.Td>{item.action}</S.Td>
-      </S.Tr>
-    ));
-  };
+  const columns: ColumnsType<HistoryItem> = [
+    { title: '계정', dataIndex: 'userId', key: 'userId', width: 120 },
+    { title: '이름', dataIndex: 'user', key: 'user', width: 120 },
+    {
+      title: '업데이트 일시',
+      dataIndex: 'updateDateTime',
+      key: 'updateDateTime',
+      width: 180,
+    },
+    { title: '액션', dataIndex: 'action', key: 'action', ellipsis: true },
+  ];
 
   return (
-    <ModalBackground position="center" onClick={onClose}>
-      <S.DialogContainer onClick={(e) => e.stopPropagation()}>
-        <S.CloseButton onClick={onClose} aria-label="닫기">
-          <CloseIcon width={20} height={20} color={theme.colors.grey[700]} />
-        </S.CloseButton>
-
-        <S.Container>
-          <S.Header>
-            <S.Title>변경 이력</S.Title>
-          </S.Header>
-
-          {histories.length > 1 && (
-            <S.TabContainer>
-              {histories.map((history, index) => (
-                <S.TabButton
-                  key={history.code}
-                  type="button"
-                  isActive={activeTabIndex === index}
-                  onClick={() => setActiveTabIndex(index)}
-                >
-                  {history.label}
-                </S.TabButton>
-              ))}
-            </S.TabContainer>
-          )}
-
-          <S.TableContainer>
-            <S.Table>
-              <S.Thead>
-                <S.Tr>
-                  <S.Th>계정</S.Th>
-                  <S.Th>이름</S.Th>
-                  <S.Th>업데이트 일시</S.Th>
-                  <S.Th>액션</S.Th>
-                </S.Tr>
-              </S.Thead>
-              <S.Tbody>{renderRows()}</S.Tbody>
-            </S.Table>
-          </S.TableContainer>
-        </S.Container>
-      </S.DialogContainer>
-    </ModalBackground>
+    <Modal
+      title="변경 이력"
+      open={isOpen}
+      onCancel={onClose}
+      footer={null}
+      width={1200}
+      destroyOnHidden
+    >
+      {histories.length > 1 ? (
+        <Tabs
+          activeKey={activeTabKey}
+          onChange={setActiveTabKey}
+          items={histories.map((history, index) => ({
+            key: index.toString(),
+            label: history.label,
+            children: (
+              <StyledTable
+                loading={isFetching}
+                columns={columns}
+                dataSource={historyData}
+                pagination={{
+                  pageSize: 10,
+                  placement: ['bottomEnd'],
+                  showSizeChanger: false,
+                }}
+              />
+            ),
+          }))}
+        />
+      ) : (
+        <StyledTable
+          loading={isFetching}
+          columns={columns}
+          dataSource={historyData}
+          pagination={{
+            pageSize: 10,
+            placement: ['bottomEnd'],
+            showSizeChanger: false,
+          }}
+          style={{ marginTop: '16px' }}
+        />
+      )}
+    </Modal>
   );
 };

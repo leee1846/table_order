@@ -2,6 +2,7 @@ import { Suspense, useState, useEffect, useMemo } from 'react';
 import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import * as S from './sidebarLayout.style';
+import { ConfigProvider, App } from 'antd';
 import {
   capsSmartOrderBlueGreyLogo,
   ChevronForwardIcon,
@@ -40,6 +41,18 @@ export const StoresSidebarLayout = () => {
         label: '매장 관리',
         path: ROUTES.BACKOFFICE.STORES.generate(),
         matchPattern: '/backoffice/stores/*',
+        subMenus: [
+          {
+            id: 'store-group',
+            label: '매장 그룹 관리',
+            path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
+          },
+          {
+            id: 'store-list',
+            label: '매장 관리',
+            path: ROUTES.BACKOFFICE.STORES.generate(),
+          },
+        ],
       },
     ];
 
@@ -64,6 +77,27 @@ export const StoresSidebarLayout = () => {
       path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(),
       matchPattern: '/backoffice/app-histories/*',
     });
+
+    if (isMaster) {
+      menus.push({
+        id: 'campaign',
+        label: '광고 관리',
+        path: ROUTES.BACKOFFICE.CAMPAIGN.generate(),
+        matchPattern: '/backoffice/campaign/*',
+        subMenus: [
+          {
+            id: 'campaign-manage',
+            label: '캠페인 관리',
+            path: ROUTES.BACKOFFICE.CAMPAIGN.generate(),
+          },
+          {
+            id: 'menu_group',
+            label: '메뉴 그룹 관리',
+            path: ROUTES.BACKOFFICE.MENU_GROUP.generate(),
+          },
+        ],
+      });
+    }
 
     return menus;
   }, [isMaster]);
@@ -91,7 +125,10 @@ export const StoresSidebarLayout = () => {
     }
   };
 
-  const handleSubMenuClick = (path: string) => navigate(path);
+  const handleSubMenuClick = (path: string) => {
+    navigate(path);
+    setOpenedMenuIds(new Set()); // 서브메뉴 클릭 시 즉시 닫기
+  };
 
   const toggleMenuOpen = (menuId: string) => {
     setOpenedMenuIds((prev) => {
@@ -109,121 +146,108 @@ export const StoresSidebarLayout = () => {
     menu.subMenus?.some((sub: TSubMenu) => isPathActive(sub.path)) ?? false;
 
   useEffect(() => {
-    const hasActiveSubMenu = (menu: TMenu) =>
-      menu.subMenus?.some((sub: TSubMenu) => location.pathname === sub.path) ??
-      false;
-
-    SIDEBAR_MENUS.forEach((menu) => {
-      if (!menu.matchPattern) {
-        return;
-      }
-
-      const match = matchPath(
-        { path: menu.matchPattern, end: false },
-        location.pathname
-      );
-      const isMatched = match !== null;
-
-      setOpenedMenuIds((prev) => {
-        const next = new Set(prev);
-
-        if (isMatched) {
-          next.add(menu.id);
-        } else if (!hasActiveSubMenu(menu)) {
-          next.delete(menu.id);
-        }
-
-        return next;
-      });
-    });
-  }, [location.pathname, SIDEBAR_MENUS]);
+    // 페이지(경로) 이동 시 열려있는 모든 드롭다운 서브메뉴를 닫음
+    setOpenedMenuIds(new Set());
+  }, [location.pathname]);
 
   return (
-    <S.Layout>
-      <S.Navbar>
-        <S.NavbarContent>
-          <S.Logo
-            type="button"
-            onClick={() => navigate(ROUTES.BACKOFFICE.STORES.generate())}
-          >
-            <img src={capsSmartOrderBlueGreyLogo} alt="logo" />
-          </S.Logo>
+    <App>
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: '#003594',
+          },
+        }}
+      >
+        <S.Layout>
+          <S.Navbar>
+            <S.NavbarContent>
+              <S.Logo
+                type="button"
+                onClick={() => navigate(ROUTES.BACKOFFICE.STORES.generate())}
+              >
+                <img src={capsSmartOrderBlueGreyLogo} alt="logo" />
+              </S.Logo>
 
-          <S.NavMenu>
-            {SIDEBAR_MENUS.map((menu) => {
-              const hasSubMenus = !!menu.subMenus?.length;
-              const isActive =
-                (menu.path && isPathActive(menu.path, menu.matchPattern)) ||
-                hasActiveSubMenu(menu);
-              const isOpened = hasSubMenus && isMenuOpened(menu.id);
+              <S.NavMenu>
+                {SIDEBAR_MENUS.map((menu) => {
+                  const hasSubMenus = !!menu.subMenus?.length;
+                  const isActive =
+                    (menu.path && isPathActive(menu.path, menu.matchPattern)) ||
+                    hasActiveSubMenu(menu);
+                  const isOpened = hasSubMenus && isMenuOpened(menu.id);
 
-              return (
-                <S.NavMenuItem key={menu.id}>
-                  <S.CategoryButton
-                    onClick={() => handleMenuClick(menu)}
-                    isSelected={isActive}
-                    isOpen={isOpened}
-                  >
-                    <span>{menu.label}</span>
-                    {hasSubMenus && (
-                      <ChevronForwardIcon
-                        color={theme.colors.grey[500]}
-                        width={16}
-                        height={16}
-                      />
-                    )}
-                  </S.CategoryButton>
+                  return (
+                    <S.NavMenuItem key={menu.id}>
+                      <S.CategoryButton
+                        onClick={() => handleMenuClick(menu)}
+                        isSelected={isActive}
+                        isOpen={isOpened}
+                      >
+                        <span>{menu.label}</span>
+                        {hasSubMenus && (
+                          <ChevronForwardIcon
+                            color={theme.colors.grey[500]}
+                            width={16}
+                            height={16}
+                          />
+                        )}
+                      </S.CategoryButton>
 
-                  {hasSubMenus && isOpened && (
-                    <S.DropdownMenu>
-                      {menu.subMenus!.map((sub: TSubMenu) => (
-                        <S.DropdownMenuItem key={sub.id}>
-                          <S.DetailButton
-                            onClick={() => handleSubMenuClick(sub.path)}
-                            isSelected={isPathActive(sub.path)}
-                          >
-                            <span>{sub.label}</span>
-                          </S.DetailButton>
-                        </S.DropdownMenuItem>
-                      ))}
-                    </S.DropdownMenu>
-                  )}
-                </S.NavMenuItem>
-              );
-            })}
-          </S.NavMenu>
+                      {hasSubMenus && isOpened && (
+                        <S.DropdownMenu
+                          onMouseLeave={() => toggleMenuOpen(menu.id)} // 마우스가 드롭다운 영역을 벗어나면 닫기
+                        >
+                          {menu.subMenus!.map((sub: TSubMenu) => (
+                            <S.DropdownMenuItem key={sub.id}>
+                              <S.DetailButton
+                                onClick={() => handleSubMenuClick(sub.path)}
+                                isSelected={isPathActive(sub.path)}
+                              >
+                                <span>{sub.label}</span>
+                              </S.DetailButton>
+                            </S.DropdownMenuItem>
+                          ))}
+                        </S.DropdownMenu>
+                      )}
+                    </S.NavMenuItem>
+                  );
+                })}
+              </S.NavMenu>
 
-          <S.MyPageIconButton
-            type="button"
-            onClick={() => navigate(ROUTES.BACKOFFICE.MYPAGE.generate())}
-            aria-label="내 정보"
-          >
-            <PersonIcon
-              width={16}
-              height={16}
-              color={
-                isPathActive(ROUTES.BACKOFFICE.MYPAGE.generate())
-                  ? theme.colors.primary[500]
-                  : theme.colors.grey[500]
-              }
-            />
-          </S.MyPageIconButton>
+              <S.MyPageIconButton
+                type="button"
+                onClick={() => navigate(ROUTES.BACKOFFICE.MYPAGE.generate())}
+                aria-label="내 정보"
+              >
+                <PersonIcon
+                  width={16}
+                  height={16}
+                  color={
+                    isPathActive(ROUTES.BACKOFFICE.MYPAGE.generate())
+                      ? theme.colors.primary[500]
+                      : theme.colors.grey[500]
+                  }
+                />
+              </S.MyPageIconButton>
 
-          {/* <S.DownloadLink
+              {/* <S.DownloadLink
             href="/app-download.html"
             target="_blank"
             rel="noopener noreferrer"
           >
             자료실
           </S.DownloadLink> */}
-        </S.NavbarContent>
-      </S.Navbar>
+            </S.NavbarContent>
+          </S.Navbar>
 
-      <S.Content>
-        <Suspense fallback={<FullscreenLoadingSpinner />}>
-          <Outlet />
-        </Suspense>
-      </S.Content>
-    </S.Layout>
+          <S.Content>
+            <Suspense fallback={<FullscreenLoadingSpinner />}>
+              <Outlet />
+            </Suspense>
+          </S.Content>
+        </S.Layout>
+      </ConfigProvider>
+    </App>
   );
 };

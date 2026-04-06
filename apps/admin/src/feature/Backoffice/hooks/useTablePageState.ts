@@ -16,6 +16,7 @@ interface UseTablePageStateReturn {
   searchKeyword: string;
   searchInputValue: string;
   handleSearchInputChange: (value: string) => void;
+  handleSearch: () => void;
   handlePageChange: (page: number) => void;
   updateUrlParams: (updates: { page?: number; search?: string }) => void;
 }
@@ -120,7 +121,11 @@ export const useTablePageState = (
 
   const handleSearchInputChange = (value: string) => {
     setSearchInputValue(value);
-    debouncedFn(value);
+    //debouncedFn(value);
+  };
+
+  const handleSearch = () => {
+    debouncedFn(searchInputValue);
   };
 
   const handlePageChange = (page: number) => {
@@ -135,6 +140,7 @@ export const useTablePageState = (
     currentPage,
     searchKeyword,
     searchInputValue,
+    handleSearch,
     handleSearchInputChange,
     handlePageChange,
     updateUrlParams,

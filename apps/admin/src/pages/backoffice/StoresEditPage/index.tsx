@@ -10,8 +10,9 @@ import {
   usePutAdminShop,
   usePutAdminMember,
 } from '@repo/api/queries';
-import { toast } from '@repo/feature/utils';
 import { ROUTES } from '@/constants/routes';
+import { App } from 'antd';
+import styled from '@emotion/styled';
 import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
@@ -36,11 +37,33 @@ const transformMemberDataToFormData = (
   };
 };
 
+// --- Emotion Styles ---
+const Container = styled.div`
+  background-color: #f4f7fa;
+  height: 100%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+const ContentCard = styled.div`
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+`;
+
 /**
  * 매장 수정 페이지
  */
 export const StoresEditPage = () => {
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const { shopCode } = useParams<{ shopCode: string }>();
   const [searchParams] = useSearchParams();
   const memberIdFromQuery = searchParams.get('memberId');
@@ -106,16 +129,18 @@ export const StoresEditPage = () => {
     }
 
     // 성공 메시지 및 페이지 이동
-    toast('매장 정보가 수정되었습니다.');
+    message.success('매장 정보가 수정되었습니다.');
     navigate(ROUTES.BACKOFFICE.STORES.generate());
   };
 
   return (
-    <Stores
-      mode="edit"
-      initialData={shopDetailResponse?.data}
-      memberInitialData={memberInitialData}
-      onSave={handleSaveShopAndMember}
-    />
+    <Container>
+      <Stores
+        mode="edit"
+        initialData={shopDetailResponse?.data}
+        memberInitialData={memberInitialData}
+        onSave={handleSaveShopAndMember}
+      />
+    </Container>
   );
 };
