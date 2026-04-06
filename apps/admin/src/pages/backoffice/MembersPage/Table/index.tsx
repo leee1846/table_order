@@ -44,6 +44,15 @@ export const Table = ({ admins }: Props) => {
         <S.Td>{getRoleLabel(admin.memberRole)}</S.Td>
         <S.Td
           style={{
+            color: admin.isLocked
+              ? theme.colors.semantic[500]
+              : theme.colors.grey[900],
+          }}
+        >
+          {admin.isLocked ? 'O' : 'X'}
+        </S.Td>
+        <S.Td
+          style={{
             color: admin.isDeleted
               ? theme.colors.semantic[500]
               : theme.colors.grey[900],
@@ -85,6 +94,7 @@ export const Table = ({ admins }: Props) => {
             <S.Th>핸드폰번호</S.Th>
             <S.Th>소속</S.Th>
             <S.Th>권한</S.Th>
+            <S.Th>잠금 여부</S.Th>
             <S.Th>삭제 여부</S.Th>
             <S.Th>작업</S.Th>
           </S.Tr>

@@ -97,6 +97,7 @@ export interface IGetAdminMember {
   updateMemberUuid: string;
   memberEmail: string;
   memberDepartment: string;
+  isLocked: boolean;
 }
 
 export type TGetAdminMemberResponse = IApiResponse<IGetAdminMember>;
