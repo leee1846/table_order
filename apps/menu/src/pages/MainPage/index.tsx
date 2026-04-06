@@ -1,4 +1,5 @@
 import * as S from '@/pages/MainPage/mainPage.style';
+import { InitialAd } from '@/pages/MainPage/InitialAd';
 import { Sidebar } from '@/pages/MainPage/Sidebar';
 import { Header } from '@/pages/MainPage/Header';
 import { CartButton } from '@/pages/MainPage/CartButton';
@@ -35,6 +36,9 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { CashPaymentInducement } from '@/feature/CashPaymentInducement';
 import { useModalStore } from '@/stores/useModalStore';
 import { OrderCompleteModalContainer } from '@/pages/MainPage/OrderCompleteModalContainer';
+
+// TEST
+const SHOW_INITIAL_AD = true;
 
 export const MainPage = () => {
   useShopData();
@@ -125,6 +129,9 @@ export const MainPage = () => {
     },
     breakTimeLastOrder: breakTimeLastOrderState,
     closureLastOrder: closureLastOrderState,
+    InitialAd: {
+      show: SHOW_INITIAL_AD,
+    },
     initialPage: {
       show: initialPageData.showInitialPage && hasInitialPageDetailImages,
     },
@@ -210,12 +217,14 @@ export const MainPage = () => {
 
   /** 초기 화면 / 언어 선택 / 객수 선택: 전체화면 페이지 위에 주문 완료 모달 노출 */
   if (
+    pageStates.InitialAd.show ||
     pageStates.initialPage.show ||
     pageStates.languageSelector.show ||
     pageStates.customerCount.show
   ) {
     return (
       <>
+        {pageStates.InitialAd.show && <InitialAd />}
         {pageStates.initialPage.show && <InitialPage />}
         {pageStates.customerCount.show && <CustomerCountSelector />}
         {pageStates.languageSelector.show && <LanguageSelector />}
