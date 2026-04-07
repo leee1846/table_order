@@ -430,14 +430,14 @@ export const DeviceListDialog = ({
 
                         <S.CardSectionWrapper>
                           <S.CardSection>
-                            <S.SectionLabel>{t('Wi-Fi 신호')}</S.SectionLabel>
+                            <S.SectionLabel>{t('와이파이 신호')}</S.SectionLabel>
                             <S.SectionValue tone={wifiTone}>
                               {formatWifiSignal(device.wifiSignal, t)}
                             </S.SectionValue>
                           </S.CardSection>
 
                           <S.CardSection>
-                            <S.SectionLabel>{t('기기버전')}</S.SectionLabel>
+                            <S.SectionLabel>{t('기기 버전')}</S.SectionLabel>
                             <S.SectionValue>
                               {device.version ? `v.${device.version}` : '-'}
                             </S.SectionValue>
@@ -449,7 +449,7 @@ export const DeviceListDialog = ({
                             <S.FooterValue>{device.ipAddress}</S.FooterValue>
                           </S.FooterItem>
                           <S.FooterItem>
-                            <S.FooterLabel>{t('빌드번호')}</S.FooterLabel>
+                            <S.FooterLabel>{t('빌드 번호')}</S.FooterLabel>
                             <S.FooterValue>
                               {device.buildNumber || '-'}
                             </S.FooterValue>
