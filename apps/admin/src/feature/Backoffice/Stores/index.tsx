@@ -21,6 +21,7 @@ interface Props {
   mode: Mode;
   initialData?: IGetAdminShopDetail;
   memberInitialData?: ICreateAdminMemberRequest;
+  memberIsLocked?: boolean;
   onSave: (
     shopData: IGetAdminShopDetail,
     memberData: ICreateAdminMemberRequest
@@ -31,6 +32,7 @@ export const Stores = ({
   mode,
   initialData,
   memberInitialData,
+  memberIsLocked,
   onSave,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<TabType>('storeInfo');
@@ -157,6 +159,7 @@ export const Stores = ({
               updateFormData={(updates) =>
                 setMemberFormData((prev) => ({ ...prev, ...updates }))
               }
+              isMemberLocked={memberIsLocked}
             />
           )}
         </S.TabContent>

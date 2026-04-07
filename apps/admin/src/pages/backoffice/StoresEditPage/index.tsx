@@ -115,6 +115,7 @@ export const StoresEditPage = () => {
       mode="edit"
       initialData={shopDetailResponse?.data}
       memberInitialData={memberInitialData}
+      memberIsLocked={memberDetailResponse?.data?.isLocked}
       onSave={handleSaveShopAndMember}
     />
   );

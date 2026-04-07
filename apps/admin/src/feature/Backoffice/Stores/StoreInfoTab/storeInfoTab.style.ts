@@ -49,3 +49,17 @@ export const MessageText = styled.p`
   color: ${theme.colors.semantic[500]};
   ${TYPOGRAPHY.ST_2}
 `;
+
+export const WarningMessage = styled.p`
+  ${TYPOGRAPHY.BD_3}
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1px solid ${theme.colors.semantic[200]};
+  border-left: 4px solid ${theme.colors.semantic[300]};
+  color: ${theme.colors.semantic[400]};
+  width: fit-content;
+`;
