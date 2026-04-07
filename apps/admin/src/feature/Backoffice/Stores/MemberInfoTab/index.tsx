@@ -4,7 +4,6 @@ import { toast, openDualActionDialog } from '@repo/feature/utils';
 import * as S from '@/feature/backoffice/Stores/StoreInfoTab/storeInfoTab.style';
 import type { ICreateAdminMemberRequest } from '@repo/api/types';
 import { Input, Button } from '@/feature/backoffice/components';
-import { useThemeMode } from '@repo/ui';
 
 interface Props {
   formData: ICreateAdminMemberRequest;
@@ -17,8 +16,6 @@ export const MemberInfoTab = ({
   updateFormData,
   isMemberLocked = false,
 }: Props) => {
-  const { theme } = useThemeMode();
-
   const hasMember = !!formData.memberId;
   const resetPasswordMutation = usePostAdminMemberPWReset();
 
