@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CloseIcon, ArrowBackIcon, PasswordIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
@@ -67,12 +67,6 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
 
     navigate(ROUTES.TABLES.generate());
   };
-
-  useEffect(() => {
-    return () => {
-      globalTimerManager.clear(TIMER_KEYS.ADMIN_ACCESS_MODAL_HIDE);
-    };
-  }, []);
 
   const handlePasswordComplete = async (completedPassword: string) => {
     const shopCode = shopData?.shopCode;
