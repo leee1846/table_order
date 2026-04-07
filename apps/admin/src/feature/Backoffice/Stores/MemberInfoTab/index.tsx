@@ -1,5 +1,6 @@
+import { useQueryClient } from '@repo/api/tanstack-query';
 import { allowOnlyNumbers } from '@repo/util/string';
-import { usePostAdminMemberPWReset } from '@repo/api/queries';
+import { queryKeys, usePostAdminMemberPWReset } from '@repo/api/queries';
 import { toast, openDualActionDialog } from '@repo/feature/utils';
 import * as S from '@/feature/backoffice/Stores/StoreInfoTab/storeInfoTab.style';
 import type { ICreateAdminMemberRequest } from '@repo/api/types';
@@ -16,6 +17,7 @@ export const MemberInfoTab = ({
   updateFormData,
   isMemberLocked = false,
 }: Props) => {
+  const queryClient = useQueryClient();
   const hasMember = !!formData.memberId;
   const resetPasswordMutation = usePostAdminMemberPWReset();
 
@@ -31,8 +33,10 @@ export const MemberInfoTab = ({
       primaryText: '확인',
       secondaryText: '취소',
       onConfirm: async () => {
-        await resetPasswordMutation.mutateAsync({
-          memberId: formData.memberId!,
+        const id = formData.memberId!;
+        await resetPasswordMutation.mutateAsync({ memberId: id });
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.admin.member(id),
         });
         toast('비밀번호가 초기화되었습니다.');
       },
