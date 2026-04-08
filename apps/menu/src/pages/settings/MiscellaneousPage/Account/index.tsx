@@ -3,20 +3,27 @@ import * as UIStyles from '@repo/ui/styles';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { getAccessToken } from '@repo/api/auth';
 import type { ITokenPayload, TShopLanguage } from '@repo/api/types';
-import { decodeJwtToken, storage } from '@repo/util/function';
+import { decodeJwtToken } from '@repo/util/function';
 import {
   useAdminTranslation,
   getAdminSupportedLanguages,
 } from '@/config/i18n/admin.i18n';
 import { LANGUAGE_CONFIG } from '@/constants/common';
 import { ROUTES } from '@/constants/routes';
-import { STORAGE_KEYS } from '@/constants/keys';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { clearAuthData } from '@/utils/auth';
 import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
 
-export const Account = () => {
-  const { i18n, t } = useAdminTranslation();
+type AccountProps = {
+  selectedLanguageCode: string;
+  onLanguageSelectionChange: (code: TShopLanguage) => void;
+};
+
+export const Account = ({
+  selectedLanguageCode,
+  onLanguageSelectionChange,
+}: AccountProps) => {
+  const { t } = useAdminTranslation();
 
   const currentAccessToken = getAccessToken();
   const tokenPayload = decodeJwtToken<ITokenPayload>(currentAccessToken ?? '');
@@ -26,7 +33,6 @@ export const Account = () => {
   const shopCode = currentShopDetail?.shopCode;
   const shopName = currentShopDetail?.shopName;
 
-  const selectedLanguageCode = i18n.language || 'KO';
   const supportedLanguageCodes = getAdminSupportedLanguages();
   const availableLanguageOptions = supportedLanguageCodes
     .filter((languageCode) => languageCode in LANGUAGE_CONFIG)
@@ -34,11 +40,6 @@ export const Account = () => {
       value: languageCode as TShopLanguage,
       label: LANGUAGE_CONFIG[languageCode as TShopLanguage].label,
     }));
-
-  const handleLanguageChange = (selectedLanguage: string) => {
-    i18n.changeLanguage(selectedLanguage);
-    storage.local.save(STORAGE_KEYS.ADMIN_I18N_LANGUAGE, selectedLanguage);
-  };
 
   const handleLogout = () => {
     openDualActionDialog({
@@ -79,7 +80,7 @@ export const Account = () => {
                 key={languageOption.value}
                 checked={selectedLanguageCode === languageOption.value}
                 value={languageOption.value}
-                onChange={() => handleLanguageChange(languageOption.value)}
+                onChange={() => onLanguageSelectionChange(languageOption.value)}
               >
                 <span>{languageOption.label}</span>
               </RadioButton>
