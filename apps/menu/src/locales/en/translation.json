@@ -294,6 +294,8 @@
   "하나카드": "Hana Card",
   "우리카드": "Woori Card",
   "기타카드": "Other Cards",
+  "시작 날짜는 종료 날짜보다 늦을 수 없습니다.": "Start date cannot be later than end date.",
+  "종료 날짜는 시작 날짜보다 이를 수 없습니다.": "End date cannot be earlier than start date.",
   "날짜 선택": "Select Date",
   "년도": "",
   "월_날짜": "",
