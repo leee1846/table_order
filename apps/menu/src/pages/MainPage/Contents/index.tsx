@@ -42,7 +42,6 @@ export const Contents = ({
           id={DOM_IDS.CONTENTS_SCROLL_CONTAINER}
           paddingTop={BANNER_AD ? '10px' : '30px'}
         >
-          <div id={DOM_IDS.CONTENTS_SCROLL_TOP_ANCHOR} />
           {BANNER_AD && <BannerAd />}
           <TabContent selectedCategory={categoryNavigation.selectedCategory} />
         </S.Container>
@@ -51,7 +50,6 @@ export const Contents = ({
           id={DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER}
           paddingTop={BANNER_AD ? '10px' : '30px'}
         >
-          <div id={DOM_IDS.CONTENTS_SCROLL_TOP_ANCHOR} />
           {BANNER_AD && <BannerAd />}
           <ScrollContent categories={categories} />
         </S.Container>
