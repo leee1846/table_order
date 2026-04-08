@@ -5,6 +5,16 @@ import {
   usFlagIcon,
   ruFlagIcon,
 } from '@repo/ui/icons';
+import type { TShopLanguage } from '@repo/api/types';
+
+/** 매장에 노출되는 언어 버튼 정렬 순서 (API 목록 순서와 무관) */
+export const SHOP_LANGUAGE_DISPLAY_ORDER: readonly TShopLanguage[] = [
+  'KO',
+  'EN',
+  'CH',
+  'JP',
+  'RU',
+];
 
 export const LANGUAGE_CONFIG = {
   KO: {
