@@ -13,9 +13,15 @@ interface Props {
 
 export const HourlySalesTable = ({ rows }: Props) => {
   const { t } = useAdminTranslation();
+  const [showTotalSalesTooltip, setShowTotalSalesTooltip] = useState(false);
   const [showPricePerCustomerTooltip, setShowPricePerCustomerTooltip] =
     useState(false);
+  const totalSalesIconWrapperRef = useRef<HTMLDivElement>(null);
   const pricePerCustomerIconWrapperRef = useRef<HTMLDivElement>(null);
+
+  const handleTotalSalesIconClick = () => {
+    setShowTotalSalesTooltip(!showTotalSalesTooltip);
+  };
 
   const handlePricePerCustomerIconClick = () => {
     setShowPricePerCustomerTooltip(!showPricePerCustomerTooltip);
@@ -23,6 +29,13 @@ export const HourlySalesTable = ({ rows }: Props) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showTotalSalesTooltip &&
+        totalSalesIconWrapperRef.current &&
+        !totalSalesIconWrapperRef.current.contains(event.target as Node)
+      ) {
+        setShowTotalSalesTooltip(false);
+      }
       if (
         showPricePerCustomerTooltip &&
         pricePerCustomerIconWrapperRef.current &&
@@ -32,14 +45,14 @@ export const HourlySalesTable = ({ rows }: Props) => {
       }
     };
 
-    if (showPricePerCustomerTooltip) {
+    if (showTotalSalesTooltip || showPricePerCustomerTooltip) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showPricePerCustomerTooltip]);
+  }, [showTotalSalesTooltip, showPricePerCustomerTooltip]);
 
   const renderRows = () => {
     if (!rows.length) {
@@ -67,7 +80,31 @@ export const HourlySalesTable = ({ rows }: Props) => {
         <tr>
           <th>{t('시간대')}</th>
           <th>
-            <S.HeaderLabel>{t('총 매출')}</S.HeaderLabel>
+            <S.HeaderLabel>
+              {t('총 매출')}
+              <S.IconWrapper
+                ref={totalSalesIconWrapperRef}
+                onClick={handleTotalSalesIconClick}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  handleTotalSalesIconClick();
+                }}
+              >
+                <InfoIcon
+                  width={18}
+                  height={18}
+                  color={theme.colors.grey[500]}
+                />
+                {showTotalSalesTooltip && (
+                  <S.Tooltip>
+                    <S.TooltipText>
+                      {t('할인,취소 매출을 제외한 총 매출')}
+                    </S.TooltipText>
+                    <S.TooltipArrow />
+                  </S.Tooltip>
+                )}
+              </S.IconWrapper>
+            </S.HeaderLabel>
           </th>
           <th>{t('총 객수')}</th>
           <th>

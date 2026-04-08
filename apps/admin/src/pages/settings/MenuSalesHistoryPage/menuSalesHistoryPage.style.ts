@@ -36,8 +36,8 @@ export const FilterBar = styled.div`
 `;
 
 export const Dropdown = css`
-  >ul{
-    overflow-x: hidden ;
+  > ul {
+    overflow-x: hidden;
   }
 `;
 
@@ -143,7 +143,7 @@ export const CategoryTooltipText = styled.span`
 
 export const CategoryTooltipArrow = styled.div`
   position: absolute;
-  bottom: -6px;
+  bottom: -5px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
@@ -272,7 +272,7 @@ export const TooltipText = styled.span`
 
 export const TooltipArrow = styled.div`
   position: absolute;
-  bottom: -6px;
+  bottom: -5px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
