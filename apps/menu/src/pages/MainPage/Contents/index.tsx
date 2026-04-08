@@ -32,7 +32,9 @@ export const Contents = ({
 
   if (categories.length < 1) {
     return (
-      <NoContent paddingTop="40vh">{t('등록된 메뉴가 없습니다.')}</NoContent>
+      <S.NoContentContainer>
+        <NoContent paddingTop="0">{t('등록된 메뉴가 없습니다.')}</NoContent>
+      </S.NoContentContainer>
     );
   }
 

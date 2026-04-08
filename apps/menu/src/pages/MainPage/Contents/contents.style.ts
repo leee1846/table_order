@@ -11,3 +11,14 @@ export const Container = styled.div`
   overflow-y: auto;
   background-color: ${({ theme }) => theme.mode.undefined_palette[900]};
 `;
+
+export const NoContentContainer = styled.div`
+  position: fixed;
+  top: 4.75rem;
+  right: 0;
+  bottom: 0;
+  left: 210px;
+  width: calc(100% - 210px);
+  overflow-y: auto;
+  background-color: ${({ theme }) => theme.mode.undefined_palette[900]};
+`;
