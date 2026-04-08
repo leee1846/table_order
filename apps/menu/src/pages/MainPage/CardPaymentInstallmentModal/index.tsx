@@ -39,6 +39,11 @@ import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { localizeOrders } from '@/utils/localizeOrders';
+import {
+  logOrderRequestRefundFailed,
+  orderRequestRefundFailedSummaryAfterOrderCreate,
+  orderRequestRefundFailedSummaryAfterPaymentApproval,
+} from '@/utils/logOrderRequestRefundFailed';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 // const PAYMENT_EVENT_NAME = 'paymentEvent';
@@ -237,6 +242,9 @@ export const CardPaymentInstallmentModal = ({
       installment: formatInstallmentMonthsToString(selectedInstallmentMonths),
     });
 
+    const shopCode = shopData?.shopCode ?? '';
+    const tableNumber = useDeviceStore.getState().data?.tableNumber ?? '';
+
     let orderResult;
     try {
       orderResult = await createOrder();
@@ -244,11 +252,15 @@ export const CardPaymentInstallmentModal = ({
       try {
         await Payment.cancel(paymentResult);
       } catch {
+        logOrderRequestRefundFailed(
+          orderRequestRefundFailedSummaryAfterOrderCreate(shopCode, tableNumber),
+          paymentResult
+        );
         throw new Error(
           t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
         );
       }
-      throw new Error(t('주문 요청에 실패했습니다. 직원에게 문의해주세요.'));
+      throw new Error(t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'));
     }
 
     const { orderGroupUuid, orderUuid, cancelOrderMenuRequest } = orderResult;
@@ -269,11 +281,17 @@ export const CardPaymentInstallmentModal = ({
       try {
         await Payment.cancel(paymentResult);
       } catch {
+        logOrderRequestRefundFailed(
+          orderRequestRefundFailedSummaryAfterPaymentApproval(
+            useShopDetailStore.getState().data?.shopSetting?.vanCode ?? 'EASY'
+          ),
+          paymentResult
+        );
         throw new Error(
           t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
         );
       }
-      throw new Error(t('주문 요청에 실패했습니다. 직원에게 문의해주세요.'));
+      throw new Error(t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'));
     }
 
     return {
@@ -338,7 +356,7 @@ export const CardPaymentInstallmentModal = ({
   const handleOrderCompleteFailure = () => {
     openConfirmDialog({
       title: t('POS 오류'),
-      content: t('주문 요청에 실패했습니다. 직원에게 문의해주세요.'),
+      content: t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'),
       confirmText: t('확인'),
     });
   };
