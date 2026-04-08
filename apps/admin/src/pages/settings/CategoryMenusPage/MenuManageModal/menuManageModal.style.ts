@@ -27,10 +27,10 @@ export const Header = styled.div`
   align-items: center;
   gap: 12px;
   width: 100%;
+  min-width: 0;
 
   & > div {
-    display: flex;
-    align-items: center;
+    min-width: 0;
   }
 `;
 
@@ -73,15 +73,26 @@ export const RightScrollable = styled.div`
 
 export const Titles = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: start;
   width: 100%;
+  min-width: 0;
+  flex: 1;
+  row-gap: 8px;
+  column-gap: 0;
+`;
+
+/** "메뉴 관리" + 세로 구분선 — 한 덩어리로 유지 */
+export const TitleLead = styled.div`
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 
   & > p {
     color: ${theme.colors.grey[800]};
     ${TYPOGRAPHY.MT_1}
     text-wrap: pretty;
-    flex-shrink: 0;
   }
 
   & > span {
@@ -90,26 +101,44 @@ export const Titles = styled.div`
     margin: 0 11px;
     background-color: ${theme.colors.semantic[800]};
   }
+`;
 
-  & > div {
-    display: flex;
-    align-items: center;
+/**
+ * 카테고리 > 모달 제목. flex-wrap으로 첫 줄에 남는 폭이 부족하면(기준: flex-basis)
+ * 통째로 다음 줄로 내려가고, 그 줄에서는 가로 전체를 씀.
+ */
+export const TitleBreadcrumb = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 0;
+  flex: 1 1 12rem;
+  max-width: 100%;
+  gap: 4px;
+  row-gap: 6px;
 
-    & > svg {
-      margin-top: 4px;
-    }
+  & > svg {
+    flex-shrink: 0;
+  }
 
-    & > p {
-      color: ${theme.colors.grey[600]};
-      ${TYPOGRAPHY.ST_1}
-      text-wrap: pretty;
-    }
+  & > p {
+    color: ${theme.colors.grey[600]};
+    ${TYPOGRAPHY.ST_1}
+  }
 
-    & > p:last-child {
-      color: ${theme.colors.primary[500]};
-      ${TYPOGRAPHY.ST_1}
-      flex-shrink: 0;
-    }
+  & > p:not(:last-child) {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    width: fit-content;
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+  }
+
+  & > p:last-child {
+    color: ${theme.colors.primary[500]};
+    ${TYPOGRAPHY.ST_1}
+    flex-shrink: 0;
   }
 `;
 
