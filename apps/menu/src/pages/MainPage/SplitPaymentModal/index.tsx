@@ -10,7 +10,10 @@ import { useCartStore } from '@/stores/useCartStore';
 import type { ICartMenuWithId, ICartMenu } from '@/types/cart';
 import { formatCurrency } from '@repo/util/string';
 import { useDeviceStore } from '@/stores/useDeviceStore';
-import { calculateMenuTotalPrice } from '@/utils/calculation';
+import {
+  calculateCartMenusTaxAmount,
+  calculateMenuTotalPrice,
+} from '@/utils/calculation';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useModalStore } from '@/stores/useModalStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
@@ -96,31 +99,12 @@ const calculateTotalMenusPrice = (menus: ICartMenu[]): number => {
   );
 };
 
-/**
- * 메뉴 목록의 부가세 금액 계산
- * isTaxFree 메뉴를 제외한 과세 대상 금액에서 역산 (과세금액 / 11)
- */
+/** POS와 동일: `calculateCartMenusTaxAmount`(카트 줄 단위 floor 합산) */
 const calculateMenusTaxAmount = (menus: ICartMenu[]): number => {
-  const categories = useCategoryStore.getState().data.categories;
-  const menuSeqToIsTaxFree = new Map<number, boolean>();
-  categories?.forEach((category) => {
-    category.menuInfoList.forEach((menu) => {
-      menuSeqToIsTaxFree.set(menu.menuSeq, menu.isTaxFree);
-    });
-  });
-
-  const taxableAmount = menus.reduce((sum, menu) => {
-    if (menuSeqToIsTaxFree.get(menu.menuSeq) === true) {
-      return sum;
-    }
-    const optionsTotal = menu.selectedOptions.reduce(
-      (optSum, opt) => optSum + opt.optionPrice * opt.quantity,
-      0
-    );
-    return sum + (menu.menuPrice + optionsTotal) * menu.quantity;
-  }, 0);
-
-  return Math.floor(taxableAmount / 11);
+  return calculateCartMenusTaxAmount(
+    menus,
+    useCategoryStore.getState().data.categories
+  );
 };
 
 /**

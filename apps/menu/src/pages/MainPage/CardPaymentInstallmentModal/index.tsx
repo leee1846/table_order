@@ -44,6 +44,7 @@ import {
   orderRequestRefundFailedSummaryAfterOrderCreate,
   orderRequestRefundFailedSummaryAfterPaymentApproval,
 } from '@/utils/logOrderRequestRefundFailed';
+import { calculateCartMenusTaxAmount } from '@/utils/calculation';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 // const PAYMENT_EVENT_NAME = 'paymentEvent';
@@ -90,28 +91,10 @@ const adjustOrderOptionQuantities = (orders: IOrder[]): IOrder[] => {
 };
 
 const calculateCartTaxAmount = (cartMenus: ICartMenu[]): number => {
-  const categories = useCategoryStore.getState().data.categories;
-  const menuSeqToIsTaxFree = new Map<number, boolean>();
-  categories?.forEach((category) => {
-    category.menuInfoList.forEach((menu) => {
-      menuSeqToIsTaxFree.set(menu.menuSeq, menu.isTaxFree);
-    });
-  });
-
-  const taxableAmount = cartMenus.reduce((sum, menu) => {
-    if (menuSeqToIsTaxFree.get(menu.menuSeq) === true) {
-      return sum;
-    }
-
-    const optionsTotal = menu.selectedOptions.reduce(
-      (optSum, opt) => optSum + opt.optionPrice * opt.quantity,
-      0
-    );
-    const menuUnitPrice = menu.menuPrice + optionsTotal;
-    return sum + menuUnitPrice * menu.quantity;
-  }, 0);
-
-  return Math.floor(taxableAmount / 11);
+  return calculateCartMenusTaxAmount(
+    cartMenus,
+    useCategoryStore.getState().data.categories
+  );
 };
 
 export const CardPaymentInstallmentModal = ({
@@ -253,7 +236,10 @@ export const CardPaymentInstallmentModal = ({
         await Payment.cancel(paymentResult);
       } catch {
         logOrderRequestRefundFailed(
-          orderRequestRefundFailedSummaryAfterOrderCreate(shopCode, tableNumber),
+          orderRequestRefundFailedSummaryAfterOrderCreate(
+            shopCode,
+            tableNumber
+          ),
           paymentResult
         );
         throw new Error(
