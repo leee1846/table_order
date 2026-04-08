@@ -1,5 +1,6 @@
 import { AdMediaSlider } from '@/pages/MainPage/InitialAd/AdMediaSlider';
 import * as S from '@/pages/MainPage/InitialAd/initialAd.style';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useInitialAdStore } from '@/stores/useInitialAdStore';
 
 /** 임시 예시 슬라이드 — API 연동 시 교체 */
@@ -21,19 +22,20 @@ export const SAMPLE_AD_SLIDES: readonly AdSlide[] = [
 ];
 
 export const InitialAd = () => {
+  const { t } = useCustomerTranslation();
   const { hideInitialAd } = useInitialAdStore();
 
   return (
     <S.Container
       onClick={hideInitialAd}
       role="button"
-      aria-label="광고 화면 닫기"
+      aria-label={t('닫기')}
       tabIndex={0}
     >
       <S.AdContainer>
         <AdMediaSlider adList={SAMPLE_AD_SLIDES} />
       </S.AdContainer>
-      <S.Notice>주문을 시작하려면 화면을 터치해 주세요.</S.Notice>
+      <S.Notice>{t('주문을 시작하려면 화면을 터치해 주세요.')}</S.Notice>
     </S.Container>
   );
 };

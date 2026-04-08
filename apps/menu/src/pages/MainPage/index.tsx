@@ -223,10 +223,10 @@ export const MainPage = () => {
   ) {
     return (
       <>
-        {pageStates.initialAd.show && <InitialAd />}
-        {pageStates.initialPage.show && <InitialPage />}
         {pageStates.customerCount.show && <CustomerCountSelector />}
         {pageStates.languageSelector.show && <LanguageSelector />}
+        {pageStates.initialPage.show && <InitialPage />}
+        {pageStates.initialAd.show && <InitialAd />}
         {modalData.isOrderCompleteModalOpened && (
           <OrderCompleteModalContainer />
         )}

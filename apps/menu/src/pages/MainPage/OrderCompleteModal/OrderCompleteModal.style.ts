@@ -1,6 +1,18 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
 
+export const ScreenReaderTitle = styled.h2`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+`;
+
 export const Container = styled.div`
   position: relative;
   width: 60rem;
@@ -26,6 +38,15 @@ export const CountdownBadge = styled.p`
 export const CountdownHighlight = styled.span`
   font-weight: 700;
   color: ${({ theme }) => theme.mode.primary[500]};
+`;
+
+export const LeftContainerAd = styled.div`
+  width: 50%;
+  height: 100%;
+  min-height: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  background-color: ${({ theme }) => theme.mode.grey[900]};
 `;
 
 export const LeftContainer = styled.div`

@@ -9,6 +9,29 @@ import customerI18n from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { Trans } from 'react-i18next';
+import type { AdSlide } from '@/pages/MainPage/InitialAd';
+import { AdMediaSlider } from '@/pages/MainPage/InitialAd/AdMediaSlider';
+import { OrderCompleteAdFullscreen } from '@/pages/MainPage/OrderCompleteModal/OrderCompleteAdFullscreen';
+
+/** 기능 확인용 임시 플래그 */
+const SHOW_AD = true;
+/** true: 전면, false: 반쪽 */
+const IS_FULLSCREEN = false;
+
+const ORDER_COMPLETE_AD_SLIDES: readonly AdSlide[] = [
+  {
+    id: 'order-complete-ad-1',
+    kind: 'image',
+    src: 'https://picsum.photos/id/180/1200/1600',
+    alt: '주문 완료 광고 예시 1',
+  },
+  {
+    id: 'order-complete-ad-2',
+    kind: 'image',
+    src: 'https://picsum.photos/id/193/1200/1600',
+    alt: '주문 완료 광고 예시 2',
+  },
+];
 
 interface Props {
   orderData: IOrder[];
@@ -31,6 +54,20 @@ export const OrderCompleteModal = ({
   );
   const shopDetailData = useShopDetailStore((s) => s.data);
 
+  const hasAd = ORDER_COMPLETE_AD_SLIDES.length > 0;
+  const showFullscreenAd = SHOW_AD && IS_FULLSCREEN && hasAd;
+  const showHalfAd = SHOW_AD && !IS_FULLSCREEN && hasAd;
+
+  if (showFullscreenAd) {
+    return (
+      <OrderCompleteAdFullscreen
+        slides={ORDER_COMPLETE_AD_SLIDES}
+        onClose={onClose}
+        t={t}
+      />
+    );
+  }
+
   return (
     <ModalBackground position="center" onClick={onClose}>
       <S.Container
@@ -51,12 +88,18 @@ export const OrderCompleteModal = ({
             ]}
           />
         </S.CountdownBadge>
-        <S.LeftContainer>
-          <img src={apronIcon} alt={t('주문 완료!')} />
-          <h2 id="order-complete-title">{t('주문 완료!')}</h2>
-          <p>{t('조리가 완료되면 저희가 알려드릴게요.')}</p>
-          <p>{t('조금만 기다려주세요.')}</p>
-        </S.LeftContainer>
+        {showHalfAd ? (
+          <S.LeftContainerAd>
+            <AdMediaSlider adList={ORDER_COMPLETE_AD_SLIDES} />
+          </S.LeftContainerAd>
+        ) : (
+          <S.LeftContainer>
+            <img src={apronIcon} alt={t('주문 완료!')} />
+            <h2 id="order-complete-title">{t('주문 완료!')}</h2>
+            <p>{t('조리가 완료되면 저희가 알려드릴게요.')}</p>
+            <p>{t('조금만 기다려주세요.')}</p>
+          </S.LeftContainer>
+        )}
 
         <S.RightContainer>
           <S.Title>{t('주문내역')}</S.Title>

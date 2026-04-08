@@ -2,11 +2,13 @@ import styled from '@emotion/styled';
 import { TYPOGRAPHY } from '@repo/ui';
 
 export const Container = styled.div`
-  position: relative;
+  position: fixed;
+  inset: 0;
+  z-index: ${({ theme }) => theme.zIndex.fixed};
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 `;
 
 export const AdContainer = styled.div`

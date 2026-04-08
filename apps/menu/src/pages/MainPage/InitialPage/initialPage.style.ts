@@ -3,9 +3,11 @@ import { TYPOGRAPHY, baseTheme } from '@repo/ui';
 import type { TInitPageLayout } from '@repo/api/types';
 
 export const Container = styled.div`
-  position: relative;
-  width: 100vw;
-  height: 100vh;
+  position: fixed;
+  inset: 0;
+  z-index: ${({ theme }) => theme.zIndex.sticky};
+  width: 100%;
+  height: 100%;
 
   & > .swiper {
     width: 100%;
