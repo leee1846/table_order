@@ -296,7 +296,7 @@ export const TablesPage = () => {
     }
 
     clearCart();
-    useInitialAdStore.getState().showInitialAd();
+    useInitialAdStore.getState().openInitialAd();
     useInitialPageStore.getState().showInitialPage();
     // 매장 기본 언어로 초기화 (KO 고정 대신 shopLanguage 사용)
     setLanguageData({

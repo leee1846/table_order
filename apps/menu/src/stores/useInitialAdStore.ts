@@ -3,9 +3,11 @@ import { create } from '@repo/feature/zustand';
 interface IInitialAdStore {
   data: {
     /** 전면 대기 광고 노출 여부 */
-    showInitialAd: boolean;
+    isInitialAdVisible: boolean;
   };
-  showInitialAd: () => void;
+  /** 전면 광고를 다시 보이게 함 */
+  openInitialAd: () => void;
+  /** 전면 광고를 닫음 */
   hideInitialAd: () => void;
   clearData: () => void;
 }
@@ -19,9 +21,9 @@ interface IInitialAdStore {
  */
 export const useInitialAdStore = create<IInitialAdStore>((set) => ({
   data: {
-    showInitialAd: false,
+    isInitialAdVisible: true,
   },
-  showInitialAd: () => set({ data: { showInitialAd: true } }),
-  hideInitialAd: () => set({ data: { showInitialAd: false } }),
-  clearData: () => set({ data: { showInitialAd: false } }),
+  openInitialAd: () => set({ data: { isInitialAdVisible: true } }),
+  hideInitialAd: () => set({ data: { isInitialAdVisible: false } }),
+  clearData: () => set({ data: { isInitialAdVisible: false } }),
 }));

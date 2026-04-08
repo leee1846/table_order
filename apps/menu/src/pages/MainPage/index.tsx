@@ -129,7 +129,7 @@ export const MainPage = () => {
     breakTimeLastOrder: breakTimeLastOrderState,
     closureLastOrder: closureLastOrderState,
     initialAd: {
-      show: initialAdData.showInitialAd,
+      show: initialAdData.isInitialAdVisible,
     },
     initialPage: {
       show: initialPageData.showInitialPage && hasInitialPageDetailImages,

@@ -31,7 +31,7 @@ export const isRefetchedTableOrderHistoriesEmpty = (
 export const applyMenuboardStateAfterTableOrderHistoriesCleared = (
   shopDetailData: IGetShop | null | undefined
 ): void => {
-  useInitialAdStore.getState().showInitialAd();
+  useInitialAdStore.getState().openInitialAd();
   useInitialPageStore.getState().showInitialPage();
   useCartStore.getState().clearCart();
   useCustomerCountStore.getState().clearData();

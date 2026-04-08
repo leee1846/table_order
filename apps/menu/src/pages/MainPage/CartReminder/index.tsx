@@ -117,7 +117,7 @@ export const CartReminder = () => {
               newShopDetailData?.shopSetting?.shopLanguage ?? 'KO',
             isSelected: false,
           });
-          useInitialAdStore.getState().showInitialAd();
+          useInitialAdStore.getState().openInitialAd();
           useInitialPageStore.getState().showInitialPage();
         }
       } catch {

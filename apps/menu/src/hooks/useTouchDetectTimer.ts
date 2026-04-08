@@ -98,7 +98,7 @@ export const useTouchDetectTimer = () => {
               newShopDetailData?.shopSetting?.shopLanguage ?? 'KO',
             isSelected: false,
           });
-          useInitialAdStore.getState().showInitialAd();
+          useInitialAdStore.getState().openInitialAd();
           useInitialPageStore.getState().showInitialPage();
         }
 
