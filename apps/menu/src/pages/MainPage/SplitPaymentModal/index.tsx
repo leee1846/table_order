@@ -580,7 +580,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         try {
           await Payment.cancel(paymentResult);
         } catch {
-          // 카드 취소 실패 시 무시
+          throw new Error(
+            t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
+          );
         }
         throw new Error(t('결제 처리 중 오류가 발생했습니다.'));
       }
@@ -602,10 +604,12 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         try {
           await Payment.cancel(paymentResult);
         } catch {
-          // 카드 취소 실패 시 무시
+          throw new Error(
+            t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
+          );
         }
         throw new Error(
-          t('주문 요청에 실패했습니다. 사장님에게 문의해주세요.')
+          t('주문 요청에 실패했습니다. 직원에게 문의해주세요.')
         );
         // postPaymentApproval 실패는 무시
       }
@@ -689,7 +693,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
     openConfirmDialog({
       title: t('POS 오류'),
-      content: t('주문 요청에 실패했습니다. 사장님에게 문의해주세요.'),
+      content: t('주문 요청에 실패했습니다. 직원에게 문의해주세요.'),
       confirmText: t('확인'),
     });
   };

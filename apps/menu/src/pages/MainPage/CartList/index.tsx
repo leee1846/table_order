@@ -327,7 +327,7 @@ export const CartList = ({
               openConfirmDialog({
                 title: t('POS 오류'),
                 content: t(
-                  '주문 요청에 실패했습니다. 사장님에게 문의해주세요.'
+                  '주문 요청에 실패했습니다. 직원에게 문의해주세요.'
                 ),
                 confirmText: t('확인'),
               });
