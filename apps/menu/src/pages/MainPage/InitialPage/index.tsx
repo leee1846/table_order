@@ -20,11 +20,12 @@ export const InitialPage = () => {
   const { themePageData } = shopPageSettingData;
   const swiperRef = useRef<SwiperType | null>(null);
 
-  const hasEnoughSlides = (themePageData?.shopPageDetailList?.length ?? 0) >= 2;
   const detailImageList =
     themePageData?.shopPageDetailList?.filter(
       (item) => item.pageDetailType === 'INIT_COMMON'
     ) ?? [];
+
+  const hasEnoughSlides = detailImageList.length >= 2;
 
   // Swiper 인스턴스가 설정되면 자동 스와이프 시작
   const startAutoplay = useCallback(() => {

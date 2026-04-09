@@ -29,12 +29,12 @@ export const useShopDetailStore = create<IShopDetailStore>((set) => {
   return {
     data: null,
     setData: async (data: IGetShop) => {
+      set({ data });
       await AppStorage.saveData({
         key: STORAGE_KEYS.SHOP_DETAIL,
         value: data,
         isTemporary: true,
       });
-      set({ data });
     },
     clearData: () => {
       AppStorage.removeData({

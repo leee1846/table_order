@@ -4,8 +4,14 @@ import { BasicButton } from '@repo/ui/components';
 import { SettingsIcon } from '@repo/ui/icons';
 import { toast } from '@repo/feature/utils';
 import { usePostDeviceDetail } from '@repo/api/queries';
-import type { IPostDeviceDetailRequest, TDeviceType } from '@repo/api/types';
+import type {
+  IPostDeviceDetailRequest,
+  TDeviceType,
+  TShopLanguage,
+} from '@repo/api/types';
+import { storage } from '@repo/util/function';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
+import { STORAGE_KEYS } from '@/constants/keys';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { Account } from '@/pages/settings/MiscellaneousPage/Account';
@@ -22,7 +28,9 @@ const TOAST_OPTIONS = {
 };
 
 export const MiscellaneousPage = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
+  const [pendingAdminLanguage, setPendingAdminLanguage] =
+    useState<TShopLanguage>(() => (i18n.language || 'KO') as TShopLanguage);
 
   const { data: deviceData, setDataAsync: setDeviceData } = useDeviceData();
   const { data: shopData } = useShopStore();
@@ -40,10 +48,6 @@ export const MiscellaneousPage = () => {
     setOrderPosNumber(deviceData.orderPosNumber ?? null);
   }, [deviceData]);
 
-  const showToast = (message: string) => {
-    toast(t(message), TOAST_OPTIONS);
-  };
-
   const handleOrderPosNumberChange = (value: string) => {
     const parsedNumber = Number(value);
     if (Number.isNaN(parsedNumber) || parsedNumber > MAX_ORDER_POS_NUMBER) {
@@ -59,7 +63,7 @@ export const MiscellaneousPage = () => {
 
   const handleSave = async () => {
     if (isOrderPosMode && orderPosNumber === null) {
-      showToast('오더포스 번호를 입력해주세요.');
+      toast(t('오더포스 번호를 입력해주세요.'), TOAST_OPTIONS);
       return;
     }
 
@@ -85,7 +89,15 @@ export const MiscellaneousPage = () => {
 
     await saveDeviceDetail(deviceDetail);
     setDeviceData(deviceDetail);
-    showToast('설정이 저장되었습니다.');
+    await i18n.changeLanguage(pendingAdminLanguage);
+    storage.local.save(STORAGE_KEYS.ADMIN_I18N_LANGUAGE, pendingAdminLanguage);
+    toast(
+      i18n.t('설정이 저장되었습니다.', {
+        lng: pendingAdminLanguage,
+        ns: 'admin',
+      }),
+      TOAST_OPTIONS
+    );
   };
 
   return (
@@ -101,7 +113,10 @@ export const MiscellaneousPage = () => {
       </header>
 
       <S.Sections>
-        <Account />
+        <Account
+          selectedLanguageCode={pendingAdminLanguage}
+          onLanguageSelectionChange={setPendingAdminLanguage}
+        />
         <Detail
           useOrderposMode={isOrderPosMode}
           onChangeUseOrderposMode={handleToggleOrderPosMode}

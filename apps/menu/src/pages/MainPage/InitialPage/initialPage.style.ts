@@ -82,6 +82,7 @@ export const Description = styled.p<{ initPageLayout: TInitPageLayout }>`
     initPageLayout === 'DARK'
       ? baseTheme.darkModeColors.grey[600]
       : baseTheme.colors.grey[600]};
+  white-space: pre-wrap;
   word-break: break-word;
   overflow-wrap: break-word;
   max-width: 100%;

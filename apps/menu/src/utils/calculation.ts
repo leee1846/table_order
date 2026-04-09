@@ -1,3 +1,75 @@
+import type { ICategoryWithMenus, IMenu } from '@repo/api/types';
+import type { ICartMenu } from '@/types/cart';
+
+/**
+ * 카테고리 API 메뉴 기준으로 menuSeq → 메뉴(면세·옵션 메타) 맵 (부가세 계산용)
+ */
+export const buildMenuSeqToCategoryMenuMap = (
+  categories: ICategoryWithMenus[] | null | undefined
+): Map<number, IMenu> => {
+  const map = new Map<number, IMenu>();
+  categories?.forEach((category) => {
+    category.menuInfoList?.forEach((menu) => {
+      map.set(menu.menuSeq, menu);
+    });
+  });
+  return map;
+};
+
+/**
+ * 카테고리에 등록된 옵션 메타의 면세 여부 (카트에는 저장하지 않고 계산 시에만 조회)
+ */
+export const isOptionTaxFreeInCategoryMenu = (
+  categoryMenu: IMenu | undefined,
+  optionGroupSeq: number,
+  optionSeq: number
+): boolean => {
+  const option = categoryMenu?.optionGroupList
+    ?.flatMap((g) => g.optionList ?? [])
+    .find(
+      (o) => o.optionGroupSeq === optionGroupSeq && o.optionSeq === optionSeq
+    );
+  return option?.isTaxFree === true;
+};
+
+/**
+ * 장바구니 부가세 (POS 단말과 동일한 방식).
+ * 카트 한 줄(ICartMenu)마다 과세 표준액에 대해 floor(금액/11) 후 합산.
+ * 메뉴와 옵션의 isTaxFree는 독립적으로 판단한다.
+ *   - 메뉴 isTaxFree: true  → 메뉴 가격만 과세 표준에서 제외
+ *   - 옵션 isTaxFree: false → 해당 옵션 가격은 과세 표준에 포함
+ * (전체 합산 후 한 번만 floor 하면 POS 품목별 역산과 1원 차이 날 수 있음)
+ */
+export const calculateCartMenusTaxAmount = (
+  menus: ICartMenu[],
+  categories: ICategoryWithMenus[] | null | undefined
+): number => {
+  const menuSeqToCategoryMenu = buildMenuSeqToCategoryMenuMap(categories);
+  return menus.reduce((totalTax, menu) => {
+    const categoryMenu = menuSeqToCategoryMenu.get(menu.menuSeq);
+
+    // 메뉴 자체가 면세이면 메뉴 가격만 0으로 처리 (옵션은 별도 판단)
+    const taxableMenuPrice =
+      categoryMenu?.isTaxFree === true ? 0 : menu.menuPrice;
+
+    // 옵션별 isTaxFree를 개별적으로 판단
+    const taxableOptionsTotal = menu.selectedOptions.reduce(
+      (optSum, opt) =>
+        isOptionTaxFreeInCategoryMenu(
+          categoryMenu,
+          opt.optionGroupSeq,
+          opt.optionSeq
+        )
+          ? optSum
+          : optSum + opt.optionPrice * opt.quantity,
+      0
+    );
+
+    const lineTaxable = (taxableMenuPrice + taxableOptionsTotal) * menu.quantity;
+    return totalTax + Math.floor(lineTaxable / 11);
+  }, 0);
+};
+
 /**
  * 메뉴 가격 계산에 사용되는 옵션 정보
  */

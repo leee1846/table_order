@@ -1,5 +1,8 @@
 import { BasicButton, ModalBackground } from '@repo/ui/components';
-import { LANGUAGE_CONFIG } from '@/constants/common';
+import {
+  LANGUAGE_CONFIG,
+  SHOP_LANGUAGE_DISPLAY_ORDER,
+} from '@/constants/common';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useEffect, useState } from 'react';
 import type { TShopLanguage } from '@repo/api/types';
@@ -29,14 +32,21 @@ export const LanguageSelectorModal = ({ onClose }: Props) => {
   }, [languageData]);
 
   const languages =
-    shopDetailData?.shopSetting?.shopLocaleMapList.map((locale) => ({
-      value: locale.localeCode,
-      label:
-        LANGUAGE_CONFIG[locale.localeCode as keyof typeof LANGUAGE_CONFIG]
-          .label,
-      flag: LANGUAGE_CONFIG[locale.localeCode as keyof typeof LANGUAGE_CONFIG]
-        .flag,
-    })) ?? [];
+    shopDetailData?.shopSetting?.shopLocaleMapList != null
+      ? SHOP_LANGUAGE_DISPLAY_ORDER.flatMap((code) => {
+          const locale = shopDetailData.shopSetting.shopLocaleMapList.find(
+            (l) => l.localeCode === code
+          );
+          if (!locale) {
+            return [];
+          }
+          const cfg = LANGUAGE_CONFIG[locale.localeCode as TShopLanguage];
+          if (!cfg) {
+            return [];
+          }
+          return [{ value: locale.localeCode, label: cfg.label, flag: cfg.flag }];
+        })
+      : [];
 
   const handleSubmit = async () => {
     if (tempSelectedLanguage) {

@@ -52,8 +52,8 @@ export const accessTokenRefreshManager = (() => {
       .then((res) => {
         const token = res.data.accessToken;
         setAccessToken(token);
-        state.config?.disconnectSse?.();
-        state.config?.reconnectSse?.();
+        // state.config?.disconnectSse?.();
+        // state.config?.reconnectSse?.();
         return token;
       })
       .catch((err) => {

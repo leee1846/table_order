@@ -10,7 +10,10 @@ import { useCartStore } from '@/stores/useCartStore';
 import type { ICartMenuWithId, ICartMenu } from '@/types/cart';
 import { formatCurrency } from '@repo/util/string';
 import { useDeviceStore } from '@/stores/useDeviceStore';
-import { calculateMenuTotalPrice } from '@/utils/calculation';
+import {
+  calculateCartMenusTaxAmount,
+  calculateMenuTotalPrice,
+} from '@/utils/calculation';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useModalStore } from '@/stores/useModalStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
@@ -43,6 +46,11 @@ import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { localizeOrders } from '@/utils/localizeOrders';
+import {
+  logOrderRequestRefundFailed,
+  orderRequestRefundFailedSummaryAfterOrderCreate,
+  orderRequestRefundFailedSummaryAfterPaymentApproval,
+} from '@/utils/logOrderRequestRefundFailed';
 
 interface Props {
   onClose: () => void;
@@ -91,31 +99,12 @@ const calculateTotalMenusPrice = (menus: ICartMenu[]): number => {
   );
 };
 
-/**
- * 메뉴 목록의 부가세 금액 계산
- * isTaxFree 메뉴를 제외한 과세 대상 금액에서 역산 (과세금액 / 11)
- */
+/** POS와 동일: `calculateCartMenusTaxAmount`(카트 줄 단위 floor 합산) */
 const calculateMenusTaxAmount = (menus: ICartMenu[]): number => {
-  const categories = useCategoryStore.getState().data.categories;
-  const menuSeqToIsTaxFree = new Map<number, boolean>();
-  categories?.forEach((category) => {
-    category.menuInfoList.forEach((menu) => {
-      menuSeqToIsTaxFree.set(menu.menuSeq, menu.isTaxFree);
-    });
-  });
-
-  const taxableAmount = menus.reduce((sum, menu) => {
-    if (menuSeqToIsTaxFree.get(menu.menuSeq) === true) {
-      return sum;
-    }
-    const optionsTotal = menu.selectedOptions.reduce(
-      (optSum, opt) => optSum + opt.optionPrice * opt.quantity,
-      0
-    );
-    return sum + (menu.menuPrice + optionsTotal) * menu.quantity;
-  }, 0);
-
-  return Math.floor(taxableAmount / 11);
+  return calculateCartMenusTaxAmount(
+    menus,
+    useCategoryStore.getState().data.categories
+  );
 };
 
 /**
@@ -546,6 +535,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const executePayment = async (
     paymentAmount: number,
     taxAmount: number,
+    installmentMonths: number,
     onSuccess: (
       orderUuidFromPayment: string,
       paymentResult: IPaymentResponse
@@ -555,19 +545,22 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       // 1. 결제 진행 모달 표시
       // setModalData('isCardPaymentProgressModalOpened', true);
 
-      // 2. 할부 개월 수 결정 (5만원 미만은 일시불 강제)
-      const installmentMonths =
+      // 2. 5만원 미만은 일시불 강제, 이상은 전달받은 할부 개월 수 사용
+      const installmentToUse =
         paymentAmount < INSTALLMENT_MINIMUM_AMOUNT
           ? INSTALLMENT_LUMP_SUM
-          : selectedInstallmentMonths;
+          : installmentMonths;
 
       // 3. 카드 단말기 승인 요청
       const paymentResult: IPaymentResponse = await Payment.approve({
         amount: paymentAmount,
         tax: taxAmount,
         taxOption: 'M',
-        installment: formatInstallmentMonthsToString(installmentMonths),
+        installment: formatInstallmentMonthsToString(installmentToUse),
       });
+
+      const shopCode = shopData?.shopCode ?? '';
+      const tableNumber = useDeviceStore.getState().data?.tableNumber ?? '';
 
       // 4. 주문 생성 또는 재사용 (첫 결제 시에만 생성)
       let orderGroupUuid: string;
@@ -580,7 +573,16 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         try {
           await Payment.cancel(paymentResult);
         } catch {
-          // 카드 취소 실패 시 무시
+          logOrderRequestRefundFailed(
+            orderRequestRefundFailedSummaryAfterOrderCreate(
+              shopCode,
+              tableNumber
+            ),
+            paymentResult
+          );
+          throw new Error(
+            t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
+          );
         }
         throw new Error(t('결제 처리 중 오류가 발생했습니다.'));
       }
@@ -602,10 +604,18 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         try {
           await Payment.cancel(paymentResult);
         } catch {
-          // 카드 취소 실패 시 무시
+          logOrderRequestRefundFailed(
+            orderRequestRefundFailedSummaryAfterPaymentApproval(
+              useShopDetailStore.getState().data?.shopSetting?.vanCode ?? 'EASY'
+            ),
+            paymentResult
+          );
+          throw new Error(
+            t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
+          );
         }
         throw new Error(
-          t('주문 요청에 실패했습니다. 사장님에게 문의해주세요.')
+          t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.')
         );
         // postPaymentApproval 실패는 무시
       }
@@ -689,7 +699,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
     openConfirmDialog({
       title: t('POS 오류'),
-      content: t('주문 요청에 실패했습니다. 사장님에게 문의해주세요.'),
+      content: t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'),
       confirmText: t('확인'),
     });
   };
@@ -854,7 +864,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * - 남은 메뉴를 모두 선택했거나
    * - 결제 후 남은 금액이 0원 이하
    */
-  const handleMenuPayment = async (): Promise<void> => {
+  const handleMenuPayment = async (
+    installmentMonths = selectedInstallmentMonths
+  ): Promise<void> => {
     // 선택된 메뉴 검증
     if (selectedMenus.length === 0) {
       toast(t('선택된 메뉴가 없습니다.'), {
@@ -877,6 +889,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     await executePayment(
       paymentAmount,
       taxAmount,
+      installmentMonths,
       (orderUuidFromPayment, paymentResult) => {
         completedPaymentResultsRef.current = paymentResult;
         handlePaymentSuccess(isAllPaid, orderUuidFromPayment, selectedMenuIds);
@@ -892,7 +905,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * - 남은 인원을 모두 선택했거나
    * - 결제 후 남은 금액이 0원 이하
    */
-  const handlePersonPayment = async (): Promise<void> => {
+  const handlePersonPayment = async (
+    installmentMonths = selectedInstallmentMonths
+  ): Promise<void> => {
     const selectedPersons = remainingPersons.filter(
       (person) => person.isSelected
     );
@@ -927,6 +942,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     await executePayment(
       paymentAmount,
       taxAmount,
+      installmentMonths,
       (orderUuidFromPayment, paymentResult) => {
         completedPaymentResultsRef.current = paymentResult;
 
@@ -978,10 +994,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     setSelectedInstallmentMonths(selectedMonths);
     setIsInstallmentModalOpen(false);
 
+    // selectedMonths를 직접 전달 (setState는 비동기이므로 stale state 방지)
     if (isPaymentByMenu) {
-      handleMenuPayment();
+      handleMenuPayment(selectedMonths);
     } else {
-      handlePersonPayment();
+      handlePersonPayment(selectedMonths);
     }
   };
 

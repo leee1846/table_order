@@ -77,9 +77,11 @@ const MenuManageModalContent = ({
         <S.LeftColumn>
           <S.Header>
             <S.Titles>
-              <p>{t('메뉴 관리')}</p>
-              <span />
-              <div>
+              <S.TitleLead>
+                <p>{t('메뉴 관리')}</p>
+                <span />
+              </S.TitleLead>
+              <S.TitleBreadcrumb>
                 <p>{categoryName}</p>
                 <ChevronForwardIcon
                   color={theme.colors.grey[600]}
@@ -87,7 +89,7 @@ const MenuManageModalContent = ({
                   height={24}
                 />
                 <p>{modalTitle}</p>
-              </div>
+              </S.TitleBreadcrumb>
             </S.Titles>
             <S.CloseButton type="button" onClick={onClose}>
               <CloseIcon

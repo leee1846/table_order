@@ -146,9 +146,23 @@ export const TablesPage = () => {
         return;
       }
 
+      if (!table.hasOrder) {
+        await createOrderGroup({
+          shopCode: shopData?.shopCode ?? '',
+          tableNumber: table.tableNumber,
+          customerCount: 1,
+          kidsCustomerCount: 0,
+        });
+      }
+
       navigate(ROUTES.TABLES.TABLE_DETAIL.generate(table.tableNumber));
     },
-    [shopSetting?.useCustomerCount, navigate]
+    [
+      shopSetting?.useCustomerCount,
+      shopData?.shopCode,
+      createOrderGroup,
+      navigate,
+    ]
   );
 
   // 공통: 인원 수 입력 모달 확인 핸들러
@@ -504,6 +518,7 @@ export const TablesPage = () => {
   if (isOrderPosDevice) {
     return (
       <>
+        {/* 포스를 선택한 경우 */}
         {shopDetailData?.shopSetting?.shopPosCode !== 'NONE' &&
         shopDetailData?.shopSetting?.shopPosCode != null ? (
           <TablesPageContainer>
@@ -544,6 +559,7 @@ export const TablesPage = () => {
             </TableCardsArea>
           </TablesPageContainer>
         ) : (
+          // 포스를 선택하지 않은 경우
           <DndContextWrapper
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}

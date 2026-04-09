@@ -22,6 +22,7 @@ export interface IOption extends ICommonResponseData {
   optionName: string;
   optionPrice: number;
   isOutOfStock: boolean;
+  isTaxFree: boolean;
   localeOptionName: TLocale;
   localeOptionNameStr: TLocale;
   quantity: number;

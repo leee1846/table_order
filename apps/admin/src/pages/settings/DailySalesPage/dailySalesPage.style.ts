@@ -147,7 +147,7 @@ export const TooltipText = styled.span`
 
 export const TooltipArrow = styled.div`
   position: absolute;
-  bottom: -6px;
+  bottom: -5px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;

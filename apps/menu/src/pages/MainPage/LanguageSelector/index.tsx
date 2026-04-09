@@ -1,6 +1,9 @@
 import * as S from '@/pages/MainPage/LanguageSelector/languageSelector.style';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
-import { LANGUAGE_CONFIG } from '@/constants/common';
+import {
+  LANGUAGE_CONFIG,
+  SHOP_LANGUAGE_DISPLAY_ORDER,
+} from '@/constants/common';
 import type { TShopLanguage } from '@repo/api/types';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
@@ -21,13 +24,20 @@ export const LanguageSelector = () => {
     return null;
   }
 
+  const shopLocalesOrdered = SHOP_LANGUAGE_DISPLAY_ORDER.flatMap((code) => {
+    const lang = shopDetailData.shopSetting.shopLocaleMapList.find(
+      (l) => l.localeCode === code
+    );
+    return lang ? [lang] : [];
+  });
+
   return (
     <S.Container>
       <S.ContentWrapper>
         <h1>{t('언어 선택')}</h1>
         <p>{t('주문에 사용하실 언어를 선택해 주세요.')}</p>
         <S.Buttons>
-          {shopDetailData.shopSetting.shopLocaleMapList.map((lang) => {
+          {shopLocalesOrdered.map((lang) => {
             const config = LANGUAGE_CONFIG[lang.localeCode as TShopLanguage];
             if (!config) {
               return null;

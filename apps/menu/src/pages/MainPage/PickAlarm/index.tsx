@@ -16,31 +16,36 @@ export const PickupAlarm = () => {
       aria-live="assertive"
       aria-labelledby="pickup-title"
     >
-      <S.Image src={waiterHandIcon} alt="" aria-hidden="true" />
-      <S.Title id="pickup-title">{t('주문하신 메뉴가 준비되었어요!')}</S.Title>
-      <S.Description>
-        <br />
-        {piupAlarmData.pickupAlertMessage
-          ? `(${piupAlarmData.pickupAlertMessage})`
-          : ''}
-      </S.Description>
+      <S.ScrollViewport>
+        <S.ScrollInner>
+          <S.Image src={waiterHandIcon} alt="" aria-hidden="true" />
+          <S.Title id="pickup-title">{t('주문하신 메뉴가 준비되었어요!')}</S.Title>
+          <S.Description>
+            <br />
+            {piupAlarmData.pickupAlertMessage
+              ? `(${piupAlarmData.pickupAlertMessage})`
+              : ''}
+          </S.Description>
+        </S.ScrollInner>
+      </S.ScrollViewport>
 
-      <BasicButton
-        variant="Solid_Blue_2XL"
-        onClick={() =>
-          setShowPickupAlarm({ showPickupAlarm: false, pickupAlertMessage: '' })
-        }
-        customStyle={css`
-          width: 18.125rem;
-          position: fixed;
-          left: 50%;
-          transform: translateX(-50%);
-          bottom: 50px;
-        `}
-        aria-label={t('닫기')}
-      >
-        {t('닫기')}
-      </BasicButton>
+      <S.Footer>
+        <BasicButton
+          variant="Solid_Blue_2XL"
+          onClick={() =>
+            setShowPickupAlarm({
+              showPickupAlarm: false,
+              pickupAlertMessage: '',
+            })
+          }
+          customStyle={css`
+            width: 18.125rem;
+          `}
+          aria-label={t('닫기')}
+        >
+          {t('닫기')}
+        </BasicButton>
+      </S.Footer>
     </S.Container>
   );
 };
