@@ -29,7 +29,7 @@ export const useShopDetailData = (options?: Props) => {
   const { data: storeData, setData: setShopDetailData } = useShopDetailStore();
 
   const enabled = !!shopData?.shopCode && !storeData && !skipInitialRequest;
-  const { data: apiData, refetch } = useGetShopDetail(
+  const { data: apiData, refetch, isLoading } = useGetShopDetail(
     shopData?.shopCode ?? '',
     { enabled }
   );
@@ -64,6 +64,7 @@ export const useShopDetailData = (options?: Props) => {
 
   return {
     data: storeData,
+    isLoading,
     refresh,
   };
 };

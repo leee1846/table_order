@@ -39,7 +39,8 @@ import { OrderCompleteModalContainer } from '@/pages/MainPage/OrderCompleteModal
 export const MainPage = () => {
   useShopData();
   useTableGroupData();
-  const { data: shopDetailData } = useShopDetailData();
+  const { data: shopDetailData, isLoading: isShopDetailLoading } =
+    useShopDetailData();
   const deviceDataResult = useDeviceData();
   const {
     categories,
@@ -47,8 +48,11 @@ export const MainPage = () => {
     staffCallCategory,
     nonStaffCallCategories,
   } = useCategoriesData();
-  const { data: tableOrderHistoriesData } = useTableOrderHistoriesData();
-  const { data: shopThemeData } = useShopThemePage();
+  const {
+    data: tableOrderHistoriesData,
+    isLoading: isTableOrderHistoriesLoading,
+  } = useTableOrderHistoriesData();
+  const { data: shopThemeData, isThemePageLoading } = useShopThemePage();
   const hasInitialPageDetailImages =
     (shopThemeData?.themePageData?.shopPageDetailList?.filter(
       (item) => item.pageDetailType === 'INIT_COMMON'
@@ -208,11 +212,20 @@ export const MainPage = () => {
     return <CashPaymentInducement />;
   }
 
+  /**
+   * 화면 표시 여부를 결정하는 핵심 데이터가 로드될 때까지 렌더링 차단
+   */
+  const isDataReady =
+    (shopDetailData !== null || !isShopDetailLoading) &&
+    (shopThemeData?.themePageData !== null || !isThemePageLoading) &&
+    (tableOrderHistoriesData !== null || !isTableOrderHistoriesLoading);
+
   /** 초기 화면 / 언어 선택 / 객수 선택: 전체화면 페이지 위에 주문 완료 모달 노출 */
   if (
-    pageStates.initialPage.show ||
-    pageStates.languageSelector.show ||
-    pageStates.customerCount.show
+    isDataReady &&
+    (pageStates.initialPage.show ||
+      pageStates.languageSelector.show ||
+      pageStates.customerCount.show)
   ) {
     return (
       <>

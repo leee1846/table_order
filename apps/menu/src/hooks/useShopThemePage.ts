@@ -34,7 +34,7 @@ export const useShopThemePage = (options?: Props) => {
 
   const enabledThemePage =
     !!shopData?.shopCode && !storeData?.themePageData && !skipInitialRequest;
-  const { data: themePageDataResponse, refetch } = useGetShopThemePage(
+  const { data: themePageDataResponse, refetch, isLoading: isThemePageLoading } = useGetShopThemePage(
     shopData?.shopCode ?? '',
     { enabled: enabledThemePage }
   );
@@ -88,6 +88,7 @@ export const useShopThemePage = (options?: Props) => {
       themePageData: storeData?.themePageData,
       shopThemeData: storeData?.shopThemeData,
     },
+    isThemePageLoading,
     refresh,
   };
 };
