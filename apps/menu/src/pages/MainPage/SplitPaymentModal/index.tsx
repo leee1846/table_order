@@ -535,6 +535,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const executePayment = async (
     paymentAmount: number,
     taxAmount: number,
+    installmentMonths: number,
     onSuccess: (
       orderUuidFromPayment: string,
       paymentResult: IPaymentResponse
@@ -544,18 +545,18 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       // 1. 결제 진행 모달 표시
       // setModalData('isCardPaymentProgressModalOpened', true);
 
-      // 2. 할부 개월 수 결정 (5만원 미만은 일시불 강제)
-      const installmentMonths =
+      // 2. 5만원 미만은 일시불 강제, 이상은 전달받은 할부 개월 수 사용
+      const installmentToUse =
         paymentAmount < INSTALLMENT_MINIMUM_AMOUNT
           ? INSTALLMENT_LUMP_SUM
-          : selectedInstallmentMonths;
+          : installmentMonths;
 
       // 3. 카드 단말기 승인 요청
       const paymentResult: IPaymentResponse = await Payment.approve({
         amount: paymentAmount,
         tax: taxAmount,
         taxOption: 'M',
-        installment: formatInstallmentMonthsToString(installmentMonths),
+        installment: formatInstallmentMonthsToString(installmentToUse),
       });
 
       const shopCode = shopData?.shopCode ?? '';
@@ -863,7 +864,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * - 남은 메뉴를 모두 선택했거나
    * - 결제 후 남은 금액이 0원 이하
    */
-  const handleMenuPayment = async (): Promise<void> => {
+  const handleMenuPayment = async (
+    installmentMonths = selectedInstallmentMonths
+  ): Promise<void> => {
     // 선택된 메뉴 검증
     if (selectedMenus.length === 0) {
       toast(t('선택된 메뉴가 없습니다.'), {
@@ -886,6 +889,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     await executePayment(
       paymentAmount,
       taxAmount,
+      installmentMonths,
       (orderUuidFromPayment, paymentResult) => {
         completedPaymentResultsRef.current = paymentResult;
         handlePaymentSuccess(isAllPaid, orderUuidFromPayment, selectedMenuIds);
@@ -901,7 +905,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * - 남은 인원을 모두 선택했거나
    * - 결제 후 남은 금액이 0원 이하
    */
-  const handlePersonPayment = async (): Promise<void> => {
+  const handlePersonPayment = async (
+    installmentMonths = selectedInstallmentMonths
+  ): Promise<void> => {
     const selectedPersons = remainingPersons.filter(
       (person) => person.isSelected
     );
@@ -936,6 +942,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     await executePayment(
       paymentAmount,
       taxAmount,
+      installmentMonths,
       (orderUuidFromPayment, paymentResult) => {
         completedPaymentResultsRef.current = paymentResult;
 
@@ -987,10 +994,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     setSelectedInstallmentMonths(selectedMonths);
     setIsInstallmentModalOpen(false);
 
+    // selectedMonths를 직접 전달 (setState는 비동기이므로 stale state 방지)
     if (isPaymentByMenu) {
-      handleMenuPayment();
+      handleMenuPayment(selectedMonths);
     } else {
-      handlePersonPayment();
+      handlePersonPayment(selectedMonths);
     }
   };
 
