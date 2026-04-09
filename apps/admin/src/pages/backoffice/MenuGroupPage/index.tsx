@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button, Input, Space, Tooltip, Form } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -13,6 +13,9 @@ import { ROUTES } from '@/constants/routes';
 import { useTablePageState } from '@/feature/backoffice/hooks';
 import PageTitle from '@/feature/Backoffice/components/PageTitle';
 import MenuGroupModal from './MenuGroupNewModal';
+import { useGetMenuGroupList } from '@repo/api/queries';
+import { MenuName } from '../../../feature/dialogs/OrderListDialog/DetailOrderDialog/detailOrderDialog.style';
+import type { IMenuGroup, IMenuGroupMenu } from '@repo/api/types';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -46,42 +49,18 @@ const TopBar = styled.div`
 `;
 
 // 데이터 타입 정의
-interface MenuGroupDataType {
-  key: string;
-  no: number;
-  menuGroupName: string;
-  menuGroupTag: string;
+/* interface MenuType {
+  menuSeq: number;
+  sortSeq: number;
   menuName: string;
-  createdAt: string;
-}
+  menuPrice: number;
+  isRecommended: boolean;
+  menuDescription: string;
+} */
 
-// 임시 목업 데이터
-const MOCK_DATA: MenuGroupDataType[] = [
-  {
-    key: '1',
-    no: 1,
-    menuGroupName: '주류(소주)',
-    menuGroupTag: '#소주 #주류',
-    menuName: '참이슬, 처음처럼, 진로, 새로, 대선',
-    createdAt: '2024-03-01',
-  },
-  {
-    key: '2',
-    no: 2,
-    menuGroupName: '주류(맥주)',
-    menuGroupTag: '#맥주 #주류',
-    menuName: '카스, 테라, 켈리, 크러시',
-    createdAt: '2024-03-02',
-  },
-  {
-    key: '3',
-    no: 3,
-    menuGroupName: '여름 시즌 메뉴',
-    menuGroupTag: '#여름 #빙수 #시즌',
-    menuName: '수박화채, 파인애플 샤베트',
-    createdAt: '2024-05-15',
-  },
-];
+interface MenuGroupDataType extends IMenuGroup {
+  no: number;
+}
 
 const StyledTable = styled(Table<MenuGroupDataType>)`
   .ant-table-thead > tr > th {
@@ -107,6 +86,28 @@ const MenuGroupPage: React.FC = () => {
     handlePageChange,
   } = useTablePageState({ pageSize });
 
+  // API 연동: 메뉴 그룹 목록 조회
+  const { data: menuGroupResponse, isFetching } = useGetMenuGroupList({
+    page: currentPage - 1,
+    size: pageSize,
+    keyword: searchKeyword || undefined,
+  });
+
+  const menuGroups: MenuGroupDataType[] = useMemo(() => {
+    const content = menuGroupResponse?.data?.content || [];
+    return content.map((item, index) => ({
+      key: String(item.menuGroupSeq || index),
+      no: (currentPage - 1) * pageSize + index + 1,
+      menuGroupSeq: item.menuGroupSeq,
+      menuGroupTag: item.menuGroupTag || '',
+      menuGroupName: item.menuGroupName || '',
+      menus: item.menus || [],
+      createdAt: item.createDate || '',
+    }));
+  }, [menuGroupResponse?.data?.content, currentPage, pageSize]);
+
+  const totalCount = menuGroupResponse?.data?.totalCount || 0;
+
   const handleCreate = () => {
     form.resetFields();
     setModalMode('new');
@@ -116,7 +117,7 @@ const MenuGroupPage: React.FC = () => {
   const handleEdit = (record: MenuGroupDataType) => {
     form.setFieldsValue({
       menuGroupName: record.menuGroupName,
-      menus: record.menuName ? record.menuName.split(', ') : [],
+      menus: record.menus ? record.menus.map((m) => m.menuName) : [],
     });
     setModalMode('edit');
     setIsModalOpen(true);
@@ -140,7 +141,13 @@ const MenuGroupPage: React.FC = () => {
       key: 'menuGroupTag',
       width: 200,
     },
-    { title: '메뉴명', dataIndex: 'menuName', key: 'menuName' },
+    {
+      title: '메뉴명',
+      dataIndex: 'menus',
+      key: 'menus',
+      render: (menus: IMenuGroupMenu[]) =>
+        menus?.map((m) => m.menuName).join(', ') || '-',
+    },
     {
       title: '생성일',
       dataIndex: 'createdAt',
@@ -183,7 +190,7 @@ const MenuGroupPage: React.FC = () => {
         <TopBar>
           <Space>
             <Input
-              placeholder="검색어를 입력하세요"
+              placeholder="메뉴그룹명을 입력하세요"
               style={{ width: 240, borderRadius: '6px' }}
               value={searchInputValue}
               onChange={(e) => handleSearchInputChange(e.target.value)}
@@ -214,9 +221,10 @@ const MenuGroupPage: React.FC = () => {
           </Space>
         </TopBar>
         <StyledTable
+          loading={isFetching}
           columns={columns}
-          dataSource={MOCK_DATA}
-          rowKey="key"
+          dataSource={menuGroups}
+          rowKey={(record) => record.menuGroupSeq}
           pagination={{
             current: currentPage,
             pageSize,
@@ -227,7 +235,7 @@ const MenuGroupPage: React.FC = () => {
               }
             },
             placement: ['bottomEnd'],
-            total: MOCK_DATA.length,
+            total: totalCount,
             showTotal: (total) => `총 ${total}건`,
             showSizeChanger: true,
           }}

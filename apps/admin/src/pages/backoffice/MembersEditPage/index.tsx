@@ -3,7 +3,6 @@ import { useMemo, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Members } from '@/feature/backoffice/Members';
 import { validateMembersData } from '@/feature/backoffice/util';
-import { openConfirmDialog } from '@repo/feature/utils';
 import { message } from 'antd';
 import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
 import { ROUTES } from '@/constants/routes';
@@ -76,7 +75,7 @@ export const MembersEditPage = () => {
     if (error && error instanceof AxiosError) {
       const statusCode = error.response?.status;
       if (statusCode === 404) {
-        openConfirmDialog({
+        showConfirm({
           title: '알림',
           content: '회원이 존재하지 않습니다.',
           onConfirm: () => {
@@ -85,7 +84,7 @@ export const MembersEditPage = () => {
         });
       }
     }
-  }, [error, navigate]);
+  }, [error, navigate, showConfirm]);
 
   // API 응답을 MembersFormData로 변환
   const initialData = useMemo(() => {

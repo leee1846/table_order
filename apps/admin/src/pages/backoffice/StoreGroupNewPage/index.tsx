@@ -10,6 +10,7 @@ import {
   App,
   Space,
   Tooltip,
+  Upload,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
@@ -21,6 +22,15 @@ import styled from '@emotion/styled';
 import PageTitle from '@/feature/Backoffice/components/PageTitle';
 import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
 import { ROUTES } from '@/constants/routes';
+import * as XLSX from 'xlsx';
+import {
+  useGetStoreGroupDetail,
+  usePostStoreSearch,
+  useGetStoreGroupMembers,
+  usePostCreateStoreGroup,
+  usePutUpdateStoreGroup,
+} from '@repo/api/queries';
+import type { IStore } from '@repo/api/types';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -55,22 +65,19 @@ const SectionTitle = styled(Title)`
   }
 `;
 
-// --- Mock Data ---
-interface StoreType {
-  key: string;
-  sid: string;
-  name: string;
-  address: string;
+// interface StoreType {
+//   shopSeq?: string | number;
+//   shopCode?: string;
+//   shopName?: string;
+//   address1?: string;
+// }
+
+interface ExcelRowData {
+  '매장 ID'?: string | number;
+  [key: string]: string | number | boolean | undefined;
 }
 
-const MOCK_STORES: StoreType[] = Array.from({ length: 15 }).map((_, i) => ({
-  key: String(i + 1),
-  sid: `S${String(i + 1).padStart(4, '0')}`,
-  name: `테스트 매장 ${i + 1}호점`,
-  address: `서울시 강남구 테스트로 ${i + 1}`,
-}));
-
-const StyledTable = styled(Table<StoreType>)`
+const StyledTable = styled(Table<IStore>)`
   .ant-table-thead > tr > th {
     background-color: #1d2a6d !important;
     color: white !important;
@@ -85,26 +92,93 @@ export const StoreGroupNewPage = () => {
   const { showConfirm } = useConfirmDialog();
   const [form] = Form.useForm<StoreGroupFormValues>();
   //const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [dataSource, setDataSource] = useState<StoreType[]>(MOCK_STORES);
+  const [dataSource, setDataSource] = useState<IStore[]>([]);
   const [searchText, setSearchText] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(20);
+  const [searchShopCodes, setSearchShopCodes] = useState<string[]>([]);
 
   const isEditMode = !!id; // id가 파라미터로 있으면 수정 모드
 
   console.log('isEditMode:', isEditMode);
 
+  // API 연동: 매장 그룹 상세 정보 조회
+  const { data: detailResponse } = useGetStoreGroupDetail(id ?? '', {
+    enabled: isEditMode,
+  });
+
+  // const storeIds = detailResponse?.data?.stores || [];
+
+  // API 연동: 매장 그룹 멤버(매장) 목록 조회 (수정 모드 시)
+  const { data: membersResponse, isFetching: isMembersLoading } =
+    useGetStoreGroupMembers(id ?? '', {
+      enabled: isEditMode,
+    });
+
+  // API 연동: 엑셀 등에서 추가된 매장 목록 검색 조회
+  const { data: searchResponse, isFetching: isSearchLoading } =
+    usePostStoreSearch(
+      { shopCodes: searchShopCodes },
+      { enabled: searchShopCodes.length > 0 }
+    );
+
+  const createMutation = usePostCreateStoreGroup();
+  const updateMutation = usePutUpdateStoreGroup();
+
   useEffect(() => {
-    if (isEditMode) {
-      // TODO: API 연동 시 id로 그룹 상세 정보 조회 후 폼 데이터 세팅
+    if (isEditMode && detailResponse?.data) {
       form.setFieldsValue({
-        groupName: '수정할 매장그룹 이름',
-        description: '수정할 매장그룹 설명입니다.',
+        groupName: detailResponse.data.groupName,
+        description: detailResponse.data.groupDescription,
       });
-      // 임시로 일부 매장 선택된 상태로 설정
-      //setSelectedRowKeys(['1', '3', '5']);
     }
-  }, [id, isEditMode, form]);
+  }, [isEditMode, detailResponse, form]);
+  console.log('membersResponse:', membersResponse);
+
+  useEffect(() => {
+    if (isEditMode && membersResponse?.data) {
+      const content = membersResponse.data.content || [];
+      const mappedStores: IStore[] = content.map((store: IStore) => ({
+        shopSeq: store.shopSeq,
+        shopCode: store.shopCode || String(store.shopSeq || '-'),
+        shopName: store.shopName || '-',
+        address1: store.address1 || '-',
+      }));
+      setDataSource(mappedStores);
+    }
+  }, [isEditMode, membersResponse]);
+
+  // 새로 검색된 매장 데이터를 테이블(dataSource)에 병합
+  useEffect(() => {
+    if (searchResponse?.data && searchShopCodes.length > 0) {
+      const content = searchResponse.data.content || [];
+      const mappedStores: IStore[] = content.map((store: IStore) => ({
+        shopSeq: store.shopSeq,
+        shopCode: store.shopCode || String(store.shopSeq || '-'),
+        shopName: store.shopName || '-',
+        address1: store.address1 || '-',
+      }));
+
+      setDataSource((prev) => {
+        const existingCodes = new Set(prev.map((p) => p.shopCode));
+        const newStores = mappedStores.filter(
+          (s) => !existingCodes.has(s.shopCode)
+        );
+
+        if (newStores.length > 0) {
+          message.success(
+            `성공적으로 ${newStores.length}개의 매장을 추가했습니다.`
+          );
+        } else {
+          message.warning(
+            '추가할 새로운 매장이 없거나 검색된 매장이 없습니다.'
+          );
+        }
+        return [...prev, ...newStores];
+      });
+      setSearchShopCodes([]); // 처리 후 검색 코드 초기화
+    }
+  }, [searchResponse, searchShopCodes, message]);
 
   const handleFinish = async (values: StoreGroupFormValues) => {
     if (dataSource.length === 0) {
@@ -117,22 +191,113 @@ export const StoreGroupNewPage = () => {
       return;
     }
 
-    const payload = {
-      ...values,
-      storeIds: dataSource.map((item) => item.key),
-    };
+    try {
+      if (isEditMode && id) {
+        const updatePayload = {
+          storeGroupSeq: Number(id),
+          groupName: values.groupName,
+          groupDescription: values.description,
+          stores: dataSource.map((item) => Number(item.shopSeq)),
+        };
+        console.log('update payload:', updatePayload);
+        await updateMutation.mutateAsync(updatePayload);
+      } else {
+        const createPayload = {
+          groupName: values.groupName,
+          groupDescription: values.description,
+          stores: dataSource.map((item) => String(item.shopSeq)),
+        };
+        console.log('create payload:', createPayload);
+        await createMutation.mutateAsync(createPayload);
+      }
 
-    console.log('Submit payload:', payload);
-
-    // TODO: 등록/수정 API 호출 로직 연결
-    message.success(`매장 그룹이 ${isEditMode ? '수정' : '등록'}되었습니다.`);
-    navigate(ROUTES.BACKOFFICE.STORE_GROUP.generate());
+      message.success(`매장 그룹이 ${isEditMode ? '수정' : '등록'}되었습니다.`);
+      navigate(ROUTES.BACKOFFICE.STORE_GROUP.generate());
+    } catch (error) {
+      message.error(
+        `매장 그룹 ${isEditMode ? '수정' : '등록'} 중 오류가 발생했습니다.`
+      );
+    }
   };
 
-  const columns: ColumnsType<StoreType> = [
-    { title: '매장 코드 (SID)', dataIndex: 'sid', key: 'sid', width: 150 },
-    { title: '매장명', dataIndex: 'name', key: 'name', width: 250 },
-    { title: '주소', dataIndex: 'address', key: 'address' },
+  const handleExcelUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json<ExcelRowData>(worksheet);
+
+        if (jsonData.length === 0) {
+          message.warning('엑셀 파일에 데이터가 없습니다.');
+          return;
+        }
+
+        // 엑셀에서 추출한 매장 코드 목록의 중복을 제거
+        const newShopCodes = Array.from(
+          new Set(
+            jsonData
+              .map((row) => {
+                const values = Object.values(row);
+                return String(row['매장 ID'] || values[0] || '');
+              })
+              .filter(Boolean)
+          )
+        );
+
+        if (newShopCodes.length > 0) {
+          setSearchShopCodes(newShopCodes);
+          message.info(`${file.name} 파일의 매장 정보를 불러오는 중입니다...`);
+        } else {
+          message.warning('유효한 매장 ID가 없습니다.');
+        }
+      } catch (error) {
+        message.error('엑셀 파일을 읽는 중 오류가 발생했습니다.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+
+    return false; // antd의 자동 업로드(API 호출) 동작 방지
+  };
+
+  const handleExcelDownload = async () => {
+    try {
+      // TODO: 실제 엑셀 다운로드 API 호출 로직으로 교체하세요.
+      // 예시 (axios 사용):
+      // const response = await api.get('/api/store-group/excel', { responseType: 'blob' });
+      // const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+      // 아래는 테스트용 더미 Blob 코드입니다. API 연동 시 삭제하세요.
+      const blob = new Blob([''], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute(
+        'download',
+        `매장목록_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.xlsx`
+      );
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      message.error('엑셀 다운로드에 실패했습니다.');
+    }
+  };
+
+  const columns: ColumnsType<IStore> = [
+    {
+      title: '매장 코드 (SID)',
+      dataIndex: 'shopCode',
+      key: 'shopCode',
+      width: 150,
+    },
+    { title: '매장명', dataIndex: 'shopName', key: 'shopName', width: 250 },
+    { title: '주소', dataIndex: 'address1', key: 'address1' },
     {
       title: '관리',
       key: 'management',
@@ -146,19 +311,19 @@ export const StoreGroupNewPage = () => {
               icon={<CloseOutlined />}
               onClick={() => {
                 setDataSource((prev) =>
-                  prev.filter((item) => item.key !== record.key)
+                  prev.filter((item) => item.shopSeq !== record.shopSeq)
                 );
-                message.warning(`'${record.name}' 삭제되었습니다.`);
+                message.warning(`'${record.shopName}' 삭제되었습니다.`);
                 // showConfirm({
                 //   title: '매장 삭제',
                 //   targetName: '매장',
-                //   itemName: record.name,
+                //   itemName: record.shopName,
                 //   onConfirm: () => {
                 //     setDataSource((prev) =>
-                //       prev.filter((item) => item.key !== record.key)
+                //       prev.filter((item) => item.shopSeq !== record.shopSeq)
                 //     );
                 //     setSelectedRowKeys((prev) =>
-                //       prev.filter((key) => key !== record.key)
+                //       prev.filter((key) => key !== record.shopSeq)
                 //     );
                 //     message.warning(`'${record.name}' 삭제되었습니다.`);
                 //   },
@@ -227,10 +392,20 @@ export const StoreGroupNewPage = () => {
                 </Text>
               </div>
               <Space>
-                <Button icon={<UploadOutlined />} variant="outlined">
-                  엑셀 업로드
-                </Button>
-                <Button icon={<DownloadOutlined />} variant="outlined">
+                <Upload
+                  accept=".xlsx, .xls, .csv"
+                  showUploadList={false}
+                  beforeUpload={handleExcelUpload}
+                >
+                  <Button icon={<UploadOutlined />} variant="outlined">
+                    엑셀 업로드
+                  </Button>
+                </Upload>
+                <Button
+                  icon={<DownloadOutlined />}
+                  variant="outlined"
+                  onClick={handleExcelDownload}
+                >
                   엑셀 다운로드
                 </Button>
               </Space>
@@ -244,17 +419,19 @@ export const StoreGroupNewPage = () => {
               // }}
               columns={columns}
               dataSource={dataSource}
+              rowKey="shopSeq"
+              loading={isMembersLoading || isSearchLoading}
               pagination={{
                 current: currentPage,
                 pageSize,
-                total: MOCK_STORES.length,
-                showTotal: (total) => `총 ${total}건`,
-                onChange: (page, pageSize) => {
+                total: dataSource.length,
+                //showTotal: (total) => `총 ${total}건`,
+                /* onChange: (page, pageSize) => {
                   setCurrentPage(page);
                   setPageSize(pageSize);
-                },
+                }, */
                 placement: ['bottomEnd'],
-                showSizeChanger: true,
+                showSizeChanger: false,
               }}
               size="middle"
             />

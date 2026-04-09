@@ -154,4 +154,22 @@ export const ENDPOINTS = {
     CHANGE_HISTORY_LIST: (historyCode: THistoryCode) =>
       `/admin/history/${historyCode}`,
   },
+
+  MENU_GROUP: {
+    LIST: () => `/menu-groups`,
+  },
+
+  STORE_GROUP: {
+    LIST: '/store-groups',
+    CREATE: '/store-groups',
+    UPDATE: (storeGroupSeq: string | number) =>
+      `/store-groups/${storeGroupSeq}`,
+    DETAIL: (id: string | number) => `/store-groups/${id}`, // TODO: 실제 상세 API 경로에 맞춰 수정하세요.
+    MEMBERS: (storeGroupSeq: string | number) =>
+      `/store-groups/${storeGroupSeq}/stores`,
+  },
+  STORE: {
+    LIST: '/stores', // TODO: 실제 API 경로에 맞게 수정하세요 (예: /stores 또는 /store/list)
+    SEARCH: '/stores', // TODO: 실제 검색 API 경로에 맞게 수정하세요
+  },
 } as const;

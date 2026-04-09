@@ -1,6 +1,7 @@
 export * from './auth';
 export * from './orders';
 export * from './menu';
+export * from './menuGroup';
 export * from './shop';
 export * from './table';
 export * from './device';
@@ -13,3 +14,5 @@ export * from './sales';
 export * from './payment';
 export * from './member';
 export * from './sse';
+export * from './storeGroup';
+export * from './store';

@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Members } from '@/feature/backoffice/Members';
-import { openConfirmDialog } from '@repo/feature/utils';
+import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
 import { useGetAdminMember } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import { AxiosError } from '@repo/api/axios';
@@ -45,6 +45,7 @@ const convertToFormData = (
 export const MembersDetailPage = () => {
   const navigate = useNavigate();
   const { memberId } = useParams<{ memberId: string }>();
+  const { showConfirm } = useConfirmDialog();
 
   const { data, error } = useGetAdminMember({
     memberId: memberId || '',
@@ -59,7 +60,7 @@ export const MembersDetailPage = () => {
     if (error && error instanceof AxiosError) {
       const statusCode = error.response?.status;
       if (statusCode === 404) {
-        openConfirmDialog({
+        showConfirm({
           title: '알림',
           content: '회원이 존재하지 않습니다.',
           onConfirm: () => {
@@ -68,7 +69,7 @@ export const MembersDetailPage = () => {
         });
       }
     }
-  }, [error, navigate]);
+  }, [error, navigate, showConfirm]);
 
   // API 응답을 MembersFormData로 변환
   const initialData = useMemo(() => {

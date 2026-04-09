@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useParams, useLocation } from 'react-router-dom';
 import { SystemControl } from '@repo/util/app';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { isNetworkErrorWithGetRequest } from '@repo/api/globalErrorHandler';
@@ -10,6 +10,7 @@ import { closeNetworkErrorDialogAndClearState } from './config/QueryProvider';
 
 const App = () => {
   const { tableNum } = useParams();
+  const location = useLocation();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -43,10 +44,12 @@ const App = () => {
   useSSEHandler(tableNum);
   useSystemStatusMonitor({ onNetworkRecovered: handleNetworkRecovered });
 
+  const isBackoffice = location.pathname.includes('backoffice');
+
   return (
     <div>
       <Outlet />
-      <AdminGlobalLoadingIndicator />
+      {!isBackoffice && <AdminGlobalLoadingIndicator />}
     </div>
   );
 };

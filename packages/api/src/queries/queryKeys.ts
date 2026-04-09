@@ -274,4 +274,28 @@ export const queryKeys = {
     changeHistoryList: (historyCode: THistoryCode, key: string) =>
       [...queryKeys.admin.all, 'changeHistoryList', historyCode, key] as const,
   },
+
+  menuGroup: {
+    all: ['menuGroup'] as const,
+    list: (page?: number, size?: number, keyword?: string) =>
+      [...queryKeys.menuGroup.all, 'list', page, size, keyword] as const,
+  },
+
+  storeGroup: {
+    all: ['storeGroup'] as const,
+    list: (page?: number, size?: number, keyword?: string) =>
+      [...queryKeys.storeGroup.all, 'list', page, size, keyword] as const,
+    detail: (id: string | number) =>
+      [...queryKeys.storeGroup.all, 'detail', id] as const,
+    members: (id: string | number) =>
+      [...queryKeys.storeGroup.all, 'members', id] as const,
+  },
+
+  store: {
+    all: ['store'] as const,
+    list: (page?: number, size?: number, keyword?: string) =>
+      [...queryKeys.store.all, 'list', page, size, keyword] as const,
+    search: (shopCodes?: string[], page?: number, size?: number) =>
+      [...queryKeys.store.all, 'search', shopCodes, page, size] as const,
+  },
 } as const;
