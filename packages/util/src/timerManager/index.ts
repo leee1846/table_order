@@ -23,9 +23,10 @@ export class TimerManager {
     this.clear(id);
 
     const timerId = setTimeout(() => {
-      callback();
-      // timeout은 실행 후 자동으로 맵에서 제거
+      // 콜백 실행 전에 맵에서 제거해야 콜백 내부에서 같은 id로 새 타이머를
+      // 등록할 때 해당 타이머 항목이 덮어씌워지지 않음
       this.timers.delete(id);
+      callback();
     }, delay);
 
     this.timers.set(id, {
