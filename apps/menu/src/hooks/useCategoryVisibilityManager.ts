@@ -44,6 +44,7 @@ const resolveHolidayIsToday = async (
   await AppStorage.saveData({
     key: STORAGE_KEYS.HOLIDAY_DAY_CACHE,
     value: { fetchedDateKey, isHoliday },
+    isTemporary: true,
   });
   return isHoliday;
 };
