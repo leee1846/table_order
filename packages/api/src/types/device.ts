@@ -44,7 +44,6 @@ export interface IPostDeviceDetailRequestBase {
 }
 export interface IPostDeviceDetailRequest extends IPostDeviceDetailRequestBase {
   shopCode: string;
-  skipGlobalErrorHandling?: boolean;
 }
 
 export interface IGetDeviceListItem extends IDevice {
