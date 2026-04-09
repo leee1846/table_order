@@ -18,7 +18,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 export const useSSEHandler = (tableNumber?: string) => {
   const queryClient = useQueryClient();
   const { shopCode } = useAuth();
-  const { clearAuth, tokenPayload } = useAuthStore();
+  const { clearAuth } = useAuthStore();
   const { data: shopDetailData } = useShopDetailData();
   const agentPingCheckTimeoutRef = useRef<number | null>(null);
   const agentErrorDialogIdRef = useRef<string | null>(null);
@@ -36,15 +36,16 @@ export const useSSEHandler = (tableNumber?: string) => {
 
   // 로그인/로그아웃 시 SSE 연결 관리
   useEffect(() => {
-    // 토큰이 있을 때만 SSE 연결 시도
-    if (tokenPayload) {
-      initializeSseConnection();
+    if (!shopCode) {
+      return;
     }
+
+    initializeSseConnection();
 
     return () => {
       disconnectSse();
     };
-  }, [tokenPayload]); // tokenPayload 변경 시 재실행
+  }, [shopCode]);
 
   const { data: sseMessage } = useSSE.useSSEData<ISseMessage>(
     SSE_KEYS.MAIN_CONNECTION
@@ -52,7 +53,11 @@ export const useSSEHandler = (tableNumber?: string) => {
 
   // SSE 핸들러 effect에서 참조하는 최신 값 모음
   // shopCode/tableNumber가 바뀌어도 effect가 재실행되지 않도록 ref로 관리
-  const sseHandlerDataRef = useRef({ shopCode, tableNumber, locationPathname: location.pathname });
+  const sseHandlerDataRef = useRef({
+    shopCode,
+    tableNumber,
+    locationPathname: location.pathname,
+  });
   useEffect(() => {
     sseHandlerDataRef.current.shopCode = shopCode;
     sseHandlerDataRef.current.tableNumber = tableNumber;
@@ -174,7 +179,8 @@ export const useSSEHandler = (tableNumber?: string) => {
       }
 
       const clearedTableNumber = sseMessage.data;
-      const { tableNumber: activeTableNumber, locationPathname } = sseHandlerDataRef.current;
+      const { tableNumber: activeTableNumber, locationPathname } =
+        sseHandlerDataRef.current;
 
       // 테이블 목록 페이지
       if (locationPathname === ROUTES.TABLES.generate()) {
