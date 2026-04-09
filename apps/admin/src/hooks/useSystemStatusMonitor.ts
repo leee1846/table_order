@@ -81,6 +81,7 @@ export const useSystemStatusMonitor = ({ onNetworkRecovered }: Options = {}) => 
       version: version ?? '',
       buildNumber: buildNumber ?? '',
       controlStatus: null,
+      skipGlobalErrorHandling: true,
     });
   }, [postDeviceDetail]);
 

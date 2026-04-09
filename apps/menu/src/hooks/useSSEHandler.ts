@@ -152,6 +152,7 @@ async function collectDeviceInfoAndSyncToServer(
     battery: mergedDeviceDetail.battery ?? 0,
     wifiSignal: mergedDeviceDetail.wifiSignal ?? '0',
     controlStatus: mergedDeviceDetail.controlStatus ?? null,
+    skipGlobalErrorHandling: true,
   });
 }
 

@@ -35,12 +35,12 @@ export const postDeviceDetail = async (
 ): Promise<TVoidApiResponse> => {
   const axiosInstance = getAxiosInstance('private');
 
-  const { shopCode, ...rest } = requests;
+  const { shopCode, skipGlobalErrorHandling = false, ...rest } = requests;
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'POST',
     url: ENDPOINTS.DEVICE.SHOP(shopCode),
     data: rest,
-    skipGlobalErrorHandling: true,
+    skipGlobalErrorHandling,
   });
 
   return response.data;

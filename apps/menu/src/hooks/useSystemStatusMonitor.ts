@@ -163,6 +163,7 @@ export const useSystemStatusMonitor = ({
         version,
         buildNumber,
         controlStatus: null,
+        skipGlobalErrorHandling: true,
       });
     };
 
