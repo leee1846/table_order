@@ -46,6 +46,7 @@
   "금액 변경하기": "Change Amount",
   "₩{{minAmount}} ~ ₩{{maxAmount}}까지 적용할 수 있어요.": "You can apply from ₩{{minAmount}} to ₩{{maxAmount}}.",
   "등록된 메뉴가 없습니다.": "No menu items registered.",
+  "등록된 테이블이 없습니다.": "No tables registered.",
   "최소 주문 수량은 {{minQuantity}}개 입니다.": "Minimum order quantity is {{minQuantity}} items.",
   "{{menuName}}의 최소 주문 수량은 {{minQuantity}}개 입니다.": "The minimum order quantity for {{menuName}} is {{minQuantity}} items.",
   "메뉴가 품절되었습니다.": "Menu item is out of stock.",

@@ -46,6 +46,8 @@ import { Sidebar } from '@/pages/TablesPage/Sidebar';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useShopStore } from '@/stores/useShopStore';
 import { useScrollToSelectedItem } from '@repo/feature/hooks';
+import { NoContent } from '@/feature/NoContent';
+import { useThemeMode } from '@repo/ui';
 
 // 헬퍼 함수: 주문 시간 포맷팅
 const formatOrderTime = (
@@ -91,6 +93,7 @@ const convertOrderDetailMenuListToMenuItems = (
 export const TablesPage = () => {
   const { t } = useAdminTranslation();
   const navigate = useNavigate();
+  const { theme } = useThemeMode();
 
   const { data: shopData } = useShopStore();
   const { data: shopDetailData } = useShopDetailData();
@@ -664,22 +667,28 @@ export const TablesPage = () => {
               ))}
             </TableGroupList>
           </TableGroupWrapper>
-          <TableCardsGrid onScroll={handleScroll}>
-            {tablesWithStatus.map((table) => (
-              <LongPressTableCard
-                key={table.id}
-                table={table}
-                onClick={(tbl) => {
-                  if (!isScrollingRef.current) {
-                    handleMenuModeTableClick(tbl);
-                  }
-                }}
-                onLongPress={handleMenuModeLongPress}
-                i18nInstance={adminI18n}
-                longPressDelay={500}
-              />
-            ))}
-          </TableCardsGrid>
+          {tablesWithStatus.length === 0 ? (
+            <NoContent color={theme.mode.grey[300]} paddingTop="0">
+              {t('등록된 테이블이 없습니다.')}
+            </NoContent>
+          ) : (
+            <TableCardsGrid onScroll={handleScroll}>
+              {tablesWithStatus.map((table) => (
+                <LongPressTableCard
+                  key={table.id}
+                  table={table}
+                  onClick={(tbl) => {
+                    if (!isScrollingRef.current) {
+                      handleMenuModeTableClick(tbl);
+                    }
+                  }}
+                  onLongPress={handleMenuModeLongPress}
+                  i18nInstance={adminI18n}
+                  longPressDelay={500}
+                />
+              ))}
+            </TableCardsGrid>
+          )}
         </TableCardsArea>
       </TablesPageContainer>
 
