@@ -32,14 +32,7 @@ const toNetworkSettingOption = (networkType?: TNetworkType): TNetworkType => {
 export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
   const { t } = useAdminTranslation();
   const appType: TAppType = 'POS_APP';
-  // const networkSettings = useMemo(
-  //   () => [
-  //     { value: 'AUTO' as TNetworkType, label: t('자동') },
-  //     { value: 'LAN' as TNetworkType, label: t('유선') },
-  //     { value: 'WIFI' as TNetworkType, label: t('무선') },
-  //   ],
-  //   [t]
-  // );
+
   const [networkSetting, setNetworkSetting] = useState<TNetworkType>('AUTO');
   const [ssid, setSsid] = useState('');
   const [ipAddress, setIpAddress] = useState('');
@@ -81,7 +74,6 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
 
     setNetworkSetting(toNetworkSettingOption(shopNetwork.networkType));
     setSsid(shopNetwork.ssid ?? '');
-    // setIpAddress(shopNetwork.ipAddress ?? '');
   }, [shopNetwork]);
 
   useEffect(() => {
@@ -98,10 +90,6 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
       },
     });
   }, [ipAddress, networkSetting, onChange, shopNetwork?.shopSeq, ssid]);
-
-  // const handleNetworkSettingChange = (value: TNetworkType) => {
-  //   setNetworkSetting(value);
-  // };
 
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -210,30 +198,6 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
           <p>Android ID</p>
           <p>{androidId || '-'}</p>
         </UIStyles.setting.ContentLayout>
-        {/* <UIStyles.setting.ContentLayout>
-          <p>{t('네트워크 설정')}</p>
-          <Dropdown
-            options={networkSettings}
-            value={networkSetting}
-            onChange={(value) =>
-              handleNetworkSettingChange(value as TNetworkType)
-            }
-          />
-        </UIStyles.setting.ContentLayout> */}
-
-        {/* <UIStyles.setting.ContentLayout>
-          <p>{t('네트워크 정보')}</p>
-          {networkSetting === 'AUTO' && (
-            <BasicButton variant="Solid_Sky_Blue_M" onClick={() => {}}>
-              {t('재설정')}
-            </BasicButton>
-          )}
-        </UIStyles.setting.ContentLayout> */}
-
-        {/* <UIStyles.setting.ContentLayout>
-          <p>SSID</p>
-          <p>{ssid || '-'}</p>
-        </UIStyles.setting.ContentLayout> */}
 
         <UIStyles.setting.ContentLayout>
           <p>IP</p>

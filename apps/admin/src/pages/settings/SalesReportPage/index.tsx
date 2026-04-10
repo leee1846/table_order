@@ -122,24 +122,6 @@ export const SalesReportPage = () => {
     [dailyRows]
   );
 
-  // const totalPayment = dailyRows.reduce(
-  //   (acc, cur) => acc + (cur.actualSalesAmount ?? cur.totalSalesAmount ?? 0),
-  //   0
-  // );
-  // const totalCount = dailyRows.reduce(
-  //   (acc, cur) => acc + (cur.totalSalesCount ?? 0),
-  //   0
-  // );
-  // const totalGuests = dailyRows.reduce(
-  //   (acc, cur) => acc + (cur.customerCount ?? 0),
-  //   0
-  // );
-  // const operatingDays = dailyRows.filter(
-  //   (row) => (row.totalSalesCount ?? 0) > 0
-  // ).length;
-  // const averageTicket =
-  //   totalGuests > 0 ? Math.round(totalPayment / totalGuests) : 0;
-
   const handleApply = () => {
     setAppliedYearMonth({ year, month });
   };
@@ -177,28 +159,6 @@ export const SalesReportPage = () => {
             {t('조회')}
           </BasicButton>
         </S.Filters>
-
-        {/* <S.Section>
-          <S.SectionHeader>{t('요약')}</S.SectionHeader>
-          <S.Cards>
-            <S.Card>
-              <S.CardLabel>{t('총 매출액')}</S.CardLabel>
-              <S.CardValue>{formatCurrency(totalPayment)}</S.CardValue>
-            </S.Card>
-            <S.Card>
-              <S.CardLabel>{t('총 주문 건수')}</S.CardLabel>
-              <S.CardValue>{formatCurrency(totalCount)}</S.CardValue>
-            </S.Card>
-            <S.Card>
-              <S.CardLabel>{t('테이블 단가')}</S.CardLabel>
-              <S.CardValue>{formatCurrency(averageTicket)}</S.CardValue>
-            </S.Card>
-            <S.Card>
-              <S.CardLabel>{t('영업일 수')}</S.CardLabel>
-              <S.CardValue>{operatingDays}</S.CardValue>
-            </S.Card>
-          </S.Cards>
-        </S.Section> */}
 
         <S.Section>
           <S.SectionHeader>{t('일별 매출내역')}</S.SectionHeader>

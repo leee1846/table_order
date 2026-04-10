@@ -34,17 +34,11 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
     [t]
   );
 
-  // const cardTerminalOptions = [
-  //   { value: 'KICC', label: t('KICC') },
-  //   { value: 'NONE', label: t('미사용') },
-  // ];
-
   const [paymentType, setPaymentType] =
     useState<PaymentTypeOption>('postpayment');
   const [vanCode, setVanCode] = useState<TVanCode>('EASY');
   const [vanId, setVanId] = useState('');
   const [shopCardTerminal, setShopCardTerminal] = useState<string>('');
-  // const [currencySetting, setCurrencySetting] = useState('');
   const [serviceChargeRate, setServiceChargeRate] = useState('');
   const [isSalesTotalVisible, setIsSalesTotalVisible] = useState(false);
   const [salesPassword, setSalesPassword] = useState('');
@@ -73,7 +67,6 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
     setVanCode('EASY');
     setVanId(shopSetting.vanId);
     setShopCardTerminal(shopSetting.shopCardTerminalCode ?? '');
-    // setCurrencySetting(shopSetting.currencySetting ?? '');
     setServiceChargeRate(
       shopSetting.serviceChargeRate !== undefined
         ? String(shopSetting.serviceChargeRate)
@@ -123,16 +116,10 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       shopSettingChanges.serviceChargeRate = serviceChargeRateValue;
     }
 
-    // if (currencySetting) {
-    //   shopSettingChanges.currencySetting =
-    //     currencySetting as IShopSetting['currencySetting'];
-    // }
-
     onChange({
       shopSetting: shopSettingChanges,
     });
   }, [
-    // currencySetting,
     isSalesDetailLocked,
     isSalesTotalVisible,
     onChange,
@@ -152,10 +139,6 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
 
   const vanOptions = useMemo(
     () => [
-      // {
-      //   value: 'VIRTUAL' as TShopCardTerminalCode,
-      //   label: t('가상 결제'),
-      // },
       {
         value: 'EASY' as TVanCode,
         label: t('이지카드'),
@@ -255,35 +238,6 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
         </>
       )}
 
-      {/* 관리자앱 카드결제 기능이 없으므로 주석처리합니다. */}
-      {/* <UIStyles.setting.ContentLayout>
-        <p>{t('카드 단말기')}</p>
-        <Dropdown
-          options={cardTerminalOptions}
-          value={shopCardTerminal}
-          onChange={(value) => setShopCardTerminal(value as string)}
-        />
-      </UIStyles.setting.ContentLayout> */}
-
-      {/* <UIStyles.setting.ContentLayout>
-        <p>{t('통화설정')}</p>
-        <Dropdown
-          options={currencyOptions}
-          value={currencySetting}
-          onChange={(value) => setCurrencySetting(value as string)}
-        />
-      </UIStyles.setting.ContentLayout> */}
-      {/* <UIStyles.setting.ContentLayout>
-         <p>봉사료율</p>
-         <S.ServiceChargeInputWrapper>
-           <input
-             type="number"
-             value={serviceChargeRate || '0.0'}
-             onChange={(event) => setServiceChargeRate(event.target.value)}
-           />
-           <span>%</span>
-         </S.ServiceChargeInputWrapper>
-        </UIStyles.setting.ContentLayout> */}
       <UIStyles.setting.ContentLayout>
         <p>{t('매출 총 금액 노출 여부')}</p>
         <ToggleButton

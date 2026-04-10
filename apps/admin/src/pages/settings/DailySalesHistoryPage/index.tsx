@@ -101,7 +101,7 @@ export const DailySalesHistoryPage = () => {
 
   const handleSelectStartDate = (date: string) => {
     if (isStartDateAfterEndDate(date, endDate)) {
-      toast(t('시작 날짜는 종료 날짜보다 이후일 수 없습니다.'));
+      toast(t('시작 날짜는 종료 날짜보다 늦을 수 없습니다.'));
       return;
     }
     setStartDate(date);
@@ -110,7 +110,7 @@ export const DailySalesHistoryPage = () => {
 
   const handleSelectEndDate = (date: string) => {
     if (isEndDateBeforeStartDate(date, startDate)) {
-      toast(t('종료 날짜는 시작 날짜보다 이전일 수 없습니다.'));
+      toast(t('종료 날짜는 시작 날짜보다 이를 수 없습니다.'));
       return;
     }
     setEndDate(date);
@@ -123,7 +123,7 @@ export const DailySalesHistoryPage = () => {
     }
 
     if (isStartDateAfterEndDate(startDate, endDate)) {
-      toast(t('시작 날짜는 종료 날짜보다 이후일 수 없습니다.'));
+      toast(t('시작 날짜는 종료 날짜보다 늦을 수 없습니다.'));
       return;
     }
 
