@@ -35,20 +35,27 @@ export const Contents = styled.div`
 
 export const Content = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 8px 12px;
   width: 100%;
-  height: 2rem;
+  min-height: 2rem;
 
   & > p {
+    flex: 1 1 0;
+    min-width: 0;
     color: ${theme.colors.primary[500]};
-    white-space: nowrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
     ${TYPOGRAPHY.MT_4};
   }
 
   & > div {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
+    height: 2rem;
 
     & > input {
       width: 3rem;
