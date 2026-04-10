@@ -26,12 +26,12 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { usePosOrderStore } from '@repo/feature/stores';
-import { useCategoryStore } from '@/stores/useCategoryStore';
 // import { usePutCancelOrderMenu } from '@repo/api/queries';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { localizeOrders } from '@/utils/localizeOrders';
 import { useIdleTimeout } from '@/hooks/useIdleTimeout';
 import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
+import { validateCartOrder } from '@/utils/validateCartOrder';
 
 const TOAST_OPTIONS = {
   position: 'center-center' as const,
@@ -139,127 +139,9 @@ export const CartList = ({
     setSelectedMenuIndex(null);
   };
 
-  // 판매 시간/요일/공휴일 검증 함수
-  const validateMenuAvailability = (): boolean => {
-    for (const cartMenu of cartData.menus) {
-      const category = categories.find(
-        (cat) => cat.categorySeq === cartMenu.categorySeq
-      );
-
-      if (!category) {
-        toast(
-          t('{{menuName}}는(은) 주문할 수 없는 메뉴입니다.', {
-            menuName:
-              cartMenu.localeMenuName?.[currentLanguage] ?? cartMenu.menuName,
-          }),
-          TOAST_OPTIONS
-        );
-        return false;
-      }
-    }
-
-    return true;
-  };
-
   const handleOrderSubmit = () => {
     if (cartData.menus.length < 1) {
       toast(t('현재 담긴 메뉴가 없어요.'), TOAST_OPTIONS);
-      return;
-    }
-
-    const hasMenuWithZeroQuantity = cartData.menus.some(
-      (menu) => menu.quantity < 1
-    );
-    if (hasMenuWithZeroQuantity) {
-      toast(
-        t('각 메뉴의 수량을 {{count}}개 이상 설정해주세요.', { count: 1 }),
-        TOAST_OPTIONS
-      );
-      return;
-    }
-
-    // 첫 주문 필수 항목이 있는 경우
-    if (cartData.hasFirstOrderRequiredItems) {
-      const firstOrderRequiredCategories = useCategoryStore
-        .getState()
-        .data.visibleCategories.filter((c) => c.isFirstOrderRequired);
-      const menusInCart = cartData.menus;
-      const hasFirstOrderRequiredMenu = firstOrderRequiredCategories.some((c) =>
-        menusInCart.some((m) => m.categorySeq === c.categorySeq)
-      );
-
-      // 카트에 첫 주문 필수 항목이 없는 경우
-      if (!hasFirstOrderRequiredMenu) {
-        const categoryName = firstOrderRequiredCategories
-          .map((c) => c.localeCategoryName?.[currentLanguage] ?? c.categoryName)
-          .join(', ');
-        toast(
-          t('[{{categoryName}}]\n 메뉴 중 1개 이상 주문해주세요.', {
-            categoryName,
-          }),
-          { position: 'center-center', duration: 3000 }
-        );
-        return;
-      }
-    }
-
-    // 품절 메뉴 검증
-    for (const cartMenu of cartData.menus) {
-      const originalMenu = categories
-        .find((category) => category.categorySeq === cartMenu.categorySeq)
-        ?.menuInfoList.find((menu) => menu.menuSeq === cartMenu.menuSeq);
-
-      if (originalMenu?.isOutOfStock) {
-        toast(
-          t('{{menuName}} 메뉴가 품절되었습니다.', {
-            menuName:
-              cartMenu.localeMenuName?.[currentLanguage] ?? cartMenu.menuName,
-          }),
-          { position: 'center-center', duration: 1500 }
-        );
-        return;
-      }
-    }
-
-    // 최소 주문 수량 검증
-    for (const cartMenu of cartData.menus) {
-      const originalMenu = categories
-        .find((category) => category.categorySeq === cartMenu.categorySeq)
-        ?.menuInfoList.find((menu) => menu.menuSeq === cartMenu.menuSeq);
-
-      if (
-        originalMenu &&
-        originalMenu.minQuantity &&
-        originalMenu.minQuantity > 0 &&
-        originalMenu.minQuantity > cartMenu.quantity
-      ) {
-        toast(
-          t('{{menuName}}의 최소 주문 수량은 {{minQuantity}}개 입니다.', {
-            menuName:
-              cartMenu.localeMenuName?.[currentLanguage] ?? cartMenu.menuName,
-            minQuantity: originalMenu.minQuantity,
-          }),
-          { position: 'center-center', duration: 1500 }
-        );
-        return;
-      }
-    }
-
-    const totalMenuAmount = calculateTotalPrice();
-    const firstOrderMinAmount =
-      shopDetailData?.shopSetting?.firstOrderMinAmount;
-
-    if (
-      firstOrderMinAmount &&
-      firstOrderMinAmount > 0 &&
-      totalMenuAmount < firstOrderMinAmount
-    ) {
-      toast(
-        t('최소 주문 금액은 ₩{{minAmount}} 입니다.', {
-          minAmount: formatCurrency(firstOrderMinAmount),
-        }),
-        TOAST_OPTIONS
-      );
       return;
     }
 
@@ -274,16 +156,21 @@ export const CartList = ({
         startTimer();
       },
       onConfirm: async () => {
-        // 판매 시간/요일/공휴일 검증
-        const isValid = validateMenuAvailability();
-        if (!isValid) {
+        if (!validateCartOrder()) {
+          startTimer();
           return;
         }
 
-        const totalPrice = calculateTotalPrice();
+        const cartSnapshot = useCartStore.getState().data;
+        const orderedMenus = cartSnapshot.menus;
+        const totalPrice = orderedMenus.reduce(
+          (total, menu) => total + calculateCartMenuPrice(menu),
+          0
+        );
+        const shopSnapshot = useShopDetailStore.getState().data;
 
         // 총 금액이 0원이거나 선불이 아닌 경우 후불 처리
-        if (totalPrice === 0 || !shopDetailData?.shopSetting?.usePrepayment) {
+        if (totalPrice === 0 || !shopSnapshot?.shopSetting?.usePrepayment) {
           const response = await executePostpaidOrder();
 
           if (!response.result) {
@@ -300,7 +187,7 @@ export const CartList = ({
               useCustomerLanguageStore.getState().data.currentLanguage;
             setModalData(
               'orderCompleteData',
-              localizeOrders(response.orders, cartData.menus, language)
+              localizeOrders(response.orders, orderedMenus, language)
             );
             setModalData('orderCompleteTotalPrice', response.totalPrice);
             clearCart();
@@ -312,8 +199,8 @@ export const CartList = ({
           };
 
           const isPosLinked =
-            !!shopDetailData?.shopSetting?.shopPosCode &&
-            shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
+            !!shopSnapshot?.shopSetting?.shopPosCode &&
+            shopSnapshot?.shopSetting?.shopPosCode !== 'NONE';
 
           if (isPosLinked && response.orderUuid) {
             const handlePosOrderFailure = async () => {
@@ -448,7 +335,7 @@ export const CartList = ({
                   <NumberInput
                     variant="square"
                     size="L"
-                    min={0}
+                    min={1}
                     value={menu.quantity}
                     onChange={(value) => handleCartQuantityChange(index, value)}
                   />
