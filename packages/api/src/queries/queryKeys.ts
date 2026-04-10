@@ -69,6 +69,9 @@ export const queryKeys = {
       [...queryKeys.menu.all, 'existingImageList', shopCode] as const,
     /** 추천 메뉴 이미지 목록 조회 */
     sampleImageList: () => [...queryKeys.menu.all, 'sampleImageList'] as const,
+    /** 메뉴 검색 조회 */
+    search: (keyword?: string) =>
+      [...queryKeys.menu.all, 'search', keyword] as const,
   },
 
   orders: {

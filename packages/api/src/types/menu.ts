@@ -436,3 +436,21 @@ export interface IUpdateMenuOutOfStockParams {
 export interface IUpdateMenuTranslationParams {
   shopCode: string;
 }
+
+// ============================================================================
+// GET /menu/search (search_1)
+// ============================================================================
+
+export interface IGetMenuSearchParams {
+  name?: string; // TODO: 실제 검색 파라미터명에 맞게 수정하세요.
+}
+
+export interface IMenuSearchItem {
+  menuSeq: number;
+  menuName: string;
+  menuPrice: number;
+  isRecommended: boolean;
+  menuDescription: string;
+}
+
+export type TGetMenuSearchResponse = IApiResponse<IMenuSearchItem[]>;

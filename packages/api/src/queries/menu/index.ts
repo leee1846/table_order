@@ -8,3 +8,4 @@ export * from './usePutUpdateMenuHidden';
 export * from './usePutUpdateMenuOutOfStock';
 export * from './usePutUpdateMenuTranslation';
 export * from './useDeleteMenu';
+export * from './useGetMenuSearch';

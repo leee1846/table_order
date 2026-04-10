@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   Form,
@@ -8,37 +8,85 @@ import {
   message,
   type FormInstance,
 } from 'antd';
-import { CloseOutlined, InfoCircleOutlined } from '@ant-design/icons';
-
-// 임시 메뉴 선택 옵션 데이터
-const MENU_OPTIONS = [
-  { label: '참이슬', value: '참이슬' },
-  { label: '처음처럼', value: '처음처럼' },
-  { label: '진로', value: '진로' },
-  { label: '새로', value: '새로' },
-  { label: '카스', value: '카스' },
-  { label: '테라', value: '테라' },
-  { label: '수박화채', value: '수박화채' },
-];
+import {
+  CloseOutlined,
+  InfoCircleOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
+import {
+  useGetMenuSearch,
+  usePostCreateMenuGroup,
+  usePatchUpdateMenuGroup,
+} from '@repo/api/queries';
 
 export interface MenuGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: 'new' | 'edit';
+  menuGroupSeq?: number | null; // 수정 시 필요한 시퀀스
   form: FormInstance;
   onSuccess?: () => void;
+}
+
+interface MenuOption {
+  label: string;
+  value: number;
 }
 
 const MenuGroupModal: React.FC<MenuGroupModalProps> = ({
   isOpen,
   onClose,
   mode,
+  menuGroupSeq,
   form,
   onSuccess,
 }) => {
+  const [keyword, setKeyword] = useState('');
+  const [debouncedKeyword, setDebouncedKeyword] = useState('');
+
+  // API 연동: 메뉴 그룹 등록 훅
+  const createMutation = usePostCreateMenuGroup();
+  const updateMutation = usePatchUpdateMenuGroup();
+
+  // 디바운싱: 입력이 멈춘 후 300ms 뒤에 검색어 상태 업데이트
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedKeyword(keyword), 300);
+    return () => clearTimeout(timer);
+  }, [keyword]);
+
+  // API 연동: 메뉴 검색
+  const { data: searchResponse, isFetching } = useGetMenuSearch(
+    { name: debouncedKeyword || undefined },
+    { enabled: !!debouncedKeyword }
+  );
+
+  const handleSearch = (newValue: string) => {
+    setKeyword(newValue);
+  };
+
   const handleSave = async () => {
     try {
-      await form.validateFields();
+      const values = await form.validateFields();
+
+      // labelInValue 속성으로 인해 values.menus는 [{ label: string, value: number }] 형태이므로 value만 추출합니다.
+      const menuIds = values.menus?.map((m: MenuOption) => m.value) || [];
+
+      if (mode === 'new') {
+        await createMutation.mutateAsync({
+          menuGroupName: values.menuGroupName,
+          menus: menuIds,
+        });
+      } else {
+        if (menuGroupSeq) {
+          await updateMutation.mutateAsync({
+            menuGroupSeq,
+            menuGroupName: values.menuGroupName,
+            menus: menuIds,
+            isDeleted: false,
+          });
+        }
+      }
+
       message.success(
         mode === 'new'
           ? '메뉴 그룹이 등록되었습니다.'
@@ -54,6 +102,7 @@ const MenuGroupModal: React.FC<MenuGroupModalProps> = ({
   return (
     <Modal
       open={isOpen}
+      wrapClassName="menu-group-modal-wrap"
       onCancel={onClose}
       width={700}
       //centered
@@ -86,7 +135,12 @@ const MenuGroupModal: React.FC<MenuGroupModalProps> = ({
           <Button size="large" onClick={onClose}>
             취소
           </Button>
-          <Button size="large" type="primary" onClick={handleSave}>
+          <Button
+            size="large"
+            type="primary"
+            onClick={handleSave}
+            loading={createMutation.isPending || updateMutation.isPending}
+          >
             저장
           </Button>
         </div>
@@ -94,8 +148,8 @@ const MenuGroupModal: React.FC<MenuGroupModalProps> = ({
     >
       <style>
         {`
-          .ant-modal,
-          .ant-modal-container {
+          .menu-group-modal-wrap .ant-modal,
+          .menu-group-modal-wrap .ant-modal-container {
             padding: 0 !important;
           }
         `}
@@ -103,12 +157,13 @@ const MenuGroupModal: React.FC<MenuGroupModalProps> = ({
       <Form form={form} layout="vertical">
         <Form.Item
           name="menuGroupName"
+          required
           label={
             <span style={{ fontWeight: 600, fontSize: '15px' }}>
               메뉴 그룹명
             </span>
           }
-          rules={[{ required: true, message: '메뉴 그룹명을 입력해주세요.' }]}
+          //rules={[{ required: true, message: '메뉴 그룹명을 입력해주세요.' }]}
         >
           <Input size="large" placeholder="메뉴 그룹명을 입력하세요" />
         </Form.Item>
@@ -132,17 +187,23 @@ const MenuGroupModal: React.FC<MenuGroupModalProps> = ({
               }}
             >
               <InfoCircleOutlined />
-              메뉴 그룹에 포함할 메뉴를 선택해주세요. (복수 선택 가능)
+              검색 후 메뉴 그룹에 포함할 메뉴를 선택해주세요. (복수 선택 가능)
             </span>
           }
         >
           <Select
             mode="multiple"
             size="large"
-            placeholder="메뉴를 선택해주세요"
-            options={MENU_OPTIONS}
+            labelInValue
+            showSearch={{ filterOption: false, onSearch: handleSearch }}
+            loading={isFetching}
             allowClear
-            showSearch
+            suffixIcon={<SearchOutlined />}
+            placeholder="검색 후 메뉴를 선택해주세요"
+            notFoundContent={isFetching ? '검색 중...' : null}
+            options={searchResponse?.data || []}
+            fieldNames={{ label: 'menuName', value: 'menuSeq' }}
+            maxTagCount="responsive"
           />
         </Form.Item>
       </Form>

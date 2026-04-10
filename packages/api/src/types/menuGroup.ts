@@ -1,4 +1,4 @@
-import type { IApiResponse } from './common';
+import type { IApiResponse, TVoidApiResponse } from './common';
 
 // ============================================================================
 // GET /menu-group/list
@@ -36,6 +36,15 @@ export type TGetMenuGroupListResponse =
   IApiResponse<IMenuGroupListResponseData>;
 
 // ============================================================================
+// POST /menu-groups
+// ============================================================================
+
+export interface ICreateMenuGroupRequest {
+  menuGroupName: string;
+  menus: number[];
+}
+
+// ============================================================================
 // GET /menu-group/{menuGroupSeq}/menus (list_2)
 // ============================================================================
 
@@ -53,3 +62,14 @@ export interface IMenuGroupMenu {
 }
 
 export type TGetMenuGroupMenuListResponse = IApiResponse<IMenuGroupMenu[]>;
+
+// ============================================================================
+// PUT /menu-groups/{menuGroupSeq} (update_1)
+// ============================================================================
+
+export interface IUpdateMenuGroupRequest {
+  menuGroupSeq: number; // Path Parameter용 (필요에 따라 수정)
+  menuGroupName?: string;
+  menus?: number[];
+  isDeleted?: boolean;
+}

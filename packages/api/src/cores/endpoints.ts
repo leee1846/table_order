@@ -79,6 +79,7 @@ export const ENDPOINTS = {
     EXISTING_IMAGE_LIST: (shopCode: string) =>
       `/menu/image/existing/list/${shopCode}`,
     SAMPLE_IMAGE_LIST: '/menu/image/sample/list',
+    SEARCH: '/menus',
   },
 
   SHOP: {
@@ -157,6 +158,8 @@ export const ENDPOINTS = {
 
   MENU_GROUP: {
     LIST: () => `/menu-groups`,
+    CREATE: `/menu-groups`,
+    UPDATE: (menuGroupSeq: string | number) => `/menu-groups/${menuGroupSeq}`,
   },
 
   STORE_GROUP: {

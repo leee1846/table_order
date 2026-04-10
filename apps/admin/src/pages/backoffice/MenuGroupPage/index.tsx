@@ -1,21 +1,28 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Space, Tooltip, Form } from 'antd';
+import { Table, Button, Input, Space, Tooltip, Form, App } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   SearchOutlined,
   PlusOutlined,
   EditOutlined,
   LinkOutlined,
+  DeleteOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { ROUTES } from '@/constants/routes';
 import { useTablePageState } from '@/feature/backoffice/hooks';
 import PageTitle from '@/feature/Backoffice/components/PageTitle';
 import MenuGroupModal from './MenuGroupNewModal';
-import { useGetMenuGroupList } from '@repo/api/queries';
+import { useQueryClient } from '@repo/api/tanstack-query';
+import {
+  useGetMenuGroupList,
+  usePatchUpdateMenuGroup,
+  queryKeys,
+} from '@repo/api/queries';
 import { MenuName } from '../../../feature/dialogs/OrderListDialog/DetailOrderDialog/detailOrderDialog.style';
 import type { IMenuGroup, IMenuGroupMenu } from '@repo/api/types';
+import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -72,9 +79,13 @@ const StyledTable = styled(Table<MenuGroupDataType>)`
 
 const MenuGroupPage: React.FC = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { showConfirm } = useConfirmDialog();
+  const { message } = App.useApp();
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'new' | 'edit'>('new');
+  const [currentGroupSeq, setCurrentGroupSeq] = useState<number | null>(null);
   const [form] = Form.useForm();
 
   const {
@@ -92,6 +103,9 @@ const MenuGroupPage: React.FC = () => {
     size: pageSize,
     keyword: searchKeyword || undefined,
   });
+
+  // API 연동: 메뉴 그룹 수정/삭제 훅
+  const updateMutation = usePatchUpdateMenuGroup();
 
   const menuGroups: MenuGroupDataType[] = useMemo(() => {
     const content = menuGroupResponse?.data?.content || [];
@@ -111,15 +125,22 @@ const MenuGroupPage: React.FC = () => {
   const handleCreate = () => {
     form.resetFields();
     setModalMode('new');
+    setCurrentGroupSeq(null);
     setIsModalOpen(true);
   };
 
   const handleEdit = (record: MenuGroupDataType) => {
     form.setFieldsValue({
       menuGroupName: record.menuGroupName,
-      menus: record.menus ? record.menus.map((m) => m.menuName) : [],
+      menus: record.menus
+        ? record.menus.map((m) => ({
+            label: m.menuName,
+            value: m.menuSeq,
+          }))
+        : [],
     });
     setModalMode('edit');
+    setCurrentGroupSeq(record.menuGroupSeq);
     setIsModalOpen(true);
   };
 
@@ -136,7 +157,7 @@ const MenuGroupPage: React.FC = () => {
       width: 200,
     },
     {
-      title: '메뉴 태그',
+      title: '메뉴 그룹 태그',
       dataIndex: 'menuGroupTag',
       key: 'menuGroupTag',
       width: 200,
@@ -169,13 +190,44 @@ const MenuGroupPage: React.FC = () => {
               onClick={() => handleEdit(record)}
             />
           </Tooltip>
-          <Tooltip title="메뉴 그룹 현황">
+          {/*           <Tooltip title="메뉴 그룹 현황">
             <Button
               type="text"
               icon={<LinkOutlined />}
               onClick={() =>
                 navigate(ROUTES.BACKOFFICE.MENU_GROUP_STATUS.generate())
               }
+            />
+          </Tooltip> */}
+          <Tooltip title="삭제">
+            <Button
+              type="text"
+              icon={<DeleteOutlined />}
+              onClick={() => {
+                showConfirm({
+                  title: '그룹 삭제',
+                  targetName: '메뉴 그룹',
+                  itemName: record.menuGroupName,
+                  onConfirm: () => {
+                    updateMutation.mutate(
+                      {
+                        menuGroupSeq: record.menuGroupSeq,
+                        menuGroupName: record.menuGroupName,
+                        menus: record.menus?.map((m) => m.menuSeq),
+                        isDeleted: true,
+                      },
+                      {
+                        onSuccess: () => {
+                          message.success('메뉴 그룹이 삭제되었습니다.');
+                          queryClient.invalidateQueries({
+                            queryKey: queryKeys.menuGroup.all,
+                          });
+                        },
+                      }
+                    );
+                  },
+                });
+              }}
             />
           </Tooltip>
         </Space>
@@ -246,7 +298,11 @@ const MenuGroupPage: React.FC = () => {
       <MenuGroupModal
         isOpen={isModalOpen}
         onClose={handleCancel}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.menuGroup.all });
+        }}
         mode={modalMode}
+        menuGroupSeq={currentGroupSeq}
         form={form}
       />
     </Container>

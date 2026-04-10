@@ -12,6 +12,8 @@ import type {
   TGetExistingMenuImageListResponse,
   TGetSampleMenuImageListResponse,
   TGetMenuListResponse,
+  IGetMenuSearchParams,
+  TGetMenuSearchResponse,
 } from '../types/menu';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -26,6 +28,23 @@ export const getMenuListByCategory = async (
   const response = await axiosInstance<TGetMenuListResponse>({
     method: 'GET',
     url: ENDPOINTS.MENU.LIST,
+    params,
+  });
+
+  return response.data;
+};
+
+/**
+ * 메뉴를 검색합니다.
+ * GET /menu
+ */
+export const getMenuSearch = async (
+  params: IGetMenuSearchParams
+): Promise<TGetMenuSearchResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetMenuSearchResponse>({
+    method: 'GET',
+    url: ENDPOINTS.MENU.SEARCH,
     params,
   });
 
