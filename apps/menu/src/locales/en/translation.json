@@ -115,6 +115,7 @@
   "취소": "Cancel",
   "언어가 변경되었습니다.": "Language has been changed.",
   "테이블이 이미 사용중입니다.": "Table is already in use.",
+  "테이블 점유 상태를 알 수 없습니다.": "Unable to determine table occupancy.",
   "테이블을 함께 사용하시겠습니까?": "Would you like to share the table?",
   "선택이 불가능합니다.": "Selection is not available.",
   "인증 실패": "Authentication Failed",

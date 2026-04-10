@@ -8,6 +8,7 @@ import {
   TGetDeviceListWithPaginationResponse,
   IPostDeviceControlRequest,
   TPostDeviceControlResponse,
+  TGetTableOccupiedCheckResponse,
 } from '../types/device';
 import { TVoidApiResponse } from '../types/common';
 
@@ -82,6 +83,20 @@ export const postDeviceControl = async (
     method: 'POST',
     url: ENDPOINTS.DEVICE.CONTROL(params.shopCode, params.deviceControlType),
     data: params.deviceList,
+  });
+
+  return response.data;
+};
+
+export const getTableOccupiedCheck = async (
+  shopCode: string,
+  tableNumber: string
+): Promise<TGetTableOccupiedCheckResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetTableOccupiedCheckResponse>({
+    method: 'GET',
+    url: ENDPOINTS.DEVICE.TABLE_OCCUPIED_CHECK(shopCode, tableNumber),
+    skipGlobalErrorHandling: true,
   });
 
   return response.data;
