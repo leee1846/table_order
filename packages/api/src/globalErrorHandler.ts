@@ -92,6 +92,7 @@ export function handleApiErrorDialog(
   const { openConfirmDialog, activeErrorTypes, messages, logLabel } = options;
 
   if (!error.response) {
+    // app 로그 확인용
     // eslint-disable-next-line no-console
     console.log(
       logLabel,
@@ -118,12 +119,28 @@ export function handleApiErrorDialog(
     return;
   }
 
+  const status = error.response.status;
+  if (status >= 500 && status < 600) {
+    // app 로그 확인용
+    // eslint-disable-next-line no-console
+    console.log(
+      logLabel,
+      JSON.stringify({
+        message: error.message,
+        code: error.code,
+        status,
+        url: error.config?.url,
+        method: error.config?.method,
+      })
+    );
+  }
+
   const isGet = String(error.config?.method ?? '').toUpperCase() === 'GET';
   if (isGet) {
     return;
   }
 
-  if (error.response.status === 500) {
+  if (status >= 500 && status < 600) {
     const userMessage = error.response.data?.status?.userMessage;
     const content =
       typeof userMessage === 'string' && userMessage.trim().length > 0

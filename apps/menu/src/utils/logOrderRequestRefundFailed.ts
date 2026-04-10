@@ -9,6 +9,7 @@ export function logOrderRequestRefundFailed(
   summary: string,
   payment: IPaymentResponse
 ): void {
+  // app 로그 확인용
   // eslint-disable-next-line no-console -- 결제 승인 성공·환불 실패 진단 로그
   console.log(
     JSON.stringify({ tag: 'order_request_refund_failed', summary, payment })
