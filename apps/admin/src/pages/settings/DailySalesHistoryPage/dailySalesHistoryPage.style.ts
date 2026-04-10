@@ -83,10 +83,13 @@ export const TableCard = styled.div`
 `;
 
 export const HeaderLabel = styled.div`
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  text-wrap: nowrap;
+  justify-content: center;
   gap: 4px;
+  max-width: 100%;
+  text-align: center;
   ${TYPOGRAPHY.ST_3}
   color: ${theme.colors.grey[600]};
 `;
@@ -94,6 +97,7 @@ export const HeaderLabel = styled.div`
 export const IconWrapper = styled.div`
   position: relative;
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   cursor: pointer;
 `;
@@ -204,8 +208,8 @@ export const FixedHeader = styled.div`
 
     thead > tr > th {
       word-break: keep-all !important;
-      word-wrap: normal !important;
-      overflow-wrap: normal !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
       white-space: normal !important;
       text-align: center !important;
       overflow: visible;

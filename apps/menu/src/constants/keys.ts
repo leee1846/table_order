@@ -31,6 +31,8 @@ export const STORAGE_KEYS = {
   DEVICE_LIST: 'device-list',
   /** 현금 결제 유도 모달 상태 (열림 여부, 총 가격) */
   CASH_PAYMENT_INDUCEMENT_MODAL: 'cash-payment-inducement-modal',
+  /** 공휴일 여부 API 캐시 (로컬 기준 일자 키, 하루 1회 요청) */
+  HOLIDAY_DAY_CACHE: 'holiday-day-cache',
 } as const;
 
 export const TIMER_KEYS = {

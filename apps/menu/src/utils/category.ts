@@ -81,7 +81,13 @@ export const checkCategorySaleStatus = (
   }
 
   // Step 2: 요일이 맞으면 시간 확인
-  if (!useSaleTime || !saleStartTime || !saleEndTime) {
+  // '0000'~'0000'은 어드민·API에서 "상시"와 동일한 의미로 쓰임 (isWithinSaleTime은 빈 구간이라 항상 false)
+  if (
+    !useSaleTime ||
+    !saleStartTime ||
+    !saleEndTime ||
+    (saleStartTime === '0000' && saleEndTime === '0000')
+  ) {
     // 시간 제약이 없으면 해당 요일에는 하루 종일 판매
     const nextMidnight = getTimeUntilMidnight(currentTime);
     return {

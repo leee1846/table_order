@@ -1,10 +1,53 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { checkCategorySaleStatus } from '@/utils/category';
-import { TIMER_KEYS } from '@/constants/keys';
+import { STORAGE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import { useGetHolidays } from '@repo/api/queries';
+import { AppStorage } from '@repo/util/app';
+import { getTodayDateString } from '@repo/util/date';
 import type { ICategoryWithMenus } from '@repo/api/types';
+
+/** AppStorage에 저장하는 공휴일 캐시 (로컬 달력 기준으로 하루 1회 갱신) */
+type HolidayDayCache = {
+  fetchedDateKey: string;
+  isHoliday: boolean;
+};
+
+const holidayFromDayCache = (
+  cache: HolidayDayCache | null,
+  todayKey: string
+): boolean | undefined =>
+  cache?.fetchedDateKey === todayKey ? cache.isHoliday : undefined;
+
+const resolveHolidayIsToday = async (
+  refetchHoliday: () => ReturnType<ReturnType<typeof useGetHolidays>['refetch']>
+): Promise<boolean> => {
+  const todayKey = getTodayDateString();
+  const { value } = await AppStorage.loadData<HolidayDayCache>({
+    key: STORAGE_KEYS.HOLIDAY_DAY_CACHE,
+  });
+
+  const cached = holidayFromDayCache(value, todayKey);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const result = await refetchHoliday();
+  if (result.isError) {
+    return result.data?.data ?? false;
+  }
+
+  const isHoliday = result.data?.data ?? false;
+  // 요청이 자정을 넘길 수 있어, 응답 시점의 로컬 날짜를 캐시 키로 저장
+  const fetchedDateKey = getTodayDateString();
+  await AppStorage.saveData({
+    key: STORAGE_KEYS.HOLIDAY_DAY_CACHE,
+    value: { fetchedDateKey, isHoliday },
+    isTemporary: true,
+  });
+  return isHoliday;
+};
 
 /**
  * 카테고리 판매 시간 및 요일에 따른 노출/비노출 상태를 자동으로 관리하는 커스텀 훅
@@ -19,14 +62,7 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 export const useCategoryVisibilityManager = (
   categories: ICategoryWithMenus[] | null
 ): void => {
-  // 공휴일 정보 가져오기
-  const { data: holidayData, refetch: refetchHoliday } = useGetHolidays();
-  const isHolidayRef = useRef(false);
-
-  // 최신 isHoliday 값을 ref에 저장
-  useEffect(() => {
-    isHolidayRef.current = holidayData?.data ?? false;
-  }, [holidayData?.data]);
+  const { refetch: refetchHoliday } = useGetHolidays({ enabled: false });
 
   // 카테고리 데이터가 로드되면 visibility 업데이트 시작
   useEffect(() => {
@@ -38,8 +74,7 @@ export const useCategoryVisibilityManager = (
 
     /** 카테고리 노출 여부를 업데이트하는 함수 */
     const updateCategoryVisibility = async () => {
-      // 타이머로 실행될 때마다 최신 공휴일 정보 가져오기
-      await refetchHoliday();
+      const isHoliday = await resolveHolidayIsToday(refetchHoliday);
 
       // cleanup이 실행된 이후에 재개된 경우 중단
       if (cancelled) {
@@ -68,7 +103,7 @@ export const useCategoryVisibilityManager = (
           saleStartTime: category.saleStartTime,
           saleEndTime: category.saleEndTime,
           isSaleOnHoliday: category.isSaleOnHoliday,
-          isHoliday: isHolidayRef.current,
+          isHoliday,
         });
 
         // visibility 맵 업데이트

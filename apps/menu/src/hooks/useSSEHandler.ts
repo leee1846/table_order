@@ -286,7 +286,7 @@ export const useSSEHandler = () => {
     stopPosSyncPolling,
     startPosSyncPolling,
 
-    handleClearTableMessage: (shopCode: string, message: ISseMessage) => {
+    handleClearTableMessage: async (shopCode: string, message: ISseMessage) => {
       if (typeof message.data !== 'string' || !message.data) {
         return;
       }
@@ -326,7 +326,7 @@ export const useSSEHandler = () => {
         return;
       }
 
-      refreshTableOrderHistoriesData();
+      await refreshTableOrderHistoriesData();
       applyMenuboardStateAfterTableOrderHistoriesCleared(
         sseHandlerDataRef.current.shopDetailData
       );

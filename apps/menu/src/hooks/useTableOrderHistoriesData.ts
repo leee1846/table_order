@@ -52,6 +52,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
     data: apiData,
     refetch,
     error,
+    isLoading,
   } = useGetTableOrderHistories(
     {
       shopCode: shopData?.shopCode ?? '',
@@ -156,6 +157,7 @@ export const useTableOrderHistoriesData = (options?: Props) => {
 
   return {
     data: storeData,
+    isLoading,
     setData: setTableOrderHistoriesData,
     refresh,
   };

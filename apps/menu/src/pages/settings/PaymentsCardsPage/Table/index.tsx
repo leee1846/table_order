@@ -134,7 +134,6 @@ export const Table = ({ items, pageSize }: Props) => {
             <br />
             {t('부가세')}
           </th>
-          {/* <th>{t('거래취소')}</th> */}
         </tr>
       </S.Thead>
       <S.Tbody pageSize={pageSize} itemLength={items.length}>

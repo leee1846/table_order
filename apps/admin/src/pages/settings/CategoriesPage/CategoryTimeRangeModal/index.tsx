@@ -48,13 +48,13 @@ export const CategoryTimeRangeModal = ({
     initializeTimeValues();
   }, [initializeTimeValues]);
 
-  // 시간 입력 핸들러 생성 함수
+  // 시간 입력 핸들러 생성 함수 (시·분 각각 최대 2자리, 0만 무한 반복되는 것 방지)
   const createTimeInputHandler = (
     setValue: (value: string) => void,
     max: number
   ) => {
     return (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = allowOnlyNumbers(e.target.value);
+      const value = allowOnlyNumbers(e.target.value).slice(0, 2);
       if (value === '' || (Number(value) >= 0 && Number(value) <= max)) {
         setValue(value);
       }
@@ -94,6 +94,7 @@ export const CategoryTimeRangeModal = ({
                 onKeyDown={handleNumericKeyDown}
                 type="text"
                 inputMode="numeric"
+                maxLength={2}
                 placeholder="00"
               />
 
@@ -104,6 +105,8 @@ export const CategoryTimeRangeModal = ({
                 onChange={createTimeInputHandler(setStartMinute, 59)}
                 onKeyDown={handleNumericKeyDown}
                 type="text"
+                inputMode="numeric"
+                maxLength={2}
                 placeholder="00"
               />
 
@@ -120,6 +123,7 @@ export const CategoryTimeRangeModal = ({
                 onKeyDown={handleNumericKeyDown}
                 type="text"
                 inputMode="numeric"
+                maxLength={2}
                 placeholder="00"
               />
 
@@ -130,6 +134,8 @@ export const CategoryTimeRangeModal = ({
                 onChange={createTimeInputHandler(setEndMinute, 59)}
                 onKeyDown={handleNumericKeyDown}
                 type="text"
+                inputMode="numeric"
+                maxLength={2}
                 placeholder="00"
               />
 

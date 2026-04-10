@@ -80,20 +80,6 @@ export const StoreEnvironment = ({
     tableOccupationTime,
   ]);
 
-  // const menuboardTypeOptions = useMemo(
-  //   () => [
-  //     {
-  //       value: 'PLUS' as TMenuboardType,
-  //       label: t('플러스형'),
-  //     },
-  //     {
-  //       value: 'MINUS' as TMenuboardType,
-  //       label: t('마이너스형'),
-  //     },
-  //   ],
-  //   [t]
-  // );
-
   return (
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
@@ -104,54 +90,6 @@ export const StoreEnvironment = ({
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
-        {/* <UIStyles.setting.ContentLayout> */}
-        {/* <p>{t('정산 시간 (영업 시간)')}</p> */}
-        {/* <UIStyles.setting.TimeRangeInput>
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="00"
-              value={startTime.hour}
-              onChange={startTime.handleHourChange}
-              maxLength={2}
-            />
-
-            <span>:</span>
-            <input
-              ref={startTime.minuteRef}
-              type="text"
-              inputMode="numeric"
-              placeholder="00"
-              value={startTime.minute}
-              onChange={startTime.handleMinuteChange}
-              onKeyDown={startTime.handleMinuteKeyDown}
-              maxLength={2}
-            />
-
-            <span>-</span>
-            <input
-              ref={endHourRef}
-              type="text"
-              inputMode="numeric"
-              placeholder="00"
-              value={endTime.hour}
-              onChange={endTime.handleHourChange}
-              maxLength={2}
-            />
-
-            <span>:</span>
-            <input
-              ref={endTime.minuteRef}
-              type="text"
-              inputMode="numeric"
-              placeholder="00"
-              value={endTime.minute}
-              onChange={endTime.handleMinuteChange}
-              onKeyDown={endTime.handleMinuteKeyDown}
-              maxLength={2}
-            />
-          </UIStyles.setting.TimeRangeInput> */}
-        {/* </UIStyles.setting.ContentLayout> */}
         <UIStyles.setting.ContentLayout>
           <p>{t('테이블 점유시간 표기')}</p>
           <ToggleButton
@@ -160,14 +98,6 @@ export const StoreEnvironment = ({
             onChange={() => setTableOccupationTime(!tableOccupationTime)}
           />
         </UIStyles.setting.ContentLayout>
-        {/* <UIStyles.setting.ContentLayout>
-          <p>{t('메뉴판 타입')}</p>
-          <Dropdown
-            options={menuboardTypeOptions}
-            value={menuboardType}
-            onChange={(value) => setMenuboardType(value as TMenuboardType | '')}
-          />
-        </UIStyles.setting.ContentLayout> */}
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>
   );

@@ -24,30 +24,6 @@ export const Container = styled.div`
   z-index: ${zIndex.modal};
 `;
 
-// export const Header = styled.div`
-//   display: flex;
-//   align-items: center;
-//   justify-content: space-between;
-//   padding: 24px;
-// `;
-
-// export const Title = styled.h2`
-//   ${TYPOGRAPHY.MT_4}
-//   color: ${theme.colors.grey[900]};
-//   padding-right: 48px;
-// `;
-
-// export const CountBadge = styled.span`
-//   display: inline-flex;
-//   align-items: center;
-//   gap: 6px;
-//   padding: 6px 12px;
-//   border-radius: 999px;
-//   background: ${theme.colors.grey[100]};
-//   color: ${theme.colors.primary[500]};
-//   ${TYPOGRAPHY.CT_2}
-// `;
-
 export const Layout = styled.div`
   position: relative;
   flex: 1;
@@ -82,10 +58,9 @@ export const TableCard = styled.button<{ selected: boolean }>`
   padding: 14px 12px;
   background: ${({ selected }) =>
     !selected ? theme.colors.primary[500] : theme.colors.grey[200]};
-  color:${({ selected }) =>
+  color: ${({ selected }) =>
     !selected ? theme.colors.white : theme.colors.grey[400]};
   border-radius: 12px;
-
 
   cursor: pointer;
   text-align: left;
@@ -143,13 +118,13 @@ export const ActionBar = styled.div`
 `;
 
 export const SidebarContainer = styled(UISidebarContainer)`
-padding-bottom: 20px;`;
+  padding-bottom: 20px;
+`;
 
 export const Logo = styled(UILogo)``;
 
 export const MenuList = styled(UIMenuList)`
- overflow: auto;
+  overflow: auto;
 `;
 
 export const MenuItem = styled(UIMenuItem)``;
-

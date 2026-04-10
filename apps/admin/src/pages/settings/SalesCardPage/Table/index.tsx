@@ -1,10 +1,8 @@
 import { t } from '@/config/i18n';
 import * as S from '@/pages/settings/SalesCardPage/Table/table.style';
 import { theme } from '@repo/ui';
-// import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency } from '@repo/util/string';
-// import { openDualActionDialog } from '@repo/feature/utils';
 import type { ICardApprovalHistoryItem } from '@repo/api/types';
 
 interface Props {
@@ -52,16 +50,6 @@ export const Table = ({ items, pageSize }: Props) => {
     return isCancel ? theme.colors.semantic[400] : theme.colors.grey[700];
   };
 
-  // const onClickCancel = () => {
-  //   openDualActionDialog({
-  //     title: t('정말 취소하시겠습니까?'),
-  //     primaryText: t('확인'),
-  //     secondaryText: t('취소'),
-  //     onConfirm: () => {
-  //     },
-  //   });
-  // };
-
   const renderRows = () => {
     if (!items || items.length === 0) {
       return (
@@ -105,17 +93,6 @@ export const Table = ({ items, pageSize }: Props) => {
             <br />
             {formatCurrency(vat)}
           </S.ColorTd>
-
-          {/* <td>
-            <BasicButton
-              variant="Outline_Navy_M"
-              onClick={onClickCancel}
-              customStyle={S.cancelButtonCss}
-              disabled={isCancel}
-            >
-              {t('취소')}
-            </BasicButton>
-          </td> */}
         </tr>
       );
     });
@@ -156,8 +133,6 @@ export const Table = ({ items, pageSize }: Props) => {
             <br />
             {t('부가세')}
           </th>
-
-          {/* <th>{t('거래취소')}</th> */}
         </tr>
       </S.Thead>
       <S.Tbody pageSize={pageSize} itemLength={items.length}>

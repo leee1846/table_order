@@ -9,7 +9,6 @@ import { toast, openDualActionDialog } from '@repo/feature/utils';
 import * as S from '@/pages/settings/CategoryMenusPage/Menus/Menu/menu.style';
 import { CloseIcon, PhotoIcon } from '@repo/ui/icons';
 import { formatCurrency } from '@repo/util/string';
-import { MenuCopyModal } from '@/pages/settings/CategoryMenusPage/MenuCopyModal';
 import type { IMenu } from '@repo/api/types';
 import {
   queryKeys,
@@ -38,7 +37,6 @@ export const Menu = ({
   isDragging = false,
 }: Props) => {
   const { t, i18n } = useAdminTranslation();
-  const [isMenuCopyModalOpen, setIsMenuCopyModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
   const queryClient = useQueryClient();
@@ -207,10 +205,6 @@ export const Menu = ({
           </S.ToggleContainer>
         </S.InfoContainer>
       </S.Container>
-
-      {isMenuCopyModalOpen && (
-        <MenuCopyModal onClose={() => setIsMenuCopyModalOpen(false)} />
-      )}
 
       {isPreviewOpen && availableImages[previewIndex] && (
         <ModalBackground>

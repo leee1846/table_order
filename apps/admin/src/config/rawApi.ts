@@ -28,6 +28,22 @@ rawApi.interceptors.response.use(
           method: error.config?.method,
         })
       );
+    } else {
+      const { status } = error.response;
+      if (status >= 500 && status < 600) {
+        // app 로그 확인용
+        // eslint-disable-next-line no-console
+        console.log(
+          'rawApi request failed:',
+          JSON.stringify({
+            message: error.message,
+            code: error.code,
+            status,
+            url: error.config?.url,
+            method: error.config?.method,
+          })
+        );
+      }
     }
     return Promise.reject(error);
   }
