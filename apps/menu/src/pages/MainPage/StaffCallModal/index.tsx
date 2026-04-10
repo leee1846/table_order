@@ -7,13 +7,21 @@ import type { ICategoryWithMenus, IMenuBase } from '@repo/api/types';
 import { useState, useEffect } from 'react';
 import type { ICartMenu } from '@/types/cart';
 import { usePostTableOrder } from '@repo/api/queries';
-import { toast, openDualActionDialog } from '@repo/feature/utils';
+import {
+  toast,
+  openDualActionDialog,
+  openConfirmDialog,
+} from '@repo/feature/utils';
+import { usePosOrderStore } from '@repo/feature/stores';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useDisableStaffCallStore } from '@/stores/useDisableStaffCallStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useShopStore } from '@/stores/useShopStore';
+import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes';
 
 interface Props {
   onClose: () => void;
@@ -107,8 +115,11 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
   };
 
   const { data: shopData } = useShopStore();
+  const navigate = useNavigate();
 
-  const { mutateAsync: createTableOrder } = usePostTableOrder();
+  const { mutateAsync: createTableOrder } = usePostTableOrder({
+    skipGlobalErrorHandling: true,
+  });
   const { data: customerCountData } = useCustomerCountStore();
   const requestOrder = () => {
     if (!shopData) {
@@ -129,31 +140,75 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
       primaryText: t('예'),
       secondaryText: t('아니오'),
       onConfirm: async () => {
-        await createTableOrder({
-          shopCode: shopData.shopCode,
-          tableNumber: useDeviceStore.getState().data?.tableNumber ?? '',
-          orderType: 'MENU',
-          // 객수 미사용시 1명으로 처리
-          customerCount: customerCountData?.adultCount ?? 1,
-          // 객수 미사용시 0명으로 처리
-          kidsCustomerCount: customerCountData?.childCount ?? 0,
-          // 직원호출 메뉴는 0원만 가능함
-          totalAmount: '0',
-          orders: selectedMenuList.map((menu) => ({
-            menuSeq: menu.menuSeq,
-            menuName: menu.menuName,
-            menuPrice: 0,
-            quantity: menu.quantity,
-            selectedOptions: [],
-          })),
-        });
+        const finishStaffRequest = async () => {
+          disableStaffCall();
+          toast(t('요청이 완료되었습니다.'), {
+            position: 'center-center',
+            duration: 1500,
+          });
+          onClose();
+        };
 
-        disableStaffCall();
-        toast(t('요청이 완료되었습니다.'), {
-          position: 'center-center',
-          duration: 1500,
-        });
-        onClose();
+        try {
+          const orderResponse = await createTableOrder({
+            shopCode: shopData.shopCode,
+            tableNumber: useDeviceStore.getState().data?.tableNumber ?? '',
+            orderType: 'MENU',
+            customerCount: customerCountData?.adultCount ?? 1,
+            kidsCustomerCount: customerCountData?.childCount ?? 0,
+            totalAmount: '0',
+            orders: selectedMenuList.map((menu) => ({
+              menuSeq: menu.menuSeq,
+              menuName: menu.menuName,
+              menuPrice: 0,
+              quantity: menu.quantity,
+              selectedOptions: [],
+            })),
+          });
+
+          const shopSnapshot = useShopDetailStore.getState().data;
+          const isPosLinked =
+            !!shopSnapshot?.shopSetting?.shopPosCode &&
+            shopSnapshot.shopSetting.shopPosCode !== 'NONE';
+          const orderUuid =
+            orderResponse.data.orderInfoList.at(-1)?.orderUuid ?? '';
+
+          if (isPosLinked && orderUuid) {
+            const shopCode = String(
+              useShopStore.getState().data?.shopCode ?? ''
+            );
+            usePosOrderStore
+              .getState()
+              .register(orderUuid, shopCode, finishStaffRequest, async () => {
+                openConfirmDialog({
+                  title: t('POS 오류'),
+                  content: t(
+                    '주문 요청에 실패하였습니다. 직원에게 문의해주세요.'
+                  ),
+                  confirmText: t('확인'),
+                });
+                onClose();
+              });
+            return;
+          }
+
+          await finishStaffRequest();
+        } catch (error: unknown) {
+          const status = (error as { response?: { status?: number } })?.response
+            ?.status;
+
+          // 테이블이 삭제된 경우
+          if (status === 400) {
+            navigate(ROUTES.TABLES.generate());
+            return;
+          }
+
+          openConfirmDialog({
+            title: t('오류'),
+            content: t('주문에 실패했습니다. 다시 시도해주세요.'),
+            confirmText: t('확인'),
+          });
+        }
       },
     });
   };
