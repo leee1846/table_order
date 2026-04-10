@@ -3,6 +3,7 @@ import customerI18n from '@/config/i18n/customer.i18n';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import type { ICartMenu } from '@/types/cart';
 import { calculateMenuTotalPrice } from '@/utils/calculation';
@@ -12,6 +13,15 @@ const DEFAULT_TOAST = {
   position: 'center-center' as const,
   duration: 2000,
 };
+
+/** 서버에 반영된 테이블 주문 라인이 하나라도 있으면 true (첫 주문 최소금액 검사 제외용) */
+function hasTableOrderHistory(): boolean {
+  const orderData = useTableOrderHistoriesStore.getState().data;
+  if (orderData === null || orderData === 'isEmptyTable') {
+    return false;
+  }
+  return orderData.orderDetailMenuList.length > 0;
+}
 
 function cartMenusTotalAmount(menus: ICartMenu[]): number {
   return menus.reduce((total, menu) => {
@@ -26,7 +36,7 @@ function cartMenusTotalAmount(menus: ICartMenu[]): number {
 }
 
 /**
- * 장바구니 주문 직전 검증: 첫 주문 필수·품절·최소 수량·최소 금액·카테고리(주문 가능) 여부.
+ * 장바구니 주문 직전 검증: 첫 주문 필수·품절·최소 수량·첫 주문 최소 금액(주문 내역 없을 때만)·카테고리(주문 가능) 여부.
  * 확인 시점의 스토어·i18n 상태를 내부에서 읽습니다. 실패 시 토스트만 띄우고 `false`를 반환합니다.
  *
  * 메뉴·품절·최소수량 조회는 `CartList`에 넘기던 `categories`와 동일하게 **노출 카테고리**(`visibleCategories`) 기준입니다.
@@ -108,6 +118,7 @@ export function validateCartOrder(): boolean {
   }
 
   if (
+    !hasTableOrderHistory() &&
     firstOrderMinAmount &&
     firstOrderMinAmount > 0 &&
     totalMenuAmount < firstOrderMinAmount
