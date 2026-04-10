@@ -128,6 +128,7 @@ export const Table = styled.table`
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
   height: 100%;
 `;
 
@@ -159,6 +160,8 @@ export const Thead = styled.thead`
 export const Tbody = styled.tbody`
   width: 100%;
   display: block;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 
   & > tr {

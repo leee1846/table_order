@@ -23,7 +23,9 @@ export const Tbody = styled(UIStyles.setting.Tbody)<{
 
   & > tr {
     align-items: center;
-    height: calc(100% / ${({ pageSize }) => pageSize});
+    flex-shrink: 0;
+    box-sizing: border-box;
+    height: max(4.25rem, calc(100% / ${({ pageSize }) => pageSize ?? 7}));
     padding: 0px;
   }
 
