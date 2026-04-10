@@ -159,26 +159,23 @@ export const StoreGroupNewPage = () => {
         address1: store.address1 || '-',
       }));
 
-      setDataSource((prev) => {
-        const existingCodes = new Set(prev.map((p) => p.shopCode));
-        const newStores = mappedStores.filter(
-          (s) => !existingCodes.has(s.shopCode)
-        );
+      const existingCodes = new Set(dataSource.map((p) => p.shopCode));
+      const newStores = mappedStores.filter(
+        (s) => !existingCodes.has(s.shopCode)
+      );
 
-        if (newStores.length > 0) {
-          message.success(
-            `성공적으로 ${newStores.length}개의 매장을 추가했습니다.`
-          );
-        } else {
-          message.warning(
-            '추가할 새로운 매장이 없거나 검색된 매장이 없습니다.'
-          );
-        }
-        return [...prev, ...newStores];
-      });
+      if (newStores.length > 0) {
+        message.success(
+          `성공적으로 ${newStores.length}개의 매장을 추가했습니다.`
+        );
+      } else {
+        message.warning('추가할 새로운 매장이 없거나 검색된 매장이 없습니다.');
+      }
+
+      setDataSource((prev) => [...prev, ...newStores]);
       setSearchShopCodes([]); // 처리 후 검색 코드 초기화
     }
-  }, [searchResponse, searchShopCodes, message]);
+  }, [searchResponse, searchShopCodes, dataSource, message]);
 
   const handleFinish = async (values: StoreGroupFormValues) => {
     if (dataSource.length === 0) {
@@ -248,7 +245,7 @@ export const StoreGroupNewPage = () => {
 
         if (newShopCodes.length > 0) {
           setSearchShopCodes(newShopCodes);
-          message.info(`${file.name} 파일의 매장 정보를 불러오는 중입니다...`);
+          //message.info(`${file.name} 파일의 매장 정보를 불러오는 중입니다...`);
         } else {
           message.warning('유효한 매장 ID가 없습니다.');
         }
@@ -354,21 +351,24 @@ export const StoreGroupNewPage = () => {
           <SectionTitle level={5}>기본 정보</SectionTitle>
 
           <Form.Item
-            label={<Text strong>그룹명</Text>}
+            label={<Text strong>매장 그룹명</Text>}
             name="groupName"
             required
             //rules={[{ required: true, message: '그룹명을 입력해주세요.' }]}
           >
             <Input
-              placeholder="그룹명을 입력하세요"
+              placeholder="매장 그룹명을 입력하세요"
               //size="large"
               style={{ maxWidth: 400 }}
             />
           </Form.Item>
 
-          <Form.Item label={<Text strong>그룹 설명</Text>} name="description">
+          <Form.Item
+            label={<Text strong>매장 그룹 설명</Text>}
+            name="description"
+          >
             <TextArea
-              placeholder="그룹에 대한 간략한 설명을 입력하세요 (선택사항)"
+              placeholder="매장 그룹에 대한 간략한 설명을 입력하세요 (선택사항)"
               rows={4}
               style={{ maxWidth: 600, resize: 'none' }}
             />
