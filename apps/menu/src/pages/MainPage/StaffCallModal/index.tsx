@@ -22,6 +22,7 @@ import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 
 interface Props {
   onClose: () => void;
@@ -120,6 +121,8 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
   const { mutateAsync: createTableOrder } = usePostTableOrder({
     skipGlobalErrorHandling: true,
   });
+  const { refresh: refreshTableOrderHistoriesData } =
+    useTableOrderHistoriesData({ skipInitialRequest: true });
   const { data: customerCountData } = useCustomerCountStore();
   const requestOrder = () => {
     if (!shopData) {
@@ -141,6 +144,7 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
       secondaryText: t('아니오'),
       onConfirm: async () => {
         const finishStaffRequest = async () => {
+          await refreshTableOrderHistoriesData();
           disableStaffCall();
           toast(t('요청이 완료되었습니다.'), {
             position: 'center-center',
