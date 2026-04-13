@@ -50,6 +50,7 @@ import {
   logOrderRequestRefundFailed,
   orderRequestRefundFailedSummaryAfterOrderCreate,
   orderRequestRefundFailedSummaryAfterPaymentApproval,
+  orderRequestRefundFailedSummaryAfterPosOrderFailure,
 } from '@/utils/logOrderRequestRefundFailed';
 
 interface Props {
@@ -661,9 +662,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
     // 첫 번째 결제인지 여부를 미리 확인 (주문 API를 요청했으면 cancelOrderMenuRequest에 값이 있음)
     const isFirstPayment = cancelOrderMenuRequestRef.current.length > 0;
 
+    let paymentCancelFailed = false;
     if (completedPaymentResultsRef.current) {
+      const paymentToCancel = completedPaymentResultsRef.current;
       try {
-        await Payment.cancel(completedPaymentResultsRef.current);
+        await Payment.cancel(paymentToCancel);
 
         // const cancelResult = await Payment.cancel(
         //   completedPaymentResultsRef.current
@@ -683,7 +686,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
         //   await cancelOrderMenu(cancelOrderMenuRequestRef.current);
         // }
       } catch {
-        // 카드 취소 실패 시 무시
+        paymentCancelFailed = true;
+        logOrderRequestRefundFailed(
+          orderRequestRefundFailedSummaryAfterPosOrderFailure(),
+          paymentToCancel
+        );
       }
     }
 
@@ -699,7 +706,9 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
     openConfirmDialog({
       title: t('POS 오류'),
-      content: t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'),
+      content: paymentCancelFailed
+        ? t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
+        : t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'),
       confirmText: t('확인'),
     });
   };

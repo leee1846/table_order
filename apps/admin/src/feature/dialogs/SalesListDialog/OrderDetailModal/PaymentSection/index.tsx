@@ -178,18 +178,12 @@ export const PaymentSection = ({ order }: Props) => {
                   <br />[{payment.issuerCompany ?? '-'}]
                 </td>
                 <td>
-                  ₩{formatCurrency(payment.transactionAmount ?? 0)}
-                  <br />-
+                  {formatCurrency(
+                    (payment.transactionAmount ?? 0) - (payment.vatAmount ?? 0)
+                  )}
+                  <br />
+                  {formatCurrency(payment.vatAmount ?? 0)}
                 </td>
-                {/* <td>
-                  <BasicButton
-                    variant="Outline_Navy_M"
-                    onClick={() => {}}
-                    customStyle={S.cancelButtonCss}
-                  >
-                    {t('취소')}
-                  </BasicButton>
-                </td> */}
               </tr>
             ))}
           </UIStyles.setting.Tbody>

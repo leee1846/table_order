@@ -32,3 +32,8 @@ export function orderRequestRefundFailedSummaryAfterPaymentApproval(
   const path = ENDPOINTS.PAYMENT.APPROVAL_METHOD_CODE(paymentMethodCode);
   return `카드 결제(승인) 성공 > 주문 생성 성공 > 결제 승인 전송(${path}) 실패 > 환불(Payment.cancel) 실패`;
 }
+
+/** 분할 결제 POS 실패 처리 중 카드 환불(Payment.cancel) 실패 */
+export function orderRequestRefundFailedSummaryAfterPosOrderFailure(): string {
+  return 'POS 주문 실패 > 카드 환불(Payment.cancel) 실패';
+}
