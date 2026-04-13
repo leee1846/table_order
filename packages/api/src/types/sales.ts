@@ -128,6 +128,7 @@ export interface IPaymentHistory {
   cancelDate: string | null;
   cancelTransactionNumber: string | null;
   createDate: string | null;
+  vatAmount: number | null;
 }
 
 export interface IOrderHistoryItem {

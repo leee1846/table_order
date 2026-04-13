@@ -23,11 +23,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTableDrag } from '@/hooks/useTableDrag';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
-import adminI18n from '@/config/i18n';
+import adminI18n, { useAdminTranslation } from '@/config/i18n';
+import { NoContent } from '@/feature/NoContent';
+import { useThemeMode } from '@repo/ui';
 import { TABLE_GROUP_STORAGE_KEY } from '@/constants/keys';
 import { useIsPosLinked } from '@/hooks/useIsPosLinked';
 
 export const TablesPage = () => {
+  const { t } = useAdminTranslation();
+  const { theme } = useThemeMode();
   const { shopCode } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -228,30 +232,36 @@ export const TablesPage = () => {
               ))}
             </TableGroupList>
           </TableGroupWrapper>
-          <TableCardsGrid>
-            {tables.map((table) =>
-              isPosLinked ? (
-                <div key={table.id}>
-                  <TableCard
-                    id={table.id}
+          {tables.length === 0 ? (
+            <NoContent paddingTop="0" color={theme.mode.grey[200]}>
+              {t('등록된 테이블이 없습니다.')}
+            </NoContent>
+          ) : (
+            <TableCardsGrid>
+              {tables.map((table) =>
+                isPosLinked ? (
+                  <div key={table.id}>
+                    <TableCard
+                      id={table.id}
+                      table={table}
+                      tableNumber={table.tableNumber}
+                      orderTime={table.orderTime ?? null}
+                      onClick={() => handleTableClick(table)}
+                      i18nInstance={adminI18n}
+                    />
+                  </div>
+                ) : (
+                  <DraggableTableCard
+                    key={table.id}
                     table={table}
-                    tableNumber={table.tableNumber}
-                    orderTime={table.orderTime ?? null}
-                    onClick={() => handleTableClick(table)}
+                    activeTableNumber={activeTableNumber}
+                    onClick={handleTableClick}
                     i18nInstance={adminI18n}
                   />
-                </div>
-              ) : (
-                <DraggableTableCard
-                  key={table.id}
-                  table={table}
-                  activeTableNumber={activeTableNumber}
-                  onClick={handleTableClick}
-                  i18nInstance={adminI18n}
-                />
-              )
-            )}
-          </TableCardsGrid>
+                )
+              )}
+            </TableCardsGrid>
+          )}
         </TableCardsArea>
       </TablesPageContainer>
 

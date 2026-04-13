@@ -11,6 +11,7 @@ import {
   usePostDeviceDetail,
   useGetDeviceList,
   usePostOrderGroup,
+  useGetTableOccupiedCheck,
 } from '@repo/api/queries';
 import {
   TablesPageContainer,
@@ -46,6 +47,8 @@ import { Sidebar } from '@/pages/TablesPage/Sidebar';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useShopStore } from '@/stores/useShopStore';
 import { useScrollToSelectedItem } from '@repo/feature/hooks';
+import { NoContent } from '@/feature/NoContent';
+import { useThemeMode } from '@repo/ui';
 
 // 헬퍼 함수: 주문 시간 포맷팅
 const formatOrderTime = (
@@ -91,6 +94,7 @@ const convertOrderDetailMenuListToMenuItems = (
 export const TablesPage = () => {
   const { t } = useAdminTranslation();
   const navigate = useNavigate();
+  const { theme } = useThemeMode();
 
   const { data: shopData } = useShopStore();
   const { data: shopDetailData } = useShopDetailData();
@@ -136,6 +140,8 @@ export const TablesPage = () => {
 
   // 공통: 주문 그룹 생성 mutation
   const { mutateAsync: createOrderGroup } = usePostOrderGroup();
+
+  const { mutateAsync: checkTableOccupiedAsync } = useGetTableOccupiedCheck();
 
   // ORDER_POS 모드: 테이블 클릭 핸들러
   const handleOrderPosTableClick = useCallback(
@@ -383,13 +389,6 @@ export const TablesPage = () => {
   // 일반 모드: 디바이스 타입 및 테이블 상태 확인 함수
   const isCurrentSelectedTable = (tableNumber: string) =>
     deviceData?.tableNumber === tableNumber;
-  const isTableOccupiedByOther = (table: TableWithStatus) => {
-    const hasMenuDevice = deviceListData?.data?.some(
-      (device) =>
-        device.tableNumber === table.tableNumber && device.deviceType === 'MENU'
-    );
-    return hasMenuDevice && !isCurrentSelectedTable(table.tableNumber);
-  };
 
   // 사용 중인 테이블 클릭 처리
   const handleOccupiedTableClick = (table: TableWithStatus) => {
@@ -430,19 +429,47 @@ export const TablesPage = () => {
     setSelectedTableForGuestCount(null);
   }, []);
 
-  // 일반 모드: 테이블 클릭 처리
+  // 일반 모드: 테이블 클릭 처리 (점유 여부는 클릭 트리거로 mutation 호출)
   const handleMenuModeTableClick = async (table: TableWithStatus) => {
-    if (isTableOccupiedByOther(table)) {
-      handleOccupiedTableClick(table);
-      return;
-    }
-
     if (isCurrentSelectedTable(table.tableNumber)) {
       await handleCurrentTableClick();
       return;
     }
 
-    selectTable(table);
+    const shopCode = shopData?.shopCode ?? '';
+    if (!shopCode) {
+      return;
+    }
+
+    try {
+      const occupiedResponse = await checkTableOccupiedAsync({
+        shopCode,
+        tableNumber: table.tableNumber,
+      });
+
+      if (occupiedResponse?.data == null) {
+        openConfirmDialog({
+          title: t('오류'),
+          content: t('테이블 점유 상태를 알 수 없습니다.'),
+          confirmText: t('확인'),
+        });
+        return;
+      }
+
+      if (occupiedResponse.data.occupied === true) {
+        handleOccupiedTableClick(table);
+        return;
+      }
+    } catch {
+      openConfirmDialog({
+        title: t('오류'),
+        content: t('테이블 점유 상태를 알 수 없습니다.'),
+        confirmText: t('확인'),
+      });
+      return;
+    }
+
+    await selectTable(table);
   };
 
   // 일반 모드: 테이블 길게 누르기 처리
@@ -640,22 +667,28 @@ export const TablesPage = () => {
               ))}
             </TableGroupList>
           </TableGroupWrapper>
-          <TableCardsGrid onScroll={handleScroll}>
-            {tablesWithStatus.map((table) => (
-              <LongPressTableCard
-                key={table.id}
-                table={table}
-                onClick={(tbl) => {
-                  if (!isScrollingRef.current) {
-                    handleMenuModeTableClick(tbl);
-                  }
-                }}
-                onLongPress={handleMenuModeLongPress}
-                i18nInstance={adminI18n}
-                longPressDelay={500}
-              />
-            ))}
-          </TableCardsGrid>
+          {tablesWithStatus.length === 0 ? (
+            <NoContent color={theme.mode.grey[300]} paddingTop="0">
+              {t('등록된 테이블이 없습니다.')}
+            </NoContent>
+          ) : (
+            <TableCardsGrid onScroll={handleScroll}>
+              {tablesWithStatus.map((table) => (
+                <LongPressTableCard
+                  key={table.id}
+                  table={table}
+                  onClick={(tbl) => {
+                    if (!isScrollingRef.current) {
+                      handleMenuModeTableClick(tbl);
+                    }
+                  }}
+                  onLongPress={handleMenuModeLongPress}
+                  i18nInstance={adminI18n}
+                  longPressDelay={500}
+                />
+              ))}
+            </TableCardsGrid>
+          )}
         </TableCardsArea>
       </TablesPageContainer>
 

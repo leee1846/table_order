@@ -88,3 +88,10 @@ export interface IPostDeviceControlRequest {
 }
 
 export type TPostDeviceControlResponse = TVoidApiResponse;
+
+export interface IGetTableOccupiedCheck {
+  occupied: boolean;
+}
+
+export type TGetTableOccupiedCheckResponse =
+  IApiResponse<IGetTableOccupiedCheck>;
