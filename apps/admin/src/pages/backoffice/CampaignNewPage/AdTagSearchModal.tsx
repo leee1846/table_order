@@ -5,7 +5,7 @@ import {
   Input,
   Upload,
   Button,
-  Space,
+  App,
   Select,
   type UploadFile,
 } from 'antd';
@@ -78,6 +78,7 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [adDescription, setAdDescription] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const { message } = App.useApp();
 
   const resetState = () => {
     setSelectedItem(null);
@@ -180,17 +181,34 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
         <Section>
           <LabelWrapper>
             <Text strong style={{ fontSize: '14px', color: '#262626' }}>
-              광고 이미지
+              이미지
             </Text>
             {/* <PriorityBadge>매장 설정보다 우선 적용</PriorityBadge> */}
           </LabelWrapper>
           <Dragger
-            accept=".jpg,.png,.gif"
+            accept=".jpg,.jpeg,.png"
             height={140}
             style={{ backgroundColor: '#fff', borderColor: '#d9d9d9' }}
             fileList={fileList}
             maxCount={1}
             beforeUpload={(file) => {
+              const extension = file.name
+                .substring(file.name.lastIndexOf('.'))
+                .toLowerCase();
+              const isImage =
+                file.type.startsWith('image/') ||
+                ['.jpg', '.jpeg', '.png'].includes(extension);
+
+              if (!['.jpg', '.jpeg', '.png'].includes(extension)) {
+                message.error(
+                  '지원하지 않는 파일 형식입니다. (jpg, png만 지원)'
+                );
+                return Upload.LIST_IGNORE;
+              }
+              if (isImage && file.size > 1 * 1024 * 1024) {
+                message.error('이미지 크기는 1MB 이하여야 합니다.');
+                return Upload.LIST_IGNORE;
+              }
               setFileList([file]);
               return false; // 자동 업로드 방지
             }}
@@ -211,7 +229,7 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
               className="ant-upload-hint"
               style={{ fontSize: '12px', color: '#bfbfbf' }}
             >
-              jpg, png, gif 파일만 지원
+              jpg, png 파일만 지원 (1MB 이하)
             </p>
           </Dragger>
         </Section>
@@ -220,7 +238,7 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
         <Section>
           <LabelWrapper>
             <Text strong style={{ fontSize: '14px', color: '#262626' }}>
-              광고 설명 문구
+              설명
             </Text>
             {/* <PriorityBadge>매장 설정보다 우선 적용</PriorityBadge> */}
           </LabelWrapper>

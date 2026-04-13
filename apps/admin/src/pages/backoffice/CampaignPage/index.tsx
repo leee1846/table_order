@@ -324,7 +324,7 @@ const CampaignPage: React.FC = () => {
   };
 
   const columns: ColumnsType<CampaignDataType> = [
-    { title: '캠페인코드', dataIndex: 'code', key: 'code', width: 120 },
+    { title: '캠페인 코드', dataIndex: 'code', key: 'code', width: 120 },
     { title: '캠페인명', dataIndex: 'name', key: 'name' },
     { title: '별명', dataIndex: 'nickname', key: 'nickname' },
     {

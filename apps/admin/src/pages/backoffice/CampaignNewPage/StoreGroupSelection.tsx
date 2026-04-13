@@ -17,7 +17,7 @@ interface StoreGroup {
 
 interface Store {
   key: string;
-  sid: string;
+  code: string;
   name: string;
   groupIds: string[]; // 매장이 속한 그룹 ID 배열 (복수 가능)
 }
@@ -61,18 +61,18 @@ const MOCK_GROUPS: StoreGroup[] = [
 ];
 
 const MOCK_STORES: Store[] = [
-  { key: '1', sid: 'S0011234', name: '투다리 강남점', groupIds: ['g1'] },
-  { key: '2', sid: 'S0015892', name: '투다리 홍대점', groupIds: ['g1', 'g2'] },
-  { key: '3', sid: 'S0022341', name: '투다리 신촌점', groupIds: ['g2'] },
+  { key: '1', code: 'S0011234', name: '투다리 강남점', groupIds: ['g1'] },
+  { key: '2', code: 'S0015892', name: '투다리 홍대점', groupIds: ['g1', 'g2'] },
+  { key: '3', code: 'S0022341', name: '투다리 신촌점', groupIds: ['g2'] },
   {
     key: '4',
-    sid: 'S0031120',
+    code: 'S0031120',
     name: '투다리 이태원점',
     groupIds: ['g1', 'g2'],
   },
-  { key: '5', sid: 'S0022349', name: '투다리 성수점', groupIds: ['g2'] },
-  { key: '6', sid: 'S0033210', name: '투다리 합정점', groupIds: ['g1'] },
-  { key: '7', sid: 'S0044501', name: '투다리 건대점', groupIds: ['g2'] },
+  { key: '5', code: 'S0022349', name: '투다리 성수점', groupIds: ['g2'] },
+  { key: '6', code: 'S0033210', name: '투다리 합정점', groupIds: ['g1'] },
+  { key: '7', code: 'S0044501', name: '투다리 건대점', groupIds: ['g2'] },
 ];
 
 export interface StoreGroupSelectionProps {
@@ -103,7 +103,7 @@ const StoreGroupSelection: React.FC<StoreGroupSelectionProps> = ({
         selectedGroups.includes(id)
       );
       const isSearchMatch =
-        store.name.includes(searchText) || store.sid.includes(searchText);
+        store.name.includes(searchText) || store.code.includes(searchText);
       return isGroupMatch && isSearchMatch;
     });
   }, [selectedGroups, searchText]);
@@ -129,7 +129,7 @@ const StoreGroupSelection: React.FC<StoreGroupSelectionProps> = ({
 
   // 테이블 컬럼 정의
   const columns: ColumnsType<Store> = [
-    { title: 'SID', dataIndex: 'sid', key: 'sid', width: 120 },
+    { title: '매장 코드', dataIndex: 'code', key: 'code', width: 120 },
     { title: '매장명', dataIndex: 'name', key: 'name', width: 200 },
     {
       title: '소속 그룹',
@@ -168,7 +168,7 @@ const StoreGroupSelection: React.FC<StoreGroupSelectionProps> = ({
       >
         <Space>
           <Input
-            placeholder="SID/매장명을 입력하세요"
+            placeholder="매장명을 입력하세요"
             style={{ width: 240, borderRadius: '6px' }}
             value={searchInputValue}
             onChange={(e) => setSearchInputValue(e.target.value)}

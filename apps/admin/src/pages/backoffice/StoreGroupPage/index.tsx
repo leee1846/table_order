@@ -17,6 +17,7 @@ import {
 // --- Types & Mock Data ---
 interface StoreGroupDataType {
   // TODO: 실제 API 응답 필드명(Swagger 참고)에 맞춰 수정해주세요.
+  no: number;
   storeGroupSeq: number;
   groupId: string;
   groupName: string;
@@ -89,7 +90,8 @@ export const StoreGroupPage = () => {
 
   const storeGroups: StoreGroupDataType[] = useMemo(
     () =>
-      (responseData?.content || []).map((item) => ({
+      (responseData?.content || []).map((item, index) => ({
+        no: (currentPage - 1) * pageSize + index + 1,
         storeGroupSeq: item.storeGroupSeq || 0,
         groupId: String(item.storeGroupId || ''),
         groupName: item.groupName || '',
@@ -97,12 +99,13 @@ export const StoreGroupPage = () => {
         groupDescription: item.groupDescription || '',
         createdAt: item.createDate || '',
       })) as StoreGroupDataType[],
-    [responseData?.content]
+    [responseData?.content, currentPage, pageSize]
   );
 
-  const totalCount = responseData?.totalCount || storeGroups.length;
+  const totalCount = responseData?.totalElements || 0;
 
   const columns: ColumnsType<StoreGroupDataType> = [
+    { title: 'No.', dataIndex: 'no', key: 'no', width: 80, align: 'center' },
     { title: '매장그룹 ID', dataIndex: 'groupId', key: 'groupId', width: 120 },
     {
       title: '매장 그룹명',

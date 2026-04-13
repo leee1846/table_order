@@ -53,7 +53,7 @@ const StoreGroupAddModal: React.FC<StoreGroupAddModalProps> = ({
   };
 
   const columns: ColumnsType<GroupData> = [
-    { title: '그룹명', dataIndex: 'name', key: 'name' },
+    { title: '매장 그룹명', dataIndex: 'name', key: 'name' },
     {
       title: '포함 매장 수',
       dataIndex: 'count',

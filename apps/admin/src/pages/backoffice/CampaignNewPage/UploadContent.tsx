@@ -23,6 +23,13 @@ export interface UploadedFile {
   originFileObj?: File;
 }
 
+export type AcceptType =
+  | 'orderStandby' // 1. 주문 대기
+  | 'topBanner' // 2. 상단 배너
+  | 'adMenu' // 3. 광고 메뉴
+  | 'fullScreenAd' // 4. 전면 광고
+  | 'orderForm'; // 5. 주문서
+
 // --- Emotion Styles ---
 const UploadSection = styled.div`
   display: flex;
@@ -108,7 +115,7 @@ interface UploadContentProps {
   handleDragEnter: (index: number) => void;
   handleDragEnd: () => void;
   handleDelete: (id: string) => void;
-  acceptType?: 'image' | 'imageAndVideo';
+  acceptType?: AcceptType;
   handleUpload?: (file: UploadedFile) => void;
 }
 
@@ -119,23 +126,54 @@ const UploadContent: React.FC<UploadContentProps> = ({
   handleDragEnter,
   handleDragEnd,
   handleDelete,
-  acceptType = 'imageAndVideo',
+  acceptType = 'orderStandby',
   handleUpload,
 }) => {
-  const acceptString =
-    acceptType === 'image'
-      ? '.jpg,.jpeg,.png,.gif'
-      : '.jpg,.jpeg,.png,.gif,.mp4';
+  const getAcceptConfig = (type: AcceptType) => {
+    switch (type) {
+      case 'orderStandby':
+        return {
+          acceptString: '.jpg,.jpeg,.png,.mp4',
+          hintText:
+            'jpg, png, mp4 파일 지원 (영상 15초/30MB 이하, 이미지 1MB 이하)',
+          validExtensions: ['.jpg', '.jpeg', '.png', '.mp4'],
+        };
+      case 'topBanner':
+        return {
+          acceptString: '.jpg,.jpeg,.png',
+          hintText: 'jpg, png 파일 지원 (1MB 이하, 750x135 규격)',
+          validExtensions: ['.jpg', '.jpeg', '.png'],
+        };
+      case 'adMenu':
+        return {
+          acceptString: '.jpg,.jpeg,.png',
+          hintText: 'jpg, png 파일 지원 (1MB 이하)',
+          validExtensions: ['.jpg', '.jpeg', '.png'],
+        };
+      case 'fullScreenAd':
+        return {
+          acceptString: '.jpg,.jpeg,.png,.mp4',
+          hintText:
+            'jpg, png, mp4 지원 (영상 15초/30MB 이하, 이미지 1MB 이하, 1280x720 규격)',
+          validExtensions: ['.jpg', '.jpeg', '.png', '.mp4'],
+        };
+      case 'orderForm':
+        return {
+          acceptString: '.jpg,.jpeg,.png',
+          hintText: 'jpg, png 파일 지원 (1MB 이하, 640x720 규격)',
+          validExtensions: ['.jpg', '.jpeg', '.png'],
+        };
+      default:
+        return {
+          acceptString: '.jpg,.jpeg,.png,.mp4',
+          hintText: '파일을 선택해주세요.',
+          validExtensions: ['.jpg', '.jpeg', '.png', '.mp4'],
+        };
+    }
+  };
 
-  const hintText =
-    acceptType === 'image'
-      ? 'jpg, png, gif 파일만 지원'
-      : 'jpg, png, gif, mp4 파일 지원';
-
-  const validExtensions =
-    acceptType === 'image'
-      ? ['.jpg', '.jpeg', '.png', '.gif']
-      : ['.jpg', '.jpeg', '.png', '.gif', '.mp4'];
+  const { acceptString, hintText, validExtensions } =
+    getAcceptConfig(acceptType);
 
   return (
     <>
@@ -147,38 +185,94 @@ const UploadContent: React.FC<UploadContentProps> = ({
             style={{ backgroundColor: '#f8fafc', borderColor: '#1d2a6d' }}
             showUploadList={false}
             beforeUpload={(file) => {
-              const extension = file.name
-                .substring(file.name.lastIndexOf('.'))
-                .toLowerCase();
-              const isValid = validExtensions.includes(extension);
-
-              if (!isValid) {
-                message.error(`지원하지 않는 파일 형식입니다. (${hintText})`);
-                return Upload.LIST_IGNORE; // antd 내부 리스트에도 추가하지 않음
-              }
-
+              const lastDotIndex = file.name.lastIndexOf('.');
+              const extension =
+                lastDotIndex !== -1
+                  ? file.name.substring(lastDotIndex).toLowerCase()
+                  : '';
               const isVideo =
                 file.type.startsWith('video/') || extension === '.mp4';
+              const isImage =
+                file.type.startsWith('image/') ||
+                ['.jpg', '.jpeg', '.png'].includes(extension);
 
-              if (isVideo && file.size > 30 * 1024 * 1024) {
-                message.error('동영상 크기는 30MB 이하여야 합니다.');
-                return Upload.LIST_IGNORE;
-              }
+              return new Promise<string | boolean>((resolve) => {
+                if (!validExtensions.includes(extension)) {
+                  message.error(`지원하지 않는 파일 형식입니다. (${hintText})`);
+                  return resolve(Upload.LIST_IGNORE);
+                }
 
-              if (handleUpload) {
-                const createAndUploadFile = (durationStr: string) => {
-                  const newFile: UploadedFile = {
-                    id: String(Date.now() + Math.random()), // 고유 ID 생성
-                    name: file.name,
-                    duration: durationStr,
-                    size: `${(file.size / (1024 * 1024)).toFixed(1)}MB`,
-                    status: '완료',
-                    originFileObj: file, // 🚀 실제 File 객체 보관
-                  };
-                  handleUpload(newFile);
+                // 이미지 용량 제한 (1MB 이하)
+                if (isImage && file.size > 1 * 1024 * 1024) {
+                  message.error('이미지 크기는 1MB 이하여야 합니다.');
+                  return resolve(Upload.LIST_IGNORE);
+                }
+
+                // 비디오 용량 제한 (30MB 이하)
+                if (isVideo && file.size > 30 * 1024 * 1024) {
+                  message.error('동영상 크기는 30MB 이하여야 합니다.');
+                  return resolve(Upload.LIST_IGNORE);
+                }
+
+                const handleSuccess = (durationStr: string) => {
+                  if (handleUpload) {
+                    const newFile: UploadedFile = {
+                      id: String(Date.now() + Math.random()), // 고유 ID 생성
+                      name: file.name,
+                      duration: durationStr,
+                      size: `${(file.size / (1024 * 1024)).toFixed(2)}MB`,
+                      status: '완료',
+                      originFileObj: file, // 🚀 실제 File 객체 보관
+                    };
+                    handleUpload(newFile);
+                  }
+                  resolve(false); // 브라우저 자동 업로드 방지 처리 완료
                 };
 
-                if (isVideo) {
+                if (isImage) {
+                  const needsDimensionCheck =
+                    acceptType === 'topBanner' ||
+                    acceptType === 'fullScreenAd' ||
+                    acceptType === 'orderForm';
+
+                  if (!needsDimensionCheck) {
+                    handleSuccess('');
+                    return;
+                  }
+
+                  const img = new Image();
+                  img.onload = () => {
+                    URL.revokeObjectURL(img.src);
+                    let isValidDim = true;
+                    let expectedDim = '';
+
+                    if (acceptType === 'topBanner') {
+                      isValidDim = img.width === 750 && img.height === 135;
+                      expectedDim = '750 x 135';
+                    } else if (acceptType === 'fullScreenAd') {
+                      isValidDim = img.width === 1280 && img.height === 720;
+                      expectedDim = '1280 x 720';
+                    } else if (acceptType === 'orderForm') {
+                      isValidDim = img.width === 640 && img.height === 720;
+                      expectedDim = '640 x 720';
+                    }
+
+                    if (!isValidDim) {
+                      message.error(
+                        `이미지 규격이 맞지 않습니다. (권장: ${expectedDim}, 현재: ${img.width} x ${img.height})`
+                      );
+                      resolve(Upload.LIST_IGNORE);
+                    } else {
+                      handleSuccess('');
+                    }
+                  };
+                  img.onerror = () => {
+                    URL.revokeObjectURL(img.src);
+                    message.error('이미지 파일을 읽을 수 없습니다.');
+                    resolve(Upload.LIST_IGNORE);
+                  };
+                  img.src = URL.createObjectURL(file);
+                } else if (isVideo) {
                   const video = document.createElement('video');
                   video.preload = 'metadata';
                   video.onloadedmetadata = () => {
@@ -187,24 +281,25 @@ const UploadContent: React.FC<UploadContentProps> = ({
 
                     if (totalSeconds > 15) {
                       message.error('동영상 길이는 15초 이하여야 합니다.');
+                      resolve(Upload.LIST_IGNORE);
                       return;
                     }
 
                     const m = Math.floor(totalSeconds / 60);
                     const s = totalSeconds % 60;
                     const durationStr = m > 0 ? `${m}분 ${s}초` : `${s}초`;
-                    createAndUploadFile(durationStr);
+                    handleSuccess(durationStr);
                   };
                   video.onerror = () => {
                     URL.revokeObjectURL(video.src);
                     message.error('동영상 파일을 읽을 수 없습니다.');
+                    resolve(Upload.LIST_IGNORE);
                   };
                   video.src = URL.createObjectURL(file);
                 } else {
-                  createAndUploadFile('');
+                  handleSuccess('');
                 }
-              }
-              return false; // 브라우저 자동 업로드 방지
+              });
             }}
           >
             <p className="ant-upload-drag-icon">

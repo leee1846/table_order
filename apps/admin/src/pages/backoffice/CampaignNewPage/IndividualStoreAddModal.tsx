@@ -11,17 +11,17 @@ export interface IndividualStoreAddModalProps {
 
 interface StoreData {
   key: string;
-  sid: string;
+  code: string;
   name: string;
 }
 
 // 임시 전체 매장 데이터
 const ALL_STORES: StoreData[] = [
-  { key: '101', sid: 'S0011234', name: '투다리 강남점' },
-  { key: '102', sid: 'S0015892', name: '투다리 홍대점' },
-  { key: '103', sid: 'S0022341', name: '투다리 신촌점' },
-  { key: '104', sid: 'S0031120', name: '투다리 이태원점' },
-  { key: '105', sid: 'S0022349', name: '투다리 성수점' },
+  { key: '101', code: 'S0011234', name: '투다리 강남점' },
+  { key: '102', code: 'S0015892', name: '투다리 홍대점' },
+  { key: '103', code: 'S0022341', name: '투다리 신촌점' },
+  { key: '104', code: 'S0031120', name: '투다리 이태원점' },
+  { key: '105', code: 'S0022349', name: '투다리 성수점' },
 ];
 
 const IndividualStoreAddModal: React.FC<IndividualStoreAddModalProps> = ({
@@ -53,12 +53,12 @@ const IndividualStoreAddModal: React.FC<IndividualStoreAddModalProps> = ({
   };
 
   const columns: ColumnsType<StoreData> = [
-    { title: 'SID', dataIndex: 'sid', key: 'sid', width: 120 },
+    { title: '매장 코드', dataIndex: 'code', key: 'code', width: 120 },
     { title: '매장명', dataIndex: 'name', key: 'name' },
   ];
 
   const filteredStores = ALL_STORES.filter(
-    (s) => s.name.includes(searchText) || s.sid.includes(searchText)
+    (s) => s.name.includes(searchText) || s.code.includes(searchText)
   );
 
   return (
@@ -107,7 +107,7 @@ const IndividualStoreAddModal: React.FC<IndividualStoreAddModalProps> = ({
       <div style={{ marginBottom: 16 }}>
         <Space>
           <Input
-            placeholder="SID 또는 매장명을 검색하세요"
+            placeholder="매장명을 검색하세요"
             allowClear
             value={searchInputValue}
             onChange={(e) => setSearchInputValue(e.target.value)}

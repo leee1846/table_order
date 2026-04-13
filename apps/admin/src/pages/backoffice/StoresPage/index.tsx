@@ -86,7 +86,7 @@ export const StoresPage = () => {
 
   // TODO: 실제 API 응답 데이터 구조에 맞게 컬럼 데이터인덱스 수정 필요
   const columns: ColumnsType<ShopDataType> = [
-    { title: '매장 ID', dataIndex: 'shopCode', key: 'shopCode', width: 120 },
+    { title: '매장 코드', dataIndex: 'shopCode', key: 'shopCode', width: 120 },
     { title: '매장명', dataIndex: 'shopName', key: 'shopName', width: 200 },
     {
       title: '사업자등록번호',

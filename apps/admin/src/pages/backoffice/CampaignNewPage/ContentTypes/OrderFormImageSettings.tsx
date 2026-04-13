@@ -129,7 +129,7 @@ const OrderFormImageSettings: React.FC<OrderFormImageSettingsProps> = ({
           handleDragEnter={handleDragEnter}
           handleDragEnd={handleDragEnd}
           handleDelete={handleDelete}
-          acceptType={exposureType === 'full' ? 'imageAndVideo' : 'image'}
+          acceptType={exposureType === 'full' ? 'fullScreenAd' : 'orderForm'}
           handleUpload={handleUpload}
         />
       </LeftArea>

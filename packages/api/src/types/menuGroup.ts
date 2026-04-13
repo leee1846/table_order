@@ -25,8 +25,8 @@ export interface IMenuGroup {
 }
 
 export interface IMenuGroupListResponseData {
-  content: IMenuGroup[]; // 백엔드 응답에 따라 content 등으로 변경될 수 있습니다.
-  totalCount: number; // 백엔드 응답에 따라 totalElements 등으로 변경될 수 있습니다.
+  content: IMenuGroup[];
+  totalElements: number;
   page: number;
   size: number;
   totalPages: number;

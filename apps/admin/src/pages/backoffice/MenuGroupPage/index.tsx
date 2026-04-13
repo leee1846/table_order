@@ -120,7 +120,7 @@ const MenuGroupPage: React.FC = () => {
     }));
   }, [menuGroupResponse?.data?.content, currentPage, pageSize]);
 
-  const totalCount = menuGroupResponse?.data?.totalCount || 0;
+  const totalCount = menuGroupResponse?.data?.totalElements || 0;
 
   const handleCreate = () => {
     form.resetFields();

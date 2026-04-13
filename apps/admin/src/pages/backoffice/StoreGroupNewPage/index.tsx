@@ -288,7 +288,7 @@ export const StoreGroupNewPage = () => {
 
   const columns: ColumnsType<IStore> = [
     {
-      title: '매장 코드 (SID)',
+      title: '매장 코드',
       dataIndex: 'shopCode',
       key: 'shopCode',
       width: 150,

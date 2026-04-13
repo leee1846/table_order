@@ -129,7 +129,7 @@ const ContentTypes: React.FC<ContentTypesProps> = ({
           handleDragEnter={(index) => handleDragEnter(index, tabKey)}
           handleDragEnd={handleDragEnd}
           handleDelete={(id) => handleDelete(id, tabKey)}
-          acceptType={idx === 0 ? 'imageAndVideo' : 'image'}
+          acceptType={idx === 0 ? 'orderStandby' : 'topBanner'}
           handleUpload={(file) => handleUpload(file, tabKey)}
         />
       ),
