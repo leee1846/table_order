@@ -44,7 +44,11 @@ export const Contents = ({
     </S.Container>
   ) : (
     <S.Container id={DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER}>
-      <ScrollContent categories={categories} />
+      {/* eagerMountCategorySeq: 사이드바로 멀리 이동 시 해당 섹션만 Lazy 우회 */}
+      <ScrollContent
+        categories={categories}
+        eagerMountCategorySeq={categoryNavigation.eagerMountCategorySeq}
+      />
     </S.Container>
   );
 };

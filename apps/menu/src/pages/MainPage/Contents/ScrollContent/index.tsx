@@ -6,25 +6,35 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 
 interface Props {
   categories: ICategoryWithMenus[];
+  eagerMountCategorySeq: number | null;
 }
 
 interface LazyCategorySectionProps {
   category: ICategoryWithMenus;
+  eagerMountCategorySeq: number | null;
 }
 
 /**
  * 뷰포트 기준 2000px 이내일 때 CategoryItem을 마운트하고,
  * 벗어나면 언마운트하여 이미지 비트맵 메모리를 해제합니다.
+ * 사이드바로 멀리 점프할 때는 eagerMountCategorySeq로 해당 섹션만 먼저 마운트합니다.
  *
  * containerRef div는 항상 DOM에 유지되므로 useCategoryNavigation의
  * IntersectionObserver(바깥 section div 관찰)에 영향을 주지 않습니다.
  */
-const LazyCategorySection = ({ category }: LazyCategorySectionProps) => {
+const LazyCategorySection = ({
+  category,
+  eagerMountCategorySeq,
+}: LazyCategorySectionProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const measuredHeightRef = useRef(600);
   const isMountedRef = useRef(false);
 
+  // IO 지연 마운트 또는 사이드바 eager 대상이면 CategoryItem 표시
+  const show = isMounted || eagerMountCategorySeq === category.categorySeq;
+
+  // 지연 마운트 전용 IntersectionObserver (바깥 section id는 네비게이션 훅이 관찰)
   useEffect(() => {
     const el = containerRef.current;
     if (!el) {
@@ -70,15 +80,15 @@ const LazyCategorySection = ({ category }: LazyCategorySectionProps) => {
     <div
       ref={containerRef}
       style={
-        !isMounted ? { minHeight: `${measuredHeightRef.current}px` } : undefined
+        !show ? { minHeight: `${measuredHeightRef.current}px` } : undefined
       }
     >
-      {isMounted && <CategoryItem category={category} />}
+      {show && <CategoryItem category={category} />}
     </div>
   );
 };
 
-export const ScrollContent = ({ categories }: Props) => {
+export const ScrollContent = ({ categories, eagerMountCategorySeq }: Props) => {
   return (
     <S.Container>
       {categories.map((category) => (
@@ -86,7 +96,10 @@ export const ScrollContent = ({ categories }: Props) => {
           key={category.categorySeq}
           id={DOM_IDS.getCategorySectionId(category.categorySeq)}
         >
-          <LazyCategorySection category={category} />
+          <LazyCategorySection
+            category={category}
+            eagerMountCategorySeq={eagerMountCategorySeq}
+          />
         </div>
       ))}
     </S.Container>
