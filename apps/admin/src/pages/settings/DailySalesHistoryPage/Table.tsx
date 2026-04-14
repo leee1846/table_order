@@ -38,10 +38,10 @@ interface Props {
 const renderMetric = (
   count: number,
   amount: number,
-  t: (key: string, options?: { count: number | string }) => string
+  t: (key: string, options?: { value: number | string }) => string
 ) => (
   <S.Metric>
-    <span>{t('{{count}}건', { count: count ?? 0 })}</span>
+    <span>{t('{{value}}건', { value: count ?? 0 })}</span>
     {typeof amount === 'number' && <strong>{formatCurrency(amount)}</strong>}
   </S.Metric>
 );
@@ -176,8 +176,8 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
         <td>{row.displayDate ?? row.saleDate}</td>
         <td>{renderMetric(row.totalSalesCount, row.totalSalesAmount, t)}</td>
         <td>{renderMetric(row.actualSalesCount, row.actualSalesAmount, t)}</td>
-        <td>{t('{{count}}건', { count: row.cancelCount ?? 0 })}</td>
-        <td>{t('{{count}}명', { count: row.customerCount ?? 0 })}</td>
+        <td>{t('{{value}}건', { value: row.cancelCount ?? 0 })}</td>
+        <td>{t('{{value}}명', { value: row.customerCount ?? 0 })}</td>
         <td>{formatCurrency(row.pricePerCustomer)}</td>
         <td>{renderMetric(row.cardSalesCount, row.cardSalesAmount, t)}</td>
         <td>{renderMetric(row.cardCancelCount, row.cardCancelAmount, t)}</td>
@@ -315,8 +315,8 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
                   t
                 )}
               </td>
-              <td>{t('{{count}}건', { count: totals.cancelCount })}</td>
-              <td>{t('{{count}}명', { count: totals.customerCount })}</td>
+              <td>{t('{{value}}건', { value: totals.cancelCount })}</td>
+              <td>{t('{{value}}명', { value: totals.customerCount })}</td>
               <td>
                 {formatCurrency(
                   totals.customerCount > 0

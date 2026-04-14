@@ -64,8 +64,8 @@ export const MenuSelector = ({
       <S.SelectedMenuContainer>
         <p>{t('선택한 메뉴')}</p>
         <p>
-          <span>{t('{{count}}개', { count: selectedMenus.length })}</span>/
-          {t('{{count}}개', { count: menus.length })}
+          <span>{t('{{value}}개', { value: selectedMenus.length })}</span>/
+          {t('{{value}}개', { value: menus.length })}
         </p>
       </S.SelectedMenuContainer>
 

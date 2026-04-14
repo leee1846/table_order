@@ -117,21 +117,21 @@ export const CustomerCountSelector = () => {
                   onClick={() => handleAdultCountChange(4)}
                   aria-label={t('{{count}}명 선택', { count: 4 })}
                 >
-                  {t('{{count}}명', { count: 4 })}
+                  {t('{{value}}명', { value: 4 })}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleAdultCountChange(6)}
                   aria-label={t('{{count}}명 선택', { count: 6 })}
                 >
-                  {t('{{count}}명', { count: 6 })}
+                  {t('{{value}}명', { value: 6 })}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleAdultCountChange(8)}
                   aria-label={t('{{count}}명 선택', { count: 8 })}
                 >
-                  {t('{{count}}명', { count: 8 })}
+                  {t('{{value}}명', { value: 8 })}
                 </button>
               </S.ButtonGroup>
             </S.CountContainer>

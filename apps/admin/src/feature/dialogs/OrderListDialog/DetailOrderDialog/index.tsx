@@ -88,7 +88,7 @@ const DetailOrderDialog = ({
             <S.InfoItem>
               <S.InfoLabel>{t('객수')}</S.InfoLabel>
               <S.InfoValue>
-                {t('{{count}}명', { count: numberOfPeople })}
+                {t('{{value}}명', { value: numberOfPeople })}
               </S.InfoValue>
             </S.InfoItem>
           </S.InfoRow>

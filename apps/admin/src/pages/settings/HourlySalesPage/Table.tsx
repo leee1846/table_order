@@ -67,9 +67,9 @@ export const HourlySalesTable = ({ rows }: Props) => {
       <tr key={row.hour}>
         <td>{row.hour}</td>
         <td>{formatCurrency(row.totalSalesAmount ?? 0)}</td>
-        <td>{t('{{count}}명', { count: row.customerCount ?? 0 })}</td>
+        <td>{t('{{value}}명', { value: row.customerCount ?? 0 })}</td>
         <td>{formatCurrency(row.pricePerCustomer ?? 0)}</td>
-        <td>{t('{{count}}개', { count: row.tableCount ?? 0 })}</td>
+        <td>{t('{{value}}개', { value: row.tableCount ?? 0 })}</td>
       </tr>
     ));
   };

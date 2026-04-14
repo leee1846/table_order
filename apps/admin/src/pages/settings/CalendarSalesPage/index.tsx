@@ -146,7 +146,7 @@ export const CalendarSalesPage = () => {
 
     return (
       <S.Event type="button" onClick={() => handleOpenModal(dateString)}>
-        <span>{t('{{count}}건', { count: entry.salesCount ?? 0 })}</span>
+        <span>{t('{{value}}건', { value: entry.salesCount ?? 0 })}</span>
         <span>
           {formatCurrency(
             entry.totalPaymentAmount ?? entry.totalSalesAmount ?? 0
@@ -262,8 +262,8 @@ export const CalendarSalesPage = () => {
               <S.StatItem>
                 <S.StatLabel>{t('총 객수')}</S.StatLabel>
                 <S.StatValue>
-                  {t('{{count}}명', {
-                    count: selectedEntry.customerCount ?? 0,
+                  {t('{{value}}명', {
+                    value: selectedEntry.customerCount ?? 0,
                   })}
                 </S.StatValue>
               </S.StatItem>

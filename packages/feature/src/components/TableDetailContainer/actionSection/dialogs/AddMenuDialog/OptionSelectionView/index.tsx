@@ -180,7 +180,7 @@ export const OptionSelectionView = ({
                           </S.OptionItemPrice>
                           {quantity >= 2 && (
                             <S.OptionItemQuantity>
-                              {t('{{count}}개', { count: quantity })}
+                              {t('{{value}}개', { value: quantity })}
                             </S.OptionItemQuantity>
                           )}
                         </S.SelectedOptionItem>

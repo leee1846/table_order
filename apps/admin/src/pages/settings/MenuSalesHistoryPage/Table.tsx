@@ -115,7 +115,7 @@ export const MenuSalesHistoryTable = ({ rows, currentLanguage }: Props) => {
           </S.MenuName>
         </td>
         <td>{formatCurrency(row.unitPrice ?? 0)}</td>
-        <td>{t('{{count}}개', { count: row.salesCount ?? 0 })}</td>
+        <td>{t('{{value}}개', { value: row.salesCount ?? 0 })}</td>
         <td>{formatCurrency(row.totalSalesAmount ?? 0)}</td>
       </S.TableRow>
     ));
@@ -195,7 +195,7 @@ export const MenuSalesHistoryTable = ({ rows, currentLanguage }: Props) => {
         <S.SummaryRow>
           <td>{t('총계')}</td>
           <td>-</td>
-          <td>{t('{{count}}개', { count: totalCount })}</td>
+          <td>{t('{{value}}개', { value: totalCount })}</td>
           <td>{formatCurrency(totalAmount)}</td>
         </S.SummaryRow>
       </UIStyles.setting.Tbody>

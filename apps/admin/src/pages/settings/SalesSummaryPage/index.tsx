@@ -127,7 +127,7 @@ export const SalesSummaryPage = () => {
         <S.Item>
           <S.SubTitle>{t('테이블 수(결제완료)')}</S.SubTitle>
           <S.Price>
-            {t('{{count}}개', { count: formatCurrency(paidTableCount) })}
+            {t('{{value}}개', { value: formatCurrency(paidTableCount) })}
           </S.Price>
           <S.Description>
             <S.IconWrapper
@@ -146,7 +146,7 @@ export const SalesSummaryPage = () => {
               )}
             </S.IconWrapper>
             {t('결제 완료 객수')}{' '}
-            {t('{{count}}명', { count: formatCurrency(paidCustomerCount) })}
+            {t('{{value}}명', { value: formatCurrency(paidCustomerCount) })}
           </S.Description>
         </S.Item>
       </S.List>
