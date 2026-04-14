@@ -347,5 +347,6 @@
   "{{count}}초 후 닫힘": "Closes in {{count}}s",
   "<0>{{seconds}}</0>초 후 닫힘": "Closes in <0>{{seconds}}</0> seconds",
   "{{menuName}}는(은) 주문할 수 없는 메뉴입니다.": "{{menuName}} cannot be ordered.",
+  "{{menuName}}는(은) 숨김 처리된 메뉴입니다.": "{{menuName}} is hidden and cannot be ordered.",
   "QR 로그인": "QR login"
 }
