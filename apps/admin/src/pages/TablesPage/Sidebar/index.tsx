@@ -18,7 +18,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { SystemControl } from '@repo/util/app';
 import { useGetShopThemeMenu } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
-import { capsSmartOrderWhiteLogo } from '@repo/ui/icons';
 
 type MenuItem = {
   id: string;
@@ -83,10 +82,7 @@ export const Sidebar = () => {
     <SidebarContainer>
       <Logo>
         <img
-          src={
-            shopThemeMenuResponse?.data?.logoImagePath ??
-            capsSmartOrderWhiteLogo
-          }
+          src={shopThemeMenuResponse?.data?.logoImagePath ?? ''}
           alt={t('매장 로고')}
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         />

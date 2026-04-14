@@ -1,9 +1,5 @@
 import { useAdminTranslation } from '@/config/i18n';
-import {
-  AddIcon,
-  HomeFilledIcon,
-  capsSmartOrderWhiteLogo,
-} from '@repo/ui/icons';
+import { AddIcon, HomeFilledIcon } from '@repo/ui/icons';
 import * as S from './sidebar.styles';
 import { theme } from '@repo/ui';
 import { useNavigate } from 'react-router-dom';
@@ -219,10 +215,7 @@ export const Sidebar = ({
     <S.Sidebar>
       <S.SidebarLogo>
         <img
-          src={
-            shopThemeMenuResponse?.data?.logoImagePath ??
-            capsSmartOrderWhiteLogo
-          }
+          src={shopThemeMenuResponse?.data?.logoImagePath ?? ''}
           alt={t('매장 로고')}
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         />

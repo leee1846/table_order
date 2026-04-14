@@ -6,7 +6,6 @@ import type {
   TGetCategoryExceptTableResponse,
 } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
-import { capsSmartOrderWhiteLogo } from '@repo/ui/icons';
 import * as S from './categoryTableAssignModal.style';
 
 interface Props {
@@ -183,10 +182,7 @@ export const CategoryTableAssignModal = ({
       <S.SidebarContainer>
         <S.Logo>
           <img
-            src={
-              shopThemeMenuResponse?.data?.logoImagePath ??
-              capsSmartOrderWhiteLogo
-            }
+            src={shopThemeMenuResponse?.data?.logoImagePath ?? ''}
             alt={t('매장 로고')}
             style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
           />
