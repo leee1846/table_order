@@ -624,14 +624,15 @@ export const useSSEHandler = () => {
       if (!currentDeviceData?.tableNumber || !message?.data) {
         return;
       }
-      // 이미 알림이 표시 중이면 중복 표시 방지
-      if (pickupAlarmShowingRef.current) {
-        return;
-      }
-
       const currentTableNumber = currentDeviceData.tableNumber;
       const pickupDataByTable = message.data as { [key: string]: string };
       if (!(currentTableNumber in pickupDataByTable)) {
+        return;
+      }
+
+      // 이미 알림이 표시 중이면 중복 표시 방지
+      if (pickupAlarmShowingRef.current) {
+        SystemControl.playSound({ type: 'dingdong' });
         return;
       }
 
