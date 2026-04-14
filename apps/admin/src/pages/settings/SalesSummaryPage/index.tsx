@@ -127,8 +127,7 @@ export const SalesSummaryPage = () => {
         <S.Item>
           <S.SubTitle>{t('테이블 수(결제완료)')}</S.SubTitle>
           <S.Price>
-            {formatCurrency(paidTableCount)}
-            <span>{t('개')}</span>
+            {t('{{count}}개', { count: formatCurrency(paidTableCount) })}
           </S.Price>
           <S.Description>
             <S.IconWrapper
@@ -146,8 +145,8 @@ export const SalesSummaryPage = () => {
                 </Tooltip>
               )}
             </S.IconWrapper>
-            {t('결제 완료 객수')} {formatCurrency(paidCustomerCount)}
-            {t('명')}
+            {t('결제 완료 객수')}{' '}
+            {t('{{count}}명', { count: formatCurrency(paidCustomerCount) })}
           </S.Description>
         </S.Item>
       </S.List>

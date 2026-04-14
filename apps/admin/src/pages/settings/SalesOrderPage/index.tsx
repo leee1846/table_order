@@ -192,24 +192,21 @@ export const SalesOrderPage = () => {
               <p>
                 <span>{t('총 매출:')}</span> {formatCurrency(totalSalesAmount)}
                 <span>
-                  {totalSalesCount}
-                  {t('건')}
+                  {t('{{count}}건', { count: totalSalesCount })}
                 </span>
               </p>
               <p>
                 <span>{t('결제 전 매출:')}</span>
                 {formatCurrency(prePaymentAmount)}
                 <span>
-                  {prePaymentCount}
-                  {t('건')}
+                  {t('{{count}}건', { count: prePaymentCount })}
                 </span>
               </p>
               <p>
                 <span>{t('총 예상 매출:')}</span>
                 {formatCurrency(estimatedTotalAmount)}
                 <span>
-                  {estimatedTotalCount}
-                  {t('건')}
+                  {t('{{count}}건', { count: estimatedTotalCount })}
                 </span>
               </p>
             </UIStyles.setting.FooterContents>
