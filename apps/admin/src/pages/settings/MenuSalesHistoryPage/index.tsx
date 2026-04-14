@@ -22,6 +22,9 @@ import { MenuSalesHistoryTable } from './Table';
 import * as S from './menuSalesHistoryPage.style';
 import type { TShopLanguage } from '@repo/api/types';
 
+/** 미분류 칩·매출 행(categoryName 없음) 필터용 sentinel (실제 categorySeq와 충돌 없음) */
+const UNCATEGORIZED_CATEGORY_SEQ = -1;
+
 export const MenuSalesHistoryPage = () => {
   const { t, i18n } = useAdminTranslation();
   const { shopCode, shopSeq } = useAuth();
@@ -32,7 +35,7 @@ export const MenuSalesHistoryPage = () => {
   const [appliedRange, setAppliedRange] = useState(defaultRange);
   const [showStartCalendar, setShowStartCalendar] = useState<boolean>(false);
   const [showEndCalendar, setShowEndCalendar] = useState<boolean>(false);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [showCategoryTooltip, setShowCategoryTooltip] =
     useState<boolean>(false);
@@ -54,19 +57,21 @@ export const MenuSalesHistoryPage = () => {
 
   const categories = useMemo(() => {
     const categoryList = categoryListResponse?.data ?? [];
-
-    const categoryNames = categoryList.map(
-      (category) =>
-        category.localeCategoryName?.[currentLanguage] ?? category.categoryName
-    );
-    // 미분류 카테고리를 맨 마지막에 추가
-    return [...categoryNames, t('미분류')];
+    return [
+      ...categoryList.map((category) => ({
+        categorySeq: category.categorySeq,
+        label:
+          category.localeCategoryName?.[currentLanguage] ??
+          category.categoryName,
+      })),
+      { categorySeq: UNCATEGORIZED_CATEGORY_SEQ, label: t('미분류') },
+    ];
   }, [categoryListResponse, t, currentLanguage]);
 
   // 처음 카테고리 로드 시 전체 선택 (한 번만 실행)
   useEffect(() => {
     if (categories.length > 0 && !hasInitializedCategories.current) {
-      setSelectedCategories(categories);
+      setSelectedCategories(categories.map((c) => c.categorySeq));
       hasInitializedCategories.current = true;
     }
   }, [categories]);
@@ -121,13 +126,15 @@ export const MenuSalesHistoryPage = () => {
   const filteredItems = useMemo(() => {
     const items = menuSalesHistoryResponse?.data ?? [];
 
-    // 카테고리 필터링
+    // 카테고리 필터링 (표시는 로케일, 비교는 categorySeq / 미분류는 이름 없음)
     if (selectedCategories.length === 0) {
       return [];
     }
     const filtered = items.filter((item) => {
-      const categoryName = item.categoryName || t('미분류');
-      return selectedCategories.includes(categoryName);
+      if (!item.categoryName?.trim()) {
+        return selectedCategories.includes(UNCATEGORIZED_CATEGORY_SEQ);
+      }
+      return selectedCategories.includes(item.categorySeq);
     });
 
     // 정렬 적용
@@ -168,7 +175,7 @@ export const MenuSalesHistoryPage = () => {
     }
 
     return filtered;
-  }, [menuSalesHistoryResponse, selectedCategories, sortBy, t]);
+  }, [menuSalesHistoryResponse, selectedCategories, sortBy]);
 
   const handleSelectStartDate = (date: string) => {
     if (isStartDateAfterEndDate(date, endDate)) {
@@ -201,16 +208,16 @@ export const MenuSalesHistoryPage = () => {
     setAppliedRange({ startDate, endDate });
   };
 
-  const toggleCategory = (category: string) => {
+  const toggleCategory = (categorySeq: number) => {
     setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
+      prev.includes(categorySeq)
+        ? prev.filter((s) => s !== categorySeq)
+        : [...prev, categorySeq]
     );
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedCategories(checked ? categories : []);
+    setSelectedCategories(checked ? categories.map((c) => c.categorySeq) : []);
   };
 
   const formatCalendarText = (date: string) => {
@@ -338,14 +345,14 @@ export const MenuSalesHistoryPage = () => {
               </S.CategoryInfoWrapper>
             </S.CategoryHeader>
             <S.CategoryChips>
-              {categories.map((category) => (
+              {categories.map(({ categorySeq, label }) => (
                 <S.Chip
-                  key={category}
+                  key={categorySeq}
                   type="button"
-                  selected={selectedCategories.includes(category)}
-                  onClick={() => toggleCategory(category)}
+                  selected={selectedCategories.includes(categorySeq)}
+                  onClick={() => toggleCategory(categorySeq)}
                 >
-                  {category}
+                  {label}
                 </S.Chip>
               ))}
             </S.CategoryChips>
