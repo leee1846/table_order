@@ -591,23 +591,31 @@ export const MenuAppFeature = ({
               const hasAllDaysSelected = dayValues.every((day) =>
                 row.selectedDays.includes(day)
               );
+              const isEveryDayChecked = row.isEveryDay || hasAllDaysSelected;
               const isEveryDayDisabled =
                 otherRowsSelectedDays.length > 0 && !hasAllDaysSelected;
 
               return (
                 <S.BreakTimeRow key={row.id}>
                   <CheckButton
-                    checked={row.isEveryDay}
+                    checked={isEveryDayChecked}
                     disabled={isEveryDayDisabled}
                     onChange={(checked) => {
                       if (isEveryDayDisabled) {
                         return;
                       }
 
-                      updateRow({
-                        isEveryDay: checked,
-                        selectedDays: checked ? dayValues : row.selectedDays,
-                      });
+                      if (checked) {
+                        updateRow({
+                          isEveryDay: true,
+                          selectedDays: dayValues,
+                        });
+                      } else {
+                        updateRow({
+                          isEveryDay: false,
+                          selectedDays: [],
+                        });
+                      }
                     }}
                     customStyle={S.CheckButtonCustomStyle}
                   >
@@ -664,8 +672,18 @@ export const MenuAppFeature = ({
                           }
                           onChange={(checked) => {
                             if (checked) {
+                              const selectedDays = [
+                                ...row.selectedDays,
+                                day.value,
+                              ];
+                              const allDaysSelected = dayValues.every((d) =>
+                                selectedDays.includes(d)
+                              );
                               updateRow({
-                                selectedDays: [...row.selectedDays, day.value],
+                                selectedDays,
+                                ...(allDaysSelected
+                                  ? { isEveryDay: true }
+                                  : {}),
                               });
                             } else {
                               updateRow({
