@@ -188,7 +188,12 @@ export const OrderListDialog = ({
         menuItems,
       };
     });
-  }, [orderLogData, ORDER_CHANNEL_LABELS, ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS]);
+  }, [
+    orderLogData,
+    ORDER_CHANNEL_LABELS,
+    ORDER_STATUS_LABELS,
+    PAYMENT_STATUS_LABELS,
+  ]);
 
   const displayedOrderItems = useMemo(
     () => orderItems.filter((order) => order.menuItems.length > 0),
@@ -217,7 +222,11 @@ export const OrderListDialog = ({
 
   return (
     <>
-      <ModalBackground position="center" onClick={onClose}>
+      <ModalBackground
+        position="center"
+        onClick={onClose}
+        scrollableBackdrop={false}
+      >
         <S.DialogContainer>
           <S.CloseButton onClick={onClose} aria-label={t('닫기')}>
             <CloseIcon width={32} height={32} color={colors.grey[700]} />
@@ -318,6 +327,7 @@ export const OrderListDialog = ({
         <ModalBackground
           position="center"
           onClick={() => setOpenDetailOrderDialog(false)}
+          scrollableBackdrop={false}
         >
           <DetailOrderDialog
             isOpen={openDetailOrderDialog}
