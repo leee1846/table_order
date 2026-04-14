@@ -30,6 +30,7 @@ import { SSE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import { ROUTES } from '@/constants/routes';
 import { globalTimerManager } from '@/utils/timerManager';
 import { applyMenuboardStateAfterTableOrderHistoriesCleared } from '@/utils/applyMenuboardStateAfterTableOrderHistoriesCleared';
+import adminI18n from '@/config/i18n/admin.i18n';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { clearAuthData } from '@/utils/auth';
@@ -312,7 +313,7 @@ export const useSSEHandler = () => {
             tableNumFromParams
           ),
         });
-        toast(tRef.current('테이블을 정리했어요.'));
+        toast(adminI18n.t('테이블을 정리했어요.'));
         navigate(ROUTES.TABLES.generate());
         return;
       }
