@@ -79,6 +79,7 @@ export const PaymentSection = ({ order }: Props) => {
               <th>{t('주문번호')}</th>
               <th>{t('거래일자')}</th>
               <th>{t('거래금액')}</th>
+              <th>{t('취소 여부')}</th>
               {/* <th>{t('현금영수증')}</th>
               <th>{t('현금영수증 발행')}</th> */}
               {/* <th>{t('거래취소')}</th> */}
@@ -103,16 +104,7 @@ export const PaymentSection = ({ order }: Props) => {
                   ) || '-'}
                 </td>
                 <td>{formatCurrency(payment.transactionAmount ?? 0)}</td>
-                {/* <td>-</td> */}
-                {/* <td>
-                  <BasicButton
-                    variant="Outline_Navy_M"
-                    onClick={() => {}}
-                    customStyle={S.cancelButtonCss}
-                  >
-                    {t('취소')}
-                  </BasicButton>
-                </td> */}
+                <td>{payment.isCanceled ? t('취소') : '-'}</td>
               </tr>
             ))}
           </UIStyles.setting.Tbody>
