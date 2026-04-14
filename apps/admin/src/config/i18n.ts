@@ -83,4 +83,12 @@ export const setStorageAdminLanguage = (
   }
 };
 
+export const resetAdminLanguageToDefault = () => {
+  storage.local.save<TShopLanguage>(
+    ADMIN_LANGUAGE_STORAGE_KEY,
+    DEFAULT_LANGUAGE
+  );
+  void adminI18n.changeLanguage(DEFAULT_LANGUAGE);
+};
+
 export default adminI18n;
