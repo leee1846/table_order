@@ -330,11 +330,15 @@ export const OptionGroupManageModal = ({
       index: number
     ): string | null => {
       if (!option) {
-        return `${index + 1}번째 옵션 정보가 올바르지 않습니다.`;
+        return t('{{index}}번째 옵션 정보가 올바르지 않습니다.', {
+          index: index + 1,
+        });
       }
 
       if (!option.optionName.trim()) {
-        return `${index + 1}번째 옵션의 이름을 입력해주세요.`;
+        return t('{{index}}번째 옵션의 이름을 입력해주세요.', {
+          index: index + 1,
+        });
       }
 
       const isValidPrice =
@@ -343,7 +347,9 @@ export const OptionGroupManageModal = ({
         !isNaN(option.optionPrice);
 
       if (!isValidPrice) {
-        return `${index + 1}번째 옵션의 가격을 0 이상의 숫자로 입력해주세요.`;
+        return t('{{index}}번째 옵션의 가격을 0 이상의 숫자로 입력해주세요.', {
+          index: index + 1,
+        });
       }
 
       return null;
