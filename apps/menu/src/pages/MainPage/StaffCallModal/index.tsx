@@ -23,6 +23,8 @@ import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { useIdleTimeout } from '@/hooks/useIdleTimeout';
+import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
 
 interface Props {
   onClose: () => void;
@@ -32,6 +34,7 @@ interface Props {
 export const StaffCallModal = ({ onClose, category }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
+  const { remainingSeconds } = useIdleTimeout(onClose);
 
   const { data: languageData } = useCustomerLanguageStore();
   const { disableStaffCall } = useDisableStaffCallStore();
@@ -238,13 +241,16 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
         aria-modal="true"
         aria-labelledby="staff-call-title"
       >
-        <S.CloseButton
-          type="button"
-          onClick={onClose}
-          aria-label={t('모달 닫기')}
-        >
-          <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
-        </S.CloseButton>
+        <S.TopHeaderActions>
+          <IdleTimerMessage remainingSeconds={remainingSeconds} />
+          <S.CloseButton
+            type="button"
+            onClick={onClose}
+            aria-label={t('모달 닫기')}
+          >
+            <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
+          </S.CloseButton>
+        </S.TopHeaderActions>
 
         <S.LeftContainer>
           <h2 id="staff-call-title">{category.categoryName} </h2>
