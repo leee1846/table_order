@@ -45,6 +45,11 @@ export const Description = styled.p`
   ${TYPOGRAPHY.ST_2}
   color: ${({ theme }) => theme.mode.grey[500]};
   margin-bottom: 24px;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
 export const TotalContainer = styled.div`

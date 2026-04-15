@@ -219,8 +219,6 @@ export const QuantityButton = styled.button`
   justify-content: center;
   padding: 0;
 
-  &:disabled {
-
   &:hover {
     background-color: ${colors.grey[50]};
   }
