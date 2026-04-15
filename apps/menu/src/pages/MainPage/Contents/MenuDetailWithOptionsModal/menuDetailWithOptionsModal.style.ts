@@ -65,6 +65,11 @@ export const Description = styled.p`
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
 export const MenuQuantityContainer = styled.div`
