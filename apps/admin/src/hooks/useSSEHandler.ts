@@ -287,5 +287,20 @@ export const useSSEHandler = (tableNumber?: string) => {
 
       return;
     }
+
+    if (sseMessage.type === 'POS_SYNC_END') {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.shop.detail(shopCode),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.table.groupList(shopCode),
+      });
+
+      if (tableNumber) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.category.menuboardList(shopCode, tableNumber),
+        });
+      }
+    }
   }, [sseMessage, queryClient]);
 };
