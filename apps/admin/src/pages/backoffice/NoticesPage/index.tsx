@@ -47,7 +47,7 @@ export const NoticesPage = () => {
       <S.Footer>
         <div />
         <Pagination
-          totalPages={noticeList?.data?.totalPage ?? 1}
+          totalPages={noticeList?.data?.totalPage ?? 0}
           currentPage={currentPage}
           onPageChange={handlePageChange}
         />
