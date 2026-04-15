@@ -3,12 +3,7 @@ import * as S from '@/pages/MainPage/StaffCallModal/staffCallModal.style';
 import { CloseIcon, DeleteIcon } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
-import type {
-  IApiError,
-  IApiStatus,
-  ICategoryWithMenus,
-  IMenuBase,
-} from '@repo/api/types';
+import type { IApiError, ICategoryWithMenus, IMenuBase } from '@repo/api/types';
 import { useState, useEffect } from 'react';
 import type { ICartMenu } from '@/types/cart';
 import { usePostTableOrder } from '@repo/api/queries';

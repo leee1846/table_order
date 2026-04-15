@@ -48,4 +48,4 @@ export const URLS = {
     'https://nexa-test.handorder.co.kr/apk/POS_APP/nexa-admin-debug.apk',
 };
 
-export const TABLE_REMOVED_STATUS_CODE = -100;
+export const TABLE_REMOVED_STATUS_CODE = -101;
