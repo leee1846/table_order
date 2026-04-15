@@ -133,6 +133,15 @@ export const TooltipArrow = styled.div`
   border-top: 6px solid ${theme.colors.grey[800]};
 `;
 
+export const ServiceColumnTooltip = styled(Tooltip)`
+  transform: translateX(calc(-63% - 25%));
+`;
+
+export const ServiceColumnTooltipArrow = styled(TooltipArrow)`
+  left: 90%;
+  transform: translateX(-100%);
+`;
+
 export const Metric = styled.div`
   display: flex;
   flex-direction: column;

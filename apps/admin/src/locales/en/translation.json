@@ -669,6 +669,8 @@
   "할인": "Discount",
   "서브 이미지": "Sub image",
   "서비스": "Service",
+  "OK포스 할인 내역은 서비스 항목에 노출됩니다.": "OK POS discount details appear in the Service column.",
+  "OK포스 할인을 제외한 할인 내역이 노출됩니다.": "Discount totals exclude OK POS discounts (see Service column).",
   "달력 매출 내역을 불러오는 중입니다.": "Loading calendar sales history...",
   "표시할 달력 정보가 없습니다.": "No calendar information to display.",
   "매출 리포트": "Sales Report",
