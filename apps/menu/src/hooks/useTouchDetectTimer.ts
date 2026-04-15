@@ -90,6 +90,9 @@ export const useTouchDetectTimer = () => {
           (newTableOrderHistoriesData?.orderDetailMenuList?.length ?? 0) < 1;
         // 이미 주문이 존재하면 언어·초기 화면을 리셋하지 않음
         if (isNoExistingOrders) {
+          // TODO
+          // 여기서 주문그룹 제거하는 api 요청해야함
+          // 그리고 아래 로직은 SSE CLEAR에서 동작해야함함
           // 객수 선택 초기화
           clearCustomerCountData();
           // 매장 기본 언어로 초기화 (KO 고정 대신 shopLanguage 사용)

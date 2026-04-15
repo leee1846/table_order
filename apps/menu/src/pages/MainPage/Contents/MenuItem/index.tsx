@@ -11,6 +11,7 @@ import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
+import { hasTableOrderHistory } from '@/utils/validateCartOrder';
 
 const IMAGE_SIZE = {
   1: {
@@ -63,8 +64,8 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
       return;
     }
 
-    // 첫 주문 필수 항목이 있는 경우
-    if (cartData.hasFirstOrderRequiredItems) {
+    // 첫 주문 필수 항목이 있고, 테이블에 기존 주문 라인이 없을 때만 검사 (이미 주문한 적 있으면 생략)
+    if (cartData.hasFirstOrderRequiredItems && !hasTableOrderHistory()) {
       const menusInCart = cartData.menus;
       const hasFirstOrderRequiredMenu = firstOrderRequiredCategories.some((c) =>
         menusInCart.some((m) => m.categorySeq === c.categorySeq)
