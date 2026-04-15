@@ -134,8 +134,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   };
 
   const menuName = menu.localeMenuName?.[currentLanguage] || menu.menuName;
-  const menuDescription =
-    menu.localeMenuDescription?.[currentLanguage] || menu.menuDescription;
+  const menuDescription = menu.localeMenuDescription?.[currentLanguage] || '';
   const priceText = `₩${formatCurrency(menu.menuPrice)}`;
   const ariaLabel = menu.isOutOfStock
     ? `${t('품절된 메뉴')}: ${menuName}, ${priceText}`
