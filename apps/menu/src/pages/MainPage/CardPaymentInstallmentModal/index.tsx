@@ -45,6 +45,7 @@ import {
   orderRequestRefundFailedSummaryAfterPaymentApproval,
 } from '@/utils/logOrderRequestRefundFailed';
 import { calculateCartMenusTaxAmount } from '@/utils/calculation';
+import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 // const PAYMENT_EVENT_NAME = 'paymentEvent';
@@ -186,7 +187,7 @@ export const CardPaymentInstallmentModal = ({
       orders: adjustedOrders,
     }).catch((error) => {
       // 테이블이 삭제된 경우
-      if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
+      if (error.response?.data?.status?.code === TABLE_REMOVED_STATUS_CODE) {
         navigate(ROUTES.TABLES.generate());
       }
     });

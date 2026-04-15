@@ -3,7 +3,12 @@ import * as S from '@/pages/MainPage/StaffCallModal/staffCallModal.style';
 import { CloseIcon, DeleteIcon } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
-import type { ICategoryWithMenus, IMenuBase } from '@repo/api/types';
+import type {
+  IApiError,
+  IApiStatus,
+  ICategoryWithMenus,
+  IMenuBase,
+} from '@repo/api/types';
 import { useState, useEffect } from 'react';
 import type { ICartMenu } from '@/types/cart';
 import { usePostTableOrder } from '@repo/api/queries';
@@ -25,6 +30,8 @@ import { ROUTES } from '@/constants/routes';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { useIdleTimeout } from '@/hooks/useIdleTimeout';
 import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
+import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
+import type { AxiosError } from '@repo/api/axios';
 
 interface Props {
   onClose: () => void;
@@ -201,11 +208,13 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
           await finishStaffRequest();
         } catch (error: unknown) {
-          const status = (error as { response?: { status?: number } })?.response
-            ?.status;
+          const axiosError = error as AxiosError<IApiError>;
 
           // 테이블이 삭제된 경우
-          if (status === 400) {
+          if (
+            axiosError?.response?.data?.status?.code ===
+            TABLE_REMOVED_STATUS_CODE
+          ) {
             navigate(ROUTES.TABLES.generate());
             return;
           }

@@ -21,6 +21,7 @@ import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { toast } from '@repo/feature/utils';
+import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -112,7 +113,7 @@ export const CartButton = ({ categories }: Props) => {
         totalAmount: totalPrice.toString(),
         orders: adjustOptionQuantitiesForOrder(orders),
       }).catch((error) => {
-        if (error.response?.status === 400) {
+        if (error.response?.data?.status?.code === TABLE_REMOVED_STATUS_CODE) {
           // 삭제된 테이블일경우
           navigate(ROUTES.TABLES.generate());
           return;

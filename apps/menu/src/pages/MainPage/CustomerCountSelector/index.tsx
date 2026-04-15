@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
+import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
 
 export const CustomerCountSelector = () => {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ export const CustomerCountSelector = () => {
       customerCount: adultCount + childCount,
       kidsCustomerCount: childCount,
     }).catch((error) => {
-      if (error.response?.status === 400) {
+      if (error.response?.data?.status?.code === TABLE_REMOVED_STATUS_CODE) {
         // 삭제된 테이블일경우
         navigate(ROUTES.TABLES.generate());
         return;

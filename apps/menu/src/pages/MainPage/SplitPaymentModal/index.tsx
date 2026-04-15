@@ -52,6 +52,7 @@ import {
   orderRequestRefundFailedSummaryAfterPaymentApproval,
   orderRequestRefundFailedSummaryAfterPosOrderFailure,
 } from '@/utils/logOrderRequestRefundFailed';
+import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
 
 interface Props {
   onClose: () => void;
@@ -476,7 +477,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       orders: adjustedOrders,
     }).catch((error) => {
       // 테이블이 삭제된 경우 테이블 선택 페이지로 이동
-      if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
+      if (error.response?.data?.status?.code === TABLE_REMOVED_STATUS_CODE) {
         navigate(ROUTES.TABLES.generate());
       }
     });
