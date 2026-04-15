@@ -91,6 +91,10 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
       if (
         !useShopDetailStore.getState().data?.shopSetting?.isMenuboardOrderable
       ) {
+        toast(t('주문하기 기능이 비활성화 되었습니다.'), {
+          position: 'center-center',
+          duration: 1500,
+        });
         return;
       }
 

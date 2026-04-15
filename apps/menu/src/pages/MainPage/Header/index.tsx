@@ -19,6 +19,7 @@ import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { useTableGroupStore } from '@/stores/useTableGroupStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
+import { toast } from '@repo/feature/utils';
 
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
@@ -284,6 +285,10 @@ export const Header = ({
 
   const onClickOrderHistoryButton = () => {
     if (!shopDetailData?.shopSetting?.isMenuboardOrderable) {
+      toast(t('주문하기 기능이 비활성화 되었습니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
       return;
     }
     useModalStore.getState().setModalData('isOrderHistoryModalOpened', true);

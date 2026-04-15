@@ -43,6 +43,16 @@ export const Sidebar = ({
   const currentLanguageIcon = LANGUAGE_CONFIG[currentLanguage].flag;
 
   const handleStaffCallClick = () => {
+    if (
+      !useShopDetailStore.getState().data?.shopSetting?.isMenuboardOrderable
+    ) {
+      toast(t('주문하기 기능이 비활성화 되었습니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
+      return;
+    }
+
     if (disableStaffCallData.disableStaffCall) {
       toast(t('잠시 후 다시 시도해주세요.'), {
         position: 'center-center',

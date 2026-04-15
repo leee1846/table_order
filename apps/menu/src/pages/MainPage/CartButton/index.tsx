@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import { useShopStore } from '@/stores/useShopStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
+import { toast } from '@repo/feature/utils';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -151,6 +152,10 @@ export const CartButton = ({ categories }: Props) => {
     if (
       !useShopDetailStore.getState().data?.shopSetting?.isMenuboardOrderable
     ) {
+      toast(t('주문하기 기능이 비활성화 되었습니다.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
       return;
     }
     setModalData('isCartListOpened', true);
