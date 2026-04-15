@@ -51,6 +51,11 @@ export const MenuName = styled.p`
   ${TYPOGRAPHY.MT_7}
   color: ${({ theme }) => theme.mode.grey[800]};
   margin: 14px 0 6px;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
 export const Price = styled.p`

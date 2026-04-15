@@ -33,6 +33,11 @@ export const Name = styled.p`
   color: ${({ theme }) => theme.mode.grey[800]};
   margin-top: 14px;
   margin-bottom: 6px;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
 export const Price = styled.p`
