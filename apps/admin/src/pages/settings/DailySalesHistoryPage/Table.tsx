@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import {
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from 'react';
+import { useOutsidePointerDismiss } from '@/hooks/useOutsidePointerDismiss';
 import { InfoIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
@@ -34,6 +41,13 @@ export type TDailySalesHistoryRow = {
 interface Props {
   rows: TDailySalesHistoryRow[];
 }
+
+type SalesHistoryHeaderTooltipId =
+  | 'totalSales'
+  | 'actualSales'
+  | 'pricePerCustomer'
+  | 'discount'
+  | 'service';
 
 const renderMetric = (
   count: number,
@@ -94,90 +108,40 @@ function HeaderWithInfo({
 
 export const DailySalesHistoryTable = ({ rows }: Props) => {
   const { t } = useAdminTranslation();
-  const [showTotalSalesTooltip, setShowTotalSalesTooltip] = useState(false);
-  const [showActualSalesTooltip, setShowActualSalesTooltip] = useState(false);
-  const [showPricePerCustomerTooltip, setShowPricePerCustomerTooltip] =
-    useState(false);
-  const [showDiscountTooltip, setShowDiscountTooltip] = useState(false);
-  const [showServiceTooltip, setShowServiceTooltip] = useState(false);
+  const [openHeaderTooltip, setOpenHeaderTooltip] = useState<
+    SalesHistoryHeaderTooltipId | null
+  >(null);
   const totalSalesIconWrapperRef = useRef<HTMLDivElement>(null);
   const iconWrapperRef = useRef<HTMLDivElement>(null);
   const pricePerCustomerIconWrapperRef = useRef<HTMLDivElement>(null);
   const discountIconWrapperRef = useRef<HTMLDivElement>(null);
   const serviceIconWrapperRef = useRef<HTMLDivElement>(null);
+  const outsideDismissAnchorRef = useRef<HTMLDivElement | null>(null);
 
-  const handleTotalSalesIconClick = () => {
-    setShowTotalSalesTooltip(!showTotalSalesTooltip);
+  const toggleHeaderTooltip = (id: SalesHistoryHeaderTooltipId) => {
+    setOpenHeaderTooltip((current) => (current === id ? null : id));
   };
 
-  const handleActualSalesIconClick = () => {
-    setShowActualSalesTooltip(!showActualSalesTooltip);
-  };
+  useLayoutEffect(() => {
+    outsideDismissAnchorRef.current =
+      openHeaderTooltip === 'totalSales'
+        ? totalSalesIconWrapperRef.current
+        : openHeaderTooltip === 'actualSales'
+          ? iconWrapperRef.current
+          : openHeaderTooltip === 'pricePerCustomer'
+            ? pricePerCustomerIconWrapperRef.current
+            : openHeaderTooltip === 'discount'
+              ? discountIconWrapperRef.current
+              : openHeaderTooltip === 'service'
+                ? serviceIconWrapperRef.current
+                : null;
+  }, [openHeaderTooltip]);
 
-  const handlePricePerCustomerIconClick = () => {
-    setShowPricePerCustomerTooltip(!showPricePerCustomerTooltip);
-  };
-
-  const handleDiscountIconClick = () => {
-    setShowDiscountTooltip(!showDiscountTooltip);
-  };
-
-  const handleServiceIconClick = () => {
-    setShowServiceTooltip(!showServiceTooltip);
-  };
-
-  useEffect(() => {
-    const outsideSpecs = [
-      {
-        open: showTotalSalesTooltip,
-        ref: totalSalesIconWrapperRef,
-        close: () => setShowTotalSalesTooltip(false),
-      },
-      {
-        open: showActualSalesTooltip,
-        ref: iconWrapperRef,
-        close: () => setShowActualSalesTooltip(false),
-      },
-      {
-        open: showPricePerCustomerTooltip,
-        ref: pricePerCustomerIconWrapperRef,
-        close: () => setShowPricePerCustomerTooltip(false),
-      },
-      {
-        open: showDiscountTooltip,
-        ref: discountIconWrapperRef,
-        close: () => setShowDiscountTooltip(false),
-      },
-      {
-        open: showServiceTooltip,
-        ref: serviceIconWrapperRef,
-        close: () => setShowServiceTooltip(false),
-      },
-    ] as const;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      for (const { open, ref, close } of outsideSpecs) {
-        if (open && ref.current && !ref.current.contains(target)) {
-          close();
-        }
-      }
-    };
-
-    if (outsideSpecs.some((s) => s.open)) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [
-    showTotalSalesTooltip,
-    showActualSalesTooltip,
-    showPricePerCustomerTooltip,
-    showDiscountTooltip,
-    showServiceTooltip,
-  ]);
+  useOutsidePointerDismiss({
+    isActive: openHeaderTooltip !== null,
+    anchorRef: outsideDismissAnchorRef,
+    onDismiss: () => setOpenHeaderTooltip(null),
+  });
 
   const totals = useMemo(() => {
     const initialTotals = {
@@ -269,8 +233,8 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
                 <HeaderWithInfo
                   label={t('총 매출')}
                   tooltipText={t('할인,취소 매출을 제외한 총 매출')}
-                  open={showTotalSalesTooltip}
-                  onToggle={handleTotalSalesIconClick}
+                  open={openHeaderTooltip === 'totalSales'}
+                  onToggle={() => toggleHeaderTooltip('totalSales')}
                   wrapperRef={totalSalesIconWrapperRef}
                 />
               </th>
@@ -278,8 +242,8 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
                 <HeaderWithInfo
                   label={t('실 매출')}
                   tooltipText={t('취소금액 및 할인이 반영된 금액')}
-                  open={showActualSalesTooltip}
-                  onToggle={handleActualSalesIconClick}
+                  open={openHeaderTooltip === 'actualSales'}
+                  onToggle={() => toggleHeaderTooltip('actualSales')}
                   wrapperRef={iconWrapperRef}
                 />
               </th>
@@ -291,8 +255,8 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
                   tooltipText={t(
                     '총 매출/총 객수(*객수 미사용 시, 매출/테이블 수)'
                   )}
-                  open={showPricePerCustomerTooltip}
-                  onToggle={handlePricePerCustomerIconClick}
+                  open={openHeaderTooltip === 'pricePerCustomer'}
+                  onToggle={() => toggleHeaderTooltip('pricePerCustomer')}
                   wrapperRef={pricePerCustomerIconWrapperRef}
                 />
               </th>
@@ -306,8 +270,8 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
                   tooltipText={t(
                     'OK포스 할인을 제외한 할인 내역이 노출됩니다.'
                   )}
-                  open={showDiscountTooltip}
-                  onToggle={handleDiscountIconClick}
+                  open={openHeaderTooltip === 'discount'}
+                  onToggle={() => toggleHeaderTooltip('discount')}
                   wrapperRef={discountIconWrapperRef}
                 />
               </th>
@@ -317,8 +281,8 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
                   tooltipText={t(
                     'OK포스 할인 내역은 서비스 항목에 노출됩니다.'
                   )}
-                  open={showServiceTooltip}
-                  onToggle={handleServiceIconClick}
+                  open={openHeaderTooltip === 'service'}
+                  onToggle={() => toggleHeaderTooltip('service')}
                   wrapperRef={serviceIconWrapperRef}
                   serviceColumn
                 />

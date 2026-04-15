@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
+import { useOutsidePointerDismiss } from '@/hooks/useOutsidePointerDismiss';
 
 /**
  * 툴팁 표시 및 위치 자동 조정 훅
  * - 콘텐츠 영역을 벗어나지 않도록 x축 위치 자동 조정
- * - 외부 클릭 시 자동 닫힘
+ * - 외부 포인터(마우스·터치) 입력 시 자동 닫힘
  */
 export const useTooltip = () => {
   const [isVisible, setIsVisible] = useState(false); //툴팁 표시, 숨김 상태
@@ -66,26 +67,11 @@ export const useTooltip = () => {
     setTimeout(adjustPosition, 0);
   }, [isVisible]);
 
-  // 외부 클릭 시 툴팁 닫기
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        isVisible &&
-        anchorRef.current &&
-        !anchorRef.current.contains(event.target as Node)
-      ) {
-        close();
-      }
-    };
-
-    if (isVisible) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isVisible]);
+  useOutsidePointerDismiss({
+    isActive: isVisible,
+    anchorRef,
+    onDismiss: close,
+  });
 
   return {
     isVisible,
