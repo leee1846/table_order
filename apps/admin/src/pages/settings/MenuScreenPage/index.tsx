@@ -109,7 +109,15 @@ export const MenuScreenPage = () => {
     await queryClient.invalidateQueries({
       queryKey: queryKeys.shop.themeMenu(shopCode),
     });
-    await refetch();
+    const refetchResult = await refetch();
+    if (refetchResult.isSuccess && refetchResult.data?.data) {
+      const next = refetchResult.data.data;
+      setScreenMode(next.useDarkTheme ? 'dark' : 'light');
+      setLogoImageUrl(next.logoImagePath || null);
+      setLogoFile(null);
+      setIsMenuThreeColumnLayout(next.isMenuThreeColumnLayout);
+      setTemplateType(next.menuboardTemplateType);
+    }
     toast(t('메뉴 화면 설정을 저장했습니다.'));
   };
 

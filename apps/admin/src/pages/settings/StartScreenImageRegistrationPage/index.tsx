@@ -286,7 +286,29 @@ export const StartScreenImageRegistrationPage = () => {
     });
     blobUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     blobUrlsRef.current.clear();
-    await refetch();
+    const refetchResult = await refetch();
+    if (refetchResult.isSuccess && refetchResult.data?.data) {
+      const nextThemePage = refetchResult.data.data;
+      const pageDetails = nextThemePage.shopPageDetailList ?? [];
+      const initCommonDetails = pageDetails.filter(
+        ({ pageDetailType }) => pageDetailType === 'INIT_COMMON'
+      );
+      existingSeqsRef.current = new Set(
+        initCommonDetails
+          .map((detail) => detail.pageDetailImageSeq)
+          .filter((seq): seq is number => seq !== null && seq !== undefined)
+      );
+      setInitCommonItems(
+        initCommonDetails.map((detail, index) => ({
+          id: detail.pageDetailImageSeq || index + 1,
+          description: detail.pageDetailDescription ?? '',
+          imageUrl: detail.pageDetailImagePath ?? null,
+          pageDetailImageSeq: detail.pageDetailImageSeq,
+          pageDetailImageFileIndex: detail.pageDetailImageFileIndex,
+        }))
+      );
+      setInitCommonFiles({});
+    }
     toast(t('이미지 등록을 저장했습니다.'));
   };
 
