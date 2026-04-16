@@ -28,8 +28,12 @@ export {
   TableGroupList,
   TableGroup,
   TableGroupButton,
+  TableGroupTabStrip,
   type TablesPageContainerProps,
   type TableWithStatus,
+  type TableGroupTabStripProps,
+  type TableGroupTabStripHandle,
+  type TableGroupTabStripItem,
   useTablesData,
 } from './TablesPageContainer';
 export {

@@ -71,8 +71,11 @@ export const SSE_KEYS = {
   MAIN_CONNECTION: 'sse-main-connection',
 } as const;
 
-/** 테이블 그룹 선택 키 */
-export const TABLE_GROUP_STORAGE_KEY = 'selectedTableGroupSeq';
+// 테이블 목록 상세 복귀용 sessionStorage 키(문자열은 @repo/feature/tables와 동일)
+export {
+  TABLES_LIST_TABLE_GROUP_SEQ_SESSION_KEY as TABLE_GROUP_STORAGE_KEY,
+  TABLES_LIST_TABLE_GROUP_DETAIL_RETURN_SESSION_KEY as TABLE_GROUP_DETAIL_RETURN_FLAG,
+} from '@repo/feature/tables';
 
 export const DOM_IDS = {
   /** 카테고리 섹션 ID 접두사 */

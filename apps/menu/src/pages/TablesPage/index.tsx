@@ -1,4 +1,10 @@
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppStorage } from '@repo/util/app';
 import {
@@ -23,14 +29,17 @@ import {
   GuestCountDialog,
   type TableWithStatus,
   TableCard,
-  TableGroupWrapper,
-  TableGroupList,
-  TableGroup,
-  TableGroupButton,
+  TableGroupTabStrip,
+  type TableGroupTabStripHandle,
 } from '@repo/feature/components';
 import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
-import { STORAGE_KEYS, TABLE_GROUP_STORAGE_KEY } from '@/constants/keys';
+import { STORAGE_KEYS } from '@/constants/keys';
+import {
+  markTablesListTableGroupForRestoreAfterTableDetailNav,
+  useEnsureSelectedTableGroupInList,
+  useTablesListTableGroupState,
+} from '@repo/feature/tables';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
@@ -45,7 +54,6 @@ import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { Sidebar } from '@/pages/TablesPage/Sidebar';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useShopStore } from '@/stores/useShopStore';
-import { useScrollToSelectedItem } from '@repo/feature/hooks';
 import { NoContent } from '@/feature/NoContent';
 import { useThemeMode } from '@repo/ui';
 
@@ -108,20 +116,22 @@ export const TablesPage = () => {
     refreshTableGroupsData();
   }, [refreshTableGroupsData]);
 
-  const { containerRef } = useScrollToSelectedItem({
-    isDataLoaded: !!tableGroupsData,
-  });
-
   // 디바이스 타입 확인
   const isOrderPosDevice = deviceData?.deviceType === 'ORDER_POS';
 
-  // 상태 관리
-  const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
-    number | null
-  >(() => {
-    const saved = sessionStorage.getItem(TABLE_GROUP_STORAGE_KEY);
-    return saved ? Number(saved) : null;
+  // 테이블 목록: 그룹 선택 + 상세 복귀 시 탭 가로 스크롤 한 번
+  const { selectedTableGroupSeq, setSelectedTableGroupSeq, alignTabStripOnce } =
+    useTablesListTableGroupState();
+
+  const tableGroupTabStripRef = useRef<TableGroupTabStripHandle>(null);
+
+  useEnsureSelectedTableGroupInList({
+    groups: tableGroupsData,
+    selectedTableGroupSeq,
+    setSelectedTableGroupSeq,
+    tabStripRef: tableGroupTabStripRef,
   });
+
   const [isGuestCountDialogOpen, setIsGuestCountDialogOpen] = useState(false);
 
   const [selectedTableForGuestCount, setSelectedTableForGuestCount] =
@@ -160,6 +170,10 @@ export const TablesPage = () => {
         });
       }
 
+      // 목록으로 돌아올 때 현재 그룹·탭 스크롤 복원
+      markTablesListTableGroupForRestoreAfterTableDetailNav(
+        selectedTableGroupSeq
+      );
       navigate(ROUTES.TABLES.TABLE_DETAIL.generate(table.tableNumber));
     },
     [
@@ -167,6 +181,7 @@ export const TablesPage = () => {
       shopData?.shopCode,
       createOrderGroup,
       navigate,
+      selectedTableGroupSeq,
     ]
   );
 
@@ -184,6 +199,10 @@ export const TablesPage = () => {
         kidsCustomerCount: data.kidsCustomerCount ?? 0,
       });
 
+      // 목록으로 돌아올 때 현재 그룹·탭 스크롤 복원
+      markTablesListTableGroupForRestoreAfterTableDetailNav(
+        selectedTableGroupSeq
+      );
       navigate(
         ROUTES.TABLES.TABLE_DETAIL.generate(
           selectedTableForGuestCount.tableNumber
@@ -193,7 +212,13 @@ export const TablesPage = () => {
       setIsGuestCountDialogOpen(false);
       setSelectedTableForGuestCount(null);
     },
-    [selectedTableForGuestCount, shopData?.shopCode, createOrderGroup, navigate]
+    [
+      selectedTableForGuestCount,
+      shopData?.shopCode,
+      createOrderGroup,
+      navigate,
+      selectedTableGroupSeq,
+    ]
   );
 
   // 공통: 선택된 테이블 그룹의 테이블 목록 조회
@@ -272,32 +297,6 @@ export const TablesPage = () => {
   const { clearData: clearCustomerCountData } = useCustomerCountStore();
   const { setData: setLanguageData } = useCustomerLanguageStore();
   const { showInitialPage } = useInitialPageStore();
-
-  // 테이블 그룹 선택값을 세션 스토리지에 저장해, 페이지 재진입 시 유지
-  useEffect(() => {
-    if (selectedTableGroupSeq !== null) {
-      sessionStorage.setItem(
-        TABLE_GROUP_STORAGE_KEY,
-        String(selectedTableGroupSeq)
-      );
-    }
-  }, [selectedTableGroupSeq]);
-
-  // 첫 번째 테이블 그룹을 기본 선택
-  useEffect(() => {
-    const groups = tableGroupsData;
-    if (!groups || groups.length === 0) {
-      return;
-    }
-
-    // 저장된 그룹이 존재하지 않거나 더 이상 없으면 첫 그룹으로 초기화
-    const exists = groups.some(
-      (group) => group.tableGroupSeq === selectedTableGroupSeq
-    );
-    if (!exists) {
-      setSelectedTableGroupSeq(groups[0]?.tableGroupSeq ?? null);
-    }
-  }, [tableGroupsData, selectedTableGroupSeq]);
 
   // 관리자 비밀번호 캐시 제거
   const clearAdminPasswordCache = () => {
@@ -496,7 +495,10 @@ export const TablesPage = () => {
       });
     }
 
-    // 주문이 있는 테이블은 바로 테이블 디테일로 이동
+    // 목록으로 돌아올 때 현재 그룹·탭 스크롤 복원
+    markTablesListTableGroupForRestoreAfterTableDetailNav(
+      selectedTableGroupSeq
+    );
     navigate(
       `${ROUTES.TABLES.TABLE_DETAIL.generate(table.tableNumber)}?orderType=MENU`
     );
@@ -551,24 +553,13 @@ export const TablesPage = () => {
           <TablesPageContainer>
             <Sidebar />
             <TableCardsArea>
-              <TableGroupWrapper>
-                <TableGroupList ref={containerRef}>
-                  {tableGroupsData?.map((tableGroup) => (
-                    <TableGroup key={tableGroup.tableGroupSeq}>
-                      <TableGroupButton
-                        isSelected={
-                          selectedTableGroupSeq === tableGroup.tableGroupSeq
-                        }
-                        onClick={() =>
-                          setSelectedTableGroupSeq(tableGroup.tableGroupSeq)
-                        }
-                      >
-                        {tableGroup.tableGroupName}
-                      </TableGroupButton>
-                    </TableGroup>
-                  ))}
-                </TableGroupList>
-              </TableGroupWrapper>
+              <TableGroupTabStrip
+                ref={tableGroupTabStripRef}
+                groups={tableGroupsData}
+                selectedSeq={selectedTableGroupSeq}
+                onSelect={setSelectedTableGroupSeq}
+                alignTabStripOnce={alignTabStripOnce}
+              />
               <TableCardsGrid onScroll={handleScroll}>
                 {tablesWithStatus.map((table) => (
                   <div key={table.id}>
@@ -596,24 +587,13 @@ export const TablesPage = () => {
             <TablesPageContainer>
               <Sidebar />
               <TableCardsArea>
-                <TableGroupWrapper>
-                  <TableGroupList ref={containerRef}>
-                    {tableGroupsData?.map((tableGroup) => (
-                      <TableGroup key={tableGroup.tableGroupSeq}>
-                        <TableGroupButton
-                          isSelected={
-                            selectedTableGroupSeq === tableGroup.tableGroupSeq
-                          }
-                          onClick={() =>
-                            setSelectedTableGroupSeq(tableGroup.tableGroupSeq)
-                          }
-                        >
-                          {tableGroup.tableGroupName}
-                        </TableGroupButton>
-                      </TableGroup>
-                    ))}
-                  </TableGroupList>
-                </TableGroupWrapper>
+                <TableGroupTabStrip
+                  ref={tableGroupTabStripRef}
+                  groups={tableGroupsData}
+                  selectedSeq={selectedTableGroupSeq}
+                  onSelect={setSelectedTableGroupSeq}
+                  alignTabStripOnce={alignTabStripOnce}
+                />
                 <TableCardsGrid onScroll={handleScroll}>
                   {tablesWithStatus.map((table) => (
                     <DraggableTableCard
@@ -649,24 +629,13 @@ export const TablesPage = () => {
         <Sidebar />
 
         <TableCardsArea>
-          <TableGroupWrapper>
-            <TableGroupList ref={containerRef}>
-              {tableGroupsData?.map((tableGroup) => (
-                <TableGroup key={tableGroup.tableGroupSeq}>
-                  <TableGroupButton
-                    isSelected={
-                      selectedTableGroupSeq === tableGroup.tableGroupSeq
-                    }
-                    onClick={() =>
-                      setSelectedTableGroupSeq(tableGroup.tableGroupSeq)
-                    }
-                  >
-                    {tableGroup.tableGroupName}
-                  </TableGroupButton>
-                </TableGroup>
-              ))}
-            </TableGroupList>
-          </TableGroupWrapper>
+          <TableGroupTabStrip
+            ref={tableGroupTabStripRef}
+            groups={tableGroupsData}
+            selectedSeq={selectedTableGroupSeq}
+            onSelect={setSelectedTableGroupSeq}
+            alignTabStripOnce={alignTabStripOnce}
+          />
           {tablesWithStatus.length === 0 ? (
             <NoContent color={theme.mode.grey[300]} paddingTop="0">
               {t('등록된 테이블이 없습니다.')}

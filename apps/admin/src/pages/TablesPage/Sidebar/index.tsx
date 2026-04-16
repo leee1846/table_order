@@ -24,7 +24,13 @@ type MenuItem = {
   label: string;
 };
 
-export const Sidebar = () => {
+export type TablesPageSidebarProps = {
+  onDeviceListDialogAfterClose?: () => void; // 기기 모달 닫힌 뒤 상위에서 탭 스크롤 등
+};
+
+export const Sidebar = ({
+  onDeviceListDialogAfterClose,
+}: TablesPageSidebarProps) => {
   const { t } = useAdminTranslation();
   const menuItems = useMemo(
     () => [
@@ -135,6 +141,7 @@ export const Sidebar = () => {
             setIsDeviceDialogOpen(false);
             setSelectedMenu('');
           }}
+          onAfterClose={onDeviceListDialogAfterClose} // TablesPage에서 탭 정렬
         />
       )}
     </SidebarContainer>

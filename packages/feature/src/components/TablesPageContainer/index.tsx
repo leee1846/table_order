@@ -18,3 +18,9 @@ export const TableGroupButton = S.TableGroupButton;
 
 export type { TableWithStatus } from './types';
 export { useTablesData } from './useTablesData';
+export {
+  TableGroupTabStrip,
+  type TableGroupTabStripProps,
+  type TableGroupTabStripHandle,
+  type TableGroupTabStripItem,
+} from './TableGroupTabStrip';

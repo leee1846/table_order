@@ -7,11 +7,12 @@ export type {
   UseLongPressReturn,
   UseLongPressHandlers,
 } from './useLongPress';
-export { useScrollToSelectedItem } from './useScrollToSelectedItem';
-export type {
-  UseScrollToSelectedItemOptions,
-  UseScrollToSelectedItemReturn,
-} from './useScrollToSelectedItem';
+export {
+  useTableGroupListAlign,
+  scrollTableGroupListToSelected,
+  tableGroupDomSeqProps,
+} from './useTableGroupListAlign';
+export type { AlignTableGroupListOptions } from './useTableGroupListAlign';
 
 // Re-export dnd-kit core utilities
 export {

@@ -13,8 +13,11 @@ export const SSE_KEYS = {
 /** 관리자 언어 저장 키 */
 export const ADMIN_LANGUAGE_STORAGE_KEY = 'adminLanguage';
 
-/** 테이블 그룹 선택 키 */
-export const TABLE_GROUP_STORAGE_KEY = 'selectedTableGroupSeq';
+// 테이블 목록 상세 복귀용 sessionStorage 키(문자열은 @repo/feature/tables와 동일)
+export {
+  TABLES_LIST_TABLE_GROUP_SEQ_SESSION_KEY as TABLE_GROUP_STORAGE_KEY,
+  TABLES_LIST_TABLE_GROUP_DETAIL_RETURN_SESSION_KEY as TABLE_GROUP_DETAIL_RETURN_FLAG,
+} from '@repo/feature/tables';
 
 /** 매출 모달, 주문 모달의 표 행 사이즈 */
 export const PAZE_SIZE = 6;
