@@ -235,6 +235,12 @@ export const MainPage = () => {
         {modalData.isOrderCompleteModalOpened && (
           <OrderCompleteModalContainer />
         )}
+        {/* 초기화면이 노출된 상태에서 픽업 알림 노출 */}
+        {pageStates.pickupAlarm.show && (
+          <S.PickupAlarmOverlay>
+            <PickupAlarm />
+          </S.PickupAlarmOverlay>
+        )}
       </>
     );
   }
