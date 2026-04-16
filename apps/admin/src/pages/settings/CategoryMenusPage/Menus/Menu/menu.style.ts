@@ -29,6 +29,7 @@ export const TitleContainer = styled.div`
 export const TitleContent = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 16px;
 
   & > span {
@@ -48,6 +49,8 @@ export const PreviewButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 2px;
+  flex-shrink: 0;
+  white-space: nowrap;
   color: ${theme.colors.grey[600]};
   border: 1px solid ${theme.colors.grey[300]};
   border-radius: 30px;
