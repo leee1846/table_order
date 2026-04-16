@@ -98,6 +98,6 @@ export const SmallNotice = styled.p<{ initPageLayout: TInitPageLayout }>`
 `;
 
 export const RightContainer = styled.div`
-  width: 60%;
+  width: 800px;
   height: 100%;
 `;

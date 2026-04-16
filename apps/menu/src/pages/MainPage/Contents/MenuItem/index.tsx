@@ -15,7 +15,7 @@ import { hasTableOrderHistory } from '@/utils/validateCartOrder';
 
 const IMAGE_SIZE = {
   1: {
-    width: '20.9375rem',
+    width: '21rem',
   },
   2: {
     width: '22.5rem',
@@ -153,7 +153,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
         <Thumbnail
           menu={menu}
           image={firstImage}
-          width={IMAGE_SIZE[layout].width}
+          width={layout === 1 ? IMAGE_SIZE[layout].width : '100%'}
         />
         <S.Content>
           <S.MenuName>{menuName}</S.MenuName>

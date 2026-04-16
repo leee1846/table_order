@@ -3,7 +3,7 @@ import { TYPOGRAPHY } from '@repo/ui';
 
 const IMAGE_SIZE = {
   1: {
-    width: '20.9375rem',
+    width: '21rem',
   },
   2: {
     width: '22.5rem',
