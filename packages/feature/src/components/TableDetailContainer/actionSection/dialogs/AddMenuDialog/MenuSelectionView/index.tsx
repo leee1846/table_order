@@ -72,8 +72,8 @@ export const MenuSelectionView = ({
         </A.CloseButton>
 
         <S.ContentWrapper>
-          {/* 왼쪽 패널 - 선택된 메뉴 */}
-          <A.RightPanel>
+          {/* 선택된 메뉴 */}
+          <S.MenuSelectionRightPanel>
             <A.PanelHeader>
               <A.PanelTitle>{tableName}</A.PanelTitle>
             </A.PanelHeader>
@@ -178,9 +178,9 @@ export const MenuSelectionView = ({
                 {isLoading ? t('처리 중...') : t('추가하기')}
               </BasicButton>
             </A.PanelFooter>
-          </A.RightPanel>
+          </S.MenuSelectionRightPanel>
 
-          {/* 오른쪽 영역 - 메뉴 그리드 */}
+          {/* 메뉴 그리드 */}
           <S.MenuGrid>
             {currentMenuList.length === 0 ? (
               <S.MenuGridPlaceholder>
@@ -207,7 +207,7 @@ export const MenuSelectionView = ({
               ))
             )}
           </S.MenuGrid>
-          {/* 중앙 사이드바 - 카테고리 */}
+          {/* 카테고리 */}
           <S.Sidebar>
             <S.CategoryList>
               {categories.map((category) => (

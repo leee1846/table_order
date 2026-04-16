@@ -1,16 +1,25 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { theme, TYPOGRAPHY } from '@repo/ui';
+import { RightPanel } from '../addMenuDialog.styles';
 
 const { colors } = theme;
+
+export const MenuSelectionRightPanel = styled(RightPanel)`
+  min-width: 0;
+`;
 
 export const ContentWrapper = styled.div`
   display: flex;
   height: 100%;
+  min-width: 0;
 `;
 
 export const Sidebar = styled.div`
-  flex: 1;
+  flex: 0 0 200px;
+  width: 200px;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 70px 22px 40px;
   background-color: ${colors.grey[200]};
 `;
@@ -21,20 +30,32 @@ export const CategoryList = styled.div`
   gap: 16px;
   overflow-y: scroll;
   height: 100%;
+  width: 100%;
+  min-width: 0;
   background-color: transparent;
 `;
 
 export const CategoryItem = styled.button<{ isActive: boolean }>`
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   text-align: center;
   ${TYPOGRAPHY.MT_4}
   color: ${({ isActive }) =>
     isActive ? colors.primary[500] : colors.grey[700]};
   cursor: pointer;
   padding: 8px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
 `;
 
 export const MenuGrid = styled.div`
   flex: 4.5;
+  min-width: 0;
   background-color: ${colors.grey[50]};
   display: grid;
   grid-template-columns: repeat(3, 1fr);
