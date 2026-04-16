@@ -156,12 +156,6 @@ export const DeviceManagementPage = () => {
                         <S.FooterLabel>{t('IP주소')}</S.FooterLabel>
                         <S.FooterValue>{device.ipAddress}</S.FooterValue>
                       </S.FooterItem>
-                      <S.FooterItem>
-                        <S.FooterLabel>{t('빌드 번호')}</S.FooterLabel>
-                        <S.FooterValue>
-                          {device.buildNumber || '-'}
-                        </S.FooterValue>
-                      </S.FooterItem>
                     </S.CardFooter>
                   </S.DeviceCard>
                 );
