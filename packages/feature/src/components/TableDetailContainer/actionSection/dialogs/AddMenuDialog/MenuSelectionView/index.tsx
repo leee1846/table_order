@@ -16,6 +16,12 @@ import { toast } from '@repo/feature/utils';
 const { colors } = theme;
 const MENU_MAX_QUANTITY = 999;
 
+const labelForLanguage = (
+  localeMap: Record<string, string> | null | undefined,
+  language: string,
+  fallback: string
+): string => localeMap?.[language] ?? fallback;
+
 interface MenuSelectionViewProps {
   i18nInstance?: I18nInstance;
   categories: ICategoryWithMenus[];
@@ -46,7 +52,7 @@ export const MenuSelectionView = ({
   isLoading = false,
 }: MenuSelectionViewProps) => {
   const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
-  const currentLan = i18n.language || 'KO';
+  const currentLanguage = (i18n.language || 'KO').toUpperCase();
 
   const currentMenuList = useMemo(() => {
     if (selectedCategory === null) {
@@ -95,7 +101,11 @@ export const MenuSelectionView = ({
                     >
                       <S.ItemHeader>
                         <S.ItemName>
-                          {item.menu.localeMenuName?.[currentLan]}
+                          {labelForLanguage(
+                            item.menu.localeMenuName,
+                            currentLanguage,
+                            item.menu.menuName
+                          )}
                         </S.ItemName>
                         <S.ItemPrice>
                           ₩{formatCurrency(item.menu.menuPrice * item.quantity)}
@@ -106,7 +116,12 @@ export const MenuSelectionView = ({
                           {item.selectedOptions.map((option) => (
                             <S.SelectedOptionItem key={option.optionSeq}>
                               <S.OptionItemName>
-                                ㄴ{option.localeOptionName?.[currentLan]}
+                                ㄴ
+                                {labelForLanguage(
+                                  option.localeOptionName,
+                                  currentLanguage,
+                                  option.optionName
+                                )}
                               </S.OptionItemName>
                               <S.OptionItemPrice>
                                 ₩
@@ -198,7 +213,11 @@ export const MenuSelectionView = ({
                     <S.SoldOutBadge>Sold Out</S.SoldOutBadge>
                   )}
                   <S.MenuTitle isOutOfStock={menu.isOutOfStock}>
-                    {menu.localeMenuName?.[currentLan]}
+                    {labelForLanguage(
+                      menu.localeMenuName,
+                      currentLanguage,
+                      menu.menuName
+                    )}
                   </S.MenuTitle>
                   <S.MenuPrice isOutOfStock={menu.isOutOfStock}>
                     ₩{formatCurrency(menu.menuPrice)}
@@ -216,7 +235,11 @@ export const MenuSelectionView = ({
                   onClick={() => onCategoryChange(category.categorySeq)}
                   isActive={selectedCategory === category.categorySeq}
                 >
-                  {category.categoryName}
+                  {labelForLanguage(
+                    category.localeCategoryName,
+                    currentLanguage,
+                    category.categoryName
+                  )}
                 </S.CategoryItem>
               ))}
             </S.CategoryList>

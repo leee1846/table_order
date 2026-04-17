@@ -32,7 +32,8 @@ export const SelectCancelDialog = ({
   onCancelSuccess,
   i18nInstance,
 }: SelectCancelDialogProps) => {
-  const { t } = useTranslation('admin', { i18n: i18nInstance });
+  const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
+  const currentLanguage = (i18n.language || 'KO').toUpperCase();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [quantities, setQuantities] = useState<Map<string, number>>(new Map());
   const { mutateAsync: cancelOrderMenu, isPending } = usePutCancelOrderMenu();
@@ -166,11 +167,8 @@ export const SelectCancelDialog = ({
                         {item.options.map((option, optIndex) => (
                           <div key={`${option.id}-${optIndex.toString()}`}>
                             <span>
-                              {
-                                option.localeOptionName?.[
-                                  i18nInstance?.language ?? ''
-                                ]
-                              }
+                              {option.localeOptionName?.[currentLanguage] ??
+                                option.name}
                             </span>
                             <span>{` x `}</span>
                             <span>{option.qty}</span>
