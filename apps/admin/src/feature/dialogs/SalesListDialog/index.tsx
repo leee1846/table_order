@@ -13,6 +13,7 @@ import { formatCurrency } from '@repo/util/string';
 import {
   getDateRangeByPreset,
   toYYYYMMDDRange,
+  formatLocalizedDate,
   type TDateRangePreset,
 } from '@repo/util/date';
 import * as UIStyles from '@repo/ui/styles';
@@ -41,7 +42,7 @@ export const SalesListDialog = ({
   shopCode,
   itemsPerPage = PAZE_SIZE,
 }: SalesListDialogProps) => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const shopSetting = useShopDetailStore((state) => state.data?.shopSetting);
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
 
@@ -175,7 +176,7 @@ export const SalesListDialog = ({
                 />
                 <S.CalendarText>
                   {startDate && endDate
-                    ? `${startDate} ~ ${endDate}`
+                    ? `${formatLocalizedDate(startDate, i18n.language)} ~ ${formatLocalizedDate(endDate, i18n.language)}`
                     : t('날짜 선택')}
                 </S.CalendarText>
               </S.CalendarButton>
