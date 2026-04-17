@@ -10,10 +10,11 @@ import { theme } from '@repo/ui';
 import { formatCurrency } from '@repo/util/string';
 import {
   getMonthDays,
-  formatDateTime,
   formatDateToYYYYMMDD,
   formatDateString,
   formatDateToDash,
+  formatLocalizedDate,
+  formatLocalizedYearMonth,
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
@@ -29,7 +30,7 @@ import * as S from './calendarSalesPage.style';
 const getWeekLabels = (t: TFunction) => getDays(t).map((day) => day.label);
 
 export const CalendarSalesPage = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const { shopCode } = useAuth();
   const navigate = useNavigate();
 
@@ -117,15 +118,7 @@ export const CalendarSalesPage = () => {
     setSelectedEntry(null);
   };
 
-  const formatModalDate = () => {
-    if (!selectedDate) {
-      return '';
-    }
-    return formatDateTime(
-      selectedDate,
-      `YYYY${t('년도')} MM${t('월_날짜')} DD${t('일_날짜')}`
-    );
-  };
+  const formatModalDate = () => formatLocalizedDate(selectedDate, i18n.language);
 
   const handleViewDetails = () => {
     if (!selectedDate) {
@@ -208,7 +201,7 @@ export const CalendarSalesPage = () => {
                   height={30}
                   color={theme.colors.grey[800]}
                 />
-                {`${year}${t('년도')} ${month}${t('월_날짜')}`}
+                {formatLocalizedYearMonth(year, month, i18n.language)}
               </S.CalendarDate>
               <S.NavButton type="button" onClick={handleNextMonth}>
                 <ChevronForwardIcon

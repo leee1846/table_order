@@ -1,5 +1,13 @@
 import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import 'dayjs/locale/ko';
+import 'dayjs/locale/en';
+import 'dayjs/locale/ja';
+import 'dayjs/locale/zh';
+import 'dayjs/locale/ru';
 import { getCurrentUnixTime } from '../time';
+
+dayjs.extend(localizedFormat);
 
 /**
  * Date 또는 문자열을 'YYYYMMDD' 형식으로 변환합니다.
@@ -518,7 +526,6 @@ export const getCurrentDayOfWeek = (date: Date = new Date()): number => {
  * @example
  * ```ts
  * getTodayDateString(); // '2025-01-15'
- * getTodayDateString('YYYY년 MM월 DD일'); // '2025년 01월 15일'
  * getTodayDateString('YYYY/MM/DD'); // '2025/01/15'
  * ```
  */
@@ -605,3 +612,92 @@ export const isEndDateBeforeStartDate = (
 
   return end.isBefore(start, 'day');
 };
+
+// ─── 다국어 날짜 포맷 유틸 ────────────────────────────────────────────────────
+
+const DAYJS_LOCALE_MAP: Record<string, string> = {
+  KO: 'ko',
+  EN: 'en',
+  JP: 'ja',
+  CH: 'zh',
+  RU: 'ru',
+};
+
+// 년/월 단독 표시: dayjs에 내장 토큰이 없어 언어별 순서 보장용 최소 맵 유지
+const YEAR_MONTH_FORMAT_MAP: Record<string, string> = {
+  KO: 'YYYY년 M월',
+  EN: 'MMMM YYYY',
+  JP: 'YYYY年M月',
+  CH: 'YYYY年M月',
+  RU: 'MMMM YYYY',
+};
+
+// 년도 단독 표시: dayjs에 내장 토큰이 없어 CJK 접미어 최소 맵 유지
+const YEAR_SUFFIX_MAP: Record<string, string> = {
+  KO: '년',
+  JP: '年',
+  CH: '年',
+};
+
+/**
+ * 언어에 맞게 날짜를 지역화된 형식으로 포맷합니다.
+ * dayjs locale의 'LL' 포맷 토큰을 사용합니다.
+ *
+ * KO → "2025년 4월 15일"  EN → "April 15, 2025"
+ * JP → "2025年4月15日"   CH → "2025年4月15日"
+ * RU → "15 апреля 2025 г."
+ */
+export const formatLocalizedDate = (
+  date: string,
+  language: string = 'KO'
+): string => {
+  const parsed = dayjs(date);
+  if (!parsed.isValid()) return '';
+  return parsed.locale(DAYJS_LOCALE_MAP[language] ?? 'ko').format('LL');
+};
+
+/**
+ * 언어에 맞게 년/월을 지역화된 형식으로 포맷합니다.
+ *
+ * KO → "2025년 4월"  EN → "April 2025"
+ * JP → "2025年4月"  CH → "2025年4月"  RU → "апрель 2025"
+ */
+export const formatLocalizedYearMonth = (
+  year: number,
+  month: number,
+  language: string = 'KO'
+): string => {
+  const locale = DAYJS_LOCALE_MAP[language] ?? 'ko';
+  const format =
+    YEAR_MONTH_FORMAT_MAP[language] ?? YEAR_MONTH_FORMAT_MAP['KO']!;
+  return dayjs()
+    .year(year)
+    .month(month - 1)
+    .locale(locale)
+    .format(format);
+};
+
+/**
+ * 언어에 맞게 연도 레이블을 반환합니다.
+ *
+ * KO → "2025년"  EN/RU → "2025"  JP/CH → "2025年"
+ */
+export const getLocalizedYearLabel = (
+  year: number,
+  language: string = 'KO'
+): string => `${year}${YEAR_SUFFIX_MAP[language] ?? ''}`;
+
+/**
+ * 언어에 맞게 월 레이블을 반환합니다.
+ * dayjs locale의 'MMMM' 포맷 토큰을 사용합니다.
+ *
+ * KO → "4월"  EN → "April"  JP → "4月"  CH → "4月"  RU → "апрель"
+ */
+export const getLocalizedMonthLabel = (
+  month: number,
+  language: string = 'KO'
+): string =>
+  dayjs()
+    .month(month - 1)
+    .locale(DAYJS_LOCALE_MAP[language] ?? 'ko')
+    .format('MMMM');

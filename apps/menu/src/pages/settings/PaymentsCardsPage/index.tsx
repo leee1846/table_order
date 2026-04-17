@@ -12,6 +12,7 @@ import {
   toYYYYMMDDRange,
   isStartDateAfterEndDate,
   isEndDateBeforeStartDate,
+  formatLocalizedDate,
   type TDateRangePreset,
 } from '@repo/util/date';
 import { formatCurrency } from '@repo/util/string';
@@ -23,7 +24,7 @@ import { useShopStore } from '@/stores/useShopStore';
 const PAGE_SIZE = 7;
 
 export const PaymentsCardsPage = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const { data: shopDetailData } = useShopDetailData();
   const { shopSetting } = shopDetailData ?? {};
   const { data: shopData } = useShopStore();
@@ -139,17 +140,6 @@ export const PaymentsCardsPage = () => {
     setCurrentPage(1);
   };
 
-  const formatCalendarText = (date: string) => {
-    if (!date) {
-      return t('날짜 선택');
-    }
-    const dateObj = new Date(date);
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
-  };
-
   return (
     <>
       <UIStyles.setting.TablePageContainer>
@@ -179,7 +169,7 @@ export const PaymentsCardsPage = () => {
                     height={25}
                     color={theme.colors.grey[700]}
                   />
-                  <S.DateText>{formatCalendarText(startDate)}</S.DateText>
+                  <S.DateText>{formatLocalizedDate(startDate, i18n.language) || t('날짜 선택')}</S.DateText>
                 </S.DateButton>
 
                 <S.RangeDivider>~</S.RangeDivider>
@@ -193,7 +183,7 @@ export const PaymentsCardsPage = () => {
                     height={25}
                     color={theme.colors.grey[700]}
                   />
-                  <S.DateText>{formatCalendarText(endDate)}</S.DateText>
+                  <S.DateText>{formatLocalizedDate(endDate, i18n.language) || t('날짜 선택')}</S.DateText>
                 </S.DateButton>
               </S.DateRange>
               <Dropdown

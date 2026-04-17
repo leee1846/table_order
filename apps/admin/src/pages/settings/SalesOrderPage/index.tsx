@@ -11,6 +11,7 @@ import {
   toYYYYMMDDRange,
   isStartDateAfterEndDate,
   isEndDateBeforeStartDate,
+  formatLocalizedDate,
   type TDateRangePreset,
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
@@ -26,7 +27,7 @@ import { usePaginationWithCache } from '@/hooks/usePaginationWithCache';
 const PAGE_SIZE = SALES_PAGE_SIZE;
 
 export const SalesOrderPage = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const { shopCode } = useAuth();
   const { data: shopDetailData } = useShopDetailData();
   const { shopSetting } = shopDetailData ?? {};
@@ -122,17 +123,6 @@ export const SalesOrderPage = () => {
     pagination.resetPage();
   };
 
-  const formatCalendarText = (date: string) => {
-    if (!date) {
-      return t('날짜 선택');
-    }
-    const dateObj = new Date(date);
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
-  };
-
   return (
     <>
       <UIStyles.setting.TablePageContainer>
@@ -154,7 +144,10 @@ export const SalesOrderPage = () => {
                   height={25}
                   color={theme.colors.grey[700]}
                 />
-                <S.DateText>{formatCalendarText(startDate)}</S.DateText>
+                <S.DateText>
+                  {formatLocalizedDate(startDate, i18n.language) ||
+                    t('날짜 선택')}
+                </S.DateText>
               </S.DateButton>
 
               <S.RangeDivider>~</S.RangeDivider>
@@ -168,7 +161,10 @@ export const SalesOrderPage = () => {
                   height={25}
                   color={theme.colors.grey[700]}
                 />
-                <S.DateText>{formatCalendarText(endDate)}</S.DateText>
+                <S.DateText>
+                  {formatLocalizedDate(endDate, i18n.language) ||
+                    t('날짜 선택')}
+                </S.DateText>
               </S.DateButton>
             </S.DateRange>
             <Dropdown
@@ -191,23 +187,17 @@ export const SalesOrderPage = () => {
             <UIStyles.setting.FooterContents>
               <p>
                 <span>{t('총 매출:')}</span> {formatCurrency(totalSalesAmount)}
-                <span>
-                  {t('{{value}}건', { value: totalSalesCount })}
-                </span>
+                <span>{t('{{value}}건', { value: totalSalesCount })}</span>
               </p>
               <p>
                 <span>{t('결제 전 매출:')}</span>
                 {formatCurrency(prePaymentAmount)}
-                <span>
-                  {t('{{value}}건', { value: prePaymentCount })}
-                </span>
+                <span>{t('{{value}}건', { value: prePaymentCount })}</span>
               </p>
               <p>
                 <span>{t('총 예상 매출:')}</span>
                 {formatCurrency(estimatedTotalAmount)}
-                <span>
-                  {t('{{value}}건', { value: estimatedTotalCount })}
-                </span>
+                <span>{t('{{value}}건', { value: estimatedTotalCount })}</span>
               </p>
             </UIStyles.setting.FooterContents>
           )}
