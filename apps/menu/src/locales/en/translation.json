@@ -52,6 +52,7 @@
   "{{menuName}}의 최소 주문 수량은 {{minQuantity}}개 입니다.": "The minimum order quantity for {{menuName}} is {{minQuantity}} items.",
   "메뉴가 품절되었습니다.": "Menu item is out of stock.",
   "{{menuName}} 메뉴가 품절되었습니다.": "{{menuName}} is out of stock.",
+  "{{optionName}} 옵션이 품절되었습니다.": "{{optionName}} is out of stock.",
   "메뉴가 담겼습니다.": "Item added to cart.",
   "메뉴를 주문할까요?": "Would you like to place an order?",
   "주방 접수된 이후에는 취소가 불가능해요.": "Cancellation is not possible after kitchen acceptance.",

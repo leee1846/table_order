@@ -36,7 +36,7 @@ function cartMenusTotalAmount(menus: ICartMenu[]): number {
 }
 
 /**
- * 장바구니 주문 직전 검증: 첫 주문 필수(주문 내역 없을 때만)·숨김·품절·최소 수량·첫 주문 최소 금액(주문 내역 없을 때만)·카테고리(주문 가능) 여부.
+ * 장바구니 주문 직전 검증: 첫 주문 필수(주문 내역 없을 때만)·숨김·품절(메뉴·옵션)·최소 수량·첫 주문 최소 금액(주문 내역 없을 때만)·카테고리(주문 가능) 여부.
  * 확인 시점의 스토어·i18n 상태를 내부에서 읽습니다. 실패 시 토스트만 띄우고 `false`를 반환합니다.
  *
  * 메뉴·품절·최소수량 조회는 `CartList`에 넘기던 `categories`와 동일하게 **노출 카테고리**(`visibleCategories`) 기준입니다.
@@ -102,6 +102,30 @@ export function validateCartOrder(): boolean {
         { position: 'center-center', duration: 1500 }
       );
       return false;
+    }
+
+    if (originalMenu) {
+      for (const cartOption of cartMenu.selectedOptions) {
+        const currentOption = originalMenu.optionGroupList
+          .flatMap((group) => group.optionList)
+          .find(
+            (o) =>
+              o.optionSeq === cartOption.optionSeq &&
+              o.optionGroupSeq === cartOption.optionGroupSeq
+          );
+
+        if (currentOption?.isOutOfStock) {
+          toast(
+            t('{{optionName}} 옵션이 품절되었습니다.', {
+              optionName:
+                cartOption.localeOptionName?.[currentLanguage] ??
+                cartOption.optionName,
+            }),
+            { position: 'center-center', duration: 1500 }
+          );
+          return false;
+        }
+      }
     }
   }
 
