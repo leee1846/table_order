@@ -101,7 +101,7 @@ const calculateTotalMenusPrice = (menus: ICartMenu[]): number => {
   );
 };
 
-/** POS와 동일: `calculateCartMenusTaxAmount`(카트 줄 단위 floor 합산) */
+/** POS와 동일: `calculateCartMenusTaxAmount`(품목 단가 단위 floor 후 수량 곱셈 합산) */
 const calculateMenusTaxAmount = (menus: ICartMenu[]): number => {
   return calculateCartMenusTaxAmount(
     menus,
