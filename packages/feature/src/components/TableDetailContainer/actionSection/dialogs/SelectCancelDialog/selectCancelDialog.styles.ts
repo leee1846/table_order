@@ -42,10 +42,21 @@ export const ItemsList = styled.div`
 
 export const ItemRow = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 4px;
 `;
 
-export const ItemInfo = styled.div`
+export const ItemMainRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+`;
+
+export const ItemCheckArea = styled.div`
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -54,6 +65,10 @@ export const ItemInfo = styled.div`
 export const ItemName = styled.span`
   ${TYPOGRAPHY.MT_5}
   color: ${colors.grey[900]};
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 `;
 
 export const ItemOptions = styled.div`
@@ -62,7 +77,14 @@ export const ItemOptions = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3px;
-  margin-left: 35px;
+  min-width: 0;
+  /* CheckButton: 체크박스(1.5rem) + label gap(7px) — 메뉴명 시작선과 동일 */
+  margin-left: calc(1.5rem + 7px);
+
+  & > div {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 `;
 
 export const QuantityWrapper = styled.div`
