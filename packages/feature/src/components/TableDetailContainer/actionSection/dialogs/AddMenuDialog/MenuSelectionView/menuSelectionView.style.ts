@@ -19,6 +19,9 @@ export const Sidebar = styled.div`
   flex: 0 0 200px;
   width: 200px;
   min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   padding: 70px 22px 40px;
   background-color: ${colors.grey[200]};
@@ -28,8 +31,9 @@ export const CategoryList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  overflow-y: scroll;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   width: 100%;
   min-width: 0;
   background-color: transparent;
@@ -37,6 +41,7 @@ export const CategoryList = styled.div`
 
 export const CategoryItem = styled.button<{ isActive: boolean }>`
   display: block;
+  flex-shrink: 0;
   width: 100%;
   min-width: 0;
   max-width: 100%;

@@ -67,6 +67,18 @@ const getLocalizedGroupName = (
   );
 };
 
+/** 다중 선택 그룹이지만 UI·규칙상 단일(최소·최대 각 1)이면 라디오로 표시 */
+const isMultipleGroupRenderedAsRadio = (group: IOptionGroup): boolean =>
+  group.isMultipleSelectable &&
+  !group.isOptionQuantitySelectable &&
+  group.minQuantity === 1 &&
+  group.maxQuantity === 1;
+
+/** 라디오 UI가 쓰이는 옵션 그룹 (단일 선택·의사 단일 다중) */
+const isRadioOptionGroup = (group: IOptionGroup): boolean =>
+  !group.isOptionQuantitySelectable &&
+  (!group.isMultipleSelectable || isMultipleGroupRenderedAsRadio(group));
+
 const formatPriceText = (price: number): string => {
   return price > 0 ? ` (+ ₩${formatCurrency(price)})` : '';
 };
@@ -118,6 +130,41 @@ const initializeSelectedOptionsMap = (
   return optionsMap;
 };
 
+/** 라디오 그룹에 선택이 없으면 첫 옵션을 실제 선택 값으로 채움 */
+const applyDefaultRadioSelectionsToMap = (
+  menu: IMenu,
+  map: SelectedOptionsMap,
+  currentLanguage: string
+): SelectedOptionsMap => {
+  const next = new Map(map);
+
+  for (const group of menu.optionGroupList) {
+    if (!isRadioOptionGroup(group)) {
+      continue;
+    }
+    if (calculateGroupTotalQuantity(next, group.optionGroupSeq) > 0) {
+      continue;
+    }
+    const firstSelectable = group.optionList.find((opt) => !opt.isOutOfStock);
+    if (!firstSelectable) {
+      continue;
+    }
+    const key = createOptionKey(
+      group.optionGroupSeq,
+      firstSelectable.optionSeq
+    );
+    next.set(key, {
+      option: {
+        ...firstSelectable,
+        optionName: getLocalizedOptionName(firstSelectable, currentLanguage),
+      },
+      quantity: 1,
+    });
+  }
+
+  return next;
+};
+
 // 선택된 옵션 Map을 카트에 저장할 배열 형태로 변환
 const convertSelectedOptionsToCartOptions = (
   selectedOptions: SelectedOptionsMap,
@@ -157,9 +204,13 @@ export const MenuDetailWithOptionsModal = ({
 
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptionsMap>(
     () =>
-      initializeSelectedOptionsMap(
+      applyDefaultRadioSelectionsToMap(
         menu,
-        initialSelectedOptions,
+        initializeSelectedOptionsMap(
+          menu,
+          initialSelectedOptions,
+          languageData.currentLanguage
+        ),
         languageData.currentLanguage
       )
   );
@@ -288,11 +339,22 @@ export const MenuDetailWithOptionsModal = ({
     option: IOption,
     group: IOptionGroup
   ) => {
-    if (group.isMultipleSelectable) {
-      handleMultipleOptionToggle(option, group);
-    } else {
+    if (!group.isMultipleSelectable) {
       handleSingleOptionSelect(option, group);
+      return;
     }
+
+    if (isMultipleGroupRenderedAsRadio(group)) {
+      const key = createOptionKey(group.optionGroupSeq, option.optionSeq);
+      if (selectedOptions.has(key)) {
+        handleMultipleOptionToggle(option, group);
+      } else {
+        handleSingleOptionSelect(option, group);
+      }
+      return;
+    }
+
+    handleMultipleOptionToggle(option, group);
   };
 
   // NumberInput 형태: 수량을 직접 입력하여 변경
@@ -422,6 +484,21 @@ export const MenuDetailWithOptionsModal = ({
 
   // 각 옵션 그룹의 최소/최대 수량 제약 검증
   const validateOptionGroups = (): boolean => {
+    for (const item of selectedOptions.values()) {
+      if (item.quantity > 0 && item.option.isOutOfStock) {
+        toast(
+          t('{{optionName}} 옵션이 품절되었습니다.', {
+            optionName: getLocalizedOptionName(
+              item.option,
+              languageData.currentLanguage
+            ),
+          }),
+          { position: 'center-center', duration: 1500 }
+        );
+        return false;
+      }
+    }
+
     for (const group of menu.optionGroupList) {
       const selectedCount = calculateGroupTotalQuantity(
         selectedOptions,
@@ -537,8 +614,8 @@ export const MenuDetailWithOptionsModal = ({
       );
     }
 
-    // 다중 선택 가능: Checkbox
-    if (group.isMultipleSelectable) {
+    // 다중 선택 가능: Checkbox (단, 최소·최대 각 1이면 라디오 UI)
+    if (group.isMultipleSelectable && !isMultipleGroupRenderedAsRadio(group)) {
       return (
         <li key={option.optionSeq}>
           <CheckButton
@@ -671,7 +748,10 @@ export const MenuDetailWithOptionsModal = ({
                       </S.OptionGroupName>
                       <S.Options
                         role={
-                          group.isMultipleSelectable ? 'group' : 'radiogroup'
+                          group.isMultipleSelectable &&
+                          !isMultipleGroupRenderedAsRadio(group)
+                            ? 'group'
+                            : 'radiogroup'
                         }
                         aria-label={groupName}
                       >
