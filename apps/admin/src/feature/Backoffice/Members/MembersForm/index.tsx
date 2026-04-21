@@ -1,4 +1,5 @@
-import { allowOnlyNumbers } from '@repo/util/string';
+import { useState, useMemo, useCallback } from 'react';
+import { allowOnlyNumbers, isValidPhoneNumber } from '@repo/util/string';
 import * as S from './membersForm.style';
 import {
   MEMBER_ROLE_OPTIONS,
@@ -14,8 +15,27 @@ interface Props {
   updateFormData: (updates: Partial<MembersFormData>) => void;
 }
 
+const MEMBER_TEL_FORMAT_ERROR =
+  '핸드폰번호는 9~11자리 연락처 형식으로 입력해주세요.';
+
 export const MembersForm = ({ mode, formData, updateFormData }: Props) => {
   const isReadOnly = mode === 'detail';
+  const [memberTelBlurred, setMemberTelBlurred] = useState(false);
+
+  const memberTelErrorMessage = useMemo(() => {
+    if (isReadOnly || !memberTelBlurred) {
+      return undefined;
+    }
+    const tel = formData.memberTel.trim();
+    if (!tel || isValidPhoneNumber(formData.memberTel)) {
+      return undefined;
+    }
+    return MEMBER_TEL_FORMAT_ERROR;
+  }, [isReadOnly, memberTelBlurred, formData.memberTel]);
+
+  const handleMemberTelBlur = useCallback(() => {
+    setMemberTelBlurred(true);
+  }, []);
 
   return (
     <S.Container>
@@ -55,6 +75,8 @@ export const MembersForm = ({ mode, formData, updateFormData }: Props) => {
               onChange={(value) =>
                 updateFormData({ memberTel: allowOnlyNumbers(value) })
               }
+              onBlur={handleMemberTelBlur}
+              errorMessage={memberTelErrorMessage}
               disabled={isReadOnly}
               inputMode="numeric"
             />
