@@ -4,6 +4,7 @@ import { BasicButton } from '@repo/ui/components';
 import { theme, TYPOGRAPHY, useThemeMode } from '@repo/ui';
 import { CloseIcon } from '@repo/ui/icons';
 import { DialogSize, getDialogWidth } from './dialog';
+import { useDialogConfirmEnter } from './useDialogConfirmEnter';
 const { colors } = theme;
 
 interface LongContentDialogProps {
@@ -29,8 +30,10 @@ export const LongContentDialog = ({
   };
   const buttonVariant = active ? 'Solid_Blue_2XL' : 'Solid_Navy_2XL';
   const isMenu = active;
+  const { ref, rootKeyboardProps } = useDialogConfirmEnter(onConfirm);
+
   return (
-    <Container size={size} isMenu={isMenu}>
+    <Container ref={ref} {...rootKeyboardProps} size={size} isMenu={isMenu}>
       <CloseButton onClick={handleClose} aria-label="닫기">
         <CloseIcon width={24} height={24} color={colors.grey[700]} />
       </CloseButton>

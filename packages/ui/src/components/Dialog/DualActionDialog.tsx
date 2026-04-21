@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
 import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
 import { DialogSize, getDialogWidth } from './dialog';
+import { useDialogConfirmEnter } from './useDialogConfirmEnter';
 
 interface DualActionDialogProps {
   title?: string;
@@ -31,8 +32,10 @@ export const DualActionDialog = ({
   const secondaryButtonVariant = active
     ? 'Outline_Blue_2XL'
     : 'Solid_Sky_Blue_2XL';
+  const { ref, rootKeyboardProps } = useDialogConfirmEnter(onConfirm);
+
   return (
-    <Container size={size} isMenu={isMenu}>
+    <Container ref={ref} {...rootKeyboardProps} size={size} isMenu={isMenu}>
       {title && (
         <Title hasContent={hasContent} isMenu={isMenu}>
           {title}
