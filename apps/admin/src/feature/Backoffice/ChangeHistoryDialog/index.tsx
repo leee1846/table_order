@@ -65,7 +65,9 @@ export const ChangeHistoryDialog = ({ isOpen, onClose, histories }: Props) => {
     }
 
     return historyData.map((item) => (
-      <S.Tr key={item.id}>
+      <S.Tr
+        key={`${currentHistory.code}-${String(currentHistory.id)}-${item.userId}-${item.id}-${item.action}`}
+      >
         <S.Td>{item.userId}</S.Td>
         <S.Td>{item.user}</S.Td>
         <S.Td>{item.updateDateTime}</S.Td>
@@ -90,7 +92,7 @@ export const ChangeHistoryDialog = ({ isOpen, onClose, histories }: Props) => {
             <S.TabContainer>
               {histories.map((history, index) => (
                 <S.TabButton
-                  key={history.code}
+                  key={`${history.code}-${String(history.id)}`}
                   type="button"
                   isActive={activeTabIndex === index}
                   onClick={() => setActiveTabIndex(index)}
@@ -111,7 +113,11 @@ export const ChangeHistoryDialog = ({ isOpen, onClose, histories }: Props) => {
                   <S.Th>액션</S.Th>
                 </S.Tr>
               </S.Thead>
-              <S.Tbody>{renderRows()}</S.Tbody>
+              <S.Tbody
+                key={`${currentHistory.code}-${String(currentHistory.id)}`}
+              >
+                {renderRows()}
+              </S.Tbody>
             </S.Table>
           </S.TableContainer>
         </S.Container>
