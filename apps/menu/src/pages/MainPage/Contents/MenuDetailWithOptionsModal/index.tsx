@@ -528,7 +528,10 @@ export const MenuDetailWithOptionsModal = ({
               handleOptionQuantityChange(option, newQuantity)
             }
             size="M"
-            disabled={option.isOutOfStock || disabledOrderable}
+            max={option.isOutOfStock ? quantity : undefined}
+            disabled={
+              (option.isOutOfStock && quantity === 0) || disabledOrderable
+            }
           />
         </S.NumberInputContainer>
       );
@@ -541,7 +544,7 @@ export const MenuDetailWithOptionsModal = ({
           <CheckButton
             checked={isSelected}
             onChange={() => handleCheckboxOrRadioSelection(option, group)}
-            disabled={option.isOutOfStock || disabledOrderable}
+            disabled={(option.isOutOfStock && !isSelected) || disabledOrderable}
             customStyle={css`
               & > div {
                 width: 24px;
@@ -566,7 +569,7 @@ export const MenuDetailWithOptionsModal = ({
           value={String(option.optionSeq)}
           onChange={() => handleCheckboxOrRadioSelection(option, group)}
           checked={isSelected}
-          disabled={option.isOutOfStock || disabledOrderable}
+          disabled={(option.isOutOfStock && !isSelected) || disabledOrderable}
         >
           <S.OptionText soldOut={option.isOutOfStock}>
             {buildOptionDisplayText(option)}
