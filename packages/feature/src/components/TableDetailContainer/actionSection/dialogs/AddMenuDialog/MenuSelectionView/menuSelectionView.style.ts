@@ -89,6 +89,7 @@ export const MenuCard = styled.div<{
   cursor: ${({ isOutOfStock }) => (isOutOfStock ? 'not-allowed' : 'pointer')};
   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08);
   height: 154px;
+  min-width: 0;
   overflow: hidden;
   justify-content: space-between;
   opacity: ${({ isOutOfStock }) => (isOutOfStock ? 0.5 : 1)};
@@ -111,9 +112,12 @@ export const MenuTitle = styled.div<{ isOutOfStock?: boolean }>`
   ${TYPOGRAPHY.MT_7}
   color: ${({ isOutOfStock }) =>
     isOutOfStock ? colors.grey[400] : colors.grey[800]};
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
@@ -142,6 +146,7 @@ export const SelectedItem = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 
   border-bottom: 1px solid ${colors.grey[200]};
 `;
@@ -150,16 +155,28 @@ export const ItemHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  min-width: 0;
 `;
 
 export const ItemName = styled.div`
   ${TYPOGRAPHY.MT_7}
   color: ${colors.grey[800]};
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const ItemPrice = styled.div`
   ${TYPOGRAPHY.MT_7}
   color: ${colors.grey[700]};
+  flex-shrink: 0;
 `;
 
 export const SelectedOptionsContainer = styled.div`
@@ -171,17 +188,27 @@ export const SelectedOptionsContainer = styled.div`
 
 export const SelectedOptionItem = styled.div`
   padding-left: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: block;
+  min-width: 0;
+  direction: ltr;
+  text-align: start;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
-export const OptionItemName = styled.div`
+export const OptionItemName = styled.span`
+  display: inline;
   ${TYPOGRAPHY.ST_4}
   color: ${colors.grey[500]};
 `;
 
-export const OptionItemPrice = styled.div`
+export const OptionItemMeta = styled.span`
+  display: inline;
+  white-space: nowrap;
+  margin-left: 0.25em;
+`;
+
+export const OptionItemPrice = styled.span`
   ${TYPOGRAPHY.ST_5}
   color: ${colors.grey[600]};
 `;

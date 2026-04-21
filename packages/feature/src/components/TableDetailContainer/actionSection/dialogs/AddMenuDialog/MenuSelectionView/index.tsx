@@ -115,22 +115,21 @@ export const MenuSelectionView = ({
                         <S.SelectedOptionsContainer>
                           {item.selectedOptions.map((option) => (
                             <S.SelectedOptionItem key={option.optionSeq}>
-                              <S.OptionItemName>
-                                ㄴ
-                                {labelForLanguage(
-                                  option.localeOptionName,
-                                  currentLanguage,
-                                  option.optionName
-                                )}
-                              </S.OptionItemName>
-                              <S.OptionItemPrice>
-                                ₩
-                                {formatCurrency(
-                                  option.optionPrice *
-                                    option.selectedQuantity *
-                                    item.quantity
-                                )}
-                              </S.OptionItemPrice>
+                              <S.OptionItemName>{`ㄴ\u2060${labelForLanguage(
+                                option.localeOptionName,
+                                currentLanguage,
+                                option.optionName
+                              )}`}</S.OptionItemName>
+                              <S.OptionItemMeta>
+                                <S.OptionItemPrice>
+                                  ₩
+                                  {formatCurrency(
+                                    option.optionPrice *
+                                      option.selectedQuantity *
+                                      item.quantity
+                                  )}
+                                </S.OptionItemPrice>
+                              </S.OptionItemMeta>
                             </S.SelectedOptionItem>
                           ))}
                         </S.SelectedOptionsContainer>

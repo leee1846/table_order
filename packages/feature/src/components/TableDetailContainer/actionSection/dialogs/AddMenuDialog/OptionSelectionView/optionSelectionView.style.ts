@@ -17,6 +17,7 @@ export const OptionLeftPanel = styled.div`
   background-color: ${colors.grey[50]};
   padding: 56px 45px;
   overflow-y: auto;
+  min-width: 0;
 `;
 
 export const OptionHeader = styled.div`
@@ -38,8 +39,9 @@ export const OptionListContainer = styled.div`
 
 export const OptionGroup = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px 50px;
+  min-width: 0;
 `;
 
 export const OptionGroupHeader = styled.div`
@@ -66,6 +68,8 @@ export const OptionRow = styled.div<{
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  min-width: 0;
 `;
 
 export const OptionNameContainer = styled.div`
@@ -73,17 +77,52 @@ export const OptionNameContainer = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 8px;
+  flex: 1;
+  min-width: 0;
+`;
+
+export const optionNameLineClamp = css`
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const OptionName = styled.div`
   ${TYPOGRAPHY.MT_5}
   color: ${colors.grey[800]};
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+
+  & > label {
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+`;
+
+export const OptionNameText = styled.span`
+  ${optionNameLineClamp}
+  flex: 1;
 `;
 
 export const OptionPrice = styled.div`
   ${TYPOGRAPHY.ST_5}
   color: ${colors.grey[600]};
   text-wrap: nowrap;
+  flex-shrink: 0;
+`;
+
+export const OptionLabelClamp = styled.span`
+  ${optionNameLineClamp}
+  flex: 1;
 `;
 
 export const OptionRightPanel = styled(RightPanel)`
@@ -99,18 +138,30 @@ export const SelectedOptionsList = styled.div`
 `;
 
 export const SelectedOptionItem = styled.div`
+  display: block;
+  min-width: 0;
   padding-bottom: 12px;
-  display: flex;
-  gap: 5px;
+  direction: ltr;
+  text-align: start;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
-export const OptionItemName = styled.div``;
-
-export const OptionItemPrice = styled.div`
-  text-wrap: nowrap;
+export const OptionItemName = styled.span`
+  display: inline;
 `;
 
-export const OptionItemQuantity = styled.div``;
+export const OptionItemMeta = styled.span`
+  display: inline;
+  white-space: nowrap;
+  margin-left: 0.25em;
+`;
+
+export const OptionItemPrice = styled.span``;
+
+export const OptionItemQuantity = styled.span`
+  margin-left: 0.25em;
+`;
 
 export const optionQuantityInput = css`
   max-width: 45%;
@@ -160,10 +211,12 @@ export const rightPanelMenuQuantityInput = css`
 
 export const checkboxCss = css`
   ${TYPOGRAPHY.MT_5}
-  max-width: 200px;
-  word-break: break-word;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   & > div {
+    flex-shrink: 0;
     width: 30px;
     height: 30px;
     aspect-ratio: 1/1;
@@ -172,10 +225,12 @@ export const checkboxCss = css`
 
 export const radioCss = css`
   ${TYPOGRAPHY.MT_5}
-  max-width: 200px;
-  word-break: break-word;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   & > div {
+    flex-shrink: 0;
     width: 30px;
     height: 30px;
   }
