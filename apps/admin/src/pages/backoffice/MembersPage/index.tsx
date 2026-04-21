@@ -3,6 +3,7 @@ import { Table } from './Table';
 import * as S from './membersPage.style';
 import { ROUTES } from '@/constants/routes';
 import { useGetAdminMemberList } from '@repo/api/queries';
+import { useStablePaginatedTotalPages } from '@repo/feature/hooks';
 import { useTablePageState } from '@/feature/backoffice/hooks';
 import { Input, Button, Pagination } from '@/feature/backoffice/components';
 import { keepPreviousData } from '@repo/api/tanstack-query';
@@ -19,13 +20,20 @@ export const MembersPage = () => {
     handlePageChange,
   } = useTablePageState({ pageSize: PAGE_SIZE });
 
-  const { data: adminList } = useGetAdminMemberList(
+  const { data: adminList, isPlaceholderData } = useGetAdminMemberList(
     {
       pageNumber: currentPage - 1,
       pageSize: PAGE_SIZE,
       searchWord: searchKeyword,
     },
     { placeholderData: keepPreviousData }
+  );
+
+  const admins = adminList?.data?.memberList ?? [];
+  const totalPages = useStablePaginatedTotalPages(
+    isPlaceholderData,
+    adminList?.data?.totalPageNumber,
+    admins.length
   );
 
   const handleCreate = () => {
@@ -55,14 +63,14 @@ export const MembersPage = () => {
         </S.SearchContainer>
 
         <S.TableWrapper>
-          <Table admins={adminList?.data?.memberList ?? []} />
+          <Table admins={admins} />
         </S.TableWrapper>
       </S.Container>
 
       <S.Footer>
         <div />
         <Pagination
-          totalPages={adminList?.data?.totalPageNumber ?? 1}
+          totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={handlePageChange}
         />

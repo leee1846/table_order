@@ -4,6 +4,7 @@ import { Table } from './Table';
 import * as S from './storesPage.style';
 import { ROUTES } from '@/constants/routes';
 import { useGetAdminShopList } from '@repo/api/queries';
+import { useStablePaginatedTotalPages } from '@repo/feature/hooks';
 import { useTablePageState } from '@/feature/backoffice/hooks';
 import { Input, Button, Pagination } from '@/feature/backoffice/components';
 
@@ -19,13 +20,22 @@ export const StoresPage = () => {
     handlePageChange,
   } = useTablePageState({ pageSize: PAGE_SIZE });
 
-  const { data: shopList } = useGetAdminShopList(
+  const { data: shopListResponse, isPlaceholderData } = useGetAdminShopList(
     {
       pageNumber: currentPage - 1,
       pageSize: PAGE_SIZE,
       searchWord: searchKeyword,
     },
     { placeholderData: keepPreviousData }
+  );
+
+  const listPayload = shopListResponse?.data;
+  const stores = listPayload?.shopList ?? [];
+
+  const totalPages = useStablePaginatedTotalPages(
+    isPlaceholderData,
+    listPayload?.totalPageNumber,
+    stores.length
   );
 
   const handleCreate = () => {
@@ -55,14 +65,14 @@ export const StoresPage = () => {
         </S.SearchContainer>
 
         <S.TableWrapper>
-          <Table stores={shopList?.data?.shopList ?? []} />
+          <Table stores={stores} />
         </S.TableWrapper>
       </S.Container>
 
       <S.Footer>
         <div />
         <Pagination
-          totalPages={shopList?.data?.totalPageNumber ?? 1}
+          totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={handlePageChange}
         />

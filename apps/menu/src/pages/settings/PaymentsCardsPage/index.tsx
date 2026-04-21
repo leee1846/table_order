@@ -75,29 +75,34 @@ export const PaymentsCardsPage = () => {
     [startDate, endDate]
   );
 
-  const { data: cardApprovalHistoryResponse } = useGetCardApprovalHistory(
-    {
-      shopCode: shopData?.shopCode ?? '',
-      cardCode: selectedCardCode === 'all' ? undefined : selectedCardCode,
-      startDate: apiStartDate,
-      endDate: apiEndDate,
-      pageNumber: currentPage - 1,
-      pageSize: PAGE_SIZE,
-    },
-    {
-      enabled: !!shopData?.shopCode && !!apiStartDate && !!apiEndDate,
-      placeholderData: keepPreviousData,
-    }
-  );
+  const { data: cardApprovalHistoryResponse, isPlaceholderData } =
+    useGetCardApprovalHistory(
+      {
+        shopCode: shopData?.shopCode ?? '',
+        cardCode: selectedCardCode === 'all' ? undefined : selectedCardCode,
+        startDate: apiStartDate,
+        endDate: apiEndDate,
+        pageNumber: currentPage - 1,
+        pageSize: PAGE_SIZE,
+      },
+      {
+        enabled: !!shopData?.shopCode && !!apiStartDate && !!apiEndDate,
+        placeholderData: keepPreviousData,
+      }
+    );
 
   const cardApprovalData = cardApprovalHistoryResponse?.data;
   const cardApprovalHistory = cardApprovalData?.cardApprovalHistory ?? [];
   const totalPagesFromResponse = cardApprovalData?.totalPageNumber;
   const hasNextPage = cardApprovalHistory.length === PAGE_SIZE;
-  const totalPages = Math.max(
+  const inferredTotal = Math.max(
     totalPagesFromResponse ?? (hasNextPage ? currentPage + 1 : currentPage),
     1
   );
+  const totalPages =
+    !isPlaceholderData && cardApprovalHistory.length === 0
+      ? 1
+      : inferredTotal;
   const totalSalesAmount = cardApprovalData?.totalSalesAmount ?? 0;
   const totalCount = cardApprovalData?.totalCount ?? 0;
 

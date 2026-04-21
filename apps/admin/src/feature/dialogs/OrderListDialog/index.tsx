@@ -3,6 +3,7 @@ import { ModalBackground, Pagination } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { useGetOrderLogList } from '@repo/api/queries';
+import { useStablePaginatedTotalPages } from '@repo/feature/hooks';
 import { keepPreviousData } from '@repo/api/tanstack-query';
 import type {
   IOrderDetailMenu,
@@ -129,6 +130,7 @@ export const OrderListDialog = ({
   const {
     data: orderLogResponse,
     isFetching,
+    isPlaceholderData,
     refetch,
   } = useGetOrderLogList(
     {
@@ -200,10 +202,11 @@ export const OrderListDialog = ({
     [orderItems]
   );
 
-  const totalPages =
-    orderLogData?.totalPageNumber && orderLogData.totalPageNumber > 0
-      ? orderLogData.totalPageNumber
-      : 1;
+  const totalPages = useStablePaginatedTotalPages(
+    isPlaceholderData,
+    orderLogData?.totalPageNumber,
+    displayedOrderItems.length
+  );
   const isInitialLoading = isFetching && !orderLogResponse;
   const hasShopCode = !!shopCode;
 

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetAppVersionList } from '@repo/api/queries';
+import { useStablePaginatedTotalPages } from '@repo/feature/hooks';
 import { Table } from './Table';
 import * as S from './appHistoriesPage.style';
 import { ROUTES } from '@/constants/routes';
@@ -20,7 +21,7 @@ export const AppHistoriesPage = () => {
     handlePageChange,
   } = useTablePageState({ pageSize: PAGE_SIZE });
 
-  const { data } = useGetAppVersionList(
+  const { data, isPlaceholderData } = useGetAppVersionList(
     {
       pageNumber: currentPage - 1,
       pageSize: PAGE_SIZE,
@@ -39,7 +40,11 @@ export const AppHistoriesPage = () => {
     return data.data.appVersionList;
   }, [data]);
 
-  const totalPages = data?.data?.totalPageNumber ?? 1;
+  const totalPages = useStablePaginatedTotalPages(
+    isPlaceholderData,
+    data?.data?.totalPageNumber,
+    histories.length
+  );
 
   const handleCreate = () => {
     navigate(ROUTES.BACKOFFICE.APP_HISTORIES_NEW.generate());

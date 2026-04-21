@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ModalBackground,
   Pagination,
@@ -8,7 +8,7 @@ import {
 import { CloseIcon, CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { useGetOrderHistory } from '@repo/api/queries';
-import type { IOrderHistoryItem } from '@repo/api/types';
+import type { IOrderHistoryItem, TGetOrderHistoryResponse } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
 import {
   getDateRangeByPreset,
@@ -91,9 +91,16 @@ export const SalesListDialog = ({
     }
   );
 
+  const getOrderHistoryItemCount = useCallback(
+    (d: TGetOrderHistoryResponse | undefined) =>
+      d?.data?.orderHistory?.length ?? 0,
+    []
+  );
+
   const pagination = usePaginationWithCache({
     queryResult: orderHistoryQuery,
     getTotalPages: (data) => data?.data?.totalPageNumber,
+    getItemCount: getOrderHistoryItemCount,
     requestedPage,
     onPageChange: setRequestedPage,
     initialPage: 1,
