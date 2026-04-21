@@ -11,11 +11,9 @@ import type { i18n as I18nInstance } from 'i18next';
 import { toast } from '@repo/feature/utils';
 import { MenuSelectionView } from './MenuSelectionView';
 import { OptionSelectionView } from './OptionSelectionView';
-import { validateOptionGroups } from './optionValidation';
 import { usePostTableOrder } from '@repo/api/queries';
 import { calculateTotalAmount } from '@repo/util/calculation';
 import { useTranslation } from 'react-i18next';
-import type { Order } from '../../../orderSection/types';
 
 export interface SelectedOption extends IOption {
   selectedQuantity: number;
@@ -39,7 +37,6 @@ interface AddMenuDialogProps {
   childCount?: number;
   orderType?: TOrderType;
   i18nInstance?: I18nInstance;
-  currentOrder?: Order | null;
   shopPosCode?: TShopPosCode;
   onOrderCreated?: (
     orderUuid: string,
@@ -59,7 +56,6 @@ export const AddMenuDialog = ({
   childCount = 0,
   orderType,
   i18nInstance,
-  currentOrder = null,
   shopPosCode,
   onOrderCreated,
 }: AddMenuDialogProps) => {
@@ -193,25 +189,6 @@ export const AddMenuDialog = ({
       return;
     }
 
-    const validation = validateOptionGroups(
-      selectedMenu.optionGroupList || [],
-      selectedOptions,
-      i18nInstance?.language
-    );
-
-    if (!validation.isValid) {
-      const invalidResult = validation.results.find(
-        (result) => !result.isValid
-      );
-
-      if (invalidResult?.messageKey) {
-        toast(t(invalidResult.messageKey, invalidResult.messageOptions));
-      } else {
-        toast(t('옵션 선택 조건을 확인해주세요.'));
-      }
-      return;
-    }
-
     const selectedOptionsList: SelectedOption[] = [];
 
     selectedOptions.forEach((quantity, optionSeq) => {
@@ -323,49 +300,6 @@ export const AddMenuDialog = ({
     if (!shopCode || !tableNumber) {
       toast(t('테이블 정보가 없어요. 다시 시도해주세요.'));
       return;
-    }
-
-    // 최소 수량 검증 로직
-    // 같은 메뉴의 수량을 모두 합산 (옵션이 다르더라도)
-    const menuQuantityMap = new Map<
-      number,
-      { menu: IMenu; totalQuantity: number }
-    >();
-
-    selectedMenus.forEach(({ menu, quantity }) => {
-      const existing = menuQuantityMap.get(menu.menuSeq);
-      if (existing) {
-        existing.totalQuantity += quantity;
-      } else {
-        menuQuantityMap.set(menu.menuSeq, { menu, totalQuantity: quantity });
-      }
-    });
-
-    // 각 메뉴별로 최소 수량 검증
-    for (const [menuSeq, { menu, totalQuantity }] of menuQuantityMap) {
-      const minQuantity = menu.minQuantity || 0;
-
-      if (minQuantity > 0) {
-        // 현재 주문에서 해당 메뉴의 총 수량 계산 (모든 옵션 포함)
-        const currentQuantity =
-          currentOrder?.items
-            ?.filter((item) => item.menuSeq === menuSeq)
-            ?.reduce((sum: number, item) => sum + item.qty, 0) || 0;
-
-        // 추가하려는 수량과 현재 수량의 합계
-        const totalQuantityAfterAdd = currentQuantity + totalQuantity;
-
-        // 최소 수량을 만족하지 못하는 경우
-        if (totalQuantityAfterAdd < minQuantity) {
-          toast(
-            t('{{menuName}}는 최소 {{minQuantity}}개를 주문해야 해요.', {
-              menuName: menu.menuName,
-              minQuantity,
-            })
-          );
-          return;
-        }
-      }
     }
 
     const orders = selectedMenus.map(({ menu, quantity, selectedOptions }) => ({

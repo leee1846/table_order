@@ -407,7 +407,6 @@ export const TableDetailContainer = ({
         childCount={orderHistoriesResponse?.data?.kidsCustomerCount ?? 0}
         orderType={orderType}
         i18nInstance={i18nInstance}
-        currentOrder={order}
         shopPosCode={shopDetailResponse?.data?.shopSetting?.shopPosCode}
         onOrderCreated={(orderUuid, cancelOrderMenuRequest) => {
           onOrderCreated?.(orderUuid, cancelOrderMenuRequest);
