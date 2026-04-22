@@ -43,6 +43,7 @@ import {
   logOrderRequestRefundFailed,
   orderRequestRefundFailedSummaryAfterOrderCreate,
   orderRequestRefundFailedSummaryAfterPaymentApproval,
+  orderRequestRefundFailedSummaryAfterPosOrderFailure,
 } from '@/utils/logOrderRequestRefundFailed';
 import { calculateCartMenusTaxAmount } from '@/utils/calculation';
 import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
@@ -340,10 +341,12 @@ export const CardPaymentInstallmentModal = ({
     });
   };
 
-  const handleOrderCompleteFailure = () => {
+  const handleOrderCompleteFailure = (paymentCancelFailed = false) => {
     openConfirmDialog({
       title: t('POS 오류'),
-      content: t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'),
+      content: paymentCancelFailed
+        ? t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
+        : t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'),
       confirmText: t('확인'),
     });
   };
@@ -369,6 +372,7 @@ export const CardPaymentInstallmentModal = ({
           .getState()
           .register(orderUuid, shopCode, handlePaymentSuccess, async () => {
             // POS 실패(-603 또는 API 에러) / 타임아웃: 환불 → 환불 정보 전송 → 주문 취소
+            let paymentCancelFailed = false;
             try {
               await Payment.cancel(paymentResult);
               // const cancelResult = await Payment.cancel(paymentResult);
@@ -386,9 +390,13 @@ export const CardPaymentInstallmentModal = ({
               // }
               // await cancelOrderMenu(cancelOrderMenuRequest);
             } catch {
-              // 카드 취소 실패 시 무시 (이미 승인된 결제이므로 수동 처리 필요)
+              paymentCancelFailed = true;
+              logOrderRequestRefundFailed(
+                orderRequestRefundFailedSummaryAfterPosOrderFailure(),
+                paymentResult
+              );
             }
-            handleOrderCompleteFailure();
+            handleOrderCompleteFailure(paymentCancelFailed);
           });
         return;
       }
