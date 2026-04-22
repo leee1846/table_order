@@ -701,3 +701,20 @@ export const getLocalizedMonthLabel = (
     .month(month - 1)
     .locale(DAYJS_LOCALE_MAP[language] ?? 'ko')
     .format('MMMM');
+
+/**
+ * 주어진 날짜에서 지정한 일수만큼 이전 날짜를 반환합니다.
+ * dayjs를 사용하므로 DST(서머타임) 경계에서도 안전하게 동작합니다.
+ *
+ * @param date - 기준 날짜
+ * @param days - 뺄 일수
+ * @returns 계산된 이전 날짜 (Date 객체)
+ *
+ * @example
+ * ```ts
+ * subtractDays(new Date('2025-03-01'), 1) // 2025-02-28
+ * subtractDays(new Date('2025-01-01'), 3) // 2024-12-29
+ * ```
+ */
+export const subtractDays = (date: Date, days: number): Date =>
+  dayjs(date).subtract(days, 'day').toDate();
