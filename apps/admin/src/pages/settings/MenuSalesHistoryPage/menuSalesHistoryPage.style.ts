@@ -98,6 +98,7 @@ export const CategoryFilter = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
   border: 1px solid ${theme.colors.grey[200]};
   border-radius: 12px;
   padding: 24px;
@@ -125,9 +126,16 @@ export const CategoryChips = styled.div`
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 `;
 
 export const Chip = styled.button<{ selected: boolean }>`
+  flex-shrink: 0;
+  white-space: nowrap;
   padding: 8px 12px;
   border-radius: 999px;
   border: 1px solid
