@@ -23,6 +23,7 @@ export const Title = styled.div`
   & > div:last-of-type {
     display: flex;
     align-items: center;
+    gap: 6px;
     & > span {
       color: ${theme.colors.grey[600]};
       ${TYPOGRAPHY.ST_1}
@@ -52,6 +53,7 @@ export const Item = styled.div`
 export const SubTitleWrapper = styled.div`
   display: flex;
   align-items: center;
+  gap: 6px;
 `;
 
 export const SubTitle = styled.p`
@@ -77,12 +79,4 @@ export const Description = styled.div`
   gap: 2px;
   color: ${theme.colors.grey[500]};
   ${TYPOGRAPHY.BD_2}
-`;
-
-export const IconWrapper = styled.div`
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 4px;
 `;

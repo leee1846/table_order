@@ -1,7 +1,5 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { useOutsidePointerDismiss } from '@/hooks/useOutsidePointerDismiss';
-import { InfoIcon } from '@repo/ui/icons';
-import { theme } from '@repo/ui';
+import { useMemo } from 'react';
+import { AntTooltip } from '@/feature/backoffice/components';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
 import type { TPaymentType } from '@repo/api/types';
@@ -28,35 +26,8 @@ interface Props {
   rows: TDailySaleRow[];
 }
 
-type DailySalesHeaderTooltipId = 'totalSales' | 'actualSales';
-
 export const DailySalesTable = ({ rows }: Props) => {
   const { t } = useAdminTranslation();
-  const [openHeaderTooltip, setOpenHeaderTooltip] = useState<
-    DailySalesHeaderTooltipId | null
-  >(null);
-  const totalSalesIconWrapperRef = useRef<HTMLDivElement>(null);
-  const actualSalesIconWrapperRef = useRef<HTMLDivElement>(null);
-  const outsideDismissAnchorRef = useRef<HTMLDivElement | null>(null);
-
-  const toggleHeaderTooltip = (id: DailySalesHeaderTooltipId) => {
-    setOpenHeaderTooltip((current) => (current === id ? null : id));
-  };
-
-  useLayoutEffect(() => {
-    outsideDismissAnchorRef.current =
-      openHeaderTooltip === 'totalSales'
-        ? totalSalesIconWrapperRef.current
-        : openHeaderTooltip === 'actualSales'
-          ? actualSalesIconWrapperRef.current
-          : null;
-  }, [openHeaderTooltip]);
-
-  useOutsidePointerDismiss({
-    isActive: openHeaderTooltip !== null,
-    anchorRef: outsideDismissAnchorRef,
-    onDismiss: () => setOpenHeaderTooltip(null),
-  });
 
   const formatStatusLabel = (status: string): string => {
     switch (status) {
@@ -131,55 +102,17 @@ export const DailySalesTable = ({ rows }: Props) => {
             <th>
               <S.HeaderLabel>
                 {t('총 매출')}
-                <S.IconWrapper
-                  ref={totalSalesIconWrapperRef}
-                  onClick={() => toggleHeaderTooltip('totalSales')}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    toggleHeaderTooltip('totalSales');
-                  }}
-                >
-                  <InfoIcon
-                    width={18}
-                    height={18}
-                    color={theme.colors.grey[500]}
-                  />
-                  {openHeaderTooltip === 'totalSales' && (
-                    <S.Tooltip>
-                      <S.TooltipText>
-                        {t('할인,취소 매출을 제외한 총 매출')}
-                      </S.TooltipText>
-                      <S.TooltipArrow />
-                    </S.Tooltip>
-                  )}
-                </S.IconWrapper>
+                <AntTooltip
+                  title={t('할인,취소 매출을 제외한 총 매출')}
+                />
               </S.HeaderLabel>
             </th>
             <th>
               <S.HeaderLabel>
                 {t('실 매출')}
-                <S.IconWrapper
-                  ref={actualSalesIconWrapperRef}
-                  onClick={() => toggleHeaderTooltip('actualSales')}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    toggleHeaderTooltip('actualSales');
-                  }}
-                >
-                  <InfoIcon
-                    width={18}
-                    height={18}
-                    color={theme.colors.grey[500]}
-                  />
-                  {openHeaderTooltip === 'actualSales' && (
-                    <S.Tooltip>
-                      <S.TooltipText>
-                        {t('취소금액 및 할인이 반영된 금액')}
-                      </S.TooltipText>
-                      <S.TooltipArrow />
-                    </S.Tooltip>
-                  )}
-                </S.IconWrapper>
+                <AntTooltip
+                  title={t('취소금액 및 할인이 반영된 금액')}
+                />
               </S.HeaderLabel>
             </th>
             <th>{t('할인 금액')}</th>

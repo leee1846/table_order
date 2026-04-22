@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { AntTooltip } from '@/feature/backoffice/components';
 import {
   Calender,
   BasicButton,
   CheckButton,
   Dropdown,
 } from '@repo/ui/components';
-import { CalendarMonthIcon, InfoIcon } from '@repo/ui/icons';
+import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { toast } from '@repo/feature/utils';
@@ -38,10 +39,7 @@ export const MenuSalesHistoryPage = () => {
   const [showEndCalendar, setShowEndCalendar] = useState<boolean>(false);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState<string | null>(null);
-  const [showCategoryTooltip, setShowCategoryTooltip] =
-    useState<boolean>(false);
   const hasInitializedCategories = useRef(false);
-  const categoryIconWrapperRef = useRef<HTMLDivElement>(null);
   const currentLanguage: TShopLanguage = useMemo(
     () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
     [i18n]
@@ -76,31 +74,6 @@ export const MenuSalesHistoryPage = () => {
       hasInitializedCategories.current = true;
     }
   }, [categories]);
-
-  // 툴팁 외부 클릭 감지
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showCategoryTooltip &&
-        categoryIconWrapperRef.current &&
-        !categoryIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowCategoryTooltip(false);
-      }
-    };
-
-    if (showCategoryTooltip) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showCategoryTooltip]);
-
-  const handleCategoryIconClick = () => {
-    setShowCategoryTooltip(!showCategoryTooltip);
-  };
 
   // 2단계: 카테고리 로드 후 매출 데이터 가져오기
   const { startDate: apiStartDate, endDate: apiEndDate } = useMemo(
@@ -309,29 +282,12 @@ export const MenuSalesHistoryPage = () => {
               >
                 <p>{t('카테고리 전체선택')}</p>
               </CheckButton>
-              <S.CategoryInfoWrapper
-                ref={categoryIconWrapperRef}
-                onClick={handleCategoryIconClick}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  handleCategoryIconClick();
-                }}
-              >
-                <InfoIcon
-                  width={18}
-                  height={18}
-                  color={theme.colors.grey[500]}
+              <S.CategoryInfoWrapper>
+                <AntTooltip
+                  title={t(
+                    "메뉴의 상위 카테고리가 삭제된 경우, 해당 메뉴는 '미분류'로 분류됩니다"
+                  )}
                 />
-                {showCategoryTooltip && (
-                  <S.CategoryTooltip>
-                    <S.CategoryTooltipText>
-                      {t(
-                        "메뉴의 상위 카테고리가 삭제된 경우, 해당 메뉴는 '미분류'로 분류됩니다"
-                      )}
-                    </S.CategoryTooltipText>
-                    <S.CategoryTooltipArrow />
-                  </S.CategoryTooltip>
-                )}
               </S.CategoryInfoWrapper>
             </S.CategoryHeader>
             <S.CategoryChips>

@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { InfoIcon } from '@repo/ui/icons';
-import { theme } from '@repo/ui';
+import { useMemo } from 'react';
+import { AntTooltip } from '@/feature/backoffice/components';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency } from '@repo/util/string';
 import type { IMenuSalesHistoryItem, TShopLanguage } from '@repo/api/types';
@@ -14,10 +13,6 @@ interface Props {
 
 export const MenuSalesHistoryTable = ({ rows, currentLanguage }: Props) => {
   const { t } = useAdminTranslation();
-  const [showSalesCountTooltip, setShowSalesCountTooltip] = useState(false);
-  const [showTotalSalesTooltip, setShowTotalSalesTooltip] = useState(false);
-  const salesCountIconWrapperRef = useRef<HTMLDivElement>(null);
-  const totalSalesIconWrapperRef = useRef<HTMLDivElement>(null);
   const orderedRows = useMemo(() => {
     if (!rows.length) {
       return [];
@@ -59,41 +54,6 @@ export const MenuSalesHistoryTable = ({ rows, currentLanguage }: Props) => {
 
     return result;
   }, [rows]);
-
-  const handleSalesCountIconClick = () => {
-    setShowSalesCountTooltip(!showSalesCountTooltip);
-  };
-
-  const handleTotalSalesIconClick = () => {
-    setShowTotalSalesTooltip(!showTotalSalesTooltip);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showSalesCountTooltip &&
-        salesCountIconWrapperRef.current &&
-        !salesCountIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowSalesCountTooltip(false);
-      }
-      if (
-        showTotalSalesTooltip &&
-        totalSalesIconWrapperRef.current &&
-        !totalSalesIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowTotalSalesTooltip(false);
-      }
-    };
-
-    if (showSalesCountTooltip || showTotalSalesTooltip) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showSalesCountTooltip, showTotalSalesTooltip]);
 
   const renderRows = () => {
     if (!orderedRows.length) {
@@ -139,53 +99,15 @@ export const MenuSalesHistoryTable = ({ rows, currentLanguage }: Props) => {
           <th>
             <S.HeaderLabel>
               {t('판매수')}
-              <S.IconWrapper
-                ref={salesCountIconWrapperRef}
-                onClick={handleSalesCountIconClick}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  handleSalesCountIconClick();
-                }}
-              >
-                <InfoIcon
-                  width={18}
-                  height={18}
-                  color={theme.colors.grey[500]}
-                />
-                {showSalesCountTooltip && (
-                  <S.Tooltip>
-                    <S.TooltipText>
-                      {t('추가선택 수량은 중복되므로 제외')}
-                    </S.TooltipText>
-                    <S.TooltipArrow />
-                  </S.Tooltip>
-                )}
-              </S.IconWrapper>
+              <AntTooltip
+                title={t('추가선택 수량은 중복되므로 제외')}
+              />
             </S.HeaderLabel>
           </th>
           <th>
             <S.HeaderLabel>
               {t('총 매출')}
-              <S.IconWrapper
-                ref={totalSalesIconWrapperRef}
-                onClick={handleTotalSalesIconClick}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  handleTotalSalesIconClick();
-                }}
-              >
-                <InfoIcon
-                  width={18}
-                  height={18}
-                  color={theme.colors.grey[500]}
-                />
-                {showTotalSalesTooltip && (
-                  <S.Tooltip>
-                    <S.TooltipText>{t('할인액 미반영')}</S.TooltipText>
-                    <S.TooltipArrow />
-                  </S.Tooltip>
-                )}
-              </S.IconWrapper>
+              <AntTooltip title={t('할인액 미반영')} />
             </S.HeaderLabel>
           </th>
         </tr>

@@ -114,43 +114,10 @@ export const CategoryHeader = styled.div`
   padding-bottom: 15px;
 `;
 
-export const CategoryInfoWrapper = styled.div`
-  position: relative;
+export const CategoryInfoWrapper = styled.span`
   display: inline-flex;
   align-items: center;
-  cursor: pointer;
   margin-left: 4px;
-`;
-
-export const CategoryTooltip = styled.div`
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: ${theme.zIndex.tooltip};
-  background-color: ${theme.colors.grey[800]};
-  color: ${theme.colors.white};
-  padding: 8px 12px;
-  border-radius: 8px;
-  white-space: nowrap;
-  ${TYPOGRAPHY.ST_4}
-  pointer-events: none;
-`;
-
-export const CategoryTooltipText = styled.span`
-  display: block;
-`;
-
-export const CategoryTooltipArrow = styled.div`
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid ${theme.colors.grey[800]};
 `;
 
 export const CategoryChips = styled.div`
@@ -242,44 +209,6 @@ export const TableRow = styled.tr<{ isOption?: boolean }>`
 
 export const MenuName = styled.span<{ isOption?: boolean }>`
   ${({ isOption }) => (isOption ? TYPOGRAPHY.ST_5 : TYPOGRAPHY.ST_4)}
-`;
-
-export const IconWrapper = styled.div`
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-`;
-
-export const Tooltip = styled.div`
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: ${theme.zIndex.tooltip};
-  background-color: ${theme.colors.grey[800]};
-  color: ${theme.colors.white};
-  padding: 8px 12px;
-  border-radius: 8px;
-  white-space: nowrap;
-  ${TYPOGRAPHY.ST_4}
-  pointer-events: none;
-`;
-
-export const TooltipText = styled.span`
-  display: block;
-`;
-
-export const TooltipArrow = styled.div`
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid ${theme.colors.grey[800]};
 `;
 
 export const StyledTable = styled(UIStyles.setting.Table)`
