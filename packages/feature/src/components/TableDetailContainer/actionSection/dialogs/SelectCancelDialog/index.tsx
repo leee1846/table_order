@@ -143,6 +143,11 @@ export const SelectCancelDialog = ({
             {items.map((item, index) => {
               const isChecked = selectedItems.has(item.id);
               const quantity = quantities.get(item.id) ?? item.qty;
+              const menuQty = item.qty;
+              const optionQtyForCancel = (optionQty: number) =>
+                menuQty > 0
+                  ? Math.round((optionQty * quantity) / menuQty)
+                  : optionQty;
 
               return (
                 <S.ItemRow key={`${item.id}-${index + 1}`}>
@@ -178,7 +183,7 @@ export const SelectCancelDialog = ({
                                   option.name}
                               </span>
                               <span>{` x `}</span>
-                              <span>{option.qty}</span>
+                              <span>{optionQtyForCancel(option.qty)}</span>
                             </div>
                           ))}
                         </S.ItemOptions>
