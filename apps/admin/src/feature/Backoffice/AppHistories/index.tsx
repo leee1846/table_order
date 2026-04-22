@@ -97,7 +97,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
             if (!fileEntry.dir) {
               // 파일 내용을 텍스트 또는 blob으로 읽기
               const content = await fileEntry.async('text'); // 또는 'blob'
-              const info = JSON.parse(content) as MenifestInfo;
+              const info = JSON.parse(content) as ManifestInfo;
               updateFormData({ version: info.version, type: 'AGENT' });
             }
           }
