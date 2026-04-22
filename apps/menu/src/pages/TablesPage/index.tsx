@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-} from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppStorage } from '@repo/util/app';
 import {
@@ -195,7 +189,7 @@ export const TablesPage = () => {
       await createOrderGroup({
         shopCode: shopData.shopCode,
         tableNumber: selectedTableForGuestCount.tableNumber,
-        customerCount: data.customerCount,
+        customerCount: data.customerCount + (data.kidsCustomerCount ?? 0),
         kidsCustomerCount: data.kidsCustomerCount ?? 0,
       });
 
