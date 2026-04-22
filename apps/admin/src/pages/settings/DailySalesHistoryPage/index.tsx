@@ -189,7 +189,10 @@ export const DailySalesHistoryPage = () => {
           </S.FilterBar>
 
           <S.TableCard>
-            <DailySalesHistoryTable rows={rows} />
+            <DailySalesHistoryTable
+              key={`${formatDateToYYYYMMDD(appliedRange.startDate)}-${formatDateToYYYYMMDD(appliedRange.endDate)}`}
+              rows={rows}
+            />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

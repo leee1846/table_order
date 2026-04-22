@@ -176,6 +176,7 @@ export const SalesOrderPage = () => {
           </S.Filters>
 
           <Table
+            key={`${apiStartDate}-${apiEndDate}-${requestedPage}`}
             orders={orders}
             onSelectOrder={(order) => setSelectedOrder(order)}
             pageSize={PAGE_SIZE}

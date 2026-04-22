@@ -246,7 +246,10 @@ export const MenuSalesHistoryPage = () => {
                   height={25}
                   color={theme.colors.grey[700]}
                 />
-                <S.DateText>{formatLocalizedDate(startDate, i18n.language) || t('날짜 선택')}</S.DateText>
+                <S.DateText>
+                  {formatLocalizedDate(startDate, i18n.language) ||
+                    t('날짜 선택')}
+                </S.DateText>
               </S.DateButton>
 
               <S.RangeDivider>~</S.RangeDivider>
@@ -260,7 +263,10 @@ export const MenuSalesHistoryPage = () => {
                   height={25}
                   color={theme.colors.grey[700]}
                 />
-                <S.DateText>{formatLocalizedDate(endDate, i18n.language) || t('날짜 선택')}</S.DateText>
+                <S.DateText>
+                  {formatLocalizedDate(endDate, i18n.language) ||
+                    t('날짜 선택')}
+                </S.DateText>
               </S.DateButton>
             </S.DateRange>
 
@@ -306,7 +312,7 @@ export const MenuSalesHistoryPage = () => {
 
           <S.TableCard>
             <MenuSalesHistoryTable
-              key={`${selectedCategories.join(',')}-${sortBy}`}
+              key={`${apiStartDate}-${apiEndDate}-${selectedCategories.join(',')}-${sortBy}`}
               rows={filteredItems}
               currentLanguage={currentLanguage}
             />

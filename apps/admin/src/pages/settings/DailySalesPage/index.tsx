@@ -178,7 +178,7 @@ export const DailySalesPage = () => {
           </S.Filters>
 
           <S.TableCard>
-            <DailySalesTable rows={paymentRows} />
+            <DailySalesTable key={apiDate} rows={paymentRows} />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

@@ -137,7 +137,10 @@ export const HourlySalesPage = () => {
           </S.FilterBar>
 
           <S.TableCard>
-            <HourlySalesTable rows={hourlySales} />
+            <HourlySalesTable
+              key={`${apiStartDate}-${apiEndDate}`}
+              rows={hourlySales}
+            />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

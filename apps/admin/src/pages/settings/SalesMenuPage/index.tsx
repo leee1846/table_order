@@ -147,11 +147,16 @@ export const SalesMenuPage = () => {
 
           <S.TableWrapper>
             <Summary
+              key={`summary-${apiStartDate}-${apiEndDate}`}
               summary={menuSalesSummary}
               currentLanguage={currentLanguage}
             />
 
-            <Table items={menuSalesList} currentLanguage={currentLanguage} />
+            <Table
+              key={`${apiStartDate}-${apiEndDate}`}
+              items={menuSalesList}
+              currentLanguage={currentLanguage}
+            />
           </S.TableWrapper>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

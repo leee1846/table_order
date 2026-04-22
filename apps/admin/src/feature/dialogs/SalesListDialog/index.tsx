@@ -196,6 +196,7 @@ export const SalesListDialog = ({
             </S.FilterContainer>
 
             <Table
+              key={`${apiStartDate}-${apiEndDate}-${pagination.currentPage}`}
               orders={orders}
               onSelectOrder={(order) => setSelectedOrder(order)}
               pageSize={itemsPerPage}

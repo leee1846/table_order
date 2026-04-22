@@ -193,7 +193,11 @@ export const SalesCardPage = () => {
             </S.FiltersRight>
           </S.Filters>
 
-          <Table items={cardApprovalHistory} pageSize={PAGE_SIZE} />
+          <Table
+            key={`${apiStartDate}-${apiEndDate}-${selectedCardCode}-${requestedPage}`}
+            items={cardApprovalHistory}
+            pageSize={PAGE_SIZE}
+          />
         </S.Container>
 
         <UIStyles.setting.Footer>
