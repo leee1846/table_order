@@ -26,7 +26,7 @@ interface Props {
   onSave?: (data: AppHistoriesFormData, appFile?: File | null) => Promise<void>;
 }
 
-interface MenifestInfo {
+interface ManifestInfo {
   appName: string;
   version: string | undefined;
   buildDate: string;
@@ -93,7 +93,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
 
         // 2. zip 내부의 파일들 반복 처리
         for (const [filename, fileEntry] of Object.entries(zipContent.files)) {
-          if (filename === 'menifest.json') {
+          if (filename === 'manifest.json') {
             if (!fileEntry.dir) {
               // 파일 내용을 텍스트 또는 blob으로 읽기
               const content = await fileEntry.async('text'); // 또는 'blob'
