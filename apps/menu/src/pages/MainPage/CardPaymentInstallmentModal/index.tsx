@@ -332,7 +332,7 @@ export const CardPaymentInstallmentModal = ({
     const errorMessage =
       error instanceof Error
         ? error.message
-        : t('결제 처리 중 오류가 발생했습니다.');
+        : t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.');
 
     openConfirmDialog({
       title: t('오류'),
