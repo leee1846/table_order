@@ -214,6 +214,21 @@ export const CategoryManageModal = ({
       return;
     }
 
+    if (useSaleTime && (!saleStartTime || !saleEndTime)) {
+      toast(t('판매 시간을 입력해주세요'));
+      return;
+    }
+
+    if (
+      useSaleTime &&
+      saleStartTime &&
+      saleEndTime &&
+      saleStartTime === saleEndTime
+    ) {
+      toast(t('판매 시간의 시작 시간과 종료 시간을 다르게 입력해주세요'));
+      return;
+    }
+
     const saleDayOfWeekNumbers = [...selectedDays].sort((a, b) => a - b);
 
     // 모든 요일이 선택되어 있고 공휴일 판매가 true면 useSaleDay는 false, 그 외에는 true
