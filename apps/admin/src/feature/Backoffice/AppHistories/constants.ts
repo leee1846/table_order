@@ -2,7 +2,7 @@ import type { TAppType } from '@repo/api/types';
 
 export interface AppHistoriesFormData {
   id?: number; // 앱 히스토리 ID
-  type: TAppType | '';
+  type: TAppType;
   title: string; // 제목
   deployDateTime: string; // 배포일시
   version: string; // 버전
