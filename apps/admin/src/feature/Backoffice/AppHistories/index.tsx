@@ -63,6 +63,10 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
 
     if (!file) {
       setAppFile(null);
+      updateFormData({
+        version: DEFAULT_APP_HISTORIES_DATA.version,
+        type: DEFAULT_APP_HISTORIES_DATA.type,
+      });
       return;
     }
     if (file.name?.toLowerCase().includes('.apk')) {
@@ -97,8 +101,17 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
             if (!fileEntry.dir) {
               // 파일 내용을 텍스트 또는 blob으로 읽기
               const content = await fileEntry.async('text'); // 또는 'blob'
-              const info = JSON.parse(content) as ManifestInfo;
-              updateFormData({ version: info.version, type: 'AGENT' });
+              try {
+                const info = JSON.parse(content) as ManifestInfo;
+                updateFormData({ version: info.version, type: 'AGENT' });
+              } catch (parseError) {
+                console.error('manifest.json 파싱 실패:', parseError);
+                updateFormData({
+                  version: DEFAULT_APP_HISTORIES_DATA.version,
+                  type: DEFAULT_APP_HISTORIES_DATA.type,
+                });
+                toast('manifest.json 파싱에 실패했습니다.');
+              }
             }
           }
         }
@@ -110,6 +123,10 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
     if (!isAllowedAppArchiveFile(file.name)) {
       toast('APK 또는 ZIP 파일만 업로드 가능합니다.');
       setAppFile(null);
+      updateFormData({
+        version: DEFAULT_APP_HISTORIES_DATA.version,
+        type: DEFAULT_APP_HISTORIES_DATA.type,
+      });
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -126,6 +143,10 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
 
   const handleRemoveAppFile = () => {
     setAppFile(null);
+    updateFormData({
+      version: DEFAULT_APP_HISTORIES_DATA.version,
+      type: DEFAULT_APP_HISTORIES_DATA.type,
+    });
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
