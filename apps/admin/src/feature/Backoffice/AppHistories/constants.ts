@@ -13,7 +13,7 @@ export interface AppHistoriesFormData {
 }
 
 export const DEFAULT_APP_HISTORIES_DATA: AppHistoriesFormData = {
-  type: '',
+  type: 'MENU',
   title: '',
   deployDateTime: '',
   version: '',
