@@ -9,6 +9,11 @@ import { IPayment, type TShopPosCode } from '@repo/api/types';
 
 const { colors } = theme;
 
+const formatKrw = (amount: number) =>
+  amount < 0
+    ? `-₩${formatCurrency(Math.abs(amount))}`
+    : `₩${formatCurrency(amount)}`;
+
 export type OrderItemsTableProps = {
   items: OrderItem[];
   discountRate: number;
@@ -83,9 +88,7 @@ export function OrderItemsTable({
                 : (it.localeMenuName?.[currentLanguage] ?? it.name)}
             </Cell>
             <Cell className="qty">{it.qty}</Cell>
-            <Cell className="price">
-              ₩{formatCurrency(it.unitPrice * it.qty)}
-            </Cell>
+            <Cell className="price">{formatKrw(it.unitPrice * it.qty)}</Cell>
           </Row>
           {it.options?.map((option) => {
             const optionLabel =
@@ -97,7 +100,7 @@ export function OrderItemsTable({
                 </Cell>
                 <Cell className="qty">{option.qty}</Cell>
                 <Cell className="price">
-                  ₩{formatCurrency(option.unitPrice * option.qty)}
+                  {formatKrw(option.unitPrice * option.qty)}
                 </Cell>
               </Row>
             );
