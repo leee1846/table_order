@@ -7,6 +7,7 @@ import {
   InboxOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
+import { formatFileSizeKbToMb } from './index';
 
 const { Text } = Typography;
 const { Dragger } = Upload;
@@ -16,11 +17,14 @@ export type UploadStatus = '완료' | '오류 : 15초 초과' | '오류 : 30MB �
 
 export interface UploadedFile {
   id: string;
+  url?: string;
   name: string;
-  duration: string;
-  size: string;
+  duration?: string;
+  durationSec?: number;
+  fileSizeKb?: string | number;
   status: UploadStatus;
   originFileObj?: File;
+  sortOrder?: number;
 }
 
 export type AcceptType =
@@ -29,6 +33,29 @@ export type AcceptType =
   | 'adMenu' // 3. 광고 메뉴
   | 'fullScreenAd' // 4. 전면 광고
   | 'orderForm'; // 5. 주문서
+
+// --- Constants ---
+export const IMAGE_DIMENSIONS: Record<
+  AcceptType,
+  { width: number; height: number }
+> = {
+  orderStandby: { width: 1280, height: 720 },
+  topBanner: { width: 750, height: 135 },
+  adMenu: { width: 336, height: 240 },
+  fullScreenAd: { width: 1280, height: 720 },
+  orderForm: { width: 480, height: 640 },
+};
+
+const DragHandle = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+`;
 
 // --- Emotion Styles ---
 const UploadSection = styled.div`
@@ -54,19 +81,14 @@ const ListItem = styled.div<{ status: UploadStatus }>`
   background-color: ${(props) =>
     props.status === '완료' ? '#fff' : '#fff1f0'};
   border-radius: 8px;
-  cursor: grab;
-
-  &:active {
-    cursor: grabbing;
-  }
 `;
 
-const NumberBadge = styled.div<{ status: UploadStatus }>`
+export const NumberBadge = styled.div<{ status?: UploadStatus | string }>`
   width: 32px;
   height: 32px;
   border-radius: 50%;
   background-color: ${(props) =>
-    props.status === '완료' ? '#1d2a6d' : '#d9363e'};
+    !props.status || props.status === '완료' ? '#1d2a6d' : '#d9363e'};
   color: white;
   display: flex;
   align-items: center;
@@ -130,37 +152,38 @@ const UploadContent: React.FC<UploadContentProps> = ({
   handleUpload,
 }) => {
   const getAcceptConfig = (type: AcceptType) => {
+    const dim = IMAGE_DIMENSIONS[type];
+    const dimText = dim ? `${dim.width}x${dim.height}` : '';
+
     switch (type) {
       case 'orderStandby':
         return {
           acceptString: '.jpg,.jpeg,.png,.mp4',
-          hintText:
-            'jpg, png, mp4 파일 지원 (영상 15초/30MB 이하, 이미지 1MB 이하)',
+          hintText: `jpg, png, mp4 파일 지원 (영상 15초/30MB 이하, 이미지 1MB 이하, ${dimText} 규격)`,
           validExtensions: ['.jpg', '.jpeg', '.png', '.mp4'],
         };
       case 'topBanner':
         return {
           acceptString: '.jpg,.jpeg,.png',
-          hintText: 'jpg, png 파일 지원 (1MB 이하, 750x135 규격)',
+          hintText: `jpg, png 파일 지원 (1MB 이하, ${dimText} 규격)`,
           validExtensions: ['.jpg', '.jpeg', '.png'],
         };
       case 'adMenu':
         return {
-          acceptString: '.jpg,.jpeg,.png',
-          hintText: 'jpg, png 파일 지원 (1MB 이하)',
-          validExtensions: ['.jpg', '.jpeg', '.png'],
+          acceptString: '.jpg,.jpeg,.png,.gif',
+          hintText: `jpg, png, gif 파일 지원 (1MB 이하, ${dimText} 규격)`,
+          validExtensions: ['.jpg', '.jpeg', '.png', '.gif'],
         };
       case 'fullScreenAd':
         return {
           acceptString: '.jpg,.jpeg,.png,.mp4',
-          hintText:
-            'jpg, png, mp4 지원 (영상 15초/30MB 이하, 이미지 1MB 이하, 1280x720 규격)',
+          hintText: `jpg, png, mp4 지원 (영상 15초/30MB 이하, 이미지 1MB 이하, ${dimText} 규격)`,
           validExtensions: ['.jpg', '.jpeg', '.png', '.mp4'],
         };
       case 'orderForm':
         return {
           acceptString: '.jpg,.jpeg,.png',
-          hintText: 'jpg, png 파일 지원 (1MB 이하, 640x720 규격)',
+          hintText: `jpg, png 파일 지원 (1MB 이하, ${dimText} 규격)`,
           validExtensions: ['.jpg', '.jpeg', '.png'],
         };
       default:
@@ -214,13 +237,17 @@ const UploadContent: React.FC<UploadContentProps> = ({
                   return resolve(Upload.LIST_IGNORE);
                 }
 
-                const handleSuccess = (durationStr: string) => {
+                const handleSuccess = (
+                  durationStr: string,
+                  durationSec: number = 0
+                ) => {
                   if (handleUpload) {
                     const newFile: UploadedFile = {
                       id: String(Date.now() + Math.random()), // 고유 ID 생성
                       name: file.name,
                       duration: durationStr,
-                      size: `${(file.size / (1024 * 1024)).toFixed(2)}MB`,
+                      durationSec,
+                      fileSizeKb: `${file.size / 1024}`,
                       status: '완료',
                       originFileObj: file, // 🚀 실제 File 객체 보관
                     };
@@ -236,34 +263,26 @@ const UploadContent: React.FC<UploadContentProps> = ({
                     acceptType === 'orderForm';
 
                   if (!needsDimensionCheck) {
-                    handleSuccess('');
+                    handleSuccess('', 0);
                     return;
                   }
 
                   const img = new Image();
                   img.onload = () => {
                     URL.revokeObjectURL(img.src);
-                    let isValidDim = true;
-                    let expectedDim = '';
+                    const expectedDim = IMAGE_DIMENSIONS[acceptType];
 
-                    if (acceptType === 'topBanner') {
-                      isValidDim = img.width === 750 && img.height === 135;
-                      expectedDim = '750 x 135';
-                    } else if (acceptType === 'fullScreenAd') {
-                      isValidDim = img.width === 1280 && img.height === 720;
-                      expectedDim = '1280 x 720';
-                    } else if (acceptType === 'orderForm') {
-                      isValidDim = img.width === 640 && img.height === 720;
-                      expectedDim = '640 x 720';
-                    }
-
-                    if (!isValidDim) {
+                    if (
+                      expectedDim &&
+                      (img.width !== expectedDim.width ||
+                        img.height !== expectedDim.height)
+                    ) {
                       message.error(
-                        `이미지 규격이 맞지 않습니다. (권장: ${expectedDim}, 현재: ${img.width} x ${img.height})`
+                        `이미지 규격이 맞지 않습니다. (권장: ${expectedDim.width} x ${expectedDim.height}, 현재: ${img.width} x ${img.height})`
                       );
                       resolve(Upload.LIST_IGNORE);
                     } else {
-                      handleSuccess('');
+                      handleSuccess('', 0);
                     }
                   };
                   img.onerror = () => {
@@ -288,7 +307,7 @@ const UploadContent: React.FC<UploadContentProps> = ({
                     const m = Math.floor(totalSeconds / 60);
                     const s = totalSeconds % 60;
                     const durationStr = m > 0 ? `${m}분 ${s}초` : `${s}초`;
-                    handleSuccess(durationStr);
+                    handleSuccess(durationStr, totalSeconds);
                   };
                   video.onerror = () => {
                     URL.revokeObjectURL(video.src);
@@ -297,7 +316,7 @@ const UploadContent: React.FC<UploadContentProps> = ({
                   };
                   video.src = URL.createObjectURL(file);
                 } else {
-                  handleSuccess('');
+                  handleSuccess('', 0);
                 }
               });
             }}
@@ -338,14 +357,10 @@ const UploadContent: React.FC<UploadContentProps> = ({
             onDragEnd={handleDragEnd}
             onDragOver={(e) => e.preventDefault()} // drop 허용을 위해 필수
           >
+            <DragHandle>
+              <HolderOutlined style={{ fontSize: '20px', color: '#bfbfbf' }} />
+            </DragHandle>
             <NumberBadge status={file.status}>{index + 1}</NumberBadge>
-            <HolderOutlined
-              style={{
-                fontSize: '20px',
-                color: '#bfbfbf',
-                marginRight: '16px',
-              }}
-            />
             <FileInfo>
               <Text strong style={{ fontSize: '15px', color: '#262626' }}>
                 {file.name}
@@ -357,7 +372,7 @@ const UploadContent: React.FC<UploadContentProps> = ({
                 <MetaBadge
                   style={{ backgroundColor: '#f5f5f5', color: '#595959' }}
                 >
-                  {file.size}
+                  {formatFileSizeKbToMb(Number(file.fileSizeKb))}
                 </MetaBadge>
               </FileMeta>
             </FileInfo>

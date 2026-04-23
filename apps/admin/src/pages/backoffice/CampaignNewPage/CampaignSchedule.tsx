@@ -13,16 +13,9 @@ import type { ColumnsType } from 'antd/es/table';
 import styled from '@emotion/styled';
 import { EditOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import type { CampaignShopData } from './StoreGroupSelection';
 
 const { Text } = Typography;
-
-// --- Types ---
-interface StoreSchedule {
-  key: string;
-  storeName: string;
-  startDate: string;
-  endDate: string;
-}
 
 // --- Emotion Styles ---
 const Container = styled.div`
@@ -57,7 +50,7 @@ const StyledCard = styled(Card)`
 `;
 
 // 이전 단계와 동일한 다크 블루 헤더 테이블
-const StyledTable = styled(Table<StoreSchedule>)`
+const StyledTable = styled(Table<CampaignShopData>)`
   .ant-table-thead > tr > th {
     background-color: #f8f9fa; /* 밝은 회색 배경 */
     color: #595959; /* 어두운 회색 텍스트 */
@@ -99,35 +92,21 @@ const InfoAlertBox = styled.div`
 `;
 
 // --- Mock Data ---
-const MOCK_SCHEDULE_DATA: StoreSchedule[] = [
-  {
-    key: '1',
-    storeName: '투다리 강남점',
-    startDate: '2024-06-01',
-    endDate: '2024-08-31',
-  },
-  {
-    key: '2',
-    storeName: '투다리 홍대점',
-    startDate: '2024-06-15',
-    endDate: '2024-08-31',
-  },
-  {
-    key: '3',
-    storeName: '투다리 신촌점',
-    startDate: '2024-06-01',
-    endDate: '2024-08-31',
-  },
-];
+export interface CampaignScheduleProps {
+  schedules: CampaignShopData[];
+  onChange: (schedules: CampaignShopData[]) => void;
+}
 
-const CampaignSchedule: React.FC = () => {
+const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
+  schedules,
+  onChange,
+}) => {
   const [form] = Form.useForm();
-  const [data, setData] = useState(MOCK_SCHEDULE_DATA);
-  const [editingKey, setEditingKey] = useState('');
+  const [editingKey, setEditingKey] = useState<number | ''>('');
 
-  const isEditing = (record: StoreSchedule) => record.key === editingKey;
+  const isEditing = (record: CampaignShopData) => record.shopSeq === editingKey;
 
-  const edit = (record: StoreSchedule) => {
+  const edit = (record: CampaignShopData) => {
     form.setFieldsValue({
       ...record,
       startDate: record.startDate
@@ -135,21 +114,21 @@ const CampaignSchedule: React.FC = () => {
         : null,
       endDate: record.endDate ? dayjs(record.endDate, 'YYYY-MM-DD') : null,
     });
-    setEditingKey(record.key);
+    setEditingKey(record.shopSeq);
   };
 
   const cancel = () => {
     setEditingKey('');
   };
 
-  const save = async (key: React.Key) => {
+  const save = async (shopSeq: number) => {
     try {
       const values = (await form.validateFields()) as {
         startDate: dayjs.Dayjs | null;
         endDate: dayjs.Dayjs | null;
       };
-      const newData = [...data];
-      const index = newData.findIndex((item) => key === item.key);
+      const newData = [...schedules];
+      const index = newData.findIndex((item) => item.shopSeq === shopSeq);
 
       if (index > -1) {
         const item = newData[index];
@@ -160,8 +139,7 @@ const CampaignSchedule: React.FC = () => {
             : '',
           endDate: values.endDate ? values.endDate.format('YYYY-MM-DD') : '',
         });
-        console.log(newData);
-        setData(newData);
+        onChange(newData);
         setEditingKey('');
       }
     } catch (errInfo) {
@@ -171,11 +149,11 @@ const CampaignSchedule: React.FC = () => {
 
   // 테이블 컬럼 정의
   // 테이블 컬럼 정의
-  const columns: ColumnsType<StoreSchedule> = [
+  const columns: ColumnsType<CampaignShopData> = [
     {
       title: '매장명',
-      dataIndex: 'storeName',
-      key: 'storeName',
+      dataIndex: 'shopName',
+      key: 'shopName',
       width: '25%',
       align: 'left', // 매장명은 좌측 정렬이 읽기 편합니다
     },
@@ -184,7 +162,7 @@ const CampaignSchedule: React.FC = () => {
       dataIndex: 'startDate',
       key: 'startDate',
       width: '25%',
-      render: (text: string, record: StoreSchedule) => {
+      render: (text: string, record: CampaignShopData) => {
         return isEditing(record) ? (
           <Form.Item
             name="startDate"
@@ -203,7 +181,7 @@ const CampaignSchedule: React.FC = () => {
       dataIndex: 'endDate',
       key: 'endDate',
       width: '25%',
-      render: (text: string, record: StoreSchedule) => {
+      render: (text: string, record: CampaignShopData) => {
         return isEditing(record) ? (
           <Form.Item
             name="endDate"
@@ -222,14 +200,14 @@ const CampaignSchedule: React.FC = () => {
       key: 'action',
       width: '10%',
       align: 'center',
-      render: (_: unknown, record: StoreSchedule) => {
+      render: (_: unknown, record: CampaignShopData) => {
         const editable = isEditing(record);
         return editable ? (
           <Space>
             <Tooltip title="저장">
               <Button
                 type="text"
-                onClick={() => save(record.key)}
+                onClick={() => save(record.shopSeq)}
                 icon={<SaveOutlined />}
               />
             </Tooltip>
@@ -259,15 +237,16 @@ const CampaignSchedule: React.FC = () => {
           {/* 이전 단계와 통일된 다크 블루 헤더 테이블 적용 */}
           <StyledTable
             columns={columns}
-            dataSource={data}
+            dataSource={schedules}
             pagination={false}
+            rowKey="shopSeq"
             size="middle"
           />
         </Form>
 
         <InfoAlertBox>
           <Text style={{ color: '#0958d9', fontSize: '13px' }}>
-            매장 개별 광고 시작/종료 기간이 설정된 경우 캠페인 기간보다 우선
+            매장 집행 기간이 설정된 경우 캠페인 전체 집행 기간 보다 우선
             적용됩니다.
           </Text>
         </InfoAlertBox>

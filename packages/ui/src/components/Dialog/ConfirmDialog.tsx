@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { BasicButton } from '@repo/ui/components';
 import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
 import { DialogSize, getDialogWidth } from './dialog';
+import { useDialogConfirmEnter } from './useDialogConfirmEnter';
 
 interface ConfirmDialogProps {
   title?: string;
@@ -22,9 +23,10 @@ export const ConfirmDialog = ({
   const { active = false } = useThemeMode();
   const isMenu = active;
   const buttonVariant = active ? 'Solid_Blue_2XL' : 'Solid_Navy_2XL';
+  const { ref, rootKeyboardProps } = useDialogConfirmEnter(onConfirm);
 
   return (
-    <Container size={size} isMenu={isMenu}>
+    <Container ref={ref} {...rootKeyboardProps} size={size} isMenu={isMenu}>
       {title && <Title isMenu={isMenu}>{title}</Title>}
       <Content isMenu={isMenu}>{content}</Content>
       <ButtonGroup>

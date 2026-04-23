@@ -12,6 +12,7 @@ import {
   toYYYYMMDDRange,
   isStartDateAfterEndDate,
   isEndDateBeforeStartDate,
+  formatLocalizedDate,
   type TDateRangePreset,
 } from '@repo/util/date';
 import { formatCurrency } from '@repo/util/string';
@@ -23,7 +24,7 @@ import { useShopStore } from '@/stores/useShopStore';
 const PAGE_SIZE = 7;
 
 export const PaymentsCardsPage = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const { data: shopDetailData } = useShopDetailData();
   const { shopSetting } = shopDetailData ?? {};
   const { data: shopData } = useShopStore();
@@ -74,29 +75,34 @@ export const PaymentsCardsPage = () => {
     [startDate, endDate]
   );
 
-  const { data: cardApprovalHistoryResponse } = useGetCardApprovalHistory(
-    {
-      shopCode: shopData?.shopCode ?? '',
-      cardCode: selectedCardCode === 'all' ? undefined : selectedCardCode,
-      startDate: apiStartDate,
-      endDate: apiEndDate,
-      pageNumber: currentPage - 1,
-      pageSize: PAGE_SIZE,
-    },
-    {
-      enabled: !!shopData?.shopCode && !!apiStartDate && !!apiEndDate,
-      placeholderData: keepPreviousData,
-    }
-  );
+  const { data: cardApprovalHistoryResponse, isPlaceholderData } =
+    useGetCardApprovalHistory(
+      {
+        shopCode: shopData?.shopCode ?? '',
+        cardCode: selectedCardCode === 'all' ? undefined : selectedCardCode,
+        startDate: apiStartDate,
+        endDate: apiEndDate,
+        pageNumber: currentPage - 1,
+        pageSize: PAGE_SIZE,
+      },
+      {
+        enabled: !!shopData?.shopCode && !!apiStartDate && !!apiEndDate,
+        placeholderData: keepPreviousData,
+      }
+    );
 
   const cardApprovalData = cardApprovalHistoryResponse?.data;
   const cardApprovalHistory = cardApprovalData?.cardApprovalHistory ?? [];
   const totalPagesFromResponse = cardApprovalData?.totalPageNumber;
   const hasNextPage = cardApprovalHistory.length === PAGE_SIZE;
-  const totalPages = Math.max(
+  const inferredTotal = Math.max(
     totalPagesFromResponse ?? (hasNextPage ? currentPage + 1 : currentPage),
     1
   );
+  const totalPages =
+    !isPlaceholderData && cardApprovalHistory.length === 0
+      ? 1
+      : inferredTotal;
   const totalSalesAmount = cardApprovalData?.totalSalesAmount ?? 0;
   const totalCount = cardApprovalData?.totalCount ?? 0;
 
@@ -139,17 +145,6 @@ export const PaymentsCardsPage = () => {
     setCurrentPage(1);
   };
 
-  const formatCalendarText = (date: string) => {
-    if (!date) {
-      return t('날짜 선택');
-    }
-    const dateObj = new Date(date);
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
-  };
-
   return (
     <>
       <UIStyles.setting.TablePageContainer>
@@ -179,7 +174,7 @@ export const PaymentsCardsPage = () => {
                     height={25}
                     color={theme.colors.grey[700]}
                   />
-                  <S.DateText>{formatCalendarText(startDate)}</S.DateText>
+                  <S.DateText>{formatLocalizedDate(startDate, i18n.language) || t('날짜 선택')}</S.DateText>
                 </S.DateButton>
 
                 <S.RangeDivider>~</S.RangeDivider>
@@ -193,7 +188,7 @@ export const PaymentsCardsPage = () => {
                     height={25}
                     color={theme.colors.grey[700]}
                   />
-                  <S.DateText>{formatCalendarText(endDate)}</S.DateText>
+                  <S.DateText>{formatLocalizedDate(endDate, i18n.language) || t('날짜 선택')}</S.DateText>
                 </S.DateButton>
               </S.DateRange>
               <Dropdown
@@ -205,7 +200,11 @@ export const PaymentsCardsPage = () => {
             </S.FiltersRight>
           </S.Filters>
 
-          <Table items={cardApprovalHistory} pageSize={PAGE_SIZE} />
+          <Table
+            key={`${apiStartDate}-${apiEndDate}-${selectedCardCode}-${currentPage}`}
+            items={cardApprovalHistory}
+            pageSize={PAGE_SIZE}
+          />
         </S.Container>
 
         <UIStyles.setting.Footer>

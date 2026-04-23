@@ -13,7 +13,7 @@ export const Container = styled.div`
   }
 `;
 
-export const ImageSection = styled.button`
+export const ImageSection = styled.div`
   position: relative;
   width: 100%;
   height: 200px;

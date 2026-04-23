@@ -6,15 +6,12 @@ import {
   DraggableTableCard,
   useTablesData,
   GuestCountDialog,
-  TableGroupWrapper,
-  TableGroupList,
-  TableGroup,
-  TableGroupButton,
+  TableGroupTabStrip,
+  type TableGroupTabStripHandle,
   type TableWithStatus,
   TableCard,
 } from '@repo/feature/components';
-import { useScrollToSelectedItem } from '@repo/feature/hooks';
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useRef } from 'react';
 import { Sidebar } from './Sidebar';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes.ts';
@@ -26,8 +23,12 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { NoContent } from '@/feature/NoContent';
 import { useThemeMode } from '@repo/ui';
-import { TABLE_GROUP_STORAGE_KEY } from '@/constants/keys';
 import { useIsPosLinked } from '@/hooks/useIsPosLinked';
+import {
+  markTablesListTableGroupForRestoreAfterTableDetailNav,
+  useEnsureSelectedTableGroupInList,
+  useTablesListTableGroupState,
+} from '@repo/feature/tables';
 
 export const TablesPage = () => {
   const { t } = useAdminTranslation();
@@ -42,12 +43,19 @@ export const TablesPage = () => {
 
   const isPosLinked = useIsPosLinked();
 
-  const [selectedTableGroupSeq, setSelectedTableGroupSeq] = useState<
-    number | null
-  >(() => {
-    const saved = sessionStorage.getItem(TABLE_GROUP_STORAGE_KEY);
-    return saved ? Number(saved) : null;
-  });
+  // 테이블 목록: 그룹 선택 + 상세 복귀 시 탭 가로 스크롤 한 번
+  const { selectedTableGroupSeq, setSelectedTableGroupSeq, alignTabStripOnce } =
+    useTablesListTableGroupState();
+
+  const tableGroupTabStripRef = useRef<TableGroupTabStripHandle>(null); // 기기 모달 닫힌 뒤 탭 스크롤용
+
+  // 전체 화면 모달 제거 다음 프레임에 선택 탭으로 가로 스크롤 맞춤
+  const scrollTableGroupTabStripAfterOverlay = useCallback(() => {
+    requestAnimationFrame(() => {
+      tableGroupTabStripRef.current?.scrollSelectedToListStart();
+    });
+  }, []);
+
   const [isGuestCountDialogOpen, setIsGuestCountDialogOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState<TableWithStatus | null>(
     null
@@ -59,36 +67,12 @@ export const TablesPage = () => {
     selectedTableGroupSeq,
   });
 
-  // 스크롤 위치 자동 저장/복원
-  const { containerRef } = useScrollToSelectedItem({
-    isDataLoaded: !!tableGroupListResponse?.data,
+  useEnsureSelectedTableGroupInList({
+    groups: tableGroupListResponse?.data,
+    selectedTableGroupSeq,
+    setSelectedTableGroupSeq,
+    tabStripRef: tableGroupTabStripRef,
   });
-
-  // 테이블 그룹 선택값을 세션 스토리지에 저장해, 페이지 재진입 시 유지
-  useEffect(() => {
-    if (selectedTableGroupSeq !== null) {
-      sessionStorage.setItem(
-        TABLE_GROUP_STORAGE_KEY,
-        String(selectedTableGroupSeq)
-      );
-    }
-  }, [selectedTableGroupSeq]);
-
-  // 첫 번째 테이블 그룹을 기본 선택
-  useEffect(() => {
-    const groups = tableGroupListResponse?.data;
-    if (!groups || groups.length === 0) {
-      return;
-    }
-
-    // 저장된 그룹이 존재하지 않거나 더 이상 없으면 첫 그룹으로 초기화
-    const exists = groups.some(
-      (group) => group.tableGroupSeq === selectedTableGroupSeq
-    );
-    if (!exists) {
-      setSelectedTableGroupSeq(groups[0]?.tableGroupSeq ?? null);
-    }
-  }, [tableGroupListResponse, selectedTableGroupSeq]);
 
   // 드래그 이벤트에서 active.id를 tableNumber이기 때문에 빠르게 조회하려고 Map으로 변환
   const tableMap = useMemo(() => {
@@ -134,10 +118,20 @@ export const TablesPage = () => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.orders.currentTableList(shopCode),
       });
+      // 목록으로 돌아올 때 현재 그룹·탭 스크롤 복원
+      markTablesListTableGroupForRestoreAfterTableDetailNav(
+        selectedTableGroupSeq
+      );
       navigate(ROUTES.TABLE_DETAIL.generate(tableNumber));
       return true;
     },
-    [shopCode, postOrderGroupMutation, queryClient, navigate]
+    [
+      shopCode,
+      postOrderGroupMutation,
+      queryClient,
+      navigate,
+      selectedTableGroupSeq,
+    ]
   );
 
   /**
@@ -152,6 +146,10 @@ export const TablesPage = () => {
       await refreshShopDetailData();
       // 주문이 있는 테이블은 바로 디테일 페이지로 이동
       if (table.hasOrder) {
+        // 목록으로 돌아올 때 현재 그룹·탭 스크롤 복원
+        markTablesListTableGroupForRestoreAfterTableDetailNav(
+          selectedTableGroupSeq
+        );
         navigate(ROUTES.TABLE_DETAIL.generate(table.tableNumber));
         return;
       }
@@ -170,6 +168,7 @@ export const TablesPage = () => {
       navigate,
       createOrderGroupAndNavigate,
       refreshShopDetailData,
+      selectedTableGroupSeq,
     ]
   );
 
@@ -214,24 +213,17 @@ export const TablesPage = () => {
       longPressDelay={350}
     >
       <TablesPageContainer>
-        <Sidebar />
+        <Sidebar
+          onDeviceListDialogAfterClose={scrollTableGroupTabStripAfterOverlay}
+        />
         <TableCardsArea>
-          <TableGroupWrapper>
-            <TableGroupList ref={containerRef}>
-              {tableGroupListResponse?.data?.map((group) => (
-                <TableGroup key={group.tableGroupSeq}>
-                  <TableGroupButton
-                    isSelected={selectedTableGroupSeq === group.tableGroupSeq}
-                    onClick={() =>
-                      setSelectedTableGroupSeq(group.tableGroupSeq)
-                    }
-                  >
-                    {group.tableGroupName}
-                  </TableGroupButton>
-                </TableGroup>
-              ))}
-            </TableGroupList>
-          </TableGroupWrapper>
+          <TableGroupTabStrip
+            ref={tableGroupTabStripRef}
+            groups={tableGroupListResponse?.data}
+            selectedSeq={selectedTableGroupSeq}
+            onSelect={setSelectedTableGroupSeq}
+            alignTabStripOnce={alignTabStripOnce}
+          />
           {tables.length === 0 ? (
             <NoContent paddingTop="0" color={theme.mode.grey[200]}>
               {t('등록된 테이블이 없습니다.')}

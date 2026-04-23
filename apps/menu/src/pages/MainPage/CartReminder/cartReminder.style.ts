@@ -30,6 +30,7 @@ export const Title = styled.p`
   line-height: 5.625rem; /* 125% */
   letter-spacing: -0.1125rem;
   color: ${({ theme }) => theme.mode.undefined_palette[400]};
+  text-align: center;
   margin-bottom: 24px;
 `;
 

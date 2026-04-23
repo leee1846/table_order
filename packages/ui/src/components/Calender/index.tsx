@@ -18,6 +18,7 @@ import {
   isDateInRange,
   getDaysBetween,
   getYearMonthFromDate,
+  formatLocalizedYearMonth,
 } from '@repo/util/date';
 import { allowOnlyNumbers } from '@repo/util/string';
 import * as S from './calender.style';
@@ -44,8 +45,6 @@ interface CalenderTranslations {
     friday: string;
     saturday: string;
   };
-  year: string;
-  month: string;
   complete: string;
   selectedDays: (count: number) => string;
 }
@@ -67,6 +66,8 @@ export const Calender = ({
     i18n: i18nInstance as I18nInstance,
   });
 
+  const language = i18nInstance?.language ?? 'KO';
+
   const currentYear = getCurrentYear();
   const MIN_YEAR = beforeYears !== undefined ? currentYear - beforeYears : null;
   const MAX_YEAR = afterYears !== undefined ? currentYear + afterYears : null;
@@ -82,8 +83,6 @@ export const Calender = ({
       friday: t('금'),
       saturday: t('토'),
     },
-    year: t('년도'),
-    month: i18nInstance ? t('월_날짜') : '월',
     complete: t('선택 완료'),
     selectedDays: (count: number) => {
       const template = t('총 {{count}}일 선택완료', { count });
@@ -404,20 +403,29 @@ export const Calender = ({
             />
           </button>
           <p>
-            <S.YearInput
-              type="number"
-              value={yearInput}
-              onChange={handleYearChange}
-              onBlur={handleYearBlur}
-              onKeyDown={handleYearKeyDown}
-              min={MIN_YEAR ?? undefined}
-              max={MAX_YEAR ?? undefined}
-              width={yearInput.length}
-            />
-            {translationsData.year}
-            <span />
-            {month}
-            {translationsData.month}
+            {(() => {
+              const [prefix, suffix] = formatLocalizedYearMonth(
+                year,
+                month,
+                language
+              ).split(String(year));
+              return (
+                <>
+                  {prefix}
+                  <S.YearInput
+                    type="number"
+                    value={yearInput}
+                    onChange={handleYearChange}
+                    onBlur={handleYearBlur}
+                    onKeyDown={handleYearKeyDown}
+                    min={MIN_YEAR ?? undefined}
+                    max={MAX_YEAR ?? undefined}
+                    width={yearInput.length}
+                  />
+                  {suffix}
+                </>
+              );
+            })()}
           </p>
           <button type="button" onClick={onClickNext}>
             <ChevronForwardIcon

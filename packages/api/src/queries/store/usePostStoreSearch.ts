@@ -22,7 +22,8 @@ export const usePostStoreSearch = (
     queryKey: queryKeys.store.search(
       params.shopCodes,
       params.page,
-      params.size
+      params.size,
+      params.ungrouped
     ),
     queryFn: () => getStoreSearch(params),
     ...options,

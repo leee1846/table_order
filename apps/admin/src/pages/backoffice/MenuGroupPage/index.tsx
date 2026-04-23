@@ -190,15 +190,6 @@ const MenuGroupPage: React.FC = () => {
               onClick={() => handleEdit(record)}
             />
           </Tooltip>
-          {/*           <Tooltip title="메뉴 그룹 현황">
-            <Button
-              type="text"
-              icon={<LinkOutlined />}
-              onClick={() =>
-                navigate(ROUTES.BACKOFFICE.MENU_GROUP_STATUS.generate())
-              }
-            />
-          </Tooltip> */}
           <Tooltip title="삭제">
             <Button
               type="text"

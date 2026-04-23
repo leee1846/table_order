@@ -32,12 +32,19 @@ export const Button = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
   return (
     <S.ButtonStyle
       type={type}
       variant={variant}
       disabled={disabled}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       fullWidth={fullWidth}
       size={size}
       css={customStyle}

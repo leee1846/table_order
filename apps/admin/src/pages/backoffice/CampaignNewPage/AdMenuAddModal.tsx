@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   Typography,
@@ -11,22 +11,27 @@ import {
 } from 'antd';
 import { CloseOutlined, PictureFilled, WarningFilled } from '@ant-design/icons';
 import styled from '@emotion/styled';
+import { useGetMenuGroupList } from '@repo/api/queries';
+import type { IMenuGroup } from '@repo/api/types';
+import { IMAGE_DIMENSIONS } from './UploadContent';
+import type { MenuItem } from './ContentTypes/AdMenuContent';
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
 const { Dragger } = Upload;
 
 // --- Types ---
-interface AdTagSearchModalProps {
+interface AdMenuAddModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (data: AdTagData) => void;
+  onConfirm: (data: adMenuData) => void;
+  initialData?: MenuItem;
 }
 
-export interface AdTagData {
-  selectedItem: string | null;
-  adImage?: UploadFile;
-  adDescription: string;
+export interface adMenuData {
+  selectedItem?: IMenuGroup | null;
+  adImage?: UploadFile | undefined;
+  adDescription?: string;
 }
 
 // --- Emotion Styles ---
@@ -70,21 +75,59 @@ const WarningBanner = styled.div`
 `;
 
 // --- Component ---
-const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
+const AdMenuAddModal: React.FC<AdMenuAddModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
+  initialData,
 }) => {
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedSeq, setSelectedSeq] = useState<string | null>(null);
   const [adDescription, setAdDescription] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const { message } = App.useApp();
 
+  // API에서 메뉴 그룹 목록 조회
+  const { data: menuGroupResponse, isFetching } = useGetMenuGroupList({
+    page: 0,
+    size: 10000, // 메뉴 그룹을 충분히 불러오기 위해 넉넉한 사이즈 지정
+  });
+
+  const menuGroupOptions = (menuGroupResponse?.data?.content || []).map(
+    (group: IMenuGroup) => ({
+      value: String(group.menuGroupSeq),
+      label: group.menuGroupName,
+    })
+  );
+
   const resetState = () => {
-    setSelectedItem(null);
+    setSelectedSeq(null);
     setAdDescription('');
     setFileList([]);
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initialData) {
+        setSelectedSeq(String(initialData.menuGroupSeq));
+        setAdDescription(initialData.contentDescription || '');
+        if (initialData.originFileObj || initialData.filePath) {
+          setFileList([
+            {
+              uid: '-1',
+              name: initialData.fileName || 'image',
+              status: 'done',
+              url: initialData.filePath || undefined,
+              //originFileObj: initialData.originFileObj as File
+            },
+          ]);
+        } else {
+          setFileList([]);
+        }
+      } else {
+        resetState();
+      }
+    }
+  }, [isOpen, initialData]);
 
   const handleCancel = () => {
     resetState();
@@ -93,7 +136,10 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
 
   const handleConfirm = () => {
     onConfirm({
-      selectedItem,
+      selectedItem:
+        menuGroupResponse?.data?.content.find(
+          (group: IMenuGroup) => group.menuGroupSeq === Number(selectedSeq)
+        ) || null,
       adImage: fileList.length > 0 ? fileList[0] : undefined,
       adDescription,
     });
@@ -159,17 +205,13 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
 
           <Select
             size="large"
-            value={selectedItem}
-            onChange={(value) => setSelectedItem(value)}
+            value={selectedSeq}
+            onChange={(value) => setSelectedSeq(value)}
             placeholder="메뉴 그룹을 선택해주세요."
             style={{ width: '100%' }}
             allowClear
-            options={[
-              { value: '크러시', label: '크러시' },
-              { value: '콜라', label: '콜라' },
-              { value: '테라', label: '테라' },
-              { value: '새로', label: '새로' },
-            ]}
+            loading={isFetching}
+            options={menuGroupOptions}
           />
 
           {/* <Text style={{ color: '#ff4d4f', fontSize: '13px' }}>
@@ -181,36 +223,60 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
         <Section>
           <LabelWrapper>
             <Text strong style={{ fontSize: '14px', color: '#262626' }}>
-              이미지
+              광고 이미지
             </Text>
             {/* <PriorityBadge>매장 설정보다 우선 적용</PriorityBadge> */}
           </LabelWrapper>
           <Dragger
-            accept=".jpg,.jpeg,.png"
+            accept=".jpg,.jpeg,.png,.gif"
             height={140}
             style={{ backgroundColor: '#fff', borderColor: '#d9d9d9' }}
             fileList={fileList}
             maxCount={1}
             beforeUpload={(file) => {
-              const extension = file.name
-                .substring(file.name.lastIndexOf('.'))
-                .toLowerCase();
-              const isImage =
-                file.type.startsWith('image/') ||
-                ['.jpg', '.jpeg', '.png'].includes(extension);
+              return new Promise<string | boolean>((resolve) => {
+                const extension = file.name
+                  .substring(file.name.lastIndexOf('.'))
+                  .toLowerCase();
+                const isImage =
+                  file.type.startsWith('image/') ||
+                  ['.jpg', '.jpeg', '.png', '.gif'].includes(extension);
 
-              if (!['.jpg', '.jpeg', '.png'].includes(extension)) {
-                message.error(
-                  '지원하지 않는 파일 형식입니다. (jpg, png만 지원)'
-                );
-                return Upload.LIST_IGNORE;
-              }
-              if (isImage && file.size > 1 * 1024 * 1024) {
-                message.error('이미지 크기는 1MB 이하여야 합니다.');
-                return Upload.LIST_IGNORE;
-              }
-              setFileList([file]);
-              return false; // 자동 업로드 방지
+                if (!['.jpg', '.jpeg', '.png', '.gif'].includes(extension)) {
+                  message.error(
+                    '지원하지 않는 파일 형식입니다. (jpg, png, gif만 지원)'
+                  );
+                  return resolve(Upload.LIST_IGNORE);
+                }
+                if (isImage && file.size > 1 * 1024 * 1024) {
+                  message.error('이미지 크기는 1MB 이하여야 합니다.');
+                  return resolve(Upload.LIST_IGNORE);
+                }
+
+                const img = new Image();
+                const adMenuDim = IMAGE_DIMENSIONS.adMenu;
+                img.onload = () => {
+                  URL.revokeObjectURL(img.src);
+                  if (
+                    img.width !== adMenuDim.width ||
+                    img.height !== adMenuDim.height
+                  ) {
+                    message.error(
+                      `이미지 규격이 맞지 않습니다. (권장: ${adMenuDim.width} x ${adMenuDim.height}, 현재: ${img.width} x ${img.height})`
+                    );
+                    resolve(Upload.LIST_IGNORE);
+                  } else {
+                    setFileList([file]);
+                    resolve(false); // 자동 업로드 방지
+                  }
+                };
+                img.onerror = () => {
+                  URL.revokeObjectURL(img.src);
+                  message.error('이미지 파일을 읽을 수 없습니다.');
+                  resolve(Upload.LIST_IGNORE);
+                };
+                img.src = URL.createObjectURL(file);
+              });
             }}
             onRemove={() => {
               setFileList([]);
@@ -229,7 +295,9 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
               className="ant-upload-hint"
               style={{ fontSize: '12px', color: '#bfbfbf' }}
             >
-              jpg, png 파일만 지원 (1MB 이하)
+              {`jpg, png, gif 파일만 지원 (1MB 이하, ${
+                IMAGE_DIMENSIONS.adMenu.width
+              } x ${IMAGE_DIMENSIONS.adMenu.height})`}
             </p>
           </Dragger>
         </Section>
@@ -238,7 +306,7 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
         <Section>
           <LabelWrapper>
             <Text strong style={{ fontSize: '14px', color: '#262626' }}>
-              설명
+              광고 설명
             </Text>
             {/* <PriorityBadge>매장 설정보다 우선 적용</PriorityBadge> */}
           </LabelWrapper>
@@ -246,7 +314,7 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
             rows={3}
             value={adDescription}
             onChange={(e) => setAdDescription(e.target.value)}
-            placeholder="예: 지금 주문하면 10% 할인! 한정 이벤트 진행 중"
+            placeholder="입력하세요."
             style={{ resize: 'none', borderRadius: '6px' }}
           />
         </Section>
@@ -264,4 +332,4 @@ const AdTagSearchModal: React.FC<AdTagSearchModalProps> = ({
   );
 };
 
-export default AdTagSearchModal;
+export default AdMenuAddModal;

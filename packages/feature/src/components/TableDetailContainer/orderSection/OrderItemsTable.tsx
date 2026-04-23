@@ -9,6 +9,11 @@ import { IPayment, type TShopPosCode } from '@repo/api/types';
 
 const { colors } = theme;
 
+const formatKrw = (amount: number) =>
+  amount < 0
+    ? `-₩${formatCurrency(Math.abs(amount))}`
+    : `₩${formatCurrency(amount)}`;
+
 export type OrderItemsTableProps = {
   items: OrderItem[];
   discountRate: number;
@@ -70,30 +75,36 @@ export function OrderItemsTable({
             onClick={() => handleRowClick(it)}
             className={it.name === '금액변경' || isOkPos ? 'no-click' : ''}
           >
-            <Cell className="name" title={it.localeMenuName?.[currentLanguage]}>
+            <Cell
+              className="name"
+              title={
+                it.name === '금액변경'
+                  ? t('금액 변경')
+                  : (it.localeMenuName?.[currentLanguage] ?? it.name)
+              }
+            >
               {it.name === '금액변경'
                 ? t('금액 변경')
-                : it.localeMenuName?.[currentLanguage]}
+                : (it.localeMenuName?.[currentLanguage] ?? it.name)}
             </Cell>
             <Cell className="qty">{it.qty}</Cell>
-            <Cell className="price">
-              ₩{formatCurrency(it.unitPrice * it.qty)}
-            </Cell>
+            <Cell className="price">{formatKrw(it.unitPrice * it.qty)}</Cell>
           </Row>
-          {it.options?.map((option) => (
-            <Row key={option.id} className="option-row">
-              <Cell
-                className="name option-name"
-                title={option.localeOptionName?.[currentLanguage]}
-              >
-                ㄴ{option.localeOptionName?.[currentLanguage]}
-              </Cell>
-              <Cell className="qty">{option.qty}</Cell>
-              <Cell className="price">
-                ₩{formatCurrency(option.unitPrice * option.qty)}
-              </Cell>
-            </Row>
-          ))}
+          {it.options?.map((option) => {
+            const optionLabel =
+              option.localeOptionName?.[currentLanguage] ?? option.name;
+            return (
+              <Row key={option.id} className="option-row">
+                <Cell className="name option-name" title={optionLabel}>
+                  ㄴ{optionLabel}
+                </Cell>
+                <Cell className="qty">{option.qty}</Cell>
+                <Cell className="price">
+                  {formatKrw(option.unitPrice * option.qty)}
+                </Cell>
+              </Row>
+            );
+          })}
         </React.Fragment>
       ))}
       {discountRate > 0 && (

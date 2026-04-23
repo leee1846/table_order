@@ -16,6 +16,7 @@ export const Container = styled.div`
 `;
 
 export const Image = styled.img`
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -40,13 +41,15 @@ export const Notice = styled.p`
 
 export const DarkLightContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
   height: 100%;
 `;
 
 export const LeftContainer = styled.div<{ initPageLayout: TInitPageLayout }>`
   position: relative;
+  flex-shrink: 0;
   width: 40%;
   min-width: 0;
   height: 100%;
@@ -100,6 +103,10 @@ export const SmallNotice = styled.p<{ initPageLayout: TInitPageLayout }>`
 `;
 
 export const RightContainer = styled.div`
-  width: 60%;
+  flex-shrink: 0;
+  width: 800px;
   height: 100%;
+  margin-left: -1px;
+  position: relative;
+  z-index: 1;
 `;

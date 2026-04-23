@@ -111,7 +111,8 @@ export const DeviceManagementPage = () => {
       <S.DeviceGridWrapper>
         {isInitialLoading ? (
           <S.EmptyState>{t('기기 목록을 불러오는 중입니다.')}</S.EmptyState>
-        ) : deviceItems.length === 0 ? (
+        ) : deviceItems.filter((device) => device.deviceType !== 'POS_APP')
+            .length === 0 ? (
           <S.EmptyState>{t('표시할 기기가 없어요.')}</S.EmptyState>
         ) : (
           <S.DeviceGrid>
@@ -155,12 +156,6 @@ export const DeviceManagementPage = () => {
                       <S.FooterItem>
                         <S.FooterLabel>{t('IP주소')}</S.FooterLabel>
                         <S.FooterValue>{device.ipAddress}</S.FooterValue>
-                      </S.FooterItem>
-                      <S.FooterItem>
-                        <S.FooterLabel>{t('빌드 번호')}</S.FooterLabel>
-                        <S.FooterValue>
-                          {device.buildNumber || '-'}
-                        </S.FooterValue>
                       </S.FooterItem>
                     </S.CardFooter>
                   </S.DeviceCard>

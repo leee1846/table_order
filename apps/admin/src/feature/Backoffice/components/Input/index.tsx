@@ -7,6 +7,7 @@ import type { SerializedStyles } from '@emotion/react';
 interface InputProps {
   value?: string;
   onChange?: (value: string) => void;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
   placeholder?: string;
   customStyle?: SerializedStyles;
   disabled?: boolean;
@@ -21,6 +22,7 @@ interface InputProps {
 const InputComponent = ({
   value = '',
   onChange,
+  onBlur,
   placeholder = '',
   customStyle,
   disabled = false,
@@ -91,6 +93,7 @@ const InputComponent = ({
             type={type}
             value={value}
             onChange={handleChange}
+            onBlur={onBlur}
             onCompositionStart={handleCompositionStart}
             inputMode={inputMode}
             placeholder={placeholder}

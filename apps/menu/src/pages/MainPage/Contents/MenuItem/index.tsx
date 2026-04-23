@@ -11,10 +11,11 @@ import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
+import { hasTableOrderHistory } from '@/utils/validateCartOrder';
 
 const IMAGE_SIZE = {
   1: {
-    width: '20.9375rem',
+    width: '21rem',
   },
   2: {
     width: '22.5rem',
@@ -63,8 +64,8 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
       return;
     }
 
-    // 첫 주문 필수 항목이 있는 경우
-    if (cartData.hasFirstOrderRequiredItems) {
+    // 첫 주문 필수 항목이 있고, 테이블에 기존 주문 라인이 없을 때만 검사 (이미 주문한 적 있으면 생략)
+    if (cartData.hasFirstOrderRequiredItems && !hasTableOrderHistory()) {
       const menusInCart = cartData.menus;
       const hasFirstOrderRequiredMenu = firstOrderRequiredCategories.some((c) =>
         menusInCart.some((m) => m.categorySeq === c.categorySeq)
@@ -91,6 +92,10 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
       if (
         !useShopDetailStore.getState().data?.shopSetting?.isMenuboardOrderable
       ) {
+        toast(t('주문하기 기능이 비활성화 되었습니다.'), {
+          position: 'center-center',
+          duration: 1500,
+        });
         return;
       }
 
@@ -130,8 +135,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
   };
 
   const menuName = menu.localeMenuName?.[currentLanguage] || menu.menuName;
-  const menuDescription =
-    menu.localeMenuDescription?.[currentLanguage] || menu.menuDescription;
+  const menuDescription = menu.localeMenuDescription?.[currentLanguage] || '';
   const priceText = `₩${formatCurrency(menu.menuPrice)}`;
   const ariaLabel = menu.isOutOfStock
     ? `${t('품절된 메뉴')}: ${menuName}, ${priceText}`
@@ -149,7 +153,7 @@ export const MenuItem = ({ layout, category, menu }: Props) => {
         <Thumbnail
           menu={menu}
           image={firstImage}
-          width={IMAGE_SIZE[layout].width}
+          width={layout === 1 ? IMAGE_SIZE[layout].width : '100%'}
         />
         <S.Content>
           <S.MenuName>{menuName}</S.MenuName>

@@ -1,5 +1,6 @@
 import { TAppType } from '../types/app';
 import type { THistoryCode } from '../types/admin';
+import type { IGetCampaignListParams } from '../types/campaign';
 
 export const queryKeys = {
   common: {
@@ -296,9 +297,45 @@ export const queryKeys = {
 
   store: {
     all: ['store'] as const,
-    list: (page?: number, size?: number, keyword?: string) =>
-      [...queryKeys.store.all, 'list', page, size, keyword] as const,
-    search: (shopCodes?: string[], page?: number, size?: number) =>
-      [...queryKeys.store.all, 'search', shopCodes, page, size] as const,
+    list: (
+      page?: number,
+      size?: number,
+      keyword?: string,
+      ungrouped?: boolean
+    ) =>
+      [...queryKeys.store.all, 'list', page, size, keyword, ungrouped] as const,
+    search: (
+      shopCodes?: string[],
+      page?: number,
+      size?: number,
+      ungrouped?: boolean
+    ) =>
+      [
+        ...queryKeys.store.all,
+        'search',
+        shopCodes,
+        page,
+        size,
+        ungrouped,
+      ] as const,
+  },
+
+  campaign: {
+    all: ['campaign'] as const,
+    detail: (campaignSeq: number | string) =>
+      [...queryKeys.campaign.all, 'detail', campaignSeq] as const,
+    list: (params: IGetCampaignListParams) =>
+      [
+        ...queryKeys.campaign.all,
+        'list',
+        params.page,
+        params.size,
+        params.name,
+        params.status,
+        params.startDate,
+        params.endDate,
+      ] as const,
+    shopStatus: (shopSeq?: number) =>
+      [...queryKeys.campaign.all, 'shopStatus', shopSeq] as const,
   },
 } as const;

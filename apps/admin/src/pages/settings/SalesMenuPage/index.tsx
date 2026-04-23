@@ -10,6 +10,7 @@ import {
   toYYYYMMDDRange,
   isStartDateAfterEndDate,
   isEndDateBeforeStartDate,
+  formatLocalizedDate,
   type TDateRangePreset,
 } from '@repo/util/date';
 import { toast } from '@repo/feature/utils';
@@ -96,17 +97,6 @@ export const SalesMenuPage = () => {
     setEndDate(range.endDate);
   };
 
-  const formatCalendarText = (date: string) => {
-    if (!date) {
-      return t('날짜 선택');
-    }
-    const dateObj = new Date(date);
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
-  };
-
   return (
     <>
       <UIStyles.setting.TablePageContainer>
@@ -129,7 +119,7 @@ export const SalesMenuPage = () => {
                   height={25}
                   color={theme.colors.grey[700]}
                 />
-                <S.DateText>{formatCalendarText(startDate)}</S.DateText>
+                <S.DateText>{formatLocalizedDate(startDate, i18n.language) || t('날짜 선택')}</S.DateText>
               </S.DateButton>
 
               <S.RangeDivider>~</S.RangeDivider>
@@ -143,7 +133,7 @@ export const SalesMenuPage = () => {
                   height={25}
                   color={theme.colors.grey[700]}
                 />
-                <S.DateText>{formatCalendarText(endDate)}</S.DateText>
+                <S.DateText>{formatLocalizedDate(endDate, i18n.language) || t('날짜 선택')}</S.DateText>
               </S.DateButton>
             </S.DateRange>
 
@@ -157,11 +147,16 @@ export const SalesMenuPage = () => {
 
           <S.TableWrapper>
             <Summary
+              key={`summary-${apiStartDate}-${apiEndDate}`}
               summary={menuSalesSummary}
               currentLanguage={currentLanguage}
             />
 
-            <Table items={menuSalesList} currentLanguage={currentLanguage} />
+            <Table
+              key={`${apiStartDate}-${apiEndDate}`}
+              items={menuSalesList}
+              currentLanguage={currentLanguage}
+            />
           </S.TableWrapper>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

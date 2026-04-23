@@ -2,27 +2,14 @@ import React, { useState } from 'react';
 import { Modal, Input, Table, Button, Space } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { CloseOutlined } from '@ant-design/icons';
+import { useGetStoreGroupList } from '@repo/api/queries';
+import type { IStoreGroup } from '@repo/api/types';
 
 export interface StoreGroupAddModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (selectedKeys: React.Key[]) => void;
 }
-
-interface GroupData {
-  id: string;
-  name: string;
-  count: number;
-}
-
-// 임시 전체 그룹 데이터
-const ALL_GROUPS: GroupData[] = [
-  { id: 'g1', name: '전국 투다리 매장', count: 72 },
-  { id: 'g2', name: '주류 취급 매장', count: 301 },
-  { id: 'g3', name: '서울 지역', count: 148 },
-  { id: 'g4', name: '직영점', count: 23 },
-  { id: 'g5', name: '테스트 매장', count: 5 },
-];
 
 const StoreGroupAddModal: React.FC<StoreGroupAddModalProps> = ({
   isOpen,
@@ -33,11 +20,24 @@ const StoreGroupAddModal: React.FC<StoreGroupAddModalProps> = ({
   const [searchText, setSearchText] = useState('');
   const [searchInputValue, setSearchInputValue] = useState('');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const { data: storeGroupResponse, isFetching } = useGetStoreGroupList({
+    page: currentPage - 1,
+    size: pageSize,
+    name: searchText || undefined,
+  });
+
+  const storeGroups = storeGroupResponse?.data?.content || [];
+  const totalElements = storeGroupResponse?.data?.totalElements || 0;
+
   const handleAdd = () => {
     onAdd(selectedRowKeys);
     setSelectedRowKeys([]); // 선택 초기화
     setSearchText('');
     setSearchInputValue('');
+    setCurrentPage(1);
     onClose();
   };
 
@@ -45,26 +45,26 @@ const StoreGroupAddModal: React.FC<StoreGroupAddModalProps> = ({
     setSelectedRowKeys([]);
     setSearchText('');
     setSearchInputValue('');
+    setCurrentPage(1);
     onClose();
   };
 
   const handleSearch = () => {
     setSearchText(searchInputValue);
+    setCurrentPage(1);
   };
 
-  const columns: ColumnsType<GroupData> = [
-    { title: '매장 그룹명', dataIndex: 'name', key: 'name' },
+  const columns: ColumnsType<IStoreGroup> = [
+    { title: '매장 그룹명', dataIndex: 'groupName', key: 'groupName' },
     {
       title: '포함 매장 수',
-      dataIndex: 'count',
-      key: 'count',
+      dataIndex: 'storeCount',
+      key: 'storeCount',
       width: 120,
       align: 'center',
-      render: (val) => `${val}개`,
+      render: (val) => `${val ?? 0}개`,
     },
   ];
-
-  const filteredGroups = ALL_GROUPS.filter((g) => g.name.includes(searchText));
 
   return (
     <Modal
@@ -129,14 +129,24 @@ const StoreGroupAddModal: React.FC<StoreGroupAddModalProps> = ({
         </Space>
       </div>
       <Table
-        rowKey="id"
+        rowKey={(record) => String(record.storeGroupSeq)}
         rowSelection={{
           selectedRowKeys,
           onChange: setSelectedRowKeys,
+          preserveSelectedRowKeys: true,
         }}
         columns={columns}
-        dataSource={filteredGroups}
-        pagination={{ pageSize: 5 }}
+        dataSource={storeGroups}
+        loading={isFetching}
+        pagination={{
+          current: currentPage,
+          pageSize,
+          total: totalElements,
+          onChange: (page, size) => {
+            setCurrentPage(page);
+            setPageSize(size);
+          },
+        }}
         size="small"
       />
     </Modal>

@@ -1,7 +1,8 @@
-import { getCurrentDayOfWeek } from '@repo/util/date';
+import { getCurrentDayOfWeek, subtractDays } from '@repo/util/date';
 import {
   isWithinSaleTime,
   getTimeUntilNextSaleStateChange,
+  parseTimeString,
 } from '@repo/util/time';
 
 /**
@@ -62,62 +63,114 @@ export const checkCategorySaleStatus = (
     isHoliday,
   } = condition;
 
-  // Step 1: 먼저 요일 확인
+  // '0000'~'0000'은 어드민·API에서 "상시"와 동일한 의미로 쓰임
+  const hasValidSaleTime =
+    useSaleTime &&
+    !!saleStartTime &&
+    !!saleEndTime &&
+    !(saleStartTime === '0000' && saleEndTime === '0000');
+
+  // 자정 넘김 + 익일 새벽 구간 여부: 이 구간의 세션은 전날(어제)에 시작된 것임
+  // 예) 18:00~03:00 설정에서 화요일 01:00이면 → 세션 시작일은 월요일
+  const isAfterMidnightSlot =
+    hasValidSaleTime &&
+    detectAfterMidnightSlot(saleStartTime!, saleEndTime!, currentTime);
+
+  // 요일 기준 날짜 결정: 익일 새벽 구간이면 전날, 그 외 오늘 (기존 동작 유지)
+  const dayCheckTime = isAfterMidnightSlot
+    ? subtractDays(currentTime, 1)
+    : currentTime;
+
+  // Step 1: 요일 확인
   const isDayAvailable = checkSaleDay(
     useSaleDay,
     saleDayOfWeek,
     isSaleOnHoliday,
-    currentTime,
+    dayCheckTime,
     isHoliday
   );
 
   if (!isDayAvailable) {
-    // 요일이 맞지 않으면 시간과 상관없이 판매 불가
-    const nextMidnight = getTimeUntilMidnight(currentTime);
+    if (isAfterMidnightSlot) {
+      // 익일 새벽 구간에서 요일 불가: 종료 시간까지만 비노출 유지
+      // 종료 시간이 지나면 요일 기준이 오늘로 바뀌어 다시 평가됨
+      const timeChangeMs = getTimeUntilNextSaleStateChange(
+        saleStartTime!,
+        saleEndTime!,
+        currentTime
+      );
+      return { isAvailable: false, nextChangeMs: timeChangeMs };
+    }
+
+    // 자정이 넘어가지 않는 경우: 자정(요일 변경)까지 대기
     return {
       isAvailable: false,
-      nextChangeMs: nextMidnight,
+      nextChangeMs: getTimeUntilMidnight(currentTime),
     };
   }
 
-  // Step 2: 요일이 맞으면 시간 확인
-  // '0000'~'0000'은 어드민·API에서 "상시"와 동일한 의미로 쓰임 (isWithinSaleTime은 빈 구간이라 항상 false)
-  if (
-    !useSaleTime ||
-    !saleStartTime ||
-    !saleEndTime ||
-    (saleStartTime === '0000' && saleEndTime === '0000')
-  ) {
-    // 시간 제약이 없으면 해당 요일에는 하루 종일 판매
-    const nextMidnight = getTimeUntilMidnight(currentTime);
+  // Step 2: 시간 확인 (시간 제약 없으면 해당 요일 하루 종일 판매)
+  if (!hasValidSaleTime) {
     return {
       isAvailable: true,
-      nextChangeMs: nextMidnight,
+      nextChangeMs: getTimeUntilMidnight(currentTime),
     };
   }
 
-  // 시간 범위 확인
-  const isTimeAvailable = isWithinSaleTime(
-    saleStartTime,
-    saleEndTime,
-    currentTime
-  );
+  const isTimeAvailable = isWithinSaleTime(saleStartTime!, saleEndTime!, currentTime);
   const timeChangeMs = getTimeUntilNextSaleStateChange(
-    saleStartTime,
-    saleEndTime,
+    saleStartTime!,
+    saleEndTime!,
     currentTime
   );
-
   // 자정(요일 변경 시점)까지의 시간도 계산
   const midnightMs = getTimeUntilMidnight(currentTime);
 
-  // 시간 변경과 요일 변경 중 더 빠른 것 선택
-  const nextChangeMs = Math.min(timeChangeMs, midnightMs);
-
   return {
     isAvailable: isTimeAvailable,
-    nextChangeMs,
+    // 시간 변경과 요일 변경 중 더 빠른 시점에 타이머 설정
+    nextChangeMs: Math.min(timeChangeMs, midnightMs),
   };
+};
+
+/**
+ * 판매 시간이 자정을 넘기면서 현재 시각이 종료 시간 이전 새벽 구간인지 판단함
+ *
+ * 이 구간(00:00 ~ 종료시간)의 세션은 전날에 시작된 것이므로
+ * 요일 판매 가능 여부를 전날 기준으로 확인해야 함
+ *
+ * @param saleStartTime - 판매 시작 시간 (예: "2100")
+ * @param saleEndTime - 판매 종료 시간 (예: "0300")
+ * @param currentTime - 현재 시간
+ * @returns 자정 넘김 + 익일 새벽 구간이면 true
+ *
+ * @example
+ * ```ts
+ * // 판매시간 21:00~03:00, 현재 01:30 → 전날 세션의 새벽 구간
+ * detectAfterMidnightSlot('2100', '0300', new Date('2025-01-07T01:30:00')); // true
+ * // 판매시간 09:00~21:00 → 자정 넘김 없음
+ * detectAfterMidnightSlot('0900', '2100', new Date('2025-01-07T10:00:00')); // false
+ * ```
+ */
+const detectAfterMidnightSlot = (
+  saleStartTime: string,
+  saleEndTime: string,
+  currentTime: Date
+): boolean => {
+  const { hour: startHour, minute: startMinute } = parseTimeString(saleStartTime);
+  const { hour: endHour, minute: endMinute } = parseTimeString(saleEndTime);
+
+  const startTotalMin = parseInt(startHour) * 60 + parseInt(startMinute);
+  const endTotalMin = parseInt(endHour) * 60 + parseInt(endMinute);
+
+  // 자정을 넘기지 않는 경우 (예: 09:00 ~ 21:00) → 기존 로직 유지
+  if (startTotalMin <= endTotalMin) return false;
+
+  const currentTotalMin = currentTime.getHours() * 60 + currentTime.getMinutes();
+
+  // 자정을 넘기는 경우: 현재 시각이 종료 시간 이전 새벽 구간인지 확인
+  // 예) 21:00~03:00에서 현재 01:30 → 01:30 < 03:00 → true (전날 세션)
+  return currentTotalMin < endTotalMin;
 };
 
 /**

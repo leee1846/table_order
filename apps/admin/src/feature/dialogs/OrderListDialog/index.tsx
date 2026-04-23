@@ -3,6 +3,7 @@ import { ModalBackground, Pagination } from '@repo/ui/components';
 import { CloseIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { useGetOrderLogList } from '@repo/api/queries';
+import { useStablePaginatedTotalPages } from '@repo/feature/hooks';
 import { keepPreviousData } from '@repo/api/tanstack-query';
 import type {
   IOrderDetailMenu,
@@ -129,6 +130,7 @@ export const OrderListDialog = ({
   const {
     data: orderLogResponse,
     isFetching,
+    isPlaceholderData,
     refetch,
   } = useGetOrderLogList(
     {
@@ -188,17 +190,23 @@ export const OrderListDialog = ({
         menuItems,
       };
     });
-  }, [orderLogData, ORDER_CHANNEL_LABELS, ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS]);
+  }, [
+    orderLogData,
+    ORDER_CHANNEL_LABELS,
+    ORDER_STATUS_LABELS,
+    PAYMENT_STATUS_LABELS,
+  ]);
 
   const displayedOrderItems = useMemo(
     () => orderItems.filter((order) => order.menuItems.length > 0),
     [orderItems]
   );
 
-  const totalPages =
-    orderLogData?.totalPageNumber && orderLogData.totalPageNumber > 0
-      ? orderLogData.totalPageNumber
-      : 1;
+  const totalPages = useStablePaginatedTotalPages(
+    isPlaceholderData,
+    orderLogData?.totalPageNumber,
+    displayedOrderItems.length
+  );
   const isInitialLoading = isFetching && !orderLogResponse;
   const hasShopCode = !!shopCode;
 
@@ -217,7 +225,11 @@ export const OrderListDialog = ({
 
   return (
     <>
-      <ModalBackground position="center" onClick={onClose}>
+      <ModalBackground
+        position="center"
+        onClick={onClose}
+        scrollableBackdrop={false}
+      >
         <S.DialogContainer>
           <S.CloseButton onClick={onClose} aria-label={t('닫기')}>
             <CloseIcon width={32} height={32} color={colors.grey[700]} />
@@ -318,6 +330,7 @@ export const OrderListDialog = ({
         <ModalBackground
           position="center"
           onClick={() => setOpenDetailOrderDialog(false)}
+          scrollableBackdrop={false}
         >
           <DetailOrderDialog
             isOpen={openDetailOrderDialog}

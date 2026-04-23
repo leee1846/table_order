@@ -3,7 +3,7 @@ import * as S from '@/pages/MainPage/StaffCallModal/staffCallModal.style';
 import { CloseIcon, DeleteIcon } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
-import type { ICategoryWithMenus, IMenuBase } from '@repo/api/types';
+import type { IApiError, ICategoryWithMenus, IMenuBase } from '@repo/api/types';
 import { useState, useEffect } from 'react';
 import type { ICartMenu } from '@/types/cart';
 import { usePostTableOrder } from '@repo/api/queries';
@@ -23,6 +23,10 @@ import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
+import { useIdleTimeout } from '@/hooks/useIdleTimeout';
+import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
+import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
+import type { AxiosError } from '@repo/api/axios';
 
 interface Props {
   onClose: () => void;
@@ -32,6 +36,7 @@ interface Props {
 export const StaffCallModal = ({ onClose, category }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
+  const { remainingSeconds } = useIdleTimeout(onClose);
 
   const { data: languageData } = useCustomerLanguageStore();
   const { disableStaffCall } = useDisableStaffCallStore();
@@ -198,11 +203,13 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
 
           await finishStaffRequest();
         } catch (error: unknown) {
-          const status = (error as { response?: { status?: number } })?.response
-            ?.status;
+          const axiosError = error as AxiosError<IApiError>;
 
           // 테이블이 삭제된 경우
-          if (status === 400) {
+          if (
+            axiosError?.response?.data?.status?.code ===
+            TABLE_REMOVED_STATUS_CODE
+          ) {
             navigate(ROUTES.TABLES.generate());
             return;
           }
@@ -238,13 +245,16 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
         aria-modal="true"
         aria-labelledby="staff-call-title"
       >
-        <S.CloseButton
-          type="button"
-          onClick={onClose}
-          aria-label={t('모달 닫기')}
-        >
-          <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
-        </S.CloseButton>
+        <S.TopHeaderActions>
+          <IdleTimerMessage remainingSeconds={remainingSeconds} />
+          <S.CloseButton
+            type="button"
+            onClick={onClose}
+            aria-label={t('모달 닫기')}
+          >
+            <CloseIcon width={32} height={32} color={theme.mode.grey[700]} />
+          </S.CloseButton>
+        </S.TopHeaderActions>
 
         <S.LeftContainer>
           <h2 id="staff-call-title">{category.categoryName} </h2>

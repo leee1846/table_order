@@ -177,15 +177,12 @@ const MOCK_GROUPS: MenuGroup[] = [
   { id: 'g4', name: '켈리', code: 'G088' },
 ];
 
-const MOCK_TABLE_DATA: StoreSyncData[] = Array.from(
-  { length: 100 },
-  (_, i) => ({
-    key: `${i + 1}`,
-    sid: `S${String(i + 1).padStart(4, '0')}`,
-    name: `테스트 매장 ${i + 1}`,
-    status: i < 80 ? '등록 완료' : '미등록',
-  })
-);
+const MOCK_TABLE_DATA: StoreSyncData[] = Array.from({ length: 10 }, (_, i) => ({
+  key: `${i + 1}`,
+  sid: `S${String(i + 1).padStart(4, '0')}`,
+  name: `테스트 매장 ${i + 1}`,
+  status: i < 5 ? '등록 완료' : '미등록',
+}));
 
 const MenuGroupStatus: React.FC = () => {
   const [activeGroupId, setActiveGroupId] = useState<string>('g1');
@@ -195,7 +192,7 @@ const MenuGroupStatus: React.FC = () => {
 
   // 테이블 컬럼 정의
   const columns: ColumnsType<StoreSyncData> = [
-    { title: '매장 SID', dataIndex: 'sid', key: 'sid', width: '20%' },
+    { title: '매장 ID', dataIndex: 'sid', key: 'sid', width: '20%' },
     {
       title: '매장명',
       dataIndex: 'name',
@@ -208,7 +205,7 @@ const MenuGroupStatus: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       width: '25%',
-      render: (status: string) => (
+      render: (status: '등록 완료' | '미등록') => (
         <StatusText status={status}>{status}</StatusText>
       ),
     },
@@ -229,7 +226,7 @@ const MenuGroupStatus: React.FC = () => {
 
   return (
     <Container>
-      <PageTitle title="메뉴 그룹 관리" subtitle="현황" />
+      <PageTitle title="캠페인 관리" subtitle="메뉴 태그 동기화 현황" />
       <ContentCard>
         <LayoutWrapper>
           {/* 1. 좌측 메뉴 그룹 리스트 */}
@@ -258,10 +255,10 @@ const MenuGroupStatus: React.FC = () => {
                     전체 100
                   </SummaryTag>
                   <SummaryTag color="#f6ffed" style={{ color: '#389e0d' }}>
-                    동기화 80
+                    등록 완료 80
                   </SummaryTag>
                   <SummaryTag color="#fff1f0" style={{ color: '#cf1322' }}>
-                    미동기화 20
+                    미등록 20
                   </SummaryTag>
                 </Space>
 

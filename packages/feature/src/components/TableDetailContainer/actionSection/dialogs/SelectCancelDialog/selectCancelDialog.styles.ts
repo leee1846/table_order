@@ -40,33 +40,53 @@ export const ItemsList = styled.div`
   padding-bottom: 15px;
 `;
 
-export const ItemRow = styled.div`
-  display: flex;
-  justify-content: space-between;
+/** 1열: 메뉴명·옵션(동일 가로폭), 2열: 수량 — 옵션 줄바꿈 폭이 메뉴명 열과 일치 */
+export const ItemGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 16px;
+  row-gap: 4px;
+  width: 100%;
 `;
 
-export const ItemInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+export const ItemNameCell = styled.div`
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  align-self: center;
 `;
 
 export const ItemName = styled.span`
   ${TYPOGRAPHY.MT_5}
   color: ${colors.grey[900]};
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 `;
 
 export const ItemOptions = styled.div`
+  grid-column: 1;
+  grid-row: 2;
   ${TYPOGRAPHY.ST_5}
   color: ${colors.grey[600]};
   display: flex;
   flex-direction: column;
   gap: 3px;
-  margin-left: 35px;
+  min-width: 0;
+  /* CheckButton: 체크박스(1.5rem) + label gap(7px) — 메뉴명 시작선과 동일 */
+  margin-left: calc(1.5rem + 7px);
+
+  & > div {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 `;
 
 export const QuantityWrapper = styled.div`
-  flex-shrink: 0;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
 `;
 
 export const Footer = styled.div``;

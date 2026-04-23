@@ -32,7 +32,8 @@ export const SelectCancelDialog = ({
   onCancelSuccess,
   i18nInstance,
 }: SelectCancelDialogProps) => {
-  const { t } = useTranslation('admin', { i18n: i18nInstance });
+  const { t, i18n } = useTranslation('admin', { i18n: i18nInstance });
+  const currentLanguage = (i18n.language || 'KO').toUpperCase();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [quantities, setQuantities] = useState<Map<string, number>>(new Map());
   const { mutateAsync: cancelOrderMenu, isPending } = usePutCancelOrderMenu();
@@ -142,10 +143,15 @@ export const SelectCancelDialog = ({
             {items.map((item, index) => {
               const isChecked = selectedItems.has(item.id);
               const quantity = quantities.get(item.id) ?? item.qty;
+              const menuQty = item.qty;
+              const optionQtyForCancel = (optionQty: number) =>
+                menuQty > 0
+                  ? Math.round((optionQty * quantity) / menuQty)
+                  : optionQty;
 
               return (
-                <S.ItemRow key={`${item.id}-${index + 1}`}>
-                  <S.ItemInfo>
+                <S.ItemGrid key={`${item.id}-${index + 1}`}>
+                  <S.ItemNameCell>
                     <CheckButton
                       variant="square"
                       checked={isChecked}
@@ -153,32 +159,21 @@ export const SelectCancelDialog = ({
                         handleCheckboxChange(item.id, checked)
                       }
                       customStyle={css`
+                        width: 100%;
+                        max-width: 100%;
+                        min-width: 0;
+                        align-items: center;
+
                         & > div {
                           width: 1.5rem;
                           height: 1.5rem;
+                          flex-shrink: 0;
                         }
                       `}
                     >
                       <S.ItemName>{item.name}</S.ItemName>
                     </CheckButton>
-                    {item.options && item.options.length > 0 && (
-                      <S.ItemOptions>
-                        {item.options.map((option, optIndex) => (
-                          <div key={`${option.id}-${optIndex.toString()}`}>
-                            <span>
-                              {
-                                option.localeOptionName?.[
-                                  i18nInstance?.language ?? ''
-                                ]
-                              }
-                            </span>
-                            <span>{` x `}</span>
-                            <span>{option.qty}</span>
-                          </div>
-                        ))}
-                      </S.ItemOptions>
-                    )}
-                  </S.ItemInfo>
+                  </S.ItemNameCell>
                   <S.QuantityWrapper>
                     <NumberInput
                       variant="square"
@@ -186,14 +181,30 @@ export const SelectCancelDialog = ({
                       min={0}
                       max={item.qty}
                       disabled={!isChecked}
-                      onChange={(value) => handleQuantityChange(item.id, value)}
+                      onChange={(value) =>
+                        handleQuantityChange(item.id, value)
+                      }
                       customStyle={css`
                         ${TYPOGRAPHY.MT_6}
                         width: 8.75rem;
                       `}
                     />
                   </S.QuantityWrapper>
-                </S.ItemRow>
+                  {item.options && item.options.length > 0 && (
+                    <S.ItemOptions>
+                      {item.options.map((option, optIndex) => (
+                        <div key={`${option.id}-${optIndex.toString()}`}>
+                          <span>
+                            {option.localeOptionName?.[currentLanguage] ??
+                              option.name}
+                          </span>
+                          <span>{` x `}</span>
+                          <span>{optionQtyForCancel(option.qty)}</span>
+                        </div>
+                      ))}
+                    </S.ItemOptions>
+                  )}
+                </S.ItemGrid>
               );
             })}
           </S.ItemsList>

@@ -76,34 +76,26 @@ export const Thumbnail = ({ menu, image, width = '100%' }: Props) => {
         </S.NoImagePlaceholder>
       )}
 
-      
-        {(menu.isBest || menu.isNew) && (
-          <S.LeftBadges>
-            {menu.isNew && (
-              <img src={newOnIcon} alt={t('신메뉴')} />
-            )}
-            {menu.isBest && (
-              <img
-                src={bestOnIcon}
-                alt={t('베스트 메뉴')}
-              />
-            )}
-          </S.LeftBadges>
-        )}
-      
-        {menu.spiceLevel > 0 && (
-          <S.ChiliIcons
-            aria-label={t('매운맛 {{level}}단계', { level: menu.spiceLevel })}
-          >
-            <img
-              src={spicyLevelIcon ?? ''}
-              width={36}
-              height={36}
-              alt=""
-              aria-hidden="true"
-            />
-          </S.ChiliIcons>
-        )}
+      {(menu.isBest || menu.isNew) && (
+        <S.LeftBadges>
+          {menu.isNew && <img src={newOnIcon} alt={t('신메뉴')} />}
+          {menu.isBest && <img src={bestOnIcon} alt={t('베스트 메뉴')} />}
+        </S.LeftBadges>
+      )}
+
+      {menu.spiceLevel > 0 && (
+        <S.ChiliIcons
+          aria-label={t('매운맛 {{level}}단계', { level: menu.spiceLevel })}
+        >
+          <img
+            src={spicyLevelIcon ?? ''}
+            width={36}
+            height={36}
+            alt=""
+            aria-hidden="true"
+          />
+        </S.ChiliIcons>
+      )}
     </S.ImageWrapper>
   );
 };

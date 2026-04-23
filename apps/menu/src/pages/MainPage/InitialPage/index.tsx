@@ -11,6 +11,8 @@ import { globalTimerManager } from '@/utils/timerManager';
 import { TIMER_KEYS } from '@/constants/keys';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 
+const SLIDE_OVERLAP_PX = 2;
+
 export const InitialPage = () => {
   const { t } = useCustomerTranslation();
 
@@ -90,7 +92,7 @@ export const InitialPage = () => {
         tabIndex={0}
       >
         <Swiper
-          spaceBetween={0}
+          spaceBetween={-SLIDE_OVERLAP_PX}
           slidesPerView={1}
           loop={hasEnoughSlides}
           onSwiper={(swiper) => {
@@ -122,7 +124,7 @@ export const InitialPage = () => {
       tabIndex={0}
     >
       <Swiper
-        spaceBetween={0}
+        spaceBetween={-SLIDE_OVERLAP_PX}
         slidesPerView={1}
         loop={hasEnoughSlides}
         onSwiper={(swiper) => {

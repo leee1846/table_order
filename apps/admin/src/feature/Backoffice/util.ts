@@ -203,6 +203,11 @@ export const validateMembersData = (membersData: MembersFormData): boolean => {
     return false;
   }
 
+  if (!isValidPhoneNumber(membersData.memberTel)) {
+    toast('핸드폰번호는 9~11자리 연락처 형식으로 입력해주세요.');
+    return false;
+  }
+
   if (!membersData.memberDepartment || !membersData.memberDepartment.trim()) {
     message.warning('소속을 입력해주세요.');
     return false;

@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
 import { CapacitorApp } from '@repo/util/app';
-import { capsSmartOrderWhiteLogo } from '@repo/ui/icons';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
@@ -49,20 +48,25 @@ export const SidebarLayout = () => {
     navigate(ROUTES.TABLES.generate());
   };
 
+  const logoImagePath = shopThemeMenuResponse?.data?.logoImagePath;
+  const logoImageSrc =
+    typeof logoImagePath === 'string' && logoImagePath.trim().length > 0
+      ? logoImagePath.trim()
+      : null;
+
   return (
     <SettingsSidebar
       useTranslation={useTranslation}
       menus={SIDEBAR_MENUS}
       logoElement={
         <button type="button" onClick={onClickLogo}>
-          <img
-            src={
-              shopThemeMenuResponse?.data?.logoImagePath ??
-              capsSmartOrderWhiteLogo
-            }
-            alt={t('매장 로고')}
-            style={{ width: '100%' }}
-          />
+          {logoImageSrc ? (
+            <img
+              src={logoImageSrc}
+              alt={t('매장 로고')}
+              style={{ width: '100%' }}
+            />
+          ) : null}
         </button>
       }
       onClickHomeButton={onClickLogo}

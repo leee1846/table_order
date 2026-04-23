@@ -24,6 +24,9 @@ export const Pagination = ({
   const isFirstPage = currentPage === 1;
   const isLastPage = currentPage >= totalPages;
 
+  const displayCurrentPage = totalPages < 1 ? 1 : currentPage;
+  const displayTotalPages = totalPages < 1 ? 1 : totalPages;
+
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) {
       return;
@@ -53,9 +56,9 @@ export const Pagination = ({
         </S.Button>
       </S.Buttons>
       <S.Texts>
-        <span>{currentPage}</span>
+        <span>{displayCurrentPage}</span>
         <span>/</span>
-        <span>{totalPages}</span>
+        <span>{displayTotalPages}</span>
       </S.Texts>
       <S.Buttons>
         <S.Button

@@ -6,7 +6,7 @@ import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { useGetOneDaySales } from '@repo/api/queries';
 import type { TPaymentType } from '@repo/api/types';
-import { formatDateToYYYYMMDD, getTodayDateString } from '@repo/util/date';
+import { formatDateToYYYYMMDD, getTodayDateString, formatLocalizedDate } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { DailySalesTable, type TDailySaleRow } from './Table';
@@ -73,7 +73,7 @@ const buildPaymentRows = (
 };
 
 export const DailySalesPage = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const { shopCode } = useAuth();
   const location = useLocation();
   const queryDate = useMemo(() => {
@@ -116,13 +116,10 @@ export const DailySalesPage = () => {
     [oneDaySales, apiDate]
   );
 
-  const displayDate = useMemo(() => {
-    const date = new Date(selectedDate);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
-  }, [selectedDate, t]);
+  const displayDate = useMemo(
+    () => formatLocalizedDate(selectedDate, i18n.language),
+    [selectedDate, i18n.language]
+  );
 
   const handleSelectDate = (startDate: string, endDate: string) => {
     const nextDate = startDate || endDate || selectedDate;
@@ -181,7 +178,7 @@ export const DailySalesPage = () => {
           </S.Filters>
 
           <S.TableCard>
-            <DailySalesTable rows={paymentRows} />
+            <DailySalesTable key={apiDate} rows={paymentRows} />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

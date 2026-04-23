@@ -1,6 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
-import { InfoIcon } from '@repo/ui/icons';
-import { theme } from '@repo/ui';
+import { AntTooltip } from '@/feature/backoffice/components';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency } from '@repo/util/string';
 import type { IHourlySalesItem } from '@repo/api/types';
@@ -13,46 +11,6 @@ interface Props {
 
 export const HourlySalesTable = ({ rows }: Props) => {
   const { t } = useAdminTranslation();
-  const [showTotalSalesTooltip, setShowTotalSalesTooltip] = useState(false);
-  const [showPricePerCustomerTooltip, setShowPricePerCustomerTooltip] =
-    useState(false);
-  const totalSalesIconWrapperRef = useRef<HTMLDivElement>(null);
-  const pricePerCustomerIconWrapperRef = useRef<HTMLDivElement>(null);
-
-  const handleTotalSalesIconClick = () => {
-    setShowTotalSalesTooltip(!showTotalSalesTooltip);
-  };
-
-  const handlePricePerCustomerIconClick = () => {
-    setShowPricePerCustomerTooltip(!showPricePerCustomerTooltip);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showTotalSalesTooltip &&
-        totalSalesIconWrapperRef.current &&
-        !totalSalesIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowTotalSalesTooltip(false);
-      }
-      if (
-        showPricePerCustomerTooltip &&
-        pricePerCustomerIconWrapperRef.current &&
-        !pricePerCustomerIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowPricePerCustomerTooltip(false);
-      }
-    };
-
-    if (showTotalSalesTooltip || showPricePerCustomerTooltip) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showTotalSalesTooltip, showPricePerCustomerTooltip]);
 
   const renderRows = () => {
     if (!rows.length) {
@@ -67,9 +25,9 @@ export const HourlySalesTable = ({ rows }: Props) => {
       <tr key={row.hour}>
         <td>{row.hour}</td>
         <td>{formatCurrency(row.totalSalesAmount ?? 0)}</td>
-        <td>{`${row.customerCount ?? 0}${t('명')}`}</td>
+        <td>{t('{{value}}명', { value: row.customerCount ?? 0 })}</td>
         <td>{formatCurrency(row.pricePerCustomer ?? 0)}</td>
-        <td>{`${row.tableCount ?? 0}${t('개')}`}</td>
+        <td>{t('{{value}}개', { value: row.tableCount ?? 0 })}</td>
       </tr>
     ));
   };
@@ -82,56 +40,18 @@ export const HourlySalesTable = ({ rows }: Props) => {
           <th>
             <S.HeaderLabel>
               {t('총 매출')}
-              <S.IconWrapper
-                ref={totalSalesIconWrapperRef}
-                onClick={handleTotalSalesIconClick}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  handleTotalSalesIconClick();
-                }}
-              >
-                <InfoIcon
-                  width={18}
-                  height={18}
-                  color={theme.colors.grey[500]}
-                />
-                {showTotalSalesTooltip && (
-                  <S.Tooltip>
-                    <S.TooltipText>
-                      {t('할인,취소 매출을 제외한 총 매출')}
-                    </S.TooltipText>
-                    <S.TooltipArrow />
-                  </S.Tooltip>
-                )}
-              </S.IconWrapper>
+              <AntTooltip
+                title={t('할인,취소 매출을 제외한 총 매출')}
+              />
             </S.HeaderLabel>
           </th>
           <th>{t('총 객수')}</th>
           <th>
             <S.HeaderLabel>
               {t('총 객단가')}
-              <S.IconWrapper
-                ref={pricePerCustomerIconWrapperRef}
-                onClick={handlePricePerCustomerIconClick}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  handlePricePerCustomerIconClick();
-                }}
-              >
-                <InfoIcon
-                  width={18}
-                  height={18}
-                  color={theme.colors.grey[500]}
-                />
-                {showPricePerCustomerTooltip && (
-                  <S.Tooltip>
-                    <S.TooltipText>
-                      {t('매출/객수(*객수 미사용 시, 매출/테이블 수)')}
-                    </S.TooltipText>
-                    <S.TooltipArrow />
-                  </S.Tooltip>
-                )}
-              </S.IconWrapper>
+              <AntTooltip
+                title={t('매출/객수(*객수 미사용 시, 매출/테이블 수)')}
+              />
             </S.HeaderLabel>
           </th>
           <th>{t('총 테이블 수')}</th>

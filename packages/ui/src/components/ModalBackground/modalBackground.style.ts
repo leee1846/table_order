@@ -4,6 +4,8 @@ import { TPosition } from '.';
 
 interface IProps {
   position?: TPosition;
+  /** false: 배경 레이어는 스크롤하지 않음(내부 콘텐츠 스크롤만 사용할 때, 이중 스크롤·WebView 이슈 완화) */
+  $scrollableBackdrop?: boolean;
 }
 
 export const Container = styled.div<IProps>`
@@ -13,8 +15,15 @@ export const Container = styled.div<IProps>`
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: ${zIndex.notification};
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  ${({ $scrollableBackdrop = true }) =>
+    $scrollableBackdrop
+      ? `
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  `
+      : `
+    overflow-y: hidden;
+  `}
   align-items: ${({ position }) =>
     position === 'center' ? 'center' : 'flex-start'};
 

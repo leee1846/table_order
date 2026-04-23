@@ -153,8 +153,9 @@ export const Stores = ({
       label: '매장 광고 정보',
       children: (
         <StoreAdInfoTab
+          shopSeq={formData?.shopSeq}
           //formData={memberFormData}
-          updateFormData={updateMemberFormData}
+          //updateFormData={updateMemberFormData}
         />
       ),
     });

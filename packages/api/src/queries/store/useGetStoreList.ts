@@ -19,7 +19,12 @@ export const useGetStoreList = (
   >
 ) => {
   return useQuery<TGetStoreListResponse, AxiosError<IApiError>>({
-    queryKey: queryKeys.store.list(params.page, params.size, params.keyword),
+    queryKey: queryKeys.store.list(
+      params.page,
+      params.size,
+      params.keyword,
+      params.ungrouped
+    ),
     queryFn: () => getStoreList(params),
     ...options,
   });

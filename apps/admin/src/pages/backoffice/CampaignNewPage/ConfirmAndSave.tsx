@@ -41,17 +41,19 @@ const LabelText = styled(Text)`
   color: #8c8c8c;
 `;
 
-// --- Component ---
-const ConfirmAndSave: React.FC = () => {
-  // 실제 환경에서는 상위 컴포넌트나 상태 관리 툴에서 등록된 데이터를 받아와서 렌더링합니다.
-  const campaignData = {
-    name: '새로 소주 여름 이벤트',
-    type: '전면 대기_영상 / 상단 배너_이미지',
-    storeCount: '128개',
-    period: '2026-06-01 ~ 2026-08-31',
-    status: '집행 대기',
-  };
+export interface CampaignSummaryData {
+  name: string;
+  type: string;
+  storeCount: string;
+  period: string;
+}
 
+interface ConfirmAndSaveProps {
+  campaignData: CampaignSummaryData;
+}
+
+// --- Component ---
+const ConfirmAndSave: React.FC<ConfirmAndSaveProps> = ({ campaignData }) => {
   return (
     <Container>
       {/* 2. 등록 정보 요약 박스 */}

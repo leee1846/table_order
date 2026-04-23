@@ -43,8 +43,10 @@ import {
   logOrderRequestRefundFailed,
   orderRequestRefundFailedSummaryAfterOrderCreate,
   orderRequestRefundFailedSummaryAfterPaymentApproval,
+  orderRequestRefundFailedSummaryAfterPosOrderFailure,
 } from '@/utils/logOrderRequestRefundFailed';
 import { calculateCartMenusTaxAmount } from '@/utils/calculation';
+import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
 // const PAYMENT_EVENT_NAME = 'paymentEvent';
@@ -186,7 +188,7 @@ export const CardPaymentInstallmentModal = ({
       orders: adjustedOrders,
     }).catch((error) => {
       // 테이블이 삭제된 경우
-      if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
+      if (error.response?.data?.status?.code === TABLE_REMOVED_STATUS_CODE) {
         navigate(ROUTES.TABLES.generate());
       }
     });
@@ -330,7 +332,7 @@ export const CardPaymentInstallmentModal = ({
     const errorMessage =
       error instanceof Error
         ? error.message
-        : t('결제 처리 중 오류가 발생했습니다.');
+        : t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.');
 
     openConfirmDialog({
       title: t('오류'),
@@ -339,10 +341,12 @@ export const CardPaymentInstallmentModal = ({
     });
   };
 
-  const handleOrderCompleteFailure = () => {
+  const handleOrderCompleteFailure = (paymentCancelFailed = false) => {
     openConfirmDialog({
       title: t('POS 오류'),
-      content: t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'),
+      content: paymentCancelFailed
+        ? t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
+        : t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'),
       confirmText: t('확인'),
     });
   };
@@ -368,6 +372,7 @@ export const CardPaymentInstallmentModal = ({
           .getState()
           .register(orderUuid, shopCode, handlePaymentSuccess, async () => {
             // POS 실패(-603 또는 API 에러) / 타임아웃: 환불 → 환불 정보 전송 → 주문 취소
+            let paymentCancelFailed = false;
             try {
               await Payment.cancel(paymentResult);
               // const cancelResult = await Payment.cancel(paymentResult);
@@ -385,9 +390,13 @@ export const CardPaymentInstallmentModal = ({
               // }
               // await cancelOrderMenu(cancelOrderMenuRequest);
             } catch {
-              // 카드 취소 실패 시 무시 (이미 승인된 결제이므로 수동 처리 필요)
+              paymentCancelFailed = true;
+              logOrderRequestRefundFailed(
+                orderRequestRefundFailedSummaryAfterPosOrderFailure(),
+                paymentResult
+              );
             }
-            handleOrderCompleteFailure();
+            handleOrderCompleteFailure(paymentCancelFailed);
           });
         return;
       }

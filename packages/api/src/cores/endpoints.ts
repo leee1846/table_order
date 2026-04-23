@@ -172,9 +172,26 @@ export const ENDPOINTS = {
     DETAIL: (id: string | number) => `/store-groups/${id}`, // TODO: 실제 상세 API 경로에 맞춰 수정하세요.
     MEMBERS: (storeGroupSeq: string | number) =>
       `/store-groups/${storeGroupSeq}/stores`,
+    STORES_BY_GROUPS: '/store-groups/stores',
   },
   STORE: {
     LIST: '/stores', // TODO: 실제 API 경로에 맞게 수정하세요 (예: /stores 또는 /store/list)
     SEARCH: '/stores', // TODO: 실제 검색 API 경로에 맞게 수정하세요
+    CAMPAIGN_STATUS: (shopSeq: number) => `/stores/${shopSeq}/campaign-status`,
+    TOGGLE_AD_TYPE_EXCLUSION: (
+      shopSeq: number,
+      campaignSeq: number,
+      adType: string
+    ) =>
+      `/stores/${shopSeq}/campaigns/${campaignSeq}/ad-types/${adType}/exclusion`,
+  },
+
+  CAMPAIGN: {
+    LIST: '/campaigns',
+    DETAIL: (campaignSeq: number | string) => `/campaigns/${campaignSeq}`,
+    CREATE: '/campaigns',
+    UPDATE: (campaignSeq: number | string) => `/campaigns/${campaignSeq}`,
+    COPY: (campaignSeq: number | string) => `/campaigns/${campaignSeq}`,
+    ACTIVE: '/campaigns/active',
   },
 } as const;

@@ -51,6 +51,11 @@ export const MenuName = styled.p`
   ${TYPOGRAPHY.MT_7}
   color: ${({ theme }) => theme.mode.grey[800]};
   margin: 14px 0 6px;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
 export const Price = styled.p`
@@ -65,6 +70,11 @@ export const Description = styled.p`
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;
 
 export const MenuQuantityContainer = styled.div`
@@ -119,6 +129,7 @@ export const Options = styled.ul`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
+  align-items: center;
 
   & > li {
     min-width: 0;

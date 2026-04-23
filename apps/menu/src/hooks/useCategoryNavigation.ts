@@ -1,6 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import { createDebounce } from '@repo/util/function';
-import { getMinFromArray } from '@repo/util/array';
 import { DOM_IDS } from '@/constants/keys';
 import type { ICategoryWithMenus } from '@repo/api/types';
 
@@ -11,6 +16,9 @@ const OBSERVER_OPTIONS: IntersectionObserverInit = {
   threshold: [0, 0.1, 0.5, 1.0],
 };
 
+/** 프로그램 스크롤 후 스파이가 다시 켜지기까지 */
+const SCROLL_SPY_SUPPRESS_MS = 800;
+
 interface IParams {
   categories: ICategoryWithMenus[];
   useSinglePageMenuboard: boolean;
@@ -20,6 +28,8 @@ interface IReturn {
   selectedCategorySeq: number;
   handleCategoryClick: (category: ICategoryWithMenus) => void;
   selectedCategory: ICategoryWithMenus | undefined;
+  /** 스크롤 모드: 사이드바로 멀리 이동 시 해당 섹션만 Lazy 우회 마운트 */
+  eagerMountCategorySeq: number | null;
   activate: () => void;
   deactivate: () => void;
 }
@@ -29,7 +39,7 @@ interface IReturn {
  *
  * @description
  * - Sidebar, ScrollContent, TabContent 간 상태를 동기화합니다
- * - 스크롤 모드: IntersectionObserver를 사용하여 화면에 보이는 카테고리를 자동으로 선택합니다
+ * - 스크롤 모드: IntersectionObserver로 스크롤에 맞춰 활성 카테고리 갱신(실제 판별은 스크롤 컨테이너 기준 기하)
  * - 탭 모드: 카테고리 클릭 시 스크롤 컨테이너를 상단으로 이동합니다
  * - 사용자 클릭 시 IntersectionObserver를 일시적으로 비활성화하여 의도하지 않은 카테고리 변경을 방지합니다
  *
@@ -49,13 +59,20 @@ export function useCategoryNavigation({
   // 활성화 상태 관리 (useEffect가 변경을 감지하도록 state 사용)
   const [isActivated, setIsActivated] = useState(false);
 
+  // 스크롤 모드: 사이드바로 멀리 점프할 때 Lazy 우회용 (ScrollContent에 전달)
+  const [eagerMountCategorySeq, setEagerMountCategorySeq] = useState<
+    number | null
+  >(null);
+  const eagerMountClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+
   // IntersectionObserver 관련 refs
   const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
-  const categoryVisibilityMapRef = useRef<Map<number, boolean>>(new Map());
   const lastEmittedCategorySeqRef = useRef<number | null>(null);
   const observedCategorySeqsRef = useRef<Set<number>>(new Set());
 
-  // 스크롤 애니메이션 관련 refs
+  // 스크롤 스파이 일시 비활성화·타이머
   const shouldIgnoreScrollObserverRef = useRef(false);
   const scrollAnimationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
@@ -78,17 +95,7 @@ export function useCategoryNavigation({
     categoriesRef.current = categories;
   }, [categories]);
 
-  // 스크롤 모드: 선택한 카테고리 섹션으로 부드럽게 스크롤
-  const scrollToCategorySection = useRef((categoryId: number) => {
-    const sectionElement = document.getElementById(
-      DOM_IDS.getCategorySectionId(categoryId)
-    );
-    if (sectionElement) {
-      sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
-
-  // 사용자 클릭 시 IntersectionObserver 이벤트 일시 비활성화 (의도하지 않은 카테고리 변경 방지)
+  // 사용자 클릭으로 프로그램 스크롤 중에는 스크롤 스파이(활성 카테고리 자동 갱신)를 일시 비활성화
   const temporarilyDisableScrollObserver = useRef(() => {
     shouldIgnoreScrollObserverRef.current = true;
 
@@ -97,13 +104,14 @@ export function useCategoryNavigation({
       clearTimeout(scrollAnimationTimerRef.current);
     }
 
-    // 800ms 후 observer 재활성화 (스크롤 애니메이션 완료 시간 고려)
+    // SCROLL_SPY_SUPPRESS_MS 경과 후 스파이 재개
     scrollAnimationTimerRef.current = setTimeout(() => {
       shouldIgnoreScrollObserverRef.current = false;
       scrollAnimationTimerRef.current = null;
-    }, 800);
+    }, SCROLL_SPY_SUPPRESS_MS);
   });
 
+<<<<<<< HEAD
   // 탭/스크롤 모드 공통: 컨테이너 최상단으로 스크롤
   const scrollContentsContainerToTop = useRef(() => {
     requestAnimationFrame(() => {
@@ -112,6 +120,18 @@ export function useCategoryNavigation({
         : DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER;
       const container = document.getElementById(containerId);
       container?.scrollTo({ top: 0, behavior: 'smooth' });
+=======
+  // 탭 모드: 스크롤 컨테이너를 상단으로 이동
+  const scrollToTop = useRef(() => {
+    requestAnimationFrame(() => {
+      // Contents 컴포넌트의 스크롤 컨테이너 찾기
+      const scrollContainer = document.getElementById(
+        DOM_IDS.CONTENTS_SCROLL_CONTAINER
+      );
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0 });
+      }
+>>>>>>> develop
     });
   });
 
@@ -139,6 +159,7 @@ export function useCategoryNavigation({
       // 탭 모드: 스크롤 컨테이너를 상단으로 이동
       scrollContentsContainerToTop.current();
     } else {
+<<<<<<< HEAD
       // 스크롤 모드: 첫 번째 카테고리면 컨테이너 최상단, 그 외는 해당 섹션으로 스크롤
       const isFirstCategory =
         currentCategories[0]?.categorySeq === category.categorySeq;
@@ -147,9 +168,47 @@ export function useCategoryNavigation({
       } else {
         scrollToCategorySection.current(category.categorySeq);
       }
+=======
+      // 스크롤 모드: eager 마운트 → useLayoutEffect에서 컨테이너 기준 스크롤, 스파이 일시 비활성화
+      lastEmittedCategorySeqRef.current = category.categorySeq;
+      setEagerMountCategorySeq(category.categorySeq);
+>>>>>>> develop
       temporarilyDisableScrollObserver.current();
     }
   }).current;
+
+  // 스크롤 모드: eager 마운트 직후 레이아웃에서 스크롤 컨테이너 기준으로 스크롤
+  useLayoutEffect(() => {
+    if (eagerMountCategorySeq === null) {
+      return;
+    }
+
+    const container = document.getElementById(
+      DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER
+    );
+    const section = document.getElementById(
+      DOM_IDS.getCategorySectionId(eagerMountCategorySeq)
+    );
+
+    if (!container || !section) {
+      setEagerMountCategorySeq(null);
+      return;
+    }
+
+    const cr = container.getBoundingClientRect();
+    const sr = section.getBoundingClientRect();
+    const nextTop = container.scrollTop + (sr.top - cr.top);
+    // scrollIntoView(smooth) 대신 즉시 이동 — WebView·lazy 조합에서 스파이가 상단으로 덮는 이슈 완화
+    container.scrollTo({ top: nextTop, behavior: 'auto' });
+
+    if (eagerMountClearTimerRef.current) {
+      clearTimeout(eagerMountClearTimerRef.current);
+    }
+    eagerMountClearTimerRef.current = setTimeout(() => {
+      setEagerMountCategorySeq(null);
+      eagerMountClearTimerRef.current = null;
+    }, 900);
+  }, [eagerMountCategorySeq]);
 
   // categories 변경 시 selectedCategorySeq 동기화 (로딩 완료 후 유효성 검증)
   useEffect(() => {
@@ -169,8 +228,7 @@ export function useCategoryNavigation({
 
   // IntersectionObserver 설정 및 관리 (스크롤 모드일 때만)
   useEffect(() => {
-    // cleanup에서 사용할 ref 값들을 미리 복사 (린터 경고 방지)
-    const visibilityMap = categoryVisibilityMapRef.current;
+    // cleanup에서 사용할 ref 값 복사 (린터 경고 방지)
     const observedSeqs = observedCategorySeqsRef.current;
 
     // activate가 호출되지 않았거나 탭 모드에서는 observer 불필요
@@ -178,39 +236,48 @@ export function useCategoryNavigation({
       return;
     }
 
-    // 화면에 보이는 카테고리 중 가장 위쪽을 감지하여 상태 업데이트
     const handleScrollVisibilityChange = () => {
-      // 사용자가 직접 클릭하여 스크롤 중이면 무시
+      // 사용자가 사이드바로 프로그램 스크롤 중이면 무시
       if (shouldIgnoreScrollObserverRef.current) {
         return;
       }
 
-      // 현재 화면에 보이는 카테고리 ID 추출
-      const visibleCategorySeqs = Array.from(visibilityMap.entries())
-        .filter(([_, isVisible]) => isVisible)
-        .map(([categorySeq]) => categorySeq);
-
-      if (visibleCategorySeqs.length === 0) {
+      const cats = categoriesRef.current;
+      const first = cats[0];
+      if (!first) {
         return;
       }
 
-      // 가장 위쪽 카테고리 선택 (가장 작은 ID)
-      const topVisibleCategorySeq = getMinFromArray(visibleCategorySeqs);
+      const container = document.getElementById(
+        DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER
+      );
+      if (!container) {
+        return;
+      }
+
+      const rect = container.getBoundingClientRect();
+      // 스크롤 컨테이너 상단에서 약 20% 아래 기준선 — 이 선을 지난 마지막 섹션을 활성으로 둠 (DOM 순서)
+      const lineY = rect.top + rect.height * 0.2;
+
+      let topSeq = first.categorySeq;
+      for (const c of cats) {
+        const el = document.getElementById(
+          DOM_IDS.getCategorySectionId(c.categorySeq)
+        );
+        if (!el) {
+          continue;
+        }
+        if (el.getBoundingClientRect().top <= lineY) {
+          topSeq = c.categorySeq;
+        }
+      }
 
       // 중복 업데이트 방지: 이전과 동일한 카테고리면 스킵
-      if (
-        topVisibleCategorySeq !== null &&
-        lastEmittedCategorySeqRef.current !== topVisibleCategorySeq
-      ) {
-        lastEmittedCategorySeqRef.current = topVisibleCategorySeq;
-
-        // 상태 업데이트 (불필요한 리렌더링 방지)
-        setSelectedCategorySeq((prevSeq) => {
-          return prevSeq === topVisibleCategorySeq
-            ? prevSeq
-            : topVisibleCategorySeq;
-        });
+      if (lastEmittedCategorySeqRef.current === topSeq) {
+        return;
       }
+      lastEmittedCategorySeqRef.current = topSeq;
+      setSelectedCategorySeq((prev) => (prev === topSeq ? prev : topSeq));
     };
 
     // 디바운스 적용: 빠른 스크롤 시 과도한 업데이트 방지 (100ms)
@@ -218,14 +285,8 @@ export function useCategoryNavigation({
       createDebounce(handleScrollVisibilityChange, 100);
     debounceCleanupRef.current = cleanup;
 
-    // IntersectionObserver 콜백: 카테고리 섹션 가시성 변경 감지
-    const handleIntersectionChange = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        const categorySeq = Number(
-          entry.target.id.replace(DOM_IDS.CATEGORY_SECTION_PREFIX, '')
-        );
-        visibilityMap.set(categorySeq, entry.isIntersecting);
-      });
+    // IO는 트리거만 — 실제 활성 카테고리는 handleScrollVisibilityChange에서 기하로 계산
+    const handleIntersectionChange = () => {
       debouncedHandleVisibilityChange();
     };
 
@@ -235,7 +296,7 @@ export function useCategoryNavigation({
       OBSERVER_OPTIONS
     );
 
-    // Cleanup: observer, 타이머, 맵 초기화
+    // Cleanup: observer·디바운스 정리
     return () => {
       const observer = intersectionObserverRef.current;
       if (observer) {
@@ -249,18 +310,21 @@ export function useCategoryNavigation({
         debounceCleanupRef.current = null;
       }
 
-      visibilityMap.clear();
       lastEmittedCategorySeqRef.current = null;
       observedSeqs.clear();
     };
   }, [useSinglePageMenuboard, isActivated]);
 
-  // useScrollLayout 변경 시 스크롤 애니메이션 타이머 정리
+  // useSinglePageMenuboard 변경 시 스크롤·eager 타이머 정리
   useEffect(() => {
     return () => {
       if (scrollAnimationTimerRef.current) {
         clearTimeout(scrollAnimationTimerRef.current);
         scrollAnimationTimerRef.current = null;
+      }
+      if (eagerMountClearTimerRef.current) {
+        clearTimeout(eagerMountClearTimerRef.current);
+        eagerMountClearTimerRef.current = null;
       }
     };
   }, [useSinglePageMenuboard]);
@@ -270,7 +334,7 @@ export function useCategoryNavigation({
     const observer = intersectionObserverRef.current;
     const observedSeqs = observedCategorySeqsRef.current;
 
-    // activate가 호출되지 않았거나 탭 모드이거나 observer가 없으면 이전 등록 제거 후 종료
+    // activate 전·탭 모드·observer 없으면 observe 해제 후 종료
     if (!isActivated || useSinglePageMenuboard || !observer) {
       if (observer) {
         observedSeqs.forEach((categorySeq) => {
@@ -355,6 +419,11 @@ export function useCategoryNavigation({
     if (!isActivated) {
       return;
     }
+    if (eagerMountClearTimerRef.current) {
+      clearTimeout(eagerMountClearTimerRef.current);
+      eagerMountClearTimerRef.current = null;
+    }
+    setEagerMountCategorySeq(null);
     setIsActivated(false);
     setSelectedCategorySeq(categoriesRef.current[0]?.categorySeq || 0);
   }, [isActivated]);
@@ -363,6 +432,7 @@ export function useCategoryNavigation({
     selectedCategorySeq,
     handleCategoryClick,
     selectedCategory,
+    eagerMountCategorySeq,
     activate,
     deactivate,
   };

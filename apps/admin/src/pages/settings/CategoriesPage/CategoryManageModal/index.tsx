@@ -28,6 +28,16 @@ import { useQueryClient } from '@repo/api/tanstack-query';
 import { toast } from '@repo/feature/utils';
 import { MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
 
+/** GET 응답에만 의미 있는 로케일 맵은 PUT 바디에 넣지 않는다(스프레드 시 함께 나가면 서버가 맵을 우선할 수 있음). */
+function stripCategoryLocaleFieldsForPut(category: ICategory) {
+  const {
+    localeCategoryName: _nameByLocale,
+    localeCategoryDescription: _descriptionByLocale,
+    ...putBase
+  } = category;
+  return putBase;
+}
+
 interface Props {
   onClose: () => void;
   categoryData?: ICategory;
@@ -148,10 +158,8 @@ export const CategoryManageModal = ({
   useEffect(() => {
     if (isEdit && categoryData?.localeCategoryName && selectedLanguageCode) {
       const categoryNameForLanguage =
-        categoryData.localeCategoryName[selectedLanguageCode] || '';
-      if (categoryNameForLanguage) {
-        setCategoryName(categoryNameForLanguage);
-      }
+        categoryData.localeCategoryName[selectedLanguageCode] ?? '';
+      setCategoryName(categoryNameForLanguage);
     }
   }, [selectedLanguageCode, isEdit, categoryData]);
 
@@ -163,10 +171,8 @@ export const CategoryManageModal = ({
       selectedLanguageCode
     ) {
       const categoryDescriptionForLanguage =
-        categoryData.localeCategoryDescription[selectedLanguageCode] || '';
-      if (categoryDescriptionForLanguage) {
-        setCategoryDescription(categoryDescriptionForLanguage);
-      }
+        categoryData.localeCategoryDescription[selectedLanguageCode] ?? '';
+      setCategoryDescription(categoryDescriptionForLanguage);
     }
   }, [selectedLanguageCode, isEdit, categoryData]);
 
@@ -208,6 +214,21 @@ export const CategoryManageModal = ({
       return;
     }
 
+    if (useSaleTime && (!saleStartTime || !saleEndTime)) {
+      toast(t('판매 시간을 입력해주세요'));
+      return;
+    }
+
+    if (
+      useSaleTime &&
+      saleStartTime &&
+      saleEndTime &&
+      saleStartTime === saleEndTime
+    ) {
+      toast(t('판매 시간의 시작 시간과 종료 시간을 다르게 입력해주세요'));
+      return;
+    }
+
     const saleDayOfWeekNumbers = [...selectedDays].sort((a, b) => a - b);
 
     // 모든 요일이 선택되어 있고 공휴일 판매가 true면 useSaleDay는 false, 그 외에는 true
@@ -218,7 +239,7 @@ export const CategoryManageModal = ({
       // 수정 모드
       const category = categoryData as ICategory;
       const updateData: IUpdateCategoryRequest = {
-        ...category,
+        ...stripCategoryLocaleFieldsForPut(category),
         categoryName: categoryName || category.categoryName,
         saleDayOfWeek: saleDayOfWeekNumbers,
         saleStartTime,
@@ -227,7 +248,7 @@ export const CategoryManageModal = ({
         useTwoColumnLayout,
         isQuantitySelectable,
         isStaffCall,
-        categoryDescription,
+        categoryDescription: categoryDescription || null,
         selectedLanguageCode,
         useSaleDay,
         useSaleTime,

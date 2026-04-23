@@ -2,64 +2,63 @@ import React, { useState } from 'react';
 import { Modal, Input, Table, Button, Space } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { CloseOutlined } from '@ant-design/icons';
+import { useGetStoreList } from '@repo/api/queries';
+import type { IStore } from '@repo/api/types';
 
 export interface IndividualStoreAddModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (selectedKeys: React.Key[]) => void;
+  onAdd: (selectedStores: IStore[]) => void;
 }
-
-interface StoreData {
-  key: string;
-  code: string;
-  name: string;
-}
-
-// 임시 전체 매장 데이터
-const ALL_STORES: StoreData[] = [
-  { key: '101', code: 'S0011234', name: '투다리 강남점' },
-  { key: '102', code: 'S0015892', name: '투다리 홍대점' },
-  { key: '103', code: 'S0022341', name: '투다리 신촌점' },
-  { key: '104', code: 'S0031120', name: '투다리 이태원점' },
-  { key: '105', code: 'S0022349', name: '투다리 성수점' },
-];
 
 const IndividualStoreAddModal: React.FC<IndividualStoreAddModalProps> = ({
   isOpen,
   onClose,
   onAdd,
 }) => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedStores, setSelectedStores] = useState<IStore[]>([]);
   const [searchText, setSearchText] = useState('');
   const [searchInputValue, setSearchInputValue] = useState('');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+  const { data: storeResponse, isFetching } = useGetStoreList({
+    page: currentPage - 1,
+    size: pageSize,
+    keyword: searchText || undefined,
+    ungrouped: true,
+  });
+
+  const stores = storeResponse?.data?.content || [];
+  const totalElements = storeResponse?.data?.totalCount || 0;
+
   const handleAdd = () => {
-    onAdd(selectedRowKeys);
-    setSelectedRowKeys([]); // 선택 초기화
+    onAdd(selectedStores);
+    setSelectedStores([]); // 선택 초기화
     setSearchText('');
     setSearchInputValue('');
+    setCurrentPage(1);
     onClose();
   };
 
   const handleCancel = () => {
-    setSelectedRowKeys([]);
+    setSelectedStores([]);
     setSearchText('');
     setSearchInputValue('');
+    setCurrentPage(1);
     onClose();
   };
 
   const handleSearch = () => {
     setSearchText(searchInputValue);
+    setCurrentPage(1);
   };
 
-  const columns: ColumnsType<StoreData> = [
-    { title: '매장 코드', dataIndex: 'code', key: 'code', width: 120 },
-    { title: '매장명', dataIndex: 'name', key: 'name' },
+  const columns: ColumnsType<IStore> = [
+    { title: '매장 코드', dataIndex: 'shopCode', key: 'shopCode', width: 120 },
+    { title: '매장명', dataIndex: 'shopName', key: 'shopName' },
   ];
-
-  const filteredStores = ALL_STORES.filter(
-    (s) => s.name.includes(searchText) || s.code.includes(searchText)
-  );
 
   return (
     <Modal
@@ -97,7 +96,7 @@ const IndividualStoreAddModal: React.FC<IndividualStoreAddModalProps> = ({
             size="large"
             type="primary"
             onClick={handleAdd}
-            disabled={selectedRowKeys.length === 0}
+            disabled={selectedStores.length === 0}
           >
             추가
           </Button>
@@ -124,13 +123,49 @@ const IndividualStoreAddModal: React.FC<IndividualStoreAddModalProps> = ({
         </Space>
       </div>
       <Table
+        rowKey={(record) => String(record.shopSeq)}
         rowSelection={{
-          selectedRowKeys,
-          onChange: setSelectedRowKeys,
+          selectedRowKeys: selectedStores.map((s) => String(s.shopSeq)),
+          onSelect: (record, selected) => {
+            if (selected) {
+              setSelectedStores((prev) => [...prev, record]);
+            } else {
+              setSelectedStores((prev) =>
+                prev.filter((s) => String(s.shopSeq) !== String(record.shopSeq))
+              );
+            }
+          },
+          onSelectAll: (selected, selectedRows, changeRows) => {
+            if (selected) {
+              setSelectedStores((prev) => {
+                const prevCodes = new Set(prev.map((s) => String(s.shopSeq)));
+                const newItems = changeRows.filter(
+                  (r) => !prevCodes.has(String(r.shopSeq))
+                );
+                return [...prev, ...newItems];
+              });
+            } else {
+              const changeCodes = new Set(
+                changeRows.map((r) => String(r.shopSeq))
+              );
+              setSelectedStores((prev) =>
+                prev.filter((p) => !changeCodes.has(String(p.shopSeq)))
+              );
+            }
+          },
         }}
         columns={columns}
-        dataSource={filteredStores}
-        pagination={{ pageSize: 5 }}
+        dataSource={stores}
+        loading={isFetching}
+        pagination={{
+          current: currentPage,
+          pageSize,
+          total: totalElements,
+          onChange: (page, size) => {
+            setCurrentPage(page);
+            setPageSize(size);
+          },
+        }}
         size="small"
       />
     </Modal>

@@ -30,6 +30,7 @@ import { SSE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import { ROUTES } from '@/constants/routes';
 import { globalTimerManager } from '@/utils/timerManager';
 import { applyMenuboardStateAfterTableOrderHistoriesCleared } from '@/utils/applyMenuboardStateAfterTableOrderHistoriesCleared';
+import adminI18n from '@/config/i18n/admin.i18n';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import { clearAuthData } from '@/utils/auth';
@@ -312,7 +313,7 @@ export const useSSEHandler = () => {
             tableNumFromParams
           ),
         });
-        toast(tRef.current('테이블을 정리했어요.'));
+        toast(adminI18n.t('테이블을 정리했어요.'));
         navigate(ROUTES.TABLES.generate());
         return;
       }
@@ -623,14 +624,15 @@ export const useSSEHandler = () => {
       if (!currentDeviceData?.tableNumber || !message?.data) {
         return;
       }
-      // 이미 알림이 표시 중이면 중복 표시 방지
-      if (pickupAlarmShowingRef.current) {
-        return;
-      }
-
       const currentTableNumber = currentDeviceData.tableNumber;
       const pickupDataByTable = message.data as { [key: string]: string };
       if (!(currentTableNumber in pickupDataByTable)) {
+        return;
+      }
+
+      // 이미 알림이 표시 중이면 중복 표시 방지
+      if (pickupAlarmShowingRef.current) {
+        SystemControl.playSound({ type: 'dingdong' });
         return;
       }
 

@@ -11,7 +11,6 @@ import { toast } from '@repo/feature/utils';
 import * as S from './recommendedImageModal.style';
 
 interface RecommendedImageModalProps {
-  isOpen: boolean;
   images: ISampleMenuImageListResponse[];
   onClose: () => void;
   onConfirm: (images: ISampleMenuImage[]) => void;
@@ -25,7 +24,6 @@ const CATEGORY_NAMES: Record<string, string> = {
 };
 
 export const RecommendedImageModal = ({
-  isOpen,
   images,
   onClose,
   onConfirm,
@@ -41,9 +39,6 @@ export const RecommendedImageModal = ({
   const selectedIds = useMemo(() => new Set(selectionOrder), [selectionOrder]);
 
   useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
     // 모달 오픈 시 선택 초기화 + 유효한 카테고리 지정
     setSelectionOrder([]);
     setSelectedCategoryCode((prev) => {
@@ -52,7 +47,7 @@ export const RecommendedImageModal = ({
       }
       return categoryCodes[0] ?? null;
     });
-  }, [categoryCodes, isOpen]);
+  }, [categoryCodes]);
 
   const selectedImages = useMemo(() => {
     const imageMap = new Map<string, ISampleMenuImage>();
@@ -101,10 +96,6 @@ export const RecommendedImageModal = ({
     onConfirm(selectedImages);
   }, [onConfirm, selectedImages]);
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
     <ModalBackground onClick={onClose}>
       <S.ModalContainer onClick={(e) => e.stopPropagation()}>
@@ -138,48 +129,52 @@ export const RecommendedImageModal = ({
                 <span>{t('이 카테고리에 이미지가 없습니다.')}</span>
               </S.EmptyState>
             ) : (
-              <S.ImageGrid>
-                {currentCategoryImages.map((image, index) => {
-                  const isSelected = selectedIds.has(image.menuImageSampleSeq);
-                  const showFallback = !image.imagePath;
-                  const selectionNumber = selectionOrderMap.get(
-                    image.menuImageSampleSeq
-                  );
+              <S.ImageGridScroll>
+                <S.ImageGrid>
+                  {currentCategoryImages.map((image, index) => {
+                    const isSelected = selectedIds.has(
+                      image.menuImageSampleSeq
+                    );
+                    const showFallback = !image.imagePath;
+                    const selectionNumber = selectionOrderMap.get(
+                      image.menuImageSampleSeq
+                    );
 
-                  return (
-                    <S.ImageButton
-                      key={`image-${image.menuImageSampleSeq}-${index.toString()}`}
-                      type="button"
-                      selected={isSelected}
-                      aria-pressed={isSelected}
-                      onClick={() => toggleSelect(image.menuImageSampleSeq)}
-                    >
-                      {showFallback ? (
-                        <S.ImageFallback>
-                          <PhotoIcon
-                            width={24}
-                            height={24}
-                            color={theme.colors.grey[400]}
+                    return (
+                      <S.ImageButton
+                        key={`image-${image.menuImageSampleSeq}-${index.toString()}`}
+                        type="button"
+                        selected={isSelected}
+                        aria-pressed={isSelected}
+                        onClick={() => toggleSelect(image.menuImageSampleSeq)}
+                      >
+                        {showFallback ? (
+                          <S.ImageFallback>
+                            <PhotoIcon
+                              width={24}
+                              height={24}
+                              color={theme.colors.grey[400]}
+                            />
+                            <span>{t('이미지를 불러올 수 없습니다.')}</span>
+                          </S.ImageFallback>
+                        ) : (
+                          <S.Image
+                            src={image.imagePath ?? ''}
+                            alt={t('추천 이미지')}
                           />
-                          <span>{t('이미지를 불러올 수 없습니다.')}</span>
-                        </S.ImageFallback>
-                      ) : (
-                        <S.Image
-                          src={image.imagePath ?? ''}
-                          alt={t('추천 이미지')}
-                        />
-                      )}
-                      {image.imageName && (
-                        <S.ImageLabel>{image.imageName}</S.ImageLabel>
-                      )}
-                      <S.SelectionOverlay selected={isSelected} />
-                      <S.SelectionIndicator selected={isSelected}>
-                        {selectionNumber}
-                      </S.SelectionIndicator>
-                    </S.ImageButton>
-                  );
-                })}
-              </S.ImageGrid>
+                        )}
+                        {image.imageName && (
+                          <S.ImageLabel>{image.imageName}</S.ImageLabel>
+                        )}
+                        <S.SelectionOverlay selected={isSelected} />
+                        <S.SelectionIndicator selected={isSelected}>
+                          {selectionNumber}
+                        </S.SelectionIndicator>
+                      </S.ImageButton>
+                    );
+                  })}
+                </S.ImageGrid>
+              </S.ImageGridScroll>
             )}
           </>
 

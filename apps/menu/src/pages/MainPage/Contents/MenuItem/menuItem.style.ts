@@ -3,7 +3,7 @@ import { TYPOGRAPHY } from '@repo/ui';
 
 const IMAGE_SIZE = {
   1: {
-    width: '20.9375rem',
+    width: '21rem',
   },
   2: {
     width: '22.5rem',
@@ -130,6 +130,10 @@ export const Description = styled.p`
   margin-top: 16px;
   color: ${({ theme }) => theme.mode.grey[500]};
   ${TYPOGRAPHY.ST_2}
+  min-width: 0;
+  width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 6;

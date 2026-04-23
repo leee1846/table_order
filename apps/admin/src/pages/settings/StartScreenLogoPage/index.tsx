@@ -180,7 +180,20 @@ export const StartScreenLogoPage = () => {
     blobUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     blobUrlsRef.current.clear();
 
-    await refetch();
+    const refetchResult = await refetch();
+    if (refetchResult.isSuccess && refetchResult.data?.data) {
+      const nextThemePage = refetchResult.data.data;
+      const nextInitLayout = nextThemePage.initPageLayout ?? 'LIGHT';
+      const nextPageDetailType =
+        nextInitLayout === 'DARK' ? 'INIT_DARK' : 'INIT_LIGHT';
+      const refreshedDetails = nextThemePage.shopPageDetailList ?? [];
+      const refreshedDetail = refreshedDetails.find(
+        ({ pageDetailType }) => pageDetailType === nextPageDetailType
+      );
+      setCurrentLogoImage(refreshedDetail?.pageDetailImagePath ?? null);
+      setCurrentLogoFile(null);
+    }
+
     toast(t('로고 설정을 저장했습니다.'));
   }, [
     shopCode,

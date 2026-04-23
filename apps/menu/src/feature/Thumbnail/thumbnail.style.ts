@@ -9,7 +9,7 @@ interface IImageWrapper {
 export const ImageWrapper = styled.div<IImageWrapper>`
   position: relative;
   width: ${({ width }) => width};
-  aspect-ratio: 7 / 5;
+  aspect-ratio: 336 / 240;
   flex-shrink: 0;
   background-color: ${({ theme, hasImage }) =>
     hasImage ? 'transparent' : theme.mode.grey[200]};

@@ -18,14 +18,19 @@ import { useAuth } from '@/hooks/useAuth';
 import { SystemControl } from '@repo/util/app';
 import { useGetShopThemeMenu } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
-import { capsSmartOrderWhiteLogo } from '@repo/ui/icons';
 
 type MenuItem = {
   id: string;
   label: string;
 };
 
-export const Sidebar = () => {
+export type TablesPageSidebarProps = {
+  onDeviceListDialogAfterClose?: () => void; // 기기 모달 닫힌 뒤 상위에서 탭 스크롤 등
+};
+
+export const Sidebar = ({
+  onDeviceListDialogAfterClose,
+}: TablesPageSidebarProps) => {
   const { t } = useAdminTranslation();
   const menuItems = useMemo(
     () => [
@@ -83,10 +88,7 @@ export const Sidebar = () => {
     <SidebarContainer>
       <Logo>
         <img
-          src={
-            shopThemeMenuResponse?.data?.logoImagePath ??
-            capsSmartOrderWhiteLogo
-          }
+          src={shopThemeMenuResponse?.data?.logoImagePath ?? ''}
           alt={t('매장 로고')}
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         />
@@ -139,6 +141,7 @@ export const Sidebar = () => {
             setIsDeviceDialogOpen(false);
             setSelectedMenu('');
           }}
+          onAfterClose={onDeviceListDialogAfterClose} // TablesPage에서 탭 정렬
         />
       )}
     </SidebarContainer>

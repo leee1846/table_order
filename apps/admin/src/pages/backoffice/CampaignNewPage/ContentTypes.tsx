@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Tabs, type TabsProps } from 'antd';
 import styled from '@emotion/styled';
 import UploadContent, { type UploadedFile } from './UploadContent';
-import TopMenuAdExposure, {
-  type MenuItem,
-} from './ContentTypes/TopMenuAdExposure';
+import AdMenuContent, {
+  type AdMenuContentProps,
+} from './ContentTypes/AdMenuContent';
 import OrderFormImageSettings from './ContentTypes/OrderFormImageSettings';
 import { useRecordDragAndDrop } from './useDragAndDrop';
 
@@ -42,13 +42,11 @@ export const initialFiles: UploadedFile[] = [
 
 export const SUB_TABS = ['주문 대기', '상단 배너', '광고 메뉴', '주문 완료'];
 
-export interface ContentTypesProps {
+export interface ContentTypesProps extends AdMenuContentProps {
   filesByTab: Record<string, UploadedFile[]>;
   setFilesByTab: React.Dispatch<
     React.SetStateAction<Record<string, UploadedFile[]>>
   >;
-  menuItems: MenuItem[];
-  setMenuItems: React.Dispatch<React.SetStateAction<MenuItem[]>>;
   exposureType: 'full' | 'half';
   setExposureType: React.Dispatch<React.SetStateAction<'full' | 'half'>>;
   orderFiles: UploadedFile[];
@@ -94,10 +92,7 @@ const ContentTypes: React.FC<ContentTypesProps> = ({
         label: tab,
         forceRender: true, // 탭 이동 시 렌더링 파기 방지
         children: (
-          <TopMenuAdExposure
-            menuItems={menuItems}
-            setMenuItems={setMenuItems}
-          />
+          <AdMenuContent menuItems={menuItems} setMenuItems={setMenuItems} />
         ),
       };
     }

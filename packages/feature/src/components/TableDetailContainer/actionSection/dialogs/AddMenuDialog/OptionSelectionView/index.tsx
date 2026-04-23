@@ -172,17 +172,19 @@ export const OptionSelectionView = ({
 
                       return (
                         <S.SelectedOptionItem key={optionSeq}>
-                          <S.OptionItemName>
-                            ㄴ{option.localeOptionName?.[currentLan]}
-                          </S.OptionItemName>
-                          <S.OptionItemPrice>
-                            (+ ₩{formatCurrency(option.optionPrice)})
-                          </S.OptionItemPrice>
-                          {quantity >= 2 && (
-                            <S.OptionItemQuantity>
-                              {t('{{count}}개', { count: quantity })}
-                            </S.OptionItemQuantity>
-                          )}
+                          <S.OptionItemName>{`ㄴ\u2060${
+                            option.localeOptionName?.[currentLan] ?? ''
+                          }`}</S.OptionItemName>
+                          <S.OptionItemMeta>
+                            <S.OptionItemPrice>
+                              (+ ₩{formatCurrency(option.optionPrice)})
+                            </S.OptionItemPrice>
+                            {quantity >= 2 && (
+                              <S.OptionItemQuantity>
+                                {t('{{value}}개', { value: quantity })}
+                              </S.OptionItemQuantity>
+                            )}
+                          </S.OptionItemMeta>
                         </S.SelectedOptionItem>
                       );
                     }
@@ -270,7 +272,9 @@ export const OptionSelectionView = ({
                         >
                           <S.OptionNameContainer>
                             <S.OptionName>
-                              {option.localeOptionName?.[currentLan]}
+                              <S.OptionNameText>
+                                {option.localeOptionName?.[currentLan]}
+                              </S.OptionNameText>
                             </S.OptionName>
                             {option.optionPrice > 0 && (
                               <S.OptionPrice>
@@ -324,7 +328,9 @@ export const OptionSelectionView = ({
                                 disabled={isDisabled}
                                 customStyle={S.checkboxCss}
                               >
-                                {option.localeOptionName?.[currentLan]}
+                                <S.OptionLabelClamp>
+                                  {option.localeOptionName?.[currentLan]}
+                                </S.OptionLabelClamp>
                               </CheckButton>
                             </S.OptionName>
                             {option.optionPrice > 0 && (
@@ -358,7 +364,9 @@ export const OptionSelectionView = ({
                               customStyle={S.radioCss}
                               disabled={isDisabled}
                             >
-                              {option.localeOptionName?.[currentLan]}
+                              <S.OptionLabelClamp>
+                                {option.localeOptionName?.[currentLan]}
+                              </S.OptionLabelClamp>
                             </RadioButton>
                           </S.OptionName>
                           {option.optionPrice > 0 && (

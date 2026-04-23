@@ -52,6 +52,7 @@ import {
   orderRequestRefundFailedSummaryAfterPaymentApproval,
   orderRequestRefundFailedSummaryAfterPosOrderFailure,
 } from '@/utils/logOrderRequestRefundFailed';
+import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
 
 interface Props {
   onClose: () => void;
@@ -100,7 +101,7 @@ const calculateTotalMenusPrice = (menus: ICartMenu[]): number => {
   );
 };
 
-/** POS와 동일: `calculateCartMenusTaxAmount`(카트 줄 단위 floor 합산) */
+/** POS와 동일: `calculateCartMenusTaxAmount`(품목 단가 단위 floor 후 수량 곱셈 합산) */
 const calculateMenusTaxAmount = (menus: ICartMenu[]): number => {
   return calculateCartMenusTaxAmount(
     menus,
@@ -476,7 +477,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       orders: adjustedOrders,
     }).catch((error) => {
       // 테이블이 삭제된 경우 테이블 선택 페이지로 이동
-      if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
+      if (error.response?.data?.status?.code === TABLE_REMOVED_STATUS_CODE) {
         navigate(ROUTES.TABLES.generate());
       }
     });

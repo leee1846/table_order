@@ -16,6 +16,7 @@ export const InfoContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
   width: 100%;
 `;
 
@@ -29,6 +30,7 @@ export const TitleContainer = styled.div`
 export const TitleContent = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 16px;
 
   & > span {
@@ -48,6 +50,8 @@ export const PreviewButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 2px;
+  flex-shrink: 0;
+  white-space: nowrap;
   color: ${theme.colors.grey[600]};
   border: 1px solid ${theme.colors.grey[300]};
   border-radius: 30px;
@@ -85,11 +89,10 @@ export const EditButton = css`
 export const Description = styled.p`
   ${TYPOGRAPHY.ST_2}
   color: ${theme.colors.grey[500]};
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  min-width: 0;
+  width: 100%;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
 `;
 
 export const ToggleContainer = styled.div`

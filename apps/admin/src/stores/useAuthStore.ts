@@ -3,6 +3,7 @@ import type { ITokenPayload } from '@repo/api/types';
 import { getAccessToken, removeAuthTokens } from '@repo/api/auth';
 import { decodeJwtToken, storage } from '@repo/util/function';
 import { STORAGE_KEYS } from '@/constants/keys';
+import { resetAdminLanguageToDefault } from '@/config/i18n';
 
 export interface IAuthStore {
   /** 디코딩된 토큰 페이로드 */
@@ -101,6 +102,7 @@ export const useAuthStore = create<IAuthStore>((set, _) => {
       removeAuthTokens();
       storage.session.remove(STORAGE_KEYS.SHOP_CODE);
       storage.session.remove(STORAGE_KEYS.SHOP_SEQ);
+      resetAdminLanguageToDefault();
       set({ tokenPayload: null, shopCode: null, shopSeq: null });
     },
     setShopDataForBackoffice: (shopCode: string, shopSeq: number) => {

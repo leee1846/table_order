@@ -41,19 +41,21 @@ export const CategoryItem = ({ category }: Props) => {
         </S.CategoryDescription>
       </div>
 
-      {category.menuInfoList.length < 1 && (
+      {category.menuInfoList.filter((menu) => !menu.isHidden).length < 1 && (
         <NoContent paddingTop="40px">{t('등록된 메뉴가 없습니다.')}</NoContent>
       )}
 
       <S.Categories layout={layout}>
-        {category.menuInfoList.filter((menu) => !menu.isHidden).map((menu) => (
-          <MenuItem
-            layout={layout}
-            key={menu.menuSeq}
-            category={category}
-            menu={menu}
-          />
-        ))}
+        {category.menuInfoList
+          .filter((menu) => !menu.isHidden)
+          .map((menu) => (
+            <MenuItem
+              layout={layout}
+              key={menu.menuSeq}
+              category={category}
+              menu={menu}
+            />
+          ))}
       </S.Categories>
     </S.Container>
   );

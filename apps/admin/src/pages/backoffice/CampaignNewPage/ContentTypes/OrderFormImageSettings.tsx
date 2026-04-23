@@ -149,7 +149,10 @@ const OrderFormImageSettings: React.FC<OrderFormImageSettingsProps> = ({
 
           <Radio.Group
             value={exposureType}
-            onChange={(e) => setExposureType(e.target.value)}
+            onChange={(e) => {
+              setExposureType(e.target.value);
+              setOrderFiles([]); // 유형이 변경될 때 파일 목록 초기화
+            }}
             style={{ width: '100%' }}
           >
             <TypeCard selected={exposureType === 'full'}>

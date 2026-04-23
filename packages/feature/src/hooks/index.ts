@@ -1,17 +1,19 @@
 export * as useSSE from './useSSE';
 export { useSSEReconnecting } from './useSSE';
 export { useToast } from './useToast';
+export { useStablePaginatedTotalPages } from './useStablePaginatedTotalPages';
 export { useLongPress } from './useLongPress';
 export type {
   UseLongPressOptions,
   UseLongPressReturn,
   UseLongPressHandlers,
 } from './useLongPress';
-export { useScrollToSelectedItem } from './useScrollToSelectedItem';
-export type {
-  UseScrollToSelectedItemOptions,
-  UseScrollToSelectedItemReturn,
-} from './useScrollToSelectedItem';
+export {
+  useTableGroupListAlign,
+  scrollTableGroupListToSelected,
+  tableGroupDomSeqProps,
+} from './useTableGroupListAlign';
+export type { AlignTableGroupListOptions } from './useTableGroupListAlign';
 
 // Re-export dnd-kit core utilities
 export {

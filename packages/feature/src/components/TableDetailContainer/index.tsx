@@ -269,6 +269,15 @@ export const TableDetailContainer = ({
     };
   }, [orderHistoriesResponse, currentTableName]);
 
+  const handleSelectCancel = () => {
+    if (order.items.length === 0) {
+      toast(t('삭제할 메뉴가 없어요.'));
+      return;
+    }
+
+    setIsSelectCancelDialogOpen(true);
+  };
+
   const handleAllCancel = () => {
     if (order.items.length === 0) {
       toast(t('삭제할 메뉴가 없어요.'));
@@ -296,7 +305,7 @@ export const TableDetailContainer = ({
   const handleActionPress = (id: string) => {
     const actionHandlers: Record<string, () => void> = {
       'add-menu': () => setIsAddMenuDialogOpen(true),
-      'select-cancel': () => setIsSelectCancelDialogOpen(true),
+      'select-cancel': handleSelectCancel,
       'amount-change': () => setIsAmountChangeDialogOpen(true),
       'all-discount': () => setIsAllDiscountDialogOpen(true),
       'all-cancel': handleAllCancel,
@@ -407,7 +416,6 @@ export const TableDetailContainer = ({
         childCount={orderHistoriesResponse?.data?.kidsCustomerCount ?? 0}
         orderType={orderType}
         i18nInstance={i18nInstance}
-        currentOrder={order}
         shopPosCode={shopDetailResponse?.data?.shopSetting?.shopPosCode}
         onOrderCreated={(orderUuid, cancelOrderMenuRequest) => {
           onOrderCreated?.(orderUuid, cancelOrderMenuRequest);

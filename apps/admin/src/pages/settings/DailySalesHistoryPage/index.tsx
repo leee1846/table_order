@@ -12,6 +12,7 @@ import {
   formatDateToYYYYMMDD,
   isStartDateAfterEndDate,
   isEndDateBeforeStartDate,
+  formatLocalizedDate,
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetDailySales } from '@repo/api/queries';
@@ -30,7 +31,7 @@ const formatWithWeekday = (date: string, t: TFunction) => {
 };
 
 export const DailySalesHistoryPage = () => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const { shopCode } = useAuth();
   const location = useLocation();
   const defaultRange = useMemo(() => getDateRangeByPreset('thisWeek'), []);
@@ -130,17 +131,6 @@ export const DailySalesHistoryPage = () => {
     setAppliedRange({ startDate, endDate });
   };
 
-  const formatCalendarText = (date: string) => {
-    if (!date) {
-      return t('날짜 선택');
-    }
-    const dateObj = new Date(date);
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
-  };
-
   return (
     <>
       <UIStyles.setting.TablePageContainer>
@@ -172,7 +162,7 @@ export const DailySalesHistoryPage = () => {
                   height={25}
                   color={theme.colors.grey[700]}
                 />
-                <S.DateText>{formatCalendarText(startDate)}</S.DateText>
+                <S.DateText>{formatLocalizedDate(startDate, i18n.language) || t('날짜 선택')}</S.DateText>
               </S.DateButton>
 
               <S.RangeDivider>~</S.RangeDivider>
@@ -186,7 +176,7 @@ export const DailySalesHistoryPage = () => {
                   height={25}
                   color={theme.colors.grey[700]}
                 />
-                <S.DateText>{formatCalendarText(endDate)}</S.DateText>
+                <S.DateText>{formatLocalizedDate(endDate, i18n.language) || t('날짜 선택')}</S.DateText>
               </S.DateButton>
             </S.DateRange>
             <BasicButton
@@ -199,7 +189,10 @@ export const DailySalesHistoryPage = () => {
           </S.FilterBar>
 
           <S.TableCard>
-            <DailySalesHistoryTable rows={rows} />
+            <DailySalesHistoryTable
+              key={`${formatDateToYYYYMMDD(appliedRange.startDate)}-${formatDateToYYYYMMDD(appliedRange.endDate)}`}
+              rows={rows}
+            />
           </S.TableCard>
         </S.Container>
       </UIStyles.setting.TablePageContainer>

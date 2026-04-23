@@ -147,7 +147,14 @@ export const useSSEHandler = (tableNumber?: string) => {
 
       // 테이블 상세: 타임스탬프 변경 시 주문 히스토리 무효화 (테이블 비우기는 CLEAR)
       if (tableNumber) {
-        const currentOrderData = sseMessage.data as Record<string, number>;
+        const currentOrderData = sseMessage.data as Record<
+          string,
+          number
+        > | null;
+        if (!currentOrderData) {
+          return;
+        }
+
         const currentTimestamp = currentOrderData[tableNumber];
         const previousTimestamp = previousOrderDataRef.current?.[tableNumber];
 
@@ -286,6 +293,21 @@ export const useSSEHandler = (tableNumber?: string) => {
       startAgentPingCheckTimerRef.current();
 
       return;
+    }
+
+    if (sseMessage.type === 'POS_SYNC_END') {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.shop.detail(shopCode),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.table.groupList(shopCode),
+      });
+
+      if (tableNumber) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.category.menuboardList(shopCode, tableNumber),
+        });
+      }
     }
   }, [sseMessage, queryClient]);
 };

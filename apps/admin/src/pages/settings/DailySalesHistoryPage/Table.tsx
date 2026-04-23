@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { InfoIcon } from '@repo/ui/icons';
-import { theme } from '@repo/ui';
+import { useMemo } from 'react';
+import { AntTooltip } from '@/feature/backoffice/components';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency } from '@repo/util/string';
 import { useAdminTranslation } from '@/config/i18n';
@@ -38,77 +37,16 @@ interface Props {
 const renderMetric = (
   count: number,
   amount: number,
-  t: (key: string) => string
+  t: (key: string, options?: { value: number | string }) => string
 ) => (
   <S.Metric>
-    <span>{`${count ?? 0}${t('건')}`}</span>
+    <span>{t('{{value}}건', { value: count ?? 0 })}</span>
     {typeof amount === 'number' && <strong>{formatCurrency(amount)}</strong>}
   </S.Metric>
 );
 
 export const DailySalesHistoryTable = ({ rows }: Props) => {
   const { t } = useAdminTranslation();
-  const [showTotalSalesTooltip, setShowTotalSalesTooltip] = useState(false);
-  const [showActualSalesTooltip, setShowActualSalesTooltip] = useState(false);
-  const [showPricePerCustomerTooltip, setShowPricePerCustomerTooltip] =
-    useState(false);
-  const totalSalesIconWrapperRef = useRef<HTMLDivElement>(null);
-  const iconWrapperRef = useRef<HTMLDivElement>(null);
-  const pricePerCustomerIconWrapperRef = useRef<HTMLDivElement>(null);
-
-  const handleTotalSalesIconClick = () => {
-    setShowTotalSalesTooltip(!showTotalSalesTooltip);
-  };
-
-  const handleActualSalesIconClick = () => {
-    setShowActualSalesTooltip(!showActualSalesTooltip);
-  };
-
-  const handlePricePerCustomerIconClick = () => {
-    setShowPricePerCustomerTooltip(!showPricePerCustomerTooltip);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showTotalSalesTooltip &&
-        totalSalesIconWrapperRef.current &&
-        !totalSalesIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowTotalSalesTooltip(false);
-      }
-      if (
-        showActualSalesTooltip &&
-        iconWrapperRef.current &&
-        !iconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowActualSalesTooltip(false);
-      }
-      if (
-        showPricePerCustomerTooltip &&
-        pricePerCustomerIconWrapperRef.current &&
-        !pricePerCustomerIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowPricePerCustomerTooltip(false);
-      }
-    };
-
-    if (
-      showTotalSalesTooltip ||
-      showActualSalesTooltip ||
-      showPricePerCustomerTooltip
-    ) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [
-    showTotalSalesTooltip,
-    showActualSalesTooltip,
-    showPricePerCustomerTooltip,
-  ]);
 
   const totals = useMemo(() => {
     const initialTotals = {
@@ -176,8 +114,8 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
         <td>{row.displayDate ?? row.saleDate}</td>
         <td>{renderMetric(row.totalSalesCount, row.totalSalesAmount, t)}</td>
         <td>{renderMetric(row.actualSalesCount, row.actualSalesAmount, t)}</td>
-        <td>{`${row.cancelCount ?? 0}${t('건')}`}</td>
-        <td>{`${row.customerCount ?? 0}${t('명')}`}</td>
+        <td>{t('{{value}}건', { value: row.cancelCount ?? 0 })}</td>
+        <td>{t('{{value}}명', { value: row.customerCount ?? 0 })}</td>
         <td>{formatCurrency(row.pricePerCustomer)}</td>
         <td>{renderMetric(row.cardSalesCount, row.cardSalesAmount, t)}</td>
         <td>{renderMetric(row.cardCancelCount, row.cardCancelAmount, t)}</td>
@@ -199,55 +137,13 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
               <th>
                 <S.HeaderLabel>
                   {t('총 매출')}
-                  <S.IconWrapper
-                    ref={totalSalesIconWrapperRef}
-                    onClick={handleTotalSalesIconClick}
-                    onTouchEnd={(e) => {
-                      e.preventDefault();
-                      handleTotalSalesIconClick();
-                    }}
-                  >
-                    <InfoIcon
-                      width={18}
-                      height={18}
-                      color={theme.colors.grey[500]}
-                    />
-                    {showTotalSalesTooltip && (
-                      <S.Tooltip>
-                        <S.TooltipText>
-                          {t('할인,취소 매출을 제외한 총 매출')}
-                        </S.TooltipText>
-                        <S.TooltipArrow />
-                      </S.Tooltip>
-                    )}
-                  </S.IconWrapper>
+                  <AntTooltip title={t('할인,취소 매출을 제외한 총 매출')} />
                 </S.HeaderLabel>
               </th>
               <th>
                 <S.HeaderLabel>
                   {t('실 매출')}
-                  <S.IconWrapper
-                    ref={iconWrapperRef}
-                    onClick={handleActualSalesIconClick}
-                    onTouchEnd={(e) => {
-                      e.preventDefault();
-                      handleActualSalesIconClick();
-                    }}
-                  >
-                    <InfoIcon
-                      width={18}
-                      height={18}
-                      color={theme.colors.grey[500]}
-                    />
-                    {showActualSalesTooltip && (
-                      <S.Tooltip>
-                        <S.TooltipText>
-                          {t('취소금액 및 할인이 반영된 금액')}
-                        </S.TooltipText>
-                        <S.TooltipArrow />
-                      </S.Tooltip>
-                    )}
-                  </S.IconWrapper>
+                  <AntTooltip title={t('취소금액 및 할인이 반영된 금액')} />
                 </S.HeaderLabel>
               </th>
               <th>{t('총 취소')}</th>
@@ -255,38 +151,34 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
               <th>
                 <S.HeaderLabel>
                   {t('총 객단가')}
-                  <S.IconWrapper
-                    ref={pricePerCustomerIconWrapperRef}
-                    onClick={handlePricePerCustomerIconClick}
-                    onTouchEnd={(e) => {
-                      e.preventDefault();
-                      handlePricePerCustomerIconClick();
-                    }}
-                  >
-                    <InfoIcon
-                      width={18}
-                      height={18}
-                      color={theme.colors.grey[500]}
-                    />
-                    {showPricePerCustomerTooltip && (
-                      <S.Tooltip>
-                        <S.TooltipText>
-                          {t(
-                            '총 매출/총 객수(*객수 미사용 시, 매출/테이블 수)'
-                          )}
-                        </S.TooltipText>
-                        <S.TooltipArrow />
-                      </S.Tooltip>
+                  <AntTooltip
+                    title={t(
+                      '총 매출/총 객수(*객수 미사용 시, 매출/테이블 수)'
                     )}
-                  </S.IconWrapper>
+                  />
                 </S.HeaderLabel>
               </th>
               <th>{t('카드')}</th>
               <th>{t('카드 취소')}</th>
               <th>{t('단순현금')}</th>
               <th>{t('단순현금 취소')}</th>
-              <th>{t('할인')}</th>
-              <th>{t('서비스')}</th>
+              <th>
+                <S.HeaderLabel>
+                  {t('할인')}
+                  <AntTooltip
+                    title={t('OK포스 할인을 제외한 할인 내역이 노출됩니다.')}
+                  />
+                </S.HeaderLabel>
+              </th>
+              <th>
+                <S.HeaderLabel>
+                  {t('서비스')}
+                  <AntTooltip
+                    title={t('OK포스 할인 내역은 서비스 항목에 노출됩니다.')}
+                    placement="topRight"
+                  />
+                </S.HeaderLabel>
+              </th>
             </tr>
           </UIStyles.setting.Thead>
         </UIStyles.setting.Table>
@@ -315,8 +207,8 @@ export const DailySalesHistoryTable = ({ rows }: Props) => {
                   t
                 )}
               </td>
-              <td>{`${totals.cancelCount}${t('건')}`}</td>
-              <td>{`${totals.customerCount}${t('명')}`}</td>
+              <td>{t('{{value}}건', { value: totals.cancelCount })}</td>
+              <td>{t('{{value}}명', { value: totals.customerCount })}</td>
               <td>
                 {formatCurrency(
                   totals.customerCount > 0

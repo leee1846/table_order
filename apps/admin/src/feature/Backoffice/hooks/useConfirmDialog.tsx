@@ -6,6 +6,7 @@ interface ShowConfirmProps {
   title: string;
   targetName?: string;
   itemName?: string;
+  okText?: string;
   content?: React.ReactNode;
   onConfirm: () => void;
 }
@@ -22,6 +23,7 @@ export const useConfirmDialog = () => {
     targetName,
     itemName,
     content,
+    okText,
     onConfirm,
   }: ShowConfirmProps) => {
     modal.confirm({
@@ -49,7 +51,7 @@ export const useConfirmDialog = () => {
           </p>
         </div>
       ),
-      okText: '삭제',
+      okText: okText || '삭제',
       cancelText: '취소',
       cancelButtonProps: {
         className: 'custom-cancel-btn',

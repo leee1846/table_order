@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ModalBackground, BasicButton, CheckButton } from '@repo/ui/components';
 import { CloseIcon /* , FullBatteryIcon */ } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -15,6 +15,7 @@ export type DeviceListDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   shopCode?: string;
+  onAfterClose?: () => void; // 닫힌 다음 프레임 부모 후처리(탭 스크롤 등)
 };
 
 const formatWifiSignal = (
@@ -52,8 +53,19 @@ export const DeviceListDialog = ({
   isOpen,
   onClose,
   shopCode,
+  onAfterClose,
 }: DeviceListDialogProps) => {
   const { t } = useAdminTranslation();
+
+  const handleClose = useCallback(() => {
+    onClose();
+    if (onAfterClose) {
+      // 모달 DOM이 빠진 뒤 레이아웃·스크롤 후처리
+      requestAnimationFrame(() => {
+        onAfterClose();
+      });
+    }
+  }, [onClose, onAfterClose]);
   const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
 
   // 각 디바이스의 이전 controlStatus를 추적 (useRef로 변경하여 의존성 문제 해결)
@@ -289,12 +301,12 @@ export const DeviceListDialog = ({
   };
 
   return (
-    <ModalBackground position="center" onClick={onClose}>
+    <ModalBackground position="center" onClick={handleClose}>
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
         <S.Container>
           <S.Header>
             <S.Title>{t('기기관리')}</S.Title>
-            <S.CloseButton onClick={onClose} aria-label={t('닫기')}>
+            <S.CloseButton onClick={handleClose} aria-label={t('닫기')}>
               <CloseIcon width={32} height={32} color={colors.grey[700]} />
             </S.CloseButton>
           </S.Header>
@@ -430,7 +442,9 @@ export const DeviceListDialog = ({
 
                         <S.CardSectionWrapper>
                           <S.CardSection>
-                            <S.SectionLabel>{t('와이파이 신호')}</S.SectionLabel>
+                            <S.SectionLabel>
+                              {t('와이파이 신호')}
+                            </S.SectionLabel>
                             <S.SectionValue tone={wifiTone}>
                               {formatWifiSignal(device.wifiSignal, t)}
                             </S.SectionValue>
@@ -447,12 +461,6 @@ export const DeviceListDialog = ({
                           <S.FooterItem>
                             <S.FooterLabel>{t('IP주소')}</S.FooterLabel>
                             <S.FooterValue>{device.ipAddress}</S.FooterValue>
-                          </S.FooterItem>
-                          <S.FooterItem>
-                            <S.FooterLabel>{t('빌드 번호')}</S.FooterLabel>
-                            <S.FooterValue>
-                              {device.buildNumber || '-'}
-                            </S.FooterValue>
                           </S.FooterItem>
                         </S.CardFooter>
                       </S.DeviceCard>

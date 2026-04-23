@@ -51,7 +51,7 @@ export interface IUpdateStoreGroupRequest {
 // ============================================================================
 export interface IStoreGroupDetail extends IStoreGroup {
   stores?: string[]; // TODO: 백엔드 응답명에 맞춰 필드를 추가/수정하세요.
-  [key: string]: any;
+  //[key: string]: any;
 }
 
 export type TGetStoreGroupDetailResponse = IApiResponse<IStoreGroupDetail>;
@@ -69,15 +69,20 @@ export interface IStoreGroupMemberResponseData {
 }
 
 export interface IStoreGroupMember {
+  shopGroupSeq: number;
+  groupId: string;
+  groupName: string;
   shopSeq: number;
   shopName: string;
   shopCode: string;
-  address1: string;
-  //   address2: string;
-  //   shopPhoneNumber: string;
-  //   ownerName: string;
-  //   shopType: string;
+  address1?: string;
+  address2?: string;
+  shopPhoneNumber?: string;
+  ownerName?: string;
+  shopType?: string;
 }
+
+export type TGetStoresByGroupsResponse = IApiResponse<IStoreGroupMember[]>;
 
 export type TGetStoreGroupMembersResponse =
   IApiResponse<IStoreGroupMemberResponseData>;

@@ -37,6 +37,7 @@ export const Contents = ({
     <S.Wrapper>
       {categories.length < 1 ? (
         <NoContent paddingTop="0">{t('등록된 메뉴가 없습니다.')}</NoContent>
+<<<<<<< HEAD
       ) : useSinglePageMenuboard ? (
         <S.Container
           id={DOM_IDS.CONTENTS_SCROLL_CONTAINER}
@@ -55,5 +56,23 @@ export const Contents = ({
         </S.Container>
       )}
     </S.Wrapper>
+=======
+      </S.NoContentContainer>
+    );
+  }
+
+  return useSinglePageMenuboard ? (
+    <S.Container id={DOM_IDS.CONTENTS_SCROLL_CONTAINER}>
+      <TabContent selectedCategory={categoryNavigation.selectedCategory} />
+    </S.Container>
+  ) : (
+    <S.Container id={DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER}>
+      {/* eagerMountCategorySeq: 사이드바로 멀리 이동 시 해당 섹션만 Lazy 우회 */}
+      <ScrollContent
+        categories={categories}
+        eagerMountCategorySeq={categoryNavigation.eagerMountCategorySeq}
+      />
+    </S.Container>
+>>>>>>> develop
   );
 };

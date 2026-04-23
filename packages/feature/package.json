@@ -9,6 +9,7 @@
     "./package.json": "./package.json",
     "./components": { "types": "./dist/components/index.d.ts", "default": "./src/components/index.ts" },
     "./hooks": { "types": "./dist/hooks/index.d.ts", "default": "./src/hooks/index.ts" },
+    "./tables": { "types": "./dist/tables/index.d.ts", "default": "./src/tables/index.ts" },
     "./utils": { "types": "./dist/utils/index.d.ts", "default": "./src/utils/index.ts" },
     "./stores": { "types": "./dist/stores/index.d.ts", "default": "./src/stores/index.ts" },
     "./zustand": { "types": "./dist/zustand.d.ts", "default": "./src/zustand.ts" }

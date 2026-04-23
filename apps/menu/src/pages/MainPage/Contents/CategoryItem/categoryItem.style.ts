@@ -29,4 +29,9 @@ export const CategoryDescription = styled.p`
   ${TYPOGRAPHY.ST_4}
   color: ${({ theme }) => theme.mode.grey[600]};
   max-width: 85%;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 `;

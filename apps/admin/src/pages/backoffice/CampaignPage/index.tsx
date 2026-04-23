@@ -19,23 +19,31 @@ import {
   DeleteOutlined,
   CopyOutlined,
   LinkOutlined,
+  FileSyncOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { ROUTES } from '@/constants/routes';
 import PageTitle from '@/feature/Backoffice/components/PageTitle';
 import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
+import {
+  useGetCampaignList,
+  usePatchUpdateCampaignActive,
+  usePostCopyCampaign,
+  usePatchUpdateCampaign,
+} from '@repo/api/queries';
 
 // --- Types ---
 type CampaignStatus = '집행중' | '대기' | '중지' | '집행종료';
 
 interface CampaignDataType {
-  key: string;
+  campaignSeq: number;
   code: string;
   name: string;
   nickname: string;
   storeCount: number;
   period: string;
   status: CampaignStatus;
+  isActive: boolean;
 }
 
 // --- Emotion Styles (이미지 디자인 완벽 반영) ---
@@ -67,142 +75,42 @@ const TopBar = styled.div`
   flex-shrink: 0;
 `;
 
-// --- Mock Data ---
-const initialData: CampaignDataType[] = [
-  {
-    key: '1',
-    code: 'CP-001',
-    name: '봄 시즌 기획전',
-    nickname: 'SPRING_24',
-    storeCount: 45,
-    period: '2024-03-01 ~ 2024-03-31',
-    status: '집행중',
-  },
-  {
-    key: '2',
-    code: 'CP-002',
-    name: '신규 가입 혜택',
-    nickname: 'WELCOME',
-    storeCount: 150,
-    period: '2024-04-01 ~ 2024-12-31',
-    status: '대기',
-  },
-  {
-    key: '3',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '집행종료',
-  },
-  {
-    key: '4',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '중지',
-  },
-  {
-    key: '5',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '중지',
-  },
-  {
-    key: '6',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '중지',
-  },
-  {
-    key: '7',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '중지',
-  },
-  {
-    key: '8',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '중지',
-  },
-  {
-    key: '9',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '중지',
-  },
-  {
-    key: '10',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '중지',
-  },
-  {
-    key: '11',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '중지',
-  },
-  {
-    key: '12',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '중지',
-  },
-  {
-    key: '13',
-    code: 'CP-003',
-    name: '라스트미닛 딜',
-    nickname: 'LAST_CALL',
-    storeCount: 12,
-    period: '2024-02-01 ~ 2024-02-28',
-    status: '중지',
-  },
-];
-
 type FilterStatus = CampaignStatus | '전체';
 
-interface CampaignDataType {
-  key: string;
-  code: string;
-  name: string;
-  nickname: string;
-  storeCount: number;
-  period: string;
-  status: CampaignStatus;
-}
+// --- Status Mapping Helpers ---
+const mapToDisplayStatus = (backendStatus?: string): CampaignStatus => {
+  switch (backendStatus) {
+    case 'PROGRESS':
+      return '집행중';
+    case 'WAITING':
+      return '대기';
+    case 'PAUSED':
+      return '중지';
+    case 'TERMINATED':
+      return '집행종료';
+    default:
+      return '대기';
+  }
+};
+
+const mapToBackendStatus = (
+  displayStatus: FilterStatus
+): string | undefined => {
+  switch (displayStatus) {
+    case '집행중':
+      return 'PROGRESS';
+    case '대기':
+      return 'WAITING';
+    case '중지':
+      return 'PAUSED';
+    case '집행종료':
+      return 'TERMINATED';
+    default:
+      return undefined;
+  }
+};
 
 const StyledRadioGroup = styled(Radio.Group)`
-  margin-bottom: 16px;
-
   .ant-radio-button-wrapper {
     /* 선택되지 않았을 때 마우스 호버 시 텍스트 색상 */
     &.status-active:hover {
@@ -254,6 +162,9 @@ const StyledRadioGroup = styled(Radio.Group)`
 
 // 테이블 상단 라디오 버튼과 테이블 사이의 간격을 주기 위한 래퍼
 const FilterWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 16px;
   flex-shrink: 0;
 `;
@@ -274,8 +185,6 @@ const CampaignPage: React.FC = () => {
   const { message } = App.useApp();
   const { showConfirm } = useConfirmDialog();
   const navigate = useNavigate();
-  const [dataSource, setDataSource] = useState<CampaignDataType[]>([]);
-  const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [searchText, setSearchText] = useState('');
   const [dateStrings, setDateStrings] = useState<[string, string]>(['', '']);
@@ -284,47 +193,102 @@ const CampaignPage: React.FC = () => {
     [string, string]
   >(['', '']);
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('전체');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  // API 데이터 호출 로직
+  // API 연동: 캠페인 목록 조회
+  const {
+    data: campaignResponse,
+    isFetching,
+    refetch,
+  } = useGetCampaignList({
+    page: currentPage - 1, // 백엔드는 보통 0부터 시작
+    size: pageSize,
+    name: appliedSearchText || undefined,
+    status: mapToBackendStatus(statusFilter),
+    startDate: appliedDateStrings[0] || undefined,
+    endDate: appliedDateStrings[1] || undefined,
+  });
 
-  const fetchCampaignList = async () => {
-    setLoading(true);
-    try {
-      // TODO: 실제 API 호출 로직으로 교체 (예: const res = await axios.get('/api/campaigns'); setDataSource(res.data); )
-      await new Promise((resolve) => setTimeout(resolve, 500)); // API 지연 시간 Mocking
-      setDataSource(initialData); // 가져온 데이터를 상태에 저장
-    } catch (error) {
-      console.error('API Error:', error);
-      message.error('캠페인 목록을 불러오는 데 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { mutateAsync: updateCampaignActive } = usePatchUpdateCampaignActive();
+  const { mutateAsync: copyCampaign } = usePostCopyCampaign();
+  const { mutateAsync: updateCampaign } = usePatchUpdateCampaign();
 
-  useEffect(() => {
-    fetchCampaignList();
-  }, []);
+  const campaigns: CampaignDataType[] = useMemo(() => {
+    return (campaignResponse?.data?.content || []).map((item) => ({
+      campaignSeq: item.campaignSeq,
+      code: item.campaignCode || '-',
+      name: item.campaignName || '-',
+      nickname: item.campaignAlias || '-',
+      storeCount: item.shopCount || 0,
+      period: `${item.startDate || ''} ~ ${item.endDate || ''}`,
+      status: mapToDisplayStatus(item.campaignStatus),
+      isActive: item.isActive,
+    }));
+  }, [campaignResponse?.data?.content]);
+
+  const totalCount = campaignResponse?.data?.totalElements || 0;
 
   const handleSearch = () => {
     setAppliedSearchText(searchText);
     setAppliedDateStrings(dateStrings);
+    setCurrentPage(1); // 검색 시 첫 페이지로 이동
   };
 
   // 상태 변경 로직
-  const updateStatus = (keys: React.Key[], nextStatus: CampaignStatus) => {
-    setDataSource((prev) =>
-      prev.map((item) =>
-        keys.includes(item.key) ? { ...item, status: nextStatus } : item
-      )
-    );
-    message.success('상태가 변경되었습니다.');
-    if (keys.length > 1) {
-      setSelectedRowKeys([]);
+  const updateStatus = async (keys: React.Key[], isActive: boolean) => {
+    try {
+      await updateCampaignActive({
+        campaignSeqs: keys.map(Number),
+        isActive,
+      });
+      message.success(
+        `선택한 캠페인이 ${isActive ? 'ON' : 'OFF'} 처리되었습니다.`
+      );
+      setSelectedRowKeys([]); // 변경 후 선택 해제
+      refetch(); // 목록 새로고침
+    } catch (error) {
+      // 글로벌 에러 핸들러에서 처리됨
     }
   };
 
+  const handleCopy = (record: CampaignDataType) => {
+    showConfirm({
+      title: '캠페인 복사',
+      targetName: '캠페인',
+      itemName: record.name,
+      okText: '복사',
+      content: (
+        <div style={{ marginTop: '16px' }}>
+          <style>
+            {`
+              .custom-cancel-btn:hover,
+              .custom-cancel-btn:focus {
+                color: #1d2a6d !important;
+                border-color: #1d2a6d !important;
+              }
+            `}
+          </style>
+          <p style={{ margin: 0, lineHeight: 1.8 }}>
+            캠페인 <strong style={{ color: '#d4380d' }}>`{record.name}`</strong>
+            을(를) 복사하시겠습니까?
+          </p>
+        </div>
+      ),
+      onConfirm: async () => {
+        try {
+          await copyCampaign({ campaignSeq: record.campaignSeq });
+          message.success(`'${record.name}' 캠페인이 복사되었습니다.`);
+          refetch(); // 목록 새로고침
+        } catch (error) {
+          // 글로벌 에러 핸들러에서 처리됨
+        }
+      },
+    });
+  };
+
   const columns: ColumnsType<CampaignDataType> = [
-    { title: '캠페인 코드', dataIndex: 'code', key: 'code', width: 120 },
+    { title: '캠페인 ID', dataIndex: 'code', key: 'code', width: 120 },
     { title: '캠페인명', dataIndex: 'name', key: 'name' },
     { title: '별명', dataIndex: 'nickname', key: 'nickname' },
     {
@@ -348,6 +312,7 @@ const CampaignPage: React.FC = () => {
           중지: 'default',
           집행종료: 'volcano',
         };
+        // (대기 : WATING, 진행 : PROGRESS, 종료 : TERMINATED, 일시정지 : PAUSED)
         return (
           <Tag color={colors[status]} variant="outlined">
             {status}
@@ -365,9 +330,13 @@ const CampaignPage: React.FC = () => {
             <Button
               type="text"
               icon={<EditOutlined />}
-              disabled={record.status !== '중지'}
+              disabled={false /* record.status === '집행중' */}
               onClick={() =>
-                navigate(ROUTES.BACKOFFICE.CAMPAIGN_EDIT.generate(record.code))
+                navigate(
+                  ROUTES.BACKOFFICE.CAMPAIGN_EDIT.generate(
+                    String(record.campaignSeq)
+                  )
+                )
               }
             />
           </Tooltip>
@@ -376,14 +345,29 @@ const CampaignPage: React.FC = () => {
               type="text"
               //danger
               icon={<DeleteOutlined />}
-              disabled={record.status !== '중지'}
+              disabled={record.status === '집행중'}
               onClick={() => {
                 showConfirm({
                   title: '캠페인 삭제',
                   targetName: '캠페인',
                   itemName: record.name,
-                  onConfirm: () => {
-                    message.warning(`'${record.name}' 삭제`);
+                  onConfirm: async () => {
+                    try {
+                      await updateCampaign({
+                        campaignSeq: record.campaignSeq,
+                        request: {
+                          campaignName: record.name, // 필수값 유지
+                          isDeleted: true,
+                        },
+                      });
+                      message.success(
+                        `'${record.name}' 캠페인이 삭제되었습니다.`
+                      );
+                      setSelectedRowKeys([]); // 삭제 후 선택 해제
+                      refetch(); // 목록 새로고침
+                    } catch (error) {
+                      // 글로벌 에러 핸들러에서 처리됨
+                    }
                   },
                 });
               }}
@@ -393,7 +377,16 @@ const CampaignPage: React.FC = () => {
             <Button
               type="text"
               icon={<CopyOutlined />}
-              onClick={() => message.info(`'${record.name}' 복사`)}
+              onClick={() => handleCopy(record)}
+            />
+          </Tooltip>
+          <Tooltip title="메뉴 태그 동기화 현황">
+            <Button
+              type="text"
+              icon={<FileSyncOutlined />}
+              onClick={() =>
+                navigate(ROUTES.BACKOFFICE.MENU_GROUP_STATUS.generate())
+              }
             />
           </Tooltip>
         </Space>
@@ -409,45 +402,15 @@ const CampaignPage: React.FC = () => {
           size="small"
           checkedChildren="on"
           unCheckedChildren="off"
-          checked={record.status !== '중지'}
-          onChange={(checked) =>
-            updateStatus([record.key], checked ? '집행중' : '중지')
-          }
+          checked={record.isActive}
+          onChange={(checked) => updateStatus([record.campaignSeq], checked)}
           style={{
-            backgroundColor: record.status !== '중지' ? '#52c41a' : '#bfbfbf',
+            backgroundColor: record.isActive ? '#52c41a' : '#bfbfbf',
           }}
         />
       ),
     },
   ];
-
-  const filteredData = useMemo(() => {
-    return dataSource.filter((item) => {
-      // 1. 캠페인명 검색
-      const matchName = item.name.includes(appliedSearchText);
-
-      // 2. 상태 필터 적용
-      const matchStatus =
-        statusFilter === '전체' || item.status === statusFilter;
-
-      // 3. 집행기간 검색 (기간이 겹치는 경우 모두 검색되도록 조건 설정)
-      let matchPeriod = true;
-      if (
-        appliedDateStrings &&
-        appliedDateStrings[0] &&
-        appliedDateStrings[1]
-      ) {
-        const [itemStart, itemEnd] = item.period.split(' ~ ');
-        // YYYY-MM-DD 포맷이므로 문자열 비교가 가능합니다.
-        if (itemStart && itemEnd) {
-          matchPeriod =
-            itemStart <= appliedDateStrings[1] &&
-            itemEnd >= appliedDateStrings[0];
-        }
-      }
-      return matchName && matchStatus && matchPeriod;
-    });
-  }, [dataSource, appliedSearchText, statusFilter, appliedDateStrings]);
 
   return (
     <Container>
@@ -478,48 +441,14 @@ const CampaignPage: React.FC = () => {
               검색
             </Button>
           </Space>
-          <Space>
-            <Button
-              variant="solid"
-              color="green"
-              disabled={selectedRowKeys.length === 0}
-              onClick={() => updateStatus(selectedRowKeys, '집행중')}
-            >
-              ON
-            </Button>
-            <Button
-              variant="solid"
-              style={{
-                backgroundColor: '#bfbfbf',
-                borderColor: '#bfbfbf',
-                color: '#fff',
-              }}
-              disabled={selectedRowKeys.length === 0}
-              onClick={() => updateStatus(selectedRowKeys, '중지')}
-            >
-              OFF
-            </Button>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              style={{
-                borderRadius: '8px',
-                height: '40px',
-                padding: '0 20px',
-                fontWeight: 600,
-              }}
-              onClick={() =>
-                navigate(ROUTES.BACKOFFICE.CAMPAIGN_NEW.generate())
-              }
-            >
-              캠페인 등록
-            </Button>
-          </Space>
         </TopBar>
         <FilterWrapper>
           <StyledRadioGroup
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setCurrentPage(1); // 탭 이동 시 첫 페이지로 이동
+            }}
             optionType="button"
             buttonStyle="solid"
           >
@@ -539,20 +468,64 @@ const CampaignPage: React.FC = () => {
               중지
             </Radio.Button>
           </StyledRadioGroup>
+          <Space>
+            <Button
+              variant="solid"
+              color="green"
+              disabled={selectedRowKeys.length === 0}
+              onClick={() => updateStatus(selectedRowKeys, true)}
+            >
+              ON
+            </Button>
+            <Button
+              variant="solid"
+              style={{
+                backgroundColor: '#bfbfbf',
+                borderColor: '#bfbfbf',
+                color: '#fff',
+              }}
+              disabled={selectedRowKeys.length === 0}
+              onClick={() => updateStatus(selectedRowKeys, false)}
+            >
+              OFF
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              style={{
+                borderRadius: '8px',
+                height: '40px',
+                padding: '0 20px',
+                fontWeight: 600,
+              }}
+              onClick={() =>
+                navigate(ROUTES.BACKOFFICE.CAMPAIGN_NEW.generate())
+              }
+            >
+              캠페인 등록
+            </Button>
+          </Space>
         </FilterWrapper>
         <StyledTable
-          loading={loading}
+          rowKey="campaignSeq"
+          loading={isFetching}
           rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
           columns={columns}
-          dataSource={filteredData}
+          dataSource={campaigns}
           rowClassName={(record) =>
             record.status === '중지' ? 'stopped-row' : ''
           }
           pagination={{
-            total: filteredData.length,
+            current: currentPage,
+            pageSize,
+            total: totalCount,
             showTotal: (total) => `총 ${total}건`,
             placement: ['bottomEnd'], // 이미지와 동일하게 우측 하단 배치
             showSizeChanger: true,
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
           }}
           // scroll={
           //   filteredData.length > 10 ? { y: 'calc(100vh - 530px)' } : undefined

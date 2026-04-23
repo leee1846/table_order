@@ -12,16 +12,24 @@ export const Container = styled.div`
   overflow: hidden;
 `;
 
-export const CloseButton = styled.button`
+export const TopHeaderActions = styled.div`
   position: absolute;
   top: 24px;
   right: 24px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const CloseButton = styled.button`
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  flex-shrink: 0;
 `;
 
 export const LeftContainer = styled.div`

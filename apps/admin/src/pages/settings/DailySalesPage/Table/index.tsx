@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { InfoIcon } from '@repo/ui/icons';
-import { theme } from '@repo/ui';
+import { useMemo } from 'react';
+import { AntTooltip } from '@/feature/backoffice/components';
 import * as UIStyles from '@repo/ui/styles';
 import { formatCurrency, formatPaymentMethodLabel } from '@repo/util/string';
 import type { TPaymentType } from '@repo/api/types';
@@ -29,45 +28,6 @@ interface Props {
 
 export const DailySalesTable = ({ rows }: Props) => {
   const { t } = useAdminTranslation();
-  const [showTotalSalesTooltip, setShowTotalSalesTooltip] = useState(false);
-  const [showActualSalesTooltip, setShowActualSalesTooltip] = useState(false);
-  const totalSalesIconWrapperRef = useRef<HTMLDivElement>(null);
-  const actualSalesIconWrapperRef = useRef<HTMLDivElement>(null);
-
-  const handleTotalSalesIconClick = () => {
-    setShowTotalSalesTooltip(!showTotalSalesTooltip);
-  };
-
-  const handleActualSalesIconClick = () => {
-    setShowActualSalesTooltip(!showActualSalesTooltip);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showTotalSalesTooltip &&
-        totalSalesIconWrapperRef.current &&
-        !totalSalesIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowTotalSalesTooltip(false);
-      }
-      if (
-        showActualSalesTooltip &&
-        actualSalesIconWrapperRef.current &&
-        !actualSalesIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowActualSalesTooltip(false);
-      }
-    };
-
-    if (showTotalSalesTooltip || showActualSalesTooltip) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showTotalSalesTooltip, showActualSalesTooltip]);
 
   const formatStatusLabel = (status: string): string => {
     switch (status) {
@@ -142,55 +102,17 @@ export const DailySalesTable = ({ rows }: Props) => {
             <th>
               <S.HeaderLabel>
                 {t('총 매출')}
-                <S.IconWrapper
-                  ref={totalSalesIconWrapperRef}
-                  onClick={handleTotalSalesIconClick}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    handleTotalSalesIconClick();
-                  }}
-                >
-                  <InfoIcon
-                    width={18}
-                    height={18}
-                    color={theme.colors.grey[500]}
-                  />
-                  {showTotalSalesTooltip && (
-                    <S.Tooltip>
-                      <S.TooltipText>
-                        {t('할인,취소 매출을 제외한 총 매출')}
-                      </S.TooltipText>
-                      <S.TooltipArrow />
-                    </S.Tooltip>
-                  )}
-                </S.IconWrapper>
+                <AntTooltip
+                  title={t('할인,취소 매출을 제외한 총 매출')}
+                />
               </S.HeaderLabel>
             </th>
             <th>
               <S.HeaderLabel>
                 {t('실 매출')}
-                <S.IconWrapper
-                  ref={actualSalesIconWrapperRef}
-                  onClick={handleActualSalesIconClick}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    handleActualSalesIconClick();
-                  }}
-                >
-                  <InfoIcon
-                    width={18}
-                    height={18}
-                    color={theme.colors.grey[500]}
-                  />
-                  {showActualSalesTooltip && (
-                    <S.Tooltip>
-                      <S.TooltipText>
-                        {t('취소금액 및 할인이 반영된 금액')}
-                      </S.TooltipText>
-                      <S.TooltipArrow />
-                    </S.Tooltip>
-                  )}
-                </S.IconWrapper>
+                <AntTooltip
+                  title={t('취소금액 및 할인이 반영된 금액')}
+                />
               </S.HeaderLabel>
             </th>
             <th>{t('할인 금액')}</th>

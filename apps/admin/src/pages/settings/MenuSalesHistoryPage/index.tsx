@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { AntTooltip } from '@/feature/backoffice/components';
 import {
   Calender,
   BasicButton,
   CheckButton,
   Dropdown,
 } from '@repo/ui/components';
-import { CalendarMonthIcon, InfoIcon } from '@repo/ui/icons';
+import { CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { toast } from '@repo/feature/utils';
@@ -15,12 +16,16 @@ import {
   toYYYYMMDDRange,
   isStartDateAfterEndDate,
   isEndDateBeforeStartDate,
+  formatLocalizedDate,
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetCategoryList, useGetMenuSalesHistory } from '@repo/api/queries';
 import { MenuSalesHistoryTable } from './Table';
 import * as S from './menuSalesHistoryPage.style';
 import type { TShopLanguage } from '@repo/api/types';
+
+/** 미분류 칩·매출 행(categoryName 없음) 필터용 sentinel (실제 categorySeq와 충돌 없음) */
+const UNCATEGORIZED_CATEGORY_SEQ = -1;
 
 export const MenuSalesHistoryPage = () => {
   const { t, i18n } = useAdminTranslation();
@@ -32,12 +37,9 @@ export const MenuSalesHistoryPage = () => {
   const [appliedRange, setAppliedRange] = useState(defaultRange);
   const [showStartCalendar, setShowStartCalendar] = useState<boolean>(false);
   const [showEndCalendar, setShowEndCalendar] = useState<boolean>(false);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState<string | null>(null);
-  const [showCategoryTooltip, setShowCategoryTooltip] =
-    useState<boolean>(false);
   const hasInitializedCategories = useRef(false);
-  const categoryIconWrapperRef = useRef<HTMLDivElement>(null);
   const currentLanguage: TShopLanguage = useMemo(
     () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
     [i18n]
@@ -54,47 +56,24 @@ export const MenuSalesHistoryPage = () => {
 
   const categories = useMemo(() => {
     const categoryList = categoryListResponse?.data ?? [];
-
-    const categoryNames = categoryList.map(
-      (category) =>
-        category.localeCategoryName?.[currentLanguage] ?? category.categoryName
-    );
-    // 미분류 카테고리를 맨 마지막에 추가
-    return [...categoryNames, t('미분류')];
+    return [
+      ...categoryList.map((category) => ({
+        categorySeq: category.categorySeq,
+        label:
+          category.localeCategoryName?.[currentLanguage] ??
+          category.categoryName,
+      })),
+      { categorySeq: UNCATEGORIZED_CATEGORY_SEQ, label: t('미분류') },
+    ];
   }, [categoryListResponse, t, currentLanguage]);
 
   // 처음 카테고리 로드 시 전체 선택 (한 번만 실행)
   useEffect(() => {
     if (categories.length > 0 && !hasInitializedCategories.current) {
-      setSelectedCategories(categories);
+      setSelectedCategories(categories.map((c) => c.categorySeq));
       hasInitializedCategories.current = true;
     }
   }, [categories]);
-
-  // 툴팁 외부 클릭 감지
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showCategoryTooltip &&
-        categoryIconWrapperRef.current &&
-        !categoryIconWrapperRef.current.contains(event.target as Node)
-      ) {
-        setShowCategoryTooltip(false);
-      }
-    };
-
-    if (showCategoryTooltip) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showCategoryTooltip]);
-
-  const handleCategoryIconClick = () => {
-    setShowCategoryTooltip(!showCategoryTooltip);
-  };
 
   // 2단계: 카테고리 로드 후 매출 데이터 가져오기
   const { startDate: apiStartDate, endDate: apiEndDate } = useMemo(
@@ -121,13 +100,15 @@ export const MenuSalesHistoryPage = () => {
   const filteredItems = useMemo(() => {
     const items = menuSalesHistoryResponse?.data ?? [];
 
-    // 카테고리 필터링
+    // 카테고리 필터링 (표시는 로케일, 비교는 categorySeq / 미분류는 이름 없음)
     if (selectedCategories.length === 0) {
       return [];
     }
     const filtered = items.filter((item) => {
-      const categoryName = item.categoryName || t('미분류');
-      return selectedCategories.includes(categoryName);
+      if (!item.categoryName?.trim()) {
+        return selectedCategories.includes(UNCATEGORIZED_CATEGORY_SEQ);
+      }
+      return selectedCategories.includes(item.categorySeq);
     });
 
     // 정렬 적용
@@ -168,7 +149,7 @@ export const MenuSalesHistoryPage = () => {
     }
 
     return filtered;
-  }, [menuSalesHistoryResponse, selectedCategories, sortBy, t]);
+  }, [menuSalesHistoryResponse, selectedCategories, sortBy]);
 
   const handleSelectStartDate = (date: string) => {
     if (isStartDateAfterEndDate(date, endDate)) {
@@ -201,27 +182,16 @@ export const MenuSalesHistoryPage = () => {
     setAppliedRange({ startDate, endDate });
   };
 
-  const toggleCategory = (category: string) => {
+  const toggleCategory = (categorySeq: number) => {
     setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
+      prev.includes(categorySeq)
+        ? prev.filter((s) => s !== categorySeq)
+        : [...prev, categorySeq]
     );
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedCategories(checked ? categories : []);
-  };
-
-  const formatCalendarText = (date: string) => {
-    if (!date) {
-      return t('날짜 선택');
-    }
-    const dateObj = new Date(date);
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    return `${year}${t('년도')} ${month}${t('월_날짜')} ${day}${t('일_날짜')}`;
+    setSelectedCategories(checked ? categories.map((c) => c.categorySeq) : []);
   };
 
   const allSelected =
@@ -276,7 +246,10 @@ export const MenuSalesHistoryPage = () => {
                   height={25}
                   color={theme.colors.grey[700]}
                 />
-                <S.DateText>{formatCalendarText(startDate)}</S.DateText>
+                <S.DateText>
+                  {formatLocalizedDate(startDate, i18n.language) ||
+                    t('날짜 선택')}
+                </S.DateText>
               </S.DateButton>
 
               <S.RangeDivider>~</S.RangeDivider>
@@ -290,7 +263,10 @@ export const MenuSalesHistoryPage = () => {
                   height={25}
                   color={theme.colors.grey[700]}
                 />
-                <S.DateText>{formatCalendarText(endDate)}</S.DateText>
+                <S.DateText>
+                  {formatLocalizedDate(endDate, i18n.language) ||
+                    t('날짜 선택')}
+                </S.DateText>
               </S.DateButton>
             </S.DateRange>
 
@@ -312,40 +288,23 @@ export const MenuSalesHistoryPage = () => {
               >
                 <p>{t('카테고리 전체선택')}</p>
               </CheckButton>
-              <S.CategoryInfoWrapper
-                ref={categoryIconWrapperRef}
-                onClick={handleCategoryIconClick}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  handleCategoryIconClick();
-                }}
-              >
-                <InfoIcon
-                  width={18}
-                  height={18}
-                  color={theme.colors.grey[500]}
+              <S.CategoryInfoWrapper>
+                <AntTooltip
+                  title={t(
+                    "메뉴의 상위 카테고리가 삭제된 경우, 해당 메뉴는 '미분류'로 분류됩니다"
+                  )}
                 />
-                {showCategoryTooltip && (
-                  <S.CategoryTooltip>
-                    <S.CategoryTooltipText>
-                      {t(
-                        "메뉴의 상위 카테고리가 삭제된 경우, 해당 메뉴는 '미분류'로 분류됩니다"
-                      )}
-                    </S.CategoryTooltipText>
-                    <S.CategoryTooltipArrow />
-                  </S.CategoryTooltip>
-                )}
               </S.CategoryInfoWrapper>
             </S.CategoryHeader>
             <S.CategoryChips>
-              {categories.map((category) => (
+              {categories.map(({ categorySeq, label }) => (
                 <S.Chip
-                  key={category}
+                  key={categorySeq}
                   type="button"
-                  selected={selectedCategories.includes(category)}
-                  onClick={() => toggleCategory(category)}
+                  selected={selectedCategories.includes(categorySeq)}
+                  onClick={() => toggleCategory(categorySeq)}
                 >
-                  {category}
+                  {label}
                 </S.Chip>
               ))}
             </S.CategoryChips>
@@ -353,7 +312,7 @@ export const MenuSalesHistoryPage = () => {
 
           <S.TableCard>
             <MenuSalesHistoryTable
-              key={`${selectedCategories.join(',')}-${sortBy}`}
+              key={`${apiStartDate}-${apiEndDate}-${selectedCategories.join(',')}-${sortBy}`}
               rows={filteredItems}
               currentLanguage={currentLanguage}
             />

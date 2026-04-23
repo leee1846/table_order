@@ -3,11 +3,7 @@ import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import * as S from './sidebarLayout.style';
 import { ConfigProvider, App } from 'antd';
-import {
-  capsSmartOrderBlueGreyLogo,
-  ChevronForwardIcon,
-  PersonIcon,
-} from '@repo/ui/icons';
+import { capsSmartOrderBlueGreyLogo, PersonIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -115,38 +111,29 @@ export const StoresSidebarLayout = () => {
   const isMenuOpened = (menuId: string) => openedMenuIds.has(menuId);
 
   const handleMenuClick = (menu: TMenu) => {
-    if (menu.subMenus !== undefined) {
-      if (menu.subMenus.length === 0) {
-        return;
-      }
-      toggleMenuOpen(menu.id);
-    } else if (menu.path) {
+    // 서브메뉴가 없는 경우에만 path로 이동합니다.
+    // 서브메뉴가 있는 경우, 클릭은 아무 동작도 하지 않습니다 (hover로 열림).
+    if (!menu.subMenus?.length && menu.path) {
       navigate(menu.path);
     }
   };
 
   const handleSubMenuClick = (path: string) => {
     navigate(path);
-    setOpenedMenuIds(new Set()); // 서브메뉴 클릭 시 즉시 닫기
   };
 
-  const toggleMenuOpen = (menuId: string) => {
-    setOpenedMenuIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(menuId)) {
-        next.delete(menuId);
-      } else {
-        next.add(menuId);
-      }
-      return next;
-    });
+  const handleMenuMouseEnter = (menuId: string) => {
+    setOpenedMenuIds(new Set([menuId]));
+  };
+
+  const handleMenuMouseLeave = () => {
+    setOpenedMenuIds(new Set());
   };
 
   const hasActiveSubMenu = (menu: TMenu) =>
     menu.subMenus?.some((sub: TSubMenu) => isPathActive(sub.path)) ?? false;
 
   useEffect(() => {
-    // 페이지(경로) 이동 시 열려있는 모든 드롭다운 서브메뉴를 닫음
     setOpenedMenuIds(new Set());
   }, [location.pathname]);
 
@@ -162,12 +149,20 @@ export const StoresSidebarLayout = () => {
         <S.Layout>
           <S.Navbar>
             <S.NavbarContent>
-              <S.Logo
-                type="button"
-                onClick={() => navigate(ROUTES.BACKOFFICE.STORES.generate())}
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                }}
               >
-                <img src={capsSmartOrderBlueGreyLogo} alt="logo" />
-              </S.Logo>
+                <S.Logo
+                  type="button"
+                  onClick={() => navigate(ROUTES.BACKOFFICE.STORES.generate())}
+                >
+                  <img src={capsSmartOrderBlueGreyLogo} alt="logo" />
+                </S.Logo>
+              </div>
 
               <S.NavMenu>
                 {SIDEBAR_MENUS.map((menu) => {
@@ -180,56 +175,57 @@ export const StoresSidebarLayout = () => {
                   return (
                     <S.NavMenuItem key={menu.id}>
                       <S.CategoryButton
+                        onMouseEnter={
+                          hasSubMenus
+                            ? () => handleMenuMouseEnter(menu.id)
+                            : undefined
+                        }
                         onClick={() => handleMenuClick(menu)}
                         isSelected={isActive}
-                        isOpen={isOpened}
                       >
                         <span>{menu.label}</span>
-                        {hasSubMenus && (
-                          <ChevronForwardIcon
-                            color={theme.colors.grey[500]}
-                            width={16}
-                            height={16}
-                          />
-                        )}
                       </S.CategoryButton>
 
                       {hasSubMenus && isOpened && (
-                        <S.DropdownMenu
-                          onMouseLeave={() => toggleMenuOpen(menu.id)} // 마우스가 드롭다운 영역을 벗어나면 닫기
-                        >
-                          {menu.subMenus!.map((sub: TSubMenu) => (
-                            <S.DropdownMenuItem key={sub.id}>
-                              <S.DetailButton
-                                onClick={() => handleSubMenuClick(sub.path)}
-                                isSelected={isPathActive(sub.path)}
-                              >
-                                <span>{sub.label}</span>
-                              </S.DetailButton>
-                            </S.DropdownMenuItem>
-                          ))}
-                        </S.DropdownMenu>
+                        <div onMouseLeave={handleMenuMouseLeave}>
+                          <S.DropdownMenu>
+                            {menu.subMenus!.map((sub: TSubMenu) => (
+                              <S.DropdownMenuItem key={sub.id}>
+                                <S.DetailButton
+                                  onClick={() => handleSubMenuClick(sub.path)}
+                                  isSelected={isPathActive(sub.path)}
+                                >
+                                  <span>{sub.label}</span>
+                                </S.DetailButton>
+                              </S.DropdownMenuItem>
+                            ))}
+                          </S.DropdownMenu>
+                        </div>
                       )}
                     </S.NavMenuItem>
                   );
                 })}
               </S.NavMenu>
 
-              <S.MyPageIconButton
-                type="button"
-                onClick={() => navigate(ROUTES.BACKOFFICE.MYPAGE.generate())}
-                aria-label="내 정보"
+              <div
+                style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}
               >
-                <PersonIcon
-                  width={16}
-                  height={16}
-                  color={
-                    isPathActive(ROUTES.BACKOFFICE.MYPAGE.generate())
-                      ? theme.colors.primary[500]
-                      : theme.colors.grey[500]
-                  }
-                />
-              </S.MyPageIconButton>
+                <S.MyPageIconButton
+                  type="button"
+                  onClick={() => navigate(ROUTES.BACKOFFICE.MYPAGE.generate())}
+                  aria-label="내 정보"
+                >
+                  <PersonIcon
+                    width={16}
+                    height={16}
+                    color={
+                      isPathActive(ROUTES.BACKOFFICE.MYPAGE.generate())
+                        ? theme.colors.primary[500]
+                        : theme.colors.grey[500]
+                    }
+                  />
+                </S.MyPageIconButton>
+              </div>
 
               {/* <S.DownloadLink
             href="/app-download.html"

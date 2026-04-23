@@ -1,12 +1,9 @@
 import { t } from '@/config/i18n';
-import { useMemo, type Ref } from 'react';
-import { InfoIcon } from '@repo/ui/icons';
-import { theme } from '@repo/ui';
+import { useMemo } from 'react';
+import { AntTooltip } from '@/feature/backoffice/components';
 import { formatCurrency } from '@repo/util/string';
 import { useGetSalesSummary } from '@repo/api/queries';
 import { useAuth } from '@/hooks/useAuth';
-import { useTooltip } from '@/hooks/useTooltip';
-import { Tooltip } from '@/components/Tooltip';
 import * as S from '@/pages/settings/SalesSummaryPage/salesSummaryPage.style';
 
 const formatDateToYYYYMMDD = (date: Date) => {
@@ -19,10 +16,6 @@ const formatDateToYYYYMMDD = (date: Date) => {
 
 export const SalesSummaryPage = () => {
   const { shopCode } = useAuth();
-  const averagePriceTooltip = useTooltip();
-  const paidCustomerTooltip = useTooltip();
-  const summaryTooltip = useTooltip();
-  const paidSalesTooltip = useTooltip();
 
   const defaultDateRange = useMemo(() => {
     const today = new Date();
@@ -60,63 +53,23 @@ export const SalesSummaryPage = () => {
         <div />
         <div>
           <span>{t('매출 요약')}</span>
-          <S.IconWrapper
-            ref={summaryTooltip.anchorRef as Ref<HTMLDivElement>}
-            onClick={summaryTooltip.toggle}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              summaryTooltip.toggle();
-            }}
-          >
-            <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
-            {summaryTooltip.isVisible && (
-              <Tooltip tooltipRef={summaryTooltip.tooltipRef}>
-                {t('최근 7일 실적 기준 지표')}
-              </Tooltip>
-            )}
-          </S.IconWrapper>
+          <AntTooltip title={t('최근 7일 실적 기준 지표')} />
         </div>
       </S.Title>
       <S.List>
         <S.Item>
           <S.SubTitleWrapper>
-            <S.IconWrapper
-              ref={paidSalesTooltip.anchorRef as Ref<HTMLDivElement>}
-              onClick={paidSalesTooltip.toggle}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                paidSalesTooltip.toggle();
-              }}
-            >
-              <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
-              {paidSalesTooltip.isVisible && (
-                <Tooltip
-                  tooltipRef={paidSalesTooltip.tooltipRef}
-                  placement="top"
-                >
-                  {t('취소금액 및 할인이 반영된 금액')}
-                </Tooltip>
-              )}
-            </S.IconWrapper>
+            <AntTooltip
+              title={t('취소금액 및 할인이 반영된 금액')}
+              placement="top"
+            />
             <S.SubTitle>{t('매출(결제완료)')}</S.SubTitle>
           </S.SubTitleWrapper>
           <S.Price>₩{formatCurrency(paidSales)}</S.Price>
           <S.Description>
-            <S.IconWrapper
-              ref={averagePriceTooltip.anchorRef as Ref<HTMLDivElement>}
-              onClick={averagePriceTooltip.toggle}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                averagePriceTooltip.toggle();
-              }}
-            >
-              <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
-              {averagePriceTooltip.isVisible && (
-                <Tooltip tooltipRef={averagePriceTooltip.tooltipRef}>
-                  {t('매출/객수(*객수 미사용 시, 매출/테이블 수)')}
-                </Tooltip>
-              )}
-            </S.IconWrapper>
+            <AntTooltip
+              title={t('매출/객수(*객수 미사용 시, 매출/테이블 수)')}
+            />
             {t('실 객단가')} ₩{formatCurrency(averagePricePerCustomer)}
           </S.Description>
         </S.Item>
@@ -127,27 +80,14 @@ export const SalesSummaryPage = () => {
         <S.Item>
           <S.SubTitle>{t('테이블 수(결제완료)')}</S.SubTitle>
           <S.Price>
-            {formatCurrency(paidTableCount)}
-            <span>{t('개')}</span>
+            {t('{{value}}개', { value: formatCurrency(paidTableCount) })}
           </S.Price>
           <S.Description>
-            <S.IconWrapper
-              ref={paidCustomerTooltip.anchorRef as Ref<HTMLDivElement>}
-              onClick={paidCustomerTooltip.toggle}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                paidCustomerTooltip.toggle();
-              }}
-            >
-              <InfoIcon width={16} height={16} color={theme.colors.grey[400]} />
-              {paidCustomerTooltip.isVisible && (
-                <Tooltip tooltipRef={paidCustomerTooltip.tooltipRef}>
-                  {t('당일 객수 기능 미사용 시 0으로 계산')}
-                </Tooltip>
-              )}
-            </S.IconWrapper>
-            {t('결제 완료 객수')} {formatCurrency(paidCustomerCount)}
-            {t('명')}
+            <AntTooltip
+              title={t('당일 객수 기능 미사용 시 0으로 계산')}
+            />
+            {t('결제 완료 객수')}{' '}
+            {t('{{value}}명', { value: formatCurrency(paidCustomerCount) })}
           </S.Description>
         </S.Item>
       </S.List>

@@ -3,28 +3,46 @@ import styled from '@emotion/styled';
 import { Form, Typography, Button, message, DatePicker, Card, App } from 'antd';
 import dayjs from 'dayjs';
 import ContentTypes, { initialFiles } from './ContentTypes';
-import StoreGroupSelection from './StoreGroupSelection';
+import StoreGroupSelection, {
+  type CampaignShopData,
+} from './StoreGroupSelection';
 import PageTitle from '@/feature/Backoffice/components/PageTitle';
-import ConfirmAndSave from './ConfirmAndSave';
+import ConfirmAndSave, { type CampaignSummaryData } from './ConfirmAndSave';
 import BasicInfoForm from './BasicInfoForm';
-import {
-  initialMenuItems,
-  type MenuItem,
-} from './ContentTypes/TopMenuAdExposure';
+import { initialMenuItems, type MenuItem } from './ContentTypes/AdMenuContent';
 import type { UploadedFile } from './UploadContent';
 import CampaignSchedule from './CampaignSchedule';
 import { useNavigate, useParams } from 'react-router-dom';
+import {
+  useGetCampaignDetail,
+  usePatchUpdateCampaign,
+  usePostCreateCampaign,
+} from '@repo/api/queries';
+import type {
+  CampaignRequestJson,
+  CampaignShop,
+  ICampaignContentResponse,
+  IStore,
+} from '@repo/api/types';
+import type { adMenuData } from './AdMenuAddModal';
+import { SelectedMenuContainer } from '../../../../../menu/src/pages/MainPage/SplitPaymentModal/MenuSelector/menuSelector.style';
+import { generateId } from '../../../../../../packages/util/src/string/index';
 
 const { Title, Text } = Typography;
 
 // BasicInfoForm에서 전달될 값들의 타입 정의 (예시)
 interface BasicInfoFormValues {
   campaignName: string;
-  campaignType: string;
+  adDescription: string;
   overallStartDate?: dayjs.Dayjs | null;
   overallEndDate?: dayjs.Dayjs | null;
   [key: string]: unknown; // BasicInfoForm에 추가될 수 있는 다른 필드들을 위해 유연하게 정의
 }
+
+// KB를 MB 단위 문자열로 변환하는 유틸리티 함수
+export const formatFileSizeKbToMb = (sizeInKb: number): string => {
+  return `${(sizeInKb / 1024).toFixed(2)}MB`;
+};
 
 // --- Emotion Styles ---
 const Container = styled.div`
@@ -91,114 +109,274 @@ const CampaignNewPagePage: React.FC = () => {
   const [form] = Form.useForm();
   // --- 각 하위 컴포넌트들의 상태를 부모로 끌어올림 ---
   const [filesByTab, setFilesByTab] = useState<Record<string, UploadedFile[]>>({
-    '0': initialFiles, // 전면 대기 화면
+    '0': [], // 전면 대기 화면
     '1': [], // 상단 배너
-    '2': [], // 메뉴 상단 노출
-    '3': [], // 주문 완료 화면
+    //'2': [], // 메뉴 상단 노출
+    //'3': [], // 주문 완료 화면
   });
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [exposureType, setExposureType] = useState<'full' | 'half'>('full');
   const [orderFiles, setOrderFiles] = useState<UploadedFile[]>([]);
 
   // --- 매장/그룹 선택 상태 ---
-  const [selectedGroups, setSelectedGroups] = useState<string[]>(['g1', 'g2']);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([
-    '1',
-    '2',
-    '3',
-    '4',
-  ]);
+  const [campaignShops, setCampaignShops] = useState<CampaignShopData[]>([]);
 
+  const [campaignSeq, setCampaignSeq] = useState<number | null>(null);
+  const { mutateAsync: createCampaign } = usePostCreateCampaign();
+  const { mutateAsync: updateCampaign } = usePatchUpdateCampaign();
   const mode = id ? 'edit' : 'new';
 
+  const { data: campaignDetailResponse, isLoading: isDetailLoading } =
+    useGetCampaignDetail(id!, {
+      enabled: mode === 'edit' && !!id,
+      // onSuccess: (data) => console.log('Campaign Detail:', data), // for debugging
+    });
+
+  // --- 요약 데이터 생성 ---
+  const formValues = form.getFieldsValue();
+
+  const getAdTypeSummary = () => {
+    const types = new Set<string>();
+    if (filesByTab['0'] && filesByTab['0']?.length > 0) {
+      types.add('주문 대기');
+    }
+    if (filesByTab['1'] && filesByTab['1']?.length > 0) {
+      types.add('상단 배너');
+    }
+    if (menuItems.length > 0) {
+      types.add('광고 메뉴');
+    }
+    if (orderFiles.length > 0) {
+      types.add('주문 완료');
+    }
+
+    const summary = Array.from(types).join(' / ');
+    return summary || '없음';
+  };
+
+  const getDetailedAdTypeSummary = () => {
+    const summaries: string[] = [];
+    if (filesByTab['0'] && filesByTab['0'].length > 0) {
+      const fileNames = filesByTab['0'].map((f) => f.name).join(', ');
+      summaries.push(`주문 대기 : (파일명 : ${fileNames})`);
+    }
+    if (filesByTab['1'] && filesByTab['1'].length > 0) {
+      const fileNames = filesByTab['1'].map((f) => f.name).join(', ');
+      summaries.push(`상단 배너 : (파일명 : ${fileNames})`);
+    }
+    if (menuItems.length > 0) {
+      const fileNames = menuItems
+        .map((m) => m.fileName)
+        .filter(Boolean)
+        .join(', ');
+      summaries.push(`광고 메뉴 : (파일명 : ${fileNames})`);
+    }
+    if (orderFiles.length > 0) {
+      const fileNames = orderFiles.map((f) => f.name).join(', ');
+      summaries.push(`주문 완료 : (파일명 : ${fileNames})`);
+    }
+    return summaries.join('\n') || '등록된 광고 없음';
+  };
+
+  const campaignSummaryData: CampaignSummaryData = {
+    name: formValues.campaignName || '-',
+    type: getAdTypeSummary(),
+    storeCount: `${campaignShops.length}개`,
+    period: `${
+      formValues.overallStartDate
+        ? formValues.overallStartDate.format('YYYY-MM-DD')
+        : '미지정'
+    } ~ ${
+      formValues.overallEndDate
+        ? formValues.overallEndDate.format('YYYY-MM-DD')
+        : '미지정'
+    }`,
+  };
+
   const onFinish = async (values: BasicInfoFormValues) => {
-    // "다음" 버튼 클릭 시: 유효성 검사 없이 다음 스텝으로 이동
     if (currentStep < STEPS.length - 1) {
-      setCurrentStep(currentStep + 1);
+      setCurrentStep((prev) => prev + 1);
       return;
     }
 
-    // "저장" 버튼 클릭 시 (마지막 스텝): 필수 항목 유효성 검사 및 데이터 제출
-    try {
-      // `validateFields`는 Form.Item에 정의된 rules를 기반으로 검사합니다.
-      //await form.validateFields(['campaignName', 'overallStartDate']);
+    // "저장" 버튼 클릭 시 (마지막 스텝)
+    if (!values.campaignName || values.campaignName.trim() === '') {
+      message.error('기본 정보 단계에서 캠페인명을 입력해주세요.');
+      setCurrentStep(0);
+      return;
+    }
 
+    if (!values.overallStartDate) {
+      message.error('스케줄 단계에서 캠페인 시작일을 지정해주세요.');
+      setCurrentStep(3);
+      return;
+    }
+
+    try {
       message.loading({
         content: '캠페인을 저장하는 중입니다...',
         key: 'save',
       });
 
-      const formData = new FormData();
+      const startDateStr = values.overallStartDate
+        ? values.overallStartDate.format('YYYY-MM-DD')
+        : '';
+      const endDateStr = values.overallEndDate
+        ? values.overallEndDate.format('YYYY-MM-DD')
+        : undefined;
 
-      // 1. 기본 정보 (Form 데이터) 추가
-      Object.entries(values || {}).forEach(([key, value]) => {
-        if (key === 'overallStartDate' || key === 'campaignName') {
-          if (!value) {
-            message.error({
-              content: '캠페인명과 시작일은 필수 항목입니다.',
-              key: 'save',
-            });
-            throw '캠페인명과 시작일은 필수 항목입니다.';
-          }
-        }
+      // 1. 기본 정보 (Form 데이터) 매핑
+      const requestData: CampaignRequestJson = {
+        campaignName: values.campaignName,
+        campaignAlias: values.adDescription,
+        startDate: startDateStr,
+        endDate: endDateStr,
+        advertiserName: (values.advertiserName as string) || undefined,
+        campaignMemo: (values.campaignMemo as string) || undefined,
+        contents: [],
+        shops: [],
+      };
 
-        if (dayjs.isDayjs(value)) {
-          // dayjs 객체는 'YYYY-MM-DD' 형식으로 변환
-          formData.append(key, (value as dayjs.Dayjs).format('YYYY-MM-DD'));
-        } else if (
-          value === null &&
-          (key === 'overallStartDate' || key === 'overallEndDate')
-        ) {
-          // 날짜가 null(선택 안됨)인 경우 빈 문자열로 추가
-          formData.append(key, '');
-        } else if (value !== undefined && value !== null) {
-          formData.append(key, String(value));
-        }
-      });
-
-      // 2. 캠페인 콘텐츠 (State 데이터) 추가
-      formData.append('exposureType', exposureType);
-      formData.append('menuItems', JSON.stringify(menuItems));
-      formData.append('selectedGroups', JSON.stringify(selectedGroups));
-      formData.append('selectedRowKeys', JSON.stringify(selectedRowKeys));
-
-      // 3. 탭별 파일 데이터 추가
-      Object.entries(filesByTab).forEach(([tabKey, files]) => {
+      // 2. 캠페인 콘텐츠 메타데이터 (CampaignContent) 매핑
+      const fileArray: (File | null)[] = [];
+      let sortOrderAcc = 1;
+      Object.entries(filesByTab).forEach(([tabKey, files], index) => {
+        console.log(tabKey, files);
+        //let sortOrderAcc = 1;
         files.forEach((fileItem) => {
-          if (fileItem.originFileObj) {
-            formData.append(`files_${tabKey}`, fileItem.originFileObj);
+          const isVideo = fileItem.originFileObj
+            ? fileItem.originFileObj.type.startsWith('video/') ||
+              fileItem.originFileObj.name.toLowerCase().endsWith('.mp4')
+            : fileItem.name.toLowerCase().endsWith('.mp4');
+
+          let adType = 'UNKNOWN';
+          if (tabKey === '0') {
+            adType = isVideo ? 'STANDBY_VIDEO' : 'STANDBY_IMAGE';
+          } else if (tabKey === '1') {
+            adType = 'TOP_BANNER_IMAGE';
+          } else if (tabKey === '2') {
+            adType = 'AD_MENU_IMAGE';
           }
-          formData.append(`filesMeta_${tabKey}`, JSON.stringify(fileItem));
+
+          if (fileItem.originFileObj) {
+            fileArray.push(fileItem.originFileObj);
+          } else {
+            fileArray.push(null);
+          }
+          console.log(fileItem.originFileObj);
+          requestData.contents!.push({
+            adType,
+            filePath: '', // 서버 등록 전이므로 빈 문자열
+            fileName: fileItem.name || '',
+            fileSizeKb: fileItem.originFileObj
+              ? Math.round(fileItem.originFileObj.size / 1024)
+              : Number(fileItem.fileSizeKb) || 0,
+            menuGroupSeq: 0,
+            contentDescription: '',
+            sortOrder: sortOrderAcc++,
+          });
         });
       });
 
-      // 4. 주문 완료 화면 파일 데이터 추가
-      orderFiles.forEach((fileItem) => {
-        if (fileItem.originFileObj) {
-          formData.append(`orderFiles`, fileItem.originFileObj);
+      // 광고 메뉴 콘텐츠 추가
+      menuItems.forEach((menuItem) => {
+        if (menuItem.originFileObj) {
+          fileArray.push(menuItem.originFileObj);
+        } else {
+          fileArray.push(null);
         }
-        formData.append(`orderFilesMeta`, JSON.stringify(fileItem));
+        requestData.contents!.push({
+          adType: menuItem.adType,
+          filePath: menuItem.filePath,
+          fileName: menuItem.fileName,
+          fileSizeKb: menuItem.fileSizeKb,
+          menuGroupSeq: menuItem.menuGroupSeq,
+          contentDescription: menuItem.contentDescription,
+          sortOrder: sortOrderAcc++,
+        });
       });
 
-      console.log('🚀 API로 전송할 FormData 엔트리 확인:');
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
+      // 3. 주문 완료 화면 파일 데이터 추가
+      orderFiles.forEach((fileItem) => {
+        //let sortOrderAcc = 1;
+        const isVideo = fileItem.originFileObj
+          ? fileItem.originFileObj.type.startsWith('video/') ||
+            fileItem.originFileObj.name.toLowerCase().endsWith('.mp4')
+          : fileItem.name.toLowerCase().endsWith('.mp4');
 
-      // TODO: 실제 API 호출 로직으로 교체
-      // await axios.post('/api/campaigns', formData, {
-      //   headers: { 'Content-Type': 'multipart/form-data' },
-      // });
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+        const orderCompAdType =
+          exposureType === 'full'
+            ? isVideo
+              ? 'ORDER_COMP_FULL_VIDEO'
+              : 'ORDER_COMP_FULL_IMAGE'
+            : 'ORDER_COMP_SIDE_IMAGE';
+
+        if (fileItem.originFileObj) {
+          fileArray.push(fileItem.originFileObj);
+        } else {
+          fileArray.push(null);
+        }
+        requestData.contents!.push({
+          adType: orderCompAdType,
+          filePath: '',
+          fileName: fileItem.originFileObj?.name || fileItem.name || '',
+          fileSizeKb: fileItem.originFileObj
+            ? Math.round(fileItem.originFileObj.size / 1024)
+            : Number(fileItem.fileSizeKb) || 0,
+          menuGroupSeq: 0,
+          contentDescription: '',
+          sortOrder: sortOrderAcc++,
+        });
+      });
+      console.log(campaignShops);
+      // 4. 매장/그룹 매핑 (CampaignShop)
+      requestData.shops = campaignShops.map((shop) => {
+        return {
+          shopSeq: shop.shopSeq,
+          shopGroupSeqs: shop.shopGroup.map((g) => Number(g.shopGroupSeq)),
+          startDate: shop.startDate,
+          endDate: shop.endDate, // 개별 기간이 없으면 전체 기간 사용
+        };
+      });
+
+      console.log('🚀 API로 전송할 Payload 확인:', {
+        request: requestData,
+        files: fileArray,
+      });
 
       if (mode === 'new') {
-        // TODO: 등록 API 호출
-        message.success('캠페인이 등록되었습니다.');
-      } else {
-        // TODO: 수정 API 호출
-        message.success('캠페인이 수정되었습니다.');
+        await createCampaign({
+          request: requestData,
+          files: fileArray as File[],
+        });
+        message.success({ content: '캠페인이 등록되었습니다.', key: 'save' });
+      } else if (campaignSeq) {
+        await updateCampaign({
+          campaignSeq,
+          request: requestData,
+          files: fileArray as File[],
+        });
+        message.success({
+          content: '캠페인이 수정되었습니다.',
+          key: 'save',
+        });
       }
-      navigate(-1); // 이전 목록 페이지로 이동
+
+      // 모든 데이터 초기값으로 세팅
+      form.resetFields();
+      setFilesByTab({
+        '0': [], // 기존 초기값 유지 (또는 필요시 빈 배열 [] 로 변경)
+        '1': [],
+        //'3': [],
+      });
+      setMenuItems([]);
+      setExposureType('full');
+      setOrderFiles([]);
+      setCampaignShops([]);
+      setCurrentStep(0); // 첫 스텝으로 이동
+
+      // 목록으로 돌아가길 원하신다면 아래 코드를 주석 해제하세요.
+      navigate(-1);
     } catch (error) {
       // antd의 validateFields는 유효성 검사 실패 시 에러를 발생시킵니다.
       console.error('Final Validation or API Error:', error);
@@ -212,15 +390,106 @@ const CampaignNewPagePage: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log(mode, '>>>>>>>>>>>>>>', id);
-    if (mode === 'edit') {
-      // TODO: id를 이용해 API 호출 후 폼 데이터 초기화
-      // 예시:
-      // fetchCampaignDetail(id).then(data => {
-      //   form.setFieldsValue(data);
-      // });
+    if (mode !== 'edit' || !campaignDetailResponse?.data) {
+      return;
     }
-  }, [id, mode, form]);
+
+    const detail = campaignDetailResponse.data;
+    setCampaignSeq(detail.campaignSeq);
+
+    // 1. 기본 정보 설정
+    form.setFieldsValue({
+      campaignName: detail.campaignName,
+      adDescription: detail.campaignAlias,
+      advertiserName: detail.advertiserName,
+      campaignMemo: detail.campaignMemo,
+      overallStartDate: detail.startDate ? dayjs(detail.startDate) : null,
+      overallEndDate: detail.endDate ? dayjs(detail.endDate) : null,
+    });
+
+    // 2. 콘텐츠 및 파일 설정
+    const adTypeToTabKey: Record<string, string> = {
+      STANDBY_VIDEO: '0',
+      STANDBY_IMAGE: '0',
+      TOP_BANNER_IMAGE: '1',
+    };
+
+    const newFilesByTab: Record<string, UploadedFile[]> = {
+      '0': [],
+      '1': [],
+    };
+    const newOrderFiles: UploadedFile[] = [];
+    const newMenuItems: MenuItem[] = [];
+
+    // [...detail.contents]
+    //   .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+    detail.contents?.forEach((content) => {
+      console.log(content);
+
+      if (content.adType === 'AD_MENU_IMAGE') {
+        newMenuItems.push({
+          id: content.contentSeq,
+          adType: content.adType,
+          filePath: content.filePath,
+          fileName: content.fileName,
+          fileSizeKb: content.fileSizeKb,
+          menuGroupSeq: content.menuGroupSeq || 0,
+          contentDescription: content.contentDescription || '',
+          sortOrder: content.sortOrder,
+          menuGroupName: content.menuGroupName,
+        });
+        return;
+      }
+
+      const uploadedFile: UploadedFile = {
+        id: String(content.contentSeq), // Use contentSeq as a unique ID
+        name: content.fileName,
+        status: '완료',
+        url: content.filePath, // This should be a full URL to the file for preview
+        fileSizeKb: content.fileSizeKb, //formatFileSizeKbToMb(content.fileSizeKb),
+        duration: content.durationSec ? `${content.durationSec}초` : '-',
+        durationSec: content.durationSec || 0,
+        sortOrder: content.sortOrder,
+      };
+
+      const tabKey = adTypeToTabKey[content.adType];
+      if (tabKey) {
+        newFilesByTab[tabKey]?.push(uploadedFile);
+      } else if (
+        [
+          'ORDER_COMP_FULL_VIDEO',
+          'ORDER_COMP_FULL_IMAGE',
+          'ORDER_COMP_SIDE_IMAGE',
+        ].includes(content.adType)
+      ) {
+        newOrderFiles.push(uploadedFile);
+        setExposureType(content.adType.includes('FULL') ? 'full' : 'half');
+      }
+    });
+
+    // 각 배열을 sortOrder에 따라 정렬
+    // for (const key in newFilesByTab) {
+    //   newFilesByTab[key]?.sort(
+    //     (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
+    //   );
+    // }
+    // newOrderFiles.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+
+    setFilesByTab(newFilesByTab);
+    setOrderFiles(newOrderFiles);
+    setMenuItems(newMenuItems);
+
+    // 3. 매장 및 스케줄 설정
+    const shopsData: CampaignShopData[] = (detail.shops || []).map((shop) => ({
+      shopSeq: shop.shopSeq,
+      shopCode: shop.shopCode || '',
+      shopName: shop.shopName || '',
+      startDate: shop.startDate || '',
+      endDate: shop.endDate || '',
+      shopGroup: shop.shopGroup || [],
+    }));
+    setCampaignShops(shopsData);
+  }, [campaignDetailResponse, form, mode]);
 
   return (
     <Container>
@@ -255,7 +524,11 @@ const CampaignNewPagePage: React.FC = () => {
         >
           {/* 현재 스텝이 '기본 정보'일 때만 렌더링 */}
           <div style={{ display: currentStep === 0 ? 'block' : 'none' }}>
-            <BasicInfoForm form={form} mode={mode} />
+            <BasicInfoForm
+              form={form}
+              mode={mode}
+              registeredAdTypeText={getDetailedAdTypeSummary()}
+            />
           </div>
           {/* 현재 스텝이 '유형별 콘텐츠'일 때만 렌더링 */}
           <div style={{ display: currentStep === 1 ? 'block' : 'none' }}>
@@ -272,56 +545,60 @@ const CampaignNewPagePage: React.FC = () => {
           </div>
           <div style={{ display: currentStep === 2 ? 'block' : 'none' }}>
             <StoreGroupSelection
-              selectedGroups={selectedGroups}
-              setSelectedGroups={setSelectedGroups}
-              selectedRowKeys={selectedRowKeys}
-              setSelectedRowKeys={setSelectedRowKeys}
+              stores={campaignShops}
+              onChange={(data) => {
+                console.log(data);
+                setCampaignShops(data);
+              }}
             />
           </div>
 
-          {currentStep === 3 && (
-            <>
-              {/* 1. 캠페인 전체 집행 기간 카드 */}
-              <StyledCard title="① 캠페인 전체 집행 기간 (상위 — 필수)">
-                <FormRow>
-                  <FormLabel>
-                    시작일 <span className="required">*</span>
-                  </FormLabel>
-                  <Form.Item
-                    name="overallStartDate"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: '캠페인 시작일을 입력해주세요!',
-                    //   },
-                    // ]}
-                    style={{ marginBottom: 0 }}
-                  >
-                    <DatePicker
-                      format="YYYY-MM-DD"
-                      style={{ width: '400px' }}
-                      placeholder="2026-06-01"
-                      size="large"
-                    />
-                  </Form.Item>
-                </FormRow>
+          <div style={{ display: currentStep === 3 ? 'block' : 'none' }}>
+            {/* 1. 캠페인 전체 집행 기간 카드 */}
+            <StyledCard title="① 캠페인 전체 집행 기간 (상위 — 필수)">
+              <FormRow>
+                <FormLabel>
+                  시작일 <span className="required">*</span>
+                </FormLabel>
+                <Form.Item
+                  name="overallStartDate"
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: '캠페인 시작일을 입력해주세요!',
+                  //   },
+                  // ]}
+                  style={{ marginBottom: 0 }}
+                >
+                  <DatePicker
+                    format="YYYY-MM-DD"
+                    style={{ width: '400px' }}
+                    placeholder="시작일"
+                    size="large"
+                  />
+                </Form.Item>
+              </FormRow>
 
-                <FormRow>
-                  <FormLabel>종료일</FormLabel>
-                  <Form.Item name="overallEndDate" style={{ marginBottom: 0 }}>
-                    <DatePicker
-                      format="YYYY-MM-DD"
-                      style={{ width: '400px' }}
-                      placeholder="2026-08-31"
-                      size="large"
-                    />
-                  </Form.Item>
-                </FormRow>
-              </StyledCard>
-              <CampaignSchedule />
-            </>
+              <FormRow>
+                <FormLabel>종료일</FormLabel>
+                <Form.Item name="overallEndDate" style={{ marginBottom: 0 }}>
+                  <DatePicker
+                    format="YYYY-MM-DD"
+                    style={{ width: '400px' }}
+                    placeholder="종료일"
+                    size="large"
+                  />
+                </Form.Item>
+              </FormRow>
+            </StyledCard>
+            <CampaignSchedule
+              schedules={campaignShops}
+              onChange={setCampaignShops}
+            />
+          </div>
+          {currentStep === 4 && (
+            <ConfirmAndSave campaignData={campaignSummaryData} />
           )}
-          {currentStep === 4 && <ConfirmAndSave />}
           {/* 하단 버튼 영역 */}
           <div
             style={{

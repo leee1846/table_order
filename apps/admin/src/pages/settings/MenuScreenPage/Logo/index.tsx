@@ -1,5 +1,11 @@
 import { t } from '@/config/i18n';
-import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type KeyboardEvent,
+} from 'react';
 import * as S from '@/pages/settings/MenuScreenPage/Logo/logo.style';
 import { theme } from '@repo/ui';
 import { PhotoIcon } from '@repo/ui/icons';
@@ -79,6 +85,17 @@ export const Logo = ({ imageUrl, onChange }: LogoProps) => {
     fileInputRef.current?.click();
   };
 
+  const handleImageSectionKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'Enter' && e.key !== ' ') {
+      return;
+    }
+    if (e.repeat) {
+      return;
+    }
+    e.preventDefault();
+    handleImageSectionClick();
+  };
+
   // 변경 버튼 클릭 시 파일 선택 다이얼로그 열기
   const handleChangeClick = () => {
     fileInputRef.current?.click();
@@ -109,7 +126,12 @@ export const Logo = ({ imageUrl, onChange }: LogoProps) => {
         onChange={handleFileChange}
       />
 
-      <S.ImageSection onClick={handleImageSectionClick}>
+      <S.ImageSection
+        role="button"
+        tabIndex={0}
+        onClick={handleImageSectionClick}
+        onKeyDown={handleImageSectionKeyDown}
+      >
         {imagePreview ? (
           // 이미지가 선택된 경우: 미리보기와 변경/삭제 버튼 표시
           <>

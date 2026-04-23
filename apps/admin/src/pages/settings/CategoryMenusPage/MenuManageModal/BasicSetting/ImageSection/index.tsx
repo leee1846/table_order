@@ -616,7 +616,7 @@ export const ImageSection = () => {
             <PhotoIcon width={36} height={36} color={theme.colors.grey[400]} />
 
             <S.Text>{t('메인 사진 (1장) 을 선택해 주세요')}</S.Text>
-            <S.SubText>{t('(392*280px 권장)')}</S.SubText>
+            <S.SubText>{t('(336*240px 권장)')}</S.SubText>
           </>
         )}
       </S.Thumbnail>
@@ -694,12 +694,13 @@ export const ImageSection = () => {
         onClose={() => setIsExistingModalOpen(false)}
         onConfirm={handleConfirmExistingImages}
       />
-      <RecommendedImageModal
-        isOpen={isRecommendedModalOpen}
-        images={recommendedImages}
-        onClose={() => setIsRecommendedModalOpen(false)}
-        onConfirm={handleConfirmRecommendedImages}
-      />
+      {isRecommendedModalOpen && (
+        <RecommendedImageModal
+          images={recommendedImages}
+          onClose={() => setIsRecommendedModalOpen(false)}
+          onConfirm={handleConfirmRecommendedImages}
+        />
+      )}
     </S.Container>
   );
 };

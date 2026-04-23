@@ -19,6 +19,11 @@ export const Container = styled.aside`
 export const CategoryButton = styled.button<{
   isActive: boolean;
 }>`
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
   padding: 14px 20px 14px 30px;
   text-align: left;
   background-color: ${({ isActive, theme }) =>

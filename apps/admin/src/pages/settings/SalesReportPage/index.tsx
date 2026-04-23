@@ -1,7 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Dropdown, BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
-import { getYears, getMonths, getMonthDateRange } from '@repo/util/date';
+import {
+  getYears,
+  getMonths,
+  getMonthDateRange,
+  getLocalizedYearLabel,
+  getLocalizedMonthLabel,
+} from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
 import {
@@ -138,7 +144,7 @@ export const SalesReportPage = () => {
           <Dropdown
             options={years.map((y) => ({
               value: y,
-              label: `${y}${t('년도')}`,
+              label: getLocalizedYearLabel(y, i18n.language),
             }))}
             value={year}
             onChange={(v) => setYear(Number(v))}
@@ -146,7 +152,7 @@ export const SalesReportPage = () => {
           <Dropdown
             options={months.map((m) => ({
               value: m,
-              label: `${m}${t('월_날짜')}`,
+              label: getLocalizedMonthLabel(m, i18n.language),
             }))}
             value={month}
             onChange={(v) => setMonth(Number(v))}

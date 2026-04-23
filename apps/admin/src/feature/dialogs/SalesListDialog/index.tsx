@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ModalBackground,
   Pagination,
@@ -8,11 +8,12 @@ import {
 import { CloseIcon, CalendarMonthIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { useGetOrderHistory } from '@repo/api/queries';
-import type { IOrderHistoryItem } from '@repo/api/types';
+import type { IOrderHistoryItem, TGetOrderHistoryResponse } from '@repo/api/types';
 import { formatCurrency } from '@repo/util/string';
 import {
   getDateRangeByPreset,
   toYYYYMMDDRange,
+  formatLocalizedDate,
   type TDateRangePreset,
 } from '@repo/util/date';
 import * as UIStyles from '@repo/ui/styles';
@@ -41,7 +42,7 @@ export const SalesListDialog = ({
   shopCode,
   itemsPerPage = PAZE_SIZE,
 }: SalesListDialogProps) => {
-  const { t } = useAdminTranslation();
+  const { t, i18n } = useAdminTranslation();
   const shopSetting = useShopDetailStore((state) => state.data?.shopSetting);
   const defaultDateRange = useMemo(() => getDateRangeByPreset('today'), []);
 
@@ -90,9 +91,16 @@ export const SalesListDialog = ({
     }
   );
 
+  const getOrderHistoryItemCount = useCallback(
+    (d: TGetOrderHistoryResponse | undefined) =>
+      d?.data?.orderHistory?.length ?? 0,
+    []
+  );
+
   const pagination = usePaginationWithCache({
     queryResult: orderHistoryQuery,
     getTotalPages: (data) => data?.data?.totalPageNumber,
+    getItemCount: getOrderHistoryItemCount,
     requestedPage,
     onPageChange: setRequestedPage,
     initialPage: 1,
@@ -149,7 +157,11 @@ export const SalesListDialog = ({
 
   return (
     <>
-      <ModalBackground position="center" onClick={onClose}>
+      <ModalBackground
+        position="center"
+        onClick={onClose}
+        scrollableBackdrop={false}
+      >
         <S.DialogContainer onClick={(e) => e.stopPropagation()}>
           <S.CloseButton onClick={onClose} aria-label={t('닫기')}>
             <CloseIcon width={32} height={32} color={colors.grey[700]} />
@@ -171,7 +183,7 @@ export const SalesListDialog = ({
                 />
                 <S.CalendarText>
                   {startDate && endDate
-                    ? `${startDate} ~ ${endDate}`
+                    ? `${formatLocalizedDate(startDate, i18n.language)} ~ ${formatLocalizedDate(endDate, i18n.language)}`
                     : t('날짜 선택')}
                 </S.CalendarText>
               </S.CalendarButton>
@@ -184,6 +196,7 @@ export const SalesListDialog = ({
             </S.FilterContainer>
 
             <Table
+              key={`${apiStartDate}-${apiEndDate}-${pagination.currentPage}`}
               orders={orders}
               onSelectOrder={(order) => setSelectedOrder(order)}
               pageSize={itemsPerPage}
@@ -196,25 +209,18 @@ export const SalesListDialog = ({
                 <p>
                   <span>{t('총 매출:')}</span>
                   {formatCurrency(totalSalesAmount)}
-                  <span>
-                    {totalSalesCount}
-                    {t('건')}
-                  </span>
+                  <span>{t('{{value}}건', { value: totalSalesCount })}</span>
                 </p>
                 <p>
                   <span>{t('결제 전 매출:')}</span>
                   {formatCurrency(prePaymentAmount)}
-                  <span>
-                    {prePaymentCount}
-                    {t('건')}
-                  </span>
+                  <span>{t('{{value}}건', { value: prePaymentCount })}</span>
                 </p>
                 <p>
                   <span>{t('총 예상 매출:')}</span>
                   {formatCurrency(estimatedTotalAmount)}
                   <span>
-                    {estimatedTotalCount}
-                    {t('건')}
+                    {t('{{value}}건', { value: estimatedTotalCount })}
                   </span>
                 </p>
               </UIStyles.setting.FooterContents>
