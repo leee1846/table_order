@@ -138,48 +138,50 @@ export const RecommendedImageModal = ({
                 <span>{t('이 카테고리에 이미지가 없습니다.')}</span>
               </S.EmptyState>
             ) : (
-              <S.ImageGrid>
-                {currentCategoryImages.map((image, index) => {
-                  const isSelected = selectedIds.has(image.menuImageSampleSeq);
-                  const showFallback = !image.imagePath;
-                  const selectionNumber = selectionOrderMap.get(
-                    image.menuImageSampleSeq
-                  );
+              <S.ImageGridScroll>
+                <S.ImageGrid>
+                  {currentCategoryImages.map((image, index) => {
+                    const isSelected = selectedIds.has(image.menuImageSampleSeq);
+                    const showFallback = !image.imagePath;
+                    const selectionNumber = selectionOrderMap.get(
+                      image.menuImageSampleSeq
+                    );
 
-                  return (
-                    <S.ImageButton
-                      key={`image-${image.menuImageSampleSeq}-${index.toString()}`}
-                      type="button"
-                      selected={isSelected}
-                      aria-pressed={isSelected}
-                      onClick={() => toggleSelect(image.menuImageSampleSeq)}
-                    >
-                      {showFallback ? (
-                        <S.ImageFallback>
-                          <PhotoIcon
-                            width={24}
-                            height={24}
-                            color={theme.colors.grey[400]}
+                    return (
+                      <S.ImageButton
+                        key={`image-${image.menuImageSampleSeq}-${index.toString()}`}
+                        type="button"
+                        selected={isSelected}
+                        aria-pressed={isSelected}
+                        onClick={() => toggleSelect(image.menuImageSampleSeq)}
+                      >
+                        {showFallback ? (
+                          <S.ImageFallback>
+                            <PhotoIcon
+                              width={24}
+                              height={24}
+                              color={theme.colors.grey[400]}
+                            />
+                            <span>{t('이미지를 불러올 수 없습니다.')}</span>
+                          </S.ImageFallback>
+                        ) : (
+                          <S.Image
+                            src={image.imagePath ?? ''}
+                            alt={t('추천 이미지')}
                           />
-                          <span>{t('이미지를 불러올 수 없습니다.')}</span>
-                        </S.ImageFallback>
-                      ) : (
-                        <S.Image
-                          src={image.imagePath ?? ''}
-                          alt={t('추천 이미지')}
-                        />
-                      )}
-                      {image.imageName && (
-                        <S.ImageLabel>{image.imageName}</S.ImageLabel>
-                      )}
-                      <S.SelectionOverlay selected={isSelected} />
-                      <S.SelectionIndicator selected={isSelected}>
-                        {selectionNumber}
-                      </S.SelectionIndicator>
-                    </S.ImageButton>
-                  );
-                })}
-              </S.ImageGrid>
+                        )}
+                        {image.imageName && (
+                          <S.ImageLabel>{image.imageName}</S.ImageLabel>
+                        )}
+                        <S.SelectionOverlay selected={isSelected} />
+                        <S.SelectionIndicator selected={isSelected}>
+                          {selectionNumber}
+                        </S.SelectionIndicator>
+                      </S.ImageButton>
+                    );
+                  })}
+                </S.ImageGrid>
+              </S.ImageGridScroll>
             )}
           </>
 

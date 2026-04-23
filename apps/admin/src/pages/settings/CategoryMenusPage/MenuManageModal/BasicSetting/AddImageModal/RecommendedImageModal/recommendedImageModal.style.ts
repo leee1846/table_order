@@ -15,6 +15,7 @@ export const ModalContainer = styled(BaseDialogContainer)`
 export const ModalHeader = styled(BaseHeader)`
   margin-bottom: 30px;
   margin-top: 0;
+  flex-shrink: 0;
 `;
 
 export const ModalTitle = styled(BaseTitle)`
@@ -31,7 +32,9 @@ export const ModalBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: 80%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 `;
 
 export const CategoryTab = styled.button<{ selected: boolean }>`
@@ -57,19 +60,35 @@ export const CategoryTabs = styled.div`
   border-radius: 20px;
   height: 60px;
   margin: 0 35px;
+  flex-shrink: 0;
+`;
+
+/** 스크롤과 그리드를 분리해 다중 행에서도 행 높이·이미지 박스가 유지되도록 함 */
+export const ImageGridScroll = styled.div`
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 0 35px;
 `;
 
 export const ImageGrid = styled.ul`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: max-content;
   gap: 12px;
-  overflow: auto;
-  height: 100%;
-  margin: 0 35px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: start;
+  align-content: start;
 `;
 
 export const ImageButton = styled.button<{ selected: boolean }>`
   position: relative;
+  width: 100%;
+  min-width: 0;
+  align-self: start;
   border: 2px solid
     ${({ selected }) =>
       selected ? theme.colors.primary[500] : theme.colors.grey[200]};
@@ -85,21 +104,23 @@ export const ImageButton = styled.button<{ selected: boolean }>`
     selected ? `0 0 0 2px ${theme.colors.primary[100]}` : 'none'};
   display: flex;
   flex-direction: column;
-  align-self: start;
+  align-items: stretch;
 `;
 
 export const Image = styled.img`
   width: 100%;
   height: 143px;
+  min-height: 143px;
   display: block;
-  object-fit: 21;
-  aspect-ratio: 1;
+  object-fit: cover;
+  flex: 0 0 auto;
 `;
 
 export const ImageFallback = styled.div`
   width: 100%;
-  height: 100%;
-  min-height: 120px;
+  height: 143px;
+  min-height: 143px;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -113,7 +134,10 @@ export const ImageLabel = styled.span`
   ${TYPOGRAPHY.ST_2}
   color: ${theme.colors.grey[700]};
   text-align: center;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
+  padding: 8px 6px;
+  flex-shrink: 0;
 `;
 
 export const SelectionOverlay = styled.div<{ selected: boolean }>`
@@ -146,6 +170,7 @@ export const Footer = styled.div`
   flex-direction: column;
   gap: 12px;
   padding-top: 16px;
+  flex-shrink: 0;
 `;
 
 export const SelectionCount = styled.div`
@@ -170,4 +195,5 @@ export const EmptyState = styled.div`
   color: ${theme.colors.grey[500]};
   ${TYPOGRAPHY.CT_2}
   flex: 1;
+  min-height: 0;
 `;
