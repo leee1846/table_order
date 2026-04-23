@@ -15,7 +15,6 @@ import styled from '@emotion/styled';
 import IndividualStoreAddModal from './IndividualStoreAddModal';
 import StoreGroupAddModal from './StoreGroupAddModal';
 import { useGetStoresByGroups } from '@repo/api/queries';
-import * as S from '@/components/Tooltip/tooltip.style';
 
 const { Text, Title } = Typography;
 
