@@ -694,12 +694,13 @@ export const ImageSection = () => {
         onClose={() => setIsExistingModalOpen(false)}
         onConfirm={handleConfirmExistingImages}
       />
-      <RecommendedImageModal
-        isOpen={isRecommendedModalOpen}
-        images={recommendedImages}
-        onClose={() => setIsRecommendedModalOpen(false)}
-        onConfirm={handleConfirmRecommendedImages}
-      />
+      {isRecommendedModalOpen && (
+        <RecommendedImageModal
+          images={recommendedImages}
+          onClose={() => setIsRecommendedModalOpen(false)}
+          onConfirm={handleConfirmRecommendedImages}
+        />
+      )}
     </S.Container>
   );
 };
