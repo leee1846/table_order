@@ -44,6 +44,12 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
           });
           setPassword(null);
         }
+        if (error.response?.status === 400) {
+          setPassword(null);
+          if (error.response?.data?.status?.code === -104) {
+            onClose();
+          }
+        }
       },
     },
   });
