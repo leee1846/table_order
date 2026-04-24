@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import type {
   ICategoryWithMenus,
   ICancelOrderMenuRequest,
@@ -61,6 +61,7 @@ export const AddMenuDialog = ({
 }: AddMenuDialogProps) => {
   const { t } = useTranslation('admin', { i18n: i18nInstance });
   const { mutateAsync: createTableOrder, isPending } = usePostTableOrder();
+  const isMountedRef = useRef(false);
   const [viewMode, setViewMode] = useState<'menu' | 'option'>('menu');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedMenu, setSelectedMenu] = useState<IMenu | null>(null);
@@ -88,6 +89,23 @@ export const AddMenuDialog = ({
       setSelectedCategory(defaultCategorySeq);
     }
   }, [defaultCategorySeq, isOpen]);
+
+  useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+      return;
+    }
+
+    if (isOpen) {
+      return;
+    }
+
+    setSelectedMenus([]);
+    setSelectedMenu(null);
+    setSelectedOptions(new Map());
+    setMenuQuantity(1);
+    setViewMode('menu');
+  }, [isOpen]);
 
   // 옵션 수량 변경 핸들러
   const handleOptionQuantityChange = (optionSeq: number, quantity: number) => {

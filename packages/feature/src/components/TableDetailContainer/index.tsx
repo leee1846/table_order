@@ -27,6 +27,7 @@ import {
   openDualActionDialog,
   toast,
 } from '@repo/feature/utils';
+import { useAddMenuDialogStore } from '../../stores/addMenuDialogStore';
 import {
   useGetTableOrderHistories,
   usePutCancelOrderAll,
@@ -78,6 +79,13 @@ export const TableDetailContainer = ({
   }, []);
   //메뉴 추가 모달
   const [isAddMenuDialogOpen, setIsAddMenuDialogOpen] = useState(false);
+  const closeSignal = useAddMenuDialogStore((s) => s.closeSignal);
+
+  useEffect(() => {
+    if (closeSignal === 0) return;
+    setIsAddMenuDialogOpen(false);
+  }, [closeSignal]);
+
   //선택 취소 모달
   const [isSelectCancelDialogOpen, setIsSelectCancelDialogOpen] =
     useState(false);

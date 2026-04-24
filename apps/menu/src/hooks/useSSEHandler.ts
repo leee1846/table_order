@@ -24,7 +24,7 @@ import {
 import { getLatestAppVersion, getPosSyncStatus } from '@repo/api/fetchers';
 import { useSSE } from '@repo/feature/hooks';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
-import { useDialogStore, usePosOrderStore } from '@repo/feature/stores';
+import { useAddMenuDialogStore, useDialogStore, usePosOrderStore } from '@repo/feature/stores';
 import { SystemControl, Installer } from '@repo/util/app';
 import { SSE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import { ROUTES } from '@/constants/routes';
@@ -476,6 +476,7 @@ export const useSSEHandler = () => {
             tableNum
           ),
         });
+        useAddMenuDialogStore.getState().requestClose();
       } else {
         void refreshTableOrderHistoriesData();
         void refreshCategoriesData().then((categories) => {
