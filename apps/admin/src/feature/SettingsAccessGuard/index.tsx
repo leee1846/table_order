@@ -42,6 +42,12 @@ export const SettingsAccessGuard = ({ children }: SettingsAccessGuardProps) => {
             confirmText: t('확인'),
           });
         }
+
+        if (error.response?.status === 400) {
+          if (error.response?.data?.status?.code === -104) {
+            handleClose();
+          }
+        }
       },
     },
   });

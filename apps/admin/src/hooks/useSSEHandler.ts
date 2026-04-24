@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { initializeSseConnection, disconnectSse } from '@/utils/sseConnection';
 import { useSSE } from '@repo/feature/hooks';
-import { usePosOrderStore } from '@repo/feature/stores';
+import { useAddMenuDialogStore, usePosOrderStore } from '@repo/feature/stores';
 import { SSE_KEYS } from '@/constants/keys';
 import type { ISseMessage } from '@repo/api/types';
 import { useAuth } from './useAuth';
@@ -242,6 +242,8 @@ export const useSSEHandler = (tableNumber?: string) => {
         queryClient.invalidateQueries({
           queryKey: queryKeys.category.menuboardList(shopCode, tableNumber),
         });
+        useAddMenuDialogStore.getState().requestClose();
+        toast(tRef.current('메뉴정보가 업데이트 되었습니다.'));
       }
       return;
     }
