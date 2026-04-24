@@ -14,13 +14,14 @@ const DEFAULT_TOAST = {
   duration: 2000,
 };
 
-/** 서버에 반영된 테이블 주문 라인이 하나라도 있으면 true (첫 주문 최소금액·첫주문 필수 카테고리 검사 제외용) */
+/** 일반 주문 라인(`callStaffMenu === false`)이 하나라도 있으면 true. 직원 호출만 있으면 false (첫 주문 최소금액·첫주문 필수 카테고리 검사 제외용). */
 export function hasTableOrderHistory(): boolean {
   const orderData = useTableOrderHistoriesStore.getState().data;
   if (orderData === null || orderData === 'isEmptyTable') {
     return false;
   }
-  return orderData.orderDetailMenuList.length > 0;
+
+  return orderData.orderDetailMenuList.some((menu) => !menu.callStaffMenu);
 }
 
 function cartMenusTotalAmount(menus: ICartMenu[]): number {
