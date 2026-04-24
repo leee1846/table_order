@@ -62,7 +62,7 @@ import CampaignNewPage from '@/pages/backoffice/CampaignNewPage';
 import MenuGroupPage from '@/pages/backoffice/MenuGroupPage';
 import { StoreGroupPage } from '@/pages/backoffice/StoreGroupPage';
 import { StoreGroupNewPage } from '@/pages/backoffice/StoreGroupNewPage';
-import MenuGroupStatus from '@/pages/backoffice/MenuGroupStatus';
+import MenuTagStatus from '@/pages/backoffice/MenuTagStatus';
 import { MembersDetailPage } from '@/pages/backoffice/MembersDetailPage';
 
 // ============================================================================
@@ -345,7 +345,7 @@ const createBackofficeRoutes = () => [
   {
     path: ROUTES.BACKOFFICE.MENU_GROUP_STATUS.path,
     loader: requireBackofficeLoader, // 권한 체크 (ADMIN, MASTER만 접근 가능하도록)
-    element: createRoute(MenuGroupStatus),
+    element: createRoute(MenuTagStatus),
   },
 ];
 

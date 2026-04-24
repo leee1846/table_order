@@ -11,7 +11,12 @@ import type {
   TGetShopCampaignStatusResponse,
   TToggleContentExclusionResponse,
   IPatchToggleContentExclusionParams,
+  TGetCampaignMenuGroupsResponse,
   IGetShopCampaignStatusParams,
+  TGetCampaignMenuGroupSyncStatusResponse,
+  IGetCampaignMenuGroupSyncStatusParams,
+  TPostRegisterMenuGroupSyncResponse,
+  IPostRegisterMenuGroupSyncRequest,
 } from '../types/campaign';
 import type { TVoidApiResponse } from '../types/common';
 import type { TGetStoresByGroupsResponse } from '../types/storeGroup';
@@ -44,6 +49,57 @@ export const getCampaignDetail = async (
   const response = await axiosInstance<TGetCampaignDetailResponse>({
     method: 'GET',
     url: ENDPOINTS.CAMPAIGN.DETAIL(campaignSeq),
+  });
+  return response.data;
+};
+
+/**
+ * 캠페인 메뉴 그룹 동기화 현황 조회 API
+ * GET /api/campaigns/{campaignSeq}/menu-groups/{menuGroupSeq}/sync-status
+ */
+export const getCampaignMenuGroupSyncStatus = async (
+  params: IGetCampaignMenuGroupSyncStatusParams
+): Promise<TGetCampaignMenuGroupSyncStatusResponse> => {
+  const { campaignSeq, menuGroupSeq, ...queryParams } = params;
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetCampaignMenuGroupSyncStatusResponse>(
+    {
+      method: 'GET',
+      url: `/campaigns/${campaignSeq}/menu-groups/${menuGroupSeq}/sync-status`,
+      params: queryParams,
+    }
+  );
+  return response.data;
+};
+
+/**
+ * 캠페인 메뉴 그룹 동기화 매장 등록
+ * POST /campaigns/{campaignSeq}/menu-groups/{menuGroupSeq}/shops/sync-register
+ */
+export const postRegisterMenuGroupSync = async (
+  params: IPostRegisterMenuGroupSyncRequest
+): Promise<TPostRegisterMenuGroupSyncResponse> => {
+  const { campaignSeq, menuGroupSeq, shopSeqs } = params;
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TPostRegisterMenuGroupSyncResponse>({
+    method: 'POST',
+    url: `/campaigns/${campaignSeq}/menu-groups/${menuGroupSeq}/shops/sync-register`,
+    data: { shopSeqs },
+  });
+  return response.data;
+};
+
+/**
+ * 캠페인 메뉴 그룹 목록 조회 API
+ * GET /campaigns/{campaignSeq}/menu-groups
+ */
+export const getCampaignMenuGroups = async (
+  campaignSeq: number | string
+): Promise<TGetCampaignMenuGroupsResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetCampaignMenuGroupsResponse>({
+    method: 'GET',
+    url: `/campaigns/${campaignSeq}/menu-groups`,
   });
   return response.data;
 };

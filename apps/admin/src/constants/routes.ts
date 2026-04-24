@@ -86,7 +86,7 @@ export const ROUTES = {
       generate: () => `/backoffice/campaign/new`,
     },
     CAMPAIGN_EDIT: {
-      path: '/backoffice/campaign/edit/:id', // 라우터에 등록할 때 사용할 path
+      path: 'campaign/edit/:id',
       generate: (id: string | number) => `/backoffice/campaign/edit/${id}`, // 페이지 이동 시 사용할 함수
     },
     MENU_GROUP: {
@@ -98,16 +98,17 @@ export const ROUTES = {
       generate: () => `/backoffice/store-groups`,
     },
     STORE_GROUP_NEW: {
-      path: '/backoffice/store-groups/new',
+      path: 'store-groups/new',
       generate: () => '/backoffice/store-groups/new',
     },
     STORE_GROUP_EDIT: {
-      path: '/backoffice/store-groups/:id',
+      path: 'store-groups/:id',
       generate: (id: string | number) => `/backoffice/store-groups/${id}`,
     },
     MENU_GROUP_STATUS: {
-      path: 'menu-group-status',
-      generate: () => `/backoffice/menu-group-status`,
+      path: 'menu-group-status/:campaignSeq',
+      generate: (campaignSeq: string | number) =>
+        `/backoffice/menu-group-status/${campaignSeq}`,
     },
   },
 

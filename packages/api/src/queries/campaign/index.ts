@@ -7,3 +7,6 @@ export * from './usePatchUpdateCampaign';
 export * from './useGetCampaignDetail';
 export * from './useGetShopCampaignStatus';
 export * from './usePatchToggleAdTypeExclusion';
+export * from './useGetCampaignMenuGroups';
+export * from './useGetCampaignMenuGroupSyncStatus';
+export * from './usePostRegisterMenuGroupSync';

@@ -288,6 +288,13 @@ const CampaignPage: React.FC = () => {
   };
 
   const columns: ColumnsType<CampaignDataType> = [
+    {
+      title: 'No.',
+      key: 'no',
+      width: 60,
+      align: 'center',
+      render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
+    },
     { title: '캠페인 ID', dataIndex: 'code', key: 'code', width: 120 },
     { title: '캠페인명', dataIndex: 'name', key: 'name' },
     { title: '별명', dataIndex: 'nickname', key: 'nickname' },
@@ -385,7 +392,11 @@ const CampaignPage: React.FC = () => {
               type="text"
               icon={<FileSyncOutlined />}
               onClick={() =>
-                navigate(ROUTES.BACKOFFICE.MENU_GROUP_STATUS.generate())
+                navigate(
+                  ROUTES.BACKOFFICE.MENU_GROUP_STATUS.generate(
+                    record.campaignSeq
+                  )
+                )
               }
             />
           </Tooltip>

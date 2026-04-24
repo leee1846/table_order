@@ -164,3 +164,62 @@ export interface IPatchToggleContentExclusionParams {
   campaignSeq: number;
   contentSeq: number;
 }
+
+export interface ICampaignMenuGroup {
+  menuGroupSeq: number;
+  menuGroupName: string;
+  menuGroupTag: string;
+}
+
+export type TGetCampaignMenuGroupsResponse = IApiResponse<ICampaignMenuGroup[]>;
+
+export interface IGetCampaignMenuGroupSyncStatusParams {
+  campaignSeq: number | string;
+  menuGroupSeq: number | string;
+  page?: number;
+  size?: number;
+}
+
+export interface ICampaignMenuGroupSyncStatus {
+  shopSeq: number;
+  shopName: string;
+  shopCode: string;
+  syncStatus: 'COMPLETED' | 'UNREGISTERED';
+  syncCompletedDate: string;
+}
+
+export interface ICampaignMenuGroupSyncStatusResponseData {
+  content: ICampaignMenuGroupSyncStatus[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  totalCount: number;
+  completedCount: number;
+  unregisteredCount: number;
+}
+
+export type TGetCampaignMenuGroupSyncStatusResponse =
+  IApiResponse<ICampaignMenuGroupSyncStatusResponseData>;
+
+export interface IPostRegisterMenuGroupSyncRequest {
+  campaignSeq: number | string;
+  menuGroupSeq: number | string;
+  shopSeqs: number[];
+}
+
+export interface IRegisterMenuGroupSyncResultItem {
+  shopSeq: number;
+  reason: string;
+}
+
+export interface IRegisterMenuGroupSyncData {
+  menuGroupSeq: number;
+  registeredCount: number;
+  failedCount: number;
+  registered: IRegisterMenuGroupSyncResultItem[];
+  failed: IRegisterMenuGroupSyncResultItem[];
+}
+
+export type TPostRegisterMenuGroupSyncResponse =
+  IApiResponse<IRegisterMenuGroupSyncData>;
