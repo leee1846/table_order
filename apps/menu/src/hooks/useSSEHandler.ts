@@ -477,6 +477,7 @@ export const useSSEHandler = () => {
           ),
         });
       } else {
+        void refreshTableOrderHistoriesData();
         void refreshCategoriesData().then((categories) => {
           // 카테고리(=메뉴) 데이터가 갱신되면, 장바구니에 담긴 동일 menuSeq의
           // 이름/가격/옵션 정보도 최신 데이터로 동기화한다.
