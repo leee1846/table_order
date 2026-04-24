@@ -55,7 +55,7 @@ export const LeftContent = styled.div`
 
 export const Divider = styled.span`
   width: 0.0625rem;
-  height: 1rem;
+  height: 1.25rem;
   background-color: ${baseTheme.darkModeColors.grey[500]};
 `;
 
@@ -98,7 +98,7 @@ export const RightContent = styled.div`
 `;
 
 export const TableNumber = styled.p`
-  ${TYPOGRAPHY.MT_6}
+  ${TYPOGRAPHY.MT_4}
   color: ${({ theme }) => theme.mode.grey[700]};
 `;
 
@@ -110,5 +110,5 @@ export const OrderHistoryButton = styled.button`
   align-items: center;
   gap: 4px;
   color: ${({ theme }) => theme.mode.primary[500]};
-  ${TYPOGRAPHY.ST_3}
+  ${TYPOGRAPHY.MT_6}
 `;

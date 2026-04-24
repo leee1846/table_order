@@ -351,7 +351,7 @@ export const Header = ({
             onClick={onClickOrderHistoryButton}
             aria-label={t('주문내역 보기')}
           >
-            <MenuIcon width={20} height={20} color={theme.mode.primary[500]} />
+            <MenuIcon width={30} height={30} color={theme.mode.primary[500]} />
             {t('주문내역')}
           </S.OrderHistoryButton>
         </S.RightContent>
