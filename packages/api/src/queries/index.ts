@@ -13,4 +13,5 @@ export * from './payment';
 export * from './admin';
 export * from './member';
 export * from './sse';
+export * from './menuBulk';
 export { queryKeys } from './queryKeys';

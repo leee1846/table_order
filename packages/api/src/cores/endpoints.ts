@@ -79,6 +79,12 @@ export const ENDPOINTS = {
     EXISTING_IMAGE_LIST: (shopCode: string) =>
       `/menu/image/existing/list/${shopCode}`,
     SAMPLE_IMAGE_LIST: '/menu/image/sample/list',
+    POS_EXCEL: (shopCode: string) => `/menu/bulk/pos-excel/${shopCode}`,
+    IMAGE_ZIP: (shopCode: string) => `/menu/bulk/images/${shopCode}`,
+    IMAGE_LIST: (shopCode: string) => `/menu/bulk/image-list/${shopCode}`,
+    POS_EXCEL_BUNDLE: (shopCode: string) =>
+      `/menu/bulk/pos-excel-bundle/${shopCode}`,
+    REPLACE_MAIN_IMAGE: (menuSeq: number) => `/menu/bulk/image/${menuSeq}`,
   },
 
   SHOP: {
