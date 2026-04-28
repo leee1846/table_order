@@ -97,3 +97,18 @@ export const createStoreGroup = async (
 
   return response.data;
 };
+
+/**
+ * 매장 그룹 엑셀 템플릿을 다운로드합니다.
+ * GET /store-groups/excel-template
+ */
+export const downloadStoreGroupExcelTemplate = async (): Promise<Blob> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<Blob>({
+    method: 'GET',
+    url: ENDPOINTS.STORE_GROUP.EXCEL_TEMPLATE,
+    responseType: 'blob',
+  });
+
+  return response.data;
+};

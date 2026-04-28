@@ -73,12 +73,16 @@ export const StoresEditPage = () => {
     enabled: !!shopCode,
   });
 
-  // 멤버 정보 조회 (memberId가 있을 때만)
+  const targetMemberId =
+    memberIdFromQuery || shopDetailResponse?.data?.memberId;
+
+  // 매장 상세 정보에서 가져온 memberId로 멤버 정보 조회
   const { data: memberDetailResponse } = useGetAdminMember({
-    memberId: memberIdFromQuery ?? '',
+    memberId: targetMemberId ?? '',
     options: {
-      enabled: !!memberIdFromQuery,
+      enabled: !!targetMemberId,
     },
+    ignoreGlobalErrors: [404],
   });
 
   // API mutation hooks

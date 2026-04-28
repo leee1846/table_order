@@ -148,7 +148,7 @@ const StoreGroupSelection: React.FC<StoreGroupSelectionProps> = ({
 
   // 테이블 컬럼 정의
   const columns: ColumnsType<CampaignShopData> = [
-    { title: '매장 코드', dataIndex: 'shopCode', key: 'shopCode', width: 120 },
+    { title: '매장 ID', dataIndex: 'shopCode', key: 'shopCode', width: 120 },
     { title: '매장명', dataIndex: 'shopName', key: 'shopName', width: 200 },
     {
       title: '소속 그룹',

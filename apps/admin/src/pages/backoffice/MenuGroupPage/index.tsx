@@ -101,7 +101,7 @@ const MenuGroupPage: React.FC = () => {
   const { data: menuGroupResponse, isFetching } = useGetMenuGroupList({
     page: currentPage - 1,
     size: pageSize,
-    keyword: searchKeyword || undefined,
+    name: searchKeyword || undefined,
   });
 
   // API 연동: 메뉴 그룹 수정/삭제 훅
@@ -151,15 +151,15 @@ const MenuGroupPage: React.FC = () => {
   const columns: ColumnsType<MenuGroupDataType> = [
     { title: 'No.', dataIndex: 'no', key: 'no', width: 80, align: 'center' },
     {
+      title: '메뉴 태그',
+      dataIndex: 'menuGroupTag',
+      key: 'menuGroupTag',
+      width: 160,
+    },
+    {
       title: '메뉴 그룹명',
       dataIndex: 'menuGroupName',
       key: 'menuGroupName',
-      width: 200,
-    },
-    {
-      title: '메뉴 그룹 태그',
-      dataIndex: 'menuGroupTag',
-      key: 'menuGroupTag',
       width: 200,
     },
     {
@@ -233,10 +233,11 @@ const MenuGroupPage: React.FC = () => {
         <TopBar>
           <Space>
             <Input
-              placeholder="메뉴그룹명을 입력하세요"
+              placeholder="메뉴그룹명 or 메뉴 태그"
               style={{ width: 240, borderRadius: '6px' }}
               value={searchInputValue}
               onChange={(e) => handleSearchInputChange(e.target.value)}
+              onPressEnter={handleSearch}
               //prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
             />
             <Button

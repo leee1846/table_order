@@ -56,7 +56,7 @@ const IndividualStoreAddModal: React.FC<IndividualStoreAddModalProps> = ({
   };
 
   const columns: ColumnsType<IStore> = [
-    { title: '매장 코드', dataIndex: 'shopCode', key: 'shopCode', width: 120 },
+    { title: '매장 ID', dataIndex: 'shopCode', key: 'shopCode', width: 120 },
     { title: '매장명', dataIndex: 'shopName', key: 'shopName' },
   ];
 

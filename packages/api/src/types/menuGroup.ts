@@ -10,7 +10,7 @@ import type { IApiResponse, TVoidApiResponse } from './common';
 export interface IGetMenuGroupListParams {
   page?: number;
   size?: number;
-  keyword?: string;
+  name?: string;
 }
 
 /**

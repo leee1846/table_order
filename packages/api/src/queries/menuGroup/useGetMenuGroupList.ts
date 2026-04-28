@@ -19,11 +19,7 @@ export const useGetMenuGroupList = (
   >
 ) => {
   return useQuery<TGetMenuGroupListResponse, AxiosError<IApiError>>({
-    queryKey: queryKeys.menuGroup.list(
-      params.page,
-      params.size,
-      params.keyword
-    ),
+    queryKey: queryKeys.menuGroup.list(params.page, params.size, params.name),
     queryFn: () => getMenuGroupList(params),
     ...options,
   });

@@ -97,6 +97,11 @@ export interface CampaignScheduleProps {
   onChange: (schedules: CampaignShopData[]) => void;
 }
 
+interface EditableFormValues {
+  startDate: dayjs.Dayjs | null;
+  endDate: dayjs.Dayjs | null;
+}
+
 const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
   schedules,
   onChange,
@@ -123,10 +128,7 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
 
   const save = async (shopSeq: number) => {
     try {
-      const values = (await form.validateFields()) as {
-        startDate: dayjs.Dayjs | null;
-        endDate: dayjs.Dayjs | null;
-      };
+      const values = (await form.validateFields()) as EditableFormValues;
       const newData = [...schedules];
       const index = newData.findIndex((item) => item.shopSeq === shopSeq);
 

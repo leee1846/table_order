@@ -29,6 +29,7 @@ import {
   useGetStoreGroupMembers,
   usePostCreateStoreGroup,
   usePutUpdateStoreGroup,
+  useGetStoreGroupExcelTemplate,
 } from '@repo/api/queries';
 import type { IStore } from '@repo/api/types';
 
@@ -124,6 +125,8 @@ export const StoreGroupNewPage = () => {
 
   const createMutation = usePostCreateStoreGroup();
   const updateMutation = usePutUpdateStoreGroup();
+  const { mutateAsync: downloadExcelTemplate } =
+    useGetStoreGroupExcelTemplate();
 
   useEffect(() => {
     if (isEditMode && detailResponse?.data) {
@@ -231,7 +234,7 @@ export const StoreGroupNewPage = () => {
           return;
         }
 
-        // 엑셀에서 추출한 매장 코드 목록의 중복을 제거
+        // 엑셀에서 추출한 매장 ID 목록의 중복을 제거
         const newShopCodes = Array.from(
           new Set(
             jsonData
@@ -260,35 +263,40 @@ export const StoreGroupNewPage = () => {
 
   const handleExcelDownload = async () => {
     try {
-      // TODO: 실제 엑셀 다운로드 API 호출 로직으로 교체하세요.
-      // 예시 (axios 사용):
-      // const response = await api.get('/api/store-group/excel', { responseType: 'blob' });
-      // const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-      // 아래는 테스트용 더미 Blob 코드입니다. API 연동 시 삭제하세요.
-      const blob = new Blob([''], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      message.loading({
+        content: '엑셀 양식 다운로드 중...',
+        key: 'downloadExcelTemplate',
       });
+
+      const blob = await downloadExcelTemplate();
 
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
       link.setAttribute(
         'download',
-        `매장목록_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.xlsx`
+        `매장그룹_엑셀양식_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.xlsx`
       );
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+
+      message.success({
+        content: '엑셀 양식 다운로드가 완료되었습니다.',
+        key: 'downloadExcelTemplate',
+      });
     } catch (error) {
-      message.error('엑셀 다운로드에 실패했습니다.');
+      message.error({
+        content: '엑셀 양식 다운로드에 실패했습니다.',
+        key: 'downloadExcelTemplate',
+      });
     }
   };
 
   const columns: ColumnsType<IStore> = [
     {
-      title: '매장 코드',
+      title: '매장 ID',
       dataIndex: 'shopCode',
       key: 'shopCode',
       width: 150,

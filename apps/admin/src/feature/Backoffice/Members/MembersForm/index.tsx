@@ -23,13 +23,14 @@ const SectionTitle = styled(Title)`
   }
 `;
 
-const HorizontalLayout = styled.div`
+const FormRow = styled.div`
   display: flex;
-  gap: 16px;
-  max-width: 400px;
+  gap: 24px;
+  max-width: 824px;
 
   > div {
     flex: 1;
+    min-width: 0;
   }
 `;
 
@@ -59,86 +60,71 @@ export const MembersForm = ({ mode, formData, updateFormData }: Props) => {
         disabled={isReadOnly}
         requiredMark={true}
       >
-        <Form.Item
-          label={<Text strong>이름</Text>}
-          name="memberName"
-          rules={[{ required: true, message: '이름을 입력해주세요.' }]}
-        >
-          <Input
-            size="large"
-            placeholder="이름을 입력하세요"
-            style={{ maxWidth: 400 }}
-          />
-        </Form.Item>
+        <FormRow>
+          <Form.Item
+            label={<Text strong>이름</Text>}
+            name="memberName"
+            rules={[{ required: true, message: '이름을 입력해주세요.' }]}
+          >
+            <Input size="large" placeholder="이름을 입력하세요" />
+          </Form.Item>
 
-        <Form.Item
-          label={<Text strong>이메일</Text>}
-          name="memberEmail"
-          rules={[{ required: true, message: '이메일을 입력해주세요.' }]}
-        >
-          <Input
-            size="large"
-            placeholder="이메일을 입력하세요"
-            style={{ maxWidth: 400 }}
-          />
-        </Form.Item>
+          <Form.Item
+            label={<Text strong>이메일</Text>}
+            name="memberEmail"
+            rules={[{ required: true, message: '이메일을 입력해주세요.' }]}
+          >
+            <Input size="large" placeholder="이메일을 입력하세요" />
+          </Form.Item>
+        </FormRow>
 
-        <Form.Item
-          label={<Text strong>핸드폰번호</Text>}
-          name="memberTel"
-          rules={[{ required: true, message: '핸드폰번호를 입력해주세요.' }]}
-          getValueFromEvent={(e) => allowOnlyNumbers(e.target.value)}
-        >
-          <Input
-            size="large"
-            placeholder="핸드폰번호를 입력하세요 (- 없이)"
-            inputMode="numeric"
-            style={{ maxWidth: 400 }}
-          />
-        </Form.Item>
+        <FormRow>
+          <Form.Item
+            label={<Text strong>핸드폰번호</Text>}
+            name="memberTel"
+            rules={[{ required: true, message: '핸드폰번호를 입력해주세요.' }]}
+            getValueFromEvent={(e) => allowOnlyNumbers(e.target.value)}
+          >
+            <Input
+              size="large"
+              placeholder="핸드폰번호를 입력하세요 (- 없이)"
+              inputMode="numeric"
+            />
+          </Form.Item>
 
-        <Form.Item
-          label={<Text strong>소속</Text>}
-          name="memberDepartment"
-          rules={[{ required: true, message: '소속을 입력해주세요.' }]}
-        >
-          <Input
-            size="large"
-            placeholder="소속을 입력하세요"
-            style={{ maxWidth: 400 }}
-          />
-        </Form.Item>
+          <Form.Item
+            label={<Text strong>소속</Text>}
+            name="memberDepartment"
+            rules={[{ required: true, message: '소속을 입력해주세요.' }]}
+          >
+            <Input size="large" placeholder="소속을 입력하세요" />
+          </Form.Item>
+        </FormRow>
 
-        <Form.Item
-          label={<Text strong>권한</Text>}
-          name="memberRole"
-          rules={[{ required: true, message: '권한을 선택해주세요.' }]}
-        >
-          <Select
-            size="large"
-            options={MEMBER_ROLE_OPTIONS}
-            placeholder="권한 선택"
-            style={{ maxWidth: 400 }}
-          />
-        </Form.Item>
+        <FormRow>
+          <Form.Item
+            label={<Text strong>권한</Text>}
+            name="memberRole"
+            rules={[{ required: true, message: '권한을 선택해주세요.' }]}
+          >
+            <Select
+              size="large"
+              options={MEMBER_ROLE_OPTIONS}
+              placeholder="권한 선택"
+            />
+          </Form.Item>
+          <div style={{ flex: 1 }} />
+        </FormRow>
 
         {(mode === 'edit' || mode === 'detail') && (
-          <HorizontalLayout>
-            <Form.Item
-              label={<Text strong>생성일자</Text>}
-              name="createdAt"
-              style={{ flex: 1 }}
-            >
+          <FormRow>
+            <Form.Item label={<Text strong>생성일자</Text>} name="createdAt">
               <Input size="large" placeholder="생성일자" disabled />
             </Form.Item>
-            <Form.Item
-              label={<Text strong>수정일자</Text>}
-              name="updatedAt"
-              style={{ flex: 1 }}
-            >
+            <Form.Item label={<Text strong>수정일자</Text>} name="updatedAt">
               <Input size="large" placeholder="수정일자" disabled />
             </Form.Item>
-          </HorizontalLayout>
+          </FormRow>
         )}
       </Form>
     </Container>

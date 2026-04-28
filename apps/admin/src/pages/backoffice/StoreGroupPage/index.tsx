@@ -200,7 +200,7 @@ export const StoreGroupPage = () => {
         <TopBar>
           <Space>
             <Input
-              placeholder="그룹명을 검색하세요"
+              placeholder="매장 그룹명 or 매장 그룹 ID"
               allowClear
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}

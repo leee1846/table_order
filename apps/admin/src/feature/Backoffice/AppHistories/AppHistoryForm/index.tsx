@@ -84,36 +84,33 @@ export const AppHistoryForm = ({
       <SectionTitle level={5}>릴리즈 노트 정보</SectionTitle>
       <FormContent>
         {/* 생성 모드일 때만 파일 업로드 노출 */}
-        {mode === 'create' && (
-          <FieldGroup>
-            <Label>
-              앱 파일 (APK/ZIP) <span>*</span>
-            </Label>
-            <FileUploadWrapper>
-              <Button
-                icon={<UploadOutlined />}
-                onClick={onSelectAppFileClick}
-                disabled={isReadOnly}
-              >
-                파일 선택
-              </Button>
-              {appFile && (
-                <Space>
-                  <Text>{appFile.name}</Text>
-                  {!isReadOnly && (
-                    <Button
-                      type="text"
-                      //danger
-                      icon={<DeleteOutlined />}
-                      onClick={onRemoveAppFile}
-                    />
-                  )}
-                </Space>
-              )}
-            </FileUploadWrapper>
-          </FieldGroup>
-        )}
-
+        <FieldGroup>
+          <Label>
+            앱 파일 (APK/ZIP) <span>*</span>
+          </Label>
+          <FileUploadWrapper>
+            <Button
+              icon={<UploadOutlined />}
+              onClick={onSelectAppFileClick}
+              disabled={isReadOnly}
+            >
+              파일 선택
+            </Button>
+            {appFile && (
+              <Space>
+                <Text>{appFile.name}</Text>
+                {!isReadOnly && (
+                  <Button
+                    type="text"
+                    //danger
+                    icon={<DeleteOutlined />}
+                    onClick={onRemoveAppFile}
+                  />
+                )}
+              </Space>
+            )}
+          </FileUploadWrapper>
+        </FieldGroup>
         <HorizontalLayout>
           <FieldGroup>
             <Label>

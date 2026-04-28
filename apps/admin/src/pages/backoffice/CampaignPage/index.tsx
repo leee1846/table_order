@@ -430,10 +430,11 @@ const CampaignPage: React.FC = () => {
         <TopBar>
           <Space>
             <Input
-              placeholder="캠페인명 검색"
+              placeholder="캠페인명 or 캠페인 ID"
               style={{ width: 240, borderRadius: '6px' }}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
+              onPressEnter={handleSearch}
             />
             <DatePicker.RangePicker
               placeholder={['집행 시작일', '집행 종료일']}

@@ -17,5 +17,6 @@ export * from './sse';
 export * from './storeGroup';
 export * from './store';
 export * from './campaign';
+export * from './menuBulk';
 
 export { queryKeys } from './queryKeys';

@@ -39,14 +39,14 @@ export const StoresSidebarLayout = () => {
         matchPattern: '/backoffice/stores/*',
         subMenus: [
           {
-            id: 'store-group',
-            label: '매장 그룹 관리',
-            path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
-          },
-          {
             id: 'store-list',
             label: '매장 관리',
             path: ROUTES.BACKOFFICE.STORES.generate(),
+          },
+          {
+            id: 'store-group',
+            label: '매장 그룹 관리',
+            path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
           },
         ],
       },

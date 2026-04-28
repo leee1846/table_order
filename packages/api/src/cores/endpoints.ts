@@ -80,6 +80,12 @@ export const ENDPOINTS = {
       `/menu/image/existing/list/${shopCode}`,
     SAMPLE_IMAGE_LIST: '/menu/image/sample/list',
     SEARCH: '/menus',
+    POS_EXCEL: (shopCode: string) => `/menu/bulk/pos-excel/${shopCode}`,
+    IMAGE_ZIP: (shopCode: string) => `/menu/bulk/images/${shopCode}`,
+    IMAGE_LIST: (shopCode: string) => `/menu/bulk/image-list/${shopCode}`,
+    POS_EXCEL_BUNDLE: (shopCode: string) =>
+      `/menu/bulk/pos-excel-bundle/${shopCode}`,
+    REPLACE_MAIN_IMAGE: (menuSeq: number) => `/menu/bulk/image/${menuSeq}`,
   },
 
   SHOP: {
@@ -173,6 +179,7 @@ export const ENDPOINTS = {
     MEMBERS: (storeGroupSeq: string | number) =>
       `/store-groups/${storeGroupSeq}/stores`,
     STORES_BY_GROUPS: '/store-groups/stores',
+    EXCEL_TEMPLATE: '/store-groups/excel-template',
   },
   STORE: {
     LIST: '/stores', // TODO: 실제 API 경로에 맞게 수정하세요 (예: /stores 또는 /store/list)
