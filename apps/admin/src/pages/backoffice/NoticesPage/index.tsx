@@ -124,10 +124,10 @@ export const NoticesPage = () => {
   const columns: ColumnsType<INotice> = [
     {
       title: 'No.',
-      dataIndex: 'noticeSeq',
-      key: 'noticeSeq',
+      key: 'no',
       width: 80,
       align: 'center',
+      render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
     {
       title: '유형',

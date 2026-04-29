@@ -108,11 +108,18 @@ export const AppHistoriesPage = () => {
   };
 
   const columns: ColumnsType<IAppVersion> = [
-    {
+    /*     {
       title: 'ID',
       dataIndex: 'appVersionSeq',
       key: 'appVersionSeq',
       width: 80,
+    }, */
+    {
+      title: 'No.',
+      key: 'no',
+      width: 80,
+      align: 'center',
+      render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
     { title: '구분', dataIndex: 'type', key: 'type', width: 100 },
     {

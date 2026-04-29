@@ -241,7 +241,6 @@ const CampaignNewPagePage: React.FC = () => {
       const fileArray: (File | null)[] = [];
       let sortOrderAcc = 1;
       Object.entries(filesByTab).forEach(([tabKey, files], index) => {
-        console.log(tabKey, files);
         //let sortOrderAcc = 1;
         files.forEach((fileItem) => {
           const isVideo = fileItem.originFileObj
@@ -263,7 +262,7 @@ const CampaignNewPagePage: React.FC = () => {
           } else {
             fileArray.push(null);
           }
-          console.log(fileItem.originFileObj);
+
           requestData.contents!.push({
             adType,
             filePath: '', // 서버 등록 전이므로 빈 문자열
@@ -328,7 +327,7 @@ const CampaignNewPagePage: React.FC = () => {
           sortOrder: sortOrderAcc++,
         });
       });
-      console.log(campaignShops);
+
       // 4. 매장/그룹 매핑 (CampaignShop)
       requestData.shops = campaignShops.map((shop) => {
         return {
@@ -337,11 +336,6 @@ const CampaignNewPagePage: React.FC = () => {
           startDate: shop.startDate,
           endDate: shop.endDate, // 개별 기간이 없으면 전체 기간 사용
         };
-      });
-
-      console.log('🚀 API로 전송할 Payload 확인:', {
-        request: requestData,
-        files: fileArray,
       });
 
       if (mode === 'new') {

@@ -103,6 +103,13 @@ export const MembersPage = () => {
   };
 
   const columns: ColumnsType<IGetAdminMember> = [
+    {
+      title: 'No.',
+      key: 'no',
+      width: 80,
+      align: 'center',
+      render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
+    },
     { title: '이름', dataIndex: 'memberName', key: 'memberName' },
     { title: '이메일', dataIndex: 'memberEmail', key: 'memberEmail' },
     { title: '핸드폰번호', dataIndex: 'memberTel', key: 'memberTel' },
