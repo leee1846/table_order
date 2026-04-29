@@ -38,6 +38,10 @@ export const getStoreGroupMembers = async (
   const response = await axiosInstance<TGetStoreGroupMembersResponse>({
     method: 'GET',
     url: ENDPOINTS.STORE_GROUP.MEMBERS(storeGroupSeq),
+    params: {
+      page: 0,
+      size: 100000,
+    },
   });
 
   return response.data;

@@ -183,7 +183,7 @@ export const ENDPOINTS = {
   },
   STORE: {
     LIST: '/stores', // TODO: 실제 API 경로에 맞게 수정하세요 (예: /stores 또는 /store/list)
-    SEARCH: '/stores', // TODO: 실제 검색 API 경로에 맞게 수정하세요
+    SEARCH: '/stores',
     CAMPAIGN_STATUS: (shopSeq: number) => `/stores/${shopSeq}/campaign-status`,
     TOGGLE_AD_TYPE_EXCLUSION: (
       shopSeq: number,
