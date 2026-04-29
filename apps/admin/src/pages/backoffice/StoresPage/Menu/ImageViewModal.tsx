@@ -127,13 +127,13 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
     setIsUploading(true);
     try {
       await replaceImage({ menuSeq, file });
-      toast('이미지가 변경 되었습니다.');
+      toast('이미지가 등록/변경 되었습니다.');
       await queryClient.invalidateQueries({
         queryKey: ['menu', 'bulkImageList', shopCode],
       });
     } catch (error) {
       console.error('Image replace failed:', error);
-      toast('이미지 변경을 실패하였습니다.');
+      toast('이미지 등록/변경을 실패했습니다.');
     } finally {
       setIsUploading(false);
     }
