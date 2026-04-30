@@ -23,6 +23,7 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [draggingMenuSeq, setDraggingMenuSeq] = useState<number | null>(null);
+  const [hoveredMenuSeq, setHoveredMenuSeq] = useState<number | null>(null);
 
   const queryClient = useQueryClient();
   const { mutateAsync: replaceImage } = usePostReplaceMenuMainImage();
@@ -47,7 +48,9 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
       // 각 이미지 URL을 fetch하여 zip 객체에 추가
       await Promise.all(
         downloadableImages.map(async (item, index) => {
-          if (!item.imagePath) return;
+          if (!item.imagePath) {
+            return;
+          }
           try {
             const response = await fetch(item.imagePath);
             const blob = await response.blob();
@@ -118,9 +121,9 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
       return;
     }
 
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const validTypes = ['image/jpeg', 'image/png'];
     if (!validTypes.includes(file.type)) {
-      toast('jpg, jpeg, png, webp, gif 확장자만 업로드 가능합니다.');
+      toast('jpg, jpeg, png 확장자만 업로드 가능합니다.');
       return;
     }
 
@@ -161,6 +164,10 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
               {downloadableImages.length}개
             </S.StatsText>
           </S.Header>
+          <S.DragDropGuide>
+            💡 변경할 이미지를 해당 메뉴 카드 위로{' '}
+            <strong>드래그 앤 드롭</strong> 하여 즉시 교체할 수 있습니다.
+          </S.DragDropGuide>
 
           {menuList.length > 0 ? (
             <S.GridContainer>
@@ -170,20 +177,10 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
                   onDragOver={(e) => handleDragOver(e, item.menuSeq)}
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, item.menuSeq)}
-                  style={{
-                    opacity: draggingMenuSeq === item.menuSeq ? 0.8 : 1,
-                    transform:
-                      draggingMenuSeq === item.menuSeq
-                        ? 'scale(0.98)'
-                        : 'scale(1)',
-                    boxShadow:
-                      draggingMenuSeq === item.menuSeq
-                        ? '0 0 0 3px #3b82f6'
-                        : '0 0 0 0px transparent',
-                    borderRadius: '8px',
-                    transition: 'all 0.3s ease-in-out',
-                    cursor: 'pointer',
-                  }}
+                  onMouseEnter={() => setHoveredMenuSeq(item.menuSeq)}
+                  onMouseLeave={() => setHoveredMenuSeq(null)}
+                  $isDragging={draggingMenuSeq === item.menuSeq}
+                  $isHovered={hoveredMenuSeq === item.menuSeq}
                 >
                   {item.imagePath ? (
                     <Image

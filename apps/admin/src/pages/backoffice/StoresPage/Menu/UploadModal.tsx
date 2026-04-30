@@ -28,7 +28,7 @@ export const UploadModal = ({ isOpen, onClose, shopCode }: Props) => {
   }
 
   const title = '엑셀 / 이미지 업로드';
-  const accept = '.xlsx, .xls, .zip';
+  const accept = '.xlsx, .zip';
 
   const processFiles = (files: FileList | File[]) => {
     let newExcel: File | null = null;
@@ -39,7 +39,7 @@ export const UploadModal = ({ isOpen, onClose, shopCode }: Props) => {
       const file = files[i];
       const lower = file?.name.toLowerCase();
       if (file) {
-        if (lower?.endsWith('.xlsx') || lower?.endsWith('.xls')) {
+        if (lower?.endsWith('.xlsx')) {
           newExcel = file;
         } else if (lower?.endsWith('.zip')) {
           newZip = file;
@@ -50,7 +50,7 @@ export const UploadModal = ({ isOpen, onClose, shopCode }: Props) => {
     }
 
     if (hasError) {
-      toast('엑셀(.xlsx, .xls) 또는 ZIP 파일만 업로드 가능합니다.');
+      toast('엑셀(.xlsx) 또는 ZIP 파일만 업로드 가능합니다.');
     }
 
     if (newExcel) {

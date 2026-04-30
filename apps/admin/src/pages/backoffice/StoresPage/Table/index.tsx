@@ -147,7 +147,7 @@ export const Table = ({ stores }: Props) => {
                   size="icon"
                   onClick={() => handleImageView(store.shopCode, store.shopSeq)}
                 >
-                  <EyeOutlined
+                  <PictureOutlined
                     style={{ fontSize: 16, color: theme.colors.grey[700] }}
                   />
                 </Button>

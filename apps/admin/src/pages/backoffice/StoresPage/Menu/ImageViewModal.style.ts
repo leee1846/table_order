@@ -51,10 +51,34 @@ export const GridContainer = styled.div`
   margin-top: 16px;
 `;
 
-export const ItemContainer = styled.div`
+
+export const DragDropGuide = styled.p`
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #6b7280;
+`;
+
+/* export const ItemContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
+`; */
+
+export const ItemContainer = styled.div<{
+  $isDragging?: boolean;
+  $isHovered?: boolean;
+}>`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: ${({ $isDragging }) => ($isDragging ? 0.8 : 1)};
+  transform: ${({ $isDragging, $isHovered }) =>
+    $isDragging ? 'scale(0.98)' : $isHovered ? 'scale(1.03)' : 'scale(1)'};
+  box-shadow: ${({ $isDragging }) =>
+    $isDragging ? '0 0 0 3px #3b82f6' : '0 0 0 0px transparent'};
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
 `;
 
 export const imageStyle: CSSProperties = {
@@ -84,6 +108,7 @@ export const TextContainer = styled.div`
   text-align: center;
   word-break: keep-all;
   line-height: 1.3;
+  padding: 2px 0;
 `;
 
 export const CategoryName = styled.span`
