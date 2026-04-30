@@ -236,6 +236,7 @@ export interface ITableCurrentStatusOption {
  * 테이블 현재 상태 메뉴 정보
  */
 export interface ITableCurrentStatus {
+  callStaffMenu: boolean;
   orderGroupUuid: string;
   orderDetailMenuSeq: number;
   menuSeq: number;

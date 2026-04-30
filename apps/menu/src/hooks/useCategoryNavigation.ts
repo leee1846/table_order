@@ -111,16 +111,14 @@ export function useCategoryNavigation({
     }, SCROLL_SPY_SUPPRESS_MS);
   });
 
-  // 탭 모드: 스크롤 컨테이너를 상단으로 이동
-  const scrollToTop = useRef(() => {
+  // 탭/스크롤 모드 공통: 컨테이너 최상단으로 스크롤
+  const scrollContentsContainerToTop = useRef(() => {
     requestAnimationFrame(() => {
-      // Contents 컴포넌트의 스크롤 컨테이너 찾기
-      const scrollContainer = document.getElementById(
-        DOM_IDS.CONTENTS_SCROLL_CONTAINER
-      );
-      if (scrollContainer) {
-        scrollContainer.scrollTo({ top: 0 });
-      }
+      const containerId = useSinglePageMenuboardRef.current
+        ? DOM_IDS.CONTENTS_SCROLL_CONTAINER
+        : DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER;
+      const container = document.getElementById(containerId);
+      container?.scrollTo({ top: 0 });
     });
   });
 
@@ -148,10 +146,16 @@ export function useCategoryNavigation({
       // 탭 모드: 스크롤 컨테이너를 상단으로 이동
       scrollContentsContainerToTop.current();
     } else {
-      // 스크롤 모드: eager 마운트 → useLayoutEffect에서 컨테이너 기준 스크롤, 스파이 일시 비활성화
+      // 스크롤 모드: 첫 번째 카테고리면 컨테이너 최상단(BannerAd 포함)으로, 그 외는 eager 마운트 → useLayoutEffect에서 스크롤
+      const isFirstCategory =
+        currentCategories[0]?.categorySeq === category.categorySeq;
       lastEmittedCategorySeqRef.current = category.categorySeq;
-      setEagerMountCategorySeq(category.categorySeq);
       temporarilyDisableScrollObserver.current();
+      if (isFirstCategory) {
+        scrollContentsContainerToTop.current();
+      } else {
+        setEagerMountCategorySeq(category.categorySeq);
+      }
     }
   }).current;
 
