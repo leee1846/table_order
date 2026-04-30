@@ -49,7 +49,7 @@ export const SalesSummaryPage = () => {
   return (
     <S.Container data-container>
       <S.Title>
-        {t('매출 관리')}
+        {t('매출 현황')}
         <div />
         <div>
           <span>{t('매출 요약')}</span>
@@ -83,9 +83,7 @@ export const SalesSummaryPage = () => {
             {t('{{value}}개', { value: formatCurrency(paidTableCount) })}
           </S.Price>
           <S.Description>
-            <AntTooltip
-              title={t('당일 객수 기능 미사용 시 0으로 계산')}
-            />
+            <AntTooltip title={t('당일 객수 기능 미사용 시 0으로 계산')} />
             {t('결제 완료 객수')}{' '}
             {t('{{value}}명', { value: formatCurrency(paidCustomerCount) })}
           </S.Description>

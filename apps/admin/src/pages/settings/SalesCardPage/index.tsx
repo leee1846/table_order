@@ -143,7 +143,7 @@ export const SalesCardPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
-            {t('매출 관리')}
+            {t('매출 현황')}
 
             <div />
             <span>{t('카드승인내역')}</span>
@@ -167,7 +167,10 @@ export const SalesCardPage = () => {
                     height={25}
                     color={theme.colors.grey[700]}
                   />
-                  <S.DateText>{formatLocalizedDate(startDate, i18n.language) || t('날짜 선택')}</S.DateText>
+                  <S.DateText>
+                    {formatLocalizedDate(startDate, i18n.language) ||
+                      t('날짜 선택')}
+                  </S.DateText>
                 </S.DateButton>
 
                 <S.RangeDivider>~</S.RangeDivider>
@@ -181,7 +184,10 @@ export const SalesCardPage = () => {
                     height={25}
                     color={theme.colors.grey[700]}
                   />
-                  <S.DateText>{formatLocalizedDate(endDate, i18n.language) || t('날짜 선택')}</S.DateText>
+                  <S.DateText>
+                    {formatLocalizedDate(endDate, i18n.language) ||
+                      t('날짜 선택')}
+                  </S.DateText>
                 </S.DateButton>
               </S.DateRange>
               <Dropdown

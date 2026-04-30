@@ -215,7 +215,7 @@ export const MenuSalesHistoryPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
-            {t('매출 관리')}
+            {t('매출 현황')}
             <div /> <span>{t('메뉴별 매출내역')}</span>
           </S.Title>
 

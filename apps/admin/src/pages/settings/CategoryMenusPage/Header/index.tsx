@@ -68,7 +68,7 @@ export const Header = ({
     <S.Header>
       <S.TitleContainer>
         <S.TextContainer>
-          <h1>{t('메뉴 관리')}</h1>
+          <h1>{t('메뉴 설정')}</h1>
           <div />
           {categoryName && <h2>{categoryName}</h2>}
         </S.TextContainer>

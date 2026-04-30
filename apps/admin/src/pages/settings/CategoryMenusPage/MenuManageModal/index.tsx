@@ -78,7 +78,7 @@ const MenuManageModalContent = ({
           <S.Header>
             <S.Titles>
               <S.TitleLead>
-                <p>{t('메뉴 관리')}</p>
+                <p>{t('메뉴 설정')}</p>
                 <span />
               </S.TitleLead>
               <S.TitleBreadcrumb>

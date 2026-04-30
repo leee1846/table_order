@@ -219,7 +219,7 @@ export const StartScreenLogoPage = () => {
           <S.Title>
             <h1>{t('시작 화면')}</h1>
             <div />
-            <span>{t('로고 설정')}</span>
+            <span>{t('로고 등록')}</span>
           </S.Title>
           <BasicButton variant="Solid_Navy_XL" onClick={handleSave}>
             {t('저장하기')}

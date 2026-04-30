@@ -379,7 +379,7 @@ export const MenuAppFeature = ({
       }
     >
       <UIStyles.setting.ContentLayout>
-        <p>{t('주문하기 사용')}</p>
+        <p>{t('주문기능 활성화')}</p>
         <ToggleButton
           size="M"
           isOn={isOrderable}
@@ -387,13 +387,13 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('첫주문 필수 카테고리 설정')}</p>
+        <p>{t('최초 주문 카테고리 선택')}</p>
         <BasicButton variant="Outline_Navy_M" onClick={handleOpenCategoryModal}>
           {t('카테고리 설정')}
         </BasicButton>
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('첫주문 금액')}</p>
+        <p>{t('최초 주문 금액')}</p>
         <input
           inputMode="numeric"
           value={
@@ -415,7 +415,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('객수사용')}</p>
+        <p>{t('방문자 수 입력')}</p>
         <ToggleButton
           size="M"
           isOn={useCustomerCount}
@@ -429,7 +429,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('어린이 객수 사용')}</p>
+        <p>{t('어린이 수 입력')}</p>
         <ToggleButton
           size="M"
           isOn={useKidsCustomerCount}
@@ -444,7 +444,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('주문서 합계금액 노출 여부')}</p>
+        <p>{t('주문서 총액 표시')}</p>
         <ToggleButton
           size="M"
           isOn={isOrderSheetTotalVisible}
@@ -454,7 +454,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('주문완료 페이지 총금액 노출 여부')}</p>
+        <p>{t('결제완료 금액 표시')}</p>
         <ToggleButton
           size="M"
           isOn={isOrderCompleteTotalVisible}
@@ -464,7 +464,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('단일페이지 메뉴 사용')}</p>
+        <p>{t('카테고리별 메뉴 보기')}</p>
         <ToggleButton
           size="M"
           isOn={useSinglePageMenuboard}
@@ -472,7 +472,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('메뉴판 관리 비밀번호(4자리)')}</p>
+        <p>{t('관리자 접근 비밀번호(4자리)')}</p>
         <input
           type="password"
           value={menuboardAdminPassword}
@@ -486,7 +486,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('관리잠금')}</p>
+        <p>{t('관리자 접근 잠금')}</p>
         <ToggleButton
           size="M"
           isOn={isAdminLocked}
@@ -513,7 +513,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout> */}
       <UIStyles.setting.ContentLayout>
-        <p>{t('테이블 중복 사용 허용')}</p>
+        <p>{t('테이블 중복 배정 허용')}</p>
         <ToggleButton
           size="M"
           isOn={useTableOverlapping}
@@ -522,7 +522,7 @@ export const MenuAppFeature = ({
       </UIStyles.setting.ContentLayout>
       <div>
         <UIStyles.setting.ContentLayout>
-          <p>{t('픽업 메세지 사용')}</p>
+          <p>{t('픽업 안내 메시지')}</p>
           <ToggleButton
             size="M"
             isOn={usePickupAlert}
@@ -547,7 +547,7 @@ export const MenuAppFeature = ({
       </div>
       <div>
         <UIStyles.setting.ContentLayout>
-          <p>{t('브레이크타임 사용')}</p>
+          <p>{t('브레이크타임 설정')}</p>
           <ToggleButton
             size="M"
             isOn={useBreakTime}
@@ -792,7 +792,7 @@ export const MenuAppFeature = ({
 
       <div>
         <UIStyles.setting.ContentLayout>
-          <p>{t('영업마감안내 사용')}</p>
+          <p>{t('영업마감안내 설정')}</p>
           <ToggleButton
             size="M"
             isOn={useClosureNotice}
@@ -802,7 +802,7 @@ export const MenuAppFeature = ({
         {useClosureNotice && (
           <S.InnerSection>
             <S.InnerSectionItem>
-              <p>{t('시간 설정')}</p>
+              <p>{t('영업마감 시간 설정')}</p>
               <UIStyles.setting.TimeRangeInput>
                 <input
                   type="text"
@@ -850,7 +850,7 @@ export const MenuAppFeature = ({
               </UIStyles.setting.TimeRangeInput>
             </S.InnerSectionItem>
             <S.InnerSectionItem>
-              <p>{t('주문 마감 안내 시간')}</p>
+              <p>{t('주문 마감 고객 안내 시간')}</p>
 
               <S.ClickableText>
                 <div>
@@ -871,7 +871,7 @@ export const MenuAppFeature = ({
               </S.ClickableText>
             </S.InnerSectionItem>
             <S.InnerSectionItem>
-              <p>{t('라스트 오더 알림')}</p>
+              <p>{t('주문 마감 고객 알림')}</p>
 
               <S.ClickableText>
                 <div>
@@ -893,7 +893,7 @@ export const MenuAppFeature = ({
             </S.InnerSectionItem>
             <S.TextAreasContainer>
               <div>
-                <p>{t('주문 마감 사전 안내 메세지')}</p>
+                <p>{t('주문 마감 사전 안내 메시지')}</p>
                 <textarea
                   value={closureLastOrderMessage}
                   maxLength={MAX_DESCRIPTION_LENGTH}
@@ -906,7 +906,7 @@ export const MenuAppFeature = ({
                 />
               </div>
               <div>
-                <p>{t('영업마감 안내 메세지')}</p>
+                <p>{t('영업 마감 사전 안내 메시지')}</p>
                 <textarea
                   value={closureMessage}
                   maxLength={MAX_DESCRIPTION_LENGTH}

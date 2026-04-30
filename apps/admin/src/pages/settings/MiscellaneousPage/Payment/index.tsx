@@ -177,7 +177,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       {paymentType === 'prepayment' && (
         <>
           <UIStyles.setting.ContentLayout>
-            <p>{t('선불 VAN')}</p>
+            <p>{t('VAN사 선택')}</p>
             <Dropdown
               options={vanOptions}
               value={vanCode}
@@ -186,7 +186,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>{t('선불 VAN ID')}</p>
+            <p>{t('VAN TID')}</p>
             <input
               type="text"
               value={vanId}
@@ -196,7 +196,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           </UIStyles.setting.ContentLayout>
 
           <UIStyles.setting.ContentLayout>
-            <p>{t('선결제 더치페이 사용')}</p>
+            <p>{t('더치페이 기능 설정')}</p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentDutch}
@@ -204,7 +204,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>{t('선불형 후불결제 사용')}</p>
+            <p>{t('후불결제 기능 설정')}</p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentDeferredPayment}
@@ -212,7 +212,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>{t('선불형 자동초기화 사용')}</p>
+            <p>{t('결제 후 자동테이블 정리')}</p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentAutoReset}
@@ -220,7 +220,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>{t('현금결제 유도 팝업 사용')}</p>
+            <p>{t('현금결제 안내 사용')}</p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentCashPaymentInducement}
@@ -228,7 +228,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>{t('선불형 현금결제 사용')}</p>
+            <p>{t('현금결제 기능 설정')}</p>
             <ToggleButton
               size="M"
               isOn={usePrepaymentCashPayment}
@@ -239,7 +239,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       )}
 
       <UIStyles.setting.ContentLayout>
-        <p>{t('매출 총 금액 노출 여부')}</p>
+        <p>{t('매출 총액 표시 설정')}</p>
         <ToggleButton
           size="M"
           isOn={isSalesTotalVisible}
@@ -258,7 +258,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('매출 비밀번호')}</p>
+        <p>{t('매출 확인 비밀번호 설정')}</p>
         <input
           type="password"
           maxLength={4}
@@ -284,7 +284,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       </UIStyles.setting.ContentLayout>
       {!isSalesTotalVisible && (
         <UIStyles.setting.ContentLayout>
-          <p>{t('매출 세부 내역 잠금 여부')}</p>
+          <p>{t('매출 상세 내역 잠금 설정')}</p>
           <ToggleButton
             size="M"
             isOn={isSalesDetailLocked}
