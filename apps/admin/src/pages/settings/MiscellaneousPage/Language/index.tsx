@@ -96,7 +96,7 @@ export const Language = ({
 
   return (
     <SectionWrapper
-      title={t('언어')}
+      title={t('언어 설정')}
       icon={
         <LanguageIcon
           width={32}
@@ -114,7 +114,7 @@ export const Language = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('메인 언어')}</p>
+        <p>{t('메뉴판 언어')}</p>
         <Dropdown
           options={languageOptions}
           value={mainLanguage}
@@ -123,7 +123,7 @@ export const Language = ({
       </UIStyles.setting.ContentLayout>
       <div>
         <UIStyles.setting.ContentLayout>
-          <p>{t('다국어 사용')}</p>
+          <p>{t('다국어 설정')}</p>
           <ToggleButton
             size="M"
             isOn={locale}

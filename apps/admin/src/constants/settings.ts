@@ -15,25 +15,25 @@ export const createSidebarMenus = (
     },
     {
       id: 'categories',
-      label: translate('카테고리 관리'),
+      label: translate('카테고리 설정'),
       path: ROUTES.SETTINGS.CATEGORIES.generate(),
     },
     {
       id: 'menus',
-      label: translate('메뉴 관리'),
+      label: translate('메뉴 설정'),
       matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.CATEGORY_MENUS.path}`,
       subMenus: menuSubMenus,
     },
     {
       id: 'sales',
-      label: translate('매출 관리'),
+      label: translate('매출 현황'),
       matchPattern: `${ROUTES.SETTINGS.path}/${ROUTES.SETTINGS.SALES.path}`,
       subMenus: CapacitorApp.isNative()
         ? [
             // 앱 전용 메뉴
             {
               id: 'summary',
-              label: translate('매출요약'),
+              label: translate('매출개요'),
               path: ROUTES.SETTINGS.SALES.SUMMARY.generate(),
             },
             {
@@ -43,12 +43,12 @@ export const createSidebarMenus = (
             },
             {
               id: 'card',
-              label: translate('카드승인내역'),
+              label: translate('카드승인현황'),
               path: ROUTES.SETTINGS.SALES.CARD.generate(),
             },
             {
               id: 'menu',
-              label: translate('메뉴판매집계'),
+              label: translate('메뉴별현황'),
               path: ROUTES.SETTINGS.SALES.MENU.generate(),
             },
           ]
@@ -112,7 +112,7 @@ export const createSidebarMenus = (
         },
         {
           id: 'logo',
-          label: translate('로고 설정'),
+          label: translate('로고 등록'),
           path: ROUTES.SETTINGS.START_SCREEN.LOGO.generate(),
         },
         {
@@ -124,7 +124,7 @@ export const createSidebarMenus = (
     },
     {
       id: 'miscellaneous',
-      label: translate('설정'),
+      label: translate('환경 설정'),
       path: ROUTES.SETTINGS.MISCELLANEOUS.generate(),
     },
   ];
@@ -133,7 +133,7 @@ export const createSidebarMenus = (
   const tablesMenuIndex = menus.findIndex((menu) => menu.id === 'sales');
   menus.splice(tablesMenuIndex + 1, 0, {
     id: 'tables',
-    label: translate('테이블 설정'),
+    label: translate('테이블 구성'),
     path: ROUTES.SETTINGS.TABLES.generate(),
   });
 

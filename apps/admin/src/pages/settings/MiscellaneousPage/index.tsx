@@ -265,7 +265,7 @@ export const MiscellaneousPage = () => {
     <S.Container>
       <header>
         <div>
-          <h1>{t('설정')}</h1>
+          <h1>{t('환경 설정')}</h1>
         </div>
         <BasicButton
           variant="Solid_Navy_XL"

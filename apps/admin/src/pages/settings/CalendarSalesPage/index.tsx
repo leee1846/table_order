@@ -118,7 +118,8 @@ export const CalendarSalesPage = () => {
     setSelectedEntry(null);
   };
 
-  const formatModalDate = () => formatLocalizedDate(selectedDate, i18n.language);
+  const formatModalDate = () =>
+    formatLocalizedDate(selectedDate, i18n.language);
 
   const handleViewDetails = () => {
     if (!selectedDate) {
@@ -182,7 +183,7 @@ export const CalendarSalesPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
-            {t('매출 관리')}
+            {t('매출 현황')}
             <div /> <span>{t('달력 매출내역')}</span>
           </S.Title>
 

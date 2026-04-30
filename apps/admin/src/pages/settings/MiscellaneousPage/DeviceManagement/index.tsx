@@ -46,7 +46,7 @@ export const DeviceManagement = () => {
           variant="Outline_Grey_M"
           onClick={handleOpenDeviceSettings}
         >
-          {t('설정')}
+          {t('환경 설정')}
         </BasicButton>
       </UIStyles.setting.ContentLayout>
     </SectionWrapper>

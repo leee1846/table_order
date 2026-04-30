@@ -116,7 +116,7 @@ export const Logo = ({ imageUrl, onChange }: LogoProps) => {
 
   return (
     <S.Container>
-      <p>{t('로고 설정')}</p>
+      <p>{t('로고 등록')}</p>
       {/* 숨겨진 파일 input (이미지 섹션 클릭 시 트리거됨) */}
       <input
         ref={fileInputRef}
