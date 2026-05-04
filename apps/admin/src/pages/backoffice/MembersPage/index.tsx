@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Space, Tooltip, App } from 'antd';
+import { Table, Button, Input, Space, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   PlusOutlined,
   EditOutlined,
-  DeleteOutlined,
   FileTextOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import { ROUTES } from '@/constants/routes';
 import { useGetAdminMemberList } from '@repo/api/queries';
 import { keepPreviousData } from '@repo/api/tanstack-query';
@@ -78,7 +77,6 @@ const DEFAULT_PAGE_SIZE = 10;
 
 export const MembersPage = () => {
   const navigate = useNavigate();
-  const { message } = App.useApp();
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const {
     currentPage,
@@ -209,8 +207,8 @@ export const MembersPage = () => {
           pagination={{
             current: currentPage,
             pageSize,
-            total: (adminList?.data?.totalPageNumber ?? 1) * pageSize,
-            //showTotal: (total) => `총 ${total}건`,
+            total: adminList?.data?.totalElements || 0,
+            showTotal: (total) => `총 ${total}건`,
             onChange: (page, size) => {
               //console.log(page, size);
               handlePageChange(page);

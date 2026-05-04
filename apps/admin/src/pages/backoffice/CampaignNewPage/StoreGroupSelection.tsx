@@ -1,14 +1,5 @@
-import React, { useState, useMemo, useEffect, use } from 'react';
-import {
-  Table,
-  Input,
-  Typography,
-  Tag,
-  Button,
-  Space,
-  Tooltip,
-  App,
-} from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Typography, Tag, Button, Space, Tooltip, App } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { DeleteOutlined, CloseOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
@@ -52,16 +43,6 @@ const StyledTable = styled(Table<CampaignShopData>)`
   }
 `;
 
-const FooterSummary = styled.div`
-  background-color: #f0f5ff;
-  padding: 16px;
-  border-radius: 8px;
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-`;
-
 export interface StoreGroupSelectionProps {
   stores?: CampaignShopData[];
   onChange: (stores: CampaignShopData[]) => void;
@@ -96,54 +77,56 @@ const StoreGroupSelection: React.FC<StoreGroupSelectionProps> = ({
 
   useEffect(() => {
     const groupStores = groupStoresResponse?.data || [];
-    if (groupStores.length === 0) return;
+    if (groupStores.length === 0) {
+      return;
+    }
 
     // 2. API에서 조회된 그룹 매장 목록 변환 및 중복 합치기
-    onChange((prev: CampaignShopData[]) => {
-      const newData = [...prev];
-      let hasChanges = false;
-      const addedStores: CampaignShopData[] = [];
-      console.log('>>>>>>', groupStores);
+    const newData = [...stores];
+    let hasChanges = false;
+    const addedStores: CampaignShopData[] = [];
 
-      groupStores.forEach((member) => {
-        const shopCode = String(member.shopCode);
-        const existingIndex = newData.findIndex(
-          (s) => s.shopSeq === member.shopSeq
-        );
-        const groupName = member.groupName;
-        const groupId = member.shopGroupSeq;
+    groupStores.forEach((member) => {
+      const shopCode = String(member.shopCode);
+      const existingIndex = newData.findIndex(
+        (s) => s.shopSeq === member.shopSeq
+      );
+      const groupName = member.groupName || '';
+      const groupId = member.shopGroupSeq;
 
-        if (existingIndex > -1) {
-          const isGroupExist =
-            newData[existingIndex] &&
-            newData[existingIndex].shopGroup.some(
-              (g) => g.shopGroupSeq === Number(groupId)
-            );
-          if (newData[existingIndex] && !isGroupExist) {
+      if (existingIndex > -1) {
+        const existingItem = newData[existingIndex];
+        if (existingItem) {
+          const isGroupExist = existingItem.shopGroup.some(
+            (g) => g.shopGroupSeq === Number(groupId)
+          );
+          if (!isGroupExist) {
             newData[existingIndex] = {
-              ...newData[existingIndex],
+              ...existingItem,
               shopGroup: [
-                ...newData[existingIndex].shopGroup,
+                ...existingItem.shopGroup,
                 { shopGroupSeq: Number(groupId), groupName },
               ],
             };
             hasChanges = true;
           }
-        } else {
-          addedStores.push({
-            shopSeq: member.shopSeq,
-            shopCode,
-            shopName: member.shopName,
-            startDate: '',
-            endDate: '',
-            shopGroup: [{ shopGroupSeq: Number(groupId), groupName }],
-          });
-          hasChanges = true;
         }
-      });
-
-      return hasChanges ? [...addedStores, ...newData] : prev;
+      } else {
+        addedStores.push({
+          shopSeq: member.shopSeq || 0,
+          shopCode,
+          shopName: member.shopName || '',
+          startDate: '',
+          endDate: '',
+          shopGroup: [{ shopGroupSeq: Number(groupId), groupName }],
+        });
+        hasChanges = true;
+      }
     });
+
+    if (hasChanges) {
+      onChange([...addedStores, ...newData]);
+    }
   }, [groupStoresResponse?.data]);
 
   // 테이블 컬럼 정의
@@ -156,7 +139,7 @@ const StoreGroupSelection: React.FC<StoreGroupSelectionProps> = ({
       render: (_, record) => {
         return (
           <Space size={[8, 8]} wrap>
-            {record.shopGroup?.map((group, idx) => {
+            {record.shopGroup?.map((group) => {
               const TAG_COLORS = [
                 // 'magenta',
                 // 'red',
@@ -179,7 +162,7 @@ const StoreGroupSelection: React.FC<StoreGroupSelectionProps> = ({
 
               return (
                 <Tag
-                  key={idx}
+                  key={group.shopGroupSeq}
                   color={TAG_COLORS[colorIndex]}
                   style={{ borderRadius: '12px' }}
                 >
@@ -311,29 +294,27 @@ const StoreGroupSelection: React.FC<StoreGroupSelectionProps> = ({
         isOpen={isIndividualModalOpen}
         onClose={() => setIsIndividualModalOpen(false)}
         onAdd={(addedModalStores) => {
-          onChange((prev) => {
-            const newData = [...prev];
-            const addedStores: CampaignShopData[] = [];
+          const newData = [...stores];
+          const addedStores: CampaignShopData[] = [];
 
-            addedModalStores.forEach((store) => {
-              const shopCode = String(store.shopCode);
-              const existingStoreIndex = newData.findIndex(
-                (s) => s.shopSeq === store.shopSeq
-              );
+          addedModalStores.forEach((store) => {
+            const shopCode = String(store.shopCode);
+            const existingStoreIndex = newData.findIndex(
+              (s) => s.shopSeq === store.shopSeq
+            );
 
-              if (existingStoreIndex < 0) {
-                addedStores.push({
-                  shopSeq: store.shopSeq || 0,
-                  shopCode,
-                  shopName: store.shopName || '',
-                  startDate: '',
-                  endDate: '',
-                  shopGroup: [],
-                });
-              }
-            });
-            return [...addedStores, ...newData];
+            if (existingStoreIndex < 0) {
+              addedStores.push({
+                shopSeq: store.shopSeq || 0,
+                shopCode,
+                shopName: store.shopName || '',
+                startDate: '',
+                endDate: '',
+                shopGroup: [],
+              });
+            }
           });
+          onChange([...addedStores, ...newData]);
         }}
       />
 

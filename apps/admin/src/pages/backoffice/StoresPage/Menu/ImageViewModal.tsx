@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import JSZip from 'jszip';
 import { App, Button, Spin, Empty, Image } from 'antd';
 import { CloseOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import {
@@ -7,7 +6,6 @@ import {
   usePostReplaceMenuMainImage,
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import type { IMenuImageListItem } from '@repo/api/types/menuBulk';
 import * as S from './ImageViewModal.style';
 
 interface Props {
@@ -19,7 +17,7 @@ interface Props {
 
 export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
   const { message } = App.useApp();
-  const [isDownloading, setIsDownloading] = useState(false);
+  //const [isDownloading, setIsDownloading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [draggingMenuSeq, setDraggingMenuSeq] = useState<number | null>(null);
 
@@ -32,62 +30,60 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
 
   // 전체 메뉴 리스트와 다운로드 가능한(이미지가 있는) 리스트 분리
   const menuList = data?.data || [];
-  const downloadableImages = menuList.filter(
-    (item: IMenuImageListItem) => item.imagePath
-  );
+  const downloadableImages = menuList.filter((item) => item.imagePath);
 
-  const handleDownloadAll = async () => {
-    if (downloadableImages.length === 0) return;
-    setIsDownloading(true);
+  // const handleDownloadAll = async () => {
+  //   if (downloadableImages.length === 0) return;
+  //   setIsDownloading(true);
 
-    try {
-      const zip = new JSZip();
+  //   try {
+  //     const zip = new JSZip();
 
-      // 각 이미지 URL을 fetch하여 zip 객체에 추가
-      await Promise.all(
-        downloadableImages.map(async (item, index) => {
-          if (!item.imagePath) return;
-          try {
-            const response = await fetch(item.imagePath);
-            const blob = await response.blob();
-            const ext =
-              item.imageExtension?.replace(/^\./, '') ||
-              blob.type.split('/')[1] ||
-              'jpg';
+  //     // 각 이미지 URL을 fetch하여 zip 객체에 추가
+  //     await Promise.all(
+  //       downloadableImages.map(async (item, index) => {
+  //         if (!item.imagePath) return;
+  //         try {
+  //           const response = await fetch(item.imagePath);
+  //           const blob = await response.blob();
+  //           const ext =
+  //             item.imageExtension?.replace(/^\./, '') ||
+  //             blob.type.split('/')[1] ||
+  //             'jpg';
 
-            // 메뉴명에서 특수문자를 제거하여 안전한 파일명 생성
-            const safeMenuName =
-              item.menuName
-                .replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\s]/g, '')
-                .trim() || 'image';
-            zip.file(`${safeMenuName}_${index + 1}.${ext}`, blob);
-          } catch (err) {
-            console.error(
-              `Failed to fetch image ${index + 1}:`,
-              item.imagePath,
-              err
-            );
-          }
-        })
-      );
+  //           // 메뉴명에서 특수문자를 제거하여 안전한 파일명 생성
+  //           const safeMenuName =
+  //             item.menuName
+  //               .replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\s]/g, '')
+  //               .trim() || 'image';
+  //           zip.file(`${safeMenuName}_${index + 1}.${ext}`, blob);
+  //         } catch (err) {
+  //           console.error(
+  //             `Failed to fetch image ${index + 1}:`,
+  //             item.imagePath,
+  //             err
+  //           );
+  //         }
+  //       })
+  //     );
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      const url = URL.createObjectURL(zipBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${shopCode}_images.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      message.success('전체 이미지 다운로드가 완료되었습니다.');
-    } catch (error) {
-      console.error('Failed to create zip:', error);
-      message.error('이미지 압축 다운로드에 실패했습니다.');
-    } finally {
-      setIsDownloading(false);
-    }
-  };
+  //     const zipBlob = await zip.generateAsync({ type: 'blob' });
+  //     const url = URL.createObjectURL(zipBlob);
+  //     const a = document.createElement('a');
+  //     a.href = url;
+  //     a.download = `${shopCode}_images.zip`;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     document.body.removeChild(a);
+  //     URL.revokeObjectURL(url);
+  //     message.success('전체 이미지 다운로드가 완료되었습니다.');
+  //   } catch (error) {
+  //     console.error('Failed to create zip:', error);
+  //     message.error('이미지 압축 다운로드에 실패했습니다.');
+  //   } finally {
+  //     setIsDownloading(false);
+  //   }
+  // };
 
   const handleDragOver = (
     e: React.DragEvent<HTMLDivElement>,
@@ -117,9 +113,9 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
       return;
     }
 
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const validTypes = ['image/jpeg', 'image/png'];
     if (!validTypes.includes(file.type)) {
-      message.warning('jpg, jpeg, png, webp, gif 확장자만 업로드 가능합니다.');
+      message.warning('jpg, jpeg, png 확장자만 업로드 가능합니다.');
       return;
     }
 
@@ -172,10 +168,7 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
         </S.ModalFooter>
       }
     >
-      <Spin
-        spinning={isLoading || isDownloading || isUploading}
-        description="처리 중..."
-      >
+      <Spin spinning={isLoading || isUploading} description="처리 중...">
         <S.HeaderContainer>
           <S.ShopCodeText>
             매장 코드:{' '}
@@ -196,7 +189,7 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
 
         {menuList.length > 0 ? (
           <S.GridContainer>
-            {menuList.map((item: IMenuImageListItem) => (
+            {menuList.map((item) => (
               <S.StyledCard
                 key={item.menuSeq}
                 hoverable

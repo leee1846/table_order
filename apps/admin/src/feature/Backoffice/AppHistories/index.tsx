@@ -8,7 +8,7 @@ import {
   type AppHistoriesFormData,
   DEFAULT_APP_HISTORIES_DATA,
 } from '@/feature/backoffice/AppHistories/constants';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import AppInfoParser, { type ApkParser, type IpaParser } from 'app-info-parser';
 import JSZip from 'jszip';
 

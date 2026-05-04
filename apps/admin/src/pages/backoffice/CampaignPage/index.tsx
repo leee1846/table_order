@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Table,
@@ -18,13 +18,12 @@ import {
   EditOutlined,
   DeleteOutlined,
   CopyOutlined,
-  LinkOutlined,
   FileSyncOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { ROUTES } from '@/constants/routes';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
-import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
+import { useConfirmDialog } from '@/feature/backoffice/hooks/useConfirmDialog';
 import {
   useGetCampaignList,
   usePatchUpdateCampaignActive,
@@ -248,7 +247,7 @@ const CampaignPage: React.FC = () => {
       setSelectedRowKeys([]); // 변경 후 선택 해제
       refetch(); // 목록 새로고침
     } catch (error) {
-      // 글로벌 에러 핸들러에서 처리됨
+      console.log(error);
     }
   };
 
@@ -281,7 +280,7 @@ const CampaignPage: React.FC = () => {
           message.success(`'${record.name}' 캠페인이 복사되었습니다.`);
           refetch(); // 목록 새로고침
         } catch (error) {
-          // 글로벌 에러 핸들러에서 처리됨
+          console.log(error);
         }
       },
     });
@@ -373,7 +372,7 @@ const CampaignPage: React.FC = () => {
                       setSelectedRowKeys([]); // 삭제 후 선택 해제
                       refetch(); // 목록 새로고침
                     } catch (error) {
-                      // 글로벌 에러 핸들러에서 처리됨
+                      console.log(error);
                     }
                   },
                 });

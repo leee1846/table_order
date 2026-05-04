@@ -4,7 +4,7 @@ import { Button, Flex } from 'antd';
 import styled from '@emotion/styled';
 import { NoticesForm } from '@/feature/backoffice/Notices/NoticesForm';
 import { ChangeHistoryDialog } from '@/feature/backoffice/ChangeHistoryDialog';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import {
   type NoticesFormData,
   DEFAULT_NOTICES_DATA,

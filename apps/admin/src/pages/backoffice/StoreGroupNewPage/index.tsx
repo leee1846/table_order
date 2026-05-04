@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Form,
@@ -6,7 +6,6 @@ import {
   Button,
   Table,
   Typography,
-  message,
   App,
   Space,
   Tooltip,
@@ -19,8 +18,7 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
-import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import { ROUTES } from '@/constants/routes';
 import * as XLSX from 'xlsx';
 import {
@@ -90,18 +88,14 @@ export const StoreGroupNewPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { message } = App.useApp();
-  const { showConfirm } = useConfirmDialog();
   const [form] = Form.useForm<StoreGroupFormValues>();
   //const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [dataSource, setDataSource] = useState<IStore[]>([]);
-  const [searchText, setSearchText] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [searchShopCodes, setSearchShopCodes] = useState<string[]>([]);
 
   const isEditMode = !!id; // id가 파라미터로 있으면 수정 모드
-
-  console.log('isEditMode:', isEditMode);
 
   // API 연동: 매장 그룹 상세 정보 조회
   const { data: detailResponse } = useGetStoreGroupDetail(id ?? '', {
@@ -119,7 +113,7 @@ export const StoreGroupNewPage = () => {
   // API 연동: 엑셀 등에서 추가된 매장 목록 검색 조회
   const { data: searchResponse, isFetching: isSearchLoading } =
     usePostStoreSearch(
-      { shopCodes: searchShopCodes },
+      { shopCodes: searchShopCodes, size: 100000 },
       { enabled: searchShopCodes.length > 0 }
     );
 
@@ -136,7 +130,6 @@ export const StoreGroupNewPage = () => {
       });
     }
   }, [isEditMode, detailResponse, form]);
-  console.log('membersResponse:', membersResponse);
 
   useEffect(() => {
     if (isEditMode && membersResponse?.data) {
@@ -168,11 +161,9 @@ export const StoreGroupNewPage = () => {
       );
 
       if (newStores.length > 0) {
-        message.success(
-          `성공적으로 ${newStores.length}개의 매장을 추가했습니다.`
-        );
+        message.success(`${newStores.length}개의 매장을 추가했습니다.`);
       } else {
-        message.warning('추가할 새로운 매장이 없거나 검색된 매장이 없습니다.');
+        message.warning('추가할 새로운 매장이 없습니다.');
       }
 
       setDataSource((prev) => [...prev, ...newStores]);
@@ -181,13 +172,13 @@ export const StoreGroupNewPage = () => {
   }, [searchResponse, searchShopCodes, dataSource, message]);
 
   const handleFinish = async (values: StoreGroupFormValues) => {
-    if (dataSource.length === 0) {
-      message.warning('최소 1개 이상의 매장이 필요합니다.');
+    if (!values.groupName) {
+      message.warning('매장 그룹명을 입력해 주세요.');
       return;
     }
 
-    if (!values.groupName) {
-      message.warning('그룹명을 입력해주세요.');
+    if (dataSource.length === 0) {
+      message.warning('최소 1개 이상의 매장이 필요합니다.');
       return;
     }
 
@@ -199,7 +190,6 @@ export const StoreGroupNewPage = () => {
           groupDescription: values.description,
           stores: dataSource.map((item) => Number(item.shopSeq)),
         };
-        console.log('update payload:', updatePayload);
         await updateMutation.mutateAsync(updatePayload);
       } else {
         const createPayload = {
@@ -207,7 +197,6 @@ export const StoreGroupNewPage = () => {
           groupDescription: values.description,
           stores: dataSource.map((item) => String(item.shopSeq)),
         };
-        console.log('create payload:', createPayload);
         await createMutation.mutateAsync(createPayload);
       }
 
@@ -226,8 +215,10 @@ export const StoreGroupNewPage = () => {
       try {
         const data = new Uint8Array(e.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: 'array' });
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json<ExcelRowData>(worksheet);
+        const worksheet = workbook.Sheets[workbook.SheetNames[0] || ''];
+        const jsonData = XLSX.utils.sheet_to_json<ExcelRowData>(
+          worksheet || []
+        );
 
         if (jsonData.length === 0) {
           message.warning('엑셀 파일에 데이터가 없습니다.');
@@ -296,6 +287,13 @@ export const StoreGroupNewPage = () => {
 
   const columns: ColumnsType<IStore> = [
     {
+      title: 'No.',
+      key: 'no',
+      width: 60,
+      align: 'center',
+      render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
+    },
+    {
       title: '매장 ID',
       dataIndex: 'shopCode',
       key: 'shopCode',
@@ -319,20 +317,6 @@ export const StoreGroupNewPage = () => {
                   prev.filter((item) => item.shopSeq !== record.shopSeq)
                 );
                 message.warning(`'${record.shopName}' 삭제되었습니다.`);
-                // showConfirm({
-                //   title: '매장 삭제',
-                //   targetName: '매장',
-                //   itemName: record.shopName,
-                //   onConfirm: () => {
-                //     setDataSource((prev) =>
-                //       prev.filter((item) => item.shopSeq !== record.shopSeq)
-                //     );
-                //     setSelectedRowKeys((prev) =>
-                //       prev.filter((key) => key !== record.shopSeq)
-                //     );
-                //     message.warning(`'${record.name}' 삭제되었습니다.`);
-                //   },
-                // });
               }}
             />
           </Tooltip>
@@ -393,15 +377,16 @@ export const StoreGroupNewPage = () => {
             >
               <div>
                 <SectionTitle level={5} style={{ marginBottom: 8 }}>
+                  <span style={{ color: '#ff4d4f', marginLeft: 4 }}>*</span>{' '}
                   매장 선택
                 </SectionTitle>
                 <Text type="secondary" style={{ display: 'block' }}>
-                  이 그룹에 포함될 매장입니다.
+                  매장을 1개 이상 추가해 주세요.
                 </Text>
               </div>
               <Space>
                 <Upload
-                  accept=".xlsx, .xls, .csv"
+                  accept=".xlsx"
                   showUploadList={false}
                   beforeUpload={handleExcelUpload}
                 >
@@ -433,13 +418,13 @@ export const StoreGroupNewPage = () => {
                 current: currentPage,
                 pageSize,
                 total: dataSource.length,
-                //showTotal: (total) => `총 ${total}건`,
-                /* onChange: (page, pageSize) => {
-                  setCurrentPage(page);
-                  setPageSize(pageSize);
-                }, */
+                showTotal: (total) => `총 ${total}건`,
                 placement: ['bottomEnd'],
-                showSizeChanger: false,
+                showSizeChanger: true,
+                onChange: (page, size) => {
+                  setCurrentPage(page);
+                  setPageSize(size);
+                },
               }}
               size="middle"
             />

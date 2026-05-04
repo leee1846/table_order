@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Members } from '@/feature/backoffice/Members';
-import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
+import { useConfirmDialog } from '@/feature/backoffice/hooks/useConfirmDialog';
 import { useGetAdminMember } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import { AxiosError } from '@repo/api/axios';

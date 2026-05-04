@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Table, Button, Input, Space, Tooltip, App } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
-import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
+import { useConfirmDialog } from '@/feature/backoffice/hooks/useConfirmDialog';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@repo/api/tanstack-query';
@@ -149,7 +149,7 @@ export const StoreGroupPage = () => {
               icon={<DeleteOutlined />}
               onClick={() => {
                 showConfirm({
-                  title: '그룹 삭제',
+                  title: '매장 그룹 삭제',
                   targetName: '매장 그룹',
                   itemName: record.groupName,
                   onConfirm: () => {

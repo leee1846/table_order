@@ -4,7 +4,7 @@ import { Button, Flex } from 'antd';
 import styled from '@emotion/styled';
 import { MembersForm } from './MembersForm';
 import { type MembersFormData, DEFAULT_MEMBERS_DATA } from './constants';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 
 type Mode = 'create' | 'edit' | 'detail';
 

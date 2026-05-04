@@ -151,8 +151,14 @@ export const queryKeys = {
   notice: {
     all: ['notice'] as const,
     /** 공지사항 목록 조회 */
-    list: (page?: number, pageSize?: number) =>
-      [...queryKeys.notice.all, 'list', page ?? 1, pageSize ?? 20] as const,
+    list: (page?: number, pageSize?: number, searchWord?: string) =>
+      [
+        ...queryKeys.notice.all,
+        'list',
+        page ?? 1,
+        pageSize ?? 20,
+        searchWord,
+      ] as const,
     /** 공지사항 상세 조회 */
     detail: (noticeSeq: number) =>
       [...queryKeys.notice.all, 'detail', noticeSeq] as const,
@@ -300,8 +306,13 @@ export const queryKeys = {
 
   store: {
     all: ['store'] as const,
-    list: (page?: number, size?: number, keyword?: string) =>
-      [...queryKeys.store.all, 'list', page, size, keyword] as const,
+    list: (
+      page?: number,
+      size?: number,
+      keyword?: string,
+      ungrouped?: boolean
+    ) =>
+      [...queryKeys.store.all, 'list', page, size, keyword, ungrouped] as const,
     search: (shopCodes?: string[], page?: number, size?: number) =>
       [...queryKeys.store.all, 'search', shopCodes, page, size] as const,
   },

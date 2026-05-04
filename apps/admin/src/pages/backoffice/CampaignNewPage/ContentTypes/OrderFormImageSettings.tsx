@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Typography, Divider, Radio, Alert, Space } from 'antd';
+import React from 'react';
+import { Typography, Divider, Radio } from 'antd';
 import styled from '@emotion/styled';
 import UploadContent, { type UploadedFile } from '../UploadContent';
 import { useListDragAndDrop } from '../useDragAndDrop';
@@ -80,20 +80,6 @@ const CardContent = styled.div`
   gap: 4px;
 `;
 
-// 업로드 포맷 태그 커스텀
-const FormatTag = styled.div`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f0f0f0;
-  color: #1d2a6d;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 16px;
-  padding: 4px 12px;
-`;
-
-// --- Component ---
 export interface OrderFormImageSettingsProps {
   exposureType: 'full' | 'half';
   setExposureType: React.Dispatch<React.SetStateAction<'full' | 'half'>>;

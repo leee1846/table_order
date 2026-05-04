@@ -1,27 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Space, Tooltip, message } from 'antd';
+import { Table, Button, Input, Space, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   PlusOutlined,
   EditOutlined,
-  DeleteOutlined,
   FileTextOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import { ROUTES } from '@/constants/routes';
-import {
-  useGetNoticeList,
-  useDeleteNotice,
-  queryKeys,
-} from '@repo/api/queries';
-import { keepPreviousData, useQueryClient } from '@repo/api/tanstack-query';
-import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
-import {
-  usePaginationState,
-  useTablePageState,
-} from '@/feature/backoffice/hooks';
+import { useGetNoticeList } from '@repo/api/queries';
+import { keepPreviousData } from '@repo/api/tanstack-query';
+import { useTablePageState } from '@/feature/backoffice/hooks';
 import { formatDateTime } from '@repo/util/date';
 import type { INotice } from '@repo/api/types';
 import { getBoardTypeLabel } from '@/feature/backoffice/Notices/constants';
@@ -83,17 +74,25 @@ const DEFAULT_PAGE_SIZE = 10;
 
 export const NoticesPage = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const deleteNoticeMutation = useDeleteNotice();
-  const { showConfirm } = useConfirmDialog();
+  // const queryClient = useQueryClient();
+  // const deleteNoticeMutation = useDeleteNotice();
+  // const { showConfirm } = useConfirmDialog();
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-  const { currentPage, handlePageChange } = usePaginationState();
-  // TODO: useGetNoticeList에 searchWord 파라미터 지원 여부 확인 및 적용 필요
+
+  const {
+    currentPage,
+    searchKeyword,
+    searchInputValue,
+    handleSearchInputChange,
+    handleSearch,
+    handlePageChange,
+  } = useTablePageState({ pageSize });
+
   const { data: noticeList, isFetching } = useGetNoticeList(
     {
       page: currentPage, // 0-based index
       pageSize,
-      //searchWord: searchKeyword,
+      searchWord: searchKeyword,
     },
     { placeholderData: keepPreviousData }
   );
@@ -102,24 +101,24 @@ export const NoticesPage = () => {
     navigate(ROUTES.BACKOFFICE.NOTICES_NEW.generate());
   };
 
-  const handleDelete = (notice: INotice) => {
-    showConfirm({
-      title: '공지사항 삭제',
-      targetName: '공지사항',
-      itemName: notice.noticeTitle,
-      onConfirm: async () => {
-        try {
-          await deleteNoticeMutation.mutateAsync(notice.noticeSeq);
-          message.success('공지사항이 삭제되었습니다.');
-          await queryClient.invalidateQueries({
-            queryKey: queryKeys.notice.list(),
-          });
-        } catch (e) {
-          message.error('공지사항 삭제 중 오류가 발생했습니다.');
-        }
-      },
-    });
-  };
+  // const handleDelete = (notice: INotice) => {
+  //   showConfirm({
+  //     title: '공지사항 삭제',
+  //     targetName: '공지사항',
+  //     itemName: notice.noticeTitle,
+  //     onConfirm: async () => {
+  //       try {
+  //         await deleteNoticeMutation.mutateAsync(notice.noticeSeq);
+  //         message.success('공지사항이 삭제되었습니다.');
+  //         await queryClient.invalidateQueries({
+  //           queryKey: queryKeys.notice.list(),
+  //         });
+  //       } catch (e) {
+  //         message.error('공지사항 삭제 중 오류가 발생했습니다.');
+  //       }
+  //     },
+  //   });
+  // };
 
   const columns: ColumnsType<INotice> = [
     {
@@ -194,9 +193,9 @@ export const NoticesPage = () => {
       <PageTitle title="공지사항 관리" subtitle="목록" />
       <ContentCard>
         <TopBar>
-          {/*                     <Space>
+          <Space>
             <SearchInput
-              placeholder="검색어를 입력하세요"
+              placeholder="제목을 검색하세요"
               allowClear
               value={searchInputValue}
               onChange={(e) => handleSearchInputChange(e.target.value)}
@@ -205,7 +204,7 @@ export const NoticesPage = () => {
             <ActionButton type="primary" onClick={handleSearch}>
               검색
             </ActionButton>
-          </Space>  */}
+          </Space>
           <div />
           <Space>
             <CreateButton
@@ -226,7 +225,8 @@ export const NoticesPage = () => {
           pagination={{
             current: currentPage,
             pageSize,
-            total: (noticeList?.data?.totalPage ?? 0) * pageSize,
+            total: noticeList?.data?.totalElements || 0,
+            showTotal: (total) => `총 ${total}건`,
             onChange: (page, size) => {
               handlePageChange(page);
               if (size !== pageSize) {

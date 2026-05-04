@@ -28,6 +28,7 @@ export type TGetLatestAppVersionResponse = IApiResponse<IAppVersion>;
 export interface IGetAppVersionListData {
   currentPageNumber: number;
   totalPageNumber: number;
+  totalElements: number;
   appVersionList: IAppVersion[];
 }
 

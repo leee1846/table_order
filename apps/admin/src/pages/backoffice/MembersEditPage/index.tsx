@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { Members } from '@/feature/backoffice/Members';
 import { validateMembersData } from '@/feature/backoffice/util';
 import { message } from 'antd';
-import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
+import { useConfirmDialog } from '@/feature/backoffice/hooks/useConfirmDialog';
 import { ROUTES } from '@/constants/routes';
 import {
   useGetAdminMember,

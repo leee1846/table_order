@@ -160,12 +160,21 @@ const MenuGroupModal: React.FC<MenuGroupModalProps> = ({
           required
           label={
             <span style={{ fontWeight: 600, fontSize: '15px' }}>
-              메뉴 그룹명
+              메뉴 그룹명{' '}
+              <span
+                style={{ fontWeight: 400, fontSize: '13px', color: '#8c8c8c' }}
+              >
+                (최대 50자)
+              </span>
             </span>
           }
-          //rules={[{ required: true, message: '메뉴 그룹명을 입력해주세요.' }]}
+          rules={[{ required: true, message: '메뉴 그룹명을 입력해주세요.' }]}
         >
-          <Input size="large" placeholder="메뉴 그룹명을 입력하세요" />
+          <Input
+            size="large"
+            placeholder="메뉴 그룹명을 입력하세요."
+            maxLength={50}
+          />
         </Form.Item>
 
         <Form.Item

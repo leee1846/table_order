@@ -9,14 +9,14 @@ import {
   Select,
   type UploadFile,
 } from 'antd';
-import { CloseOutlined, PictureFilled, WarningFilled } from '@ant-design/icons';
+import { CloseOutlined, PictureFilled } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { useGetMenuGroupList } from '@repo/api/queries';
 import type { IMenuGroup } from '@repo/api/types';
 import { IMAGE_DIMENSIONS } from './UploadContent';
 import type { MenuItem } from './ContentTypes/AdMenuContent';
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 const { TextArea } = Input;
 const { Dragger } = Upload;
 
@@ -48,27 +48,6 @@ const Section = styled.div`
 `;
 
 const LabelWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-// "매장 설정보다 우선 적용" 하늘색 뱃지
-const PriorityBadge = styled.span`
-  background-color: #e6f7ff;
-  color: #1677ff;
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-weight: normal;
-`;
-
-// 하단 노란색 안내 배너
-const WarningBanner = styled.div`
-  background-color: #fffbe6;
-  border: 1px solid #ffe58f;
-  border-radius: 6px;
-  padding: 12px 16px;
   display: flex;
   align-items: center;
   gap: 8px;

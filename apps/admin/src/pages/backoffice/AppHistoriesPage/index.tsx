@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button, Input, Space, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -8,7 +8,7 @@ import {
   FileTextOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import { ROUTES } from '@/constants/routes';
 import { useGetAppVersionList } from '@repo/api/queries';
 import { keepPreviousData } from '@repo/api/tanstack-query';
@@ -205,11 +205,12 @@ export const AppHistoriesPage = () => {
           columns={columns}
           dataSource={historyList?.data?.appVersionList ?? []}
           rowKey="appVersionSeq"
-          //loading={isFetching}
+          loading={isFetching}
           pagination={{
             current: currentPage,
             pageSize,
-            total: (historyList?.data?.totalPageNumber ?? 0) * pageSize,
+            total: historyList?.data?.totalElements || 0,
+            showTotal: (total) => `총 ${total}건`,
             onChange: (page, size) => {
               handlePageChange(page);
               if (size !== pageSize) {

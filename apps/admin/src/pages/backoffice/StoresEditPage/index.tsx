@@ -47,17 +47,6 @@ const Container = styled.div`
   overflow: hidden;
 `;
 
-const ContentCard = styled.div`
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-`;
-
 /**
  * 매장 수정 페이지
  */
@@ -73,8 +62,7 @@ export const StoresEditPage = () => {
     enabled: !!shopCode,
   });
 
-  const targetMemberId =
-    memberIdFromQuery || shopDetailResponse?.data?.memberId;
+  const targetMemberId = memberIdFromQuery;
 
   // 매장 상세 정보에서 가져온 memberId로 멤버 정보 조회
   const { data: memberDetailResponse } = useGetAdminMember({

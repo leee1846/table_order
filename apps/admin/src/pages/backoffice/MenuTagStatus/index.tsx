@@ -9,7 +9,7 @@ import {
 } from '@repo/api/queries';
 import type { ICampaignMenuGroupSyncStatus } from '@repo/api/types';
 import styled from '@emotion/styled';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 
 const { Title, Text } = Typography;
 

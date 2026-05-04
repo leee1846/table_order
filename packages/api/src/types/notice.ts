@@ -24,6 +24,7 @@ export interface INotice {
 export interface IGetNoticeListParams {
   page?: number;
   pageSize?: number;
+  searchWord?: string;
 }
 
 /**
@@ -32,6 +33,7 @@ export interface IGetNoticeListParams {
 export interface INoticeListData {
   currentPageNumber: number;
   totalPage: number;
+  totalElements: number;
   noticeList: INotice[];
 }
 

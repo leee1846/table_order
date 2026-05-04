@@ -1,7 +1,6 @@
 import React from 'react';
 import { Typography, Upload, Tooltip, message } from 'antd';
 import {
-  CaretRightOutlined,
   HolderOutlined,
   DeleteOutlined,
   InboxOutlined,
@@ -119,18 +118,6 @@ const MetaBadge = styled.span`
   font-weight: 500;
 `;
 
-const StatusLabel = styled.div<{ status: UploadStatus }>`
-  padding: 6px 16px;
-  font-weight: bold;
-  font-size: 13px;
-  border: 1px solid
-    ${(props) => (props.status === '완료' ? '#52c41a' : '#ff4d4f')};
-  color: ${(props) => (props.status === '완료' ? '#389e0d' : '#cf1322')};
-  background-color: ${(props) =>
-    props.status === '완료' ? '#f6ffed' : 'transparent'};
-`;
-
-// --- Component Props ---
 interface UploadContentProps {
   files: UploadedFile[];
   handleDragStart: (index: number) => void;

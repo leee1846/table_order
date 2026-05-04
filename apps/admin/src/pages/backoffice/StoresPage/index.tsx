@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { keepPreviousData } from '@repo/api/tanstack-query';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button, Input, Space, Tooltip, App } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
-  SearchOutlined,
   PlusOutlined,
   EditOutlined,
   SettingOutlined,
@@ -16,7 +15,7 @@ import styled from '@emotion/styled';
 import { ROUTES } from '@/constants/routes';
 import { useGetAdminShopList, useGetDownloadPosExcel } from '@repo/api/queries';
 import { useTablePageState } from '@/feature/backoffice/hooks';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { UploadModal } from './Menu/UploadModal';
 import { ImageViewModal } from './Menu/ImageViewModal';
@@ -291,8 +290,8 @@ export const StoresPage = () => {
               }
             },
             placement: ['bottomEnd'],
-            total: (shopList?.data?.totalPageNumber ?? 1) * pageSize,
-            //showTotal: (total) => `총 ${total}건`,
+            total: shopList?.data?.totalElements || 0,
+            showTotal: (total) => `총 ${total}건`,
             showSizeChanger: true,
           }}
           //scroll={{ y: 'calc(100vh - 400px)' }}

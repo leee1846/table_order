@@ -1,18 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Table, Button, Input, Space, Tooltip, Form, App } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import {
-  SearchOutlined,
-  PlusOutlined,
-  EditOutlined,
-  LinkOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
-import { ROUTES } from '@/constants/routes';
 import { useTablePageState } from '@/feature/backoffice/hooks';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import MenuGroupModal from './MenuGroupNewModal';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import {
@@ -20,13 +12,11 @@ import {
   usePatchUpdateMenuGroup,
   queryKeys,
 } from '@repo/api/queries';
-import { MenuName } from '../../../feature/dialogs/OrderListDialog/DetailOrderDialog/detailOrderDialog.style';
 import type { IMenuGroup, IMenuGroupMenu } from '@repo/api/types';
-import { useConfirmDialog } from '@/feature/Backoffice/hooks/useConfirmDialog';
+import { useConfirmDialog } from '@/feature/backoffice/hooks/useConfirmDialog';
 
 const DEFAULT_PAGE_SIZE = 10;
 
-// --- Emotion Styles ---
 const Container = styled.div`
   background-color: #f4f7fa;
   height: 100%;
@@ -55,16 +45,6 @@ const TopBar = styled.div`
   flex-shrink: 0;
 `;
 
-// 데이터 타입 정의
-/* interface MenuType {
-  menuSeq: number;
-  sortSeq: number;
-  menuName: string;
-  menuPrice: number;
-  isRecommended: boolean;
-  menuDescription: string;
-} */
-
 interface MenuGroupDataType extends IMenuGroup {
   no: number;
 }
@@ -78,7 +58,7 @@ const StyledTable = styled(Table<MenuGroupDataType>)`
 `;
 
 const MenuGroupPage: React.FC = () => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { showConfirm } = useConfirmDialog();
   const { message } = App.useApp();
@@ -161,11 +141,28 @@ const MenuGroupPage: React.FC = () => {
       dataIndex: 'menuGroupName',
       key: 'menuGroupName',
       width: 200,
+      render: (text: string) => (
+        <div
+          title={text}
+          style={{
+            maxWidth: 200,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            wordBreak: 'keep-all',
+          }}
+        >
+          {text}
+        </div>
+      ),
     },
     {
       title: '메뉴명',
       dataIndex: 'menus',
       key: 'menus',
+      width: 400,
       render: (menus: IMenuGroupMenu[]) =>
         menus?.map((m) => m.menuName).join(', ') || '-',
     },
@@ -196,7 +193,7 @@ const MenuGroupPage: React.FC = () => {
               icon={<DeleteOutlined />}
               onClick={() => {
                 showConfirm({
-                  title: '그룹 삭제',
+                  title: '메뉴 그룹 삭제',
                   targetName: '메뉴 그룹',
                   itemName: record.menuGroupName,
                   onConfirm: () => {
@@ -234,6 +231,7 @@ const MenuGroupPage: React.FC = () => {
           <Space>
             <Input
               placeholder="메뉴그룹명 or 메뉴 태그"
+              allowClear
               style={{ width: 240, borderRadius: '6px' }}
               value={searchInputValue}
               onChange={(e) => handleSearchInputChange(e.target.value)}

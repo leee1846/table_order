@@ -135,7 +135,7 @@ const IndividualStoreAddModal: React.FC<IndividualStoreAddModalProps> = ({
               );
             }
           },
-          onSelectAll: (selected, selectedRows, changeRows) => {
+          onSelectAll: (selected, _selectedRows, changeRows) => {
             if (selected) {
               setSelectedStores((prev) => {
                 const prevCodes = new Set(prev.map((s) => String(s.shopSeq)));

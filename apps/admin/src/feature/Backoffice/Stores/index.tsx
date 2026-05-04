@@ -1,14 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Tabs,
-  Button,
-  Space,
-  Form,
-  Flex,
-  Typography,
-  type TabsProps,
-} from 'antd';
+import { Tabs, Form, Flex, type TabsProps, Button } from 'antd';
 //import type { TabsProps } from 'antd';
 import { StoreInfoTab } from '@/feature/backoffice/Stores/StoreInfoTab';
 import { MemberInfoTab } from '@/feature/backoffice/Stores/MemberInfoTab';
@@ -23,7 +15,7 @@ import {
   DEFAULT_MEMBER_DATA,
   DEFAULT_SHOP_DATA,
 } from '@/feature/backoffice/Stores/constants';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import styled from '@emotion/styled';
 
 const FormWrapper = styled.div`

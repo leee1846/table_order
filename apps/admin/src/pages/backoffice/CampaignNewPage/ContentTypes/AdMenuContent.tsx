@@ -1,16 +1,6 @@
-import React, { use, useState } from 'react';
+import React, { useState } from 'react';
+import { Typography, Button, Tooltip, Space } from 'antd';
 import {
-  Typography,
-  Button,
-  Tag,
-  Tooltip,
-  Space,
-  Alert,
-  type UploadFile,
-} from 'antd';
-import {
-  MenuOutlined,
-  PictureFilled,
   DeleteOutlined,
   EditOutlined,
   HolderOutlined,
@@ -81,19 +71,6 @@ const DragHandle = styled.div`
   margin-right: 24px;
   display: flex;
   align-items: center;
-`;
-
-const ImagePlaceholder = styled.div`
-  width: 56px;
-  height: 56px;
-  background-color: #e2e8f0;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 20px;
-  color: #adb5bd;
-  font-size: 24px;
 `;
 
 const ItemInfo = styled.div`

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import { Form, Typography, Button, message, DatePicker, Card, App } from 'antd';
+import { Form, Button, DatePicker, Card, App } from 'antd';
 import dayjs from 'dayjs';
-import ContentTypes, { initialFiles } from './ContentTypes';
+import ContentTypes from './ContentTypes';
 import StoreGroupSelection, {
   type CampaignShopData,
 } from './StoreGroupSelection';
-import PageTitle from '@/feature/Backoffice/components/PageTitle';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import ConfirmAndSave, { type CampaignSummaryData } from './ConfirmAndSave';
 import BasicInfoForm from './BasicInfoForm';
-import { initialMenuItems, type MenuItem } from './ContentTypes/AdMenuContent';
+import { type MenuItem } from './ContentTypes/AdMenuContent';
 import type { UploadedFile } from './UploadContent';
 import CampaignSchedule from './CampaignSchedule';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -18,17 +18,9 @@ import {
   usePatchUpdateCampaign,
   usePostCreateCampaign,
 } from '@repo/api/queries';
-import type {
-  CampaignRequestJson,
-  CampaignShop,
-  ICampaignContentResponse,
-  IStore,
-} from '@repo/api/types';
-import type { adMenuData } from './AdMenuAddModal';
-import { SelectedMenuContainer } from '../../../../../menu/src/pages/MainPage/SplitPaymentModal/MenuSelector/menuSelector.style';
-import { generateId } from '../../../../../../packages/util/src/string/index';
+import type { CampaignRequestJson } from '@repo/api/types';
 
-const { Title, Text } = Typography;
+// const { Text } = Typography;
 
 // BasicInfoForm에서 전달될 값들의 타입 정의 (예시)
 interface BasicInfoFormValues {
@@ -76,7 +68,6 @@ const StepBlock = styled.div<{ active?: boolean }>`
   }
 `;
 
-// 폼 영역 스타일
 const FormWrapper = styled.div`
   background: #fff;
   padding: 40px;
@@ -85,14 +76,6 @@ const FormWrapper = styled.div`
   border-top: 2px solid #e2e8f0;
 `;
 
-const DescriptionText = styled(Text)`
-  display: block;
-  font-size: 16px;
-  color: #595959;
-  margin-bottom: 40px;
-`;
-
-// --- Constants ---
 const STEPS = [
   '① 기본 정보',
   '② 유형별 콘텐츠',
@@ -126,7 +109,7 @@ const CampaignNewPagePage: React.FC = () => {
   const { mutateAsync: updateCampaign } = usePatchUpdateCampaign();
   const mode = id ? 'edit' : 'new';
 
-  const { data: campaignDetailResponse, isLoading: isDetailLoading } =
+  const { data: campaignDetailResponse /* , isLoading: isDetailLoading */ } =
     useGetCampaignDetail(id!, {
       enabled: mode === 'edit' && !!id,
       // onSuccess: (data) => console.log('Campaign Detail:', data), // for debugging
@@ -240,7 +223,7 @@ const CampaignNewPagePage: React.FC = () => {
       // 2. 캠페인 콘텐츠 메타데이터 (CampaignContent) 매핑
       const fileArray: (File | null)[] = [];
       let sortOrderAcc = 1;
-      Object.entries(filesByTab).forEach(([tabKey, files], index) => {
+      Object.entries(filesByTab).forEach(([tabKey, files]) => {
         //let sortOrderAcc = 1;
         files.forEach((fileItem) => {
           const isVideo = fileItem.originFileObj
@@ -418,8 +401,6 @@ const CampaignNewPagePage: React.FC = () => {
     // [...detail.contents]
     //   .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
     detail.contents?.forEach((content) => {
-      console.log(content);
-
       if (content.adType === 'AD_MENU_IMAGE') {
         newMenuItems.push({
           id: content.contentSeq,
@@ -541,7 +522,6 @@ const CampaignNewPagePage: React.FC = () => {
             <StoreGroupSelection
               stores={campaignShops}
               onChange={(data) => {
-                console.log(data);
                 setCampaignShops(data);
               }}
             />

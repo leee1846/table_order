@@ -10,10 +10,7 @@ import {
 } from 'antd';
 import { CloseOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
-import type {
-  ICreateAdminMemberRequest,
-  ICampaignStatus,
-} from '@repo/api/types';
+import type { ICampaignStatus } from '@repo/api/types';
 import { useNavigate } from 'react-router-dom';
 import {
   useGetShopCampaignStatus,
@@ -106,13 +103,19 @@ const ItemInfo = styled.div`
   gap: 4px;
 `;
 
-// --- Mock Data ---
-
 const getAdTypeLabel = (adType: string) => {
-  if (adType.includes('STANDBY')) return '주문 대기';
-  if (adType.includes('TOP_BANNER')) return '상단 배너';
-  if (adType.includes('AD_MENU')) return '광고 메뉴';
-  if (adType.includes('ORDER_COMP')) return '주문 완료';
+  if (adType.includes('STANDBY')) {
+    return '주문 대기';
+  }
+  if (adType.includes('TOP_BANNER')) {
+    return '상단 배너';
+  }
+  if (adType.includes('AD_MENU')) {
+    return '광고 메뉴';
+  }
+  if (adType.includes('ORDER_COMP')) {
+    return '주문 완료';
+  }
   return adType;
 };
 
@@ -147,7 +150,9 @@ export const StoreAdInfoTab = ({
   });
 
   const handleToggleExclusion = (campaignSeq: number, contentSeq: number) => {
-    if (!shopSeq) return;
+    if (!shopSeq) {
+      return;
+    }
     toggleContentExclusion({ shopSeq, campaignSeq, contentSeq });
   };
 

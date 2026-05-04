@@ -134,15 +134,17 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
 
       if (index > -1) {
         const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          startDate: values.startDate
-            ? values.startDate.format('YYYY-MM-DD')
-            : '',
-          endDate: values.endDate ? values.endDate.format('YYYY-MM-DD') : '',
-        });
-        onChange(newData);
-        setEditingKey('');
+        if (item) {
+          newData.splice(index, 1, {
+            ...item,
+            startDate: values.startDate
+              ? values.startDate.format('YYYY-MM-DD')
+              : '',
+            endDate: values.endDate ? values.endDate.format('YYYY-MM-DD') : '',
+          });
+          onChange(newData);
+          setEditingKey('');
+        }
       }
     } catch (errInfo) {
       console.log('Validate Failed:', errInfo);

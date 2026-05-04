@@ -15,31 +15,6 @@ const InnerContainer = styled.div`
   background: #fff;
 `;
 
-// --- Mock Data ---
-export const initialFiles: UploadedFile[] = [
-  {
-    id: '1',
-    name: '새로_여름.mp4',
-    duration: '14초',
-    size: '8.2MB',
-    status: '완료',
-  },
-  {
-    id: '2',
-    name: 'test_video.mp4',
-    duration: '22초',
-    size: '14MB',
-    status: '오류 : 15초 초과',
-  },
-  {
-    id: '3',
-    name: 'test_video.mp4',
-    duration: '15초',
-    size: '33MB',
-    status: '오류 : 30MB 초과',
-  },
-];
-
 export const SUB_TABS = ['주문 대기', '상단 배너', '광고 메뉴', '주문 완료'];
 
 export interface ContentTypesProps extends AdMenuContentProps {

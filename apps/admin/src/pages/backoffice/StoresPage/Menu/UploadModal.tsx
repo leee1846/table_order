@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, App } from 'antd';
 import {
   InboxOutlined,
@@ -26,12 +26,12 @@ export const UploadModal = ({ isOpen, onClose, shopCode }: Props) => {
 
   const handleBeforeUpload = (file: File) => {
     const lower = file.name.toLowerCase();
-    if (lower.endsWith('.xlsx') || lower.endsWith('.xls')) {
+    if (lower.endsWith('.xlsx')) {
       setExcelFile(file);
     } else if (lower.endsWith('.zip')) {
       setZipFile(file);
     } else {
-      message.warning('엑셀(.xlsx, .xls) 또는 ZIP 파일만 업로드 가능합니다.');
+      message.warning('엑셀(.xlsx) 또는 ZIP 파일만 업로드 가능합니다.');
     }
     return false; // 브라우저의 기본 업로드 동작 방지
   };
@@ -77,9 +77,9 @@ export const UploadModal = ({ isOpen, onClose, shopCode }: Props) => {
           {
             uid: 'excel',
             name: `[엑셀] ${excelFile.name}`,
-            status: 'done' as const,
-            originFileObj: excelFile,
-          },
+            status: 'done',
+            originFileObj: excelFile as File,
+          } as UploadFile,
         ]
       : []),
     ...(zipFile
@@ -87,9 +87,9 @@ export const UploadModal = ({ isOpen, onClose, shopCode }: Props) => {
           {
             uid: 'zip',
             name: `[이미지] ${zipFile.name}`,
-            status: 'done' as const,
-            originFileObj: zipFile,
-          },
+            status: 'done',
+            originFileObj: zipFile as File,
+          } as UploadFile,
         ]
       : []),
   ];
@@ -150,7 +150,7 @@ export const UploadModal = ({ isOpen, onClose, shopCode }: Props) => {
 
       <S.StyledDragger
         multiple
-        accept=".xlsx, .xls, .zip"
+        accept=".xlsx, .zip"
         fileList={fileList}
         beforeUpload={handleBeforeUpload}
         onRemove={handleRemove}
@@ -163,7 +163,7 @@ export const UploadModal = ({ isOpen, onClose, shopCode }: Props) => {
           클릭하거나 파일을 이곳으로 드래그 앤 드롭하세요.
         </p>
         <p className="ant-upload-hint">
-          엑셀(.xlsx, .xls) 및 ZIP(.zip) 파일만 지원합니다.
+          엑셀(.xlsx) 및 ZIP(.zip) 파일만 지원합니다.
         </p>
       </S.StyledDragger>
     </S.StyledModal>
