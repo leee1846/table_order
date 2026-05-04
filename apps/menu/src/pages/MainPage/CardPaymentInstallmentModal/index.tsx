@@ -46,8 +46,10 @@ import {
   orderRequestRefundFailedSummaryAfterPosOrderFailure,
 } from '@/utils/logOrderRequestRefundFailed';
 import {
+  buildMenuSeqToCategoryMenuMap,
   calculateCartMenusTaxAmount,
   convertCartMenusToAdjustedOrders,
+  isOptionGroupIndependentInCategoryMenu,
 } from '@/utils/calculation';
 import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
 
@@ -110,19 +112,30 @@ export const CardPaymentInstallmentModal = ({
   const shouldShowInstallmentSection = totalPrice >= INSTALLMENT_MINIMUM_AMOUNT;
 
   const getRawOrdersFromCart = (): IOrder[] => {
-    return cartData.menus.map((menu) => ({
-      menuSeq: menu.menuSeq,
-      menuName: menu.menuName,
-      menuPrice: menu.menuPrice,
-      quantity: menu.quantity,
-      selectedOptions: menu.selectedOptions.map((opt) => ({
-        optionSeq: opt.optionSeq,
-        optionGroupSeq: opt.optionGroupSeq,
-        optionName: opt.optionName,
-        optionPrice: opt.optionPrice,
-        quantity: opt.quantity,
-      })),
-    }));
+    // 주문 시점의 categories 기준으로 isMenuQuantityIndependent 스냅샷
+    const categories = useCategoryStore.getState().data.categories;
+    const menuSeqToCategoryMenuMap = buildMenuSeqToCategoryMenuMap(categories);
+
+    return cartData.menus.map((menu) => {
+      const categoryMenu = menuSeqToCategoryMenuMap.get(menu.menuSeq);
+      return {
+        menuSeq: menu.menuSeq,
+        menuName: menu.menuName,
+        menuPrice: menu.menuPrice,
+        quantity: menu.quantity,
+        selectedOptions: menu.selectedOptions.map((opt) => ({
+          optionSeq: opt.optionSeq,
+          optionGroupSeq: opt.optionGroupSeq,
+          optionName: opt.optionName,
+          optionPrice: opt.optionPrice,
+          quantity: opt.quantity,
+          isMenuQuantityIndependent: isOptionGroupIndependentInCategoryMenu(
+            categoryMenu,
+            opt.optionGroupSeq
+          ),
+        })),
+      };
+    });
   };
 
   // 결제 진행 모달 오픈 시 결제 이벤트 리스너 설정

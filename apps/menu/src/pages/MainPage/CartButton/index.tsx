@@ -117,19 +117,27 @@ export const CartButton = ({ categories }: Props) => {
           canceledQuantity: menu.menuQuantity,
         }));
 
-      const orders: IOrder[] = cartData.menus.map((menu) => ({
-        menuSeq: menu.menuSeq,
-        menuName: menu.menuName,
-        menuPrice: menu.menuPrice,
-        quantity: menu.quantity,
-        selectedOptions: menu.selectedOptions.map((opt) => ({
-          optionSeq: opt.optionSeq,
-          optionGroupSeq: opt.optionGroupSeq,
-          optionName: opt.optionName,
-          optionPrice: opt.optionPrice,
-          quantity: opt.quantity,
-        })),
-      }));
+      // 모달 표시용 orders: 주문 시점의 isMenuQuantityIndependent 값을 categories에서 스냅샷
+      const orders: IOrder[] = cartData.menus.map((menu) => {
+        const categoryMenu = menuSeqToCategoryMenuMap.get(menu.menuSeq);
+        return {
+          menuSeq: menu.menuSeq,
+          menuName: menu.menuName,
+          menuPrice: menu.menuPrice,
+          quantity: menu.quantity,
+          selectedOptions: menu.selectedOptions.map((opt) => ({
+            optionSeq: opt.optionSeq,
+            optionGroupSeq: opt.optionGroupSeq,
+            optionName: opt.optionName,
+            optionPrice: opt.optionPrice,
+            quantity: opt.quantity,
+            isMenuQuantityIndependent: isOptionGroupIndependentInCategoryMenu(
+              categoryMenu,
+              opt.optionGroupSeq
+            ),
+          })),
+        };
+      });
 
       return {
         result: true,

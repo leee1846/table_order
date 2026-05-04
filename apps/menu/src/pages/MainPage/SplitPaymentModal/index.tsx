@@ -792,19 +792,27 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
     const runFullSuccess = async (): Promise<void> => {
       const language = useCustomerLanguageStore.getState().data.currentLanguage;
-      const rawOrders: IOrder[] = cartData.menus.map((menu) => ({
-        menuSeq: menu.menuSeq,
-        menuName: menu.menuName,
-        menuPrice: menu.menuPrice,
-        quantity: menu.quantity,
-        selectedOptions: menu.selectedOptions.map((opt) => ({
-          optionSeq: opt.optionSeq,
-          optionGroupSeq: opt.optionGroupSeq,
-          optionName: opt.optionName,
-          optionPrice: opt.optionPrice,
-          quantity: opt.quantity,
-        })),
-      }));
+      // 주문 시점의 categories 기준으로 isMenuQuantityIndependent 스냅샷
+      const rawOrders: IOrder[] = cartData.menus.map((menu) => {
+        const categoryMenu = menuSeqToCategoryMenuMap.get(menu.menuSeq);
+        return {
+          menuSeq: menu.menuSeq,
+          menuName: menu.menuName,
+          menuPrice: menu.menuPrice,
+          quantity: menu.quantity,
+          selectedOptions: menu.selectedOptions.map((opt) => ({
+            optionSeq: opt.optionSeq,
+            optionGroupSeq: opt.optionGroupSeq,
+            optionName: opt.optionName,
+            optionPrice: opt.optionPrice,
+            quantity: opt.quantity,
+            isMenuQuantityIndependent: isOptionGroupIndependentInCategoryMenu(
+              categoryMenu,
+              opt.optionGroupSeq
+            ),
+          })),
+        };
+      });
       const orderData = localizeOrders(rawOrders, cartData.menus, language);
 
       toast(t('결제를 성공했습니다.'), {

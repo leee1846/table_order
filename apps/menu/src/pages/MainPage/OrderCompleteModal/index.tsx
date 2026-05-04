@@ -71,28 +71,30 @@ export const OrderCompleteModal = ({
                 </S.MenuInfo>
 
                 <S.OptionList role="list">
-                  {order.selectedOptions.map((option) => (
-                    <li key={option.optionSeq} role="listitem">
-                      <div>
-                        <span />
-                        <p>{option.optionName}</p>
-                      </div>
+                  {order.selectedOptions.map((option) => {
+                    // 주문 시점에 스냅샷된 isMenuQuantityIndependent 기준:
+                    // independent=true → 옵션 수량 고정 (메뉴 수량 미곱셈)
+                    // independent=false/undefined → 옵션 수량 × 메뉴 수량
+                    const displayQty = option.isMenuQuantityIndependent
+                      ? option.quantity
+                      : option.quantity * order.quantity;
 
-                      <div>
-                        <p>
-                          {formatCurrency(option.quantity * order.quantity)}
-                        </p>
-                        <p>
-                          ₩
-                          {formatCurrency(
-                            option.optionPrice *
-                              option.quantity *
-                              order.quantity
-                          )}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
+                    return (
+                      <li key={option.optionSeq} role="listitem">
+                        <div>
+                          <span />
+                          <p>{option.optionName}</p>
+                        </div>
+
+                        <div>
+                          <p>{formatCurrency(displayQty)}</p>
+                          <p>
+                            ₩{formatCurrency(option.optionPrice * displayQty)}
+                          </p>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </S.OptionList>
               </li>
             ))}
