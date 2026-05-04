@@ -11,7 +11,6 @@ import {
   PictureOutlined,
   DownloadOutlined,
   SettingOutlined,
-  EyeOutlined,
 } from '@ant-design/icons';
 import { Button } from '@/feature/backoffice/components';
 import { toast } from '@repo/feature/utils';
@@ -62,7 +61,7 @@ export const Table = ({ stores }: Props) => {
     setIsImageViewModalOpen(true);
   };
 
-  const handleExcelDownload = async (shopCode: string, shopSeq: number) => {
+  const handleExcelDownload = async (shopCode: string) => {
     try {
       const blob = await downloadPosExcel(shopCode);
       const url = window.URL.createObjectURL(blob);
@@ -100,9 +99,7 @@ export const Table = ({ stores }: Props) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() =>
-                    handleExcelDownload(store.shopCode, store.shopSeq)
-                  }
+                  onClick={() => handleExcelDownload(store.shopCode)}
                 >
                   <DownloadOutlined
                     style={{ fontSize: 16, color: theme.colors.grey[700] }}

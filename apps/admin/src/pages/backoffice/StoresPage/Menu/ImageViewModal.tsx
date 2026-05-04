@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/feature/backoffice/components';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
-import JSZip from 'jszip';
 import { toast } from '@repo/feature/utils';
 import * as S from './ImageViewModal.style';
 import { Image } from 'antd';
@@ -20,7 +19,6 @@ interface Props {
 }
 
 export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
-  const [isDownloading, setIsDownloading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [draggingMenuSeq, setDraggingMenuSeq] = useState<number | null>(null);
   const [hoveredMenuSeq, setHoveredMenuSeq] = useState<number | null>(null);
@@ -38,7 +36,7 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
     (item: IMenuImageListItem) => item.imagePath
   );
 
-  const handleDownloadAll = async () => {
+  /*   const handleDownloadAll = async () => {
     if (downloadableImages.length === 0) return;
     setIsDownloading(true);
 
@@ -91,7 +89,7 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
     } finally {
       setIsDownloading(false);
     }
-  };
+  }; */
 
   const handleDragOver = (
     e: React.DragEvent<HTMLDivElement>,
@@ -148,9 +146,7 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
 
   return (
     <S.Backdrop>
-      {(isLoading || isDownloading || isUploading) && (
-        <FullscreenLoadingSpinner />
-      )}
+      {(isLoading || isUploading) && <FullscreenLoadingSpinner />}
       <S.ModalContainer>
         <S.Title>메뉴 이미지 목록</S.Title>
 
