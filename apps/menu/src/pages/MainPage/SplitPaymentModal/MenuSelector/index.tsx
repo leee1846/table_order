@@ -74,14 +74,18 @@ export const MenuSelector = ({
           const menuPrice = calculateMenuPrice(menu);
           const isSelected = isMenuSelected(menu);
 
+          const isDisabled = menuPrice === 0;
+
           return (
             <S.MenuItem
               key={`${menu.menuSeq}-${index + 1}`}
               isSelected={isSelected}
+              isDisabled={isDisabled}
             >
-              <button type="button">
+              <button type="button" disabled={isDisabled}>
                 <CheckButton
                   checked={isSelected}
+                  disabled={isDisabled}
                   onChange={(checked) =>
                     handleMenuSelectionChange(checked, menu)
                   }

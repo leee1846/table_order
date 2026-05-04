@@ -1,4 +1,4 @@
-import { BasicButton, ModalBackground } from '@repo/ui/components';
+﻿import { BasicButton, ModalBackground } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/SplitPaymentModal/splitPaymentModal.style';
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { MenuSelector } from '@/pages/MainPage/SplitPaymentModal/MenuSelector';
@@ -11,8 +11,11 @@ import type { ICartMenuWithId, ICartMenu } from '@/types/cart';
 import { formatCurrency } from '@repo/util/string';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import {
+  buildMenuSeqToCategoryMenuMap,
   calculateCartMenusTaxAmount,
   calculateMenuTotalPrice,
+  convertCartMenusToAdjustedOrders,
+  isOptionGroupIndependentInCategoryMenu,
 } from '@/utils/calculation';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useModalStore } from '@/stores/useModalStore';
@@ -81,22 +84,34 @@ interface PaymentResult {
 
 /**
  * 단일 메뉴의 총 가격 계산 (메뉴 가격 + 옵션 가격)
+ * menuMap: buildMenuSeqToCategoryMenuMap 결과 — isMenuQuantityIndependent 조회용
  */
-const calculateSingleMenuPrice = (menu: ICartMenu): number => {
+const calculateSingleMenuPrice = (
+  menu: ICartMenu,
+  menuMap: ReturnType<typeof buildMenuSeqToCategoryMenuMap>
+): number => {
+  const categoryMenu = menuMap.get(menu.menuSeq);
   const options = menu.selectedOptions.map((option) => ({
     optionPrice: option.optionPrice,
     quantity: option.quantity,
+    isMenuQuantityIndependent: isOptionGroupIndependentInCategoryMenu(
+      categoryMenu,
+      option.optionGroupSeq
+    ),
   }));
-
   return calculateMenuTotalPrice(menu.menuPrice, menu.quantity, options);
 };
 
 /**
  * 여러 메뉴의 총 가격 합계 계산
+ * menuMap: buildMenuSeqToCategoryMenuMap 결과 — isMenuQuantityIndependent 조회용
  */
-const calculateTotalMenusPrice = (menus: ICartMenu[]): number => {
+const calculateTotalMenusPrice = (
+  menus: ICartMenu[],
+  menuMap: ReturnType<typeof buildMenuSeqToCategoryMenuMap>
+): number => {
   return menus.reduce(
-    (totalPrice, menu) => totalPrice + calculateSingleMenuPrice(menu),
+    (totalPrice, menu) => totalPrice + calculateSingleMenuPrice(menu, menuMap),
     0
   );
 };
@@ -171,39 +186,6 @@ const calculatePersonPrice = (
   return personIndex === 0 ? remainderAmount : baseAmount;
 };
 
-/**
- * 장바구니 데이터를 주문 API 형식으로 변환
- * 메뉴와 옵션 정보를 주문 데이터 구조에 맞게 변환
- */
-const convertCartMenusToOrders = (cartMenus: ICartMenu[]): IOrder[] => {
-  return cartMenus.map((menu: ICartMenu) => ({
-    menuSeq: menu.menuSeq,
-    menuName: menu.menuName,
-    menuPrice: menu.menuPrice,
-    quantity: menu.quantity,
-    selectedOptions: menu.selectedOptions.map((selectedOption) => ({
-      optionSeq: selectedOption.optionSeq,
-      optionGroupSeq: selectedOption.optionGroupSeq,
-      optionName: selectedOption.optionName,
-      optionPrice: selectedOption.optionPrice,
-      quantity: selectedOption.quantity,
-    })),
-  }));
-};
-
-/**
- * 주문 옵션 수량을 주문 수량에 맞게 조정
- * 예: 메뉴 2개, 옵션 1개 → 옵션 수량 = 2 × 1 = 2개
- */
-const adjustOrderOptionQuantities = (orders: IOrder[]): IOrder[] => {
-  return orders.map((order) => ({
-    ...order,
-    selectedOptions: order.selectedOptions.map((option) => ({
-      ...option,
-      quantity: order.quantity * option.quantity,
-    })),
-  }));
-};
 
 /**
  * 사용자 취소 에러 여부 확인
@@ -226,6 +208,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const { setModalData } = useModalStore();
   const { data: shopData } = useShopStore();
   const { data: customerCountData } = useCustomerCountStore();
+  const categories = useCategoryStore((s) => s.data.categories);
   const { refresh: refreshTableOrderHistoriesData } =
     useTableOrderHistoriesData({ skipInitialRequest: true });
 
@@ -302,29 +285,52 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   );
   const [paidPersonIds, setPaidPersonIds] = useState<Set<string>>(new Set());
 
+  // menuSeq → 카테고리 메뉴 맵 (isMenuQuantityIndependent 조회용, categories 변경 시에만 재빌드)
+  const menuSeqToCategoryMenuMap = useMemo(
+    () => buildMenuSeqToCategoryMenuMap(categories),
+    [categories]
+  );
+
   /**
    * 전체 메뉴 목록 (수량만큼 개별 항목으로 펼침)
    * 예: 메뉴 A 2개 → [메뉴 A-0, 메뉴 A-1]
    * 개별 선택을 위해 각 메뉴에 고유 ID 부여
+   *
+   * isMenuQuantityIndependent=true 옵션은 첫 번째 항목에만 포함
+   * (독립 옵션은 메뉴 수량 무관 1회 적용이므로 첫 번째 항목이 전체 금액을 부담)
    */
   const allMenus = useMemo(
     () =>
-      cartData.menus.flatMap((menu, menuIndex) =>
-        Array.from({ length: menu.quantity }, (_, quantityIndex) => ({
-          ...menu,
-          quantity: 1,
-          id: `${menu.menuSeq}-${menuIndex}-${quantityIndex}`,
-        }))
-      ),
-    [cartData.menus]
+      cartData.menus.flatMap((menu, menuIndex) => {
+        const categoryMenu = menuSeqToCategoryMenuMap.get(menu.menuSeq);
+        return Array.from({ length: menu.quantity }, (_, quantityIndex) => {
+          const isFirstItem = quantityIndex === 0;
+          const selectedOptions = isFirstItem
+            ? menu.selectedOptions
+            : menu.selectedOptions.filter(
+                (opt) =>
+                  !isOptionGroupIndependentInCategoryMenu(
+                    categoryMenu,
+                    opt.optionGroupSeq
+                  )
+              );
+          return {
+            ...menu,
+            quantity: 1,
+            selectedOptions,
+            id: `${menu.menuSeq}-${menuIndex}-${quantityIndex}`,
+          };
+        });
+      }),
+    [cartData.menus, menuSeqToCategoryMenuMap]
   );
 
   /**
    * 전체 결제 금액 (모든 메뉴의 합계)
    */
   const totalPrice = useMemo(
-    () => calculateTotalMenusPrice(cartData.menus),
-    [cartData.menus]
+    () => calculateTotalMenusPrice(cartData.menus, menuSeqToCategoryMenuMap),
+    [cartData.menus, menuSeqToCategoryMenuMap]
   );
 
   // ----------------------------------------------------------------------------
@@ -343,16 +349,16 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * 선택된 메뉴들의 총 금액
    */
   const selectedMenuPrice = useMemo(
-    () => calculateTotalMenusPrice(selectedMenus),
-    [selectedMenus]
+    () => calculateTotalMenusPrice(selectedMenus, menuSeqToCategoryMenuMap),
+    [selectedMenus, menuSeqToCategoryMenuMap]
   );
 
   /**
    * 남은 메뉴들의 총 금액
    */
   const remainingMenuPrice = useMemo(
-    () => calculateTotalMenusPrice(remainingMenus),
-    [remainingMenus]
+    () => calculateTotalMenusPrice(remainingMenus, menuSeqToCategoryMenuMap),
+    [remainingMenus, menuSeqToCategoryMenuMap]
   );
 
   // ----------------------------------------------------------------------------
@@ -461,12 +467,13 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
    * @returns 생성된 주문의 UUID 정보
    */
   const createOrder = async (): Promise<PaymentResult> => {
-    // 1. 장바구니 데이터를 주문 형식으로 변환
-    const orders = convertCartMenusToOrders(cartData.menus);
-    // 2. 옵션 수량 조정 (메뉴 수량 × 옵션 수량)
-    const adjustedOrders = adjustOrderOptionQuantities(orders);
+    // 1. 장바구니 데이터를 주문 형식으로 변환 + 옵션 수량 조정 (독립 옵션 수량 보존)
+    const adjustedOrders = convertCartMenusToAdjustedOrders(
+      cartData.menus,
+      useCategoryStore.getState().data.categories
+    );
 
-    // 3. 주문 생성 API 호출
+    // 2. 주문 생성 API 호출
     const orderResponse = await createTableOrder({
       shopCode: shopData?.shopCode ?? '',
       tableNumber: deviceData?.tableNumber ?? '',
@@ -785,11 +792,20 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
 
     const runFullSuccess = async (): Promise<void> => {
       const language = useCustomerLanguageStore.getState().data.currentLanguage;
-      const orderData = localizeOrders(
-        convertCartMenusToOrders(cartData.menus),
-        cartData.menus,
-        language
-      );
+      const rawOrders: IOrder[] = cartData.menus.map((menu) => ({
+        menuSeq: menu.menuSeq,
+        menuName: menu.menuName,
+        menuPrice: menu.menuPrice,
+        quantity: menu.quantity,
+        selectedOptions: menu.selectedOptions.map((opt) => ({
+          optionSeq: opt.optionSeq,
+          optionGroupSeq: opt.optionGroupSeq,
+          optionName: opt.optionName,
+          optionPrice: opt.optionPrice,
+          quantity: opt.quantity,
+        })),
+      }));
+      const orderData = localizeOrders(rawOrders, cartData.menus, language);
 
       toast(t('결제를 성공했습니다.'), {
         duration: TOAST_DURATION,

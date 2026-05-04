@@ -45,7 +45,10 @@ import {
   orderRequestRefundFailedSummaryAfterPaymentApproval,
   orderRequestRefundFailedSummaryAfterPosOrderFailure,
 } from '@/utils/logOrderRequestRefundFailed';
-import { calculateCartMenusTaxAmount } from '@/utils/calculation';
+import {
+  calculateCartMenusTaxAmount,
+  convertCartMenusToAdjustedOrders,
+} from '@/utils/calculation';
 import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
 
 const ORDER_TYPE_PREPAYMENT = 'PREPAYMENT';
@@ -59,38 +62,6 @@ interface CardPaymentInstallmentModalProps {
   totalPrice: number;
 }
 
-/**
- * 장바구니 데이터를 주문 데이터 형식으로 변환
- */
-const convertCartMenusToOrders = (cartMenus: ICartMenu[]): IOrder[] => {
-  return cartMenus.map((menu: ICartMenu) => ({
-    menuSeq: menu.menuSeq,
-    menuName: menu.menuName,
-    menuPrice: menu.menuPrice,
-    quantity: menu.quantity,
-    selectedOptions: menu.selectedOptions.map((selectedOption) => ({
-      optionSeq: selectedOption.optionSeq,
-      optionGroupSeq: selectedOption.optionGroupSeq,
-      optionName: selectedOption.optionName,
-      optionPrice: selectedOption.optionPrice,
-      quantity: selectedOption.quantity,
-    })),
-  }));
-};
-
-/**
- * 주문 옵션 수량을 주문 수량에 맞게 조정 (백엔드 요구 사항)
- * (메뉴 수량 × 옵션 수량)
- */
-const adjustOrderOptionQuantities = (orders: IOrder[]): IOrder[] => {
-  return orders.map((order) => ({
-    ...order,
-    selectedOptions: order.selectedOptions.map((option) => ({
-      ...option,
-      quantity: order.quantity * option.quantity,
-    })),
-  }));
-};
 
 const calculateCartTaxAmount = (cartMenus: ICartMenu[]): number => {
   return calculateCartMenusTaxAmount(
@@ -138,8 +109,20 @@ export const CardPaymentInstallmentModal = ({
 
   const shouldShowInstallmentSection = totalPrice >= INSTALLMENT_MINIMUM_AMOUNT;
 
-  const getOrdersFromCart = (): IOrder[] => {
-    return convertCartMenusToOrders(cartData.menus);
+  const getRawOrdersFromCart = (): IOrder[] => {
+    return cartData.menus.map((menu) => ({
+      menuSeq: menu.menuSeq,
+      menuName: menu.menuName,
+      menuPrice: menu.menuPrice,
+      quantity: menu.quantity,
+      selectedOptions: menu.selectedOptions.map((opt) => ({
+        optionSeq: opt.optionSeq,
+        optionGroupSeq: opt.optionGroupSeq,
+        optionName: opt.optionName,
+        optionPrice: opt.optionPrice,
+        quantity: opt.quantity,
+      })),
+    }));
   };
 
   // 결제 진행 모달 오픈 시 결제 이벤트 리스너 설정
@@ -175,8 +158,10 @@ export const CardPaymentInstallmentModal = ({
     orderUuid: string;
     cancelOrderMenuRequest: ICancelOrderMenuRequest;
   }> => {
-    const orders = getOrdersFromCart();
-    const adjustedOrders = adjustOrderOptionQuantities(orders);
+    const adjustedOrders = convertCartMenusToAdjustedOrders(
+      cartData.menus,
+      useCategoryStore.getState().data.categories
+    );
 
     const orderResponse = await createTableOrder({
       shopCode: shopData?.shopCode ?? '',
@@ -294,7 +279,7 @@ export const CardPaymentInstallmentModal = ({
   const handlePaymentSuccess = async () => {
     const language = useCustomerLanguageStore.getState().data.currentLanguage;
     const orderData = localizeOrders(
-      getOrdersFromCart(),
+      getRawOrdersFromCart(),
       cartData.menus,
       language
     );

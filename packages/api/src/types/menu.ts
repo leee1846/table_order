@@ -1,4 +1,4 @@
-import type { IApiResponse } from './common';
+﻿import type { IApiResponse } from './common';
 
 interface ICommonResponseData {
   index: number;
@@ -38,6 +38,7 @@ export interface IOptionGroup extends ICommonResponseData {
   isOptionQuantitySelectable: boolean;
   localeOptionGroupName: TLocale;
   localeOptionGroupNameStr: TLocale;
+  isMenuQuantityIndependent: boolean;
   optionList: IOption[];
 }
 
@@ -79,6 +80,7 @@ export interface ICreateOptionGroup {
   maxQuantity: number;
   isMultipleSelectable: boolean;
   isOptionQuantitySelectable: boolean;
+  isMenuQuantityIndependent: boolean;
   optionList: ICreateOption[];
 }
 
@@ -95,6 +97,7 @@ export interface IUpdateOptionGroup {
   maxQuantity: number;
   isMultipleSelectable: boolean;
   isOptionQuantitySelectable: boolean;
+  isMenuQuantityIndependent: boolean;
   optionList: IUpdateOption[];
 }
 

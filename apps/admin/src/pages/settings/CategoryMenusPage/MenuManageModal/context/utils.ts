@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   ICreateMenuImage,
   ICreateMenuRequest,
   ICreateOption,
@@ -118,6 +118,7 @@ const toCreateOptionGroup = (group: IOptionGroup): ICreateOptionGroup => ({
   maxQuantity: group.maxQuantity,
   isMultipleSelectable: group.isMultipleSelectable,
   isOptionQuantitySelectable: group.isOptionQuantitySelectable,
+  isMenuQuantityIndependent: group.isMenuQuantityIndependent ?? false,
   optionList: (group.optionList || []).map(toCreateOption),
 });
 

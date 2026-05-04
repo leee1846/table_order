@@ -438,6 +438,7 @@
   "주문완료 페이지 총금액 노출 여부": "Show total amount on order completion page",
   "주문하기 사용": "Enable ordering",
   "중복체크 허용 (선택 옵션)": "Allow duplicate selection (optional)",
+  "옵션 수량 고정": "Fixed option quantity",
   "직원호출 사용": "Enable staff call",
   "첫주문 금액": "First order amount",
   "첫주문 필수 카테고리": "Required categories for first order",

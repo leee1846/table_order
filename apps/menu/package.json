@@ -1,7 +1,7 @@
 {
   "name": "menu",
   "private": true,
-  "version": "1.0.29",
+  "version": "1.0.30",
   "type": "module",
   "scripts": {
     "dev": "vite --mode development --host",
@@ -13,7 +13,7 @@
     "_build:prod": "tsc --noEmit -p tsconfig.app.check.json && tsc --noEmit -p tsconfig.node.json && vite build --mode production",
     "build:stage": "turbo run _build:stage --filter=menu --force",
     "_build:stage": "tsc --noEmit -p tsconfig.app.check.json && tsc --noEmit -p tsconfig.node.json && vite build --mode stage",
-    "preview": "vite preview",
+    "preview": "vite preview --host",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "check-types": "turbo run _check-types --filter=menu --force",

@@ -62,8 +62,8 @@ export const OrderCompleteModal = ({
           <S.Title>{t('주문내역')}</S.Title>
           <S.Date>{getTodayDateString()}</S.Date>
           <S.OrderList role="list" aria-label={t('주문내역')}>
-            {orderData.map((order) => (
-              <li key={order.menuSeq} role="listitem">
+            {orderData.map((order, index) => (
+              <li key={`order-${order.menuSeq}-${index + 1}`} role="listitem">
                 <S.MenuInfo>
                   <h3>{order.menuName}</h3>
                   <p>{formatCurrency(order.quantity)}</p>

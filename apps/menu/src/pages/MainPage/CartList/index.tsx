@@ -1,5 +1,5 @@
-import { createPortal } from 'react-dom';
-import { useState } from 'react';
+﻿import { createPortal } from 'react-dom';
+import { useState, useMemo } from 'react';
 import * as S from '@/pages/MainPage/CartList/cartList.style';
 import { BasicButton, NumberInput } from '@repo/ui/components';
 import { DeleteIcon, EmptedCartIcon } from '@repo/ui/icons';
@@ -18,7 +18,11 @@ import type {
   IOrder,
 } from '@repo/api/types';
 import type { ICartMenu } from '@/types/cart';
-import { calculateMenuTotalPrice } from '@/utils/calculation';
+import {
+  buildMenuSeqToCategoryMenuMap,
+  calculateMenuTotalPrice,
+  isOptionGroupIndependentInCategoryMenu,
+} from '@/utils/calculation';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useShopStore } from '@/stores/useShopStore';
 import { MENU_MAX_QUANTITY } from '@/constants/common';
@@ -87,18 +91,24 @@ export const CartList = ({
     .find((category) => category.categorySeq === selectedMenu?.categorySeq)
     ?.menuInfoList.find((menu) => menu.menuSeq === selectedMenu?.menuSeq);
 
+  // menuSeq → 카테고리 메뉴 맵 (isMenuQuantityIndependent 조회용, categories 변경 시에만 재빌드)
+  const menuSeqToCategoryMenuMap = useMemo(
+    () => buildMenuSeqToCategoryMenuMap(categories),
+    [categories]
+  );
+
   // 카트 메뉴의 총 가격 계산
   const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
+    const categoryMenu = menuSeqToCategoryMenuMap.get(cartMenu.menuSeq);
     const options = cartMenu.selectedOptions.map((option) => ({
       optionPrice: option.optionPrice,
       quantity: option.quantity,
+      isMenuQuantityIndependent: isOptionGroupIndependentInCategoryMenu(
+        categoryMenu,
+        option.optionGroupSeq
+      ),
     }));
-
-    return calculateMenuTotalPrice(
-      cartMenu.menuPrice,
-      cartMenu.quantity,
-      options
-    );
+    return calculateMenuTotalPrice(cartMenu.menuPrice, cartMenu.quantity, options);
   };
 
   // 전체 카트의 총 합계 계산
@@ -291,7 +301,19 @@ export const CartList = ({
 
                 {hasOptions && (
                   <S.Options>
-                    {menu.selectedOptions.map((option) => (
+                    {menu.selectedOptions.map((option) => {
+                      const categoryMenu = menuSeqToCategoryMenuMap.get(
+                        menu.menuSeq
+                      );
+                      const isIndependent = isOptionGroupIndependentInCategoryMenu(
+                        categoryMenu,
+                        option.optionGroupSeq
+                      );
+                      const displayQty = isIndependent
+                        ? option.quantity
+                        : option.quantity * menu.quantity;
+                      const displayPrice = option.optionPrice * displayQty;
+                      return (
                       <S.OptionItem key={option.optionSeq}>
                         <p>
                           <span />
@@ -299,20 +321,12 @@ export const CartList = ({
                             option.optionName}
                         </p>
                         <div>
-                          <p>
-                            {formatCurrency(option.quantity * menu.quantity)}
-                          </p>
-                          <p>
-                            ₩
-                            {formatCurrency(
-                              option.optionPrice *
-                                option.quantity *
-                                menu.quantity
-                            )}
-                          </p>
+                          <p>{formatCurrency(displayQty)}</p>
+                          <p>₩{formatCurrency(displayPrice)}</p>
                         </div>
                       </S.OptionItem>
-                    ))}
+                      );
+                    })}
                     <S.OptionButtonContainer>
                       <button
                         type="button"
