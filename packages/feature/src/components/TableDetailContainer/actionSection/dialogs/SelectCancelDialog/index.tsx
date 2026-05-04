@@ -186,7 +186,7 @@ export const SelectCancelDialog = ({
                     <NumberInput
                       variant="square"
                       value={quantity}
-                      min={0}
+                      min={1}
                       max={item.qty}
                       disabled={!isChecked}
                       onChange={(value) => handleQuantityChange(item.id, value)}
