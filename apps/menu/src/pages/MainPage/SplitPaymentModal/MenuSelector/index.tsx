@@ -80,7 +80,6 @@ export const MenuSelector = ({
             <S.MenuItem
               key={`${menu.menuSeq}-${index + 1}`}
               isSelected={isSelected}
-              isDisabled={isDisabled}
             >
               <button type="button" disabled={isDisabled}>
                 <CheckButton
