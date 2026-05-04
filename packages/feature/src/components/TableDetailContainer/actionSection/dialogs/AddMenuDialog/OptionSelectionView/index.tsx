@@ -55,17 +55,14 @@ export const OptionSelectionView = ({
   };
 
   const totalPrice = useMemo(() => {
-    // 메뉴 가격 * 메뉴 수량
     const menuTotalPrice = selectedMenu.menuPrice * menuQuantity;
 
-    // 선택된 옵션들의 총 가격 계산       //entries key : optionSeq, value : quantity 쌍으로 반환
     const optionsTotalPrice = Array.from(selectedOptions.entries()).reduce(
       (sum, [optionSeq, quantity]) => {
         if (quantity === 0) {
           return sum;
         }
 
-        // 옵션 찾기
         const option = optionGroups
           .flatMap((group) => group.optionList)
           .find((opt) => opt.optionSeq === optionSeq);
@@ -74,7 +71,6 @@ export const OptionSelectionView = ({
           return sum;
         }
 
-        // 옵션 그룹 찾기
         const optionGroup = optionGroups.find(
           (group) => group.optionGroupSeq === option.optionGroupSeq
         );
@@ -83,10 +79,12 @@ export const OptionSelectionView = ({
           return sum;
         }
 
-        const calculatedQuantity = menuQuantity * quantity;
+        // isMenuQuantityIndependent=true: 옵션 수량 고정 (메뉴 수량 곱셈 없음)
+        const effectiveQuantity = optionGroup.isMenuQuantityIndependent
+          ? quantity
+          : menuQuantity * quantity;
 
-        // 옵션 가격 * 계산된 수량
-        return sum + option.optionPrice * calculatedQuantity;
+        return sum + option.optionPrice * effectiveQuantity;
       },
       0
     );
@@ -170,6 +168,15 @@ export const OptionSelectionView = ({
                         return null;
                       }
 
+                      const optionGroup = optionGroups.find(
+                        (g) => g.optionGroupSeq === option.optionGroupSeq
+                      );
+                      // 독립 옵션: 선택 수량 고정 / 연동 옵션: 선택 수량 × 메뉴 수량
+                      const displayQuantity =
+                        optionGroup?.isMenuQuantityIndependent
+                          ? quantity
+                          : quantity * menuQuantity;
+
                       return (
                         <S.SelectedOptionItem key={optionSeq}>
                           <S.OptionItemName>{`ㄴ\u2060${
@@ -179,11 +186,11 @@ export const OptionSelectionView = ({
                             <S.OptionItemPrice>
                               (+ ₩{formatCurrency(option.optionPrice)})
                             </S.OptionItemPrice>
-                            {quantity >= 2 && (
-                              <S.OptionItemQuantity>
-                                {t('{{value}}개', { value: quantity })}
-                              </S.OptionItemQuantity>
-                            )}
+                            {/* {displayQuantity >= 2 && ( */}
+                            <S.OptionItemQuantity>
+                              {t('{{value}}개', { value: displayQuantity })}
+                            </S.OptionItemQuantity>
+                            {/* )} */}
                           </S.OptionItemMeta>
                         </S.SelectedOptionItem>
                       );

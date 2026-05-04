@@ -17,6 +17,11 @@ import { useTranslation } from 'react-i18next';
 
 export interface SelectedOption extends IOption {
   selectedQuantity: number;
+  /**
+   * true: 옵션 수량이 메뉴 수량과 무관하게 고정됨 (주문 시 메뉴 수량으로 곱해지지 않음)
+   * false/undefined: 옵션 수량에 메뉴 수량 곱셈 적용 (기본 동작)
+   */
+  isMenuQuantityIndependent?: boolean;
 }
 
 export interface SelectedMenuWithOptions {
@@ -221,9 +226,15 @@ export const AddMenuDialog = ({
             return;
           }
 
+          const optionGroup = selectedMenu.optionGroupList.find(
+            (g) => g.optionGroupSeq === option.optionGroupSeq
+          );
+
           selectedOptionsList.push({
             ...option,
             selectedQuantity: quantity,
+            isMenuQuantityIndependent:
+              optionGroup?.isMenuQuantityIndependent ?? false,
           });
         }
       }
@@ -330,7 +341,10 @@ export const AddMenuDialog = ({
         optionGroupSeq: option.optionGroupSeq,
         optionName: option.optionName,
         optionPrice: option.optionPrice,
-        quantity: option.selectedQuantity * quantity,
+        // isMenuQuantityIndependent=true: 옵션 수량 고정 (메뉴 수량 곱셈 없음)
+        quantity: option.isMenuQuantityIndependent
+          ? option.selectedQuantity
+          : option.selectedQuantity * quantity,
       })),
     }));
 

@@ -218,6 +218,7 @@ export interface IGetTableOrderHistoriesParams {
  * 테이블 현재 상태 옵션 정보
  */
 export interface ITableCurrentStatusOption {
+  isMenuQuantityIndependent: boolean;
   orderDetailOptionSeq: number;
   optionName: string;
   optionPrice: number;
