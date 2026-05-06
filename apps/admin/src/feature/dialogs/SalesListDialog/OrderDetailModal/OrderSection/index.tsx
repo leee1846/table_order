@@ -12,15 +12,23 @@ interface Props {
 export const OrderSection = ({ order }: Props) => {
   const { t, i18n } = useAdminTranslation();
   const orderLog = order.orderLog;
+  const isCanceledStatus = (statusCode: string) =>
+    statusCode === 'CANCEL' || statusCode === 'POS_CANCEL';
   const menus =
-    orderLog?.orderInfoList?.flatMap((info) => info.orderDetailMenuList) ?? [];
+    orderLog?.orderInfoList?.flatMap((info) =>
+      info.orderDetailMenuList.map((menu) => ({
+        menu,
+        statusCode: info.status.status,
+      }))
+    ) ?? [];
   const currentLanguage: TShopLanguage = useMemo(
     () => (i18n.language?.toUpperCase() || 'KO') as TShopLanguage,
     [i18n]
   );
 
   const totalQuantity = menus.reduce(
-    (sum, menu) => sum + (menu.menuQuantity ?? 0),
+    (sum, item) =>
+      isCanceledStatus(item.statusCode) ? sum : sum + (item.menu.menuQuantity ?? 0),
     0
   );
 
@@ -62,12 +70,13 @@ export const OrderSection = ({ order }: Props) => {
       <S.OrderList>
         <ul>
           {menus.length === 0 && <li>{t('주문 내역이 없습니다.')}</li>}
-          {menus.map((menu) => {
+          {menus.map(({ menu, statusCode }) => {
             const options = menu.orderDetailOptionList ?? [];
+            const isCanceled = isCanceledStatus(statusCode);
 
             return (
               <li key={menu.orderDetailMenuSeq}>
-                <S.MenuItem>
+                <S.MenuItem data-canceled={isCanceled}>
                   <p>
                     {menu.localeMenuName?.[currentLanguage] ?? menu.menuName}
                   </p>
@@ -77,7 +86,10 @@ export const OrderSection = ({ order }: Props) => {
                 {options.length > 0 && (
                   <ul>
                     {options.map((option) => (
-                      <S.OptionItem key={option.orderDetailOptionSeq}>
+                      <S.OptionItem
+                        key={option.orderDetailOptionSeq}
+                        data-canceled={isCanceled}
+                      >
                         <p>
                           <span />
                           {option.localeOptionName?.[currentLanguage] ??
