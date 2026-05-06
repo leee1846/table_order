@@ -21,6 +21,7 @@ export const Detail = ({
   const { t } = useAdminTranslation();
   const deviceData = useDeviceStore((s) => s.data);
   const { data: latestVersionData } = useGetLatestAppVersion('MENU');
+  const versionEnv = import.meta.env.VITE_APP_VERSION_ENV;
 
   return (
     <UIStyles.setting.Container>
@@ -28,7 +29,12 @@ export const Detail = ({
         <UIStyles.setting.Title>{t('버전 및 네트워크')}</UIStyles.setting.Title>
         <S.Versions>
           <p>
-            {t('WEB 버전')} <span>{__APP_VERSION__}</span>
+            {t('WEB 버전')}
+            <span>
+              {versionEnv
+                ? `${__APP_VERSION__} (${versionEnv})`
+                : __APP_VERSION__}
+            </span>
           </p>
           <div />
           <p>
