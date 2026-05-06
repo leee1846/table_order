@@ -41,6 +41,7 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
   const { data: latestAppVersionResponse } = useGetLatestAppVersion(appType);
 
   const latestAppVersionText = latestAppVersionResponse?.data?.version;
+  const versionEnv = import.meta.env.VITE_APP_VERSION_ENV;
 
   useEffect(() => {
     if (CapacitorApp.isNative()) {
@@ -153,7 +154,12 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
         </S.TitleContentContainer>
         <S.Versions>
           <p>
-            {t('WEB 버전')} <span>{__APP_VERSION__}</span>
+            {t('WEB 버전')}
+            <span>
+              {versionEnv
+                ? `${__APP_VERSION__} (${versionEnv})`
+                : __APP_VERSION__}
+            </span>
           </p>
           <div />
           {CapacitorApp.isNative() && (
@@ -165,7 +171,15 @@ export const Network = ({ shopNetwork, onChange }: NetworkProps) => {
             </>
           )}
           <p>
-            {t('APP 최신 버전')} <span>{latestAppVersionText ?? '-'}</span>
+            {t('APP 최신 버전')}{' '}
+            <span>
+              {/* {latestAppVersionText
+                ? versionEnv
+                  ? `${latestAppVersionText}(${versionEnv})`
+                  : latestAppVersionText
+                : '-'} */}
+              {latestAppVersionText ?? '-'}
+            </span>
           </p>
         </S.Versions>
       </UIStyles.setting.Header>
