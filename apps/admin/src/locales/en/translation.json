@@ -492,6 +492,7 @@
   "판매 시작 시간": "Sales start time",
   "판매 요일": "Sales days",
   "판매 종료 시간": "Sales end time",
+  "판매 시간의 시작 시간과 종료 시간을 다르게 입력해주세요": "Please enter different start and end times for the sales period.",
   "판매시간": "Sales time",
   "포스 코드 연동": "POS code integration",
   "포스연동 메뉴코드": "POS-linked menu code",
