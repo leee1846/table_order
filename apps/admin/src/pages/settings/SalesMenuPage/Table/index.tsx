@@ -14,33 +14,55 @@ export const Table = ({ items, currentLanguage }: Props) => {
   const renderRows = () => {
     if (!items || items.length === 0) {
       return (
-        <tr
-          style={{
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <td colSpan={4}>{t('메뉴 판매 내역이 없습니다.')}</td>
-        </tr>
+        <S.EmptyRow>
+          <td colSpan={6}>{t('메뉴 판매 내역이 없습니다.')}</td>
+        </S.EmptyRow>
       );
     }
 
-    return items.map((item, index) => (
-      <S.MenuRow key={`${item.menuName}-${index.toString()}`}>
-        <td>{item.localeMenuName?.[currentLanguage] ?? item.menuName}</td>
-        <td>{formatCurrency(item.unitPrice)}</td>
-        <td>{formatCurrency(item.quantity)}</td>
-        <td>{formatCurrency(item.totalPrice)}</td>
-        <td>{formatCurrency(item.discountAmount)}</td>
-        <td>{formatCurrency(item.actualSalesAmount)}</td>
-      </S.MenuRow>
-    ));
+    return items.flatMap((item, itemIndex) => {
+      const options = item.optionList ?? [];
+      const menuKey = `menu-${itemIndex}-${item.menuName}`;
+
+      const menuRow = (
+        <S.MenuRow key={menuKey} hasOptions={options.length > 0}>
+          <td>
+            <S.MenuName>
+              {item.localeMenuName?.[currentLanguage] ?? item.menuName}
+            </S.MenuName>
+          </td>
+          <td>{formatCurrency(item.unitPrice)}</td>
+          <td>{formatCurrency(item.quantity)}</td>
+          <td>{formatCurrency(item.totalPrice)}</td>
+          <td>{formatCurrency(item.discountAmount)}</td>
+          <td>{formatCurrency(item.actualSalesAmount)}</td>
+        </S.MenuRow>
+      );
+
+      const optionRows = options.map((option, optIndex) => (
+        <S.OptionRow
+          key={`${menuKey}-opt-${optIndex + 1}-${option.menuName}`}
+          isLast={optIndex === options.length - 1}
+        >
+          <td>
+            <S.OptionMenuName>
+              {option.localeMenuName?.[currentLanguage] ?? option.menuName}
+            </S.OptionMenuName>
+          </td>
+          <td>{formatCurrency(option.unitPrice)}</td>
+          <td>{formatCurrency(option.quantity)}</td>
+          <td>{formatCurrency(option.totalPrice)}</td>
+          <td>{formatCurrency(option.discountAmount)}</td>
+          <td>{formatCurrency(option.actualSalesAmount)}</td>
+        </S.OptionRow>
+      ));
+
+      return [menuRow, ...optionRows];
+    });
   };
 
   return (
-    <UIStyles.setting.Table>
+    <S.StyledTable>
       <UIStyles.setting.Thead>
         <tr>
           <th>{t('메뉴이름')}</th>
@@ -52,6 +74,6 @@ export const Table = ({ items, currentLanguage }: Props) => {
         </tr>
       </UIStyles.setting.Thead>
       <S.Tbody>{renderRows()}</S.Tbody>
-    </UIStyles.setting.Table>
+    </S.StyledTable>
   );
 };

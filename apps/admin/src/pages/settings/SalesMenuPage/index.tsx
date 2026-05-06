@@ -105,7 +105,7 @@ export const SalesMenuPage = () => {
             {t('매출 현황')}
 
             <div />
-            <span>{t('메뉴판매집계')}</span>
+            <span>{t('메뉴별현황')}</span>
           </S.Title>
 
           <S.Filters>
