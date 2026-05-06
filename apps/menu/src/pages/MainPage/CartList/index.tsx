@@ -1,5 +1,5 @@
 ﻿import { createPortal } from 'react-dom';
-import { useState, useMemo } from 'react';
+import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import * as S from '@/pages/MainPage/CartList/cartList.style';
 import { BasicButton, NumberInput } from '@repo/ui/components';
 import { DeleteIcon, EmptedCartIcon } from '@repo/ui/icons';
@@ -7,6 +7,7 @@ import { useThemeMode } from '@repo/ui';
 import {
   openDualActionDialog,
   openConfirmDialog,
+  closeDialog,
   toast,
 } from '@repo/feature/utils';
 import { useCartStore } from '@/stores/useCartStore';
@@ -40,6 +41,25 @@ import { validateCartOrder } from '@/utils/validateCartOrder';
 const TOAST_OPTIONS = {
   position: 'center-center' as const,
   duration: 2000,
+};
+
+// 사용자 액션으로 다이얼로그가 닫힐 때 추적 id만 비움(Global이 closeDialog 호출).
+const clearOrderSubmitDialogTracking = (
+  idRef: RefObject<string | null>
+): void => {
+  idRef.current = null;
+};
+
+// 추적 중인 주문 확인 다이얼로그만 닫고 ref를 비움(다른 전역 다이얼로그는 유지).
+const closeOrderSubmitDialogIfTracked = (
+  idRef: RefObject<string | null>
+): void => {
+  const id = idRef.current;
+  if (id === null) {
+    return;
+  }
+  closeDialog(id);
+  idRef.current = null;
 };
 
 interface Props {
@@ -80,7 +100,15 @@ export const CartList = ({
     clearCart,
   } = useCartStore();
 
-  const { startTimer, clearTimer, remainingSeconds } = useIdleTimeout(onClose);
+  // "메뉴를 주문할까요?" 다이얼로그 id만 보관해 타임아웃·언마운트 시 해당 창만 닫음.
+  const orderSubmitDialogIdRef = useRef<string | null>(null);
+
+  const { startTimer, remainingSeconds } = useIdleTimeout(onClose);
+
+  // 유휴 만료·배경 클릭 등으로 언마운트될 때 남은 주문 확인 창이 있으면 같이 제거.
+  useEffect(() => {
+    return () => closeOrderSubmitDialogIfTracked(orderSubmitDialogIdRef);
+  }, []);
 
   const [selectedMenu, setSelectedMenu] = useState<ICartMenu | null>(null);
   const [selectedMenuIndex, setSelectedMenuIndex] = useState<number | null>(
@@ -108,7 +136,11 @@ export const CartList = ({
         option.optionGroupSeq
       ),
     }));
-    return calculateMenuTotalPrice(cartMenu.menuPrice, cartMenu.quantity, options);
+    return calculateMenuTotalPrice(
+      cartMenu.menuPrice,
+      cartMenu.quantity,
+      options
+    );
   };
 
   // 전체 카트의 총 합계 계산
@@ -155,17 +187,22 @@ export const CartList = ({
       return;
     }
 
-    clearTimer();
+    // 같은 버튼으로 다시 열 때 이전에 남은 주문 확인 창이 있으면 먼저 닫음.
+    closeOrderSubmitDialogIfTracked(orderSubmitDialogIdRef);
 
-    openDualActionDialog({
+    const dialogId = openDualActionDialog({
       title: t('메뉴를 주문할까요?'),
       content: t('주방 접수된 이후에는 취소가 불가능해요.'),
       primaryText: t('주문하기'),
       secondaryText: t('이전으로'),
       onCancel: () => {
+        // 이전으로: GlobalDialog가 닫으므로 추적 id만 정리.
+        clearOrderSubmitDialogTracking(orderSubmitDialogIdRef);
         startTimer();
       },
       onConfirm: async () => {
+        // 주문하기: GlobalDialog가 닫으므로 추적 id만 정리.
+        clearOrderSubmitDialogTracking(orderSubmitDialogIdRef);
         if (!validateCartOrder()) {
           startTimer();
           return;
@@ -254,6 +291,8 @@ export const CartList = ({
         openPaymentsModal();
       },
     });
+    // 방금 연 주문 확인 다이얼로그 id를 저장해 유휴·언마운트 시 closeDialog에 사용.
+    orderSubmitDialogIdRef.current = dialogId;
   };
 
   const hasMenusInCart = cartData.menus.length > 0;
@@ -305,26 +344,27 @@ export const CartList = ({
                       const categoryMenu = menuSeqToCategoryMenuMap.get(
                         menu.menuSeq
                       );
-                      const isIndependent = isOptionGroupIndependentInCategoryMenu(
-                        categoryMenu,
-                        option.optionGroupSeq
-                      );
+                      const isIndependent =
+                        isOptionGroupIndependentInCategoryMenu(
+                          categoryMenu,
+                          option.optionGroupSeq
+                        );
                       const displayQty = isIndependent
                         ? option.quantity
                         : option.quantity * menu.quantity;
                       const displayPrice = option.optionPrice * displayQty;
                       return (
-                      <S.OptionItem key={option.optionSeq}>
-                        <p>
-                          <span />
-                          {option.localeOptionName?.[currentLanguage] ??
-                            option.optionName}
-                        </p>
-                        <div>
-                          <p>{formatCurrency(displayQty)}</p>
-                          <p>₩{formatCurrency(displayPrice)}</p>
-                        </div>
-                      </S.OptionItem>
+                        <S.OptionItem key={option.optionSeq}>
+                          <p>
+                            <span />
+                            {option.localeOptionName?.[currentLanguage] ??
+                              option.optionName}
+                          </p>
+                          <div>
+                            <p>{formatCurrency(displayQty)}</p>
+                            <p>₩{formatCurrency(displayPrice)}</p>
+                          </div>
+                        </S.OptionItem>
                       );
                     })}
                     <S.OptionButtonContainer>
