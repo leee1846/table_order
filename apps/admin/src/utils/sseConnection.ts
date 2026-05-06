@@ -33,3 +33,10 @@ export const initializeSseConnection = async () => {
 export const disconnectSse = () => {
   useSSE.disconnectSSE(SSE_KEYS.MAIN_CONNECTION);
 };
+
+/**
+ * 네트워크 복구 시 SSE 재연결 트리거
+ */
+export const reconnectSseOnNetworkRecovery = () => {
+  useSSE.reconnectSSEOnNetworkRecovery(SSE_KEYS.MAIN_CONNECTION);
+};

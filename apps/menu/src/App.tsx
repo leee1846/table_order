@@ -5,6 +5,7 @@ import { SystemControl } from '@repo/util/app';
 import { useSSEHandler } from '@/hooks/useSSEHandler';
 import { useSystemStatusMonitor } from '@/hooks/useSystemStatusMonitor';
 import { useNetworkRecoveryRefresh } from '@/hooks/useNetworkRecoveryRefresh';
+import { reconnectSseOnNetworkRecovery } from '@/utils/sseConnection';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { PosSyncOverlayModal } from '@/feature/PosSyncOverlayModal';
 import { MenuGlobalLoadingIndicator } from '@/feature/MenuGlobalLoadingIndicator';
@@ -14,7 +15,10 @@ const AppContent = () => {
   // 네트워크 복구 시 현재 페이지 GET API 재요청 후 에러 다이얼로그 자동 닫기
   const { refreshAllAndCloseDialogOnSuccess } = useNetworkRecoveryRefresh();
   useSystemStatusMonitor({
-    onNetworkRecovered: refreshAllAndCloseDialogOnSuccess,
+    onNetworkRecovered: async () => {
+      await refreshAllAndCloseDialogOnSuccess();
+      reconnectSseOnNetworkRecovery();
+    },
   });
   useSSEHandler();
 

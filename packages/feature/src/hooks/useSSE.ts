@@ -424,6 +424,52 @@ export const useSSEData = <T = unknown>(key: string) => {
 };
 
 /**
+ * 네트워크 복구 시 SSE 재연결을 트리거하는 함수
+ *
+ * - 이미 연결된 경우 무시 (이중 연결 방지)
+ * - 기존 타이머(2초/30초) 및 오류 팝업을 즉시 정리
+ * - isReconnecting = true 설정으로 loading UI 표시
+ * - reconnectAttempts = 0 리셋으로 기존 onerror 재연결 흐름(5회 → 팝업)에 합류
+ * - 성공 시 onopen이 타이머·팝업·loading UI를 모두 정리 (기존 로직 그대로)
+ * - 실패 시 onerror 재연결 로직이 기존과 동일하게 동작
+ */
+export const reconnectSSEOnNetworkRecovery = (key: string): void => {
+  const state = sseConnectionMap.get(key);
+  if (!state || !state.url) {
+    return;
+  }
+
+  // 이미 연결되어 있으면 무시
+  if (state.eventSource) {
+    return;
+  }
+
+  // 기존 재연결 타이머(2초) 정리
+  if (state.reconnectTimeoutId) {
+    clearTimeout(state.reconnectTimeoutId);
+    state.reconnectTimeoutId = null;
+  }
+  // 다이얼로그 노출 중 30초 타이머 정리
+  if (state.retryAfterDialogTimeoutId) {
+    clearTimeout(state.retryAfterDialogTimeoutId);
+    state.retryAfterDialogTimeoutId = null;
+  }
+  // 오류 팝업 즉시 닫기
+  if (state.connectionErrorDialogId) {
+    closeDialog(state.connectionErrorDialogId);
+    state.connectionErrorDialogId = null;
+  }
+
+  // loading UI 표시 및 재시도 카운트 초기화
+  state.isReconnecting = true;
+  state.reconnectAttempts = 0;
+  state.setIsReconnectingCallbacks.forEach((cb) => cb(true));
+  notifyReconnectingChange();
+
+  connectSSE(key, state.url);
+};
+
+/**
  * 모든 SSE 연결의 재연결 상태를 구독하는 Hook
  * @returns 재연결 중인 SSE 연결이 하나라도 있으면 true
  */
