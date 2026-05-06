@@ -32,6 +32,8 @@ export const AdminMyPage = () => {
   const [newPasswordError, setNewPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
+  const versionEnv = import.meta.env.VITE_APP_VERSION_ENV;
+
   // 비밀번호 표시/숨김 토글 컴포넌트
   const renderPasswordVisibilityToggle = (
     isVisible: boolean,
@@ -191,7 +193,11 @@ export const AdminMyPage = () => {
           </S.TokenInfoItem>
           <S.TokenInfoItem>
             <S.TokenInfoKey>버전</S.TokenInfoKey>
-            <S.TokenInfoValue>{__APP_VERSION__}</S.TokenInfoValue>
+            <S.TokenInfoValue>
+              {versionEnv
+                ? `${__APP_VERSION__} (${versionEnv})`
+                : __APP_VERSION__}
+            </S.TokenInfoValue>
           </S.TokenInfoItem>
         </S.TokenInfoGrid>
       </S.TokenInfoCard>
