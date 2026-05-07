@@ -19,6 +19,7 @@ import { LoginPasswordChangeModal } from './LoginPasswordChangeModal';
 import { rawApi } from '@/config/rawApi';
 import type { IApiError } from '@repo/api/types';
 import type { AxiosError } from '@repo/api/axios';
+import { useRemoteSupport } from '@repo/feature/hooks';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [idErrorMessage, setIdErrorMessage] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+  const { isRemoteSupportVisible, openRemoteSupport } = useRemoteSupport(t);
 
   // 비밀번호 표시/숨김 상태
   const [passwordInputType, setPasswordInputType] = useState<
@@ -236,13 +238,24 @@ export const LoginPage = () => {
               errorMessage={passwordErrorMessage}
             />
           </div>
-          <BasicButton
-            variant="Solid_Navy_XL"
-            customStyle={S.buttonCss}
-            onClick={handleLogin}
-          >
-            {t('로그인')}
-          </BasicButton>
+          <S.ButtonContainer>
+            <BasicButton
+              variant="Solid_Navy_XL"
+              customStyle={S.buttonCss}
+              onClick={handleLogin}
+            >
+              {t('로그인')}
+            </BasicButton>
+            {isRemoteSupportVisible && (
+              <BasicButton
+                variant="Solid_Navy_XL"
+                customStyle={S.buttonCss}
+                onClick={() => void openRemoteSupport()}
+              >
+                {t('원격지원')}
+              </BasicButton>
+            )}
+          </S.ButtonContainer>
         </S.LoginContainer>
       </S.Container>
 

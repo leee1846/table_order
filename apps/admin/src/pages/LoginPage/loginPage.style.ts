@@ -33,3 +33,8 @@ export const InputTitle = styled.span`
   color: ${theme.colors.grey[800]};
   ${TYPOGRAPHY.BD_3}
 `;
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  gap: 10px;
+`;

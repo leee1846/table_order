@@ -3,10 +3,12 @@ import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
+import { useRemoteSupport } from '@repo/feature/hooks';
 
 export const Sidebar = () => {
   const navigate = useNavigate();
   const { t } = useAdminTranslation();
+  const { isRemoteSupportVisible, openRemoteSupport } = useRemoteSupport(t);
 
   const { data: shopPageSettingData } = useShopThemePage();
 
@@ -27,6 +29,14 @@ export const Sidebar = () => {
         <CommonStyles.MenuItem isSelected={false} onClick={onClickManagement}>
           {t('관리')}
         </CommonStyles.MenuItem>
+        {isRemoteSupportVisible && (
+          <CommonStyles.MenuItem
+            isSelected={false}
+            onClick={() => void openRemoteSupport()}
+          >
+            {t('원격지원')}
+          </CommonStyles.MenuItem>
+        )}
       </CommonStyles.MenuList>
     </CommonStyles.SidebarContainer>
   );
