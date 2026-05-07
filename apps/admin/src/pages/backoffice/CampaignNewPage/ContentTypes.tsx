@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs, type TabsProps } from 'antd';
 import styled from '@emotion/styled';
-import UploadContent, { type UploadedFile } from './UploadContent';
+import UploadContent, { type UploadedFile } from './ContentTypes/UploadContent';
 import AdMenuContent, {
   type AdMenuContentProps,
 } from './ContentTypes/AdMenuContent';

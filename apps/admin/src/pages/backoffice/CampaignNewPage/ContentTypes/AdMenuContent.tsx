@@ -6,9 +6,9 @@ import {
   HolderOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
-import AdMenuAddModal, { type adMenuData } from '../AdMenuAddModal';
+import AdMenuAddModal, { type adMenuData } from './AdMenuAddModal';
 import { useListDragAndDrop } from '../useDragAndDrop';
-import { NumberBadge } from '../UploadContent';
+import { NumberBadge } from './UploadContent';
 import { formatFileSizeKbToMb } from '../index';
 
 const { Text } = Typography;

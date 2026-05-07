@@ -108,6 +108,8 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
 }) => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState<number | ''>('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const isEditing = (record: CampaignShopData) => record.shopSeq === editingKey;
 
@@ -242,7 +244,20 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
           <StyledTable
             columns={columns}
             dataSource={schedules}
-            pagination={false}
+            pagination={{
+              current: currentPage,
+              pageSize,
+              total: schedules.length,
+              showTotal: (total) => `총 ${total}건`,
+              placement: ['bottomEnd'],
+              showSizeChanger: true,
+              onChange: (page, size) => {
+                setCurrentPage(page);
+                if (size) {
+                  setPageSize(size);
+                }
+              },
+            }}
             rowKey="shopSeq"
             size="middle"
           />

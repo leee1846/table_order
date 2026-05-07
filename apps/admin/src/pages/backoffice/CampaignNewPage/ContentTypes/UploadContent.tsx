@@ -6,7 +6,7 @@ import {
   InboxOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
-import { formatFileSizeKbToMb } from './index';
+import { formatFileSizeKbToMb } from '../index';
 
 const { Text } = Typography;
 const { Dragger } = Upload;

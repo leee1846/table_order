@@ -14,7 +14,7 @@ import styled from '@emotion/styled';
 import { useGetMenuGroupList } from '@repo/api/queries';
 import type { IMenuGroup } from '@repo/api/types';
 import { IMAGE_DIMENSIONS } from './UploadContent';
-import type { MenuItem } from './ContentTypes/AdMenuContent';
+import type { MenuItem } from './AdMenuContent';
 
 const { Text } = Typography;
 const { TextArea } = Input;

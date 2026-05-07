@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Divider, Radio } from 'antd';
 import styled from '@emotion/styled';
-import UploadContent, { type UploadedFile } from '../UploadContent';
+import UploadContent, { type UploadedFile } from './UploadContent';
 import { useListDragAndDrop } from '../useDragAndDrop';
 
 const { Title, Text } = Typography;

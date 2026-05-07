@@ -10,7 +10,7 @@ import PageTitle from '@/feature/backoffice/components/PageTitle';
 import ConfirmAndSave, { type CampaignSummaryData } from './ConfirmAndSave';
 import BasicInfoForm from './BasicInfoForm';
 import { type MenuItem } from './ContentTypes/AdMenuContent';
-import type { UploadedFile } from './UploadContent';
+import type { UploadedFile } from './ContentTypes/UploadContent';
 import CampaignSchedule from './CampaignSchedule';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
