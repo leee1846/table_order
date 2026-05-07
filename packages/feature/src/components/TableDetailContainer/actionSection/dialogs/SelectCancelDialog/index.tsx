@@ -144,10 +144,18 @@ export const SelectCancelDialog = ({
               const isChecked = selectedItems.has(item.id);
               const quantity = quantities.get(item.id) ?? item.qty;
               const menuQty = item.qty;
-              const optionQtyForCancel = (optionQty: number) =>
+              const optionQtyForDependent = (optionQty: number) =>
                 menuQty > 0
                   ? Math.round((optionQty * quantity) / menuQty)
                   : optionQty;
+
+              const visibleOptions =
+                item.options?.filter((option) => {
+                  if (option.isMenuQuantityIndependent === true) {
+                    return menuQty > 0 && quantity === menuQty;
+                  }
+                  return true;
+                }) ?? [];
 
               return (
                 <S.ItemGrid key={`${item.id}-${index + 1}`}>
@@ -178,30 +186,34 @@ export const SelectCancelDialog = ({
                     <NumberInput
                       variant="square"
                       value={quantity}
-                      min={0}
+                      min={1}
                       max={item.qty}
                       disabled={!isChecked}
-                      onChange={(value) =>
-                        handleQuantityChange(item.id, value)
-                      }
+                      onChange={(value) => handleQuantityChange(item.id, value)}
                       customStyle={css`
                         ${TYPOGRAPHY.MT_6}
                         width: 8.75rem;
                       `}
                     />
                   </S.QuantityWrapper>
-                  {item.options && item.options.length > 0 && (
+                  {visibleOptions.length > 0 && (
                     <S.ItemOptions>
-                      {item.options.map((option, optIndex) => (
-                        <div key={`${option.id}-${optIndex.toString()}`}>
-                          <span>
-                            {option.localeOptionName?.[currentLanguage] ??
-                              option.name}
-                          </span>
-                          <span>{` x `}</span>
-                          <span>{optionQtyForCancel(option.qty)}</span>
-                        </div>
-                      ))}
+                      {visibleOptions.map((option, optIndex) => {
+                        const displayQty = option.isMenuQuantityIndependent
+                          ? option.qty
+                          : optionQtyForDependent(option.qty);
+
+                        return (
+                          <div key={`${option.id}-${optIndex.toString()}`}>
+                            <span>
+                              {option.localeOptionName?.[currentLanguage] ??
+                                option.name}
+                            </span>
+                            <span>{` x `}</span>
+                            <span>{displayQty}</span>
+                          </div>
+                        );
+                      })}
                     </S.ItemOptions>
                   )}
                 </S.ItemGrid>

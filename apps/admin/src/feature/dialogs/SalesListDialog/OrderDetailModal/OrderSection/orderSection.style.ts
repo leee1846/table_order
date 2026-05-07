@@ -56,6 +56,10 @@ export const MenuItem = styled.div`
     ${TYPOGRAPHY.MT_9}
     color: ${theme.colors.grey[800]};
   }
+
+  &[data-canceled='true'] > p {
+    color: ${theme.colors.semantic[500]};
+  }
   & > p:first-of-type {
     width: 70%;
   }
@@ -87,6 +91,15 @@ export const OptionItem = styled.li`
       border-bottom: 1.2px solid ${theme.colors.grey[500]};
       margin: 0 4px 4px 0;
     }
+  }
+
+  &[data-canceled='true'] > p {
+    color: ${theme.colors.semantic[500]};
+  }
+
+  &[data-canceled='true'] > p > span {
+    border-left: 1.25px solid ${theme.colors.semantic[500]};
+    border-bottom: 1.2px solid ${theme.colors.semantic[500]};
   }
   & > p:first-of-type {
     width: 70%;

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+﻿import { useEffect, useMemo } from 'react';
 import { BasicButton, ModalBackground } from '@repo/ui/components';
 import * as S from '@/pages/MainPage/PaymentsModal/paymentsModal.style';
 import {
@@ -22,9 +22,13 @@ import { useModalStore } from '@/stores/useModalStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useCartStore } from '@/stores/useCartStore';
 import { useShopStore } from '@/stores/useShopStore';
-import { calculateMenuTotalPrice } from '@/utils/calculation';
-import type { ICartMenu } from '@/types/cart';
+import {
+  buildMenuSeqToCategoryMenuMap,
+  calculateMenuTotalPrice,
+  isOptionGroupIndependentInCategoryMenu,
+} from '@/utils/calculation';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 import type { ICancelOrderMenuRequest, IOrder } from '@repo/api/types';
 // import { usePutCancelOrderMenu } from '@repo/api/queries';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
@@ -78,28 +82,31 @@ export const PaymentsModal = ({
     !!shopDetailData?.shopSetting?.shopPosCode &&
     shopDetailData?.shopSetting?.shopPosCode !== 'NONE';
 
-  // 카트 메뉴의 총 가격 계산
-  const calculateCartMenuPrice = (cartMenu: ICartMenu): number => {
-    const options = cartMenu.selectedOptions.map((option) => ({
-      optionPrice: option.optionPrice,
-      quantity: option.quantity,
-    }));
+  const categories = useCategoryStore((s) => s.data.categories);
 
-    return calculateMenuTotalPrice(
-      cartMenu.menuPrice,
-      cartMenu.quantity,
-      options
-    );
-  };
+  // menuSeq → 카테고리 메뉴 맵 (isMenuQuantityIndependent 조회용, categories 변경 시에만 재빌드)
+  const menuSeqToCategoryMenuMap = useMemo(
+    () => buildMenuSeqToCategoryMenuMap(categories),
+    [categories]
+  );
 
-  // 전체 카트의 총 합계 계산
-  const calculateTotalPrice = (): number => {
-    return cartData.menus.reduce((total, menu) => {
-      return total + calculateCartMenuPrice(menu);
-    }, 0);
-  };
-
-  const totalPrice = calculateTotalPrice();
+  // 전체 카트의 총 합계 계산 (isMenuQuantityIndependent 옵션 수량 보정 포함)
+  const totalPrice = useMemo(
+    () =>
+      cartData.menus.reduce((total, menu) => {
+        const categoryMenu = menuSeqToCategoryMenuMap.get(menu.menuSeq);
+        const options = menu.selectedOptions.map((option) => ({
+          optionPrice: option.optionPrice,
+          quantity: option.quantity,
+          isMenuQuantityIndependent: isOptionGroupIndependentInCategoryMenu(
+            categoryMenu,
+            option.optionGroupSeq
+          ),
+        }));
+        return total + calculateMenuTotalPrice(menu.menuPrice, menu.quantity, options);
+      }, 0),
+    [cartData.menus, menuSeqToCategoryMenuMap]
+  );
 
   const onClickNext = () => {
     if (selectedPaymentMethod === null) {

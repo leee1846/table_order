@@ -96,13 +96,15 @@ export const MenuList = styled.div`
 
 export const MenuItem = styled.div`
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr;
+  grid-template-columns: minmax(0, 2fr) 0.5fr 1fr;
   align-items: center;
   padding: 8px;
   ${TYPOGRAPHY.ST_2}
 `;
 
 export const MenuName = styled.div`
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;
@@ -117,7 +119,7 @@ export const MenuPrice = styled.div<{ isOption?: boolean }>`
 
 export const OptionItem = styled.div<{ isOption?: boolean }>`
   display: grid;
-  grid-template-columns: 7fr 1fr 1fr;
+  grid-template-columns: minmax(0, 4fr) 0.5fr 1fr;
   align-items: center;
   ${TYPOGRAPHY.ST_4}
   color: ${colors.grey[500]};
@@ -125,6 +127,8 @@ export const OptionItem = styled.div<{ isOption?: boolean }>`
 `;
 
 export const OptionName = styled.div`
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;

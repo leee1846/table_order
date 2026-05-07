@@ -17,6 +17,16 @@ export interface ISalesSummary {
   dailySales: IDailySalesSummary[];
 }
 
+export interface IMenuSalesSummaryOptionItem {
+  menuName: string;
+  localeMenuName?: Record<string, string> | null;
+  unitPrice: number;
+  quantity: number;
+  totalPrice: number;
+  actualSalesAmount: number;
+  discountAmount: number;
+}
+
 export interface IMenuSalesSummaryItem {
   menuName: string;
   localeMenuName?: Record<string, string> | null;
@@ -25,6 +35,7 @@ export interface IMenuSalesSummaryItem {
   totalPrice: number;
   actualSalesAmount: number;
   discountAmount: number;
+  optionList: IMenuSalesSummaryOptionItem[];
 }
 
 export interface IMenuSalesSummary {

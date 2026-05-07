@@ -113,25 +113,32 @@ export const MenuSelectionView = ({
                       </S.ItemHeader>
                       {item.selectedOptions.length > 0 && (
                         <S.SelectedOptionsContainer>
-                          {item.selectedOptions.map((option) => (
-                            <S.SelectedOptionItem key={option.optionSeq}>
-                              <S.OptionItemName>{`ㄴ\u2060${labelForLanguage(
-                                option.localeOptionName,
-                                currentLanguage,
-                                option.optionName
-                              )}`}</S.OptionItemName>
-                              <S.OptionItemMeta>
-                                <S.OptionItemPrice>
-                                  ₩
-                                  {formatCurrency(
-                                    option.optionPrice *
-                                      option.selectedQuantity *
-                                      item.quantity
-                                  )}
-                                </S.OptionItemPrice>
-                              </S.OptionItemMeta>
-                            </S.SelectedOptionItem>
-                          ))}
+                          {item.selectedOptions.map((option) => {
+                            // isMenuQuantityIndependent=true: 메뉴 수량 곱셈 없이 옵션 수량 고정
+                            const effectiveMultiplier =
+                              option.isMenuQuantityIndependent
+                                ? 1
+                                : item.quantity;
+                            // 실제 주문되는 옵션 수량 (독립: selectedQuantity, 연동: selectedQuantity × 메뉴수량)
+                            const displayQuantity =
+                              option.selectedQuantity * effectiveMultiplier;
+                            const optionTotalPrice =
+                              option.optionPrice * displayQuantity;
+
+                            return (
+                              <S.SelectedOptionItem key={option.optionSeq}>
+                                <S.OptionCellName>{`ㄴ${labelForLanguage(
+                                  option.localeOptionName,
+                                  currentLanguage,
+                                  option.optionName
+                                )}`}</S.OptionCellName>
+                                <S.OptionCellQty>{displayQuantity}</S.OptionCellQty>
+                                <S.OptionCellPrice>
+                                  ₩{formatCurrency(optionTotalPrice)}
+                                </S.OptionCellPrice>
+                              </S.SelectedOptionItem>
+                            );
+                          })}
                         </S.SelectedOptionsContainer>
                       )}
                       <S.ItemActions>

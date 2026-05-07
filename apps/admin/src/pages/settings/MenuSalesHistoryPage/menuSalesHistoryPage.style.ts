@@ -176,9 +176,12 @@ export const HeaderLabel = styled.div`
 `;
 
 export const EmptyRow = styled.tr`
-  td {
-    padding: 16px 0;
+  & > td {
+    grid-column: 1 / -1;
+    padding: 16px 0 !important;
+    padding-left: 0 !important;
     text-align: center !important;
+    display: block;
     ${TYPOGRAPHY.ST_3}
     color: ${theme.colors.grey[500]};
   }
@@ -199,46 +202,48 @@ export const TableRow = styled.tr<{ isOption?: boolean }>`
     `
     & > td {
       color: ${theme.colors.grey[500]} !important;
-      font-size : 13px !important;
-      >span{
-        font-size : 13px !important;
-        padding-left: 10px !important;      
-      }
-        &:last-child{
-          padding-right: 5px !important;
-        }
+      font-size: 13px !important;
+    }
+    & > td > span {
+      font-size: 13px !important;
     }
   `}
-
-  & > td:first-of-type {
-    padding-left: ${({ isOption }) => (isOption ? '5px' : '0')};
-  }
 `;
 
 export const MenuName = styled.span<{ isOption?: boolean }>`
   ${({ isOption }) => (isOption ? TYPOGRAPHY.ST_5 : TYPOGRAPHY.ST_4)}
+  display: block;
+  min-width: 0;
+  text-align: left;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+  ${({ isOption }) => isOption && `padding-left: 10px;`}
 `;
 
 export const StyledTable = styled(UIStyles.setting.Table)`
-  thead {
-    & > tr > th:first-of-type {
-      flex: 2;
-      text-align: left;
-      padding-left: 20px;
-    }
-    & > tr > th:not(:first-of-type) {
-      flex: 1;
-    }
+  thead > tr,
+  tbody > tr {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+    column-gap: 6px;
+    width: 100%;
+    align-items: center;
+    box-sizing: border-box;
   }
 
-  tbody {
-    & > tr > td:first-of-type {
-      flex: 2;
-      padding-left: 20px;
-      text-align: left;
-    }
-    & > tr > td:not(:first-of-type) {
-      flex: 1;
-    }
+  thead > tr > th:first-of-type,
+  tbody > tr > td:first-of-type {
+    text-align: left;
+    padding-left: 20px;
+    min-width: 0;
+  }
+
+  thead > tr > th:not(:first-of-type),
+  tbody > tr > td:not(:first-of-type) {
+    min-width: 0;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 `;

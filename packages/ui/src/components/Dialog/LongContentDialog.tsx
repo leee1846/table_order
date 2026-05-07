@@ -72,6 +72,7 @@ const Container = styled.div<{ size?: DialogSize; isMenu: boolean }>`
   border: 1px solid
     ${({ theme, isMenu }) =>
       isMenu ? theme.mode.undefined_palette[1000] : 'none'};
+  outline: none;
 `;
 
 const Title = styled.h2<{ isMenu: boolean }>`

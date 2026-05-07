@@ -33,3 +33,15 @@ export interface IPaginationParams {
   pageSize: number;
   searchWord: string;
 }
+
+export interface IMenuImageListItem {
+  categorySeq: number;
+  categoryName: string;
+  menuSeq: number;
+  menuName: string;
+  imageName: string | null;
+  imagePath: string | null;
+  imageExtension: string | null;
+}
+
+export type TGetMenuBulkImageListResponse = IApiResponse<IMenuImageListItem[]>;

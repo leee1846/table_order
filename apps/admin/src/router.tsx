@@ -418,7 +418,7 @@ const createSettingsRoutes = () => [
         loader: requireNativeLoader,
       },
       {
-        path: ROUTES.SETTINGS.SALES.MENU.path, //메뉴판매집계(앱)
+        path: ROUTES.SETTINGS.SALES.MENU.path, //메뉴별현황(앱)
         element: <SalesMenuPage />,
         loader: requireNativeLoader,
       },

@@ -1,4 +1,4 @@
-import { createPortal } from 'react-dom';
+﻿import { createPortal } from 'react-dom';
 import { useState, useMemo } from 'react';
 import { css } from '@emotion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -425,12 +425,18 @@ export const MenuDetailWithOptionsModal = ({
   };
 
   const totalPrice = useMemo(() => {
-    const options = Array.from(selectedOptions.values()).map((item) => ({
-      optionPrice: item.option.optionPrice,
-      quantity: item.quantity,
-    }));
+    const options = Array.from(selectedOptions.values()).map((item) => {
+      const group = menu.optionGroupList.find(
+        (g) => g.optionGroupSeq === item.option.optionGroupSeq
+      );
+      return {
+        optionPrice: item.option.optionPrice,
+        quantity: item.quantity,
+        isMenuQuantityIndependent: group?.isMenuQuantityIndependent ?? false,
+      };
+    });
     return calculateMenuTotalPrice(menu.menuPrice, menuQuantity, options);
-  }, [selectedOptions, menu.menuPrice, menuQuantity]);
+  }, [selectedOptions, menu.menuPrice, menuQuantity, menu.optionGroupList]);
 
   const buildOptionGroupTitle = (group: IOptionGroup): React.ReactNode => {
     const name = getLocalizedGroupName(group, languageData.currentLanguage);

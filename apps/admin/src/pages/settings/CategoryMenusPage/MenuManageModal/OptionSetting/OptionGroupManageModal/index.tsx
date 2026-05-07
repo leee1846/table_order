@@ -1,4 +1,4 @@
-import { t } from '@/config/i18n';
+﻿import { t } from '@/config/i18n';
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { theme } from '@repo/ui';
 import {
@@ -30,6 +30,7 @@ interface OptionGroupSettings {
   maxQuantity: number;
   isOptionQuantitySelectable: boolean;
   isMultipleSelectable: boolean;
+  isMenuQuantityIndependent: boolean;
 }
 
 interface Props {
@@ -45,6 +46,7 @@ const DEFAULT_SETTINGS: OptionGroupSettings = {
   maxQuantity: 0,
   isOptionQuantitySelectable: false,
   isMultipleSelectable: false,
+  isMenuQuantityIndependent: false,
 };
 
 const createEmptyOption = (): ICreateOption => ({
@@ -149,6 +151,8 @@ export const OptionGroupManageModal = ({
         isOptionQuantitySelectable:
           existingOptionGroup.isOptionQuantitySelectable,
         isMultipleSelectable: existingOptionGroup.isMultipleSelectable,
+        isMenuQuantityIndependent:
+          existingOptionGroup.isMenuQuantityIndependent ?? false,
       });
 
       const convertedOptions: IUpdateOption[] =
@@ -249,6 +253,7 @@ export const OptionGroupManageModal = ({
     maxQuantity: settings.maxQuantity,
     isMultipleSelectable: settings.isMultipleSelectable,
     isOptionQuantitySelectable: settings.isOptionQuantitySelectable,
+    isMenuQuantityIndependent: settings.isMenuQuantityIndependent,
   });
 
   const handleDeleteOption = (optionSeq: number | null, index: number) => {
@@ -698,6 +703,16 @@ export const OptionGroupManageModal = ({
                 customStyle={S.checkButtonCss}
               >
                 <span>{t('중복체크 허용 (선택 옵션)')}</span>
+              </CheckButton>
+
+              <CheckButton
+                checked={settings.isMenuQuantityIndependent}
+                onChange={(checked) =>
+                  updateSettings({ isMenuQuantityIndependent: checked })
+                }
+                customStyle={S.checkButtonCss}
+              >
+                <span>{t('옵션 수량 고정')}</span>
               </CheckButton>
             </S.AdditionalsContainer>
           </S.TitleContainer>

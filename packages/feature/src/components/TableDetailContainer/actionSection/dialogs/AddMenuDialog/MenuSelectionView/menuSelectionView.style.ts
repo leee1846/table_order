@@ -191,31 +191,32 @@ export const SelectedOptionsContainer = styled.div`
   gap: 6px;
 `;
 
+/** OrderItemsTable의 option-row와 동일한 3컬럼 그리드 구조 (name | qty | price) */
 export const SelectedOptionItem = styled.div`
-  padding-left: 12px;
-  display: block;
-  min-width: 0;
-  direction: ltr;
-  text-align: start;
-  overflow-wrap: break-word;
-  word-break: break-word;
-`;
-
-export const OptionItemName = styled.span`
-  display: inline;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   ${TYPOGRAPHY.ST_4}
   color: ${colors.grey[500]};
+  line-height: 1;
 `;
 
-export const OptionItemMeta = styled.span`
-  display: inline;
+export const OptionCellName = styled.div`
+  padding: 8px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  margin-left: 0.25em;
 `;
 
-export const OptionItemPrice = styled.span`
-  ${TYPOGRAPHY.ST_5}
-  color: ${colors.grey[600]};
+export const OptionCellQty = styled.div`
+  padding: 8px;
+  white-space: nowrap;
+`;
+
+export const OptionCellPrice = styled.div`
+  padding: 8px;
+  white-space: nowrap;
+  text-align: right;
 `;
 
 export const ItemActions = styled.div`

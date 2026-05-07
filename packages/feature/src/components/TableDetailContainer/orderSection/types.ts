@@ -5,6 +5,8 @@ export interface OrderItemOption {
   name: string;
   qty: number;
   unitPrice: number;
+  /** true면 메뉴 수량과 무관한 옵션(주문 시 메뉴 수량으로 곱해지지 않음) */
+  isMenuQuantityIndependent?: boolean;
   localeOptionName?: Record<string, string>;
 }
 

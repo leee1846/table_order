@@ -11,6 +11,11 @@ interface MenuPriceItem {
 interface SelectedOptionPrice {
   optionPrice: number;
   selectedQuantity: number;
+  /**
+   * true: 옵션 가격이 메뉴 수량과 무관하게 고정됨 (isMenuQuantityIndependent)
+   * false/undefined: 옵션 가격에 메뉴 수량 곱셈 적용 (기본 동작)
+   */
+  isMenuQuantityIndependent?: boolean;
 }
 
 /**
@@ -47,10 +52,26 @@ export const calculateTotalAmount = <T extends MenuItemForCalculation>(
   selectedMenus: T[]
 ): number => {
   return selectedMenus.reduce((sum, item) => {
-    const optionTotal = item.selectedOptions.reduce(
-      (optSum, opt) => optSum + opt.optionPrice * opt.selectedQuantity,
+    // 메뉴 수량에 연동되는 옵션: (메뉴 가격 + 옵션 가격 합계) × 메뉴 수량
+    const dependentOptionTotal = item.selectedOptions.reduce(
+      (optSum, opt) =>
+        opt.isMenuQuantityIndependent
+          ? optSum
+          : optSum + opt.optionPrice * opt.selectedQuantity,
       0
     );
-    return sum + (item.menu.menuPrice + optionTotal) * item.quantity;
+    // 메뉴 수량과 무관한 옵션: 옵션 가격 합계 (메뉴 수량 곱셈 없음)
+    const independentOptionTotal = item.selectedOptions.reduce(
+      (optSum, opt) =>
+        opt.isMenuQuantityIndependent
+          ? optSum + opt.optionPrice * opt.selectedQuantity
+          : optSum,
+      0
+    );
+    return (
+      sum +
+      (item.menu.menuPrice + dependentOptionTotal) * item.quantity +
+      independentOptionTotal
+    );
   }, 0);
 };

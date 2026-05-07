@@ -249,6 +249,8 @@ export const TableDetailContainer = ({
                 name: option.optionName,
                 qty: option.optionQuantity,
                 unitPrice: option.optionPrice,
+                isMenuQuantityIndependent:
+                  option.isMenuQuantityIndependent ?? false,
                 localeOptionName: option.localeOptionName,
               }))
             : undefined;

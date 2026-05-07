@@ -7,6 +7,7 @@ import { useSSEHandler } from './hooks/useSSEHandler';
 import { useSystemStatusMonitor } from './hooks/useSystemStatusMonitor';
 import { AdminGlobalLoadingIndicator } from './feature/AdminGlobalLoadingIndicator';
 import { closeNetworkErrorDialogAndClearState } from './config/QueryProvider';
+import { reconnectSseOnNetworkRecovery } from './utils/sseConnection';
 
 const App = () => {
   const { tableNum } = useParams();
@@ -39,6 +40,8 @@ const App = () => {
     if (!hasActiveNetworkErrors) {
       closeNetworkErrorDialogAndClearState();
     }
+
+    reconnectSseOnNetworkRecovery();
   }, [queryClient]);
 
   useSSEHandler(tableNum);

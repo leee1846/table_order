@@ -1,4 +1,4 @@
-import { toast } from '@repo/feature/utils';
+﻿import { toast } from '@repo/feature/utils';
 import customerI18n from '@/config/i18n/customer.i18n';
 import { useCartStore } from '@/stores/useCartStore';
 import { useCategoryStore } from '@/stores/useCategoryStore';
@@ -6,7 +6,11 @@ import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableOrderHistoriesStore } from '@/stores/useTableOrderHistoriesStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import type { ICartMenu } from '@/types/cart';
-import { calculateMenuTotalPrice } from '@/utils/calculation';
+import {
+  buildMenuSeqToCategoryMenuMap,
+  calculateMenuTotalPrice,
+  isOptionGroupIndependentInCategoryMenu,
+} from '@/utils/calculation';
 import { formatCurrency } from '@repo/util/string';
 
 const DEFAULT_TOAST = {
@@ -25,10 +29,17 @@ export function hasTableOrderHistory(): boolean {
 }
 
 function cartMenusTotalAmount(menus: ICartMenu[]): number {
+  const visibleCategories = useCategoryStore.getState().data.visibleCategories;
+  const menuSeqToCategoryMenuMap = buildMenuSeqToCategoryMenuMap(visibleCategories);
   return menus.reduce((total, menu) => {
+    const categoryMenu = menuSeqToCategoryMenuMap.get(menu.menuSeq);
     const options = menu.selectedOptions.map((option) => ({
       optionPrice: option.optionPrice,
       quantity: option.quantity,
+      isMenuQuantityIndependent: isOptionGroupIndependentInCategoryMenu(
+        categoryMenu,
+        option.optionGroupSeq
+      ),
     }));
     return (
       total + calculateMenuTotalPrice(menu.menuPrice, menu.quantity, options)

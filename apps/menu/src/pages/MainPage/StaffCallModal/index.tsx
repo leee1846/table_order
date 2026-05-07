@@ -4,13 +4,14 @@ import { CloseIcon, DeleteIcon } from '@repo/ui/icons';
 import { css } from '@emotion/react';
 import { TYPOGRAPHY, useThemeMode } from '@repo/ui';
 import type { IApiError, ICategoryWithMenus, IMenuBase } from '@repo/api/types';
-import { useState, useEffect } from 'react';
+import { type RefObject, useState, useEffect, useRef } from 'react';
 import type { ICartMenu } from '@/types/cart';
 import { usePostTableOrder } from '@repo/api/queries';
 import {
   toast,
   openDualActionDialog,
   openConfirmDialog,
+  closeDialog,
 } from '@repo/feature/utils';
 import { usePosOrderStore } from '@repo/feature/stores';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
@@ -28,6 +29,25 @@ import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
 import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
 import type { AxiosError } from '@repo/api/axios';
 
+// 사용자 액션으로 다이얼로그가 닫힐 때 추적 id만 비움(Global이 closeDialog 호출).
+const clearStaffRequestConfirmDialogTracking = (
+  idRef: RefObject<string | null>
+): void => {
+  idRef.current = null;
+};
+
+// 추적 중인 직원 요청 확인 dual 다이얼로그만 닫고 ref를 비움.
+const closeStaffRequestConfirmDialogIfTracked = (
+  idRef: RefObject<string | null>
+): void => {
+  const id = idRef.current;
+  if (id === null) {
+    return;
+  }
+  closeDialog(id);
+  idRef.current = null;
+};
+
 interface Props {
   onClose: () => void;
   category: ICategoryWithMenus;
@@ -37,6 +57,15 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
   const { t } = useCustomerTranslation();
   const { theme } = useThemeMode();
   const { remainingSeconds } = useIdleTimeout(onClose);
+
+  // "요청을 완료하시겠습니까?" dual 다이얼로그 id만 보관해 언마운트 시 해당 창만 닫음.
+  const staffRequestConfirmDialogIdRef = useRef<string | null>(null);
+
+  // 유휴 만료·배경 클릭 등으로 언마운트될 때 남은 요청 확인 창이 있으면 같이 제거.
+  useEffect(() => {
+    return () =>
+      closeStaffRequestConfirmDialogIfTracked(staffRequestConfirmDialogIdRef);
+  }, []);
 
   const { data: languageData } = useCustomerLanguageStore();
   const { disableStaffCall } = useDisableStaffCallStore();
@@ -142,12 +171,21 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
       return;
     }
 
-    openDualActionDialog({
+    // 같은 플로우로 다시 열 때 이전에 남은 요청 확인 창이 있으면 먼저 닫음.
+    closeStaffRequestConfirmDialogIfTracked(staffRequestConfirmDialogIdRef);
+
+    const dialogId = openDualActionDialog({
       title: t('요청하기'),
       content: t('요청을 완료하시겠습니까?'),
       primaryText: t('예'),
       secondaryText: t('아니오'),
+      onCancel: () => {
+        // 아니오: GlobalDialog가 닫으므로 추적 id만 정리.
+        clearStaffRequestConfirmDialogTracking(staffRequestConfirmDialogIdRef);
+      },
       onConfirm: async () => {
+        // 예: GlobalDialog가 닫으므로 추적 id만 정리.
+        clearStaffRequestConfirmDialogTracking(staffRequestConfirmDialogIdRef);
         const finishStaffRequest = async () => {
           await refreshTableOrderHistoriesData();
           disableStaffCall();
@@ -222,6 +260,8 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
         }
       },
     });
+    // 방금 연 요청 확인 다이얼로그 id를 저장해 언마운트 시 closeDialog에 사용.
+    staffRequestConfirmDialogIdRef.current = dialogId;
   };
 
   // 목록에 보이지 않는 메뉴(isHidden, isOutOfStock)는 선택 목록에서 제거

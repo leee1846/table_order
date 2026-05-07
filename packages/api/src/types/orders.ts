@@ -38,6 +38,12 @@ export interface ISelectedOption {
   optionName: string;
   optionPrice: number;
   quantity: number;
+  /**
+   * 주문 시점에 캡처된 독립 수량 여부.
+   * true: 옵션 수량이 메뉴 수량과 무관하게 고정 (표시 시 메뉴 수량 미곱셈)
+   * undefined/false: 옵션 수량에 메뉴 수량 곱셈 적용 (기본)
+   */
+  isMenuQuantityIndependent?: boolean;
 }
 
 export interface IOrder {
@@ -218,6 +224,7 @@ export interface IGetTableOrderHistoriesParams {
  * 테이블 현재 상태 옵션 정보
  */
 export interface ITableCurrentStatusOption {
+  isMenuQuantityIndependent: boolean;
   orderDetailOptionSeq: number;
   optionName: string;
   optionPrice: number;
