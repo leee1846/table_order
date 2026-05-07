@@ -116,7 +116,7 @@ const CampaignNewPagePage: React.FC = () => {
     });
 
   // --- 요약 데이터 생성 ---
-  const formValues = form.getFieldsValue();
+  const formValues = currentStep === 4 ? form.getFieldsValue() : {};
 
   const getAdTypeSummary = () => {
     const types = new Set<string>();
@@ -375,14 +375,16 @@ const CampaignNewPagePage: React.FC = () => {
     setCampaignSeq(detail.campaignSeq);
 
     // 1. 기본 정보 설정
-    form.setFieldsValue({
-      campaignName: detail.campaignName,
-      adDescription: detail.campaignAlias,
-      advertiserName: detail.advertiserName,
-      campaignMemo: detail.campaignMemo,
-      overallStartDate: detail.startDate ? dayjs(detail.startDate) : null,
-      overallEndDate: detail.endDate ? dayjs(detail.endDate) : null,
-    });
+    setTimeout(() => {
+      form.setFieldsValue({
+        campaignName: detail.campaignName,
+        adDescription: detail.campaignAlias,
+        advertiserName: detail.advertiserName,
+        campaignMemo: detail.campaignMemo,
+        overallStartDate: detail.startDate ? dayjs(detail.startDate) : null,
+        overallEndDate: detail.endDate ? dayjs(detail.endDate) : null,
+      });
+    }, 0);
 
     // 2. 콘텐츠 및 파일 설정
     const adTypeToTabKey: Record<string, string> = {
