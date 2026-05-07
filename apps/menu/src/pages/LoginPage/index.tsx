@@ -18,6 +18,7 @@ import * as S from '@/pages/LoginPage/loginPage.style';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useMerchantRegistration } from '@/hooks/useMerchantRegistration';
 import { CameraManager, CapacitorApp } from '@repo/util/app';
+import { useRemoteSupport } from '@repo/feature/hooks';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export const LoginPage = () => {
   const [idErrorMessage, setIdErrorMessage] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const { isRemoteSupportVisible, openRemoteSupport } = useRemoteSupport(t);
 
   // API hooks
   const { mutateAsync: login } = usePostLogin();
@@ -264,11 +266,22 @@ export const LoginPage = () => {
           </BasicButton>
           <BasicButton
             variant="Solid_Navy_XL"
+            customStyle={S.buttonCss}
             onClick={onClickQrLogin}
             aria-label={t('QR 로그인')}
           >
             {t('QR 로그인')}
           </BasicButton>
+          {isRemoteSupportVisible && (
+            <BasicButton
+              variant="Solid_Navy_XL"
+              customStyle={S.buttonCss}
+              onClick={() => void openRemoteSupport()}
+              aria-label={t('원격지원')}
+            >
+              {t('원격지원')}
+            </BasicButton>
+          )}
         </div>
       </S.LoginContainer>
     </S.Container>

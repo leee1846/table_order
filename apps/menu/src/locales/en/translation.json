@@ -107,6 +107,8 @@
   "KDS 모드 사용": "Use KDS Mode",
   "웨이팅 모드 사용": "Use Waiting Mode",
   "관리": "Management",
+  "원격지원": "Remote Support",
+  "원격지원을 실행할 수 없습니다.": "Unable to launch remote support.",
   "테이블이 존재하지 않습니다.": "No tables exist.",
   "빈 테이블": "Empty table",
   "현금 결제로 주문하시겠습니까?": "Would you like to order with cash payment?",

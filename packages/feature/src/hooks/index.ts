@@ -3,6 +3,7 @@ export { useSSEReconnecting } from './useSSE';
 export { useToast } from './useToast';
 export { useStablePaginatedTotalPages } from './useStablePaginatedTotalPages';
 export { useLongPress } from './useLongPress';
+export { useRemoteSupport } from './useRemoteSupport';
 export type {
   UseLongPressOptions,
   UseLongPressReturn,

@@ -18,6 +18,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { SystemControl } from '@repo/util/app';
 import { useGetShopThemeMenu } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
+import { useRemoteSupport } from '@repo/feature/hooks';
 
 type MenuItem = {
   id: string;
@@ -32,15 +33,18 @@ export const Sidebar = ({
   onDeviceListDialogAfterClose,
 }: TablesPageSidebarProps) => {
   const { t } = useAdminTranslation();
-  const menuItems = useMemo(
-    () => [
+  const { isRemoteSupportVisible, openRemoteSupport } = useRemoteSupport(t);
+  const menuItems = useMemo(() => {
+    return [
       { id: 'order', label: t('주문') },
       { id: 'sales', label: t('매출') },
       { id: 'device', label: t('기기') },
       { id: 'management', label: t('관리') },
-    ],
-    [t]
-  );
+      ...(isRemoteSupportVisible
+        ? [{ id: 'remoteSupport', label: t('원격지원') }]
+        : []),
+    ];
+  }, [isRemoteSupportVisible, t]);
   const navigate = useNavigate();
 
   const { shopCode } = useAuth();
@@ -58,6 +62,11 @@ export const Sidebar = ({
   const [isDeviceDialogOpen, setIsDeviceDialogOpen] = useState(false);
 
   const handleMenuClick = (menuId: string) => {
+    if (menuId === 'remoteSupport') {
+      void openRemoteSupport();
+      return;
+    }
+
     setSelectedMenu(menuId);
     if (menuId === 'order') {
       setIsOrderListDialogOpen(true);

@@ -132,6 +132,16 @@ export interface ISystemControl {
    * 앱 준비가 완료되면 호출합니다.
    */
   hideSplash(): Promise<void>;
+
+  /**
+   * 패키지 열기
+   * @param packageName - 열 패키지 이름 (net.koino.anysupportMobileCustomize 원격지원 앱)
+   */
+  openPackage({
+    packageName,
+  }: {
+    packageName: 'net.koino.anysupportMobileCustomize'; // 원격지원 앱
+  }): Promise<void>;
 }
 
 const NativeSystem = registerPlugin<ISystemControl & Plugin>('SystemControl');
@@ -225,5 +235,9 @@ export const SystemControl: ISystemControl = {
    */
   hideSplash: async () => {
     await NativeSystem.hideSplash();
+  },
+
+  openPackage: async ({ packageName }) => {
+    await NativeSystem.openPackage({ packageName });
   },
 };
