@@ -146,12 +146,11 @@ export const Header = ({
      */
     const updateMessage = () => {
       let targetTimeStr = '';
-      let messagePrefixKey: '라스트오더' | '브레이크타임' | '영업마감' | '' =
-        '';
+      let messagePrefixKey: '주문 마감' | '브레이크타임' | '영업마감' | '' = '';
 
       // 라스트오더 알림 상태
       if (isBreakTimeLastOrderAlert || isClosureLastOrderAlert) {
-        messagePrefixKey = '라스트오더';
+        messagePrefixKey = '주문 마감';
         targetTimeStr = isBreakTimeLastOrderAlert
           ? breakLastOrderTime || ''
           : closureLastOrderTime || '';
@@ -176,8 +175,8 @@ export const Header = ({
       const remainingTime = formatRemainingTime(targetDate);
       const formattedTime = formatTimeToHHMM(targetTimeStr);
       const messageKey =
-        messagePrefixKey === '라스트오더'
-          ? '라스트오더까지 {{remaining}}남았습니다. 라스트오더 시간은 {{time}}입니다.'
+        messagePrefixKey === '주문 마감'
+          ? '주문 마감까지 {{remaining}}남았습니다. 주문 마감 시간은 {{time}}입니다.'
           : messagePrefixKey === '브레이크타임'
             ? '브레이크타임까지 {{remaining}}남았습니다. 브레이크타임 시간은 {{time}}입니다.'
             : '영업마감까지 {{remaining}}남았습니다. 영업마감 시간은 {{time}}입니다.';
