@@ -151,7 +151,8 @@ export const CategoryButton = styled.button<ICategoryButton>`
 export const DropdownMenu = styled.ul`
   position: absolute;
   top: calc(100% + 4px);
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: ${theme.colors.white};
   border: 1px solid ${theme.colors.grey[200]};
   border-radius: 6px;
@@ -161,16 +162,16 @@ export const DropdownMenu = styled.ul`
   list-style: none;
   margin: 0;
   z-index: 1001;
-  animation: dropdownFadeIn 0.25s cubic-bezier(0.2, 0, 0, 1);
+  animation: dropdownFadeIn 0.4s ease-out;
 
   @keyframes dropdownFadeIn {
     from {
       opacity: 0;
-      transform: translateY(-8px);
+      transform: translate(-50%, -12px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translate(-50%, 0);
     }
   }
 `;

@@ -1,4 +1,4 @@
-import { Suspense, useState, useEffect, useMemo } from 'react';
+import { Suspense, useState, useEffect, useMemo, useRef } from 'react';
 import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import * as S from './sidebarLayout.style';
@@ -26,7 +26,8 @@ export const StoresSidebarLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { tokenPayload } = useAuthStore();
-  const [openedMenuIds, setOpenedMenuIds] = useState<Set<string>>(new Set());
+  const [openedMenuId, setOpenedMenuId] = useState<string | null>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isMaster = tokenPayload?.role === 'MASTER';
 
@@ -35,7 +36,6 @@ export const StoresSidebarLayout = () => {
       {
         id: 'stores',
         label: '매장 관리',
-        path: ROUTES.BACKOFFICE.STORES.generate(),
         matchPattern: '/backoffice/stores/*',
         subMenus: [
           {
@@ -78,7 +78,6 @@ export const StoresSidebarLayout = () => {
       menus.push({
         id: 'campaign',
         label: '광고 관리',
-        path: ROUTES.BACKOFFICE.CAMPAIGN.generate(),
         matchPattern: '/backoffice/campaign/*',
         subMenus: [
           {
@@ -108,11 +107,40 @@ export const StoresSidebarLayout = () => {
     }
     return location.pathname === path;
   };
-  const isMenuOpened = (menuId: string) => openedMenuIds.has(menuId);
+
+  const selectedKeys = useMemo(() => {
+    const currentPath = location.pathname;
+
+    // Check for active sub-menu first
+    for (const menu of SIDEBAR_MENUS) {
+      const activeSubMenu = menu.subMenus?.find((sm) =>
+        matchPath({ path: sm.path, end: true }, currentPath)
+      );
+      if (activeSubMenu) {
+        return [activeSubMenu.path];
+      }
+    }
+
+    // Check for active main menu
+    const activeMenu = SIDEBAR_MENUS.find(
+      (m) =>
+        (m.matchPattern &&
+          matchPath({ path: m.matchPattern, end: false }, currentPath)) ||
+        m.path === currentPath
+    );
+
+    return activeMenu ? [activeMenu.path || activeMenu.id] : [];
+  }, [location.pathname, SIDEBAR_MENUS]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleMenuClick = (menu: TMenu) => {
-    // 서브메뉴가 없는 경우에만 path로 이동합니다.
-    // 서브메뉴가 있는 경우, 클릭은 아무 동작도 하지 않습니다 (hover로 열림).
     if (!menu.subMenus?.length && menu.path) {
       navigate(menu.path);
     }
@@ -120,22 +148,22 @@ export const StoresSidebarLayout = () => {
 
   const handleSubMenuClick = (path: string) => {
     navigate(path);
+    setOpenedMenuId(null);
   };
 
-  const handleMenuMouseEnter = (menuId: string) => {
-    setOpenedMenuIds(new Set([menuId]));
+  const handleMouseEnter = (menuId: string) => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setOpenedMenuId(menuId);
   };
 
-  const handleMenuMouseLeave = () => {
-    setOpenedMenuIds(new Set());
+  const handleMouseLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setOpenedMenuId(null);
+    }, 200); // 200ms 여유 부여 (필요에 따라 시간 조절 가능)
   };
-
-  const hasActiveSubMenu = (menu: TMenu) =>
-    menu.subMenus?.some((sub: TSubMenu) => isPathActive(sub.path)) ?? false;
-
-  useEffect(() => {
-    setOpenedMenuIds(new Set());
-  }, [location.pathname]);
 
   return (
     <App>
@@ -167,46 +195,44 @@ export const StoresSidebarLayout = () => {
               <S.NavMenu>
                 {SIDEBAR_MENUS.map((menu) => {
                   const hasSubMenus = !!menu.subMenus?.length;
-                  const isActive =
-                    (menu.path && isPathActive(menu.path, menu.matchPattern)) ||
-                    hasActiveSubMenu(menu);
-                  const isOpened = hasSubMenus && isMenuOpened(menu.id);
+                  const isActive = selectedKeys.includes(menu.path || menu.id);
+                  const isOpened = openedMenuId === menu.id;
 
                   return (
-                    <S.NavMenuItem key={menu.id}>
+                    <S.NavMenuItem
+                      key={menu.id}
+                      onMouseEnter={
+                        hasSubMenus
+                          ? () => handleMouseEnter(menu.id)
+                          : undefined
+                      }
+                      onMouseLeave={hasSubMenus ? handleMouseLeave : undefined}
+                    >
                       <S.CategoryButton
-                        onMouseEnter={
-                          hasSubMenus
-                            ? () => handleMenuMouseEnter(menu.id)
-                            : undefined
-                        }
                         onClick={() => handleMenuClick(menu)}
-                        isSelected={isActive}
+                        isSelected={isActive || isOpened}
                       >
                         <span>{menu.label}</span>
                       </S.CategoryButton>
 
                       {hasSubMenus && isOpened && (
-                        <div onMouseLeave={handleMenuMouseLeave}>
-                          <S.DropdownMenu>
-                            {menu.subMenus!.map((sub: TSubMenu) => (
-                              <S.DropdownMenuItem key={sub.id}>
-                                <S.DetailButton
-                                  onClick={() => handleSubMenuClick(sub.path)}
-                                  isSelected={isPathActive(sub.path)}
-                                >
-                                  <span>{sub.label}</span>
-                                </S.DetailButton>
-                              </S.DropdownMenuItem>
-                            ))}
-                          </S.DropdownMenu>
-                        </div>
+                        <S.DropdownMenu>
+                          {menu.subMenus!.map((sub: TSubMenu) => (
+                            <S.DropdownMenuItem key={sub.id}>
+                              <S.DetailButton
+                                onClick={() => handleSubMenuClick(sub.path)}
+                                isSelected={selectedKeys.includes(sub.path)}
+                              >
+                                <span>{sub.label}</span>
+                              </S.DetailButton>
+                            </S.DropdownMenuItem>
+                          ))}
+                        </S.DropdownMenu>
                       )}
                     </S.NavMenuItem>
                   );
                 })}
               </S.NavMenu>
-
               <div
                 style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}
               >
