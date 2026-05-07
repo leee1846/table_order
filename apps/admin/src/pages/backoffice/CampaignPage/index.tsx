@@ -295,8 +295,28 @@ const CampaignPage: React.FC = () => {
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
     { title: '캠페인 ID', dataIndex: 'code', key: 'code', width: 120 },
-    { title: '캠페인명', dataIndex: 'name', key: 'name' },
-    { title: '별명', dataIndex: 'nickname', key: 'nickname' },
+    {
+      title: '캠페인명',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text: string) =>
+        text?.length > 40 ? (
+          <Tooltip title={text}>{`${text.substring(0, 50)}...`}</Tooltip>
+        ) : (
+          text
+        ),
+    },
+    {
+      title: '별명',
+      dataIndex: 'nickname',
+      key: 'nickname',
+      render: (text: string) =>
+        text?.length > 40 ? (
+          <Tooltip title={text}>{`${text.substring(0, 50)}...`}</Tooltip>
+        ) : (
+          text
+        ),
+    },
     {
       title: '등록 매장수',
       dataIndex: 'storeCount',
@@ -490,11 +510,15 @@ const CampaignPage: React.FC = () => {
             </Button>
             <Button
               variant="solid"
-              style={{
-                backgroundColor: '#bfbfbf',
-                borderColor: '#bfbfbf',
-                color: '#fff',
-              }}
+              style={
+                selectedRowKeys.length > 0
+                  ? {
+                      backgroundColor: '#8c8c8c',
+                      borderColor: '#8c8c8c',
+                      color: '#fff',
+                    }
+                  : undefined
+              }
               disabled={selectedRowKeys.length === 0}
               onClick={() => updateStatus(selectedRowKeys, false)}
             >

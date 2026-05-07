@@ -244,12 +244,8 @@ const UploadContent: React.FC<UploadContentProps> = ({
                 };
 
                 if (isImage) {
-                  const needsDimensionCheck =
-                    acceptType === 'topBanner' ||
-                    acceptType === 'fullScreenAd' ||
-                    acceptType === 'orderForm';
-
-                  if (!needsDimensionCheck) {
+                  const expectedDim = IMAGE_DIMENSIONS[acceptType];
+                  if (!expectedDim) {
                     handleSuccess('', 0);
                     return;
                   }
@@ -257,12 +253,10 @@ const UploadContent: React.FC<UploadContentProps> = ({
                   const img = new Image();
                   img.onload = () => {
                     URL.revokeObjectURL(img.src);
-                    const expectedDim = IMAGE_DIMENSIONS[acceptType];
 
                     if (
-                      expectedDim &&
-                      (img.width !== expectedDim.width ||
-                        img.height !== expectedDim.height)
+                      img.width !== expectedDim.width ||
+                      img.height !== expectedDim.height
                     ) {
                       message.error(
                         `이미지 규격이 맞지 않습니다. (권장: ${expectedDim.width} x ${expectedDim.height}, 현재: ${img.width} x ${img.height})`
@@ -283,6 +277,20 @@ const UploadContent: React.FC<UploadContentProps> = ({
                   video.preload = 'metadata';
                   video.onloadedmetadata = () => {
                     URL.revokeObjectURL(video.src);
+
+                    // const expectedDim = IMAGE_DIMENSIONS[acceptType];
+                    // if (
+                    //   expectedDim &&
+                    //   (video.videoWidth !== expectedDim.width ||
+                    //     video.videoHeight !== expectedDim.height)
+                    // ) {
+                    //   message.error(
+                    //     `동영상 규격이 맞지 않습니다. (권장: ${expectedDim.width} x ${expectedDim.height}, 현재: ${video.videoWidth} x ${video.videoHeight})`
+                    //   );
+                    //   resolve(Upload.LIST_IGNORE);
+                    //   return;
+                    // }
+
                     const totalSeconds = Math.round(video.duration);
 
                     if (totalSeconds > 15) {

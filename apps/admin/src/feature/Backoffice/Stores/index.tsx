@@ -177,7 +177,7 @@ export const Stores = ({
           <div
             style={{
               display: 'flex',
-              justifyContent: 'flex-end',
+              justifyContent: 'flex-start',
               gap: 8,
               marginTop: 40,
             }}

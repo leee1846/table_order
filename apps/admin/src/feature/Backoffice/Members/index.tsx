@@ -25,7 +25,7 @@ const FormWrapper = styled.div`
 
 const ActionButtons = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-top: 40px;
 `;
 

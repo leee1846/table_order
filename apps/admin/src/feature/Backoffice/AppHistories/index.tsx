@@ -36,7 +36,7 @@ const FormWrapper = styled.div`
 
 const ActionButtons = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-top: 40px;
 `;
 
@@ -216,7 +216,6 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
         />
 
         <ActionButtons>
-          <div />
           <ButtonGroup>
             <Button size="large" onClick={() => navigate(-1)}>
               {mode === 'detail' ? '목록' : '취소'}
