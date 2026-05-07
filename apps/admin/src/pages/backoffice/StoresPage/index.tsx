@@ -125,7 +125,7 @@ export const StoresPage = () => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${shopName}_메뉴포스연동_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      link.download = `${shopCode}_${shopName}_${new Date().toISOString().slice(0, 10)}.xlsx`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
