@@ -150,7 +150,7 @@
   "메뉴 삭제": "Delete Menu",
   "주문 알림": "Order Notification",
   "라스트오더 알림": "Last Order Notification",
-  "라스트오더까지 {{remaining}}남았습니다. 라스트오더 시간은 {{time}}입니다.": "{{remaining}} left until last order. Last order time is {{time}}.",
+  "주문 마감까지 {{remaining}}남았습니다. 주문 마감 시간은 {{time}}입니다.": "{{remaining}} left until order cutoff. Order cutoff time is {{time}}.",
   "브레이크타임까지 {{remaining}}남았습니다. 브레이크타임 시간은 {{time}}입니다.": "{{remaining}} left until break time. Break time is {{time}}.",
   "영업마감까지 {{remaining}}남았습니다. 영업마감 시간은 {{time}}입니다.": "{{remaining}} left until closing. Closing time is {{time}}.",
   "시": ":",

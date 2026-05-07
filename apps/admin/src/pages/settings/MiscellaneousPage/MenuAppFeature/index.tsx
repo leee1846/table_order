@@ -387,7 +387,7 @@ export const MenuAppFeature = ({
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
-        <p>{t('최초 주문 카테고리 선택')}</p>
+        <p>{t('첫주문 필수 카테고리')}</p>
         <BasicButton variant="Outline_Navy_M" onClick={handleOpenCategoryModal}>
           {t('카테고리 설정')}
         </BasicButton>
