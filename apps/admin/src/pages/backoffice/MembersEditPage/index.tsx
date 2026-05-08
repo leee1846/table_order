@@ -143,6 +143,7 @@ export const MembersEditPage = () => {
     showConfirm({
       title: '비밀번호 초기화',
       content: '비밀번호를 초기화하시겠습니까?',
+      okText: '초기화',
       onConfirm: async () => {
         await resetPasswordMutation.mutateAsync({ memberId });
         message.success('비밀번호가 초기화되었습니다.');
