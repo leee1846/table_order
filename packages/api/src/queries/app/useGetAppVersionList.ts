@@ -1,12 +1,15 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import type { IApiError, IPaginationParams } from '../../types/common';
+import type { IApiError } from '../../types/common';
 import { queryKeys } from '../queryKeys';
-import type { TGetAppVersionListResponse } from '../../types/app';
+import type {
+  IAppVersionParams,
+  TGetAppVersionListResponse,
+} from '../../types/app';
 import { getAppVersionList } from '../../fetchers/app';
 
 export const useGetAppVersionList = (
-  params: IPaginationParams,
+  params: IAppVersionParams,
   options?: Omit<
     UseQueryOptions<TGetAppVersionListResponse, AxiosError<IApiError>>,
     'queryKey' | 'queryFn'

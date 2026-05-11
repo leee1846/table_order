@@ -1,4 +1,4 @@
-import type { IApiResponse } from './common';
+import type { IApiResponse, IPaginationParams } from './common';
 
 export type TAppType = 'MENU' | 'POS_APP' | 'AGENT' | '';
 
@@ -33,6 +33,10 @@ export interface IGetAppVersionListData {
 }
 
 export type TGetAppVersionListResponse = IApiResponse<IGetAppVersionListData>;
+
+export interface IAppVersionParams extends IPaginationParams {
+  type: TAppType;
+}
 
 export interface ICreateAppVersionParams {
   type: TAppType;

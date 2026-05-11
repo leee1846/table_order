@@ -14,7 +14,7 @@ import { useGetAppVersionList } from '@repo/api/queries';
 import { keepPreviousData } from '@repo/api/tanstack-query';
 import { useTablePageState } from '@/feature/backoffice/hooks';
 import { formatDateTime } from '@repo/util/date';
-import type { IAppVersion } from '@repo/api/types';
+import type { IAppVersion, TAppType } from '@repo/api/types';
 import { APP_TYPE } from '@/feature/backoffice/SidebarLayout';
 
 // --- Emotion Styles ---
@@ -83,7 +83,7 @@ export const AppHistoriesPage = () => {
     handleSearch,
     handlePageChange,
   } = useTablePageState({ pageSize });
-  const { type } = useParams<{ type: string }>();
+  const { type } = useParams<{ type: TAppType }>();
 
   const pageTitle = useMemo(() => {
     const typeLabel =
@@ -104,7 +104,7 @@ export const AppHistoriesPage = () => {
       pageNumber: currentPage - 1,
       pageSize,
       searchWord: searchKeyword,
-      type: type || '',
+      type: type || 'MENU',
     },
     { placeholderData: keepPreviousData }
   );
