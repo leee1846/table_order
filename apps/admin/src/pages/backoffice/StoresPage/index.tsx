@@ -151,15 +151,39 @@ export const StoresPage = () => {
       align: 'center',
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
-    { title: '매장 ID', dataIndex: 'shopCode', key: 'shopCode', width: 120 },
-    { title: '매장명', dataIndex: 'shopName', key: 'shopName', width: 200 },
+    {
+      title: '매장 ID',
+      dataIndex: 'shopCode',
+      key: 'shopCode',
+      width: 120,
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+    },
+    {
+      title: '매장명',
+      dataIndex: 'shopName',
+      key: 'shopName',
+      width: 200,
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+    },
     {
       title: '사업자등록번호',
       dataIndex: 'businessNumber',
       key: 'businessNumber',
       width: 150,
+      align: 'center',
     },
-    { title: '기본 주소', dataIndex: 'address1', key: 'address1' },
+    {
+      title: '기본 주소',
+      dataIndex: 'address1',
+      key: 'address1',
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+    },
     {
       title: '매장 메뉴',
       key: 'storeMenu',

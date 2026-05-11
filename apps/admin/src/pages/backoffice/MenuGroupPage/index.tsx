@@ -129,18 +129,22 @@ const MenuGroupPage: React.FC = () => {
   };
 
   const columns: ColumnsType<MenuGroupDataType> = [
-    { title: 'No.', dataIndex: 'no', key: 'no', width: 80, align: 'center' },
+    { title: 'No.', dataIndex: 'no', key: 'no', width: 60, align: 'center' },
     {
       title: '메뉴 태그',
       dataIndex: 'menuGroupTag',
       key: 'menuGroupTag',
-      width: 160,
+      width: 120,
+      align: 'center',
     },
     {
       title: '메뉴 그룹명',
       dataIndex: 'menuGroupName',
       key: 'menuGroupName',
-      width: 200,
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+      width: 180,
       render: (text: string) => (
         <div
           title={text}
@@ -163,6 +167,9 @@ const MenuGroupPage: React.FC = () => {
       dataIndex: 'menus',
       key: 'menus',
       width: 400,
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
       render: (menus: IMenuGroupMenu[]) =>
         menus?.map((m) => m.menuName).join(', ') || '-',
     },
@@ -170,7 +177,7 @@ const MenuGroupPage: React.FC = () => {
       title: '생성일',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      width: 150,
+      width: 140,
       align: 'center',
     },
     {

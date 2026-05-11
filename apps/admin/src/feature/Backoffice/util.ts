@@ -138,11 +138,11 @@ export const validateAppHistoriesData = (
   }
 
   // 배포일시에 시간이 포함되어 있는지 확인 (YYYY-MM-DD HH:mm:ss 형식)
-  const dateTimeParts = appHistoriesData.deployDateTime.trim().split(' ');
-  if (dateTimeParts.length < 2 || !dateTimeParts[1]) {
-    message.warning('배포 시간을 선택해주세요.');
-    return false;
-  }
+  // const dateTimeParts = appHistoriesData.deployDateTime.trim().split(' ');
+  // if (dateTimeParts.length < 2 || !dateTimeParts[1]) {
+  //   message.warning('배포 시간을 선택해주세요.');
+  //   return false;
+  // }
 
   if (!appHistoriesData.version || !appHistoriesData.version.trim()) {
     message.warning('버전을 입력해주세요.');

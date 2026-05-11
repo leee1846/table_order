@@ -11,6 +11,7 @@ import {
 import PageTitle from '@/feature/backoffice/components/PageTitle';
 import AppInfoParser, { type ApkParser, type IpaParser } from 'app-info-parser';
 import JSZip from 'jszip';
+import { AdminLoadingOverlay } from '@/feature/AdminLoadingOverlay';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -58,6 +59,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
   );
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [appFile, setAppFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -72,7 +74,12 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
 
   const handleSave = async () => {
     if (onSave) {
-      await onSave(formData, appFile);
+      setIsSaving(true);
+      try {
+        await onSave(formData, appFile);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -181,15 +188,19 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
   };
 
   const getSubtitle = () => {
-    if (mode === 'create') return '등록';
-    if (mode === 'edit') return '수정';
+    if (mode === 'create') {
+      return '등록';
+    }
+    if (mode === 'edit') {
+      return '수정';
+    }
     return '상세';
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Flex justify="space-between" align="center">
-        <PageTitle title="릴리즈 노트" subtitle={getSubtitle()} />
+        <PageTitle title="배포 관리" subtitle={getSubtitle()} />
         <ButtonGroup>
           {mode !== 'create' && (
             <Button onClick={handleHistory}>변경 이력</Button>
@@ -217,11 +228,20 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
 
         <ActionButtons>
           <ButtonGroup>
-            <Button size="large" onClick={() => navigate(-1)}>
+            <Button
+              size="large"
+              onClick={() => navigate(-1)}
+              disabled={isSaving}
+            >
               {mode === 'detail' ? '목록' : '취소'}
             </Button>
             {mode !== 'detail' && (
-              <Button size="large" type="primary" onClick={handleSave}>
+              <Button
+                size="large"
+                type="primary"
+                onClick={handleSave}
+                loading={isSaving}
+              >
                 {mode === 'create' ? '저장' : '수정'}
               </Button>
             )}
@@ -240,6 +260,11 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
           },
         ]}
       />
+      {isSaving && (
+        <AdminLoadingOverlay
+          message={mode === 'create' ? '저장 중입니다' : '수정 중입니다'}
+        />
+      )}
     </div>
   );
 };

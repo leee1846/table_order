@@ -81,7 +81,7 @@ export const AppHistoryForm = ({
 
   return (
     <Container>
-      <SectionTitle level={5}>릴리즈 노트 정보</SectionTitle>
+      <SectionTitle level={5}>배포 정보</SectionTitle>
       <FormContent>
         {/* 생성 모드일 때만 파일 업로드 노출 */}
         <FieldGroup>
@@ -175,7 +175,7 @@ export const AppHistoryForm = ({
           </Label>
           <Input.TextArea
             size="large"
-            placeholder="릴리즈 노트 내용을 입력하세요"
+            placeholder="배포 내용을 입력하세요"
             value={formData.content}
             onChange={(e) => updateFormData({ content: e.target.value })}
             disabled={isReadOnly}

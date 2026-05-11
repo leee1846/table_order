@@ -30,8 +30,8 @@ export const ROUTES = {
       generate: () => '/backoffice/mypage',
     },
     APP_HISTORIES: {
-      path: 'app-histories',
-      generate: () => '/backoffice/app-histories',
+      path: 'app-histories/list/:type',
+      generate: (type: string) => `/backoffice/app-histories/list/${type}`,
     },
     APP_HISTORIES_NEW: {
       path: 'app-histories/new',

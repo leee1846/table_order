@@ -106,12 +106,23 @@ export const StoreGroupPage = () => {
 
   const columns: ColumnsType<StoreGroupDataType> = [
     { title: 'No.', dataIndex: 'no', key: 'no', width: 80, align: 'center' },
-    { title: '매장그룹 ID', dataIndex: 'groupId', key: 'groupId', width: 120 },
+    {
+      title: '매장그룹 ID',
+      dataIndex: 'groupId',
+      key: 'groupId',
+      width: 120,
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+    },
     {
       title: '매장 그룹명',
       dataIndex: 'groupName',
       key: 'groupName',
       width: 250,
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
     },
     {
       title: '포함 매장 수',
@@ -120,8 +131,21 @@ export const StoreGroupPage = () => {
       width: 120,
       align: 'center',
     },
-    { title: '설명', dataIndex: 'groupDescription', key: 'groupDescription' },
-    { title: '생성일', dataIndex: 'createdAt', key: 'createdAt', width: 150 },
+    {
+      title: '설명',
+      dataIndex: 'groupDescription',
+      key: 'groupDescription',
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+    },
+    {
+      title: '생성일',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 150,
+      align: 'center',
+    },
     {
       title: '관리',
       key: 'management',

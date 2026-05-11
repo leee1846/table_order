@@ -136,7 +136,14 @@ export const NoticesPage = () => {
       align: 'center',
       render: (boardType) => getBoardTypeLabel(boardType),
     },
-    { title: '제목', dataIndex: 'noticeTitle', key: 'noticeTitle' },
+    {
+      title: '제목',
+      dataIndex: 'noticeTitle',
+      key: 'noticeTitle',
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+    },
     {
       title: '작성일',
       dataIndex: 'createDate',
@@ -190,7 +197,7 @@ export const NoticesPage = () => {
 
   return (
     <Container>
-      <PageTitle title="공지사항 관리" subtitle="목록" />
+      <PageTitle title="공지사항" subtitle="목록" />
       <ContentCard>
         <TopBar>
           <Space>

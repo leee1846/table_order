@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Table, Button, Input, Space, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
@@ -15,6 +15,7 @@ import { keepPreviousData } from '@repo/api/tanstack-query';
 import { useTablePageState } from '@/feature/backoffice/hooks';
 import { formatDateTime } from '@repo/util/date';
 import type { IAppVersion } from '@repo/api/types';
+import { APP_TYPE } from '@/feature/backoffice/SidebarLayout';
 
 // --- Emotion Styles ---
 const Container = styled.div`
@@ -82,15 +83,37 @@ export const AppHistoriesPage = () => {
     handleSearch,
     handlePageChange,
   } = useTablePageState({ pageSize });
+  const { type } = useParams<{ type: string }>();
 
-  const { data: historyList, isFetching } = useGetAppVersionList(
+  const pageTitle = useMemo(() => {
+    const typeLabel =
+      type === APP_TYPE.MENU
+        ? '메뉴'
+        : type === APP_TYPE.POS_APP
+          ? '관리자'
+          : '에이전트';
+    return `배포 관리 (${typeLabel})`;
+  }, [type]);
+
+  const {
+    data: historyList,
+    isFetching,
+    refetch,
+  } = useGetAppVersionList(
     {
       pageNumber: currentPage - 1,
       pageSize,
       searchWord: searchKeyword,
+      type: type || '',
     },
     { placeholderData: keepPreviousData }
   );
+
+  useEffect(() => {
+    handlePageChange(1);
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
 
   const handleCreate = () => {
     navigate(ROUTES.BACKOFFICE.APP_HISTORIES_NEW.generate());
@@ -121,20 +144,38 @@ export const AppHistoriesPage = () => {
       align: 'center',
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
-    { title: '구분', dataIndex: 'type', key: 'type', width: 100 },
+    // {
+    //   title: '구분',
+    //   dataIndex: 'type',
+    //   key: 'type',
+    //   width: 100,
+    //   align: 'center',
+    // },
+    {
+      title: '버전',
+      dataIndex: 'version',
+      key: 'version',
+      width: 120,
+      align: 'center',
+    },
+    {
+      title: '제목',
+      dataIndex: 'title',
+      key: 'title',
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+      render: (title: string) => title ?? '-',
+    },
     {
       title: '배포일시',
       dataIndex: 'deployDate',
       key: 'deployDate',
       width: 180,
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
       render: (deployDate: string) => formatDeployDate(deployDate) || '-',
-    },
-    { title: '버전', dataIndex: 'version', key: 'version', width: 120 },
-    {
-      title: '제목',
-      dataIndex: 'title',
-      key: 'title',
-      render: (title: string) => title ?? '-',
     },
     {
       title: '관리',
@@ -176,7 +217,7 @@ export const AppHistoriesPage = () => {
 
   return (
     <Container>
-      <PageTitle title="릴리즈 노트" subtitle="목록" />
+      <PageTitle title={pageTitle} subtitle="목록" />
       <ContentCard>
         <TopBar>
           <Space>
@@ -197,7 +238,7 @@ export const AppHistoriesPage = () => {
               icon={<PlusOutlined />}
               onClick={handleCreate}
             >
-              릴리즈 노트 생성
+              배포 등록
             </CreateButton>
           </Space>
         </TopBar>

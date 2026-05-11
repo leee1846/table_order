@@ -294,14 +294,23 @@ const CampaignPage: React.FC = () => {
       align: 'center',
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
-    { title: '캠페인 ID', dataIndex: 'code', key: 'code', width: 120 },
+    {
+      title: '캠페인 ID',
+      dataIndex: 'code',
+      key: 'code',
+      width: 120,
+      align: 'center',
+    },
     {
       title: '캠페인명',
       dataIndex: 'name',
       key: 'name',
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
       render: (text: string) =>
-        text?.length > 40 ? (
-          <Tooltip title={text}>{`${text.substring(0, 50)}...`}</Tooltip>
+        text?.length > 30 ? (
+          <Tooltip title={text}>{`${text.substring(0, 30)}...`}</Tooltip>
         ) : (
           text
         ),
@@ -310,27 +319,40 @@ const CampaignPage: React.FC = () => {
       title: '별명',
       dataIndex: 'nickname',
       key: 'nickname',
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
       render: (text: string) =>
-        text?.length > 40 ? (
-          <Tooltip title={text}>{`${text.substring(0, 50)}...`}</Tooltip>
+        text?.length > 30 ? (
+          <Tooltip title={text}>{`${text.substring(0, 30)}...`}</Tooltip>
         ) : (
           text
         ),
     },
     {
-      title: '등록 매장수',
+      title: '매장수',
       dataIndex: 'storeCount',
       key: 'storeCount',
-      width: 120,
+      width: 80,
+      align: 'center',
       // sorter: (a, b) => a.storeCount - b.storeCount,
       render: (val) => `${val}개`,
     },
-    { title: '집행기간', dataIndex: 'period', key: 'period', width: 220 },
+    {
+      title: '집행기간',
+      dataIndex: 'period',
+      key: 'period',
+      width: 120,
+      align: 'center',
+    },
     {
       title: '상태',
       dataIndex: 'status',
       key: 'status',
-      width: 120,
+      width: 60,
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
       render: (status: CampaignStatus) => {
         const colors = {
           집행중: 'green',
@@ -349,7 +371,8 @@ const CampaignPage: React.FC = () => {
     {
       title: '관리',
       key: 'management',
-      width: 180,
+      width: 120,
+      align: 'center',
       render: (_, record) => (
         <Space size={0}>
           <Tooltip title="수정">
@@ -425,7 +448,7 @@ const CampaignPage: React.FC = () => {
     {
       title: 'ON/OFF',
       key: 'onoff',
-      width: 100,
+      width: 80,
       align: 'center',
       render: (_, record) => (
         <Switch

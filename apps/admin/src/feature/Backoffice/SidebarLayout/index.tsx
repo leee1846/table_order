@@ -22,6 +22,12 @@ type TMenu = {
   matchPattern?: string;
 };
 
+export const APP_TYPE = {
+  MENU: 'MENU',
+  POS_APP: 'POS_APP',
+  AGENT: 'AGENT',
+} as const;
+
 export const StoresSidebarLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,44 +40,29 @@ export const StoresSidebarLayout = () => {
   const SIDEBAR_MENUS = useMemo<TMenu[]>(() => {
     const menus: TMenu[] = [
       {
-        id: 'stores',
-        label: '매장 관리',
-        matchPattern: '/backoffice/stores/*',
-        subMenus: [
-          {
-            id: 'store-list',
-            label: '매장 관리',
-            path: ROUTES.BACKOFFICE.STORES.generate(),
-          },
-          {
-            id: 'store-group',
-            label: '매장 그룹 관리',
-            path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
-          },
-        ],
+        id: 'notices',
+        label: '공지사항',
+        path: ROUTES.BACKOFFICE.NOTICES.generate(),
+        matchPattern: '/backoffice/notices/*',
       },
     ];
 
-    if (isMaster) {
-      menus.push({
-        id: 'members',
-        label: '회원 관리',
-        path: ROUTES.BACKOFFICE.MEMBERS.generate(),
-        matchPattern: '/backoffice/members/*',
-      });
-    }
-
     menus.push({
-      id: 'notices',
-      label: '공지사항 관리',
-      path: ROUTES.BACKOFFICE.NOTICES.generate(),
-      matchPattern: '/backoffice/notices/*',
-    });
-    menus.push({
-      id: 'app-histories',
-      label: '릴리즈 노트 관리',
-      path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(),
-      matchPattern: '/backoffice/app-histories/*',
+      id: 'stores',
+      label: '매장 관리',
+      matchPattern: '/backoffice/stores/*',
+      subMenus: [
+        {
+          id: 'store-list',
+          label: '매장 관리',
+          path: ROUTES.BACKOFFICE.STORES.generate(),
+        },
+        {
+          id: 'store-group',
+          label: '매장 그룹 관리',
+          path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
+        },
+      ],
     });
 
     if (isMaster) {
@@ -94,6 +85,38 @@ export const StoresSidebarLayout = () => {
       });
     }
 
+    menus.push({
+      id: 'app-histories',
+      label: '배포 관리',
+      //path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(),
+      matchPattern: '/backoffice/app-histories/*',
+      subMenus: [
+        {
+          id: 'menu-app',
+          label: '메뉴앱',
+          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.MENU),
+        },
+        {
+          id: 'admin-app',
+          label: '관리자앱',
+          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.POS_APP),
+        },
+        {
+          id: 'agent',
+          label: '에이전트',
+          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.AGENT),
+        },
+      ],
+    });
+
+    if (isMaster) {
+      menus.push({
+        id: 'members',
+        label: '회원 관리',
+        path: ROUTES.BACKOFFICE.MEMBERS.generate(),
+        matchPattern: '/backoffice/members/*',
+      });
+    }
     return menus;
   }, [isMaster]);
 

@@ -108,10 +108,36 @@ export const MembersPage = () => {
       align: 'center',
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
-    { title: '이름', dataIndex: 'memberName', key: 'memberName' },
-    { title: '이메일', dataIndex: 'memberEmail', key: 'memberEmail' },
-    { title: '핸드폰번호', dataIndex: 'memberTel', key: 'memberTel' },
-    { title: '소속', dataIndex: 'memberDepartment', key: 'memberDepartment' },
+    {
+      title: '이름',
+      dataIndex: 'memberName',
+      key: 'memberName',
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+    },
+    {
+      title: '이메일',
+      dataIndex: 'memberEmail',
+      key: 'memberEmail',
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+    },
+    {
+      title: '핸드폰번호',
+      dataIndex: 'memberTel',
+      key: 'memberTel',
+      onHeaderCell: () => ({
+        style: { textAlign: 'center' },
+      }),
+    },
+    {
+      title: '소속',
+      dataIndex: 'memberDepartment',
+      key: 'memberDepartment',
+      align: 'center',
+    },
     {
       title: '권한',
       dataIndex: 'memberRole',

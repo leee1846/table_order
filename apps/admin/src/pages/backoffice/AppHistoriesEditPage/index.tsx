@@ -100,7 +100,7 @@ export const AppHistoriesEditPage = () => {
     }
 
     if (!formData.id) {
-      message.error('릴리즈 노트 ID가 없습니다.');
+      message.error('배포 ID가 없습니다.');
       return;
     }
 
@@ -114,8 +114,8 @@ export const AppHistoriesEditPage = () => {
       });
     }
 
-    message.success('릴리즈 노트 수정이 완료되었습니다.');
-    navigate(ROUTES.BACKOFFICE.APP_HISTORIES.generate());
+    message.success('배포 수정이 완료되었습니다.');
+    navigate(ROUTES.BACKOFFICE.APP_HISTORIES.generate(formData.type));
   };
 
   return (

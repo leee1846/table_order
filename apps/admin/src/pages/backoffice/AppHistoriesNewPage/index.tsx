@@ -61,8 +61,8 @@ export const AppHistoriesNewPage = () => {
     const appVersionSeq = result.data?.appVersionSeq;
     await postAppVersionFile({ appVersionSeq, file: appFile });
 
-    message.success('릴리즈 노트 생성이 완료되었습니다.');
-    navigate(ROUTES.BACKOFFICE.APP_HISTORIES.generate());
+    message.success('배포 생성이 완료되었습니다.');
+    navigate(ROUTES.BACKOFFICE.APP_HISTORIES.generate(data.type));
   };
 
   return (

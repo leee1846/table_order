@@ -54,6 +54,7 @@ export const Stores = ({
     useState<IGetAdminShopDetail>(DEFAULT_SHOP_DATA);
   const [memberFormData, setMemberFormData] =
     useState<ICreateAdminMemberRequest>(DEFAULT_MEMBER_DATA);
+  const [activeTab, setActiveTab] = useState('storeInfo');
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -170,34 +171,38 @@ export const Stores = ({
           style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
         >
           <Tabs
-            defaultActiveKey="storeInfo"
+            activeKey={activeTab}
+            onChange={setActiveTab}
             items={tabItems}
             style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
           />
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              gap: 8,
-              marginTop: 40,
-            }}
-          >
-            <Button
-              size="large"
-              onClick={() => navigate(-1)}
-              style={{ width: '100px' }}
+
+          {activeTab !== 'storeAdInfo' && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                gap: 8,
+                marginTop: 40,
+              }}
             >
-              취소
-            </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-              style={{ width: '100px' }}
-            >
-              {mode === 'create' ? '저장' : '수정'}
-            </Button>
-          </div>
+              <Button
+                size="large"
+                onClick={() => navigate(-1)}
+                style={{ width: '100px' }}
+              >
+                취소
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                style={{ width: '100px' }}
+              >
+                {mode === 'create' ? '저장' : '수정'}
+              </Button>
+            </div>
+          )}
 
           <>
             {mode === 'edit' && (
