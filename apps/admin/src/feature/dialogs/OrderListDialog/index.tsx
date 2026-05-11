@@ -39,6 +39,7 @@ const mapMenuItems = (orderDetailMenuList: IOrderDetailMenu[]): MenuItem[] => {
             name: option.optionName,
             qty: option.optionQuantity,
             unitPrice: option.optionPrice,
+            localeOptionName: option.localeOptionName ?? undefined,
           }))
         : undefined;
 
@@ -53,6 +54,7 @@ const mapMenuItems = (orderDetailMenuList: IOrderDetailMenu[]): MenuItem[] => {
       qty: menu.menuQuantity,
       unitPrice: menu.menuPrice,
       options,
+      localeMenuName: menu.localeMenuName ?? undefined,
     };
   });
 };

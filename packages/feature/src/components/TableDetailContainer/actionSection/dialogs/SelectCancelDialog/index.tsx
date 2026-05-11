@@ -179,7 +179,12 @@ export const SelectCancelDialog = ({
                         }
                       `}
                     >
-                      <S.ItemName>{item.name}</S.ItemName>
+                      <S.ItemName>
+                        {item.name === '금액변경'
+                          ? t('금액 변경')
+                          : (item.localeMenuName?.[currentLanguage] ??
+                            item.name)}
+                      </S.ItemName>
                     </CheckButton>
                   </S.ItemNameCell>
                   <S.QuantityWrapper>

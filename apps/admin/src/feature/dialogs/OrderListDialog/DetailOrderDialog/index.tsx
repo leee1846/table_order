@@ -23,8 +23,8 @@ const DetailOrderDialog = ({
   menuItems = [],
   numberOfPeople = 0,
 }: DetailOrderDialogProps) => {
-  const { t } = useAdminTranslation();
-
+  const { t, i18n } = useAdminTranslation();
+  const currentLanguage = (i18n.language || 'KO').toUpperCase();
   if (!isOpen) {
     return null;
   }
@@ -97,13 +97,20 @@ const DetailOrderDialog = ({
           {menuItems.map((item) => (
             <div key={item.id}>
               <S.MenuItem>
-                <S.MenuName>{item.name}</S.MenuName>
+                <S.MenuName>
+                  {item.name === '금액변경'
+                    ? t('금액 변경')
+                    : (item.localeMenuName?.[currentLanguage] ?? item.name)}
+                </S.MenuName>
                 <S.MenuQty>{item.qty}</S.MenuQty>
                 <S.MenuPrice>{formatCurrency(item.unitPrice)}</S.MenuPrice>
               </S.MenuItem>
               {item.options?.map((option) => (
                 <S.OptionItem key={option.id} isOption>
-                  <S.OptionName>ㄴ{option.name}</S.OptionName>
+                  <S.OptionName>
+                    ㄴ
+                    {option.localeOptionName?.[currentLanguage] ?? option.name}
+                  </S.OptionName>
                   <S.OptionQty>{option.qty}</S.OptionQty>
                   <S.OptionPrice>
                     {formatCurrency(option.unitPrice)}
