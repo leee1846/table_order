@@ -6,7 +6,11 @@ import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import { useGetOneDaySales } from '@repo/api/queries';
 import type { TPaymentType } from '@repo/api/types';
-import { formatDateToYYYYMMDD, getTodayDateString, formatLocalizedDate } from '@repo/util/date';
+import {
+  formatDateToYYYYMMDD,
+  getTodayDateString,
+  formatLocalizedDate,
+} from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { DailySalesTable, type TDailySaleRow } from './Table';
@@ -133,7 +137,7 @@ export const DailySalesPage = () => {
         <S.Container>
           <S.Header>
             <S.Title>
-              {t('매출')}
+              {t('매출 현황')}
               <div />
               <span>{t('당일 매출내역')}</span>
             </S.Title>
