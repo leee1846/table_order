@@ -4,6 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { useRemoteSupport } from '@repo/feature/hooks';
+import { HomeFilledIcon } from '@repo/ui/icons';
+import { theme } from '@repo/ui';
+import { toast } from '@repo/feature/utils';
+import { AppStorage } from '@repo/util/app';
+import { STORAGE_KEYS } from '@/constants/keys';
+import { useDeviceStore } from '@/stores/useDeviceStore';
+import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
+import * as S from './sidebar.styles';
 
 export const Sidebar = () => {
   const navigate = useNavigate();
@@ -14,6 +22,21 @@ export const Sidebar = () => {
 
   const onClickManagement = () => {
     navigate(ROUTES.SETTINGS.MISCELLANEOUS.generate());
+  };
+
+  const onClickHomeButton = () => {
+    // 메인 복귀 시 잠깐 잠금 UI 노출 방지
+    useRequestAdminAccessModalStore.getState().setShow(false);
+
+    if (useDeviceStore.getState().data?.tableNumber) {
+      AppStorage.removeData({
+        key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
+      });
+      navigate(ROUTES.ROOT.generate());
+      return;
+    }
+
+    toast(t('테이블을 선택해주세요.'));
   };
 
   return (
@@ -38,6 +61,11 @@ export const Sidebar = () => {
           </CommonStyles.MenuItem>
         )}
       </CommonStyles.MenuList>
+
+      <S.HomeButton type="button" onClick={onClickHomeButton}>
+        <HomeFilledIcon width={24} height={24} color={theme.colors.grey[700]} />
+        <span>{t('메인 홈')}</span>
+      </S.HomeButton>
     </CommonStyles.SidebarContainer>
   );
 };
