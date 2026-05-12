@@ -1,5 +1,9 @@
 import { Input, Typography, Button, Space } from 'antd';
-import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  UploadOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+} from '@ant-design/icons';
 import styled from '@emotion/styled';
 import type { AppHistoriesFormData } from '@/feature/backoffice/AppHistories/constants';
 import type { TAppType } from '@repo/api/types';
@@ -88,28 +92,42 @@ export const AppHistoryForm = ({
           <Label>
             앱 파일 (APK/ZIP) <span>*</span>
           </Label>
-          <FileUploadWrapper>
-            <Button
-              icon={<UploadOutlined />}
-              onClick={onSelectAppFileClick}
-              disabled={isReadOnly}
-            >
-              파일 선택
-            </Button>
-            {appFile && (
-              <Space>
-                <Text>{appFile.name}</Text>
-                {!isReadOnly && (
-                  <Button
-                    type="text"
-                    //danger
-                    icon={<DeleteOutlined />}
-                    onClick={onRemoveAppFile}
-                  />
-                )}
-              </Space>
-            )}
-          </FileUploadWrapper>
+          {mode === 'detail' && formData.downloadPath ? (
+            <FileUploadWrapper>
+              <Button
+                icon={<DownloadOutlined />}
+                href={formData.downloadPath}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+              >
+                {formData.downloadPath.replace(/^.*\//, '')}
+              </Button>
+            </FileUploadWrapper>
+          ) : (
+            <FileUploadWrapper>
+              <Button
+                icon={<UploadOutlined />}
+                onClick={onSelectAppFileClick}
+                disabled={isReadOnly}
+              >
+                파일 선택
+              </Button>
+              {appFile && (
+                <Space>
+                  <Text>{appFile.name}</Text>
+                  {!isReadOnly && (
+                    <Button
+                      type="text"
+                      //danger
+                      icon={<DeleteOutlined />}
+                      onClick={onRemoveAppFile}
+                    />
+                  )}
+                </Space>
+              )}
+            </FileUploadWrapper>
+          )}
         </FieldGroup>
         <HorizontalLayout>
           <FieldGroup>
