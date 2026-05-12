@@ -28,6 +28,7 @@ import { useIdleTimeout } from '@/hooks/useIdleTimeout';
 import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
 import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
 import type { AxiosError } from '@repo/api/axios';
+import { validateMenusHiddenAndStock } from '@/utils/validateCartOrder';
 
 // 사용자 액션으로 다이얼로그가 닫힐 때 추적 id만 비움(Global이 closeDialog 호출).
 const clearStaffRequestConfirmDialogTracking = (
@@ -186,6 +187,9 @@ export const StaffCallModal = ({ onClose, category }: Props) => {
       onConfirm: async () => {
         // 예: GlobalDialog가 닫으므로 추적 id만 정리.
         clearStaffRequestConfirmDialogTracking(staffRequestConfirmDialogIdRef);
+        if (!validateMenusHiddenAndStock(selectedMenuList)) {
+          return;
+        }
         const finishStaffRequest = async () => {
           await refreshTableOrderHistoriesData();
           disableStaffCall();

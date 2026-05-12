@@ -18,6 +18,72 @@ const DEFAULT_TOAST = {
   duration: 2000,
 };
 
+/**
+ * 주문 직전(또는 확인 시점) 기준으로 메뉴·옵션의 숨김·품절 여부만 검사
+ */
+export function validateMenusHiddenAndStock(menus: ICartMenu[]): boolean {
+  const visibleCategories = useCategoryStore.getState().data.visibleCategories;
+  const currentLanguage =
+    useCustomerLanguageStore.getState().data.currentLanguage;
+
+  const t = (key: string, options?: Record<string, string | number>) =>
+    String(customerI18n.t(key, options));
+
+  for (const cartMenu of menus) {
+    const originalMenu = visibleCategories
+      .find((category) => category.categorySeq === cartMenu.categorySeq)
+      ?.menuInfoList.find((menu) => menu.menuSeq === cartMenu.menuSeq);
+
+    if (originalMenu?.isHidden) {
+      toast(
+        t('{{menuName}}는(은) 숨김 처리된 메뉴입니다.', {
+          menuName:
+            cartMenu.localeMenuName?.[currentLanguage] ?? cartMenu.menuName,
+        }),
+        DEFAULT_TOAST
+      );
+      return false;
+    }
+
+    if (originalMenu?.isOutOfStock) {
+      toast(
+        t('{{menuName}} 메뉴가 품절되었습니다.', {
+          menuName:
+            cartMenu.localeMenuName?.[currentLanguage] ?? cartMenu.menuName,
+        }),
+        { position: 'center-center', duration: 1500 }
+      );
+      return false;
+    }
+
+    if (originalMenu) {
+      for (const cartOption of cartMenu.selectedOptions) {
+        const currentOption = originalMenu.optionGroupList
+          .flatMap((group) => group.optionList)
+          .find(
+            (o) =>
+              o.optionSeq === cartOption.optionSeq &&
+              o.optionGroupSeq === cartOption.optionGroupSeq
+          );
+
+        if (currentOption?.isOutOfStock) {
+          toast(
+            t('{{optionName}} 옵션이 품절되었습니다.', {
+              optionName:
+                cartOption.localeOptionName?.[currentLanguage] ??
+                cartOption.optionName,
+            }),
+            { position: 'center-center', duration: 1500 }
+          );
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
 /** 일반 주문 라인(`callStaffMenu === false`)이 하나라도 있으면 true. 직원 호출만 있으면 false (첫 주문 최소금액·첫주문 필수 카테고리 검사 제외용). */
 export function hasTableOrderHistory(): boolean {
   const orderData = useTableOrderHistoriesStore.getState().data;
@@ -30,7 +96,8 @@ export function hasTableOrderHistory(): boolean {
 
 function cartMenusTotalAmount(menus: ICartMenu[]): number {
   const visibleCategories = useCategoryStore.getState().data.visibleCategories;
-  const menuSeqToCategoryMenuMap = buildMenuSeqToCategoryMenuMap(visibleCategories);
+  const menuSeqToCategoryMenuMap =
+    buildMenuSeqToCategoryMenuMap(visibleCategories);
   return menus.reduce((total, menu) => {
     const categoryMenu = menuSeqToCategoryMenuMap.get(menu.menuSeq);
     const options = menu.selectedOptions.map((option) => ({
@@ -89,56 +156,8 @@ export function validateCartOrder(): boolean {
     }
   }
 
-  for (const cartMenu of cartMenus) {
-    const originalMenu = visibleCategories
-      .find((category) => category.categorySeq === cartMenu.categorySeq)
-      ?.menuInfoList.find((menu) => menu.menuSeq === cartMenu.menuSeq);
-
-    if (originalMenu?.isHidden) {
-      toast(
-        t('{{menuName}}는(은) 숨김 처리된 메뉴입니다.', {
-          menuName:
-            cartMenu.localeMenuName?.[currentLanguage] ?? cartMenu.menuName,
-        }),
-        DEFAULT_TOAST
-      );
-      return false;
-    }
-
-    if (originalMenu?.isOutOfStock) {
-      toast(
-        t('{{menuName}} 메뉴가 품절되었습니다.', {
-          menuName:
-            cartMenu.localeMenuName?.[currentLanguage] ?? cartMenu.menuName,
-        }),
-        { position: 'center-center', duration: 1500 }
-      );
-      return false;
-    }
-
-    if (originalMenu) {
-      for (const cartOption of cartMenu.selectedOptions) {
-        const currentOption = originalMenu.optionGroupList
-          .flatMap((group) => group.optionList)
-          .find(
-            (o) =>
-              o.optionSeq === cartOption.optionSeq &&
-              o.optionGroupSeq === cartOption.optionGroupSeq
-          );
-
-        if (currentOption?.isOutOfStock) {
-          toast(
-            t('{{optionName}} 옵션이 품절되었습니다.', {
-              optionName:
-                cartOption.localeOptionName?.[currentLanguage] ??
-                cartOption.optionName,
-            }),
-            { position: 'center-center', duration: 1500 }
-          );
-          return false;
-        }
-      }
-    }
+  if (!validateMenusHiddenAndStock(cartMenus)) {
+    return false;
   }
 
   for (const cartMenu of cartMenus) {
