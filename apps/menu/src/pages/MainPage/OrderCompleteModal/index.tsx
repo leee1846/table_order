@@ -9,29 +9,9 @@ import customerI18n from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { Trans } from 'react-i18next';
-import type { AdSlide } from '@/pages/MainPage/InitialAd';
-import { AdMediaSlider } from '@/pages/MainPage/InitialAd/AdMediaSlider';
-import { OrderCompleteAdFullscreen } from '@/pages/MainPage/OrderCompleteModal/OrderCompleteAdFullscreen';
-
-/** 기능 확인용 임시 플래그 */
-const SHOW_AD = true;
-/** true: 전면, false: 반쪽 */
-const IS_FULLSCREEN = false;
-
-const ORDER_COMPLETE_AD_SLIDES: readonly AdSlide[] = [
-  {
-    id: 'order-complete-ad-1',
-    kind: 'image',
-    src: 'https://picsum.photos/id/180/1200/1600',
-    alt: '주문 완료 광고 예시 1',
-  },
-  {
-    id: 'order-complete-ad-2',
-    kind: 'image',
-    src: 'https://picsum.photos/id/193/1200/1600',
-    alt: '주문 완료 광고 예시 2',
-  },
-];
+import { AdMediaSlider } from '@/pages/MainPage/StandbyAd/AdMediaSlider';
+import { OrderCompleteFullAd } from '@/pages/MainPage/OrderCompleteModal/OrderCompleteFullAd';
+import { useAdStore } from '@/stores/useAdStore';
 
 interface Props {
   orderData: IOrder[];
@@ -53,15 +33,24 @@ export const OrderCompleteModal = ({
     [language]
   );
   const shopDetailData = useShopDetailStore((s) => s.data);
+  const { data: adData } = useAdStore();
 
-  const hasAd = ORDER_COMPLETE_AD_SLIDES.length > 0;
-  const showFullscreenAd = SHOW_AD && IS_FULLSCREEN && hasAd;
-  const showHalfAd = SHOW_AD && !IS_FULLSCREEN && hasAd;
+  const { orderCompleteFullFiles, orderCompleteSideFiles, localVideoUrls } =
+    adData;
+
+  // sortOrder 기준으로 FULL/SIDE 중 먼저 오는 타입만 표시
+  const firstFullFile = orderCompleteFullFiles[0];
+  const firstSideFile = orderCompleteSideFiles[0];
+  const showFullscreenAd =
+    !!firstFullFile &&
+    (!firstSideFile || firstFullFile.sortOrder <= firstSideFile.sortOrder);
+  const showHalfAd = !showFullscreenAd && !!firstSideFile;
 
   if (showFullscreenAd) {
     return (
-      <OrderCompleteAdFullscreen
-        slides={ORDER_COMPLETE_AD_SLIDES}
+      <OrderCompleteFullAd
+        files={orderCompleteFullFiles}
+        localVideoUrls={localVideoUrls}
         onClose={onClose}
         t={t}
       />
@@ -90,7 +79,7 @@ export const OrderCompleteModal = ({
         </S.CountdownBadge>
         {showHalfAd ? (
           <S.LeftContainerAd>
-            <AdMediaSlider adList={ORDER_COMPLETE_AD_SLIDES} />
+            <AdMediaSlider files={orderCompleteSideFiles} />
           </S.LeftContainerAd>
         ) : (
           <S.LeftContainer>

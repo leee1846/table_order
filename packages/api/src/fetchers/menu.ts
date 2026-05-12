@@ -14,6 +14,7 @@ import type {
   TGetMenuListResponse,
   IGetMenuSearchParams,
   TGetMenuSearchResponse,
+  TGetMenuAdFilesResponse,
 } from '../types/menu';
 import type { TVoidApiResponse } from '../types/common';
 
@@ -236,6 +237,18 @@ export const updateMenuTranslation = async (
   const response = await axiosInstance<TVoidApiResponse>({
     method: 'PUT',
     url: ENDPOINTS.MENU.TRANSLATION(params.shopCode),
+  });
+
+  return response.data;
+};
+
+export const getMenuAdFiles = async (
+  shopCode: string
+): Promise<TGetMenuAdFilesResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TGetMenuAdFilesResponse>({
+    method: 'GET',
+    url: ENDPOINTS.MENU.AD_FILE(shopCode),
   });
 
   return response.data;

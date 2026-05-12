@@ -16,7 +16,7 @@ import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
-import { useInitialAdStore } from '@/stores/useInitialAdStore';
+import { useStandbyAdStore } from '@/stores/useStandbyAdStore';
 import { globalTimerManager } from '@/utils/timerManager';
 import { useModalStore } from '@/stores/useModalStore';
 import * as S from './cartReminder.style';
@@ -117,7 +117,7 @@ export const CartReminder = () => {
               newShopDetailData?.shopSetting?.shopLanguage ?? 'KO',
             isSelected: false,
           });
-          useInitialAdStore.getState().openInitialAd();
+          useStandbyAdStore.getState().openStandbyAd();
           useInitialPageStore.getState().showInitialPage();
         }
       } catch {

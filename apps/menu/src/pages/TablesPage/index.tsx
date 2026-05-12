@@ -45,7 +45,7 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
-import { useInitialAdStore } from '@/stores/useInitialAdStore';
+import { useStandbyAdStore } from '@/stores/useStandbyAdStore';
 import { Sidebar } from '@/pages/TablesPage/Sidebar';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useShopStore } from '@/stores/useShopStore';
@@ -309,7 +309,7 @@ export const TablesPage = () => {
     }
 
     clearCart();
-    useInitialAdStore.getState().openInitialAd();
+    useStandbyAdStore.getState().openStandbyAd();
     useInitialPageStore.getState().showInitialPage();
     // 매장 기본 언어로 초기화 (KO 고정 대신 shopLanguage 사용)
     setLanguageData({

@@ -20,3 +20,10 @@ export const AdMediaImage = styled.img`
   height: 100%;
   object-fit: cover;
 `;
+
+export const AdMediaVideo = styled.video`
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;

@@ -76,6 +76,9 @@ export const queryKeys = {
     /** 메뉴 검색 조회 */
     search: (keyword?: string) =>
       [...queryKeys.menu.all, 'search', keyword] as const,
+    /** 광고 파일 목록 조회 */
+    adFiles: (shopCode: string) =>
+      [...queryKeys.menu.all, 'adFiles', shopCode] as const,
   },
 
   orders: {

@@ -12,7 +12,7 @@ export const ImgContainer = styled.div`
   border-radius: 0.5rem;
   overflow: hidden;
 
-  & .banner-ad-swiper {
+  & .top-banner-ad-swiper {
     width: 100%;
     height: 100%;
   }

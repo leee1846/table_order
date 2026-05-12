@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { NoContent } from '@/feature/NoContent';
 import { ScrollContent } from '@/pages/MainPage/Contents/ScrollContent';
 import { TabContent } from '@/pages/MainPage/Contents/TabContent';
-import { BannerAd } from '@/pages/MainPage/BannerAd';
+import { TopBannerAd } from '@/pages/MainPage/TopBannerAd';
 import * as S from '@/pages/MainPage/Contents/contents.style';
 import type { ICategoryWithMenus } from '@repo/api/types';
 import { DOM_IDS } from '@/constants/keys';
@@ -42,7 +42,7 @@ export const Contents = ({
           id={DOM_IDS.CONTENTS_SCROLL_CONTAINER}
           paddingTop={BANNER_AD ? '10px' : '30px'}
         >
-          {BANNER_AD && <BannerAd />}
+          {BANNER_AD && <TopBannerAd />}
           <TabContent selectedCategory={categoryNavigation.selectedCategory} />
         </S.Container>
       ) : (
@@ -50,7 +50,7 @@ export const Contents = ({
           id={DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER}
           paddingTop={BANNER_AD ? '10px' : '30px'}
         >
-          {BANNER_AD && <BannerAd />}
+          {BANNER_AD && <TopBannerAd />}
           {/* eagerMountCategorySeq: 사이드바로 멀리 이동 시 해당 섹션만 Lazy 우회 */}
           <ScrollContent
             categories={categories}

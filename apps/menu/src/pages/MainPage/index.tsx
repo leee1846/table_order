@@ -1,10 +1,11 @@
 import * as S from '@/pages/MainPage/mainPage.style';
-import { InitialAd } from '@/pages/MainPage/InitialAd';
+import { StandbyAd } from '@/pages/MainPage/StandbyAd';
 import { Sidebar } from '@/pages/MainPage/Sidebar';
 import { Header } from '@/pages/MainPage/Header';
 import { CartButton } from '@/pages/MainPage/CartButton';
 import { Contents } from '@/pages/MainPage/Contents';
 import { useShopData } from '@/hooks/useShopData';
+import { useAdData } from '@/hooks/useAdData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
@@ -14,7 +15,8 @@ import { useBreakTime } from '@/hooks/useBreakTime';
 import { useShopClosure } from '@/hooks/useShopClosure';
 import { usePickupAlarmStore } from '@/stores/usePickupAlarmStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
-import { useInitialAdStore } from '@/stores/useInitialAdStore';
+import { useStandbyAdStore } from '@/stores/useStandbyAdStore';
+import { useAdStore } from '@/stores/useAdStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
 import { useAppThemeSettings } from '@/hooks/useAppThemeSettings';
 import { useCustomerLanguageSettings } from '@/hooks/useCustomerLanguageSettings';
@@ -40,6 +42,7 @@ import { OrderCompleteModalContainer } from '@/pages/MainPage/OrderCompleteModal
 
 export const MainPage = () => {
   useShopData();
+  useAdData();
   useTableGroupData();
   const { data: shopDetailData, isLoading: isShopDetailLoading } =
     useShopDetailData();
@@ -90,7 +93,9 @@ export const MainPage = () => {
   useBreakTimeCartClear(breakTimeState);
 
   const { data: initialPageData } = useInitialPageStore();
-  const { data: initialAdData } = useInitialAdStore();
+  const { data: standbyAdData } = useStandbyAdStore();
+  const { data: adData } = useAdStore();
+  console.log(adData);
   const { data: pickUpAlarmData } = usePickupAlarmStore();
   const { data: cartReminderData } = useCartReminderStore();
   const { data: modalData } = useModalStore();
@@ -132,8 +137,12 @@ export const MainPage = () => {
     },
     breakTimeLastOrder: breakTimeLastOrderState,
     closureLastOrder: closureLastOrderState,
-    initialAd: {
-      show: initialAdData.isInitialAdVisible,
+    standbyAd: {
+      // 로딩 중에는 계속 블로킹 (파일 여부를 모르므로)
+      // 로딩 완료 후 파일이 없으면 즉시 해제, 있으면 광고 노출
+      show:
+        standbyAdData.isStandbyAdVisible &&
+        (adData.isAdDataLoading || adData.standbyFiles.length > 0),
     },
     initialPage: {
       show: initialPageData.showInitialPage && hasInitialPageDetailImages,
@@ -229,7 +238,7 @@ export const MainPage = () => {
   /** 초기 화면 / 언어 선택 / 객수 선택: 전체화면 페이지 위에 주문 완료 모달 노출 */
   if (
     isDataReady &&
-    (pageStates.initialAd.show ||
+    (pageStates.standbyAd.show ||
       pageStates.initialPage.show ||
       pageStates.languageSelector.show ||
       pageStates.customerCount.show)
@@ -239,7 +248,7 @@ export const MainPage = () => {
         {pageStates.initialPage.show && <InitialPage />}
         {pageStates.customerCount.show && <CustomerCountSelector />}
         {pageStates.languageSelector.show && <LanguageSelector />}
-        {pageStates.initialAd.show && <InitialAd />}
+        {pageStates.standbyAd.show && <StandbyAd />}
         {modalData.isOrderCompleteModalOpened && (
           <OrderCompleteModalContainer />
         )}

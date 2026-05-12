@@ -10,7 +10,7 @@ import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
 import { useCartReminderStore } from '@/stores/useCartReminderStore';
-import { useInitialAdStore } from '@/stores/useInitialAdStore';
+import { useStandbyAdStore } from '@/stores/useStandbyAdStore';
 import { useDeviceData } from '@/hooks/useDeviceData';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
@@ -101,7 +101,7 @@ export const useTouchDetectTimer = () => {
               newShopDetailData?.shopSetting?.shopLanguage ?? 'KO',
             isSelected: false,
           });
-          useInitialAdStore.getState().openInitialAd();
+          useStandbyAdStore.getState().openStandbyAd();
           useInitialPageStore.getState().showInitialPage();
         }
 

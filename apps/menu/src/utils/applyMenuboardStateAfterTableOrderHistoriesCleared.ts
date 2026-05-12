@@ -4,7 +4,7 @@ import { useCartStore } from '@/stores/useCartStore';
 import { useCustomerCountStore } from '@/stores/useCustomerCountStore';
 import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useInitialPageStore } from '@/stores/useInitialPageStore';
-import { useInitialAdStore } from '@/stores/useInitialAdStore';
+import { useStandbyAdStore } from '@/stores/useStandbyAdStore';
 import { useModalStore } from '@/stores/useModalStore';
 
 /**
@@ -31,7 +31,7 @@ export const isRefetchedTableOrderHistoriesEmpty = (
 export const applyMenuboardStateAfterTableOrderHistoriesCleared = (
   shopDetailData: IGetShop | null | undefined
 ): void => {
-  useInitialAdStore.getState().openInitialAd();
+  useStandbyAdStore.getState().openStandbyAd();
   useInitialPageStore.getState().showInitialPage();
   useCartStore.getState().clearCart();
   useCustomerCountStore.getState().clearData();

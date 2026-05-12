@@ -9,3 +9,4 @@ export * from './usePutUpdateMenuOutOfStock';
 export * from './usePutUpdateMenuTranslation';
 export * from './useDeleteMenu';
 export * from './useGetMenuSearch';
+export * from './useGetMenuAdFiles';
