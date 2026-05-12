@@ -115,10 +115,7 @@ export const useAdData = () => {
         }
       }
 
-      // 모든 영상 다운로드 완료 — AppStorage 전체 저장 상태 확인 후 컴포넌트 렌더 허용
       if (!cancelled) {
-        console.warn('[useAdData] 광고 처리 완료 — AppStorage 저장 값 확인');
-        await AppStorage.getAllData();
         setAdDataLoading(false);
       }
     };

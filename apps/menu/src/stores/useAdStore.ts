@@ -134,10 +134,17 @@ export const useAdStore = create<IAdStore>((set) => {
     data: INITIAL_DATA,
 
     setAdFiles: async (files) => {
+      const nextFilePaths = new Set(files.map((f) => f.filePath));
       set((state) => ({
         data: {
           ...state.data,
           ...groupAdFiles(files),
+          // 새 API 응답에 없는 filePath의 URL만 제거 — 유지되는 영상은 URL을 그대로 보존
+          localVideoUrls: Object.fromEntries(
+            Object.entries(state.data.localVideoUrls).filter(([key]) =>
+              nextFilePaths.has(key)
+            )
+          ),
           isLoaded: true,
         },
       }));
@@ -168,6 +175,7 @@ export const useAdStore = create<IAdStore>((set) => {
 
     clearData: () => {
       AppStorage.removeData({ key: STORAGE_KEYS.AD_FILES });
+      AppStorage.removeData({ key: STORAGE_KEYS.AD_VIDEO_PATHS });
       set({ data: INITIAL_DATA });
     },
   };

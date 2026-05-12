@@ -95,7 +95,6 @@ export const MainPage = () => {
   const { data: initialPageData } = useInitialPageStore();
   const { data: standbyAdData } = useStandbyAdStore();
   const { data: adData } = useAdStore();
-  console.log(adData);
   const { data: pickUpAlarmData } = usePickupAlarmStore();
   const { data: cartReminderData } = useCartReminderStore();
   const { data: modalData } = useModalStore();

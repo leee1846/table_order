@@ -11,6 +11,10 @@ import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { Trans } from 'react-i18next';
 import { AdMediaSlider } from '@/pages/MainPage/StandbyAd/AdMediaSlider';
 import { OrderCompleteFullAd } from '@/pages/MainPage/OrderCompleteModal/OrderCompleteFullAd';
+import {
+  shouldShowOrderCompleteFullscreenAd,
+  shouldShowOrderCompleteHalfAd,
+} from '@/pages/MainPage/OrderCompleteModal/orderCompleteAdVisibility';
 import { useAdStore } from '@/stores/useAdStore';
 
 interface Props {
@@ -18,6 +22,8 @@ interface Props {
   totalPrice: number;
   onClose: () => void;
   countdown: number;
+  /** half(사이드) 광고일 때만 20초 표시·자동 닫기 */
+  countdownActive: boolean;
 }
 
 export const OrderCompleteModal = ({
@@ -25,6 +31,7 @@ export const OrderCompleteModal = ({
   totalPrice,
   onClose,
   countdown,
+  countdownActive,
 }: Props) => {
   // 모달이 열린 시점에 store에 캡처된 언어로 고정 — 리마운트·언어 변경에 무관
   const language = useModalStore.getState().data.orderCompleteLanguage;
@@ -39,12 +46,14 @@ export const OrderCompleteModal = ({
     adData;
 
   // sortOrder 기준으로 FULL/SIDE 중 먼저 오는 타입만 표시
-  const firstFullFile = orderCompleteFullFiles[0];
-  const firstSideFile = orderCompleteSideFiles[0];
-  const showFullscreenAd =
-    !!firstFullFile &&
-    (!firstSideFile || firstFullFile.sortOrder <= firstSideFile.sortOrder);
-  const showHalfAd = !showFullscreenAd && !!firstSideFile;
+  const showFullscreenAd = shouldShowOrderCompleteFullscreenAd(
+    orderCompleteFullFiles,
+    orderCompleteSideFiles
+  );
+  const showHalfAd = shouldShowOrderCompleteHalfAd(
+    orderCompleteFullFiles,
+    orderCompleteSideFiles
+  );
 
   if (showFullscreenAd) {
     return (
@@ -64,19 +73,21 @@ export const OrderCompleteModal = ({
         aria-modal="true"
         aria-labelledby="order-complete-title"
       >
-        <S.CountdownBadge>
-          <Trans
-            i18n={customerI18n}
-            i18nKey="<0>{{seconds}}</0>초 후 닫힘"
-            values={{ seconds: countdown }}
-            lng={language}
-            components={[
-              <S.CountdownHighlight key="countdown-highlight">
-                {countdown}
-              </S.CountdownHighlight>,
-            ]}
-          />
-        </S.CountdownBadge>
+        {countdownActive && (
+          <S.CountdownBadge>
+            <Trans
+              i18n={customerI18n}
+              i18nKey="<0>{{seconds}}</0>초 후 닫힘"
+              values={{ seconds: countdown }}
+              lng={language}
+              components={[
+                <S.CountdownHighlight key="countdown-highlight">
+                  {countdown}
+                </S.CountdownHighlight>,
+              ]}
+            />
+          </S.CountdownBadge>
+        )}
         {showHalfAd ? (
           <S.LeftContainerAd>
             <AdMediaSlider files={orderCompleteSideFiles} />

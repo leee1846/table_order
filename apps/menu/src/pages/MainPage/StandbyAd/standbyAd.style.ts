@@ -15,9 +15,11 @@ export const AdContainer = styled.div`
   flex: 1;
   min-height: 0;
   width: 100%;
+  overflow: hidden;
 `;
 
 export const Notice = styled.p`
+  flex-shrink: 0;
   width: 100%;
   padding: 20px 24px;
   text-align: center;
