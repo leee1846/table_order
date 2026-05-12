@@ -35,12 +35,7 @@ const DetailOrderDialog = ({
   };
 
   // 합계 계산
-  const totalQuantity = menuItems.reduce((sum, item) => {
-    const itemTotal =
-      item.qty +
-      (item.options?.reduce((optSum, opt) => optSum + opt.qty, 0) || 0);
-    return sum + itemTotal;
-  }, 0);
+  const totalQuantity = menuItems.reduce((sum, item) => sum + item.qty, 0);
 
   const totalPrice = menuItems.reduce((sum, item) => {
     const itemPrice = item.unitPrice * item.qty;
