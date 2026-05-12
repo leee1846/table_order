@@ -228,8 +228,10 @@ const CampaignNewPagePage: React.FC = () => {
         files.forEach((fileItem) => {
           const isVideo = fileItem.originFileObj
             ? fileItem.originFileObj.type.startsWith('video/') ||
-              fileItem.originFileObj.name.toLowerCase().endsWith('.mp4')
-            : fileItem.name.toLowerCase().endsWith('.mp4');
+              fileItem.originFileObj.name.toLowerCase().endsWith('.mp4') ||
+              fileItem.originFileObj.name.toLowerCase().endsWith('.webm')
+            : fileItem.name.toLowerCase().endsWith('.mp4') ||
+              fileItem.name.toLowerCase().endsWith('.webm');
 
           let adType = 'UNKNOWN';
           if (tabKey === '0') {
@@ -283,8 +285,10 @@ const CampaignNewPagePage: React.FC = () => {
         //let sortOrderAcc = 1;
         const isVideo = fileItem.originFileObj
           ? fileItem.originFileObj.type.startsWith('video/') ||
-            fileItem.originFileObj.name.toLowerCase().endsWith('.mp4')
-          : fileItem.name.toLowerCase().endsWith('.mp4');
+            fileItem.originFileObj.name.toLowerCase().endsWith('.mp4') ||
+            fileItem.originFileObj.name.toLowerCase().endsWith('.webm')
+          : fileItem.name.toLowerCase().endsWith('.mp4') ||
+            fileItem.name.toLowerCase().endsWith('.webm');
 
         const orderCompAdType =
           exposureType === 'full'

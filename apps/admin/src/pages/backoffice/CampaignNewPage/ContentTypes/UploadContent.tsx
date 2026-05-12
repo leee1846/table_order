@@ -145,9 +145,9 @@ const UploadContent: React.FC<UploadContentProps> = ({
     switch (type) {
       case 'orderStandby':
         return {
-          acceptString: '.jpg,.jpeg,.png,.mp4',
-          hintText: `jpg, png, mp4 파일 지원 (영상 15초/30MB 이하, 이미지 1MB 이하, ${dimText} 규격)`,
-          validExtensions: ['.jpg', '.jpeg', '.png', '.mp4'],
+          acceptString: '.jpg,.jpeg,.png,.mp4,.webm',
+          hintText: `jpg, png, mp4, webm 파일 지원 (영상 15초/30MB 이하, 이미지 1MB 이하, ${dimText} 규격)`,
+          validExtensions: ['.jpg', '.jpeg', '.png', '.mp4', '.webm'],
         };
       case 'topBanner':
         return {
@@ -163,9 +163,9 @@ const UploadContent: React.FC<UploadContentProps> = ({
         };
       case 'fullScreenAd':
         return {
-          acceptString: '.jpg,.jpeg,.png,.mp4',
-          hintText: `jpg, png, mp4 지원 (영상 15초/30MB 이하, 이미지 1MB 이하, ${dimText} 규격)`,
-          validExtensions: ['.jpg', '.jpeg', '.png', '.mp4'],
+          acceptString: '.jpg,.jpeg,.png,.mp4,.webm',
+          hintText: `jpg, png, mp4, webm 지원 (영상 15초/30MB 이하, 이미지 1MB 이하, ${dimText} 규격)`,
+          validExtensions: ['.jpg', '.jpeg', '.png', '.mp4', '.webm'],
         };
       case 'orderForm':
         return {
@@ -175,9 +175,9 @@ const UploadContent: React.FC<UploadContentProps> = ({
         };
       default:
         return {
-          acceptString: '.jpg,.jpeg,.png,.mp4',
+          acceptString: '.jpg,.jpeg,.png,.mp4,.webm',
           hintText: '파일을 선택해주세요.',
-          validExtensions: ['.jpg', '.jpeg', '.png', '.mp4'],
+          validExtensions: ['.jpg', '.jpeg', '.png', '.mp4', '.webm'],
         };
     }
   };
@@ -201,7 +201,9 @@ const UploadContent: React.FC<UploadContentProps> = ({
                   ? file.name.substring(lastDotIndex).toLowerCase()
                   : '';
               const isVideo =
-                file.type.startsWith('video/') || extension === '.mp4';
+                file.type.startsWith('video/') ||
+                extension === '.mp4' ||
+                extension === '.webm';
               const isImage =
                 file.type.startsWith('image/') ||
                 ['.jpg', '.jpeg', '.png'].includes(extension);
