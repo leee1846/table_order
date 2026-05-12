@@ -119,7 +119,7 @@ export const Notices = ({ mode, initialData, onSave, onDelete }: Props) => {
           {
             code: 'NOTICE',
             id: initialData?.id ?? '',
-            label: '공지사항 변경 이력',
+            label: '공지 사항 변경 이력',
           },
         ]}
       />

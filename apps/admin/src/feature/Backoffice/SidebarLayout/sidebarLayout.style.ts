@@ -94,10 +94,10 @@ export const CategoryButton = styled.button<ICategoryButton>`
   position: relative;
 
   span {
-    ${TYPOGRAPHY.BD_2}
-    color: ${({ isSelected }) =>
-      isSelected ? theme.colors.grey[900] : theme.colors.grey[700]};
+    ${TYPOGRAPHY.ST_3}
+    color: theme.colors.black;
     font-weight: ${({ isSelected }) => (isSelected ? 600 : 500)};
+    font-size: 1.0625rem;
     white-space: nowrap;
     transition: color 0.2s ease;
   }
@@ -199,8 +199,9 @@ export const DetailButton = styled.button<IDetailButton>`
   span {
     ${TYPOGRAPHY.BD_2}
     color: ${({ isSelected }) =>
-      isSelected ? theme.colors.grey[900] : theme.colors.grey[700]};
-    font-weight: ${({ isSelected }) => (isSelected ? 600 : 500)};
+      isSelected ? theme.colors.grey[900] : theme.colors.grey[600]};
+    font-size: 0.8125rem;
+    font-weight: 400;
     white-space: nowrap;
     transition: color 0.2s ease;
   }
