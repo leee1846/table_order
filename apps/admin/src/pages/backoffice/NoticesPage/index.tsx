@@ -103,8 +103,8 @@ export const NoticesPage = () => {
 
   // const handleDelete = (notice: INotice) => {
   //   showConfirm({
-  //     title: '공지사항 삭제',
-  //     targetName: '공지사항',
+  //     title: '공지 사항 삭제',
+  //     targetName: '공지 사항',
   //     itemName: notice.noticeTitle,
   //     onConfirm: async () => {
   //       try {
@@ -114,7 +114,7 @@ export const NoticesPage = () => {
   //           queryKey: queryKeys.notice.list(),
   //         });
   //       } catch (e) {
-  //         message.error('공지사항 삭제 중 오류가 발생했습니다.');
+  //         message.error('공지 사항 삭제 중 오류가 발생했습니다.');
   //       }
   //     },
   //   });
@@ -197,7 +197,7 @@ export const NoticesPage = () => {
 
   return (
     <Container>
-      <PageTitle title="공지사항" subtitle="목록" />
+      <PageTitle title="공지 사항" subtitle="목록" />
       <ContentCard>
         <TopBar>
           <Space>
@@ -219,7 +219,7 @@ export const NoticesPage = () => {
               icon={<PlusOutlined />}
               onClick={handleCreate}
             >
-              공지사항 등록
+              공지 사항 등록
             </CreateButton>
           </Space>
         </TopBar>

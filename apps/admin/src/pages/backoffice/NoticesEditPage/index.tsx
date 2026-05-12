@@ -63,21 +63,21 @@ export const NoticesEditPage = () => {
 
   const handleDelete = async () => {
     if (!initialData?.id) {
-      message.error('공지사항 ID가 없습니다.');
+      message.error('공지 사항 ID가 없습니다.');
       return;
     }
 
     const noticeId = initialData.id;
 
     showConfirm({
-      title: '공지사항 삭제',
+      title: '공지 사항 삭제',
       content: '정말 삭제하시겠습니까?',
       onConfirm: async () => {
         try {
           await deleteNoticeMutation.mutateAsync(noticeId);
           message.success('공지사항이 삭제되었습니다.');
         } catch (e) {
-          message.error('공지사항 삭제 중 오류가 발생했습니다.');
+          message.error('공지 사항 삭제 중 오류가 발생했습니다.');
         }
         navigate(ROUTES.BACKOFFICE.NOTICES.generate());
       },
@@ -90,7 +90,7 @@ export const NoticesEditPage = () => {
     }
 
     if (!formData.id) {
-      message.error('공지사항 ID가 없습니다.');
+      message.error('공지 사항 ID가 없습니다.');
       return;
     }
 
@@ -105,7 +105,7 @@ export const NoticesEditPage = () => {
       params,
     });
 
-    message.success('공지사항 수정이 완료되었습니다.');
+    message.success('공지 사항 수정이 완료되었습니다.');
     navigate(ROUTES.BACKOFFICE.NOTICES.generate());
   };
 

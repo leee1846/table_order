@@ -77,7 +77,7 @@ export const Notices = ({ mode, initialData, onSave, onDelete }: Props) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Flex justify="space-between" align="center">
-        <PageTitle title="공지사항" subtitle={getSubtitle()} />
+        <PageTitle title="공지 사항" subtitle={getSubtitle()} />
         <ButtonGroup>
           {mode === 'edit' && onDelete && (
             <Button onClick={onDelete} danger>

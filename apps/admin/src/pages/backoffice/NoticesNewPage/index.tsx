@@ -38,7 +38,7 @@ export const NoticesNewPage = () => {
     const params = convertToCreateParams(data);
     await createNotice(params);
 
-    message.success('공지사항 생성이 완료되었습니다.');
+    message.success('공지 사항 생성이 완료되었습니다.');
     navigate(ROUTES.BACKOFFICE.NOTICES.generate());
   };
 

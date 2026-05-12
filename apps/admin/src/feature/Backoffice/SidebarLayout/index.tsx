@@ -41,7 +41,7 @@ export const StoresSidebarLayout = () => {
     const menus: TMenu[] = [
       {
         id: 'notices',
-        label: '공지사항',
+        label: '공지 사항',
         path: ROUTES.BACKOFFICE.NOTICES.generate(),
         matchPattern: '/backoffice/notices/*',
       },
@@ -93,12 +93,12 @@ export const StoresSidebarLayout = () => {
       subMenus: [
         {
           id: 'menu-app',
-          label: '메뉴앱',
+          label: '메뉴판 앱',
           path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.MENU),
         },
         {
           id: 'admin-app',
-          label: '관리자앱',
+          label: '관리자 앱',
           path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.POS_APP),
         },
         {

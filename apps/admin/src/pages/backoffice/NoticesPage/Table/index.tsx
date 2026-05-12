@@ -27,7 +27,7 @@ export const Table = ({ notices }: Props) => {
     if (!notices || notices.length === 0) {
       return (
         <S.EmptyRow>
-          <S.EmptyCell colSpan={5}>공지사항 목록이 없습니다.</S.EmptyCell>
+          <S.EmptyCell colSpan={5}>공지 사항 목록이 없습니다.</S.EmptyCell>
         </S.EmptyRow>
       );
     }

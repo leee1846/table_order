@@ -50,7 +50,7 @@ export const NoticesForm = ({ mode, formData, updateFormData }: Props) => {
 
   return (
     <Container>
-      <SectionTitle level={5}>공지사항 정보</SectionTitle>
+      <SectionTitle level={5}>공지 사항 정보</SectionTitle>
       <Form
         form={form}
         layout="vertical"
