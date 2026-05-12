@@ -78,6 +78,11 @@ export const Stores = ({
       finalMemberData = { ...finalMemberData, ...memberInitialData };
     }
 
+    // 매장 유형 디폴트 값 'GENL'(일반) 설정
+    if (!finalShopData.shopType) {
+      finalShopData.shopType = 'GENL';
+    }
+
     setFormData(finalShopData);
     setMemberFormData(finalMemberData);
     form.setFieldsValue({ ...finalShopData, ...finalMemberData });

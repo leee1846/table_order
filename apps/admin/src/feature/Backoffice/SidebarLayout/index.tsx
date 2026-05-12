@@ -140,7 +140,7 @@ export const StoresSidebarLayout = () => {
         matchPath({ path: sm.path, end: true }, currentPath)
       );
       if (activeSubMenu) {
-        return [activeSubMenu.path];
+        return [menu.path || menu.id, activeSubMenu.path];
       }
     }
 

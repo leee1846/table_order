@@ -1,4 +1,4 @@
-import { Form, Input, Select, Checkbox, Row, Col, Space } from 'antd';
+import { Form, Input, Select, Checkbox, Row, Col, Space, Radio } from 'antd';
 import { allowOnlyNumbers } from '@repo/util/string';
 import type { IGetAdminShopDetail } from '@repo/api/types';
 
@@ -70,7 +70,21 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
           </Form.Item>
         </Col>
       </Row>
-
+      <Row gutter={16}>
+        <Col span={24}>
+          <Form.Item label="매장 유형" required>
+            <Radio.Group
+              value={formData.shopType || 'GENL'}
+              onChange={(e) => updateFormData({ shopType: e.target.value })}
+              disabled={mode === 'edit'}
+            >
+              <Radio value="GENL">일반</Radio>
+              <Radio value="FRAN">프랜차이즈</Radio>
+              <Radio value="OTHR">기타</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Col>
+      </Row>
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item label="사업자등록번호">
@@ -206,7 +220,7 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
         </Col>
       </Row>
 
-      <Form.Item>
+      {/*       <Form.Item>
         <Space size="large" wrap>
           <Checkbox
             checked={formData.isActive}
@@ -237,7 +251,7 @@ export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
             베타 업데이트
           </Checkbox>
         </Space>
-      </Form.Item>
+      </Form.Item> */}
     </div>
   );
 };
