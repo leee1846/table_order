@@ -17,7 +17,7 @@ export interface IStore {
 
 export interface IStoreListResponseData {
   content: IStore[];
-  totalCount: number;
+  totalElements: number;
   page: number;
   size: number;
   totalPages: number;

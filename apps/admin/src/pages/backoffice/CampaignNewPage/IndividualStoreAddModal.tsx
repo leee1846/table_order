@@ -21,7 +21,7 @@ const IndividualStoreAddModal: React.FC<IndividualStoreAddModalProps> = ({
   const [searchInputValue, setSearchInputValue] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
 
   const { data: storeResponse, isFetching } = useGetStoreList({
     page: currentPage - 1,
@@ -31,7 +31,7 @@ const IndividualStoreAddModal: React.FC<IndividualStoreAddModalProps> = ({
   });
 
   const stores = storeResponse?.data?.content || [];
-  const totalElements = storeResponse?.data?.totalCount || 0;
+  const totalElements = storeResponse?.data?.totalElements || 0;
 
   const handleAdd = () => {
     onAdd(selectedStores);
