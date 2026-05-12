@@ -250,6 +250,15 @@ export const useSSEHandler = () => {
     [queryClient]
   );
 
+  const refetchAdFiles = useCallback(
+    (shopCode: string) => {
+      queryClient.refetchQueries({
+        queryKey: queryKeys.menu.adFiles(shopCode),
+      });
+    },
+    [queryClient]
+  );
+
   const stopPosSyncPolling = useCallback(() => {
     globalTimerManager.clear(TIMER_KEYS.POS_SYNC_POLLING);
   }, []);
@@ -284,6 +293,7 @@ export const useSSEHandler = () => {
   const handlersRef = useRef({
     refetchCurrentTableList,
     refetchDeviceList,
+    refetchAdFiles,
     stopPosSyncPolling,
     startPosSyncPolling,
 
@@ -758,6 +768,21 @@ export const useSSEHandler = () => {
       refreshShopThemePageData();
     },
 
+    // AD_MENU: 광고 파일 + 메뉴보드(카테고리) 동시 갱신
+    // 광고 파일 refetch → useAdData의 useEffect가 apiData 변경을 감지하여 자동 재처리
+    // 메뉴보드 갱신은 handleMenuMessage와 동일 로직 재사용 (장바구니 동기화·다이얼로그 닫기 포함)
+    handleAdMenuMessage: () => {
+      const { locationPathname, currentShopData } = sseHandlerDataRef.current;
+      if (locationPathname === ROUTES.LOGIN.path) {
+        return;
+      }
+      const shopCode = currentShopData?.shopCode;
+      if (shopCode) {
+        handlersRef.current.refetchAdFiles(shopCode);
+      }
+      handlersRef.current.handleMenuMessage();
+    },
+
     handleLogoutMessage: async () => {
       openConfirmDialog({
         title: tRef.current('로그아웃'),
@@ -928,7 +953,8 @@ export const useSSEHandler = () => {
   useEffect(() => {
     handlersRef.current.refetchCurrentTableList = refetchCurrentTableList;
     handlersRef.current.refetchDeviceList = refetchDeviceList;
-  }, [refetchCurrentTableList, refetchDeviceList]);
+    handlersRef.current.refetchAdFiles = refetchAdFiles;
+  }, [refetchCurrentTableList, refetchDeviceList, refetchAdFiles]);
 
   // ----- Effect: SSE 메시지 수신 시 타입별 핸들러 실행 -----
   useEffect(() => {
@@ -1001,6 +1027,9 @@ export const useSSEHandler = () => {
         break;
       case 'POS_SYNC_END':
         handlersRef.current.handlePosSyncEndMessage();
+        break;
+      case 'AD_MENU':
+        handlersRef.current.handleAdMenuMessage();
         break;
       default:
         break;
