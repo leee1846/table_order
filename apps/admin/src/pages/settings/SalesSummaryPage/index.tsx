@@ -52,7 +52,7 @@ export const SalesSummaryPage = () => {
         {t('매출 현황')}
         <div />
         <div>
-          <span>{t('매출 요약')}</span>
+          <span>{t('매출개요')}</span>
           <AntTooltip title={t('최근 7일 실적 기준 지표')} />
         </div>
       </S.Title>

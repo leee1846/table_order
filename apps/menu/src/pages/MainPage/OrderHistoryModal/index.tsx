@@ -10,6 +10,11 @@ import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
 import { useIdleTimeout } from '@/hooks/useIdleTimeout';
 import { IdleTimerMessage } from '@/feature/IdleTimerMessage';
 
+const formatKrw = (amount: number) =>
+  amount < 0
+    ? `-₩${formatCurrency(Math.abs(amount))}`
+    : `₩${formatCurrency(amount)}`;
+
 interface Props {
   orderHistories?: ITableOrderHistoriesData | null;
   onClose: () => void;
@@ -56,8 +61,7 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
                 </p>
                 <p>{formatCurrency(orderHistory.menuQuantity)}</p>
                 <p>
-                  ₩
-                  {formatCurrency(
+                  {formatKrw(
                     orderHistory.menuPrice * orderHistory.menuQuantity
                   )}
                 </p>
@@ -74,10 +78,7 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
                     <div>
                       <p>{formatCurrency(option.optionQuantity)}</p>
                       <p>
-                        ₩
-                        {formatCurrency(
-                          option.optionPrice * option.optionQuantity
-                        )}
+                        {formatKrw(option.optionPrice * option.optionQuantity)}
                       </p>
                     </div>
                   </li>
@@ -91,7 +92,7 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
           {shopDetailData?.shopSetting?.isOrderSheetTotalVisible && (
             <div>
               <h3>{t('합계')}</h3>
-              <p>₩{formatCurrency(orderHistories?.totalAmount ?? 0)}</p>
+              <p>{formatKrw(orderHistories?.totalAmount ?? 0)}</p>
             </div>
           )}
           <BasicButton

@@ -82,7 +82,7 @@ export const MenuSalesHistoryTable = ({ rows, currentLanguage }: Props) => {
   };
 
   const totalCount = orderedRows.reduce(
-    (acc, cur) => acc + (cur.salesCount ?? 0),
+    (acc, cur) => (cur.isOption === 1 ? acc : acc + (cur.salesCount ?? 0)),
     0
   );
   const totalAmount = orderedRows.reduce(
@@ -99,9 +99,7 @@ export const MenuSalesHistoryTable = ({ rows, currentLanguage }: Props) => {
           <th>
             <S.HeaderLabel>
               {t('판매수')}
-              <AntTooltip
-                title={t('추가선택 수량은 중복되므로 제외')}
-              />
+              <AntTooltip title={t('추가선택 수량은 중복되므로 제외')} />
             </S.HeaderLabel>
           </th>
           <th>
