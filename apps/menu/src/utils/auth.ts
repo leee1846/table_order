@@ -9,6 +9,8 @@ export const clearAuthData = async () => {
   removeAuthTokens();
   storage.local.clear();
   storage.session.clear();
+  // TODO: 광고 미디어 파일 모두 삭제 로직 추가 예정
+  // await AppStorage.removeAllAdMedia({ type: 'video' });
   resetAllStores();
   await AppStorage.removeAllData();
 };

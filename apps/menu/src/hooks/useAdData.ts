@@ -50,24 +50,37 @@ export const useAdData = () => {
       const prevResult = await AppStorage.loadData<string[]>({
         key: STORAGE_KEYS.AD_VIDEO_PATHS,
       });
+
       const prevVideoStorageKeys = prevResult?.value ?? [];
+      console.log(
+        'prevVideoStorageKeys!!!!!!!이전에 저장된 영상 식별자!!!!!!',
+        prevVideoStorageKeys
+      );
 
       const staleStorageKeys = prevVideoStorageKeys.filter(
         (k) => !currentVideoStorageKeys.includes(k)
       );
+
+      console.log(
+        'staleStorageKeys!!!!!!!stale 영상 식별자!!!!!!',
+        staleStorageKeys
+      );
       for (const staleKey of staleStorageKeys) {
         try {
-          await AppStorage.removeData({ key: staleKey });
+          console.log(
+            'removeData!!!!!!!stale 영상 식별자 삭제!!!!!!',
+            staleKey
+          );
+          await AppStorage.removeAdMedia({ fileName: staleKey, type: 'video' });
         } catch {
           // 삭제 실패 시 무시 (다음 세션에서 재시도)
         }
       }
 
-      // 3. 현재 영상 식별자 목록을 세션 저장 (앱 종료 시 자동 삭제)
+      // 3. 현재 영상 식별자 목록을 저장하여 재부팅 후에도 stale 영상 추적 유지
       await AppStorage.saveData({
         key: STORAGE_KEYS.AD_VIDEO_PATHS,
         value: currentVideoStorageKeys,
-        isTemporary: true,
       });
 
       // 4. 영상 파일 순차 다운로드 후 로컬 URL 등록
@@ -85,13 +98,14 @@ export const useAdData = () => {
           if (!storageFileName) {
             continue;
           }
-
+          console.log('storageFileName이름!!!!!!!', storageFileName);
           const { exists } = await AppStorage.exists({
             fileName: storageFileName,
             type: 'video',
           });
-
+          console.log('exists!!!!!!!존재함??/', exists);
           if (!exists) {
+            console.log('downloadFromUrl!!!!!!!다운로드 진행해', file.filePath);
             await AppStorage.downloadFromUrl({
               url: file.filePath,
               fileName: storageFileName,
@@ -107,7 +121,7 @@ export const useAdData = () => {
             fileName: storageFileName,
             type: 'video',
           });
-
+          console.log('url!!!!!!!저장한거!!!!!!', url);
           // localVideoUrls key는 filePath 유지 — AdMediaSlider가 file.filePath로 조회
           setLocalVideoUrl(file.filePath, url);
         } catch {

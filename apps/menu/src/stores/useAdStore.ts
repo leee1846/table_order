@@ -39,7 +39,7 @@ export interface IAdStoreData {
 interface IAdStore {
   data: IAdStoreData;
   /**
-   * API 응답 전체를 받아 adType별로 그룹화하고 AppStorage에 세션 캐시
+   * API 응답 전체를 받아 adType별로 그룹화하고 AppStorage에 캐시
    */
   setAdFiles: (files: IGetMenuAdFile[]) => Promise<void>;
   /**
@@ -103,10 +103,10 @@ const INITIAL_DATA: IAdStoreData = {
  * @description
  * - API 응답(IGetMenuAdFile[])을 adType별로 그룹화하여 보관
  * - 영상 파일의 로컬 URL(AppStorage.getLocalUrl 결과)을 localVideoUrls에 캐시
- * - 메타데이터는 AppStorage(temporary)에 세션 캐시하여 앱 재기동 시 빠르게 복원
+ * - 메타데이터는 AppStorage에 캐시하여 앱 재기동 시 빠르게 복원
  */
 export const useAdStore = create<IAdStore>((set) => {
-  // 세션 캐시 복원 (앱 재기동 시 API 응답 전에 이전 데이터로 즉시 렌더 가능)
+  // 캐시 복원 (앱 재기동 시 API 응답 전에 이전 데이터로 즉시 렌더 가능)
   // isLoaded가 이미 true이면 API가 먼저 응답한 것이므로 캐시로 덮어쓰지 않음
   AppStorage.loadData<IGetMenuAdFile[]>({ key: STORAGE_KEYS.AD_FILES }).then(
     (result) => {
@@ -151,7 +151,6 @@ export const useAdStore = create<IAdStore>((set) => {
       await AppStorage.saveData({
         key: STORAGE_KEYS.AD_FILES,
         value: files,
-        isTemporary: true,
       });
     },
 
