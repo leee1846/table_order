@@ -35,7 +35,7 @@ export const STORAGE_KEYS = {
   HOLIDAY_DAY_CACHE: 'holiday-day-cache',
   /** 광고 파일 목록 캐시 */
   AD_FILES: 'ad-files',
-  /** AppStorage에 다운로드된 영상 filePath 목록 (stale 영상 제거용) */
+  /** 레거시 메타데이터 키 — clearData 시에만 제거 (영상 본체는 AdStorage) */
   AD_VIDEO_PATHS: 'ad-video-paths',
 } as const;
 

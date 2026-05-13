@@ -32,22 +32,6 @@ export interface IAppStorage {
   removeAllData(): Promise<void>;
 
   /**
-   * 광고 미디어 파일 삭제
-   * @param options.fileName - 삭제할 파일명
-   * @param options.type - 'image' or 'video'
-   */
-  removeAdMedia(options: {
-    fileName: string;
-    type?: 'image' | 'video';
-  }): Promise<void>;
-
-  /**
-   * 광고 미디어 파일 전체 삭제
-   * @param options.type - 'image' or 'video'
-   */
-  removeAllAdMedia(options?: { type?: 'image' | 'video' }): Promise<void>;
-
-  /**
    * 모든 데이터 로드
    * @returns 영구 저장 데이터와 임시 저장 데이터
    */
@@ -145,14 +129,6 @@ export const AppStorage: IAppStorage = {
 
   removeAllData: async () => {
     await AppStorageNative.removeAllData();
-  },
-
-  removeAdMedia: async () => {
-    // 추가 예정
-  },
-
-  removeAllAdMedia: async () => {
-    // 추가 예정
   },
 
   getAllData: async () => {

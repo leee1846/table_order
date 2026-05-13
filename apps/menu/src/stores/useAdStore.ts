@@ -1,7 +1,7 @@
 import { create } from '@repo/feature/zustand';
 import type { IGetMenuAdFile, TGetMenuAdFilesAdType } from '@repo/api/types';
 import { STORAGE_KEYS } from '@/constants/keys';
-import { AppStorage } from '@repo/util/app';
+import { AdStorage, AppStorage } from '@repo/util/app';
 
 const STANDBY_TYPES: readonly TGetMenuAdFilesAdType[] = [
   'STANDBY_VIDEO',
@@ -39,7 +39,7 @@ export interface IAdStoreData {
 interface IAdStore {
   data: IAdStoreData;
   /**
-   * API 응답 전체를 받아 adType별로 그룹화하고 AppStorage에 캐시
+   * API 응답 전체를 받아 adType별로 그룹화하고 AppStorage(AD_FILES)에 캐시
    */
   setAdFiles: (files: IGetMenuAdFile[]) => Promise<void>;
   /**
@@ -102,7 +102,7 @@ const INITIAL_DATA: IAdStoreData = {
  *
  * @description
  * - API 응답(IGetMenuAdFile[])을 adType별로 그룹화하여 보관
- * - 영상 파일의 로컬 URL(AppStorage.getLocalUrl 결과)을 localVideoUrls에 캐시
+ * - 영상 파일의 로컬 URL(AdStorage.getAdUrl 반환)을 localVideoUrls에 캐시
  * - 메타데이터는 AppStorage에 캐시하여 앱 재기동 시 빠르게 복원
  */
 export const useAdStore = create<IAdStore>((set) => {
@@ -173,8 +173,9 @@ export const useAdStore = create<IAdStore>((set) => {
     },
 
     clearData: () => {
-      AppStorage.removeData({ key: STORAGE_KEYS.AD_FILES });
-      AppStorage.removeData({ key: STORAGE_KEYS.AD_VIDEO_PATHS });
+      void AppStorage.removeData({ key: STORAGE_KEYS.AD_FILES });
+      void AppStorage.removeData({ key: STORAGE_KEYS.AD_VIDEO_PATHS });
+      void AdStorage.clearAds().catch(() => undefined);
       set({ data: INITIAL_DATA });
     },
   };
