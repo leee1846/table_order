@@ -9,4 +9,5 @@ export const FullscreenViewport = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100%;
+  background-color: ${({ theme }) => theme.mode.undefined_palette[100]};
 `;
