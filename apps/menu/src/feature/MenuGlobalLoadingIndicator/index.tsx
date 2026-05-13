@@ -5,6 +5,7 @@ import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { PosSyncOverlayModal } from '@/feature/PosSyncOverlayModal';
 import { ROUTES } from '@/constants/routes';
+import { useAdStore } from '@/stores/useAdStore';
 
 /**
  * Menu 앱용 GlobalLoadingIndicator Wrapper
@@ -21,15 +22,18 @@ export function MenuGlobalLoadingIndicator() {
   const t = isRootPage ? tCustomer : tAdmin;
 
   const isPosSyncVisible = usePosSyncOverlayStore((s) => s.isVisible);
+  const isAdDataLoading = useAdStore((s) => s.data.isAdDataLoading);
 
   return (
     <GlobalLoadingIndicator
       isPosSyncVisible={isPosSyncVisible}
       sseReconnectingMessage={t('네트워크 연결 중')}
       posOrderWaitingMessage={t('주문 대기 중')}
+      customLoadingMessage={t('광고 콘텐츠 준비 중')}
       LoadingOverlay={PosSyncOverlayModal}
       hideSSEReconnectingOverlay
       hideFetchingSpinner={isRootPage}
+      customLoadingVisible={isRootPage && isAdDataLoading}
     />
   );
 }

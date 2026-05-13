@@ -29,11 +29,12 @@ export const useAdData = () => {
 
     let cancelled = false;
 
-    // API 응답이 도착했으므로 로딩 시작
-    setAdDataLoading(true);
-
     const processAdFiles = async () => {
       const files = apiData.data ?? [];
+      const hasAdFiles = files.length > 0;
+
+      // 광고 항목이 있을 때만 영상 준비 로딩 오버레이 표시
+      setAdDataLoading(hasAdFiles);
 
       // 1. 전체 메타데이터 store 저장 — 이미지 광고는 이 시점부터 렌더 가능
       await setAdFiles(files);
@@ -129,7 +130,7 @@ export const useAdData = () => {
         }
       }
 
-      if (!cancelled) {
+      if (!cancelled && hasAdFiles) {
         setAdDataLoading(false);
       }
     };

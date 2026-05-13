@@ -90,7 +90,7 @@ const INITIAL_DATA: IAdStoreData = {
   orderCompleteSideFiles: [],
   localVideoUrls: {},
   isLoaded: false,
-  isAdDataLoading: true,
+  isAdDataLoading: false,
 };
 
 // ============================================================================
