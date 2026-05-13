@@ -105,12 +105,6 @@ const ActionButton = styled(Button)`
   height: 36px;
   padding: 0 32px;
   font-weight: 600;
-
-  &:hover,
-  &:focus {
-    background-color: #1d2a6d;
-    opacity: 0.9;
-  }
 `;
 
 const PanelTitle = styled(Text)`
@@ -247,10 +241,10 @@ const MenuGroupStatus: React.FC = () => {
   // 일괄 등록 처리
   const handleBulkRegister = () => {
     if (!activeGroupId || !campaignSeq) return;
-    if (selectedRowKeys.length === 0) {
+    /*     if (selectedRowKeys.length === 0) {
       message.warning('등록할 매장을 선택해주세요.');
       return;
-    }
+    } */
 
     registerSync(
       {
@@ -374,8 +368,11 @@ const MenuGroupStatus: React.FC = () => {
                     미등록 {syncData?.unregisteredCount || 0}
                   </SummaryTag>
                 </Space>
-
-                <ActionButton type="primary" onClick={handleBulkRegister}>
+                <ActionButton
+                  type="primary"
+                  onClick={handleBulkRegister}
+                  disabled={selectedRowKeys.length === 0}
+                >
                   일괄 등록
                 </ActionButton>
               </Space>
