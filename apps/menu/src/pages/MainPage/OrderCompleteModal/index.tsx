@@ -9,7 +9,7 @@ import customerI18n from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { Trans } from 'react-i18next';
-import { AdMediaSlider } from '@/pages/MainPage/StandbyAd/AdMediaSlider';
+import { AdMediaSlider } from '@/feature/AdMediaSlider';
 import { OrderCompleteFullAd } from '@/pages/MainPage/OrderCompleteModal/OrderCompleteFullAd';
 import {
   shouldShowOrderCompleteFullscreenAd,

@@ -1,6 +1,6 @@
 import type { TFunction } from 'i18next';
 import type { IGetMenuAdFile } from '@repo/api/types';
-import { AdMediaSlider } from '@/pages/MainPage/StandbyAd/AdMediaSlider';
+import { AdMediaSlider } from '@/feature/AdMediaSlider';
 import * as S from '@/pages/MainPage/StandbyAd/standbyAd.style';
 import * as OverlayS from '@/pages/MainPage/OrderCompleteModal/OrderCompleteFullAd.style';
 
@@ -28,7 +28,12 @@ export const OrderCompleteFullAd = ({
     tabIndex={0}
   >
     <S.AdContainer>
-      <AdMediaSlider files={files} localVideoUrls={localVideoUrls} />
+      <AdMediaSlider
+        files={files}
+        localVideoUrls={localVideoUrls}
+        isLooping={false}
+        onComplete={onClose}
+      />
     </S.AdContainer>
     <S.Notice>{t('주문을 시작하려면 화면을 터치해 주세요.')}</S.Notice>
   </OverlayS.FullscreenViewport>
