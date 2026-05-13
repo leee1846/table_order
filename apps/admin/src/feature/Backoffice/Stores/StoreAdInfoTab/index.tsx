@@ -192,6 +192,7 @@ export const StoreAdInfoTab = ({
             <ItemInfo>
               <Text style={{ color: '#262626', fontSize: '14px' }}>
                 {getAdTypeLabel(ad.adType)}
+                {ad.menuGroupName && ` (${ad.menuGroupName})`}
               </Text>
               <Text type="secondary" style={{ fontSize: '12px' }}>
                 {ad.fileName}

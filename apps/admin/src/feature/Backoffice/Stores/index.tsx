@@ -165,7 +165,14 @@ export const Stores = ({
         justify="space-between"
         align="center" /* style={{ marginBottom: 24 }} */
       >
-        <PageTitle title="매장 관리" subtitle={subTitle} />
+        <PageTitle
+          title="매장 관리"
+          subtitle={
+            mode === 'edit'
+              ? `${subTitle}  (${initialData?.shopCode})`
+              : subTitle
+          }
+        />
         {mode === 'edit' && <Button onClick={handleHistory}>변경 이력</Button>}
       </Flex>
       <FormWrapper>

@@ -122,6 +122,7 @@ export interface ICampaignStatusContent {
   contentSeq: number;
   adType: string;
   fileName: string | null;
+  menuGroupName: string | null;
   excluded: boolean;
 }
 
