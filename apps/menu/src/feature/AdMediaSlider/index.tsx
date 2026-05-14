@@ -72,7 +72,14 @@ const VideoSlide = ({
   }, [loopPlayback, onEnded, src]);
 
   return (
-    <S.AdMediaVideo ref={ref} src={src} muted playsInline loop={loopPlayback} />
+    <S.AdMediaVideo
+      ref={ref}
+      src={src}
+      muted
+      playsInline
+      loop={loopPlayback}
+      poster="https://d1pv6p24gb2rr8.cloudfront.net/ad/campaign/13/STANDBY_IMAGE/fd18fcc0_black.png"
+    />
   );
 };
 
