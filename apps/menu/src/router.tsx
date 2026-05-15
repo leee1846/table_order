@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { getAccessToken } from '@repo/api/auth';
-import { AppStorage } from '@repo/util/app';
+import { saveAppLog, AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from './constants/keys';
 import App from './App';
 import { MainPage } from '@/pages/MainPage';
@@ -110,3 +110,23 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+
+/**
+ * 이전 페이지 경로를 추적
+ * subscribe 최초 호출(앱 초기 진입) 시에는 null로 기록
+ */
+let prevPathname: string | null = null;
+
+/**
+ * - 'idle': 이동 완료 후 state.location이 실제 이동된 페이지 → 기록
+ */
+router.subscribe((state) => {
+  if (state.navigation.state === 'idle') {
+    saveAppLog('[페이지 이동]', {
+      from: prevPathname,
+      to: state.location.pathname,
+      search: state.location.search,
+    });
+    prevPathname = state.location.pathname;
+  }
+});

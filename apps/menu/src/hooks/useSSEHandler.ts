@@ -25,7 +25,7 @@ import { getLatestAppVersion, getPosSyncStatus } from '@repo/api/fetchers';
 import { useSSE } from '@repo/feature/hooks';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
 import { useAddMenuDialogStore, useDialogStore, usePosOrderStore } from '@repo/feature/stores';
-import { SystemControl, Installer } from '@repo/util/app';
+import { SystemControl, Installer, saveAppLog } from '@repo/util/app';
 import { SSE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import { ROUTES } from '@/constants/routes';
 import { globalTimerManager } from '@/utils/timerManager';
@@ -694,9 +694,7 @@ export const useSSEHandler = () => {
         try {
           await SystemControl.reboot();
         } catch (e) {
-          // app 로그 확인용
-          // eslint-disable-next-line no-console
-          console.log('DEVICE_RESTART error:', JSON.stringify(e));
+          saveAppLog('[SSE 오류]', { event: 'DEVICE_RESTART', error: JSON.stringify(e) });
           const { currentShopData } = sseHandlerDataRef.current;
           if (currentShopData?.shopCode) {
             await collectDeviceInfoAndSyncToServer(
@@ -728,9 +726,7 @@ export const useSSEHandler = () => {
         await Installer.startUpdate(downloadPath, checksum);
       } catch (e) {
         if (currentShopData?.shopCode) {
-          // app 로그 확인용
-          // eslint-disable-next-line no-console
-          console.log('DEVICE_APP_UPDATE error:', JSON.stringify(e));
+          saveAppLog('[SSE 오류]', { event: 'DEVICE_APP_UPDATE', error: JSON.stringify(e) });
           await collectDeviceInfoAndSyncToServer(
             deviceDataSyncDeps,
             currentShopData.shopCode,

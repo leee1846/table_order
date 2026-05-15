@@ -1,5 +1,6 @@
 import type { IPaymentResponse } from '@repo/util/app';
 import { ENDPOINTS } from '@repo/api/cores';
+import { saveAppLog } from '@repo/util/app';
 
 /**
  * 카드 승인은 되었으나 Payment.cancel(환불)까지 실패한 경우 진단 로그.
@@ -9,11 +10,10 @@ export function logOrderRequestRefundFailed(
   summary: string,
   payment: IPaymentResponse
 ): void {
-  // app 로그 확인용
-  // eslint-disable-next-line no-console -- 결제 승인 성공·환불 실패 진단 로그
-  console.log(
-    JSON.stringify({ tag: 'order_request_refund_failed', summary, payment })
-  );
+  saveAppLog('[결제 환불 실패]', {
+    summary,
+    payment: payment as unknown as Record<string, unknown>,
+  });
 }
 
 /** POST /order/{shopCode}/{tableNumber} 주문 생성 실패 후 환불 실패 */
