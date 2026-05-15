@@ -7,6 +7,7 @@ import { toast } from '@repo/feature/utils';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/optionSetting.style';
 import { OptionGroupManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/OptionGroupManageModal';
 import { useMenuManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
+import { resolveLocalizedName } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/utils';
 
 interface Props {
   isPosLinked: boolean;
@@ -118,9 +119,11 @@ export const OptionSetting = ({ isPosLinked }: Props) => {
             const optionList = optionGroup.optionList ?? [];
             const key = getOptionGroupKey(optionGroup.optionGroupSeq, index);
 
-            const displayOptionGroupName =
-              optionGroup.localeOptionGroupName?.[selectedLanguageCode] ??
-              optionGroup.optionGroupName;
+            const displayOptionGroupName = resolveLocalizedName(
+              optionGroup.localeOptionGroupName,
+              selectedLanguageCode,
+              optionGroup.optionGroupName
+            );
 
             return (
               <S.OptionGroup key={key}>
@@ -133,9 +136,11 @@ export const OptionSetting = ({ isPosLinked }: Props) => {
                         index,
                         optionIndex
                       );
-                      const displayOptionName =
-                        option.localeOptionName?.[selectedLanguageCode] ??
-                        option.optionName;
+                      const displayOptionName = resolveLocalizedName(
+                        option.localeOptionName,
+                        selectedLanguageCode,
+                        option.optionName
+                      );
 
                       return (
                         <span key={optionKey}>
