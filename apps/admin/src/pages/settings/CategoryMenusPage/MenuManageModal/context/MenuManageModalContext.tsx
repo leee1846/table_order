@@ -7,7 +7,12 @@ import {
   useEffect,
   type ReactNode,
 } from 'react';
-import type { IGetMenu, IMenu, IUpdateMenuRequest } from '@repo/api/types';
+import type {
+  IGetMenu,
+  IMenu,
+  IUpdateMenuRequest,
+  TShopLanguage,
+} from '@repo/api/types';
 import {
   queryKeys,
   usePostCreateMenu,
@@ -22,7 +27,12 @@ import type {
   MenuManageModalContextValue,
   ModalMode,
 } from './types';
-import { getInitialFormValues, buildMenuData, buildUpdateData } from './utils';
+import {
+  getInitialFormValues,
+  buildMenuData,
+  buildUpdateData,
+  syncOptionGroupListForLanguage,
+} from './utils';
 import { useMenuImagesState } from './useMenuImagesState';
 
 export type { MenuImageData, FileWithId, FormValues } from './types';
@@ -86,6 +96,16 @@ const useMenuFormState = (
             const menuDescriptionForLanguage =
               menu.localeMenuDescription[updated.selectedLanguageCode] || '';
             updated.menuDescription = menuDescriptionForLanguage;
+          }
+
+          const languageCode =
+            updated.selectedLanguageCode as TShopLanguage;
+
+          if (prev.optionGroupList?.length) {
+            updated.optionGroupList = syncOptionGroupListForLanguage(
+              prev.optionGroupList,
+              languageCode
+            );
           }
         }
 

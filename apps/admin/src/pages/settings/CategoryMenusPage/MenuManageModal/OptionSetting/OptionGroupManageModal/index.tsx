@@ -11,7 +11,6 @@ import { AddCircleIcon, CloseIcon, DeleteIcon } from '@repo/ui/icons';
 import type {
   IOption,
   IOptionGroup,
-  IUpdateOptionGroup,
   ICreateOption,
   IUpdateOption,
   TLocale,
@@ -22,6 +21,11 @@ import { MAX_NAME_LENGTH } from '@repo/util/constants';
 /** 옵션 가격 입력 최대값 (999,999,999원) */
 const MAX_OPTION_PRICE = 999999999;
 import { useMenuManageModal } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
+import {
+  createOptionGroupForLanguage,
+  mergeOptionGroupForLanguage,
+  resolveLocalizedName,
+} from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/utils';
 import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/OptionSetting/OptionGroupManageModal/optionGroupManageModal.style';
 import { toast } from '@repo/feature/utils';
 
@@ -142,8 +146,11 @@ export const OptionGroupManageModal = ({
   useEffect(() => {
     if (existingOptionGroup) {
       setOptionGroupName(
-        existingOptionGroup.localeOptionGroupName?.[selectedLanguageCode] ??
+        resolveLocalizedName(
+          existingOptionGroup.localeOptionGroupName,
+          selectedLanguageCode,
           existingOptionGroup.optionGroupName
+        )
       );
       setSettings({
         minQuantity: existingOptionGroup.minQuantity,
@@ -161,9 +168,11 @@ export const OptionGroupManageModal = ({
           return {
             optionSeq: option.optionSeq,
             optionGroupSeq: existingOptionGroup.optionGroupSeq,
-            optionName:
-              option.localeOptionName?.[selectedLanguageCode] ??
-              option.optionName,
+            optionName: resolveLocalizedName(
+              option.localeOptionName,
+              selectedLanguageCode,
+              option.optionName
+            ),
             optionPrice: option.optionPrice,
             isDeleted: option.isDeleted ?? false,
             index: option.index,
@@ -178,7 +187,7 @@ export const OptionGroupManageModal = ({
       setSettings(DEFAULT_SETTINGS);
       setOptions([createEmptyOption()] as ICreateOption[]);
     }
-  }, [existingOptionGroup, isOptionGroupEditMode]);
+  }, [existingOptionGroup, isOptionGroupEditMode, selectedLanguageCode]);
 
   const handleAddOption = () => {
     if (isPosLinked) {
@@ -404,19 +413,20 @@ export const OptionGroupManageModal = ({
           existingOptionGroup.optionGroupSeq
         );
 
-        const updateOptionGroup: IUpdateOptionGroup = {
-          ...buildOptionGroupBase(
-            existingOptionGroup.optionGroupSeq,
-            existingOptionGroup.menuSeq,
-            existingOptionGroup.index
-          ),
-          optionList: updateOptionList,
-        };
-
-        // index로 해당 그룹 찾아서 수정
         const updatedList = currentOptionGroupList.map((group, index) =>
           index === optionGroupIndex
-            ? (updateOptionGroup as unknown as IOptionGroup)
+            ? mergeOptionGroupForLanguage(
+                existingOptionGroup,
+                {
+                  ...buildOptionGroupBase(
+                    existingOptionGroup.optionGroupSeq,
+                    existingOptionGroup.menuSeq,
+                    existingOptionGroup.index
+                  ),
+                  optionList: updateOptionList,
+                },
+                selectedLanguageCode
+              )
             : group
         );
         updateFormValues({ optionGroupList: updatedList });
@@ -432,10 +442,13 @@ export const OptionGroupManageModal = ({
         addOptionDefaultsForForm({ ...option, isDeleted: false })
       );
 
-      const newOptionGroup: IOptionGroup = {
-        ...buildOptionGroupBase(0, 0, currentOptionGroupList.length + 1),
-        optionList: optionListForForm,
-      } as IOptionGroup;
+      const newOptionGroup = createOptionGroupForLanguage(
+        {
+          ...buildOptionGroupBase(0, 0, currentOptionGroupList.length + 1),
+          optionList: optionListForForm,
+        } as IOptionGroup,
+        selectedLanguageCode
+      );
 
       updateFormValues({
         optionGroupList: [...currentOptionGroupList, newOptionGroup],
@@ -452,18 +465,20 @@ export const OptionGroupManageModal = ({
         existingOptionGroup.optionGroupSeq
       );
 
-      const updateOptionGroup: IUpdateOptionGroup = {
-        ...buildOptionGroupBase(
-          existingOptionGroup.optionGroupSeq,
-          existingOptionGroup.menuSeq,
-          existingOptionGroup.index
-        ),
-        optionList: updateOptionList,
-      };
-
       const updatedList = currentOptionGroupList.map((group) =>
         group.optionGroupSeq === optionGroupSeq
-          ? (updateOptionGroup as unknown as IOptionGroup)
+          ? mergeOptionGroupForLanguage(
+              existingOptionGroup,
+              {
+                ...buildOptionGroupBase(
+                  existingOptionGroup.optionGroupSeq,
+                  existingOptionGroup.menuSeq,
+                  existingOptionGroup.index
+                ),
+                optionList: updateOptionList,
+              },
+              selectedLanguageCode
+            )
           : group
       );
       updateFormValues({ optionGroupList: updatedList });
@@ -479,16 +494,18 @@ export const OptionGroupManageModal = ({
     // IOptionGroup 형식으로 변환 (formValues에 저장하기 위해)
     const optionListForForm = updateOptionList.map(addOptionDefaultsForForm);
 
-    const newOptionGroup: IOptionGroup = {
-      ...buildOptionGroupBase(
-        tempOptionGroupSeq,
-        0,
-        currentOptionGroupList.length + 1
-      ),
-      optionList: optionListForForm,
-      localeOptionGroupName: {} as TLocale,
-      localeOptionGroupNameStr: {} as TLocale,
-    } as IOptionGroup;
+    const newOptionGroup = createOptionGroupForLanguage(
+      {
+        ...buildOptionGroupBase(
+          tempOptionGroupSeq,
+          0,
+          currentOptionGroupList.length + 1
+        ),
+        optionList: optionListForForm,
+        localeOptionGroupNameStr: {} as TLocale,
+      } as IOptionGroup,
+      selectedLanguageCode
+    );
 
     updateFormValues({
       optionGroupList: [...currentOptionGroupList, newOptionGroup],
@@ -510,6 +527,7 @@ export const OptionGroupManageModal = ({
     updateFormValues,
     onClose,
     onCreated,
+    selectedLanguageCode,
   ]);
 
   const modalTitle = isOptionGroupEditMode

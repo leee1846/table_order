@@ -89,52 +89,13 @@ export function handleApiErrorDialog(
   error: AxiosError<IApiError>,
   options: HandleApiErrorDialogOptions
 ): void {
-  const { openConfirmDialog, activeErrorTypes, messages, logLabel } = options;
+  const { openConfirmDialog, activeErrorTypes, messages } = options;
 
   if (!error.response) {
-    // app 로그 확인용
-    // eslint-disable-next-line no-console
-    console.log(
-      logLabel,
-      JSON.stringify({
-        message: error.message,
-        code: error.code,
-        url: error.config?.url,
-        method: error.config?.method,
-      })
-    );
-
-    // const content = messages.network;
-    // const isGet = String(error.config?.method).toUpperCase() === 'GET';
-    // if (!isGet && !activeErrorTypes.has(ERROR_TYPES.NETWORK)) {
-    //   activeErrorTypes.add(ERROR_TYPES.NETWORK);
-    //   openConfirmDialog({
-    //     title: 'Server Error',
-    //     content,
-    //     onConfirm: () => {
-    //       activeErrorTypes.delete(ERROR_TYPES.NETWORK);
-    //     },
-    //   });
-    // }
     return;
   }
 
   const status = error.response.status;
-  if (status >= 500 && status < 600) {
-    // app 로그 확인용
-    // eslint-disable-next-line no-console
-    console.log(
-      logLabel,
-      JSON.stringify({
-        message: error.message,
-        code: error.code,
-        status,
-        url: error.config?.url,
-        method: error.config?.method,
-      })
-    );
-  }
-
   const isGet = String(error.config?.method ?? '').toUpperCase() === 'GET';
   if (isGet) {
     return;

@@ -11,6 +11,7 @@
   IUpdateMenuRequest,
   IUpdateOption,
   IUpdateOptionGroup,
+  TLocale,
   TShopLanguage,
 } from '@repo/api/types';
 import { generateId } from '@repo/util/string';
@@ -47,7 +48,10 @@ export const getInitialFormValues = (
     categorySeq: menu.categorySeq,
     isRecommended: menu.isRecommended ?? false,
     isAdMenu: menu.isAdMenu ?? false,
-    optionGroupList: menu.optionGroupList ?? [],
+    optionGroupList: syncOptionGroupListForLanguage(
+      menu.optionGroupList ?? [],
+      currentLanguage
+    ),
     selectedLanguageCode: currentLanguage,
     menuImageList: menu.menuImageList ?? [],
     localeMenuName: menu.localeMenuName ?? null,
@@ -87,6 +91,127 @@ export const isExistingImage = (id: string) => id.startsWith('existing-');
 
 export const parseImageSeq = (id: string) =>
   parseInt(id.replace('existing-', ''), 10);
+
+/** locale 맵에서 선택 언어 이름을 가져오고, 없으면 flat 필드를 사용 */
+export const resolveLocalizedName = (
+  locale: TLocale | null | undefined,
+  languageCode: string,
+  fallback: string
+): string => locale?.[languageCode] ?? fallback;
+
+/** 선택 언어에 맞게 옵션 그룹/옵션의 flat 이름을 locale 기준으로 동기화 */
+export const syncOptionGroupListForLanguage = (
+  optionGroupList: IOptionGroup[],
+  languageCode: TShopLanguage
+): IOptionGroup[] =>
+  optionGroupList.map((group) => ({
+    ...group,
+    optionGroupName: resolveLocalizedName(
+      group.localeOptionGroupName,
+      languageCode,
+      group.optionGroupName
+    ),
+    optionList: (group.optionList ?? []).map((option) => ({
+      ...option,
+      optionName: resolveLocalizedName(
+        option.localeOptionName,
+        languageCode,
+        option.optionName
+      ),
+    })),
+  }));
+
+const upsertLocaleEntry = (
+  locale: TLocale | null | undefined,
+  languageCode: string,
+  name: string
+): TLocale => ({
+  ...(locale ?? {}),
+  [languageCode]: name,
+});
+
+/** 옵션 그룹 모달 저장 시: 기존 그룹에 현재 언어 이름을 locale·flat 모두 반영 */
+export const mergeOptionGroupForLanguage = (
+  existing: IOptionGroup,
+  updates: Pick<
+    IOptionGroup,
+    | 'optionGroupName'
+    | 'menuSeq'
+    | 'index'
+    | 'minQuantity'
+    | 'maxQuantity'
+    | 'isMultipleSelectable'
+    | 'isOptionQuantitySelectable'
+    | 'isMenuQuantityIndependent'
+  > & { optionList: IUpdateOption[] },
+  languageCode: string
+): IOptionGroup => {
+  const optionGroupName = updates.optionGroupName.trim();
+
+  const optionList = updates.optionList.map((savedOption) => {
+    const existingOption =
+      savedOption.optionSeq > 0
+        ? existing.optionList?.find(
+            (option) => option.optionSeq === savedOption.optionSeq
+          )
+        : undefined;
+
+    const optionName = savedOption.optionName.trim();
+
+    return {
+      ...(existingOption ?? ({} as IOption)),
+      ...savedOption,
+      optionName,
+      localeOptionName: upsertLocaleEntry(
+        existingOption?.localeOptionName,
+        languageCode,
+        optionName
+      ),
+    } as IOption;
+  });
+
+  return {
+    ...existing,
+    ...updates,
+    optionGroupName,
+    localeOptionGroupName: upsertLocaleEntry(
+      existing.localeOptionGroupName,
+      languageCode,
+      optionGroupName
+    ),
+    optionList,
+  };
+};
+
+/** 신규 옵션 그룹 form 저장 시: 현재 언어 locale·flat 이름 설정 */
+export const createOptionGroupForLanguage = (
+  group: IOptionGroup,
+  languageCode: string
+): IOptionGroup => {
+  const optionGroupName = group.optionGroupName.trim();
+
+  return {
+    ...group,
+    optionGroupName,
+    localeOptionGroupName: upsertLocaleEntry(
+      group.localeOptionGroupName,
+      languageCode,
+      optionGroupName
+    ),
+    optionList: (group.optionList ?? []).map((option) => {
+      const optionName = option.optionName.trim();
+      return {
+        ...option,
+        optionName,
+        localeOptionName: upsertLocaleEntry(
+          option.localeOptionName,
+          languageCode,
+          optionName
+        ),
+      };
+    }),
+  };
+};
 
 /** 옵션을 ICreateOption으로 변환 */
 const toCreateOption = (option: IOption): ICreateOption => ({
@@ -186,10 +311,21 @@ export const buildUpdateData = (
   formValues: FormValues,
   menuImageList: IMenuImage[]
 ): IUpdateMenuRequest => {
-  const optionGroupList = formValues.optionGroupList ?? menu.optionGroupList;
-  const convertedOptionGroupList = optionGroupList
-    ? convertOptionGroupListForUpdate(optionGroupList)
-    : undefined;
+  const selectedLanguageCode = (formValues.selectedLanguageCode ??
+    menu.selectedLanguageCode ??
+    'KO') as TShopLanguage;
+
+  const rawOptionGroupList =
+    formValues.optionGroupList ?? menu.optionGroupList ?? [];
+
+  const optionGroupListForLanguage = syncOptionGroupListForLanguage(
+    rawOptionGroupList,
+    selectedLanguageCode
+  );
+
+  const convertedOptionGroupList = convertOptionGroupListForUpdate(
+    optionGroupListForLanguage
+  );
 
   return {
     menuSeq: menu.menuSeq,
@@ -208,8 +344,7 @@ export const buildUpdateData = (
     isTaxFree: formValues.isTaxFree ?? menu.isTaxFree,
     minQuantity: formValues.minQuantity ?? 0,
     optionGroupList: (convertedOptionGroupList as IOptionGroup[]) ?? undefined,
-    selectedLanguageCode:
-      formValues.selectedLanguageCode ?? menu.selectedLanguageCode,
+    selectedLanguageCode,
     menuImageList,
   };
 };

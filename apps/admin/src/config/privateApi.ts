@@ -1,5 +1,6 @@
 import { t } from '@/config/i18n';
 import { createAxiosInstance } from '@repo/api/cores';
+import { saveAppLog } from '@repo/util/app';
 import {
   axios,
   type AxiosError,
@@ -36,17 +37,12 @@ const forceReLogin = (reason: string) => {
     ? decodeJwtToken<ITokenPayload>(accessToken)
     : null;
 
-  // app 로그 확인용
-  // eslint-disable-next-line no-console
-  console.log(
-    '인증만료 (로그아웃) 발생:',
-    JSON.stringify({
-      reason,
-      token: accessToken,
-      tokenExp: tokenPayload?.exp ?? null,
-      currentTime: getCurrentUnixTime(),
-    })
-  );
+  saveAppLog('[인증 만료]', {
+    reason,
+    token: accessToken,
+    tokenExp: tokenPayload?.exp ?? null,
+    currentTime: getCurrentUnixTime(),
+  });
 
   removeAuthTokens();
   disconnectSse();
@@ -60,7 +56,7 @@ const forceReLogin = (reason: string) => {
 };
 
 accessTokenRefreshManager.configure({
-  onRefreshFailed: () => forceReLogin('refresh-token-expired'),
+  onRefreshFailed: () => forceReLogin('리프레시 토큰 만료'),
   reconnectSse: initializeSseConnection,
   disconnectSse,
 });
@@ -75,14 +71,14 @@ privateApi.interceptors.request.use(
 
     // 토큰이 없을경우
     if (!accessToken) {
-      forceReLogin('request-no-access-token');
+      forceReLogin('요청 시 액세스 토큰 없음');
       throw new axios.Cancel('No access token');
     }
 
     // 토큰이 유효하지 않을경우
     const payload = decodeJwtToken<ITokenPayload>(accessToken);
     if (!payload) {
-      forceReLogin('request-invalid-token-payload');
+      forceReLogin('요청 시 토큰 페이로드 유효하지 않음');
       throw new axios.Cancel('Invalid access token');
     }
 
@@ -146,7 +142,7 @@ privateApi.interceptors.response.use(
       }
 
       // 재시도 후에도 401 → 로그아웃
-      forceReLogin('response-retry-401');
+      forceReLogin('재시도 후에도 401 응답');
       throw new axios.Cancel('Invalid access token');
     }
 

@@ -1,4 +1,5 @@
 export * from './AdStorage';
+export * from './AppLog';
 export * from './AppStorage';
 export * from './SystemControl';
 export * from './CapacitorApp';

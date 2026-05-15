@@ -1,4 +1,5 @@
 import { registerPlugin, type Plugin } from '@capacitor/core';
+import { saveAppLog } from './AppLog';
 
 export interface IAppStorage {
   /**
@@ -141,7 +142,7 @@ export const AppStorage: IAppStorage = {
         parsedData[key] = value;
       }
     });
-    console.log('[AppStorage.getAllData] 반환:', parsedData);
+    saveAppLog('[앱스토리지 전체 조회]', { data: parsedData });
     return result;
   },
 
