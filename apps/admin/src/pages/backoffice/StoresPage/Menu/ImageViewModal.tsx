@@ -188,9 +188,10 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
                     <S.ImagePlaceholder>이미지 없음</S.ImagePlaceholder>
                   )}
                   <S.TextContainer>
-                    <S.CategoryName>{item.categoryName}</S.CategoryName>
-                    <br />
-                    <strong>{item.menuName}</strong>
+                    <S.CategoryName title={item.categoryName}>
+                      {item.categoryName}
+                    </S.CategoryName>
+                    <S.MenuName title={item.menuName}>{item.menuName}</S.MenuName>
                   </S.TextContainer>
                 </S.ItemContainer>
               ))}

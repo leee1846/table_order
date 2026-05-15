@@ -106,14 +106,30 @@ export const TextContainer = styled.div`
   font-size: 13px;
   color: #333;
   text-align: center;
-  word-break: keep-all;
   line-height: 1.3;
   padding: 2px 0;
+  width: 100%;
+  min-width: 0;
+`;
+
+const singleLineEllipsis = `
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 export const CategoryName = styled.span`
   font-size: 11px;
   color: #888;
+  ${singleLineEllipsis}
+`;
+
+export const MenuName = styled.strong`
+  margin-top: 2px;
+  font-size: inherit;
+  font-weight: bold;
+  ${singleLineEllipsis}
 `;
 
 export const EmptyMessage = styled.p`
