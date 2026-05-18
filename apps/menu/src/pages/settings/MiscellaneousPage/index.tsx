@@ -20,6 +20,7 @@ import { DeviceManagement } from '@/pages/settings/MiscellaneousPage/DeviceManag
 import { Payment } from '@/pages/settings/MiscellaneousPage/Payment';
 import * as S from '@/pages/settings/MiscellaneousPage/MiscellaneousPage.style';
 import { useShopStore } from '@/stores/useShopStore';
+import { CapacitorApp } from '@repo/util/app';
 
 const MAX_ORDER_POS_NUMBER = 999;
 const TOAST_OPTIONS = {
@@ -124,7 +125,7 @@ export const MiscellaneousPage = () => {
           handleOrderPosNumberChange={handleOrderPosNumberChange}
         />
         <Payment />
-        <DeviceManagement />
+        {CapacitorApp.isNative() && <DeviceManagement />}
       </S.Sections>
     </S.Container>
   );
