@@ -38,6 +38,7 @@ import {
   getImageUrl,
   toCameraFile,
 } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection/imageHelpers';
+import { isShopRole } from '@/utils/common';
 
 type ImageModalMode = 'main' | 'additional';
 type CaptureTarget = {
@@ -563,7 +564,9 @@ export const ImageSection = () => {
       />
 
       <S.MainImageTitle>{t('대표 이미지')}</S.MainImageTitle>
-      <S.Thumbnail onClick={() => !mainImage && openModal('main')}>
+      <S.Thumbnail
+        onClick={() => !isShopRole() && !mainImage && openModal('main')}
+      >
         {(formValues.isBest || formValues.isNew) && (
           <S.BadgesContainer>
             <div>
@@ -593,22 +596,24 @@ export const ImageSection = () => {
 
         {mainImage && mainImageUrl ? (
           <>
-            <S.ThumbnailActionButtons onClick={(e) => e.stopPropagation()}>
-              <BasicButton
-                onClick={() => openModal('main')}
-                customStyle={S.ThumbnailActionButton}
-                variant="Outline_Grey_S"
-              >
-                {t('변경')}
-              </BasicButton>
-              <BasicButton
-                css={S.ThumbnailActionButton}
-                onClick={removeMainImage}
-                variant="Solid_Sky_Blue_S"
-              >
-                {t('삭제')}
-              </BasicButton>
-            </S.ThumbnailActionButtons>
+            {!isShopRole() && (
+              <S.ThumbnailActionButtons onClick={(e) => e.stopPropagation()}>
+                <BasicButton
+                  onClick={() => openModal('main')}
+                  customStyle={S.ThumbnailActionButton}
+                  variant="Outline_Grey_S"
+                >
+                  {t('변경')}
+                </BasicButton>
+                <BasicButton
+                  css={S.ThumbnailActionButton}
+                  onClick={removeMainImage}
+                  variant="Solid_Sky_Blue_S"
+                >
+                  {t('삭제')}
+                </BasicButton>
+              </S.ThumbnailActionButtons>
+            )}
             <img src={mainImageUrl} alt={t('메인 사진')} />
           </>
         ) : (
@@ -621,51 +626,62 @@ export const ImageSection = () => {
         )}
       </S.Thumbnail>
 
-      <S.AdditionalImagesTitle>{t('서브 이미지')}</S.AdditionalImagesTitle>
-      {additionalImages.length > 0 ? (
-        <S.ImagesContainer>
-          <S.Gradient />
-          <S.ScrollableContent>
+      {!isShopRole() && (
+        <>
+          <S.AdditionalImagesTitle>{t('서브 이미지')}</S.AdditionalImagesTitle>
+          {additionalImages.length > 0 ? (
+            <S.ImagesContainer>
+              <S.Gradient />
+              <S.ScrollableContent>
+                <S.ImageAddButton
+                  type="button"
+                  onClick={() => openModal('additional')}
+                >
+                  <AddIcon
+                    width={20}
+                    height={20}
+                    color={theme.colors.grey[600]}
+                  />
+                </S.ImageAddButton>
+                <ul>
+                  {additionalImages
+                    .sort((a, b) => (a.imageSeq ?? 0) - (b.imageSeq ?? 0))
+                    .map((image) => (
+                      <li key={image.id}>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeAdditionalImage(image.id);
+                          }}
+                        >
+                          <CloseIcon
+                            width={14}
+                            height={14}
+                            color={theme.colors.grey[200]}
+                          />
+                        </button>
+                        <img
+                          src={getImageUrl(image) ?? ''}
+                          alt={t('추가 이미지')}
+                          onClick={() => openModal('additional', image.id)}
+                          onClickCapture={(e) => e.stopPropagation()}
+                        />
+                      </li>
+                    ))}
+                </ul>
+              </S.ScrollableContent>
+            </S.ImagesContainer>
+          ) : (
             <S.ImageAddButton
               type="button"
               onClick={() => openModal('additional')}
             >
               <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
+              <span>{t('추가할 이미지가 있다면 선택해 주세요')}</span>
             </S.ImageAddButton>
-            <ul>
-              {additionalImages
-                .sort((a, b) => (a.imageSeq ?? 0) - (b.imageSeq ?? 0))
-                .map((image) => (
-                  <li key={image.id}>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeAdditionalImage(image.id);
-                      }}
-                    >
-                      <CloseIcon
-                        width={14}
-                        height={14}
-                        color={theme.colors.grey[200]}
-                      />
-                    </button>
-                    <img
-                      src={getImageUrl(image) ?? ''}
-                      alt={t('추가 이미지')}
-                      onClick={() => openModal('additional', image.id)}
-                      onClickCapture={(e) => e.stopPropagation()}
-                    />
-                  </li>
-                ))}
-            </ul>
-          </S.ScrollableContent>
-        </S.ImagesContainer>
-      ) : (
-        <S.ImageAddButton type="button" onClick={() => openModal('additional')}>
-          <AddIcon width={20} height={20} color={theme.colors.grey[600]} />
-          <span>{t('추가할 이미지가 있다면 선택해 주세요')}</span>
-        </S.ImageAddButton>
+          )}
+        </>
       )}
 
       <GalleryModal

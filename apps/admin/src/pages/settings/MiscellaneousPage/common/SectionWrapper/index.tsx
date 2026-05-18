@@ -3,6 +3,7 @@ import { theme } from '@repo/ui';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/common/SectionWrapper/sectionWrapper.style';
 import { useState } from 'react';
+import { isShopRole } from '@/utils/common';
 
 interface Props {
   title: string;
@@ -10,7 +11,7 @@ interface Props {
   icon: React.ReactNode;
 }
 export const SectionWrapper = ({ title, icon, children }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(isShopRole() ? true : false);
 
   return (
     <UIStyles.setting.Container>

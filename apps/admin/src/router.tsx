@@ -92,12 +92,7 @@ const redirectByUserRole = (payload: ITokenPayload) => {
 
   // 사장님 권한
   if (isShopRole) {
-    // 사장님 권한 && App(태블릿)일 경우 테이블 페이지로 리디렉트
-    if (isNative) {
-      return redirect(ROUTES.TABLES.generate());
-    }
-    // 사장님 권한 && Web(데스크탑)일 경우 공지사항 페이지로 리디렉트
-    return redirect(ROUTES.SETTINGS.NOTICES.generate());
+    return redirect(ROUTES.SETTINGS.MISCELLANEOUS.generate());
   }
 
   // 관리자 권한 && Web(데스크탑)일 경우 매장목록 페이지로 리디렉트

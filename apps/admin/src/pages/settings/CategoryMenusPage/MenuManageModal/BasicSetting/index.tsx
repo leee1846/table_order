@@ -14,10 +14,8 @@ import * as S from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSett
 import { ImageSection } from '@/pages/settings/CategoryMenusPage/MenuManageModal/BasicSetting/ImageSection';
 import { useMenuForm } from '@/pages/settings/CategoryMenusPage/MenuManageModal/context/MenuManageModalContext';
 import { formatCurrency, clampNumericToMax } from '@repo/util/string';
-import {
-  MAX_NAME_LENGTH,
-  MAX_DESCRIPTION_LENGTH,
-} from '@repo/util/constants';
+import { MAX_NAME_LENGTH, MAX_DESCRIPTION_LENGTH } from '@repo/util/constants';
+import { isShopRole } from '@/utils/common';
 
 const SPICE_LEVELS = [1, 2, 3] as const;
 
@@ -99,6 +97,7 @@ export const BasicSetting = ({ isPosLinked, hideImageSection }: Props) => {
               customStyle={S.inputCss}
               value={formValues.menuName ?? ''}
               onChange={handleMenuNameChange}
+              disabled={isShopRole()}
             />
           </S.VerticalLayout>
 
@@ -115,7 +114,7 @@ export const BasicSetting = ({ isPosLinked, hideImageSection }: Props) => {
               customStyle={S.inputCss}
               value={formatCurrency(formValues.menuPrice ?? 0)}
               onChange={handlePriceChange}
-              disabled={isPosLinked}
+              disabled={isPosLinked || isShopRole()}
             />
           </S.VerticalLayout>
         </S.HorizontalLayout>

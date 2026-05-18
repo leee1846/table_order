@@ -23,8 +23,7 @@ import type {
 } from '@repo/api/types';
 import { useAuth } from '@/hooks/useAuth';
 import * as S from '@/pages/settings/MiscellaneousPage/MiscellaneousPage.style';
-import { Account } from '@/pages/settings/MiscellaneousPage/Account';
-import { Network } from '@/pages/settings/MiscellaneousPage/Network';
+import { SystemInfo } from '@/pages/settings/MiscellaneousPage/SystemInfo';
 import { StoreEnvironment } from '@/pages/settings/MiscellaneousPage/StoreEnvironment';
 import { MenuAppFeature } from '@/pages/settings/MiscellaneousPage/MenuAppFeature';
 import { Payment } from '@/pages/settings/MiscellaneousPage/Payment';
@@ -35,6 +34,7 @@ import type { MiscellaneousChange } from './types';
 import { toast } from '@repo/feature/utils';
 import { CapacitorApp } from '@repo/util/app';
 import { ADMIN_LANGUAGE_STORAGE_KEY } from '@/constants/keys';
+import { isShopRole } from '@/utils/common';
 
 export const MiscellaneousPage = () => {
   const { t } = useAdminTranslation();
@@ -277,23 +277,22 @@ export const MiscellaneousPage = () => {
       </header>
 
       <S.Sections>
-        <Account
+        <SystemInfo
+          key={`system-info-${componentKey}`}
           shopName={shopInfo?.shopName}
           shopCode={shopInfo?.shopCode}
           userId={tokenPayload?.sub}
-        />
-
-        <Network
-          key={`network-${componentKey}`}
           shopNetwork={shopInfo?.shopNetwork}
           onChange={handleChange}
         />
-        <StoreEnvironment
-          key={`store-env-${componentKey}`}
-          shopSetting={shopInfo?.shopSetting}
-          shopTime={shopInfo?.shopTime}
-          onChange={handleChange}
-        />
+        {!isShopRole() && (
+          <StoreEnvironment
+            key={`store-env-${componentKey}`}
+            shopSetting={shopInfo?.shopSetting}
+            shopTime={shopInfo?.shopTime}
+            onChange={handleChange}
+          />
+        )}
 
         <MenuAppFeature
           key={`menu-app-${componentKey}`}
@@ -310,11 +309,13 @@ export const MiscellaneousPage = () => {
           shopSetting={shopInfo?.shopSetting}
           onChange={handleChange}
         />
-        <Intergration
-          key={`integration-${componentKey}`}
-          shopSetting={shopInfo?.shopSetting}
-          onChange={handleChange}
-        />
+        {!isShopRole() && (
+          <Intergration
+            key={`integration-${componentKey}`}
+            shopSetting={shopInfo?.shopSetting}
+            onChange={handleChange}
+          />
+        )}
 
         <Language
           key={`language-${componentKey}`}
