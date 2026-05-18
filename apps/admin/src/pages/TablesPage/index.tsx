@@ -24,6 +24,7 @@ import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { NoContent } from '@/feature/NoContent';
 import { useThemeMode } from '@repo/ui';
 import { useIsPosLinked } from '@/hooks/useIsPosLinked';
+import { isShopRole } from '@/utils/common';
 import {
   markTablesListTableGroupForRestoreAfterTableDetailNav,
   useEnsureSelectedTableGroupInList,
@@ -217,42 +218,46 @@ export const TablesPage = () => {
           onDeviceListDialogAfterClose={scrollTableGroupTabStripAfterOverlay}
         />
         <TableCardsArea>
-          <TableGroupTabStrip
-            ref={tableGroupTabStripRef}
-            groups={tableGroupListResponse?.data}
-            selectedSeq={selectedTableGroupSeq}
-            onSelect={setSelectedTableGroupSeq}
-            alignTabStripOnce={alignTabStripOnce}
-          />
-          {tables.length === 0 ? (
-            <NoContent paddingTop="0" color={theme.mode.grey[200]}>
-              {t('등록된 테이블이 없습니다.')}
-            </NoContent>
-          ) : (
-            <TableCardsGrid>
-              {tables.map((table) =>
-                isPosLinked ? (
-                  <div key={table.id}>
-                    <TableCard
-                      id={table.id}
-                      table={table}
-                      tableNumber={table.tableNumber}
-                      orderTime={table.orderTime ?? null}
-                      onClick={() => handleTableClick(table)}
-                      i18nInstance={adminI18n}
-                    />
-                  </div>
-                ) : (
-                  <DraggableTableCard
-                    key={table.id}
-                    table={table}
-                    activeTableNumber={activeTableNumber}
-                    onClick={handleTableClick}
-                    i18nInstance={adminI18n}
-                  />
-                )
+          {!isShopRole() && (
+            <>
+              <TableGroupTabStrip
+                ref={tableGroupTabStripRef}
+                groups={tableGroupListResponse?.data}
+                selectedSeq={selectedTableGroupSeq}
+                onSelect={setSelectedTableGroupSeq}
+                alignTabStripOnce={alignTabStripOnce}
+              />
+              {tables.length === 0 ? (
+                <NoContent paddingTop="0" color={theme.mode.grey[200]}>
+                  {t('등록된 테이블이 없습니다.')}
+                </NoContent>
+              ) : (
+                <TableCardsGrid>
+                  {tables.map((table) =>
+                    isPosLinked ? (
+                      <div key={table.id}>
+                        <TableCard
+                          id={table.id}
+                          table={table}
+                          tableNumber={table.tableNumber}
+                          orderTime={table.orderTime ?? null}
+                          onClick={() => handleTableClick(table)}
+                          i18nInstance={adminI18n}
+                        />
+                      </div>
+                    ) : (
+                      <DraggableTableCard
+                        key={table.id}
+                        table={table}
+                        activeTableNumber={activeTableNumber}
+                        onClick={handleTableClick}
+                        i18nInstance={adminI18n}
+                      />
+                    )
+                  )}
+                </TableCardsGrid>
               )}
-            </TableCardsGrid>
+            </>
           )}
         </TableCardsArea>
       </TablesPageContainer>

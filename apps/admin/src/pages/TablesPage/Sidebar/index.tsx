@@ -19,6 +19,7 @@ import { SystemControl } from '@repo/util/app';
 import { useGetShopThemeMenu } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { useRemoteSupport } from '@repo/feature/hooks';
+import { isShopRole } from '@/utils/common';
 
 type MenuItem = {
   id: string;
@@ -36,8 +37,12 @@ export const Sidebar = ({
   const { isRemoteSupportVisible, openRemoteSupport } = useRemoteSupport(t);
   const menuItems = useMemo(() => {
     return [
-      { id: 'order', label: t('주문') },
-      { id: 'sales', label: t('매출') },
+      ...(!isShopRole()
+        ? [
+            { id: 'order', label: t('주문') },
+            { id: 'sales', label: t('매출') },
+          ]
+        : []),
       { id: 'device', label: t('기기') },
       { id: 'management', label: t('관리') },
       ...(isRemoteSupportVisible
@@ -77,7 +82,7 @@ export const Sidebar = ({
       setIsDeviceDialogOpen(true);
     }
     if (menuId === 'management') {
-      navigate(ROUTES.SETTINGS.NOTICES.generate());
+      navigate(ROUTES.SETTINGS.MISCELLANEOUS.generate());
     }
   };
 

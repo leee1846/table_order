@@ -22,6 +22,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import { isShopRole } from '@/utils/common';
 
 interface Props {
   menu: IMenu;
@@ -163,14 +164,16 @@ export const Menu = ({
             </S.TitleContent>
 
             <S.ActionGroup>
-              <BasicButton
-                variant="Outline_Grey_M"
-                onClick={handleDeleteMenu}
-                disabled={isPosLinked}
-                customStyle={S.DeleteButton}
-              >
-                {t('삭제')}
-              </BasicButton>
+              {!isShopRole() && (
+                <BasicButton
+                  variant="Outline_Grey_M"
+                  onClick={handleDeleteMenu}
+                  disabled={isPosLinked}
+                  customStyle={S.DeleteButton}
+                >
+                  {t('삭제')}
+                </BasicButton>
+              )}
               <BasicButton
                 variant="Solid_Sky_Blue_M"
                 onClick={() => onEditMenu(menu)}

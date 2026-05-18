@@ -15,6 +15,7 @@ import { theme } from '@repo/ui';
 import { DeleteIcon, MenuBookIcon } from '@repo/ui/icons';
 import { CategoryModal } from './CategoryModal';
 import { getDays } from '@/constants/days';
+import { isShopRole } from '@/utils/common';
 import {
   allowOnlyNumbers,
   formatCurrency,
@@ -378,42 +379,50 @@ export const MenuAppFeature = ({
         />
       }
     >
-      <UIStyles.setting.ContentLayout>
-        <p>{t('주문기능 활성화')}</p>
-        <ToggleButton
-          size="M"
-          isOn={isOrderable}
-          onChange={() => setIsOrderable(!isOrderable)}
-        />
-      </UIStyles.setting.ContentLayout>
-      <UIStyles.setting.ContentLayout>
-        <p>{t('최초 주문 카테고리 선택')}</p>
-        <BasicButton variant="Outline_Navy_M" onClick={handleOpenCategoryModal}>
-          {t('카테고리 설정')}
-        </BasicButton>
-      </UIStyles.setting.ContentLayout>
-      <UIStyles.setting.ContentLayout>
-        <p>{t('최초 주문 금액')}</p>
-        <input
-          inputMode="numeric"
-          value={
-            firstOrderMinAmount === ''
-              ? ''
-              : formatCurrency(Number(firstOrderMinAmount))
-          }
-          onChange={(event) => {
-            const value = event.target.value;
-            const numericStr = allowOnlyNumbers(value);
-            if (numericStr.length === 0) {
-              setFirstOrderMinAmount('');
-            } else {
-              setFirstOrderMinAmount(
-                String(clampNumericToMax(value, MAX_FIRST_ORDER_MIN_AMOUNT))
-              );
-            }
-          }}
-        />
-      </UIStyles.setting.ContentLayout>
+      {!isShopRole() && (
+        <>
+          <UIStyles.setting.ContentLayout>
+            <p>{t('주문기능 활성화')}</p>
+            <ToggleButton
+              size="M"
+              isOn={isOrderable}
+              onChange={() => setIsOrderable(!isOrderable)}
+            />
+          </UIStyles.setting.ContentLayout>
+          <UIStyles.setting.ContentLayout>
+            <p>{t('최초 주문 카테고리 선택')}</p>
+            <BasicButton
+              variant="Outline_Navy_M"
+              onClick={handleOpenCategoryModal}
+            >
+              {t('카테고리 설정')}
+            </BasicButton>
+          </UIStyles.setting.ContentLayout>
+          <UIStyles.setting.ContentLayout>
+            <p>{t('최초 주문 금액')}</p>
+            <input
+              inputMode="numeric"
+              value={
+                firstOrderMinAmount === ''
+                  ? ''
+                  : formatCurrency(Number(firstOrderMinAmount))
+              }
+              onChange={(event) => {
+                const value = event.target.value;
+                const numericStr = allowOnlyNumbers(value);
+                if (numericStr.length === 0) {
+                  setFirstOrderMinAmount('');
+                } else {
+                  setFirstOrderMinAmount(
+                    String(clampNumericToMax(value, MAX_FIRST_ORDER_MIN_AMOUNT))
+                  );
+                }
+              }}
+            />
+          </UIStyles.setting.ContentLayout>
+        </>
+      )}
+
       <UIStyles.setting.ContentLayout>
         <p>{t('방문자 수 입력')}</p>
         <ToggleButton
@@ -463,14 +472,18 @@ export const MenuAppFeature = ({
           }
         />
       </UIStyles.setting.ContentLayout>
-      <UIStyles.setting.ContentLayout>
-        <p>{t('카테고리별 메뉴 보기')}</p>
-        <ToggleButton
-          size="M"
-          isOn={useSinglePageMenuboard}
-          onChange={() => setUseSinglePageMenuboard(!useSinglePageMenuboard)}
-        />
-      </UIStyles.setting.ContentLayout>
+
+      {!isShopRole() && (
+        <UIStyles.setting.ContentLayout>
+          <p>{t('카테고리별 메뉴 보기')}</p>
+          <ToggleButton
+            size="M"
+            isOn={useSinglePageMenuboard}
+            onChange={() => setUseSinglePageMenuboard(!useSinglePageMenuboard)}
+          />
+        </UIStyles.setting.ContentLayout>
+      )}
+
       <UIStyles.setting.ContentLayout>
         <p>{t('관리자 접근 비밀번호(4자리)')}</p>
         <input
@@ -512,39 +525,45 @@ export const MenuAppFeature = ({
           onChange={() => setUseTheftPrevention(!useTheftPrevention)}
         />
       </UIStyles.setting.ContentLayout> */}
-      <UIStyles.setting.ContentLayout>
-        <p>{t('테이블 중복 배정 허용')}</p>
-        <ToggleButton
-          size="M"
-          isOn={useTableOverlapping}
-          onChange={() => setUseTableOverlapping(!useTableOverlapping)}
-        />
-      </UIStyles.setting.ContentLayout>
-      <div>
-        <UIStyles.setting.ContentLayout>
-          <p>{t('픽업 안내 메시지')}</p>
-          <ToggleButton
-            size="M"
-            isOn={usePickupAlert}
-            onChange={() => setUsePickupAlert(!usePickupAlert)}
-          />
-        </UIStyles.setting.ContentLayout>
-        {usePickupAlert && (
-          <S.TextAreaContainer>
-            <textarea
-              value={pickupAlertMessage}
-              maxLength={MAX_DESCRIPTION_LENGTH}
-              placeholder={t('메뉴가 나왔으니 가지고 가십시오.')}
-              onChange={(event) => {
-                const value = event.target.value;
-                if (value.length <= MAX_DESCRIPTION_LENGTH) {
-                  setPickupAlertMessage(value);
-                }
-              }}
+
+      {!isShopRole() && (
+        <>
+          <UIStyles.setting.ContentLayout>
+            <p>{t('테이블 중복 배정 허용')}</p>
+            <ToggleButton
+              size="M"
+              isOn={useTableOverlapping}
+              onChange={() => setUseTableOverlapping(!useTableOverlapping)}
             />
-          </S.TextAreaContainer>
-        )}
-      </div>
+          </UIStyles.setting.ContentLayout>
+          <div>
+            <UIStyles.setting.ContentLayout>
+              <p>{t('픽업 안내 메시지')}</p>
+              <ToggleButton
+                size="M"
+                isOn={usePickupAlert}
+                onChange={() => setUsePickupAlert(!usePickupAlert)}
+              />
+            </UIStyles.setting.ContentLayout>
+            {usePickupAlert && (
+              <S.TextAreaContainer>
+                <textarea
+                  value={pickupAlertMessage}
+                  maxLength={MAX_DESCRIPTION_LENGTH}
+                  placeholder={t('메뉴가 나왔으니 가지고 가십시오.')}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (value.length <= MAX_DESCRIPTION_LENGTH) {
+                      setPickupAlertMessage(value);
+                    }
+                  }}
+                />
+              </S.TextAreaContainer>
+            )}
+          </div>
+        </>
+      )}
+
       <div>
         <UIStyles.setting.ContentLayout>
           <p>{t('브레이크타임 설정')}</p>

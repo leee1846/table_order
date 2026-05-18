@@ -18,6 +18,7 @@ import {
   MenuManageModalProvider,
   useMenuManageModal,
 } from './context/MenuManageModalContext';
+import { isShopRole } from '@/utils/common';
 
 interface Props {
   menu?: IMenu;
@@ -107,67 +108,77 @@ const MenuManageModalContent = ({
 
         <S.RightColumn>
           <S.RightScrollable>
-            {mode === 'edit' ? (
-              <S.LanguageSelector>
-                {isExpanded ? (
-                  <>
-                    <S.SelectedLanguageText>
-                      <LanguageIcon
-                        width={20}
-                        height={20}
-                        color={theme.colors.grey[600]}
-                      />
+            {!isShopRole() && (
+              <>
+                {mode === 'edit' ? (
+                  <S.LanguageSelector>
+                    {isExpanded ? (
+                      <>
+                        <S.SelectedLanguageText>
+                          <LanguageIcon
+                            width={20}
+                            height={20}
+                            color={theme.colors.grey[600]}
+                          />
 
-                      {selectedLanguage.label}
-                    </S.SelectedLanguageText>
-                    <S.LanguageTabs>
-                      {languageOptions.map((option) => (
-                        <S.LanguageTab
-                          key={option.value}
-                          isSelected={selectedLanguageCode === option.value}
-                          onClick={() => handleLanguageChange(option.value)}
-                        >
-                          {option.label}
-                        </S.LanguageTab>
-                      ))}
-                    </S.LanguageTabs>
-                  </>
+                          {selectedLanguage.label}
+                        </S.SelectedLanguageText>
+                        <S.LanguageTabs>
+                          {languageOptions.map((option) => (
+                            <S.LanguageTab
+                              key={option.value}
+                              isSelected={selectedLanguageCode === option.value}
+                              onClick={() => handleLanguageChange(option.value)}
+                            >
+                              {option.label}
+                            </S.LanguageTab>
+                          ))}
+                        </S.LanguageTabs>
+                      </>
+                    ) : (
+                      <S.LanguageTitleButton
+                        onClick={() => setIsExpanded(true)}
+                      >
+                        <LanguageIcon
+                          width={20}
+                          height={20}
+                          color={theme.colors.grey[600]}
+                        />
+                        {selectedLanguage.label}
+                      </S.LanguageTitleButton>
+                    )}
+                    <S.ToggleButton
+                      type="button"
+                      onClick={() => setIsExpanded(!isExpanded)}
+                    >
+                      {isExpanded ? (
+                        <ChevronBackwardIcon
+                          color={theme.colors.grey[400]}
+                          width={20}
+                          height={20}
+                        />
+                      ) : (
+                        <ChevronForwardIcon
+                          color={theme.colors.grey[400]}
+                          width={20}
+                          height={20}
+                        />
+                      )}
+                    </S.ToggleButton>
+                  </S.LanguageSelector>
                 ) : (
-                  <S.LanguageTitleButton onClick={() => setIsExpanded(true)}>
-                    <LanguageIcon
-                      width={20}
-                      height={20}
-                      color={theme.colors.grey[600]}
-                    />
-                    {selectedLanguage.label}
-                  </S.LanguageTitleButton>
+                  <div />
                 )}
-                <S.ToggleButton
-                  type="button"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                >
-                  {isExpanded ? (
-                    <ChevronBackwardIcon
-                      color={theme.colors.grey[400]}
-                      width={20}
-                      height={20}
-                    />
-                  ) : (
-                    <ChevronForwardIcon
-                      color={theme.colors.grey[400]}
-                      width={20}
-                      height={20}
-                    />
-                  )}
-                </S.ToggleButton>
-              </S.LanguageSelector>
-            ) : (
-              <div />
+              </>
             )}
 
             <BasicSetting isPosLinked={isPosLinked} hideImageSection />
-            <OptionSetting isPosLinked={isPosLinked} />
-            <AdditionalSetting />
+            {!isShopRole() && (
+              <>
+                <OptionSetting isPosLinked={isPosLinked} />
+                <AdditionalSetting />
+              </>
+            )}
           </S.RightScrollable>
 
           <S.Footer>

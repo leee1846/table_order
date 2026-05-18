@@ -10,6 +10,7 @@ import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/typ
 import { CapacitorApp } from '@repo/util/app';
 import { toast } from '@repo/feature/utils';
 import * as S from '@/pages/settings/MiscellaneousPage/Payment/payment.style';
+import { isShopRole } from '@/utils/common';
 
 type PaymentTypeOption = 'prepayment' | 'postpayment';
 
@@ -176,24 +177,28 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       </UIStyles.setting.ContentLayout>
       {paymentType === 'prepayment' && (
         <>
-          <UIStyles.setting.ContentLayout>
-            <p>{t('VAN사 선택')}</p>
-            <Dropdown
-              options={vanOptions}
-              value={vanCode}
-              onChange={(value) => setVanCode(value as TVanCode)}
-              disabled={true}
-            />
-          </UIStyles.setting.ContentLayout>
-          <UIStyles.setting.ContentLayout>
-            <p>{t('VAN TID')}</p>
-            <input
-              type="text"
-              value={vanId}
-              onChange={(event) => setVanId(event.target.value)}
-              readOnly={true}
-            />
-          </UIStyles.setting.ContentLayout>
+          {!isShopRole() && (
+            <>
+              <UIStyles.setting.ContentLayout>
+                <p>{t('VAN사 선택')}</p>
+                <Dropdown
+                  options={vanOptions}
+                  value={vanCode}
+                  onChange={(value) => setVanCode(value as TVanCode)}
+                  disabled={true}
+                />
+              </UIStyles.setting.ContentLayout>
+              <UIStyles.setting.ContentLayout>
+                <p>{t('VAN TID')}</p>
+                <input
+                  type="text"
+                  value={vanId}
+                  onChange={(event) => setVanId(event.target.value)}
+                  readOnly={true}
+                />
+              </UIStyles.setting.ContentLayout>
+            </>
+          )}
 
           <UIStyles.setting.ContentLayout>
             <p>{t('더치페이 기능 설정')}</p>
@@ -257,51 +262,56 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           }
         />
       </UIStyles.setting.ContentLayout>
-      <UIStyles.setting.ContentLayout>
-        <p>{t('매출 확인 비밀번호 설정')}</p>
-        <input
-          type="password"
-          maxLength={4}
-          value={salesPassword}
-          placeholder=""
-          readOnly={CapacitorApp.isNative()}
-          onChange={(event) => {
-            const value = event.target.value.replace(/\D/g, '').slice(0, 4);
-            setSalesPassword(value);
-          }}
-          onClick={() => {
-            if (CapacitorApp.isNative()) {
-              toast(t('관리자 웹에서 변경해주세요.'));
-            }
-          }}
-          onFocus={(e) => {
-            if (CapacitorApp.isNative()) {
-              e.target.blur();
-              toast(t('관리자 웹에서 변경해주세요.'));
-            }
-          }}
-        />
-      </UIStyles.setting.ContentLayout>
-      {!isSalesTotalVisible && (
-        <UIStyles.setting.ContentLayout>
-          <p>{t('매출 상세 내역 잠금 설정')}</p>
-          <ToggleButton
-            size="M"
-            isOn={isSalesDetailLocked}
-            onChange={() => {
-              if (CapacitorApp.isNative()) {
-                toast(t('관리자 웹에서 변경해주세요.'));
-                return;
-              }
-              setIsSalesDetailLocked(!isSalesDetailLocked);
-            }}
-            customStyle={
-              CapacitorApp.isNative()
-                ? S.getNativeToggleButtonStyle(isSalesDetailLocked)
-                : undefined
-            }
-          />
-        </UIStyles.setting.ContentLayout>
+
+      {!isShopRole() && (
+        <>
+          <UIStyles.setting.ContentLayout>
+            <p>{t('매출 확인 비밀번호 설정')}</p>
+            <input
+              type="password"
+              maxLength={4}
+              value={salesPassword}
+              placeholder=""
+              readOnly={CapacitorApp.isNative()}
+              onChange={(event) => {
+                const value = event.target.value.replace(/\D/g, '').slice(0, 4);
+                setSalesPassword(value);
+              }}
+              onClick={() => {
+                if (CapacitorApp.isNative()) {
+                  toast(t('관리자 웹에서 변경해주세요.'));
+                }
+              }}
+              onFocus={(e) => {
+                if (CapacitorApp.isNative()) {
+                  e.target.blur();
+                  toast(t('관리자 웹에서 변경해주세요.'));
+                }
+              }}
+            />
+          </UIStyles.setting.ContentLayout>
+          {!isSalesTotalVisible && (
+            <UIStyles.setting.ContentLayout>
+              <p>{t('매출 상세 내역 잠금 설정')}</p>
+              <ToggleButton
+                size="M"
+                isOn={isSalesDetailLocked}
+                onChange={() => {
+                  if (CapacitorApp.isNative()) {
+                    toast(t('관리자 웹에서 변경해주세요.'));
+                    return;
+                  }
+                  setIsSalesDetailLocked(!isSalesDetailLocked);
+                }}
+                customStyle={
+                  CapacitorApp.isNative()
+                    ? S.getNativeToggleButtonStyle(isSalesDetailLocked)
+                    : undefined
+                }
+              />
+            </UIStyles.setting.ContentLayout>
+          )}
+        </>
       )}
     </SectionWrapper>
   );
