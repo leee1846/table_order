@@ -1,6 +1,5 @@
-import type { IPaymentResponse } from '@repo/util/app';
 import { ENDPOINTS } from '@repo/api/cores';
-import { saveAppLog } from '@repo/util/app';
+import { saveAppLog, type IPaymentResponse } from '@repo/util/app';
 
 /**
  * 카드 승인은 되었으나 Payment.cancel(환불)까지 실패한 경우 진단 로그.

@@ -1,5 +1,6 @@
 import { registerPlugin, type Plugin } from '@capacitor/core';
 import { BackgroundMode } from '@anuradev/capacitor-background-mode';
+import { saveAppLog } from './AppLog';
 
 /**
  * 배터리/와이파이 상태 정보
@@ -154,16 +155,54 @@ export const SystemControl: ISystemControl = {
   startMonitoring: async (callback) => {
     NativeSystem.stopMonitoring();
 
+    // 동일한 WiFi 레벨 중복 로그 방지 (0: 연결 불가, 1: 약함, 2: 보통)
+    let lastLoggedPoorWifi: number | null = null;
+
     // RSSI 값을 0~4로 정규화하는 래퍼 콜백
     const normalizedCallback = (status: SystemStatus) => {
+      const normalizedWifi =
+        status.wifi !== undefined && status.wifi !== null
+          ? normalizeRssiToLevel(status.wifi)
+          : null;
+
       const normalizedStatus: SystemStatus = {
         ...status,
-        // wifi 값이 있으면 정규화
-        wifi:
-          status.wifi !== undefined && status.wifi !== null
-            ? normalizeRssiToLevel(status.wifi)
-            : null,
+        wifi: normalizedWifi,
       };
+
+      if (status.event === 'network_recovered') {
+        saveAppLog('[네트워크 재연결]', {
+          event: status.event,
+          rssi: status.wifi,
+          wifi: normalizedWifi,
+        });
+      }
+
+      if (status.event === 'network_lost') {
+        saveAppLog('[네트워크 끊김]', {
+          event: status.event,
+          rssi: status.wifi,
+          wifi: normalizedWifi,
+        });
+      }
+
+      if (
+        normalizedWifi !== null &&
+        normalizedWifi <= 2 &&
+        lastLoggedPoorWifi !== normalizedWifi
+      ) {
+        saveAppLog(
+          normalizedWifi <= 1 ? '[네트워크 상태 약함]' : '[네트워크 상태 보통]',
+          {
+            rssi: status.wifi,
+            wifi: normalizedWifi,
+          }
+        );
+        lastLoggedPoorWifi = normalizedWifi;
+      } else if (normalizedWifi !== null && normalizedWifi > 2) {
+        lastLoggedPoorWifi = null;
+      }
+
       callback(normalizedStatus);
     };
 
