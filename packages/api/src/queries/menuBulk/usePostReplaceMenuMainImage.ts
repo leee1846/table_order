@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { replaceMenuMainImage } from '../../fetchers/menu';
 import type { IApiError, TVoidApiResponse } from '../../types/common';
+import { replaceMenuMainImage } from '../../fetchers/menuBulk';
 
 /**
  * 메뉴 메인 이미지를 단건으로 교체합니다.

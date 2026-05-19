@@ -1,10 +1,8 @@
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
-import { getMenuBulkImageList } from '../../fetchers/menu';
-import type {
-  IApiError,
-  TGetMenuBulkImageListResponse,
-} from '../../types/common';
+import type { IApiError } from '../../types/common';
+import { TGetMenuBulkImageListResponse } from '../../types/menuBulk';
+import { getMenuBulkImageList } from '../../fetchers/menuBulk';
 
 /**
  * 메뉴 대표 이미지 목록 조회 훅

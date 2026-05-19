@@ -89,7 +89,6 @@ export interface IAppStorage {
     type?: 'image' | 'video';
   }): Promise<{ url: string }>;
 }
-
 const AppStorageNative = registerPlugin<IAppStorage & Plugin>('AppStorage');
 
 /**

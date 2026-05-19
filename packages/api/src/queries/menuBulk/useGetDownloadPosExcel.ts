@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { downloadPosExcel } from '../../fetchers/menu';
 import type { IApiError } from '../../types/common';
+import { downloadPosExcel } from '../../fetchers/menuBulk';
 
 /**
  * 메뉴 POS 엑셀 파일을 다운로드합니다.

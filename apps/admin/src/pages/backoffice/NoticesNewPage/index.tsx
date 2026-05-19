@@ -1,11 +1,19 @@
 import { useNavigate } from 'react-router-dom';
+import styled from '@emotion/styled';
 import { ROUTES } from '@/constants/routes';
 import { Notices } from '@/feature/backoffice/Notices';
 import { validateNoticesData } from '@/feature/backoffice/util';
-import { toast } from '@repo/feature/utils';
+import { message } from 'antd';
 import { usePostNotice } from '@repo/api/queries';
 import type { NoticesFormData } from '@/feature/backoffice/Notices/constants';
 import type { ICreateNoticeRequest, TNoticeBoardType } from '@repo/api/types';
+
+// --- Emotion Styles ---
+const Container = styled.div`
+  background-color: #f4f7fa;
+  min-height: 100%;
+  padding: 40px;
+`;
 
 // NoticesFormData를 ICreateNoticeRequest로 변환
 const convertToCreateParams = (
@@ -30,9 +38,13 @@ export const NoticesNewPage = () => {
     const params = convertToCreateParams(data);
     await createNotice(params);
 
-    toast('공지사항 생성이 완료되었습니다.');
+    message.success('공지 사항 생성이 완료되었습니다.');
     navigate(ROUTES.BACKOFFICE.NOTICES.generate());
   };
 
-  return <Notices mode="create" onSave={handleSave} />;
+  return (
+    <Container>
+      <Notices mode="create" onSave={handleSave} />
+    </Container>
+  );
 };

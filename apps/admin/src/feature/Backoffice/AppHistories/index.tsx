@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { toast } from '@repo/feature/utils';
+import { useNavigate } from 'react-router-dom';
+import { Button, Flex, message } from 'antd';
+import styled from '@emotion/styled';
 import { AppHistoryForm } from '@/feature/backoffice/AppHistories/AppHistoryForm';
 import { ChangeHistoryDialog } from '@/feature/backoffice/ChangeHistoryDialog';
-import * as S from '@/feature/backoffice/AppHistories/appHistories.style';
 import {
   type AppHistoriesFormData,
   DEFAULT_APP_HISTORIES_DATA,
 } from '@/feature/backoffice/AppHistories/constants';
-import { Button } from '@/feature/backoffice/components';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
 import AppInfoParser, { type ApkParser, type IpaParser } from 'app-info-parser';
 import JSZip from 'jszip';
+import { AdminLoadingOverlay } from '@/feature/AdminLoadingOverlay';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -26,6 +28,24 @@ interface Props {
   onSave?: (data: AppHistoriesFormData, appFile?: File | null) => Promise<void>;
 }
 
+const FormWrapper = styled.div`
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 40px;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
 interface ManifestInfo {
   appName: string;
   version: string | undefined;
@@ -33,11 +53,13 @@ interface ManifestInfo {
 }
 
 export const AppHistories = ({ mode, initialData, onSave }: Props) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<AppHistoriesFormData>(
     DEFAULT_APP_HISTORIES_DATA
   );
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [appFile, setAppFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -52,7 +74,12 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
 
   const handleSave = async () => {
     if (onSave) {
-      await onSave(formData, appFile);
+      setIsSaving(true);
+      try {
+        await onSave(formData, appFile);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -110,7 +137,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
                   version: DEFAULT_APP_HISTORIES_DATA.version,
                   type: DEFAULT_APP_HISTORIES_DATA.type,
                 });
-                toast('manifest.json 파싱에 실패했습니다.');
+                message.warning('manifest.json 파싱에 실패했습니다.');
               }
             }
           }
@@ -121,7 +148,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
     }
 
     if (!isAllowedAppArchiveFile(file.name)) {
-      toast('APK 또는 ZIP 파일만 업로드 가능합니다.');
+      message.warning('APK 또는 ZIP 파일만 업로드 가능합니다.');
       setAppFile(null);
       updateFormData({
         version: DEFAULT_APP_HISTORIES_DATA.version,
@@ -160,9 +187,9 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
     setIsHistoryDialogOpen(false);
   };
 
-  const getTitle = () => {
+  const getSubtitle = () => {
     if (mode === 'create') {
-      return '생성';
+      return '등록';
     }
     if (mode === 'edit') {
       return '수정';
@@ -171,33 +198,25 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
   };
 
   return (
-    <S.PageWrapper>
-      <S.Container>
-        <S.TitleContainer>
-          <S.Title>
-            릴리즈 노트
-            <div />
-            <span>{getTitle()}</span>
-          </S.Title>
-          {mode === 'detail' ? (
-            <Button variant="outline" onClick={handleHistory}>
-              변경 이력
-            </Button>
-          ) : (
-            <Button variant="default" onClick={handleSave}>
-              저장
-            </Button>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Flex justify="space-between" align="center">
+        <PageTitle title="배포 관리" subtitle={getSubtitle()} />
+        <ButtonGroup>
+          {mode !== 'create' && (
+            <Button onClick={handleHistory}>변경 이력</Button>
           )}
-        </S.TitleContainer>
+        </ButtonGroup>
+      </Flex>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={APP_ARCHIVE_ACCEPT}
-          onChange={handleAppFileChange}
-          style={{ display: 'none' }}
-          aria-hidden
-        />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={APP_ARCHIVE_ACCEPT}
+        onChange={handleAppFileChange}
+        style={{ display: 'none' }}
+        aria-hidden
+      />
+      <FormWrapper>
         <AppHistoryForm
           mode={mode}
           formData={formData}
@@ -206,18 +225,46 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
           onSelectAppFileClick={handleSelectAppFileClick}
           onRemoveAppFile={handleRemoveAppFile}
         />
-        <ChangeHistoryDialog
-          isOpen={isHistoryDialogOpen}
-          onClose={handleCloseHistoryDialog}
-          histories={[
-            {
-              code: 'APP_VERSION',
-              id: initialData?.id ?? '',
-              label: '앱 버전 변경 이력',
-            },
-          ]}
+
+        <ActionButtons>
+          <ButtonGroup>
+            <Button
+              size="large"
+              onClick={() => navigate(-1)}
+              disabled={isSaving}
+            >
+              {mode === 'detail' ? '목록' : '취소'}
+            </Button>
+            {mode !== 'detail' && (
+              <Button
+                size="large"
+                type="primary"
+                onClick={handleSave}
+                loading={isSaving}
+              >
+                {mode === 'create' ? '저장' : '수정'}
+              </Button>
+            )}
+          </ButtonGroup>
+        </ActionButtons>
+      </FormWrapper>
+
+      <ChangeHistoryDialog
+        isOpen={isHistoryDialogOpen}
+        onClose={handleCloseHistoryDialog}
+        histories={[
+          {
+            code: 'APP_VERSION',
+            id: initialData?.id ?? '',
+            label: '앱 버전 변경 이력',
+          },
+        ]}
+      />
+      {isSaving && (
+        <AdminLoadingOverlay
+          message={mode === 'create' ? '저장 중입니다' : '수정 중입니다'}
         />
-      </S.Container>
-    </S.PageWrapper>
+      )}
+    </div>
   );
 };

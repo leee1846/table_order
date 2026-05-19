@@ -1,145 +1,112 @@
 import styled from '@emotion/styled';
-import {
-  Backdrop as BaseBackdrop,
-  ModalContainer as BaseModalContainer,
-} from './UploadModal.style';
-import type { CSSProperties } from 'react';
+import { Typography, Card, Modal } from 'antd';
 
-export const Backdrop = styled(BaseBackdrop)`
-  z-index: 100;
+const { Text } = Typography;
+
+export const modalStyles = {
+  header: {
+    backgroundColor: '#1d2a6d',
+    padding: '20px 24px',
+    margin: 0,
+    borderRadius: '8px 8px 0 0',
+  },
+  container: { padding: 0 },
+  body: { padding: '32px 24px', maxHeight: '70vh', overflowY: 'auto' },
+};
+
+export const StyledModal = styled(Modal)`
+  .ant-modal-container,
+  .ant-modal-content {
+    padding: 0 !important;
+  }
 `;
 
-export const ModalContainer = styled(BaseModalContainer)`
-  width: 1200px;
-  max-width: 90%;
-  height: 70vh;
-  display: flex;
-  flex-direction: column;
-`;
-
-export const Title = styled.h2`
-  margin-top: 0;
-  margin-bottom: 16px;
+export const ModalTitle = styled.span`
+  color: #fff;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 600;
 `;
 
-export const ContentWrapper = styled.div`
-  margin: 20px 0;
-  min-height: 100px;
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 8px;
+export const ModalFooter = styled.div`
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 `;
 
-export const Header = styled.div`
+export const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 24px;
 `;
 
-export const StatsText = styled.p`
+export const ShopCodeText = styled(Text)`
+  font-size: 15px;
+`;
+
+export const ShopCodeHighlight = styled(Text)`
+  color: #1d2a6d;
+`;
+
+export const StatsText = styled(Text)`
+  font-size: 14px;
+`;
+
+export const InfoBanner = styled.div`
+  background-color: #e6f4ff;
+  border: 1px solid #91caff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const InfoText = styled(Text)`
+  color: #0958d9;
   font-size: 13px;
-  color: #666;
-  margin: 0;
 `;
 
 export const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 12px;
-  margin-top: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
 `;
 
-
-export const DragDropGuide = styled.p`
-  margin-bottom: 16px;
-  font-size: 14px;
-  color: #6b7280;
+export const StyledCard = styled(Card)<{ isDragging?: boolean }>`
+  border-color: ${({ isDragging }) => (isDragging ? '#1677ff' : undefined)};
+  background-color: ${({ isDragging }) => (isDragging ? '#e6f4ff' : undefined)};
+  border-width: ${({ isDragging }) => (isDragging ? '2px' : '1px')};
+  border-style: ${({ isDragging }) => (isDragging ? 'dashed' : 'solid')};
+  transition: all 0.2s;
 `;
 
-/* export const ItemContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-`; */
-
-export const ItemContainer = styled.div<{
-  $isDragging?: boolean;
-  $isHovered?: boolean;
-}>`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  opacity: ${({ $isDragging }) => ($isDragging ? 0.8 : 1)};
-  transform: ${({ $isDragging, $isHovered }) =>
-    $isDragging ? 'scale(0.98)' : $isHovered ? 'scale(1.03)' : 'scale(1)'};
-  box-shadow: ${({ $isDragging }) =>
-    $isDragging ? '0 0 0 3px #3b82f6' : '0 0 0 0px transparent'};
-  border-radius: 8px;
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
-`;
-
-export const imageStyle: CSSProperties = {
-  width: '100%',
-  height: '120px',
-  objectFit: 'cover',
-  borderRadius: '8px',
-  border: '1px solid #e5e5e5',
-};
-
-export const ImagePlaceholder = styled.div`
-  width: 100%;
-  height: 120px;
-  background-color: #f5f5f5;
+export const ImageWrapper = styled.div`
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  border: 1px solid #e5e5e5;
-  color: #999;
+  margin-bottom: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  overflow: hidden;
+`;
+
+export const TextWrapper = styled.div`
+  line-height: 1.4;
+`;
+
+export const CategoryName = styled(Text)`
   font-size: 12px;
 `;
 
-export const TextContainer = styled.div`
+export const MenuName = styled(Text)`
   font-size: 13px;
-  color: #333;
-  text-align: center;
-  line-height: 1.3;
-  padding: 2px 0;
-  width: 100%;
-  min-width: 0;
 `;
 
-const singleLineEllipsis = `
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-export const CategoryName = styled.span`
-  font-size: 11px;
-  color: #888;
-  ${singleLineEllipsis}
-`;
-
-export const MenuName = styled.strong`
-  margin-top: 2px;
-  font-size: inherit;
-  font-weight: bold;
-  ${singleLineEllipsis}
-`;
-
-export const EmptyMessage = styled.p`
-  margin-top: 10px;
-  color: #666;
-`;
-
-export const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  flex-shrink: 0;
+export const EmptyImageText = styled(Text)`
+  font-size: 12px;
 `;

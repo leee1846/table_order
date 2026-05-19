@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { uploadPosExcel } from '../../fetchers/menu';
 import type { IApiError, TVoidApiResponse } from '../../types/common';
+import { uploadPosExcel } from '../../fetchers/menuBulk';
 
 /**
  * 메뉴 POS 엑셀 파일을 업로드합니다.

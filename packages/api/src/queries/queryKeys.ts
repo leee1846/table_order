@@ -1,5 +1,9 @@
 import { TAppType } from '../types/app';
 import type { THistoryCode } from '../types/admin';
+import type {
+  IGetCampaignListParams,
+  IGetCampaignMenuGroupSyncStatusParams,
+} from '../types';
 
 export const queryKeys = {
   common: {
@@ -69,6 +73,12 @@ export const queryKeys = {
       [...queryKeys.menu.all, 'existingImageList', shopCode] as const,
     /** 추천 메뉴 이미지 목록 조회 */
     sampleImageList: () => [...queryKeys.menu.all, 'sampleImageList'] as const,
+    /** 메뉴 검색 조회 */
+    search: (keyword?: string) =>
+      [...queryKeys.menu.all, 'search', keyword] as const,
+    /** 광고 파일 목록 조회 */
+    adFiles: (shopCode: string) =>
+      [...queryKeys.menu.all, 'adFiles', shopCode] as const,
   },
 
   orders: {
@@ -144,8 +154,14 @@ export const queryKeys = {
   notice: {
     all: ['notice'] as const,
     /** 공지사항 목록 조회 */
-    list: (page?: number, pageSize?: number) =>
-      [...queryKeys.notice.all, 'list', page ?? 1, pageSize ?? 20] as const,
+    list: (page?: number, pageSize?: number, searchWord?: string) =>
+      [
+        ...queryKeys.notice.all,
+        'list',
+        page ?? 1,
+        pageSize ?? 20,
+        searchWord,
+      ] as const,
     /** 공지사항 상세 조회 */
     detail: (noticeSeq: number) =>
       [...queryKeys.notice.all, 'detail', noticeSeq] as const,
@@ -274,4 +290,65 @@ export const queryKeys = {
     changeHistoryList: (historyCode: THistoryCode, key: string) =>
       [...queryKeys.admin.all, 'changeHistoryList', historyCode, key] as const,
   },
-} as const;
+
+  menuGroup: {
+    all: ['menuGroup'] as const,
+    list: (page?: number, size?: number, keyword?: string) =>
+      [...queryKeys.menuGroup.all, 'list', page, size, keyword] as const,
+  },
+
+  storeGroup: {
+    all: ['storeGroup'] as const,
+    list: (page?: number, size?: number, keyword?: string) =>
+      [...queryKeys.storeGroup.all, 'list', page, size, keyword] as const,
+    detail: (id: string | number) =>
+      [...queryKeys.storeGroup.all, 'detail', id] as const,
+    members: (id: string | number) =>
+      [...queryKeys.storeGroup.all, 'members', id] as const,
+  },
+
+  store: {
+    all: ['store'] as const,
+    list: (
+      page?: number,
+      size?: number,
+      keyword?: string,
+      ungrouped?: boolean
+    ) =>
+      [...queryKeys.store.all, 'list', page, size, keyword, ungrouped] as const,
+    search: (shopCodes?: string[], page?: number, size?: number) =>
+      [...queryKeys.store.all, 'search', shopCodes, page, size] as const,
+  },
+
+  campaign: {
+    all: ['campaign'] as const,
+    lists: () => [...queryKeys.campaign.all, 'list'] as const,
+    list: (params: IGetCampaignListParams) => [
+      ...queryKeys.campaign.lists(),
+      params,
+    ],
+    details: () => [...queryKeys.campaign.all, 'detail'] as const,
+    detail: (campaignSeq: number | string) => [
+      ...queryKeys.campaign.details(),
+      campaignSeq,
+    ],
+    shopStatuses: () => [...queryKeys.campaign.all, 'shopStatus'] as const,
+    shopStatus: (shopSeq?: number) => [
+      ...queryKeys.campaign.shopStatuses(),
+      shopSeq,
+    ],
+    menuGroups: (campaignSeq: number | string) => [
+      ...queryKeys.campaign.all,
+      'menuGroups',
+      campaignSeq,
+    ],
+    menuGroupSyncStatus: (params: IGetCampaignMenuGroupSyncStatusParams) => [
+      ...queryKeys.campaign.all,
+      'menuGroupSyncStatus',
+      params.campaignSeq,
+      params.menuGroupSeq,
+      params.page,
+      params.size,
+    ],
+  },
+};

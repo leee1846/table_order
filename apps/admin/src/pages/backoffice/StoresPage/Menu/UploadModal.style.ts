@@ -1,161 +1,90 @@
 import styled from '@emotion/styled';
+import { Typography, Upload, Modal } from 'antd';
+import type { CSSProperties } from 'react';
 
-export const Backdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+const { Text } = Typography;
+
+export const modalStyles = {
+  header: {
+    backgroundColor: '#1d2a6d',
+    padding: '20px 24px',
+    margin: 0,
+    borderRadius: '8px 8px 0 0',
+  } as CSSProperties,
+  content: { padding: 0, borderRadius: '8px' } as CSSProperties,
+  body: { padding: '32px 24px' } as CSSProperties,
+};
+
+export const StyledModal = styled(Modal)`
+  .ant-modal-container,
+  .ant-modal-content {
+    padding: 0 !important;
+  }
 `;
 
-export const ModalContainer = styled.div`
-  background-color: #fff;
-  padding: 24px;
-  border-radius: 8px;
-  width: 500px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-`;
-
-export const Title = styled.h2`
-  margin-top: 0;
-  margin-bottom: 16px;
+export const ModalTitle = styled.span`
+  color: #fff;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 600;
 `;
 
-export const InfoText = styled.p`
-  margin-bottom: 24px;
-  font-size: 14px;
-  color: #666;
-`;
-
-export const ShopCodeWrapper = styled.span`
-  display: block;
-  margin-bottom: 12px;
-  color: #374151;
-`;
-
-export const ShopCodeHighlight = styled.strong`
-  color: #111827;
-`;
-
-export const InfoListItem = styled.span<{ isLast?: boolean }>`
-  display: block;
-  margin-bottom: ${({ isLast }) => (isLast ? '0' : '6px')};
-`;
-
-export const Dropzone = styled.div<{ isDragging: boolean }>`
-  border: 2px dashed ${({ isDragging }) => (isDragging ? '#3b82f6' : '#d1d5db')};
-  background-color: ${({ isDragging }) => (isDragging ? '#eff6ff' : '#f9fafb')};
-  border-radius: 8px;
-  padding: 64px 16px;
-  text-align: center;
-  cursor: pointer;
-  margin-bottom: 24px;
-  transition: all 0.2s ease-in-out;
-
-  &:hover {
-    background-color: #eff6ff;
-    border-color: #3b82f6;
-  }
-`;
-
-export const DropzoneText = styled.p`
-  margin: 0;
-  color: #6b7280;
-  font-size: 14px;
-`;
-
-export const FileList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0 0 24px 0;
-  max-height: 150px;
-  overflow-y: auto;
-`;
-
-export const FileItem = styled.li`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-  margin-bottom: 8px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
-
-export const FileName = styled.span`
-  font-size: 14px;
-  color: #374151;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 90%;
-`;
-
-export const RemoveButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  border-radius: 4px;
-
-  &:hover {
-    background-color: #e5e7eb;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-`;
-
-export const FileInput = styled.input`
-  display: none;
-`;
-
-export const ButtonWrapper = styled.div`
+export const ModalFooter = styled.div`
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
   display: flex;
   justify-content: flex-end;
   gap: 8px;
 `;
 
-export const ProgressWrapper = styled.div`
+export const ShopInfoContainer = styled.div`
   margin-bottom: 24px;
 `;
 
-export const ProgressTrack = styled.div`
-  width: 100%;
-  height: 8px;
-  background-color: #f0f0f0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 8px;
+export const ShopCodeText = styled(Text)`
+  font-size: 15px;
 `;
 
-export const ProgressBar = styled.div<{ progress: number }>`
-  width: ${({ progress }) => progress}%;
-  height: 100%;
-  background-color: #3b82f6; /* 파란색 계열, 테마 색상으로 변경 가능 */
-  transition: width 0.3s ease;
+export const ShopCodeHighlight = styled(Text)`
+  color: #1d2a6d;
 `;
 
-export const ProgressText = styled.p`
-  font-size: 12px;
-  color: #666;
-  text-align: right;
+export const InfoBanner = styled.div`
+  background-color: #e6f4ff;
+  border: 1px solid #91caff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+`;
+
+export const InfoIconWrapper = styled.div`
+  color: #1677ff;
+  margin-top: 4px;
+`;
+
+export const InfoList = styled.ul`
   margin: 0;
+  padding-left: 5px;
+  color: #0958d9;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+export const StyledDragger = styled(Upload.Dragger)`
+  padding: 24px 0;
+
+  .ant-upload-drag-icon .anticon {
+    color: #1d2a6d;
+  }
+  .ant-upload-text {
+    color: #262626 !important;
+    font-weight: 500;
+  }
+  .ant-upload-hint {
+    color: #8c8c8c !important;
+  }
 `;

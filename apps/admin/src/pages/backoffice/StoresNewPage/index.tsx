@@ -3,7 +3,8 @@ import { ROUTES } from '@/constants/routes';
 import { Stores } from '@/feature/backoffice/Stores';
 import { validateShopData } from '@/feature/backoffice/util';
 import { usePostAdminShop } from '@repo/api/queries';
-import { toast } from '@repo/feature/utils';
+import { App } from 'antd';
+import styled from '@emotion/styled';
 import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
@@ -48,11 +49,22 @@ const transformShopDetailToCreateRequest = (
   };
 };
 
+// --- Emotion Styles ---
+const Container = styled.div`
+  background-color: #f4f7fa;
+  height: 100%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
 /**
  * 매장 생성 페이지
  */
 export const StoresNewPage = () => {
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const { mutateAsync: createAdminShop } = usePostAdminShop();
 
   /**
@@ -76,9 +88,13 @@ export const StoresNewPage = () => {
     await createAdminShop(createRequest);
 
     // 성공 메시지 및 페이지 이동
-    toast('매장 생성이 완료되었습니다.');
+    message.success('매장 생성이 완료되었습니다.');
     navigate(ROUTES.BACKOFFICE.STORES.generate());
   };
 
-  return <Stores mode="create" onSave={handleCreateShop} />;
+  return (
+    <Container>
+      <Stores mode="create" onSave={handleCreateShop} />
+    </Container>
+  );
 };

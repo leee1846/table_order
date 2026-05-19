@@ -10,8 +10,9 @@ import {
   usePutAdminShop,
   usePutAdminMember,
 } from '@repo/api/queries';
-import { toast } from '@repo/feature/utils';
 import { ROUTES } from '@/constants/routes';
+import { App } from 'antd';
+import styled from '@emotion/styled';
 import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
@@ -36,11 +37,22 @@ const transformMemberDataToFormData = (
   };
 };
 
+// --- Emotion Styles ---
+const Container = styled.div`
+  background-color: #f4f7fa;
+  height: 100%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
 /**
  * 매장 수정 페이지
  */
 export const StoresEditPage = () => {
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const { shopCode } = useParams<{ shopCode: string }>();
   const [searchParams] = useSearchParams();
   const memberIdFromQuery = searchParams.get('memberId');
@@ -50,12 +62,15 @@ export const StoresEditPage = () => {
     enabled: !!shopCode,
   });
 
-  // 멤버 정보 조회 (memberId가 있을 때만)
+  const targetMemberId = memberIdFromQuery;
+
+  // 매장 상세 정보에서 가져온 memberId로 멤버 정보 조회
   const { data: memberDetailResponse } = useGetAdminMember({
-    memberId: memberIdFromQuery ?? '',
+    memberId: targetMemberId ?? '',
     options: {
-      enabled: !!memberIdFromQuery,
+      enabled: !!targetMemberId,
     },
+    ignoreGlobalErrors: [404],
   });
 
   // API mutation hooks
@@ -106,17 +121,18 @@ export const StoresEditPage = () => {
     }
 
     // 성공 메시지 및 페이지 이동
-    toast('매장 정보가 수정되었습니다.');
+    message.success('매장 정보가 수정되었습니다.');
     navigate(ROUTES.BACKOFFICE.STORES.generate());
   };
 
   return (
-    <Stores
-      mode="edit"
-      initialData={shopDetailResponse?.data}
-      memberInitialData={memberInitialData}
-      memberIsLocked={memberDetailResponse?.data?.isLocked}
-      onSave={handleSaveShopAndMember}
-    />
+    <Container>
+      <Stores
+        mode="edit"
+        initialData={shopDetailResponse?.data}
+        memberInitialData={memberInitialData}
+        onSave={handleSaveShopAndMember}
+      />
+    </Container>
   );
 };

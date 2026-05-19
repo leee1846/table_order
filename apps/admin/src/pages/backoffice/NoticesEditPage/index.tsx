@@ -1,8 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
+import styled from '@emotion/styled';
 import { Notices } from '@/feature/backoffice/Notices';
 import { validateNoticesData } from '@/feature/backoffice/util';
-import { openDualActionDialog, toast } from '@repo/feature/utils';
+import { useConfirmDialog } from '@/feature/backoffice/hooks/useConfirmDialog';
+import { message } from 'antd';
 import { ROUTES } from '@/constants/routes';
 import {
   useGetNoticeDetail,
@@ -12,6 +14,13 @@ import {
 import { formatDateTime } from '@repo/util/date';
 import type { NoticesFormData } from '@/feature/backoffice/Notices/constants';
 import type { INotice, ICreateNoticeRequest } from '@repo/api/types';
+
+// --- Emotion Styles ---
+const Container = styled.div`
+  background-color: #f4f7fa;
+  min-height: 100%;
+  padding: 40px;
+`;
 
 // INotice를 NoticesFormData로 변환
 const convertToFormData = (
@@ -38,6 +47,7 @@ const convertToFormData = (
 export const NoticesEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { showConfirm } = useConfirmDialog();
 
   const { data } = useGetNoticeDetail(Number(id || 0), {
     enabled: !!id,
@@ -53,20 +63,22 @@ export const NoticesEditPage = () => {
 
   const handleDelete = async () => {
     if (!initialData?.id) {
-      toast('공지사항 ID가 없습니다.');
+      message.error('공지 사항 ID가 없습니다.');
       return;
     }
 
     const noticeId = initialData.id;
 
-    openDualActionDialog({
-      title: '공지사항 삭제',
+    showConfirm({
+      title: '공지 사항 삭제',
       content: '정말 삭제하시겠습니까?',
-      primaryText: '확인',
-      secondaryText: '취소',
       onConfirm: async () => {
-        await deleteNoticeMutation.mutateAsync(noticeId);
-        toast('공지사항이 삭제되었습니다.');
+        try {
+          await deleteNoticeMutation.mutateAsync(noticeId);
+          message.success('공지사항이 삭제되었습니다.');
+        } catch (e) {
+          message.error('공지 사항 삭제 중 오류가 발생했습니다.');
+        }
         navigate(ROUTES.BACKOFFICE.NOTICES.generate());
       },
     });
@@ -78,7 +90,7 @@ export const NoticesEditPage = () => {
     }
 
     if (!formData.id) {
-      toast('공지사항 ID가 없습니다.');
+      message.error('공지 사항 ID가 없습니다.');
       return;
     }
 
@@ -93,16 +105,18 @@ export const NoticesEditPage = () => {
       params,
     });
 
-    toast('공지사항 수정이 완료되었습니다.');
+    message.success('공지 사항 수정이 완료되었습니다.');
     navigate(ROUTES.BACKOFFICE.NOTICES.generate());
   };
 
   return (
-    <Notices
-      mode="edit"
-      initialData={initialData}
-      onSave={handleSave}
-      onDelete={handleDelete}
-    />
+    <Container>
+      <Notices
+        mode="edit"
+        initialData={initialData}
+        onSave={handleSave}
+        onDelete={handleDelete}
+      />
+    </Container>
   );
 };

@@ -1,8 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
+import styled from '@emotion/styled';
 import { AppHistories } from '@/feature/backoffice/AppHistories';
 import { validateAppHistoriesData } from '@/feature/backoffice/util';
-import { toast } from '@repo/feature/utils';
+import { message } from 'antd';
 import { ROUTES } from '@/constants/routes';
 import {
   useGetAppVersionDetail,
@@ -12,6 +13,13 @@ import {
 import { formatDateTime } from '@repo/util/date';
 import type { AppHistoriesFormData } from '@/feature/backoffice/AppHistories/constants';
 import type { IAppVersion, ICreateAppVersionParams } from '@repo/api/types';
+
+// --- Emotion Styles ---
+const Container = styled.div`
+  background-color: #f4f7fa;
+  min-height: 100%;
+  padding: 40px;
+`;
 
 // IAppVersion을 AppHistoriesFormData로 변환
 const convertToFormData = (
@@ -92,7 +100,7 @@ export const AppHistoriesEditPage = () => {
     }
 
     if (!formData.id) {
-      toast('릴리즈 노트 ID가 없습니다.');
+      message.error('배포 ID가 없습니다.');
       return;
     }
 
@@ -106,11 +114,13 @@ export const AppHistoriesEditPage = () => {
       });
     }
 
-    toast('릴리즈 노트 수정이 완료되었습니다.');
-    navigate(ROUTES.BACKOFFICE.APP_HISTORIES.generate());
+    message.success('배포 수정이 완료되었습니다.');
+    navigate(ROUTES.BACKOFFICE.APP_HISTORIES.generate(formData.type));
   };
 
   return (
-    <AppHistories mode="edit" initialData={initialData} onSave={handleSave} />
+    <Container>
+      <AppHistories mode="edit" initialData={initialData} onSave={handleSave} />
+    </Container>
   );
 };
