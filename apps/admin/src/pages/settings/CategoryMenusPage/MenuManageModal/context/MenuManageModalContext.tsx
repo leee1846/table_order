@@ -254,7 +254,7 @@ export const MenuManageModalProvider = ({
 
     // 메뉴 이름 검증
     if (!formValues.menuName || !formValues.menuName.trim()) {
-      toast(t('메뉴명을 입력해주세요.'));
+      toast(t('음식명을 입력해 주세요.'));
       return;
     }
 

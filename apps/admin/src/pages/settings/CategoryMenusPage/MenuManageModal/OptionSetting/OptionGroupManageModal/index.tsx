@@ -331,7 +331,7 @@ export const OptionGroupManageModal = ({
 
   const validateForm = (): boolean => {
     if (!optionGroupName.trim()) {
-      toast(t('옵션 그룹명을 입력해주세요.'));
+      toast(t('선택 항목 그룹명을 입력해주세요.'));
       return false;
     }
     if (options.length === 0) {
@@ -531,8 +531,8 @@ export const OptionGroupManageModal = ({
   ]);
 
   const modalTitle = isOptionGroupEditMode
-    ? t('옵션 그룹 수정')
-    : t('옵션 그룹 추가');
+    ? t('선택 항목 그룹 수정')
+    : t('선택 항목 그룹 추가');
 
   const handlePriceChange = (index: number, value: string) => {
     if (isPosLinked) {
@@ -556,11 +556,11 @@ export const OptionGroupManageModal = ({
         <S.Contents>
           <S.TitleContainer>
             <p>
-              {t('옵션 그룹명')}
+              {t('선택 항목 그룹명')}
               <span>*</span>
             </p>
             <Input
-              placeholder={t('옵션 그룹명을 입력해주세요.')}
+              placeholder={t('선택 항목 그룹명을 입력해주세요.')}
               customStyle={S.inputCss}
               value={optionGroupName}
               onChange={handleOptionGroupNameChange}
@@ -569,7 +569,7 @@ export const OptionGroupManageModal = ({
 
           <S.TitleContainer>
             <p>
-              {t('개별 옵션')}
+              {t('개별 선택 항목')}
               <span>*</span>
             </p>
             {options.length > 0 && (
@@ -603,7 +603,7 @@ export const OptionGroupManageModal = ({
                         <span>{t('품절')}</span>
                       </CheckButton>
                       <Input
-                        placeholder={t('옵션 이름을 입력해주세요.')}
+                        placeholder={t('선택 항목 이름을 입력해주세요.')}
                         customStyle={S.inputCss}
                         value={option.optionName}
                         onChange={(value) =>
@@ -612,7 +612,7 @@ export const OptionGroupManageModal = ({
                       />
 
                       <Input
-                        placeholder={t('옵션 가격을 입력해주세요.')}
+                        placeholder={t('선택 항목 가격을 입력해주세요.')}
                         customStyle={S.inputCss}
                         value={formatCurrency(option.optionPrice)}
                         onChange={(value) => handlePriceChange(index, value)}
@@ -660,7 +660,7 @@ export const OptionGroupManageModal = ({
                 color={theme.colors.grey[600]}
               />
 
-              <span>{t('옵션 추가')}</span>
+              <span>{t('선택 항목 추가')}</span>
             </S.OptionAddButton>
           </S.TitleContainer>
 
@@ -709,7 +709,7 @@ export const OptionGroupManageModal = ({
                 }
                 customStyle={S.checkButtonCss}
               >
-                <span>{t('옵션 수량 선택')}</span>
+                <span>{t('수량 선택')}</span>
               </CheckButton>
 
               <CheckButton
@@ -730,23 +730,23 @@ export const OptionGroupManageModal = ({
                 }
                 customStyle={S.checkButtonCss}
               >
-                <span>{t('옵션 수량 고정')}</span>
+                <span>{t('수량 고정')}</span>
               </CheckButton>
             </S.AdditionalsContainer>
           </S.TitleContainer>
 
           <S.TitleContainer>
-            <p>{t('포스 코드 연동')}</p>
+            <p>{t('POS 연동 선택 항목 그룹 식별 코드')}</p>
             <S.CodeContainer>
               <Input
-                placeholder={t('옵션 그룹 코드')}
+                placeholder={t('선택 항목 그룹 식별 코드')}
                 disabled
                 customStyle={S.inputCss}
                 value={existingOptionGroup?.mappedHeadOptionGroupCode ?? ''}
               />
 
               <Input
-                placeholder={t('옵션 분류 코드')}
+                placeholder={t('선택 항목 그룹 분류 코드')}
                 disabled
                 customStyle={S.inputCss}
                 value={existingOptionGroup?.mappedOptionGroupCode ?? ''}

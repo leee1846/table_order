@@ -69,7 +69,7 @@ export const Header = ({
     <S.Header>
       <S.TitleContainer>
         <S.TextContainer>
-          <h1>{t('메뉴 설정')}</h1>
+          <h1>{t('음식 목록 설정')}</h1>
           <div />
           {categoryName && <h2>{categoryName}</h2>}
         </S.TextContainer>
@@ -97,7 +97,7 @@ export const Header = ({
           onClick={handleTranslateMenus}
           customStyle={S.TranslateButton}
         >
-          {t('메뉴 일괄 번역하기')}
+          {t('전체 음식목록 번역하기')}
         </BasicButton>
       )}
     </S.Header>

@@ -89,11 +89,11 @@ export const BasicSetting = ({ isPosLinked, hideImageSection }: Props) => {
         <S.HorizontalLayout>
           <S.VerticalLayout>
             <S.Title>
-              {t('메뉴명')}
+              {t('음식명')}
               <span>*</span>
             </S.Title>
             <Input
-              placeholder={t('메뉴명을 입력해 주세요.')}
+              placeholder={t('음식명을 입력해 주세요.')}
               customStyle={S.inputCss}
               value={formValues.menuName ?? ''}
               onChange={handleMenuNameChange}
@@ -120,11 +120,11 @@ export const BasicSetting = ({ isPosLinked, hideImageSection }: Props) => {
         </S.HorizontalLayout>
 
         <S.VerticalLayout flex>
-          <S.Title>{t('메뉴 설명')}</S.Title>
+          <S.Title>{t('음식 설명')}</S.Title>
           <S.Textarea
             id={`menu-description-${descriptionInputId}`}
             value={formValues.menuDescription ?? ''}
-            placeholder={t('메뉴 설명을 입력해 주세요.')}
+            placeholder={t('음식 설명을 입력해 주세요.')}
             onChange={handleMenuDescriptionChange}
             maxLength={MAX_DESCRIPTION_LENGTH}
           />

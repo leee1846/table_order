@@ -305,7 +305,7 @@ export const DeviceListDialog = ({
       <S.DialogContainer onClick={(e) => e.stopPropagation()}>
         <S.Container>
           <S.Header>
-            <S.Title>{t('기기관리')}</S.Title>
+            <S.Title>{t('디바이스 관리')}</S.Title>
             <S.CloseButton onClick={handleClose} aria-label={t('닫기')}>
               <CloseIcon width={32} height={32} color={colors.grey[700]} />
             </S.CloseButton>

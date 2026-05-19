@@ -24,7 +24,7 @@ export const Theme = ({ value, onChange }: ThemeProps) => {
             checked={value === 'LIGHT'}
             customStyle={S.RadioButtonStyle}
           >
-            <span>{t('밝은 테마')}</span>
+            <span>{t('라이트 모드')}</span>
           </RadioButton>
         </button>
         <button type="button" onClick={() => onChange('DARK')}>
@@ -38,7 +38,7 @@ export const Theme = ({ value, onChange }: ThemeProps) => {
             checked={value === 'DARK'}
             customStyle={S.RadioButtonStyle}
           >
-            <span>{t('어두운 테마')}</span>
+            <span>{t('다크 모드')}</span>
           </RadioButton>
         </button>
         <button type="button" onClick={() => onChange('IMAGE')}>
@@ -51,7 +51,7 @@ export const Theme = ({ value, onChange }: ThemeProps) => {
             checked={value === 'IMAGE'}
             customStyle={S.RadioButtonStyle}
           >
-            <span>{t('전체 이미지')}</span>
+            <span>{t('전체 화면')}</span>
           </RadioButton>
         </button>
       </S.Themes>

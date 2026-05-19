@@ -102,7 +102,7 @@ export const SalesMenuPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
-            {t('매출 현황')}
+          {t('실적 및 매출 현황')}
 
             <div />
             <span>{t('메뉴별현황')}</span>

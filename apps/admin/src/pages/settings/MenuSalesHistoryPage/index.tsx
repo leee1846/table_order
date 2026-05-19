@@ -205,7 +205,7 @@ export const MenuSalesHistoryPage = () => {
       { value: 'salesCount_asc', label: t('판매수 낮은 순') },
       { value: 'unitPrice_desc', label: t('단가 높은 순') },
       { value: 'unitPrice_asc', label: t('단가 낮은 순') },
-      { value: 'menuName_asc', label: t('메뉴명 가나다 순') },
+      { value: 'menuName_asc', label: t('음식명 가나다 순') },
     ],
     [t]
   );
@@ -215,7 +215,7 @@ export const MenuSalesHistoryPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
-            {t('매출 현황')}
+            {t('실적 및 매출 현황')}
             <div /> <span>{t('메뉴별 매출내역')}</span>
           </S.Title>
 

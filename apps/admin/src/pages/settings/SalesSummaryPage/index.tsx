@@ -49,7 +49,7 @@ export const SalesSummaryPage = () => {
   return (
     <S.Container data-container>
       <S.Title>
-        {t('매출 현황')}
+        {t('실적 및 매출 현황')}
         <div />
         <div>
           <span>{t('매출개요')}</span>

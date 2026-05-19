@@ -136,7 +136,7 @@ export const SalesReportPage = () => {
     <UIStyles.setting.TablePageContainer>
       <S.Container>
         <S.Title>
-          {t('매출 현황')}
+          {t('실적 및 매출 현황')}
           <div /> <span>{t('매출 리포트')}</span>
         </S.Title>
 

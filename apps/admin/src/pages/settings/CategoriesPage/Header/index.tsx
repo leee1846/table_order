@@ -19,9 +19,9 @@ export const Header = ({ onClickAddCategory, isPosLinked }: Props) => {
   return (
     <S.Header>
       <S.TextContainer>
-        <h1>{t('카테고리 설정')}</h1>
+        <h1>{t('분류항목 설정')}</h1>
         <div />
-        <h2>{t('카테고리 추가하기')}</h2>
+        <h2>{t('분류항목 추가하기')}</h2>
       </S.TextContainer>
       <BasicButton
         variant="Solid_Navy_2XL"
@@ -33,7 +33,7 @@ export const Header = ({ onClickAddCategory, isPosLinked }: Props) => {
         }
         disabled={isPosLinked}
       >
-        {t('카테고리 추가')}
+        {t('분류항목 추가')}
       </BasicButton>
     </S.Header>
   );

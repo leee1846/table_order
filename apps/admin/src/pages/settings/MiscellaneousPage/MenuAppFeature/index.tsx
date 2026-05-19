@@ -382,7 +382,7 @@ export const MenuAppFeature = ({
       {!isShopRole() && (
         <>
           <UIStyles.setting.ContentLayout>
-            <p>{t('주문기능 활성화')}</p>
+            <p>{t('주문 기능 사용여부')}</p>
             <ToggleButton
               size="M"
               isOn={isOrderable}
@@ -390,12 +390,12 @@ export const MenuAppFeature = ({
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
-            <p>{t('최초 주문 카테고리 선택')}</p>
+            <p>{t('첫 주문 분류항목 선택')}</p>
             <BasicButton
               variant="Outline_Navy_M"
               onClick={handleOpenCategoryModal}
             >
-              {t('카테고리 설정')}
+              {t('분류항목 설정')}
             </BasicButton>
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
@@ -475,7 +475,7 @@ export const MenuAppFeature = ({
 
       {!isShopRole() && (
         <UIStyles.setting.ContentLayout>
-          <p>{t('카테고리별 메뉴 보기')}</p>
+          <p>{t('분류항목별 음식목록 보기')}</p>
           <ToggleButton
             size="M"
             isOn={useSinglePageMenuboard}
@@ -538,7 +538,7 @@ export const MenuAppFeature = ({
           </UIStyles.setting.ContentLayout>
           <div>
             <UIStyles.setting.ContentLayout>
-              <p>{t('픽업 안내 메시지')}</p>
+              <p>{t('음식 수령 안내내')}</p>
               <ToggleButton
                 size="M"
                 isOn={usePickupAlert}
@@ -566,7 +566,7 @@ export const MenuAppFeature = ({
 
       <div>
         <UIStyles.setting.ContentLayout>
-          <p>{t('브레이크타임 설정')}</p>
+          <p>{t('휴식시간 운영')}</p>
           <ToggleButton
             size="M"
             isOn={useBreakTime}
@@ -811,7 +811,7 @@ export const MenuAppFeature = ({
 
       <div>
         <UIStyles.setting.ContentLayout>
-          <p>{t('영업마감안내 설정')}</p>
+          <p>{t('매장 운영 종료 안내')}</p>
           <ToggleButton
             size="M"
             isOn={useClosureNotice}
@@ -821,7 +821,7 @@ export const MenuAppFeature = ({
         {useClosureNotice && (
           <S.InnerSection>
             <S.InnerSectionItem>
-              <p>{t('영업마감 시간 설정')}</p>
+              <p>{t('매장 운영 종료 시간 설정')}</p>
               <UIStyles.setting.TimeRangeInput>
                 <input
                   type="text"
@@ -925,7 +925,7 @@ export const MenuAppFeature = ({
                 />
               </div>
               <div>
-                <p>{t('영업 마감 사전 안내 메시지')}</p>
+                <p>{t('매장 운영 종료 사전 안내 메시지')}</p>
                 <textarea
                   value={closureMessage}
                   maxLength={MAX_DESCRIPTION_LENGTH}

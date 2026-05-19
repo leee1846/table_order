@@ -164,7 +164,7 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
       }
     >
       <UIStyles.setting.ContentLayout>
-        <p>{t('매장 결제 방식')}</p>
+        <p>{t('결제 시스템 방식')}</p>
         <Dropdown
           options={paymentTypeOptions}
           value={paymentType}

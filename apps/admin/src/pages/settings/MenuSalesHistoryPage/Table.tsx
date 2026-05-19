@@ -94,7 +94,7 @@ export const MenuSalesHistoryTable = ({ rows, currentLanguage }: Props) => {
     <S.StyledTable>
       <UIStyles.setting.Thead>
         <tr>
-          <th>{t('메뉴명')}</th>
+          <th>{t('음식명')}</th>
           <th>{t('단가')}</th>
           <th>
             <S.HeaderLabel>

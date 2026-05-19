@@ -85,13 +85,13 @@ export const StoreEnvironment = ({
       <UIStyles.setting.Header>
         <S.TitleContentContainer>
           <StoreIcon width={32} height={32} color={theme.colors.primary[500]} />
-          <UIStyles.setting.Title>{t('매장 환경')}</UIStyles.setting.Title>
+          <UIStyles.setting.Title>{t('매장 운영 조건')}</UIStyles.setting.Title>
         </S.TitleContentContainer>
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
-          <p>{t('테이블 점유시간 표기')}</p>
+          <p>{t('고객 테이블 이용 시간 표시')}</p>
           <ToggleButton
             size="M"
             isOn={tableOccupationTime}
