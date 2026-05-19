@@ -7,8 +7,9 @@ import type {
   ICreateAppVersionParams,
   TGetAppVersionResponse,
   TPostAppVersionResponse,
+  IAppVersionParams,
 } from '../types/app';
-import type { IPaginationParams, TVoidApiResponse } from '../types/common';
+import type { TVoidApiResponse } from '../types/common';
 
 export const getLatestAppVersion = async (
   appType: TAppType
@@ -23,13 +24,13 @@ export const getLatestAppVersion = async (
 };
 
 export const getAppVersionList = async (
-  params: IPaginationParams
+  params: IAppVersionParams
 ): Promise<TGetAppVersionListResponse> => {
   const axiosInstance = getAxiosInstance('private');
 
   const response = await axiosInstance<TGetAppVersionListResponse>({
     method: 'GET',
-    url: ENDPOINTS.APP.VERSION_LIST,
+    url: ENDPOINTS.APP.VERSION_LIST(params.type),
     params,
   });
 

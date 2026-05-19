@@ -30,8 +30,8 @@ export const ROUTES = {
       generate: () => '/backoffice/mypage',
     },
     APP_HISTORIES: {
-      path: 'app-histories',
-      generate: () => '/backoffice/app-histories',
+      path: 'app-histories/list/:type',
+      generate: (type: string) => `/backoffice/app-histories/list/${type}`,
     },
     APP_HISTORIES_NEW: {
       path: 'app-histories/new',
@@ -72,6 +72,43 @@ export const ROUTES = {
     MEMBERS_EDIT: {
       path: 'members/:memberId/edit',
       generate: (memberId: string) => `/backoffice/members/${memberId}/edit`,
+    },
+    MEMBERS_DETAIL: {
+      path: 'members/:memberId',
+      generate: (memberId: string) => `/backoffice/members/${memberId}`,
+    },
+    CAMPAIGN: {
+      path: 'campaign',
+      generate: () => `/backoffice/campaign`,
+    },
+    CAMPAIGN_NEW: {
+      path: 'campaign/new',
+      generate: () => `/backoffice/campaign/new`,
+    },
+    CAMPAIGN_EDIT: {
+      path: 'campaign/edit/:id',
+      generate: (id: string | number) => `/backoffice/campaign/edit/${id}`, // 페이지 이동 시 사용할 함수
+    },
+    MENU_GROUP: {
+      path: 'menu-group',
+      generate: () => `/backoffice/menu-group`,
+    },
+    STORE_GROUP: {
+      path: 'store-groups',
+      generate: () => `/backoffice/store-groups`,
+    },
+    STORE_GROUP_NEW: {
+      path: 'store-groups/new',
+      generate: () => '/backoffice/store-groups/new',
+    },
+    STORE_GROUP_EDIT: {
+      path: 'store-groups/:id',
+      generate: (id: string | number) => `/backoffice/store-groups/${id}`,
+    },
+    MENU_GROUP_STATUS: {
+      path: 'menu-group-status/:campaignSeq',
+      generate: (campaignSeq: string | number) =>
+        `/backoffice/menu-group-status/${campaignSeq}`,
     },
   },
 

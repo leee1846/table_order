@@ -61,6 +61,7 @@ export const DEFAULT_FORM_VALUES: FormValues = {
   isTaxFree: false,
   minQuantity: 0,
   isRecommended: false,
+  isAdMenu: false,
   optionGroupList: [],
   selectedLanguageCode: 'KO',
   menuImageList: [],

@@ -19,6 +19,10 @@ interface GlobalLoadingIndicatorProps {
    */
   posOrderWaitingMessage: string;
   /**
+   * 앱별 로딩 오버레이를 표시할 때 사용할 메시지
+   */
+  customLoadingMessage?: string;
+  /**
    * 로딩 오버레이 컴포넌트
    * - message prop을 받는 컴포넌트 전달
    */
@@ -34,6 +38,10 @@ interface GlobalLoadingIndicatorProps {
    * - mutation 로딩은 이 옵션과 무관하게 동작
    */
   hideFetchingSpinner?: boolean;
+  /**
+   * API fetching 여부와 무관하게 LoadingOverlay를 표시해야 하는 앱별 로딩 상태
+   */
+  customLoadingVisible?: boolean;
 }
 
 /**
@@ -60,9 +68,11 @@ export function GlobalLoadingIndicator({
   isPosSyncVisible,
   sseReconnectingMessage,
   posOrderWaitingMessage,
+  customLoadingMessage = '',
   LoadingOverlay,
   hideSSEReconnectingOverlay = false,
   hideFetchingSpinner = false,
+  customLoadingVisible = false,
 }: GlobalLoadingIndicatorProps) {
   const isFetching =
     useIsFetching() -
@@ -91,7 +101,12 @@ export function GlobalLoadingIndicator({
     return <LoadingOverlay message={posOrderWaitingMessage} />;
   }
 
-  // 4순위: 일반 API 로딩 (hideFetchingSpinner=true이면 fetching은 무시, mutation은 유지)
+  // 4순위: 앱별 커스텀 로딩 오버레이
+  if (customLoadingVisible) {
+    return <LoadingOverlay message={customLoadingMessage} />;
+  }
+
+  // 5순위: 일반 API 로딩
   const isFetchingActive = hideFetchingSpinner ? false : isFetching > 0;
   if (isFetchingActive || isMutating > 0) {
     return <FullscreenLoadingSpinner />;

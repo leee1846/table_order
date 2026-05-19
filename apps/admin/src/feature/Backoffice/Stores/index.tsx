@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Tabs, Form, Flex, type TabsProps, Button } from 'antd';
+//import type { TabsProps } from 'antd';
 import { StoreInfoTab } from '@/feature/backoffice/Stores/StoreInfoTab';
 import { MemberInfoTab } from '@/feature/backoffice/Stores/MemberInfoTab';
 import { SettingInfoTab } from '@/feature/backoffice/Stores/SettingInfoTab';
 import { ChangeHistoryDialog } from '@/feature/backoffice/ChangeHistoryDialog';
-import * as S from '@/feature/backoffice/Stores/stores.style';
+import { StoreAdInfoTab } from '@/feature/backoffice/Stores/StoreAdInfoTab';
 import type {
   ICreateAdminMemberRequest,
   IGetAdminShopDetail,
@@ -12,16 +15,27 @@ import {
   DEFAULT_MEMBER_DATA,
   DEFAULT_SHOP_DATA,
 } from '@/feature/backoffice/Stores/constants';
-import { Button } from '@/feature/backoffice/components';
+import PageTitle from '@/feature/backoffice/components/PageTitle';
+import styled from '@emotion/styled';
 
-type TabType = 'storeInfo' | 'memberInfo' | 'settingInfo';
+const FormWrapper = styled.div`
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-top: 2px solid #e2e8f0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+`;
+
 type Mode = 'create' | 'edit';
 
 interface Props {
   mode: Mode;
   initialData?: IGetAdminShopDetail;
   memberInitialData?: ICreateAdminMemberRequest;
-  memberIsLocked?: boolean;
   onSave: (
     shopData: IGetAdminShopDetail,
     memberData: ICreateAdminMemberRequest
@@ -32,48 +46,58 @@ export const Stores = ({
   mode,
   initialData,
   memberInitialData,
-  memberIsLocked,
   onSave,
 }: Props) => {
-  const [activeTab, setActiveTab] = useState<TabType>('storeInfo');
+  const navigate = useNavigate();
+  const [form] = Form.useForm();
   const [formData, setFormData] =
     useState<IGetAdminShopDetail>(DEFAULT_SHOP_DATA);
   const [memberFormData, setMemberFormData] =
     useState<ICreateAdminMemberRequest>(DEFAULT_MEMBER_DATA);
+  const [activeTab, setActiveTab] = useState('storeInfo');
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (memberInitialData) {
-      setMemberFormData((prev) => {
-        return {
-          ...prev,
-          ...memberInitialData,
-        };
-      });
-      return;
-    }
-  }, [memberInitialData]);
+    let finalShopData = { ...DEFAULT_SHOP_DATA };
+    let finalMemberData = { ...DEFAULT_MEMBER_DATA };
 
-  useEffect(() => {
     if (initialData) {
-      // posLinkType이 null인 경우 'NONE'으로 설정
-      const normalizedData = {
+      finalShopData = {
+        ...finalShopData,
         ...initialData,
         settingInfo: {
+          ...finalShopData.settingInfo,
           ...initialData.settingInfo,
           posLinkType: initialData.settingInfo?.posLinkType || 'NONE',
         },
       };
-      setFormData(normalizedData);
-      setMemberFormData((prev) => ({
-        ...prev,
-        shopSeq: initialData?.shopSeq ?? 0,
-      }));
+      finalMemberData.shopSeq = initialData.shopSeq ?? 0;
     }
-  }, [initialData]);
+
+    if (memberInitialData) {
+      finalMemberData = { ...finalMemberData, ...memberInitialData };
+    }
+
+    // 매장 유형 디폴트 값 'GENL'(일반) 설정
+    if (!finalShopData.shopType) {
+      finalShopData.shopType = 'GENL';
+    }
+
+    setFormData(finalShopData);
+    setMemberFormData(finalMemberData);
+    form.setFieldsValue({ ...finalShopData, ...finalMemberData });
+  }, [initialData, memberInitialData, form]);
 
   const updateFormData = (updates: Partial<IGetAdminShopDetail>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
+    form.setFieldsValue(updates);
+  };
+
+  const updateMemberFormData = (
+    updates: Partial<ICreateAdminMemberRequest>
+  ) => {
+    setMemberFormData((prev) => ({ ...prev, ...updates }));
+    form.setFieldsValue(updates);
   };
 
   const handleSave = async () => {
@@ -88,105 +112,138 @@ export const Stores = ({
     setIsHistoryDialogOpen(false);
   };
 
-  const title = mode === 'create' ? '생성' : '수정';
+  const subTitle = mode === 'create' ? '등록' : '수정';
+
+  const tabItems: TabsProps['items'] = [
+    {
+      key: 'storeInfo',
+      label: '매장 정보',
+      children: (
+        <StoreInfoTab
+          mode={mode}
+          formData={formData}
+          updateFormData={updateFormData}
+        />
+      ),
+    },
+    {
+      key: 'settingInfo',
+      label: '세팅 정보',
+      children: (
+        <SettingInfoTab formData={formData} updateFormData={updateFormData} />
+      ),
+    },
+  ];
+
+  if (mode === 'edit') {
+    tabItems.push({
+      key: 'memberInfo',
+      label: '계정 정보',
+      children: (
+        <MemberInfoTab
+          formData={memberFormData}
+          updateFormData={updateMemberFormData}
+        />
+      ),
+    });
+    tabItems.push({
+      key: 'storeAdInfo',
+      label: '매장 광고 정보',
+      children: (
+        <StoreAdInfoTab
+          shopSeq={formData?.shopSeq}
+          //formData={memberFormData}
+          //updateFormData={updateMemberFormData}
+        />
+      ),
+    });
+  }
 
   return (
-    <S.PageWrapper>
-      <S.Container>
-        <S.TitleContainer>
-          <S.Title>
-            매장 관리
-            <div />
-            <span>{title}</span>
-          </S.Title>
-          <S.ButtonGroup>
-            {mode === 'edit' && (
-              <Button variant="outline" onClick={handleHistory}>
-                변경 이력
-              </Button>
-            )}
-            <Button variant="default" onClick={handleSave}>
-              저장
-            </Button>
-          </S.ButtonGroup>
-        </S.TitleContainer>
-
-        <S.TabContainer>
-          <S.TabButton
-            type="button"
-            isActive={activeTab === 'storeInfo'}
-            onClick={() => setActiveTab('storeInfo')}
-          >
-            매장 정보
-          </S.TabButton>
-          <S.TabButton
-            type="button"
-            isActive={activeTab === 'settingInfo'}
-            onClick={() => setActiveTab('settingInfo')}
-          >
-            세팅 정보
-          </S.TabButton>
-          {mode === 'edit' && (
-            <S.TabButton
-              type="button"
-              isActive={activeTab === 'memberInfo'}
-              onClick={() => setActiveTab('memberInfo')}
-            >
-              계정 정보
-            </S.TabButton>
-          )}
-        </S.TabContainer>
-
-        <S.TabContent>
-          {activeTab === 'storeInfo' && (
-            <StoreInfoTab
-              mode={mode}
-              formData={formData}
-              updateFormData={updateFormData}
-            />
-          )}
-
-          {activeTab === 'settingInfo' && (
-            <SettingInfoTab
-              formData={formData}
-              updateFormData={updateFormData}
-            />
-          )}
-
-          {activeTab === 'memberInfo' && mode === 'edit' && (
-            <MemberInfoTab
-              formData={memberFormData}
-              updateFormData={(updates) =>
-                setMemberFormData((prev) => ({ ...prev, ...updates }))
-              }
-              isMemberLocked={memberIsLocked}
-            />
-          )}
-        </S.TabContent>
-        {mode === 'edit' && (
-          <ChangeHistoryDialog
-            isOpen={isHistoryDialogOpen}
-            onClose={handleCloseHistoryDialog}
-            histories={[
-              {
-                code: 'SHOP',
-                id: initialData?.shopCode ?? '',
-                label: '매장 변경 이력',
-              },
-              ...(memberInitialData?.memberId
-                ? [
-                    {
-                      code: 'MEMBER' as const,
-                      id:
-                        memberFormData?.memberId || memberInitialData?.memberId,
-                      label: '계정 변경 이력',
-                    },
-                  ]
-                : []),
-            ]}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Flex
+        justify="space-between"
+        align="center" /* style={{ marginBottom: 24 }} */
+      >
+        <PageTitle
+          title="매장 관리"
+          subtitle={
+            mode === 'edit'
+              ? `${subTitle}  (${initialData?.shopCode})`
+              : subTitle
+          }
+        />
+        {mode === 'edit' && <Button onClick={handleHistory}>변경 이력</Button>}
+      </Flex>
+      <FormWrapper>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSave}
+          style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+        >
+          <Tabs
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            items={tabItems}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
           />
-        )}
-      </S.Container>
-    </S.PageWrapper>
+
+          {activeTab !== 'storeAdInfo' && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                gap: 8,
+                marginTop: 40,
+              }}
+            >
+              <Button
+                size="large"
+                onClick={() => navigate(-1)}
+                style={{ width: '100px' }}
+              >
+                취소
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                style={{ width: '100px' }}
+              >
+                {mode === 'create' ? '저장' : '수정'}
+              </Button>
+            </div>
+          )}
+
+          <>
+            {mode === 'edit' && (
+              <ChangeHistoryDialog
+                isOpen={isHistoryDialogOpen}
+                onClose={handleCloseHistoryDialog}
+                histories={[
+                  {
+                    code: 'SHOP',
+                    id: initialData?.shopCode ?? '',
+                    label: '매장 변경 이력',
+                  },
+                  ...(memberInitialData?.memberId
+                    ? [
+                        {
+                          code: 'MEMBER' as const,
+                          id:
+                            memberFormData?.memberId ||
+                            memberInitialData?.memberId,
+                          label: '계정 변경 이력',
+                        },
+                      ]
+                    : []),
+                ]}
+              />
+            )}
+          </>
+        </Form>
+      </FormWrapper>
+    </div>
   );
 };

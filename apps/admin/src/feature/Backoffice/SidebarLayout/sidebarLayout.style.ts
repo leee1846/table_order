@@ -4,7 +4,7 @@ import { TYPOGRAPHY, theme } from '@repo/ui';
 export const Layout = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
 `;
 
@@ -28,8 +28,13 @@ export const NavbarContent = styled.div`
 `;
 
 export const Logo = styled.button`
+  display: flex;
+  align-items: center;
   width: 100px;
   padding: 5px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
 
   & > img {
     width: 100%;
@@ -39,6 +44,7 @@ export const Logo = styled.button`
 export const NavMenu = styled.ul`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   flex: 1;
   list-style: none;
@@ -88,10 +94,10 @@ export const CategoryButton = styled.button<ICategoryButton>`
   position: relative;
 
   span {
-    ${TYPOGRAPHY.BD_2}
-    color: ${({ isSelected }) =>
-      isSelected ? theme.colors.grey[900] : theme.colors.grey[700]};
+    ${TYPOGRAPHY.ST_3}
+    color: theme.colors.black;
     font-weight: ${({ isSelected }) => (isSelected ? 600 : 500)};
+    font-size: 1.0625rem;
     white-space: nowrap;
     transition: color 0.2s ease;
   }
@@ -145,26 +151,27 @@ export const CategoryButton = styled.button<ICategoryButton>`
 export const DropdownMenu = styled.ul`
   position: absolute;
   top: calc(100% + 4px);
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: ${theme.colors.white};
   border: 1px solid ${theme.colors.grey[200]};
   border-radius: 6px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   padding: 6px;
-  min-width: 200px;
+  width: max-content;
   list-style: none;
   margin: 0;
   z-index: 1001;
-  animation: fadeIn 0.15s ease-out;
+  animation: dropdownFadeIn 0.4s ease-out;
 
-  @keyframes fadeIn {
+  @keyframes dropdownFadeIn {
     from {
       opacity: 0;
-      transform: translateY(-4px);
+      transform: translate(-50%, -12px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translate(-50%, 0);
     }
   }
 `;
@@ -181,35 +188,34 @@ export const DetailButton = styled.button<IDetailButton>`
   align-items: center;
   width: 100%;
   text-align: left;
-  padding: 10px 12px;
-  border-radius: 4px;
+  padding: 8px 12px;
+  border-radius: 6px;
   background: ${({ isSelected }) =>
-    isSelected ? theme.colors.primary[100] : 'transparent'};
+    isSelected ? theme.colors.grey[100] : 'transparent'};
   border: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 
   span {
-    ${TYPOGRAPHY.MT_3}
+    ${TYPOGRAPHY.BD_2}
     color: ${({ isSelected }) =>
-      isSelected ? theme.colors.primary[700] : theme.colors.grey[700]};
-    font-weight: ${({ isSelected }) => (isSelected ? 500 : 400)};
+      isSelected ? theme.colors.grey[900] : theme.colors.grey[600]};
+    font-size: 0.8125rem;
+    font-weight: 400;
     white-space: nowrap;
+    transition: color 0.2s ease;
   }
 
   &:hover {
-    background-color: ${({ isSelected }) =>
-      isSelected ? theme.colors.primary[100] : theme.colors.grey[50]};
+    background-color: ${theme.colors.grey[100]};
 
     span {
-      color: ${({ isSelected }) =>
-        isSelected ? theme.colors.primary[700] : theme.colors.grey[900]};
+      color: ${theme.colors.grey[900]};
     }
   }
 
   &:active {
-    background-color: ${({ isSelected }) =>
-      isSelected ? theme.colors.primary[100] : theme.colors.grey[100]};
+    background-color: ${theme.colors.grey[200]};
   }
 `;
 

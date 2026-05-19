@@ -11,7 +11,7 @@ export const ENDPOINTS = {
 
   APP: {
     LATEST_VERSION: (type: string) => `/app/version/latest/${type}`,
-    VERSION_LIST: `/app/version/list`,
+    VERSION_LIST: (type: string) => `/app/version/list/${type}`,
     VERSION: '/app/version',
     APP_VERSION_FILE: (appVersionSeq: number) =>
       `/app/version/file/${appVersionSeq}`,
@@ -79,12 +79,14 @@ export const ENDPOINTS = {
     EXISTING_IMAGE_LIST: (shopCode: string) =>
       `/menu/image/existing/list/${shopCode}`,
     SAMPLE_IMAGE_LIST: '/menu/image/sample/list',
+    SEARCH: '/menus',
     POS_EXCEL: (shopCode: string) => `/menu/bulk/pos-excel/${shopCode}`,
     IMAGE_ZIP: (shopCode: string) => `/menu/bulk/images/${shopCode}`,
     IMAGE_LIST: (shopCode: string) => `/menu/bulk/image-list/${shopCode}`,
     POS_EXCEL_BUNDLE: (shopCode: string) =>
       `/menu/bulk/pos-excel-bundle/${shopCode}`,
     REPLACE_MAIN_IMAGE: (menuSeq: number) => `/menu/bulk/image/${menuSeq}`,
+    AD_FILE: (shopCode: string) => `/menu/ad/file/${shopCode}`,
   },
 
   SHOP: {
@@ -161,5 +163,43 @@ export const ENDPOINTS = {
     MEMBER_PASSWORD_RESET: `/admin/member/password/reset`,
     CHANGE_HISTORY_LIST: (historyCode: THistoryCode) =>
       `/admin/history/${historyCode}`,
+  },
+
+  MENU_GROUP: {
+    LIST: () => `/menu-groups`,
+    CREATE: `/menu-groups`,
+    UPDATE: (menuGroupSeq: string | number) => `/menu-groups/${menuGroupSeq}`,
+  },
+
+  STORE_GROUP: {
+    LIST: '/store-groups',
+    CREATE: '/store-groups',
+    UPDATE: (storeGroupSeq: string | number) =>
+      `/store-groups/${storeGroupSeq}`,
+    DETAIL: (id: string | number) => `/store-groups/${id}`, // TODO: 실제 상세 API 경로에 맞춰 수정하세요.
+    MEMBERS: (storeGroupSeq: string | number) =>
+      `/store-groups/${storeGroupSeq}/stores`,
+    STORES_BY_GROUPS: '/store-groups/stores',
+    EXCEL_TEMPLATE: '/store-groups/excel-template',
+  },
+  STORE: {
+    LIST: '/stores', // TODO: 실제 API 경로에 맞게 수정하세요 (예: /stores 또는 /store/list)
+    SEARCH: '/stores',
+    CAMPAIGN_STATUS: (shopSeq: number) => `/stores/${shopSeq}/campaign-status`,
+    TOGGLE_AD_TYPE_EXCLUSION: (
+      shopSeq: number,
+      campaignSeq: number,
+      adType: string
+    ) =>
+      `/stores/${shopSeq}/campaigns/${campaignSeq}/ad-types/${adType}/exclusion`,
+  },
+
+  CAMPAIGN: {
+    LIST: '/campaigns',
+    DETAIL: (campaignSeq: number | string) => `/campaigns/${campaignSeq}`,
+    CREATE: '/campaigns',
+    UPDATE: (campaignSeq: number | string) => `/campaigns/${campaignSeq}`,
+    COPY: (campaignSeq: number | string) => `/campaigns/${campaignSeq}`,
+    ACTIVE: '/campaigns/active',
   },
 } as const;

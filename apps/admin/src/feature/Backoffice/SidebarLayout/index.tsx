@@ -1,12 +1,9 @@
-import { Suspense, useState, useEffect, useMemo } from 'react';
+import { Suspense, useState, useEffect, useMemo, useRef } from 'react';
 import { Outlet, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { FullscreenLoadingSpinner } from '@repo/ui/components';
 import * as S from './sidebarLayout.style';
-import {
-  capsSmartOrderBlueGreyLogo,
-  ChevronForwardIcon,
-  PersonIcon,
-} from '@repo/ui/icons';
+import { ConfigProvider, App } from 'antd';
+import { capsSmartOrderBlueGreyLogo, PersonIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -25,23 +22,101 @@ type TMenu = {
   matchPattern?: string;
 };
 
+export const APP_TYPE = {
+  MENU: 'MENU',
+  POS_APP: 'POS_APP',
+  AGENT: 'AGENT',
+} as const;
+
 export const StoresSidebarLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { tokenPayload } = useAuthStore();
-  const [openedMenuIds, setOpenedMenuIds] = useState<Set<string>>(new Set());
+  const [openedMenuId, setOpenedMenuId] = useState<string | null>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isMaster = tokenPayload?.role === 'MASTER';
+  const isDevelopEnv = import.meta.env.MODE === 'development';
 
   const SIDEBAR_MENUS = useMemo<TMenu[]>(() => {
     const menus: TMenu[] = [
       {
-        id: 'stores',
-        label: '매장 관리',
-        path: ROUTES.BACKOFFICE.STORES.generate(),
-        matchPattern: '/backoffice/stores/*',
+        id: 'notices',
+        label: '공지 사항',
+        path: ROUTES.BACKOFFICE.NOTICES.generate(),
+        matchPattern: '/backoffice/notices/*',
       },
     ];
+
+    if (isDevelopEnv) {
+      menus.push({
+        id: 'stores',
+        label: '매장 관리',
+        matchPattern: '/backoffice/stores/*',
+        subMenus: [
+          {
+            id: 'store-list',
+            label: '매장 관리',
+            path: ROUTES.BACKOFFICE.STORES.generate(),
+          },
+          {
+            id: 'store-group',
+            label: '매장 그룹 관리',
+            path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
+          },
+        ],
+      });
+    } else {
+      menus.push({
+        id: 'store-list',
+        label: '매장 관리',
+        path: ROUTES.BACKOFFICE.STORES.generate(),
+      });
+    }
+
+    if (isMaster && isDevelopEnv) {
+      menus.push({
+        id: 'campaign',
+        label: '광고 관리',
+        matchPattern: '/backoffice/campaign/*',
+        subMenus: [
+          {
+            id: 'campaign-manage',
+            label: '캠페인 관리',
+            path: ROUTES.BACKOFFICE.CAMPAIGN.generate(),
+          },
+          {
+            id: 'menu_group',
+            label: '메뉴 그룹 관리',
+            path: ROUTES.BACKOFFICE.MENU_GROUP.generate(),
+          },
+        ],
+      });
+    }
+
+    menus.push({
+      id: 'app-histories',
+      label: '배포 관리',
+      //path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(),
+      matchPattern: '/backoffice/app-histories/*',
+      subMenus: [
+        {
+          id: 'menu-app',
+          label: '메뉴판 앱',
+          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.MENU),
+        },
+        {
+          id: 'admin-app',
+          label: '관리자 앱',
+          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.POS_APP),
+        },
+        {
+          id: 'agent',
+          label: '에이전트',
+          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.AGENT),
+        },
+      ],
+    });
 
     if (isMaster) {
       menus.push({
@@ -51,22 +126,8 @@ export const StoresSidebarLayout = () => {
         matchPattern: '/backoffice/members/*',
       });
     }
-
-    menus.push({
-      id: 'notices',
-      label: '공지사항 관리',
-      path: ROUTES.BACKOFFICE.NOTICES.generate(),
-      matchPattern: '/backoffice/notices/*',
-    });
-    menus.push({
-      id: 'app-histories',
-      label: '릴리즈 노트 관리',
-      path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(),
-      matchPattern: '/backoffice/app-histories/*',
-    });
-
     return menus;
-  }, [isMaster]);
+  }, [isMaster, isDevelopEnv]);
 
   const isPathActive = (path: string, matchPattern?: string) => {
     if (matchPattern) {
@@ -78,152 +139,169 @@ export const StoresSidebarLayout = () => {
     }
     return location.pathname === path;
   };
-  const isMenuOpened = (menuId: string) => openedMenuIds.has(menuId);
+
+  const selectedKeys = useMemo(() => {
+    const currentPath = location.pathname;
+
+    // Check for active sub-menu first
+    for (const menu of SIDEBAR_MENUS) {
+      const activeSubMenu = menu.subMenus?.find((sm) =>
+        matchPath({ path: sm.path, end: true }, currentPath)
+      );
+      if (activeSubMenu) {
+        return [menu.path || menu.id, activeSubMenu.path];
+      }
+    }
+
+    // Check for active main menu
+    const activeMenu = SIDEBAR_MENUS.find(
+      (m) =>
+        (m.matchPattern &&
+          matchPath({ path: m.matchPattern, end: false }, currentPath)) ||
+        m.path === currentPath
+    );
+
+    return activeMenu ? [activeMenu.path || activeMenu.id] : [];
+  }, [location.pathname, SIDEBAR_MENUS]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleMenuClick = (menu: TMenu) => {
-    if (menu.subMenus !== undefined) {
-      if (menu.subMenus.length === 0) {
-        return;
-      }
-      toggleMenuOpen(menu.id);
-    } else if (menu.path) {
+    if (!menu.subMenus?.length && menu.path) {
       navigate(menu.path);
     }
   };
 
-  const handleSubMenuClick = (path: string) => navigate(path);
-
-  const toggleMenuOpen = (menuId: string) => {
-    setOpenedMenuIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(menuId)) {
-        next.delete(menuId);
-      } else {
-        next.add(menuId);
-      }
-      return next;
-    });
+  const handleSubMenuClick = (path: string) => {
+    navigate(path);
+    setOpenedMenuId(null);
   };
 
-  const hasActiveSubMenu = (menu: TMenu) =>
-    menu.subMenus?.some((sub: TSubMenu) => isPathActive(sub.path)) ?? false;
+  const handleMouseEnter = (menuId: string) => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setOpenedMenuId(menuId);
+  };
 
-  useEffect(() => {
-    const hasActiveSubMenu = (menu: TMenu) =>
-      menu.subMenus?.some((sub: TSubMenu) => location.pathname === sub.path) ??
-      false;
-
-    SIDEBAR_MENUS.forEach((menu) => {
-      if (!menu.matchPattern) {
-        return;
-      }
-
-      const match = matchPath(
-        { path: menu.matchPattern, end: false },
-        location.pathname
-      );
-      const isMatched = match !== null;
-
-      setOpenedMenuIds((prev) => {
-        const next = new Set(prev);
-
-        if (isMatched) {
-          next.add(menu.id);
-        } else if (!hasActiveSubMenu(menu)) {
-          next.delete(menu.id);
-        }
-
-        return next;
-      });
-    });
-  }, [location.pathname, SIDEBAR_MENUS]);
+  const handleMouseLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setOpenedMenuId(null);
+    }, 200); // 200ms 여유 부여 (필요에 따라 시간 조절 가능)
+  };
 
   return (
-    <S.Layout>
-      <S.Navbar>
-        <S.NavbarContent>
-          <S.Logo
-            type="button"
-            onClick={() => navigate(ROUTES.BACKOFFICE.STORES.generate())}
-          >
-            <img src={capsSmartOrderBlueGreyLogo} alt="logo" />
-          </S.Logo>
+    <App>
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: '#003594',
+          },
+        }}
+      >
+        <S.Layout>
+          <S.Navbar>
+            <S.NavbarContent>
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <S.Logo
+                  type="button"
+                  onClick={() => navigate(ROUTES.BACKOFFICE.STORES.generate())}
+                >
+                  <img src={capsSmartOrderBlueGreyLogo} alt="logo" />
+                </S.Logo>
+              </div>
 
-          <S.NavMenu>
-            {SIDEBAR_MENUS.map((menu) => {
-              const hasSubMenus = !!menu.subMenus?.length;
-              const isActive =
-                (menu.path && isPathActive(menu.path, menu.matchPattern)) ||
-                hasActiveSubMenu(menu);
-              const isOpened = hasSubMenus && isMenuOpened(menu.id);
+              <S.NavMenu>
+                {SIDEBAR_MENUS.map((menu) => {
+                  const hasSubMenus = !!menu.subMenus?.length;
+                  const isActive = selectedKeys.includes(menu.path || menu.id);
+                  const isOpened = openedMenuId === menu.id;
 
-              return (
-                <S.NavMenuItem key={menu.id}>
-                  <S.CategoryButton
-                    onClick={() => handleMenuClick(menu)}
-                    isSelected={isActive}
-                    isOpen={isOpened}
-                  >
-                    <span>{menu.label}</span>
-                    {hasSubMenus && (
-                      <ChevronForwardIcon
-                        color={theme.colors.grey[500]}
-                        width={16}
-                        height={16}
-                      />
-                    )}
-                  </S.CategoryButton>
+                  return (
+                    <S.NavMenuItem
+                      key={menu.id}
+                      onMouseEnter={
+                        hasSubMenus
+                          ? () => handleMouseEnter(menu.id)
+                          : undefined
+                      }
+                      onMouseLeave={hasSubMenus ? handleMouseLeave : undefined}
+                    >
+                      <S.CategoryButton
+                        onClick={() => handleMenuClick(menu)}
+                        isSelected={isActive || isOpened}
+                      >
+                        <span>{menu.label}</span>
+                      </S.CategoryButton>
 
-                  {hasSubMenus && isOpened && (
-                    <S.DropdownMenu>
-                      {menu.subMenus!.map((sub: TSubMenu) => (
-                        <S.DropdownMenuItem key={sub.id}>
-                          <S.DetailButton
-                            onClick={() => handleSubMenuClick(sub.path)}
-                            isSelected={isPathActive(sub.path)}
-                          >
-                            <span>{sub.label}</span>
-                          </S.DetailButton>
-                        </S.DropdownMenuItem>
-                      ))}
-                    </S.DropdownMenu>
-                  )}
-                </S.NavMenuItem>
-              );
-            })}
-          </S.NavMenu>
+                      {hasSubMenus && isOpened && (
+                        <S.DropdownMenu>
+                          {menu.subMenus!.map((sub: TSubMenu) => (
+                            <S.DropdownMenuItem key={sub.id}>
+                              <S.DetailButton
+                                onClick={() => handleSubMenuClick(sub.path)}
+                                isSelected={selectedKeys.includes(sub.path)}
+                              >
+                                <span>{sub.label}</span>
+                              </S.DetailButton>
+                            </S.DropdownMenuItem>
+                          ))}
+                        </S.DropdownMenu>
+                      )}
+                    </S.NavMenuItem>
+                  );
+                })}
+              </S.NavMenu>
+              <div
+                style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}
+              >
+                <S.MyPageIconButton
+                  type="button"
+                  onClick={() => navigate(ROUTES.BACKOFFICE.MYPAGE.generate())}
+                  aria-label="내 정보"
+                >
+                  <PersonIcon
+                    width={16}
+                    height={16}
+                    color={
+                      isPathActive(ROUTES.BACKOFFICE.MYPAGE.generate())
+                        ? theme.colors.primary[500]
+                        : theme.colors.grey[500]
+                    }
+                  />
+                </S.MyPageIconButton>
+              </div>
 
-          <S.MyPageIconButton
-            type="button"
-            onClick={() => navigate(ROUTES.BACKOFFICE.MYPAGE.generate())}
-            aria-label="내 정보"
-          >
-            <PersonIcon
-              width={16}
-              height={16}
-              color={
-                isPathActive(ROUTES.BACKOFFICE.MYPAGE.generate())
-                  ? theme.colors.primary[500]
-                  : theme.colors.grey[500]
-              }
-            />
-          </S.MyPageIconButton>
-
-          {/* <S.DownloadLink
+              {/* <S.DownloadLink
             href="/app-download.html"
             target="_blank"
             rel="noopener noreferrer"
           >
             자료실
           </S.DownloadLink> */}
-        </S.NavbarContent>
-      </S.Navbar>
+            </S.NavbarContent>
+          </S.Navbar>
 
-      <S.Content>
-        <Suspense fallback={<FullscreenLoadingSpinner />}>
-          <Outlet />
-        </Suspense>
-      </S.Content>
-    </S.Layout>
+          <S.Content>
+            <Suspense fallback={<FullscreenLoadingSpinner />}>
+              <Outlet />
+            </Suspense>
+          </S.Content>
+        </S.Layout>
+      </ConfigProvider>
+    </App>
   );
 };

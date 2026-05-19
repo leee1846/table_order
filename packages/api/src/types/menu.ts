@@ -193,6 +193,7 @@ export interface IMenuBase {
   totalPrice: number; // CLIENT_ONLY
   selectedLanguageCode: string | null;
   menuImageList: IMenuImage[] | null; // READ_ONLY (GET 응답에만 포함)
+  isAdMenu: boolean; // 광고 메뉴
 }
 
 // ============================================================================
@@ -439,3 +440,43 @@ export interface IUpdateMenuOutOfStockParams {
 export interface IUpdateMenuTranslationParams {
   shopCode: string;
 }
+
+// ============================================================================
+// GET /menu/search (search_1)
+// ============================================================================
+
+export interface IGetMenuSearchParams {
+  name?: string; // TODO: 실제 검색 파라미터명에 맞게 수정하세요.
+}
+
+export interface IMenuSearchItem {
+  menuSeq: number;
+  menuName: string;
+  menuPrice: number;
+  isRecommended: boolean;
+  menuDescription: string;
+}
+
+export type TGetMenuSearchResponse = IApiResponse<IMenuSearchItem[]>;
+
+export type TGetMenuAdFilesAdType =
+  | 'STANDBY_VIDEO' // (주문대기동영상)
+  | 'STANDBY_IMAGE' // (주문대기이미지)
+  | 'TOP_BANNER_IMAGE' // (상단배너이미지)
+  | 'ORDER_COMP_FULL_VIDEO' // (주문완료 전면 동영상)
+  | 'ORDER_COMP_FULL_IMAGE' // (주문완료 전면 이미지)
+  | 'ORDER_COMP_SIDE_IMAGE'; // (주문완료 측면면 이미지)
+
+export interface IGetMenuAdFile {
+  contentSeq: number;
+  campaignSeq: number;
+  adType: TGetMenuAdFilesAdType;
+  filePath: string;
+  fileName: string;
+  durationSec: number;
+  fileSizeKb: number;
+  sortOrder: number;
+  contentDescription: string;
+}
+
+export type TGetMenuAdFilesResponse = IApiResponse<IGetMenuAdFile[]>;

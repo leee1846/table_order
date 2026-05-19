@@ -1,8 +1,6 @@
-import { CheckButton } from '@repo/ui/components';
+import { Form, Input, Select, Checkbox, Row, Col, Radio } from 'antd';
 import { allowOnlyNumbers } from '@repo/util/string';
-import * as S from '@/feature/backoffice/Stores/StoreInfoTab/storeInfoTab.style';
 import type { IGetAdminShopDetail } from '@repo/api/types';
-import { Input, Dropdown } from '@/feature/backoffice/components';
 
 type Mode = 'create' | 'edit';
 
@@ -34,215 +32,226 @@ const AREA_CODE_OPTIONS = [
 
 export const StoreInfoTab = ({ mode, formData, updateFormData }: Props) => {
   return (
-    <S.Container>
-      <S.Section>
-        <S.FormContent>
-          {mode === 'edit' && (
-            <S.HorizontalLayout>
-              <S.FieldGroup>
-                <S.Label>SID</S.Label>
-                <Input
-                  placeholder="SID"
-                  value={formData.shopCode ?? ''}
-                  onChange={() => {
-                    // readOnly
-                  }}
-                  disabled
-                />
-              </S.FieldGroup>
-            </S.HorizontalLayout>
-          )}
-
-          <S.HorizontalLayout>
-            <S.FieldGroup>
-              <S.Label>
-                매장명 <span>*</span>
-              </S.Label>
+    <div style={{ marginTop: 24 }}>
+      {mode === 'edit' && (
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="SID">
               <Input
-                placeholder="매장명을 입력하세요"
-                value={formData.shopName}
-                onChange={(value) => updateFormData({ shopName: value })}
+                placeholder="SID"
+                value={formData.shopCode ?? ''}
+                disabled
               />
-            </S.FieldGroup>
+            </Form.Item>
+          </Col>
+        </Row>
+      )}
 
-            <S.FieldGroup>
-              <S.Label>
-                검색용 매장명 <span>*</span>
-              </S.Label>
-              <Input
-                placeholder="검색용 매장명을 입력하세요"
-                value={formData.shopSearchName}
-                onChange={(value) => updateFormData({ shopSearchName: value })}
-              />
-            </S.FieldGroup>
-          </S.HorizontalLayout>
-
-          <S.HorizontalLayout>
-            <S.FieldGroup>
-              <S.Label>사업자등록번호</S.Label>
-              <Input
-                placeholder="사업자등록번호를 입력하세요"
-                value={formData.businessNumber}
-                onChange={(value) =>
-                  updateFormData({ businessNumber: allowOnlyNumbers(value) })
-                }
-                type="tel"
-                inputMode="numeric"
-              />
-            </S.FieldGroup>
-            <S.FieldGroup>
-              <CheckButton
-                checked={formData.isCorporate}
-                onChange={(checked) => updateFormData({ isCorporate: checked })}
-                customStyle={S.LargeCheckboxStyle}
-              >
-                <p>법인 여부</p>
-              </CheckButton>
-            </S.FieldGroup>
-          </S.HorizontalLayout>
-
-          <S.FieldGroup>
-            <S.Label>
-              기본 주소 <span>*</span>
-            </S.Label>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="매장명" required>
             <Input
-              placeholder="기본 주소를 입력하세요"
-              value={formData.address1}
-              onChange={(value) => updateFormData({ address1: value })}
+              placeholder="매장명을 입력하세요"
+              value={formData.shopName}
+              onChange={(e) => updateFormData({ shopName: e.target.value })}
             />
-          </S.FieldGroup>
+          </Form.Item>
+        </Col>
 
-          <S.FieldGroup>
-            <S.Label>나머지 주소</S.Label>
+        <Col span={12}>
+          <Form.Item label="검색용 매장명" required>
             <Input
-              placeholder="나머지 주소를 입력하세요"
-              value={formData.address2}
-              onChange={(value) => updateFormData({ address2: value })}
+              placeholder="검색용 매장명을 입력하세요"
+              value={formData.shopSearchName}
+              onChange={(e) =>
+                updateFormData({ shopSearchName: e.target.value })
+              }
             />
-          </S.FieldGroup>
-
-          <S.FieldGroup>
-            <S.Label>지역 코드</S.Label>
-            <Dropdown
-              options={AREA_CODE_OPTIONS}
-              value={formData.areaCode || null}
-              onChange={(value) => updateFormData({ areaCode: String(value) })}
-              placeholder="지역 코드를 선택하세요"
-            />
-          </S.FieldGroup>
-
-          <S.FieldGroup>
-            <S.Label>매장 이메일</S.Label>
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row gutter={16}>
+        <Col span={24}>
+          <Form.Item label="매장 유형" required>
+            <Radio.Group
+              value={formData.shopType || 'GENL'}
+              onChange={(e) => updateFormData({ shopType: e.target.value })}
+              disabled={mode === 'edit'}
+            >
+              <Radio value="GENL">일반</Radio>
+              <Radio value="FRAN">프랜차이즈</Radio>
+              <Radio value="OTHR">기타</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="사업자등록번호">
             <Input
-              placeholder="매장 이메일을 입력하세요"
-              value={formData.shopEmail}
-              onChange={(value) => updateFormData({ shopEmail: value })}
-            />
-          </S.FieldGroup>
-
-          <S.FieldGroup>
-            <S.Label>
-              매장 전화번호 <span>*</span>
-            </S.Label>
-            <Input
-              placeholder="매장 전화번호를 입력하세요"
-              value={formData.shopPhoneNumber}
-              onChange={(value) =>
-                updateFormData({ shopPhoneNumber: allowOnlyNumbers(value) })
+              placeholder="사업자등록번호를 입력하세요"
+              value={formData.businessNumber}
+              onChange={(e) =>
+                updateFormData({
+                  businessNumber: allowOnlyNumbers(e.target.value),
+                })
               }
               type="tel"
               inputMode="numeric"
             />
-          </S.FieldGroup>
-
-          <S.HorizontalLayout>
-            <S.FieldGroup>
-              <S.Label>
-                대표자명 <span>*</span>
-              </S.Label>
-              <Input
-                placeholder="대표자명을 입력하세요"
-                value={formData.ownerName}
-                onChange={(value) => updateFormData({ ownerName: value })}
-              />
-            </S.FieldGroup>
-
-            <S.FieldGroup>
-              <S.Label>
-                대표자 연락처 <span>*</span>
-              </S.Label>
-              <Input
-                placeholder="대표자 연락처를 입력하세요"
-                value={formData.ownerPhoneNumber}
-                onChange={(value) =>
-                  updateFormData({ ownerPhoneNumber: allowOnlyNumbers(value) })
-                }
-                type="tel"
-                inputMode="numeric"
-              />
-            </S.FieldGroup>
-          </S.HorizontalLayout>
-
-          <S.HorizontalLayout>
-            <S.FieldGroup>
-              <S.Label>실무 담당자명</S.Label>
-              <Input
-                placeholder="실무 담당자명을 입력하세요"
-                value={formData.managerName}
-                onChange={(value) => updateFormData({ managerName: value })}
-              />
-            </S.FieldGroup>
-
-            <S.FieldGroup>
-              <S.Label>실무 담당자 연락처</S.Label>
-              <Input
-                placeholder="실무 담당자 연락처를 입력하세요"
-                value={formData.managerPhoneNumber}
-                onChange={(value) =>
-                  updateFormData({
-                    managerPhoneNumber: allowOnlyNumbers(value),
-                  })
-                }
-                type="tel"
-                inputMode="numeric"
-              />
-            </S.FieldGroup>
-          </S.HorizontalLayout>
-
-          <S.CheckboxGroup>
-            <CheckButton
-              checked={formData.isActive}
-              onChange={(checked) => updateFormData({ isActive: checked })}
-              customStyle={S.LargeCheckboxStyle}
-            >
-              활성화
-            </CheckButton>
-            <CheckButton
-              checked={formData.isTestShop}
-              onChange={(checked) => updateFormData({ isTestShop: checked })}
-              customStyle={S.LargeCheckboxStyle}
-            >
-              테스트 매장
-            </CheckButton>
-            <CheckButton
-              checked={formData.isEarlyUpdate}
-              onChange={(checked) => updateFormData({ isEarlyUpdate: checked })}
-              customStyle={S.LargeCheckboxStyle}
-            >
-              공식 업데이트
-            </CheckButton>
-            <CheckButton
-              checked={formData.isEarlyBetaUpdate}
-              onChange={(checked) =>
-                updateFormData({ isEarlyBetaUpdate: checked })
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          {/* 레이아웃 정렬을 위해 빈 라벨 속성 추가 */}
+          <Form.Item label=" " colon={false}>
+            <Checkbox
+              checked={formData.isCorporate}
+              onChange={(e) =>
+                updateFormData({ isCorporate: e.target.checked })
               }
-              customStyle={S.LargeCheckboxStyle}
             >
-              베타 업데이트
-            </CheckButton>
-          </S.CheckboxGroup>
-        </S.FormContent>
-      </S.Section>
-    </S.Container>
+              법인 여부
+            </Checkbox>
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Form.Item label="기본 주소" required>
+        <Input
+          placeholder="기본 주소를 입력하세요"
+          value={formData.address1}
+          onChange={(e) => updateFormData({ address1: e.target.value })}
+        />
+      </Form.Item>
+
+      <Form.Item label="나머지 주소">
+        <Input
+          placeholder="나머지 주소를 입력하세요"
+          value={formData.address2}
+          onChange={(e) => updateFormData({ address2: e.target.value })}
+        />
+      </Form.Item>
+
+      <Form.Item label="지역 코드">
+        <Select
+          options={AREA_CODE_OPTIONS}
+          value={formData.areaCode || null}
+          onChange={(value) => updateFormData({ areaCode: String(value) })}
+          placeholder="지역 코드를 선택하세요"
+          style={{ width: '100%' }}
+        />
+      </Form.Item>
+
+      <Form.Item label="매장 이메일">
+        <Input
+          placeholder="매장 이메일을 입력하세요"
+          value={formData.shopEmail}
+          onChange={(e) => updateFormData({ shopEmail: e.target.value })}
+        />
+      </Form.Item>
+
+      <Form.Item label="매장 전화번호" required>
+        <Input
+          placeholder="매장 전화번호를 입력하세요"
+          value={formData.shopPhoneNumber}
+          onChange={(e) =>
+            updateFormData({
+              shopPhoneNumber: allowOnlyNumbers(e.target.value),
+            })
+          }
+          type="tel"
+          inputMode="numeric"
+        />
+      </Form.Item>
+
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="대표자명" required>
+            <Input
+              placeholder="대표자명을 입력하세요"
+              value={formData.ownerName}
+              onChange={(e) => updateFormData({ ownerName: e.target.value })}
+            />
+          </Form.Item>
+        </Col>
+
+        <Col span={12}>
+          <Form.Item label="대표자 연락처" required>
+            <Input
+              placeholder="대표자 연락처를 입력하세요"
+              value={formData.ownerPhoneNumber}
+              onChange={(e) =>
+                updateFormData({
+                  ownerPhoneNumber: allowOnlyNumbers(e.target.value),
+                })
+              }
+              type="tel"
+              inputMode="numeric"
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="실무 담당자명">
+            <Input
+              placeholder="실무 담당자명을 입력하세요"
+              value={formData.managerName}
+              onChange={(e) => updateFormData({ managerName: e.target.value })}
+            />
+          </Form.Item>
+        </Col>
+
+        <Col span={12}>
+          <Form.Item label="실무 담당자 연락처">
+            <Input
+              placeholder="실무 담당자 연락처를 입력하세요"
+              value={formData.managerPhoneNumber}
+              onChange={(e) =>
+                updateFormData({
+                  managerPhoneNumber: allowOnlyNumbers(e.target.value),
+                })
+              }
+              type="tel"
+              inputMode="numeric"
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      {/*       <Form.Item>
+        <Space size="large" wrap>
+          <Checkbox
+            checked={formData.isActive}
+            onChange={(e) => updateFormData({ isActive: e.target.checked })}
+          >
+            활성화
+          </Checkbox>
+          <Checkbox
+            checked={formData.isTestShop}
+            onChange={(e) => updateFormData({ isTestShop: e.target.checked })}
+          >
+            테스트 매장
+          </Checkbox>
+          <Checkbox
+            checked={formData.isEarlyUpdate}
+            onChange={(e) =>
+              updateFormData({ isEarlyUpdate: e.target.checked })
+            }
+          >
+            공식 업데이트
+          </Checkbox>
+          <Checkbox
+            checked={formData.isEarlyBetaUpdate}
+            onChange={(e) =>
+              updateFormData({ isEarlyBetaUpdate: e.target.checked })
+            }
+          >
+            베타 업데이트
+          </Checkbox>
+        </Space>
+      </Form.Item> */}
+    </div>
   );
 };

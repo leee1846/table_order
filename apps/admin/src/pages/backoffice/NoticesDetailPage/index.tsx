@@ -1,11 +1,18 @@
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
+import styled from '@emotion/styled';
 import { Notices } from '@/feature/backoffice/Notices';
+import { useGetNoticeDetail } from '@repo/api/queries';
 import { formatDateTime } from '@repo/util/date';
 import type { NoticesFormData } from '@/feature/backoffice/Notices/constants';
 import type { INotice } from '@repo/api/types';
-import { useGetNoticeDetail } from '@repo/api/queries';
 
+// --- Emotion Styles ---
+const Container = styled.div`
+  background-color: #f4f7fa;
+  min-height: 100%;
+  padding: 40px;
+`;
 // INotice를 NoticesFormData로 변환
 const convertToFormData = (
   notice: INotice | undefined
@@ -40,5 +47,9 @@ export const NoticesDetailPage = () => {
     return convertToFormData(data?.data);
   }, [data]);
 
-  return <Notices mode="detail" initialData={initialData} />;
+  return (
+    <Container>
+      <Notices mode="detail" initialData={initialData} />
+    </Container>
+  );
 };

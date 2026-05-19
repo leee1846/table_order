@@ -1,11 +1,19 @@
 import { useNavigate } from 'react-router-dom';
+import styled from '@emotion/styled';
 import { ROUTES } from '@/constants/routes';
 import { Members } from '@/feature/backoffice/Members';
 import { validateMembersData } from '@/feature/backoffice/util';
-import { toast } from '@repo/feature/utils';
+import { message } from 'antd';
 import { usePostAdminMember } from '@repo/api/queries';
 import type { MembersFormData } from '@/feature/backoffice/Members/constants';
 import type { ICreateAdminMemberRequest } from '@repo/api/types';
+
+// --- Emotion Styles ---
+const Container = styled.div`
+  background-color: #f4f7fa;
+  min-height: 100%;
+  padding: 40px;
+`;
 
 // MembersFormData를 ICreateAdminMemberRequest로 변환
 const convertToCreateParams = (
@@ -35,9 +43,13 @@ export const MembersNewPage = () => {
     const params = convertToCreateParams(data);
     await createAdminMember(params);
 
-    toast('관리자 생성이 완료되었습니다.');
+    message.success('관리자 생성이 완료되었습니다.');
     navigate(ROUTES.BACKOFFICE.MEMBERS.generate());
   };
 
-  return <Members mode="create" onSave={handleSave} />;
+  return (
+    <Container>
+      <Members mode="create" onSave={handleSave} />
+    </Container>
+  );
 };

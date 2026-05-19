@@ -1,6 +1,5 @@
-import * as S from '@/feature/backoffice/Stores/StoreInfoTab/storeInfoTab.style';
+import { Form, Input, Select, Row, Col } from 'antd';
 import type { IGetAdminShopDetail } from '@repo/api/types';
-import { Input, Dropdown } from '@/feature/backoffice/components';
 
 interface Props {
   formData: IGetAdminShopDetail;
@@ -41,76 +40,74 @@ export const SettingInfoTab = ({ formData, updateFormData }: Props) => {
   };
 
   return (
-    <S.Container>
-      <S.Section>
-        <S.FormContent>
-          <S.FieldGroup>
-            <S.Label>결제형태</S.Label>
+    <div style={{ marginTop: 24 }}>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="결제형태">
             <Input
               placeholder="결제형태"
               value={settingInfo.usePrepayment ? '선불' : '후불'}
-              onChange={() => {
-                // readOnly
-              }}
               disabled
             />
-          </S.FieldGroup>
-
-          <S.FieldGroup>
-            <S.Label>VAN TID</S.Label>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="VAN TID">
             <Input
               placeholder="VAN TID를 입력하세요"
               value={settingInfo.vanId || ''}
-              onChange={(value) => updateSettingInfo({ vanId: value })}
+              onChange={(e) => updateSettingInfo({ vanId: e.target.value })}
             />
-          </S.FieldGroup>
+          </Form.Item>
+        </Col>
+      </Row>
 
-          <S.FieldGroup>
-            <S.Label>로컬아이피</S.Label>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="로컬아이피">
             <Input
               placeholder="로컬아이피"
               value={settingInfo.ipAddress || ''}
-              onChange={() => {
-                // readOnly
-              }}
               disabled
             />
-          </S.FieldGroup>
-
-          <S.FieldGroup>
-            <S.Label>포스연동방식</S.Label>
-            <Dropdown
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="포스연동방식">
+            <Select
               options={posLinkTypeOptions}
               value={settingInfo.posLinkType || 'NONE'}
               onChange={(value) =>
                 updateSettingInfo({ posLinkType: value as 'NONE' | 'OKPOS' })
               }
-              disabled
               placeholder="포스연동방식을 선택하세요"
+              style={{ width: '100%' }}
             />
-          </S.FieldGroup>
+          </Form.Item>
+        </Col>
+      </Row>
 
-          <S.HorizontalLayout>
-            <S.FieldGroup>
-              <S.Label>공유기 ID</S.Label>
-              <Input
-                placeholder="공유기 ID를 입력하세요"
-                value={settingInfo.routerId || ''}
-                onChange={(value) => updateSettingInfo({ routerId: value })}
-              />
-            </S.FieldGroup>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label="공유기 ID">
+            <Input
+              placeholder="공유기 ID를 입력하세요"
+              value={settingInfo.routerId || ''}
+              onChange={(e) => updateSettingInfo({ routerId: e.target.value })}
+            />
+          </Form.Item>
+        </Col>
 
-            <S.FieldGroup>
-              <S.Label>공유기 PW</S.Label>
-              <Input
-                placeholder="공유기 PW를 입력하세요"
-                value={settingInfo.routerPw || ''}
-                onChange={(value) => updateSettingInfo({ routerPw: value })}
-              />
-            </S.FieldGroup>
-          </S.HorizontalLayout>
-        </S.FormContent>
-      </S.Section>
-    </S.Container>
+        <Col span={12}>
+          <Form.Item label="공유기 PW">
+            <Input
+              placeholder="공유기 PW를 입력하세요"
+              value={settingInfo.routerPw || ''}
+              onChange={(e) => updateSettingInfo({ routerPw: e.target.value })}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+    </div>
   );
 };

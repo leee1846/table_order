@@ -57,6 +57,13 @@ import { MenuScreenPage } from '@/pages/settings/MenuScreenPage';
 import { StartScreenThemePage } from '@/pages/settings/StartScreenThemePage';
 import { StartScreenLogoPage } from '@/pages/settings/StartScreenLogoPage';
 import { StartScreenImageRegistrationPage } from '@/pages/settings/StartScreenImageRegistrationPage';
+import CampaignPage from '@/pages/backoffice/CampaignPage';
+import CampaignNewPage from '@/pages/backoffice/CampaignNewPage';
+import MenuGroupPage from '@/pages/backoffice/MenuGroupPage';
+import { StoreGroupPage } from '@/pages/backoffice/StoreGroupPage';
+import { StoreGroupNewPage } from '@/pages/backoffice/StoreGroupNewPage';
+import MenuTagStatus from '@/pages/backoffice/MenuTagStatus';
+import { MembersDetailPage } from '@/pages/backoffice/MembersDetailPage';
 
 // ============================================================================
 // Helper Functions - Token & Payload
@@ -289,6 +296,51 @@ const createBackofficeRoutes = () => [
     path: ROUTES.BACKOFFICE.MEMBERS_EDIT.path,
     loader: requireMasterLoader,
     element: createRoute(MembersEditPage),
+  },
+  {
+    path: ROUTES.BACKOFFICE.MEMBERS_DETAIL.path,
+    loader: requireMasterLoader,
+    element: createRoute(MembersDetailPage),
+  },
+  {
+    path: ROUTES.BACKOFFICE.CAMPAIGN.path,
+    loader: requireMasterLoader,
+    element: createRoute(CampaignPage),
+  },
+  {
+    path: ROUTES.BACKOFFICE.CAMPAIGN_NEW.path,
+    loader: requireMasterLoader,
+    element: createRoute(CampaignNewPage),
+  },
+  {
+    path: ROUTES.BACKOFFICE.CAMPAIGN_EDIT.path,
+    loader: requireMasterLoader,
+    element: createRoute(CampaignNewPage),
+  },
+  {
+    path: ROUTES.BACKOFFICE.MENU_GROUP.path,
+    loader: requireMasterLoader,
+    element: createRoute(MenuGroupPage),
+  },
+  {
+    path: ROUTES.BACKOFFICE.STORE_GROUP.path,
+    loader: requireMasterLoader,
+    element: createRoute(StoreGroupPage),
+  },
+  {
+    path: ROUTES.BACKOFFICE.STORE_GROUP_NEW.path,
+    loader: requireBackofficeLoader,
+    element: createRoute(StoreGroupNewPage),
+  },
+  {
+    path: ROUTES.BACKOFFICE.STORE_GROUP_EDIT.path,
+    loader: requireBackofficeLoader,
+    element: createRoute(StoreGroupNewPage),
+  },
+  {
+    path: ROUTES.BACKOFFICE.MENU_GROUP_STATUS.path,
+    loader: requireBackofficeLoader, // 권한 체크 (ADMIN, MASTER만 접근 가능하도록)
+    element: createRoute(MenuTagStatus),
   },
 ];
 

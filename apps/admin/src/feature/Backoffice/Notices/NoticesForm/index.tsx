@@ -1,10 +1,36 @@
-import { useRef, useEffect } from 'react';
-import * as S from './noticesForm.style';
+import { useEffect } from 'react';
+import { Form, Input, Select, Typography } from 'antd';
+import styled from '@emotion/styled';
 import {
   BOARD_TYPE_OPTIONS,
   type NoticesFormData,
 } from '@/feature/backoffice/Notices/constants';
-import { Input, Dropdown } from '@/feature/backoffice/components';
+
+const { Title, Text } = Typography;
+
+// --- Emotion Styles ---
+const Container = styled.div`
+  padding: 8px 0;
+`;
+
+const SectionTitle = styled(Title)`
+  && {
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: #1d2a6d;
+    font-size: 16px;
+  }
+`;
+
+const HorizontalLayout = styled.div`
+  display: flex;
+  gap: 16px;
+  max-width: 400px;
+
+  > div {
+    flex: 1;
+  }
+`;
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -15,97 +41,84 @@ interface Props {
 }
 
 export const NoticesForm = ({ mode, formData, updateFormData }: Props) => {
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const isReadOnly = mode === 'detail';
+  const [form] = Form.useForm();
 
-  // detail 모드일 때 textarea 높이를 내용에 맞게 자동 조절
   useEffect(() => {
-    if (isReadOnly && textAreaRef.current) {
-      textAreaRef.current.style.height = 'auto';
-      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
-    }
-  }, [formData.content, isReadOnly]);
+    form.setFieldsValue(formData);
+  }, [formData, form]);
 
   return (
-    <S.Container>
-      <S.Section>
-        <S.FormContent>
-          <S.FieldGroup>
-            <S.Label>
-              유형 <span>*</span>
-            </S.Label>
-            <Dropdown
-              options={BOARD_TYPE_OPTIONS}
-              value={formData.boardType}
-              onChange={(value) =>
-                updateFormData({ boardType: value as string })
-              }
-              disabled={isReadOnly}
-              placeholder="유형 선택"
-            />
-          </S.FieldGroup>
+    <Container>
+      <SectionTitle level={5}>공지 사항 정보</SectionTitle>
+      <Form
+        form={form}
+        layout="vertical"
+        onValuesChange={(changedValues) => updateFormData(changedValues)}
+        disabled={isReadOnly}
+        requiredMark={true}
+      >
+        <Form.Item
+          label={<Text strong>유형</Text>}
+          name="boardType"
+          rules={[{ required: true, message: '유형을 선택해주세요.' }]}
+        >
+          <Select
+            size="large"
+            options={BOARD_TYPE_OPTIONS}
+            placeholder="유형 선택"
+            style={{ maxWidth: 400 }}
+          />
+        </Form.Item>
 
-          <S.FieldGroup>
-            <S.Label>
-              제목 <span>*</span>
-            </S.Label>
-            <Input
-              placeholder="제목을 입력하세요"
-              value={formData.title}
-              onChange={(value) => updateFormData({ title: value })}
-              disabled={isReadOnly}
-              maxLength={200}
-            />
-          </S.FieldGroup>
+        <Form.Item
+          label={<Text strong>제목</Text>}
+          name="title"
+          rules={[{ required: true, message: '제목을 입력해주세요.' }]}
+        >
+          <Input
+            size="large"
+            placeholder="제목을 입력하세요"
+            maxLength={200}
+            style={{ maxWidth: 800 }}
+          />
+        </Form.Item>
 
-          <S.FieldGroup>
-            <S.Label>
-              내용 <span>*</span>
-            </S.Label>
-            <S.TextAreaWrapper>
-              <S.TextArea
-                ref={textAreaRef}
-                placeholder="내용을 입력하세요"
-                value={formData.content}
-                onChange={(e) =>
-                  updateFormData({ content: e.target.value.slice(0, 200) })
-                }
-                maxLength={200}
-                disabled={isReadOnly}
-                isDetail={isReadOnly}
-              />
-              <S.TextAreaCount>{formData.content.length}/200</S.TextAreaCount>
-            </S.TextAreaWrapper>
-          </S.FieldGroup>
+        <Form.Item
+          label={<Text strong>내용</Text>}
+          name="content"
+          rules={[{ required: true, message: '내용을 입력해주세요.' }]}
+          getValueFromEvent={(e) => e.target.value.slice(0, 200)}
+        >
+          <Input.TextArea
+            size="large"
+            placeholder="내용을 입력하세요"
+            maxLength={200}
+            autoSize={{ minRows: 6 }}
+            showCount={!isReadOnly}
+            style={{ maxWidth: 800 }}
+          />
+        </Form.Item>
 
-          {(mode === 'edit' || mode === 'detail') && (
-            <S.HorizontalLayout>
-              <S.FieldGroup>
-                <S.Label>생성일자</S.Label>
-                <Input
-                  placeholder="생성일자"
-                  value={formData.createdAt || ''}
-                  onChange={() => {
-                    // readOnly
-                  }}
-                  disabled
-                />
-              </S.FieldGroup>
-              <S.FieldGroup>
-                <S.Label>수정일자</S.Label>
-                <Input
-                  placeholder="수정일자"
-                  value={formData.updatedAt || ''}
-                  onChange={() => {
-                    // readOnly
-                  }}
-                  disabled
-                />
-              </S.FieldGroup>
-            </S.HorizontalLayout>
-          )}
-        </S.FormContent>
-      </S.Section>
-    </S.Container>
+        {(mode === 'edit' || mode === 'detail') && (
+          <HorizontalLayout>
+            <Form.Item
+              label={<Text strong>생성일자</Text>}
+              name="createdAt"
+              style={{ flex: 1 }}
+            >
+              <Input size="large" placeholder="생성일자" disabled />
+            </Form.Item>
+            <Form.Item
+              label={<Text strong>수정일자</Text>}
+              name="updatedAt"
+              style={{ flex: 1 }}
+            >
+              <Input size="large" placeholder="수정일자" disabled />
+            </Form.Item>
+          </HorizontalLayout>
+        )}
+      </Form>
+    </Container>
   );
 };

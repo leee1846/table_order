@@ -19,6 +19,7 @@ export interface IGetAdminShopItem {
 export type TGetAdminShopListResponse = IApiResponse<{
   currentPageNumber: number;
   totalPageNumber: number;
+  totalElements: number;
   shopList: IGetAdminShopItem[];
 }>;
 
@@ -116,6 +117,7 @@ export interface ICreateAdminMemberRequest {
 export type TGetAdminMemberListResponse = IApiResponse<{
   currentPageNumber: number;
   totalPageNumber: number;
+  totalElements: number;
   memberList: IGetAdminMember[];
 }>;
 
