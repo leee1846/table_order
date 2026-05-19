@@ -47,7 +47,7 @@ const forceReLogin = (reason: string) => {
   });
 
   removeAuthTokens();
-  disconnectSse();
+  disconnectSse('인증 만료');
   openConfirmDialog({
     title: t('인증 만료'),
     content: t('인증이 유효하지 않습니다.\n 로그인 후 다시 시도해주세요.'),

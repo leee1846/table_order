@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { saveAppLog } from '@repo/util/app';
 import { openConfirmDialog, closeDialog } from '../utils/dialog';
 
 const RETRY_AFTER_DIALOG_MS = 30 * 1000; // 30초
@@ -118,7 +119,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
     state.isReconnecting = false;
   }
 
-  // EventSource 생성 및 연결
+  saveAppLog('[SSE 연결 시도]', { key });
   const eventSource = new EventSource(url);
   state.eventSource = eventSource;
 
@@ -143,6 +144,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
     state.setIsConnectedCallbacks.forEach((callback) => callback(true));
     state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
     notifyReconnectingChange();
+    saveAppLog('[SSE 연결 성공]', { key });
   };
 
   // 메시지 큐 처리 함수
@@ -205,6 +207,11 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
 
       // 재시도 횟수 증가
       state.reconnectAttempts += 1;
+
+      saveAppLog('[SSE 연결 오류]', {
+        key,
+        재시도횟수: state.reconnectAttempts,
+      });
 
       // 5번 이상 시도했으면 다이얼로그 표시 후 30초마다 재시도 (타이머는 다이얼로그 노출 중에만 동작)
       if (state.reconnectAttempts > 5) {
@@ -295,6 +302,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       state.setErrorCallbacks.forEach((callback) => callback(error));
       state.isConnected = false;
       state.setIsConnectedCallbacks.forEach((callback) => callback(false));
+      saveAppLog('[SSE 연결 오류]', { key, readyState: 'OPEN' });
     }
   };
 };
@@ -304,9 +312,10 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
  * - 맵에서 state는 삭제하지 않음 (재연결 시 같은 state를 사용해 구독자(setDataCallbacks)가 유지되도록 함)
  * - 토큰 갱신 등으로 재연결 후에도 useSSEData 구독이 그대로 메시지를 받을 수 있음
  */
-export const disconnectSSE = (key: string): void => {
+export const disconnectSSE = (key: string, reason?: string): void => {
   const state = sseConnectionMap.get(key);
   if (state) {
+    saveAppLog('[SSE 연결 해제]', { reason, key });
     if (state.reconnectTimeoutId) {
       clearTimeout(state.reconnectTimeoutId);
       state.reconnectTimeoutId = null;

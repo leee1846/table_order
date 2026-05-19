@@ -29,7 +29,7 @@ export const Account = ({ shopName, shopCode, userId }: AccountProps) => {
 
   const handleLogout = () => {
     // sse 연결 끊기
-    disconnectSse();
+    disconnectSse('로그아웃');
 
     // store 비우기
     clearAuth();

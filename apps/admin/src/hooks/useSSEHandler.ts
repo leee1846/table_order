@@ -43,7 +43,7 @@ export const useSSEHandler = (tableNumber?: string) => {
     initializeSseConnection();
 
     return () => {
-      disconnectSse();
+      disconnectSse('shopCode 변경 > useEffect dependency cleanup');
     };
   }, [shopCode]);
 
@@ -120,7 +120,7 @@ export const useSSEHandler = (tableNumber?: string) => {
   useEffect(() => {
     if (sseMessage?.type === 'LOGOUT') {
       clearAuth();
-      disconnectSse();
+      disconnectSse('SSE LOGOUT type');
       window.location.replace(ROUTES.LOGIN.generate());
     }
   }, [sseMessage, clearAuth]);
@@ -231,9 +231,11 @@ export const useSSEHandler = (tableNumber?: string) => {
             androidId,
           });
         } catch (error) {
-          if ((error as { response?: { status?: number } }).response?.status === 410) {
-            // 서버가 SSE 세션 만료를 알림 → 기존 연결 해제 후 새 토큰으로 재연결
-            disconnectSse();
+          if (
+            (error as { response?: { status?: number } }).response?.status ===
+            410
+          ) {
+            disconnectSse('ack api error status 410');
             void initializeSseConnection();
           }
           // 410 외 heartbeat ack 실패는 무시
@@ -243,8 +245,7 @@ export const useSSEHandler = (tableNumber?: string) => {
     }
 
     if (sseMessage.type === 'DISCONNECT') {
-      // 서버가 SSE 연결 종료를 알림 → 기존 연결 해제 후 새 토큰으로 재연결
-      disconnectSse();
+      disconnectSse('SSE DISCONNECT type');
       void initializeSseConnection();
       return;
     }
