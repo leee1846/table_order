@@ -72,7 +72,10 @@ export const OrderHistoryModal = ({ orderHistories, onClose }: Props) => {
                   <li key={option.orderDetailOptionSeq} role="listitem">
                     <div>
                       <span />
-                      <p>{option.optionName}</p>
+                      <p>
+                        {option.localeOptionName?.[currentLanguage] ??
+                          option.optionName}
+                      </p>
                     </div>
 
                     <div>
