@@ -661,10 +661,21 @@ export const useSSEHandler = () => {
             shopCode,
             androidId,
           });
-        } catch {
-          // heartbeat ack 실패는 무시
+        } catch (error) {
+          if ((error as { response?: { status?: number } }).response?.status === 410) {
+            // 서버가 SSE 세션 만료를 알림 → 기존 연결 해제 후 새 토큰으로 재연결
+            disconnectSse();
+            void initializeSseConnection();
+          }
+          // 410 외 heartbeat ack 실패는 무시
         }
       })();
+    },
+
+    handleDisconnectMessage: () => {
+      // 서버가 SSE 연결 종료를 알림 → 기존 연결 해제 후 새 토큰으로 재연결
+      disconnectSse();
+      void initializeSseConnection();
     },
 
     handleDeviceControlMessage: (
@@ -997,6 +1008,9 @@ export const useSSEHandler = () => {
         break;
       case 'POS_SYNC_END':
         handlersRef.current.handlePosSyncEndMessage();
+        break;
+      case 'DISCONNECT':
+        handlersRef.current.handleDisconnectMessage();
         break;
       default:
         break;

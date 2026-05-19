@@ -29,7 +29,9 @@ const activeErrorTypes = new Set<string>();
 let hasForceReLoginCalled = false;
 
 const forceReLogin = (reason: string) => {
-  if (hasForceReLoginCalled) { return; }
+  if (hasForceReLoginCalled) {
+    return;
+  }
   hasForceReLoginCalled = true;
 
   const accessToken = getAccessToken();
@@ -141,8 +143,8 @@ privateApi.interceptors.response.use(
         }
       }
 
-      // 재시도 후에도 401 → 로그아웃
-      forceReLogin('재시도 후에도 401 응답');
+      // 토큰 갱신 후 동일 API 재요청해도 401 → 로그아웃
+      forceReLogin('토큰 갱신 후 API 재요청 → 401');
       throw new axios.Cancel('Invalid access token');
     }
 

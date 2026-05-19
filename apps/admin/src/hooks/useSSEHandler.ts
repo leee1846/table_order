@@ -230,10 +230,22 @@ export const useSSEHandler = (tableNumber?: string) => {
             shopCode: currentShopCode,
             androidId,
           });
-        } catch {
-          // heartbeat ack 실패는 무시
+        } catch (error) {
+          if ((error as { response?: { status?: number } }).response?.status === 410) {
+            // 서버가 SSE 세션 만료를 알림 → 기존 연결 해제 후 새 토큰으로 재연결
+            disconnectSse();
+            void initializeSseConnection();
+          }
+          // 410 외 heartbeat ack 실패는 무시
         }
       })();
+      return;
+    }
+
+    if (sseMessage.type === 'DISCONNECT') {
+      // 서버가 SSE 연결 종료를 알림 → 기존 연결 해제 후 새 토큰으로 재연결
+      disconnectSse();
+      void initializeSseConnection();
       return;
     }
 

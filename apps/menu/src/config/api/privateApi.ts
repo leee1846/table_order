@@ -137,7 +137,7 @@ privateApi.interceptors.response.use(
       }
 
       // 재시도 후에도 401 → 로그아웃
-      forceReLogin('재시도 후에도 401 응답');
+      forceReLogin('토큰 갱신 후 API 재요청 → 401');
       throw new axios.Cancel('Invalid access token');
     }
 
