@@ -37,12 +37,8 @@ export const Sidebar = ({
   const { isRemoteSupportVisible, openRemoteSupport } = useRemoteSupport(t);
   const menuItems = useMemo(() => {
     return [
-      ...(!isShopRole()
-        ? [
-            { id: 'order', label: t('주문') },
-            { id: 'sales', label: t('매출') },
-          ]
-        : []),
+      { id: 'order', label: t('주문') },
+      ...(!isShopRole() ? [{ id: 'sales', label: t('매출') }] : []),
       { id: 'device', label: t('기기') },
       { id: 'management', label: t('관리') },
       ...(isRemoteSupportVisible
