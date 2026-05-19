@@ -30,7 +30,8 @@ export interface ISseMessage {
     | 'POS_SYNC_START'
     | 'POS_SYNC_END'
     | 'CLEAR'
-    | 'AD_MENU';
+    | 'AD_MENU'
+    | 'DISCONNECT';
   data:
     | {
         [key: string]: number | string;

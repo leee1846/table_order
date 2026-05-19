@@ -43,7 +43,7 @@ export const useSSEHandler = (tableNumber?: string) => {
     initializeSseConnection();
 
     return () => {
-      disconnectSse();
+      disconnectSse('shopCode 변경 > useEffect dependency cleanup');
     };
   }, [shopCode]);
 
@@ -120,7 +120,7 @@ export const useSSEHandler = (tableNumber?: string) => {
   useEffect(() => {
     if (sseMessage?.type === 'LOGOUT') {
       clearAuth();
-      disconnectSse();
+      disconnectSse('SSE LOGOUT type');
       window.location.replace(ROUTES.LOGIN.generate());
     }
   }, [sseMessage, clearAuth]);
@@ -230,10 +230,23 @@ export const useSSEHandler = (tableNumber?: string) => {
             shopCode: currentShopCode,
             androidId,
           });
-        } catch {
-          // heartbeat ack 실패는 무시
+        } catch (error) {
+          if (
+            (error as { response?: { status?: number } }).response?.status ===
+            410
+          ) {
+            disconnectSse('ack api error status 410');
+            void initializeSseConnection();
+          }
+          // 410 외 heartbeat ack 실패는 무시
         }
       })();
+      return;
+    }
+
+    if (sseMessage.type === 'DISCONNECT') {
+      disconnectSse('SSE DISCONNECT type');
+      void initializeSseConnection();
       return;
     }
 

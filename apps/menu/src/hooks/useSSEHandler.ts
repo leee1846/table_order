@@ -24,7 +24,11 @@ import {
 import { getLatestAppVersion, getPosSyncStatus } from '@repo/api/fetchers';
 import { useSSE } from '@repo/feature/hooks';
 import { toast, openConfirmDialog } from '@repo/feature/utils';
-import { useAddMenuDialogStore, useDialogStore, usePosOrderStore } from '@repo/feature/stores';
+import {
+  useAddMenuDialogStore,
+  useDialogStore,
+  usePosOrderStore,
+} from '@repo/feature/stores';
 import { SystemControl, Installer, saveAppLog } from '@repo/util/app';
 import { SSE_KEYS, TIMER_KEYS } from '@/constants/keys';
 import { ROUTES } from '@/constants/routes';
@@ -671,10 +675,22 @@ export const useSSEHandler = () => {
             shopCode,
             androidId,
           });
-        } catch {
-          // heartbeat ack 실패는 무시
+        } catch (error) {
+          if (
+            (error as { response?: { status?: number } }).response?.status ===
+            410
+          ) {
+            disconnectSse('ack api error status 410');
+            void initializeSseConnection();
+          }
+          // 410 외 heartbeat ack 실패는 무시
         }
       })();
+    },
+
+    handleDisconnectMessage: () => {
+      disconnectSse('SSE DISCONNECT type');
+      void initializeSseConnection();
     },
 
     handleDeviceControlMessage: (
@@ -704,7 +720,10 @@ export const useSSEHandler = () => {
         try {
           await SystemControl.reboot();
         } catch (e) {
-          saveAppLog('[SSE 오류]', { event: 'DEVICE_RESTART', error: JSON.stringify(e) });
+          saveAppLog('[SSE > reboot plugin 오류]', {
+            event: 'DEVICE_RESTART',
+            error: JSON.stringify(e),
+          });
           const { currentShopData } = sseHandlerDataRef.current;
           if (currentShopData?.shopCode) {
             await collectDeviceInfoAndSyncToServer(
@@ -736,7 +755,10 @@ export const useSSEHandler = () => {
         await Installer.startUpdate(downloadPath, checksum);
       } catch (e) {
         if (currentShopData?.shopCode) {
-          saveAppLog('[SSE 오류]', { event: 'DEVICE_APP_UPDATE', error: JSON.stringify(e) });
+          saveAppLog('[SSE > startUpdate plugin 오류]', {
+            event: 'DEVICE_APP_UPDATE',
+            error: JSON.stringify(e),
+          });
           await collectDeviceInfoAndSyncToServer(
             deviceDataSyncDeps,
             currentShopData.shopCode,
@@ -894,7 +916,7 @@ export const useSSEHandler = () => {
     return () => {
       cancelled = true;
       globalTimerManager.clear(TIMER_KEYS.TABLE_REMOVAL_CHECK);
-      disconnectSse();
+      disconnectSse('shopCode 변경 > useEffect dependency cleanup');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- shopCode 기준 1회 실행
   }, [currentShopData?.shopCode]);
@@ -1026,6 +1048,9 @@ export const useSSEHandler = () => {
         break;
       case 'AD_MENU':
         handlersRef.current.handleAdMenuMessage();
+        break;
+      case 'DISCONNECT':
+        handlersRef.current.handleDisconnectMessage();
         break;
       default:
         break;

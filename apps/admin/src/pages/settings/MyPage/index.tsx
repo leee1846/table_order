@@ -19,7 +19,7 @@ export const MyPage = () => {
   const memberId = tokenPayload?.sub ?? '';
 
   const performLogout = () => {
-    disconnectSse();
+    disconnectSse('로그아웃');
     clearAuth();
     window.location.replace(ROUTES.LOGIN.generate());
   };

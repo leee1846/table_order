@@ -5,7 +5,7 @@ import { storage } from '@repo/util/function';
 import { resetAllStores } from '@/utils/resetStores';
 
 export const clearAuthData = async () => {
-  disconnectSse();
+  disconnectSse('로그아웃');
   removeAuthTokens();
   storage.local.clear();
   storage.session.clear();
