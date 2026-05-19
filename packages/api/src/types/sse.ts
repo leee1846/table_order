@@ -29,7 +29,8 @@ export interface ISseMessage {
     | 'AGENT_PING'
     | 'POS_SYNC_START'
     | 'POS_SYNC_END'
-    | 'CLEAR';
+    | 'CLEAR'
+    | 'DISCONNECT';
   data:
     | {
         [key: string]: number | string;

@@ -29,7 +29,9 @@ const activeErrorTypes = new Set<string>();
 let hasForceReLoginCalled = false;
 
 const forceReLogin = (reason: string) => {
-  if (hasForceReLoginCalled) { return; }
+  if (hasForceReLoginCalled) {
+    return;
+  }
   hasForceReLoginCalled = true;
 
   const accessToken = getAccessToken();
@@ -45,7 +47,7 @@ const forceReLogin = (reason: string) => {
   });
 
   removeAuthTokens();
-  disconnectSse();
+  disconnectSse('인증 만료');
   openConfirmDialog({
     title: t('인증 만료'),
     content: t('인증이 유효하지 않습니다.\n 로그인 후 다시 시도해주세요.'),
@@ -141,8 +143,8 @@ privateApi.interceptors.response.use(
         }
       }
 
-      // 재시도 후에도 401 → 로그아웃
-      forceReLogin('재시도 후에도 401 응답');
+      // 토큰 갱신 후 동일 API 재요청해도 401 → 로그아웃
+      forceReLogin('토큰 갱신 후 API 재요청 → 401');
       throw new axios.Cancel('Invalid access token');
     }
 
