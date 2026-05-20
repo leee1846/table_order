@@ -9,8 +9,9 @@ export const HomeButton = styled.button`
   gap: 6px;
   padding: 24px 0;
   margin-top: auto;
-  background-color: ${theme.colors.grey[900]};
+  background-color: ${theme.colors.white};
   cursor: pointer;
+  border-top: 2px solid ${theme.colors.grey[200]};
 
   span {
     ${TYPOGRAPHY.MT_6}

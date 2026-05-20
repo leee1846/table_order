@@ -16,10 +16,10 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useAuth } from '@/hooks/useAuth';
 import { SystemControl } from '@repo/util/app';
-import { useGetShopThemeMenu } from '@repo/api/queries';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { useRemoteSupport } from '@repo/feature/hooks';
 import { isShopRole } from '@/utils/common';
+import { capsSmartOrderBlueGreyLogo } from '@repo/ui/icons';
 
 type MenuItem = {
   id: string;
@@ -37,10 +37,10 @@ export const Sidebar = ({
   const { isRemoteSupportVisible, openRemoteSupport } = useRemoteSupport(t);
   const menuItems = useMemo(() => {
     return [
-      { id: 'order', label: t('주문') },
-      ...(!isShopRole() ? [{ id: 'sales', label: t('매출') }] : []),
-      { id: 'device', label: t('기기') },
-      { id: 'management', label: t('관리') },
+      { id: 'order', label: t('주문목록') },
+      ...(!isShopRole() ? [{ id: 'sales', label: t('매출관리') }] : []),
+      { id: 'device', label: t('기기관리') },
+      { id: 'management', label: t('환경설정') },
       ...(isRemoteSupportVisible
         ? [{ id: 'remoteSupport', label: t('원격지원') }]
         : []),
@@ -49,10 +49,6 @@ export const Sidebar = ({
   const navigate = useNavigate();
 
   const { shopCode } = useAuth();
-
-  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
-    enabled: !!shopCode,
-  });
 
   const [selectedMenu, setSelectedMenu] = useState<string>('');
   //주문 모달
@@ -98,7 +94,7 @@ export const Sidebar = ({
     <SidebarContainer>
       <Logo>
         <img
-          src={shopThemeMenuResponse?.data?.logoImagePath ?? ''}
+          src={capsSmartOrderBlueGreyLogo}
           alt={t('매장 로고')}
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         />

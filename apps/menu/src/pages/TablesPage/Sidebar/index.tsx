@@ -2,9 +2,8 @@ import * as CommonStyles from '@repo/ui/styles/sidebar.styles';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { useRemoteSupport } from '@repo/feature/hooks';
-import { HomeFilledIcon } from '@repo/ui/icons';
+import { capsSmartOrderBlueGreyLogo, HomeFilledIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { toast } from '@repo/feature/utils';
 import { AppStorage } from '@repo/util/app';
@@ -17,8 +16,6 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const { t } = useAdminTranslation();
   const { isRemoteSupportVisible, openRemoteSupport } = useRemoteSupport(t);
-
-  const { data: shopPageSettingData } = useShopThemePage();
 
   const onClickManagement = () => {
     navigate(ROUTES.SETTINGS.MISCELLANEOUS.generate());
@@ -42,10 +39,7 @@ export const Sidebar = () => {
   return (
     <CommonStyles.SidebarContainer>
       <CommonStyles.Logo>
-        <img
-          src={shopPageSettingData?.shopThemeData?.logoImagePath ?? ''}
-          alt={t('매장 로고')}
-        />
+        <img src={capsSmartOrderBlueGreyLogo} alt={t('매장 로고')} />
       </CommonStyles.Logo>
 
       <CommonStyles.MenuList>
@@ -63,7 +57,7 @@ export const Sidebar = () => {
       </CommonStyles.MenuList>
 
       <S.HomeButton type="button" onClick={onClickHomeButton}>
-        <HomeFilledIcon width={24} height={24} color={theme.colors.grey[700]} />
+        <HomeFilledIcon width={24} height={24} color={theme.colors.grey[600]} />
         <span>{t('메인 홈')}</span>
       </S.HomeButton>
     </CommonStyles.SidebarContainer>

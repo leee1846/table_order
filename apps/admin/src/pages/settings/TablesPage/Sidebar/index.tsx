@@ -1,5 +1,9 @@
 import { useAdminTranslation } from '@/config/i18n';
-import { AddIcon, HomeFilledIcon } from '@repo/ui/icons';
+import {
+  AddIcon,
+  capsSmartOrderBlueGreyLogo,
+  HomeFilledIcon,
+} from '@repo/ui/icons';
 import * as S from './sidebar.styles';
 import { theme } from '@repo/ui';
 import { useNavigate } from 'react-router-dom';
@@ -7,11 +11,7 @@ import { AddTableGroupDialog } from '@/pages/settings/TablesPage/dialogs/AddTabl
 import { EditTableGroupDialog } from '@/pages/settings/TablesPage/dialogs/EditTableGroupDialog';
 import { openDualActionDialog, toast } from '@repo/feature/utils';
 import { useQueryClient } from '@repo/api/tanstack-query';
-import {
-  queryKeys,
-  useDeleteTableGroup,
-  useGetShopThemeMenu,
-} from '@repo/api/queries';
+import { queryKeys, useDeleteTableGroup } from '@repo/api/queries';
 import { TableGroupItem } from '@/pages/settings/TablesPage/Sidebar/TableGroupItem';
 import { ROUTES } from '@/constants/routes';
 import { useState, useRef, useLayoutEffect, useEffect } from 'react';
@@ -42,10 +42,6 @@ export const Sidebar = ({
   const { mutateAsync: deleteTableGroup } = useDeleteTableGroup();
 
   const { shopCode, shopSeq } = useAuth();
-
-  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
-    enabled: !!shopCode,
-  });
 
   const [isAddTableGroupDialogOpen, setIsAddTableGroupDialogOpen] =
     useState(false);
@@ -215,7 +211,7 @@ export const Sidebar = ({
     <S.Sidebar>
       <S.SidebarLogo>
         <img
-          src={shopThemeMenuResponse?.data?.logoImagePath ?? ''}
+          src={capsSmartOrderBlueGreyLogo}
           alt={t('매장 로고')}
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         />
@@ -270,7 +266,7 @@ export const Sidebar = ({
             : navigate(ROUTES.SETTINGS.NOTICES.generate())
         }
       >
-        <HomeFilledIcon width={24} height={24} color={colors.grey[700]} />
+        <HomeFilledIcon width={24} height={24} color={colors.grey[600]} />
         <span>{t('메인 홈')}</span>
       </S.FloatingHomeButton>
 

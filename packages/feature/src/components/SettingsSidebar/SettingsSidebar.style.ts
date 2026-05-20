@@ -10,7 +10,7 @@ export const Layout = styled.div`
 export const Section = styled.section`
   display: flex;
   flex-direction: column;
-  background-color: ${theme.colors.grey[800]};
+  background-color: ${theme.colors.white};
   width: 100%;
   min-width: 13.125rem;
   max-width: 13.125rem;
@@ -18,6 +18,7 @@ export const Section = styled.section`
   min-height: 0;
   overflow: hidden;
   position: relative;
+  border-right: 2px solid ${theme.colors.grey[200]};
 `;
 
 export const Logo = styled.div`
@@ -61,7 +62,7 @@ export const CategoryButton = styled.button<ICategoryButton>`
     text-overflow: ellipsis;
     ${TYPOGRAPHY.MT_8}
     color: ${({ isSelected }) =>
-      isSelected ? theme.colors.white : theme.colors.grey[500]};
+      isSelected ? theme.colors.primary[600] : theme.colors.grey[600]};
   }
 
   & > svg {
@@ -93,7 +94,7 @@ export const DetailButton = styled.button<IDetailButton>`
     text-overflow: ellipsis;
     ${TYPOGRAPHY.ST_4}
     color: ${({ isSelected }) =>
-      isSelected ? theme.colors.primary[400] : theme.colors.grey[400]};
+      isSelected ? theme.colors.primary[600] : theme.colors.grey[600]};
   }
 `;
 
@@ -108,8 +109,9 @@ export const FloatingHomeButton = styled.button`
   justify-content: center;
   gap: 6px;
   padding: 24px 0;
-  background-color: ${theme.colors.grey[900]};
+  background-color: ${theme.colors.white};
   cursor: pointer;
+  border-top: 2px solid ${theme.colors.grey[200]};
 
   span {
     ${TYPOGRAPHY.MT_6}
