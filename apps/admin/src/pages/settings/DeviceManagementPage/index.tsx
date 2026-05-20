@@ -105,7 +105,7 @@ export const DeviceManagementPage = () => {
   return (
     <S.Container>
       <S.Header>
-        <S.Title>{t('기기관리')}</S.Title>
+        <S.Title>{t('디바이스 관리')}</S.Title>
       </S.Header>
 
       <S.DeviceGridWrapper>

@@ -221,7 +221,9 @@ export const SystemInfo = ({
             color={theme.colors.primary[500]}
           />
 
-          <UIStyles.setting.Title>{t('시스템 정보')}</UIStyles.setting.Title>
+          <UIStyles.setting.Title>
+            {t('시스템 버전 및 네트워크 정보')}
+          </UIStyles.setting.Title>
         </S.TitleContentContainer>
         <UIStyles.setting.ContentLayout>
           <div style={{ display: 'flex', gap: 12 }}>
@@ -311,11 +313,11 @@ export const SystemInfo = ({
         {CapacitorApp.isNative() && (
           <>
             <UIStyles.setting.ContentLayout>
-              <p>Android ID</p>
+              <p>{t('안드로이드 기기식별 정보(ID)')}</p>
               <p>{androidId || '-'}</p>
             </UIStyles.setting.ContentLayout>
             <UIStyles.setting.ContentLayout>
-              <p>IP</p>
+              <p>{t('네트워크 주소(IP)')}</p>
               <p>{ipAddress || '-'}</p>
             </UIStyles.setting.ContentLayout>
           </>

@@ -30,7 +30,7 @@ export const CategoryModal = ({
     <ModalBackground onClick={onClose}>
       <S.Container>
         <S.Header>
-          <h3>{t('최초 주문 카테고리 선택')}</h3>
+          <h3>{t('첫 주문 분류항목 선택')}</h3>
           <button type="button" aria-label={t('닫기')} onClick={onClose}>
             <CloseIcon width={28} height={28} color={theme.colors.grey[600]} />
           </button>

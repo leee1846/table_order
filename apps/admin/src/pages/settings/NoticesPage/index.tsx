@@ -45,7 +45,7 @@ export const NoticesPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Header>
-            <h1>{t('공지사항')}</h1>
+            <h1>{t('안내사항')}</h1>
             <BasicButton variant="Solid_Grey_L" onClick={moveToCustomerCenter}>
               {t('고객센터')}
             </BasicButton>

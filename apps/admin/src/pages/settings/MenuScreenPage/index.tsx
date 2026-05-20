@@ -118,7 +118,7 @@ export const MenuScreenPage = () => {
       setIsMenuThreeColumnLayout(next.isMenuThreeColumnLayout);
       setTemplateType(next.menuboardTemplateType);
     }
-    toast(t('메뉴 화면 설정을 저장했습니다.'));
+    toast(t('음식 목록 화면 설정을 저장했습니다.'));
   };
 
   if (!shopCode) {
@@ -129,7 +129,7 @@ export const MenuScreenPage = () => {
     <S.Container>
       <S.Header>
         <S.Title>
-          <h1>{t('메뉴 화면')}</h1>
+          <h1>{t('음식 목록 화면')}</h1>
           <div />
           <span>{t('테마 설정')}</span>
         </S.Title>

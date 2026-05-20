@@ -199,7 +199,7 @@ export const CategoryManageModal = ({
         );
 
         if (hasStaffCallCategory) {
-          toast(t('이미 직원 호출 카테고리가 있습니다'));
+          toast(t('이미 직원 호출 분류항목이 있습니다'));
           return; // 체크 안 함
         }
       }
@@ -210,7 +210,7 @@ export const CategoryManageModal = ({
   // 완료 버튼 핸들러
   const handleSubmit = async () => {
     if (categoryName === '') {
-      toast(t('카테고리 이름을 입력해주세요.'));
+      toast(t('분류항목 이름을 입력해주세요.'));
       return;
     }
 
@@ -310,19 +310,19 @@ export const CategoryManageModal = ({
 
           <S.Title>
             <p>
-              {t('카테고리')} {isEdit ? t('수정') : t('추가')}
+              {t('분류항목')} {isEdit ? t('수정') : t('추가')}
             </p>
           </S.Title>
 
           <S.Content>
             <div>
               <S.SubTitle>
-                {t('카테고리 이름')}
+                {t('분류항목 이름')}
                 <span>*</span>
               </S.SubTitle>
 
               <Input
-                placeholder={t('카테고리 이름을 입력해주세요.')}
+                placeholder={t('분류항목 이름을 입력해주세요.')}
                 value={categoryName}
                 onChange={(value) => {
                   if (value.length <= MAX_NAME_LENGTH) {
@@ -333,7 +333,7 @@ export const CategoryManageModal = ({
             </div>
 
             <Input
-              placeholder={t('카테고리 설명을 입력해주세요.')}
+              placeholder={t('분류항목 설명을 입력해주세요.')}
               value={categoryDescription}
               onChange={(value) => {
                 if (value.length <= MAX_DESCRIPTION_LENGTH) {
@@ -343,7 +343,7 @@ export const CategoryManageModal = ({
             />
 
             <div>
-              <S.SubTitle>{t('판매 요일')}</S.SubTitle>
+              <S.SubTitle>{t('운영 요일')}</S.SubTitle>
               <S.DayList>
                 {days.map((day) => (
                   <li key={day.value}>
@@ -382,7 +382,7 @@ export const CategoryManageModal = ({
                   onChange={(checked) => setIsQuantitySelectable(checked)}
                   customStyle={S.checkButtonCss}
                 >
-                  <p>{t('수량선택 사용')}</p>
+                  <p>{t('개수 입력')}</p>
                 </CheckButton>
 
                 <CheckButton
@@ -390,7 +390,7 @@ export const CategoryManageModal = ({
                   onChange={handleStaffCallChange}
                   customStyle={S.checkButtonCss}
                 >
-                  <p>{t('직원호출 사용')}</p>
+                  <p>{t('직원 부르기')}</p>
                 </CheckButton>
 
                 <CheckButton
@@ -398,7 +398,7 @@ export const CategoryManageModal = ({
                   onChange={(checked) => setUseTwoColumnLayout(checked)}
                   customStyle={S.checkButtonCss}
                 >
-                  <p>{t('2열 배치(가로 기본형)')}</p>
+                  <p>{t('가로 2열 배치')}</p>
                 </CheckButton>
                 <S.TimeRangeWrapper>
                   <CheckButton
@@ -406,7 +406,7 @@ export const CategoryManageModal = ({
                     onChange={(checked) => setUseSaleTime(checked)}
                     customStyle={S.checkButtonCss}
                   >
-                    <p>{t('판매 시간 설정')}</p>
+                    <p>{t('운영 시간 설정')}</p>
                   </CheckButton>
                   <S.TimeRangeContainer>
                     <S.TimeRangeDisplay

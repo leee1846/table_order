@@ -36,6 +36,7 @@ export const StoresSidebarLayout = () => {
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isMaster = tokenPayload?.role === 'MASTER';
+  const isDevelopEnv = false; //import.meta.env.MODE === 'development';
 
   const SIDEBAR_MENUS = useMemo<TMenu[]>(() => {
     const menus: TMenu[] = [
@@ -47,25 +48,33 @@ export const StoresSidebarLayout = () => {
       },
     ];
 
-    menus.push({
-      id: 'stores',
-      label: '매장 관리',
-      matchPattern: '/backoffice/stores/*',
-      subMenus: [
-        {
-          id: 'store-list',
-          label: '매장 관리',
-          path: ROUTES.BACKOFFICE.STORES.generate(),
-        },
-        {
-          id: 'store-group',
-          label: '매장 그룹 관리',
-          path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
-        },
-      ],
-    });
+    if (isDevelopEnv) {
+      menus.push({
+        id: 'stores',
+        label: '매장 관리',
+        matchPattern: '/backoffice/stores/*',
+        subMenus: [
+          {
+            id: 'store-list',
+            label: '매장 관리',
+            path: ROUTES.BACKOFFICE.STORES.generate(),
+          },
+          {
+            id: 'store-group',
+            label: '매장 그룹 관리',
+            path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
+          },
+        ],
+      });
+    } else {
+      menus.push({
+        id: 'store-list',
+        label: '매장 관리',
+        path: ROUTES.BACKOFFICE.STORES.generate(),
+      });
+    }
 
-    if (isMaster) {
+    if (isMaster && isDevelopEnv) {
       menus.push({
         id: 'campaign',
         label: '광고 관리',
@@ -118,7 +127,7 @@ export const StoresSidebarLayout = () => {
       });
     }
     return menus;
-  }, [isMaster]);
+  }, [isMaster, isDevelopEnv]);
 
   const isPathActive = (path: string, matchPattern?: string) => {
     if (matchPattern) {

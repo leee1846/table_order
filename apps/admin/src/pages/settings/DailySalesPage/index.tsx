@@ -137,7 +137,7 @@ export const DailySalesPage = () => {
         <S.Container>
           <S.Header>
             <S.Title>
-              {t('매출 현황')}
+              {t('실적 및 매출 현황')}
               <div />
               <span>{t('당일 매출내역')}</span>
             </S.Title>

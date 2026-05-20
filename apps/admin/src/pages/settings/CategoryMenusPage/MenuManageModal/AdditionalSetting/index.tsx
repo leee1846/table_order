@@ -27,11 +27,11 @@ export const AdditionalSetting = () => {
   return (
     <S.Container>
       <S.SectionContainer>
-        <p>{t('포스연동 메뉴코드')}</p>
+        <p>{t('POS 연동 음식목록 식별 코드')}</p>
         <Input disabled value={formValues.mappedMenuCode ?? ''} />
       </S.SectionContainer>
       <S.SectionContainer>
-        <p>{t('최소 주문 수량')}</p>
+        <p>{t('최소 주문 가능 개수')}</p>
         <Input
           value={
             formValues.minQuantity != null

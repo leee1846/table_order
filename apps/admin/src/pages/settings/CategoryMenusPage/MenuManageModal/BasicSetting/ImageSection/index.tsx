@@ -563,7 +563,7 @@ export const ImageSection = () => {
         onChange={handleFileChange}
       />
 
-      <S.MainImageTitle>{t('대표 이미지')}</S.MainImageTitle>
+      <S.MainImageTitle>{t('기본 사진')}</S.MainImageTitle>
       <S.Thumbnail
         onClick={() => !isShopRole() && !mainImage && openModal('main')}
       >
@@ -628,7 +628,7 @@ export const ImageSection = () => {
 
       {!isShopRole() && (
         <>
-          <S.AdditionalImagesTitle>{t('서브 이미지')}</S.AdditionalImagesTitle>
+          <S.AdditionalImagesTitle>{t('추가 사진')}</S.AdditionalImagesTitle>
           {additionalImages.length > 0 ? (
             <S.ImagesContainer>
               <S.Gradient />

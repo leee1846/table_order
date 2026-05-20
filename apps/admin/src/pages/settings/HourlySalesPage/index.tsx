@@ -86,7 +86,7 @@ export const HourlySalesPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
-            {t('매출 현황')}
+            {t('실적 및 매출 현황')}
             <div /> <span>{t('시간별 매출내역')}</span>
           </S.Title>
 

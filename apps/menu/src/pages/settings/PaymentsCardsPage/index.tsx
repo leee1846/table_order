@@ -100,9 +100,7 @@ export const PaymentsCardsPage = () => {
     1
   );
   const totalPages =
-    !isPlaceholderData && cardApprovalHistory.length === 0
-      ? 1
-      : inferredTotal;
+    !isPlaceholderData && cardApprovalHistory.length === 0 ? 1 : inferredTotal;
   const totalSalesAmount = cardApprovalData?.totalSalesAmount ?? 0;
   const totalCount = cardApprovalData?.totalCount ?? 0;
 
@@ -150,7 +148,7 @@ export const PaymentsCardsPage = () => {
       <UIStyles.setting.TablePageContainer>
         <S.Container>
           <S.Title>
-            {t('매출 현황')}
+            {t('실적 및 매출 현황')}
 
             <div />
             <span>{t('카드승인내역')}</span>

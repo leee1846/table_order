@@ -59,7 +59,8 @@ const MenuManageModalContent = ({
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const modalTitle = mode === 'create' ? t('메뉴 추가') : t('메뉴 수정');
+  const modalTitle =
+    mode === 'create' ? t('음식 목록 추가') : t('음식 목록 수정');
 
   const selectedLanguageCode = formValues.selectedLanguageCode as TShopLanguage;
 
@@ -79,7 +80,7 @@ const MenuManageModalContent = ({
           <S.Header>
             <S.Titles>
               <S.TitleLead>
-                <p>{t('메뉴 설정')}</p>
+                <p>{t('음식 목록 설정')}</p>
                 <span />
               </S.TitleLead>
               <S.TitleBreadcrumb>
