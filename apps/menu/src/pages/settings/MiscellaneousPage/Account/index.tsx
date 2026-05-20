@@ -1,28 +1,19 @@
-import { BasicButton, RadioButton } from '@repo/ui/components';
+import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import { openDualActionDialog } from '@repo/feature/utils';
 import { getAccessToken } from '@repo/api/auth';
-import type { ITokenPayload, TShopLanguage } from '@repo/api/types';
+import type { ITokenPayload } from '@repo/api/types';
 import { decodeJwtToken } from '@repo/util/function';
-import {
-  useAdminTranslation,
-  getAdminSupportedLanguages,
-} from '@/config/i18n/admin.i18n';
-import { LANGUAGE_CONFIG } from '@/constants/common';
+import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { clearAuthData } from '@/utils/auth';
 import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
+import { useDeviceStore } from '@/stores/useDeviceStore';
+import { useGetLatestAppVersion } from '@repo/api/queries';
 
-type AccountProps = {
-  selectedLanguageCode: string;
-  onLanguageSelectionChange: (code: TShopLanguage) => void;
-};
-
-export const Account = ({
-  selectedLanguageCode,
-  onLanguageSelectionChange,
-}: AccountProps) => {
+export const Account = () => {
+  const versionEnv = import.meta.env.VITE_APP_VERSION_ENV;
   const { t } = useAdminTranslation();
 
   const currentAccessToken = getAccessToken();
@@ -33,13 +24,8 @@ export const Account = ({
   const shopCode = currentShopDetail?.shopCode;
   const shopName = currentShopDetail?.shopName;
 
-  const supportedLanguageCodes = getAdminSupportedLanguages();
-  const availableLanguageOptions = supportedLanguageCodes
-    .filter((languageCode) => languageCode in LANGUAGE_CONFIG)
-    .map((languageCode) => ({
-      value: languageCode as TShopLanguage,
-      label: LANGUAGE_CONFIG[languageCode as TShopLanguage].label,
-    }));
+  const deviceData = useDeviceStore((s) => s.data);
+  const { data: latestVersionData } = useGetLatestAppVersion('MENU');
 
   const handleLogout = () => {
     openDualActionDialog({
@@ -57,35 +43,52 @@ export const Account = ({
   return (
     <UIStyles.setting.Container>
       <UIStyles.setting.Header>
-        <S.TitleContainer>
-          <UIStyles.setting.Title>{username}</UIStyles.setting.Title>
-          <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
-            {t('로그아웃')}
-          </BasicButton>
-        </S.TitleContainer>
-        <S.SID>
-          {t('매장 아이디')} <span>{shopCode}</span>
-        </S.SID>
+        <UIStyles.setting.Title>
+          {t('시스템 버전 및 네트워크 정보')}
+        </UIStyles.setting.Title>
+        <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
+          {t('로그아웃')}
+        </BasicButton>
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
+          <p>{t('버전 정보')}</p>
+
+          <S.Versions>
+            <p>
+              {t('WEB 버전')}
+              <span>
+                {versionEnv
+                  ? `${__APP_VERSION__} (${versionEnv})`
+                  : __APP_VERSION__}
+              </span>
+            </p>
+            <div />
+            <p>
+              {t('APP 버전')} <span>{deviceData?.version}</span>
+            </p>
+            <div />
+            <p>
+              {t('APP 최신 버전')}{' '}
+              <span>{latestVersionData?.data?.version ?? '-'}</span>
+            </p>
+          </S.Versions>
+        </UIStyles.setting.ContentLayout>
+
+        <UIStyles.setting.ContentLayout>
+          <p>{t('매장명')}</p>
           <p>{shopName}</p>
         </UIStyles.setting.ContentLayout>
+
         <UIStyles.setting.ContentLayout>
-          <p>{t('관리자 언어 선택')}</p>
-          <S.LanguageList>
-            {availableLanguageOptions.map((languageOption) => (
-              <RadioButton
-                key={languageOption.value}
-                checked={selectedLanguageCode === languageOption.value}
-                value={languageOption.value}
-                onChange={() => onLanguageSelectionChange(languageOption.value)}
-              >
-                <span>{languageOption.label}</span>
-              </RadioButton>
-            ))}
-          </S.LanguageList>
+          <p>{t('매장 아이디')}</p>
+          <p>{shopCode}</p>
+        </UIStyles.setting.ContentLayout>
+
+        <UIStyles.setting.ContentLayout>
+          <p>{t('계정 아이디')}</p>
+          <p>{username}</p>
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>

@@ -114,15 +114,14 @@ export const MiscellaneousPage = () => {
       </header>
 
       <S.Sections>
-        <Account
-          selectedLanguageCode={pendingAdminLanguage}
-          onLanguageSelectionChange={setPendingAdminLanguage}
-        />
+        <Account />
         <Detail
           useOrderposMode={isOrderPosMode}
           onChangeUseOrderposMode={handleToggleOrderPosMode}
           orderPosNumber={orderPosNumber}
           handleOrderPosNumberChange={handleOrderPosNumberChange}
+          selectedLanguageCode={pendingAdminLanguage}
+          onLanguageSelectionChange={setPendingAdminLanguage}
         />
         <Payment />
         {CapacitorApp.isNative() && <DeviceManagement />}
