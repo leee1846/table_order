@@ -512,7 +512,7 @@ export const MenuAppFeature = ({
           </UIStyles.setting.ContentLayout>
           <div>
             <UIStyles.setting.ContentLayout>
-              <p>{t('음식 수령 안내내')}</p>
+              <p>{t('음식 수령 안내')}</p>
               <SettingSwitch
                 checked={usePickupAlert}
                 onChange={setUsePickupAlert}
