@@ -2,7 +2,7 @@ import { BasicButton } from '@repo/ui/components';
 import * as UIStyles from '@repo/ui/styles';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { SettingsLauncher } from '@repo/util/app';
-import { openDualActionDialog, toast } from '@repo/feature/utils';
+import { toast } from '@repo/feature/utils';
 
 export const DeviceManagement = () => {
   const { t } = useAdminTranslation();
@@ -18,17 +18,18 @@ export const DeviceManagement = () => {
     }
   };
 
-  const sendLog = async () => {
-    openDualActionDialog({
-      title: t('앱 로그 전송'),
-      content: t('앱 로그를 전송하시겠습니까?'),
-      primaryText: t('확인'),
-      secondaryText: t('취소'),
-      onConfirm: () => {
-        // TODO: 로그 전송 로직 구현
-      },
-    });
-  };
+  // TODO: 앱 로그 전송 기능 추가 예정
+  // const sendLog = async () => {
+  //   openDualActionDialog({
+  //     title: t('앱 로그 전송'),
+  //     content: t('앱 로그를 전송하시겠습니까?'),
+  //     primaryText: t('확인'),
+  //     secondaryText: t('취소'),
+  //     onConfirm: () => {
+  //       // TODO: 로그 전송 로직 구현
+  //     },
+  //   });
+  // };
 
   return (
     <UIStyles.setting.Container>
@@ -47,12 +48,13 @@ export const DeviceManagement = () => {
           </BasicButton>
         </UIStyles.setting.ContentLayout>
 
-        <UIStyles.setting.ContentLayout>
+        {/* TODO: 앱 로그 전송 기능 추가 예정 */}
+        {/* <UIStyles.setting.ContentLayout>
           <p>{t('앱 로그 전송')}</p>
           <BasicButton variant="Outline_Grey_M" onClick={sendLog}>
             {t('로그 전송')}
           </BasicButton>
-        </UIStyles.setting.ContentLayout>
+        </UIStyles.setting.ContentLayout> */}
       </UIStyles.setting.ContentsLayout>
     </UIStyles.setting.Container>
   );

@@ -44,7 +44,7 @@ export const Sidebar = () => {
 
       <CommonStyles.MenuList>
         <CommonStyles.MenuItem isSelected={false} onClick={onClickManagement}>
-          {t('관리')}
+          {t('환경설정')}
         </CommonStyles.MenuItem>
         {isRemoteSupportVisible && (
           <CommonStyles.MenuItem

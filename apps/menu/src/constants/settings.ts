@@ -10,7 +10,7 @@ export const getSidebarMenus = (
   const menus: TMenu[] = [
     {
       id: 'misc',
-      label: t('설정'),
+      label: t('사용자 설정'),
       path: ROUTES.SETTINGS.MISCELLANEOUS.generate(),
     },
   ];
