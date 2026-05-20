@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Flex, message } from 'antd';
 import styled from '@emotion/styled';
@@ -12,6 +12,7 @@ import PageTitle from '@/feature/backoffice/components/PageTitle';
 import AppInfoParser, { type ApkParser, type IpaParser } from 'app-info-parser';
 import JSZip from 'jszip';
 import { AdminLoadingOverlay } from '@/feature/AdminLoadingOverlay';
+import { APP_TYPE } from '../SidebarLayout';
 
 type Mode = 'create' | 'edit' | 'detail';
 
@@ -61,6 +62,22 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
   const [appFile, setAppFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const pageTitle = useMemo(() => {
+    let typeLabel = '';
+    if (formData.type) {
+      typeLabel =
+        formData?.type === APP_TYPE.MENU
+          ? '메뉴판'
+          : formData?.type === APP_TYPE.POS_APP
+            ? '관리자'
+            : '에이전트';
+    } else {
+      typeLabel = '';
+    }
+
+    return typeLabel ? `배포 관리 (${typeLabel})` : '배포 관리';
+  }, [formData]);
 
   useEffect(() => {
     if (initialData) {
@@ -200,7 +217,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Flex justify="space-between" align="center">
-        <PageTitle title="배포 관리" subtitle={getSubtitle()} />
+        <PageTitle title={pageTitle} subtitle={getSubtitle()} />
         <ButtonGroup>
           {mode !== 'create' && (
             <Button onClick={handleHistory}>변경 이력</Button>

@@ -97,7 +97,7 @@ export const TableGroupItem = styled.div<{ isSelected: boolean }>`
   cursor: pointer;
   ${TYPOGRAPHY.MT_4}
   color: ${({ isSelected }) =>
-    isSelected ? colors.primary[500] : colors.grey[500]};
+    isSelected ? colors.primary[600] : colors.grey[600]};
 `;
 
 export const AddGroupButtonContainer = styled.div`
@@ -136,7 +136,8 @@ export const FloatingHomeButton = styled.button`
   justify-content: center;
   gap: 6px;
   padding: 24px 0;
-  background-color: ${colors.grey[900]};
+  background-color: ${colors.white};
+  border-top: 2px solid ${colors.grey[200]};
   cursor: pointer;
 
   span {

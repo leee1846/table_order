@@ -1,8 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import * as S from '@/pages/MainPage/Contents/ScrollContent/scrollContent.style';
 import { CategoryItem } from '@/pages/MainPage/Contents/CategoryItem';
 import { DOM_IDS } from '@/constants/keys';
 import type { ICategoryWithMenus } from '@repo/api/types';
+
+const LAZY_MOUNT_VIEWPORT_MARGIN_PX = 2000;
+
+// 섹션이 스크롤 영역 ±margin 안에 있는지 판별 (menuboard 갱신 후 재마운트 판정용)
+const isSectionNearScrollViewport = (
+  scrollContainer: HTMLElement,
+  sectionElement: HTMLElement,
+  marginPx: number
+): boolean => {
+  const containerRect = scrollContainer.getBoundingClientRect();
+  const sectionRect = sectionElement.getBoundingClientRect();
+  return (
+    sectionRect.bottom >= containerRect.top - marginPx &&
+    sectionRect.top <= containerRect.bottom + marginPx
+  );
+};
+
+// 카테고리 순서·목록 변경 감지용 fingerprint (예: "1,2,3")
+const buildCategoryListOrderKey = (categories: ICategoryWithMenus[]): string =>
+  categories.map((c) => c.categorySeq).join(',');
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -11,6 +31,7 @@ interface Props {
 
 interface LazyCategorySectionProps {
   category: ICategoryWithMenus;
+  categoriesOrderKey: string;
   eagerMountCategorySeq: number | null;
 }
 
@@ -24,6 +45,7 @@ interface LazyCategorySectionProps {
  */
 const LazyCategorySection = ({
   category,
+  categoriesOrderKey,
   eagerMountCategorySeq,
 }: LazyCategorySectionProps) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -68,13 +90,41 @@ const LazyCategorySection = ({
       },
       {
         root: scrollContainer,
-        rootMargin: '2000px 0px',
+        rootMargin: `${LAZY_MOUNT_VIEWPORT_MARGIN_PX}px 0px`,
       }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  // menuboard/SSE 갱신·순서 변경 후, 화면 근처 섹션만 CategoryItem 재마운트 (언마운트는 위 IO가 담당)
+  useLayoutEffect(() => {
+    const sectionElement = containerRef.current;
+    if (!sectionElement) {
+      return;
+    }
+
+    const scrollContainer = document.getElementById(
+      DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER
+    );
+    if (!scrollContainer) {
+      return;
+    }
+
+    if (
+      !isSectionNearScrollViewport(
+        scrollContainer,
+        sectionElement,
+        LAZY_MOUNT_VIEWPORT_MARGIN_PX
+      )
+    ) {
+      return;
+    }
+
+    isMountedRef.current = true;
+    setIsMounted(true);
+  }, [category, categoriesOrderKey]);
 
   return (
     <div
@@ -89,6 +139,9 @@ const LazyCategorySection = ({
 };
 
 export const ScrollContent = ({ categories, eagerMountCategorySeq }: Props) => {
+  // 자식 LazyCategorySection의 menuboard 재판정 트리거
+  const categoriesOrderKey = buildCategoryListOrderKey(categories);
+
   return (
     <S.Container>
       {categories.map((category) => (
@@ -98,6 +151,7 @@ export const ScrollContent = ({ categories, eagerMountCategorySeq }: Props) => {
         >
           <LazyCategorySection
             category={category}
+            categoriesOrderKey={categoriesOrderKey}
             eagerMountCategorySeq={eagerMountCategorySeq}
           />
         </div>

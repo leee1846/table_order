@@ -3,7 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import type { IShopSetting, TShopPosCode } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
-import { BasicButton, Dropdown, ToggleButton } from '@repo/ui/components';
+import { BasicButton, Dropdown } from '@repo/ui/components';
+import { SettingSwitch } from '@/pages/settings/MiscellaneousPage/common/SettingSwitch';
 import { ConnectionIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
@@ -99,10 +100,9 @@ export const Intergration = ({ shopSetting, onChange }: IntergrationProps) => {
         <>
           <UIStyles.setting.ContentLayout>
             <p>{t('메뉴 품절 자동 해제')}</p>
-            <ToggleButton
-              size="M"
-              isOn={useSoldOutAutoRestore}
-              onChange={() => setUseSoldOutAutoRestore(!useSoldOutAutoRestore)}
+            <SettingSwitch
+              checked={useSoldOutAutoRestore}
+              onChange={setUseSoldOutAutoRestore}
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>

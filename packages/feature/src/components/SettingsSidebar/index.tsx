@@ -139,7 +139,7 @@ export const SettingsSidebar = ({
             <HomeFilledIcon
               width={24}
               height={24}
-              color={theme.colors.grey[700]}
+              color={theme.colors.grey[600]}
             />
             <span>{t('메인 홈')}</span>
           </S.FloatingHomeButton>

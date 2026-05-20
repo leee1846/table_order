@@ -7,10 +7,11 @@ const { colors } = theme;
 export const SidebarContainer = styled.aside`
   display: flex;
   flex-direction: column;
-  background-color: ${colors.grey[800]};
+  background-color: ${colors.white};
   height: 100vh;
   width: 140px;
   overflow: auto;
+  border-right: 2px solid ${colors.grey[200]};
 `;
 
 export const Logo = styled.button`
@@ -46,7 +47,7 @@ export const MenuItem = styled.li<IMenuItem>`
 
   ${TYPOGRAPHY.MT_4}
   color: ${({ isSelected }) =>
-    isSelected ? colors.primary[500] : colors.grey[500]};
+    isSelected ? colors.primary[600] : colors.grey[600]};
 `;
 
 export const ActionButtons = styled.div`

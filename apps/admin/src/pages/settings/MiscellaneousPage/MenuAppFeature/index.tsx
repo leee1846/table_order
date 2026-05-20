@@ -2,12 +2,8 @@ import { useAdminTranslation } from '@/config/i18n';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ICategory, IShopSetting, IShopTime } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
-import {
-  BasicButton,
-  CheckButton,
-  Dropdown,
-  ToggleButton,
-} from '@repo/ui/components';
+import { BasicButton, CheckButton, Dropdown } from '@repo/ui/components';
+import { SettingSwitch } from '@/pages/settings/MiscellaneousPage/common/SettingSwitch';
 import * as UIStyles from '@repo/ui/styles';
 import * as S from '@/pages/settings/MiscellaneousPage/MenuAppFeature/menuAppFeature.style';
 import { useTimeInput } from '@/hooks/useTimeInput';
@@ -383,11 +379,7 @@ export const MenuAppFeature = ({
         <>
           <UIStyles.setting.ContentLayout>
             <p>{t('주문 기능 사용여부')}</p>
-            <ToggleButton
-              size="M"
-              isOn={isOrderable}
-              onChange={() => setIsOrderable(!isOrderable)}
-            />
+            <SettingSwitch checked={isOrderable} onChange={setIsOrderable} />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
             <p>{t('첫 주문 분류항목 선택')}</p>
@@ -425,13 +417,11 @@ export const MenuAppFeature = ({
 
       <UIStyles.setting.ContentLayout>
         <p>{t('방문자 수 입력')}</p>
-        <ToggleButton
-          size="M"
-          isOn={useCustomerCount}
-          onChange={() => {
-            const next = !useCustomerCount;
-            setUseCustomerCount(next);
-            if (!next) {
+        <SettingSwitch
+          checked={useCustomerCount}
+          onChange={(checked) => {
+            setUseCustomerCount(checked);
+            if (!checked) {
               setUseKidsCustomerCount(false);
             }
           }}
@@ -439,47 +429,38 @@ export const MenuAppFeature = ({
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>{t('어린이 수 입력')}</p>
-        <ToggleButton
-          size="M"
-          isOn={useKidsCustomerCount}
-          onChange={() => {
-            const next = !useKidsCustomerCount;
-            if (next && !useCustomerCount) {
+        <SettingSwitch
+          checked={useKidsCustomerCount}
+          onChange={(checked) => {
+            if (checked && !useCustomerCount) {
               toast(t('객수 사용을 활성화 해주세요.'));
               return;
             }
-            setUseKidsCustomerCount(next);
+            setUseKidsCustomerCount(checked);
           }}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>{t('주문서 총액 표시')}</p>
-        <ToggleButton
-          size="M"
-          isOn={isOrderSheetTotalVisible}
-          onChange={() =>
-            setIsOrderSheetTotalVisible(!isOrderSheetTotalVisible)
-          }
+        <SettingSwitch
+          checked={isOrderSheetTotalVisible}
+          onChange={setIsOrderSheetTotalVisible}
         />
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>{t('결제완료 금액 표시')}</p>
-        <ToggleButton
-          size="M"
-          isOn={isOrderCompleteTotalVisible}
-          onChange={() =>
-            setIsOrderCompleteTotalVisible(!isOrderCompleteTotalVisible)
-          }
+        <SettingSwitch
+          checked={isOrderCompleteTotalVisible}
+          onChange={setIsOrderCompleteTotalVisible}
         />
       </UIStyles.setting.ContentLayout>
 
       {!isShopRole() && (
         <UIStyles.setting.ContentLayout>
           <p>{t('분류항목별 음식목록 보기')}</p>
-          <ToggleButton
-            size="M"
-            isOn={useSinglePageMenuboard}
-            onChange={() => setUseSinglePageMenuboard(!useSinglePageMenuboard)}
+          <SettingSwitch
+            checked={useSinglePageMenuboard}
+            onChange={setUseSinglePageMenuboard}
           />
         </UIStyles.setting.ContentLayout>
       )}
@@ -500,21 +481,15 @@ export const MenuAppFeature = ({
       </UIStyles.setting.ContentLayout>
       <UIStyles.setting.ContentLayout>
         <p>{t('관리자 접근 잠금')}</p>
-        <ToggleButton
-          size="M"
-          isOn={isAdminLocked}
-          onChange={() => {
+        <SettingSwitch
+          checked={isAdminLocked}
+          onChange={(checked) => {
             if (CapacitorApp.isNative()) {
               toast(t('관리자 웹에서 변경해주세요.'));
               return;
             }
-            setIsAdminLocked(!isAdminLocked);
+            setIsAdminLocked(checked);
           }}
-          customStyle={
-            CapacitorApp.isNative()
-              ? S.getNativeToggleButtonStyle(isAdminLocked)
-              : undefined
-          }
         />
       </UIStyles.setting.ContentLayout>
       {/* <UIStyles.setting.ContentLayout>
@@ -530,19 +505,17 @@ export const MenuAppFeature = ({
         <>
           <UIStyles.setting.ContentLayout>
             <p>{t('테이블 중복 배정 허용')}</p>
-            <ToggleButton
-              size="M"
-              isOn={useTableOverlapping}
-              onChange={() => setUseTableOverlapping(!useTableOverlapping)}
+            <SettingSwitch
+              checked={useTableOverlapping}
+              onChange={setUseTableOverlapping}
             />
           </UIStyles.setting.ContentLayout>
           <div>
             <UIStyles.setting.ContentLayout>
-              <p>{t('음식 수령 안내내')}</p>
-              <ToggleButton
-                size="M"
-                isOn={usePickupAlert}
-                onChange={() => setUsePickupAlert(!usePickupAlert)}
+              <p>{t('음식 수령 안내')}</p>
+              <SettingSwitch
+                checked={usePickupAlert}
+                onChange={setUsePickupAlert}
               />
             </UIStyles.setting.ContentLayout>
             {usePickupAlert && (
@@ -567,11 +540,7 @@ export const MenuAppFeature = ({
       <div>
         <UIStyles.setting.ContentLayout>
           <p>{t('휴식시간 운영')}</p>
-          <ToggleButton
-            size="M"
-            isOn={useBreakTime}
-            onChange={() => setUseBreakTime(!useBreakTime)}
-          />
+          <SettingSwitch checked={useBreakTime} onChange={setUseBreakTime} />
         </UIStyles.setting.ContentLayout>
         {useBreakTime && (
           <S.InnerSection>
@@ -812,10 +781,9 @@ export const MenuAppFeature = ({
       <div>
         <UIStyles.setting.ContentLayout>
           <p>{t('매장 운영 종료 안내')}</p>
-          <ToggleButton
-            size="M"
-            isOn={useClosureNotice}
-            onChange={() => setUseClosureNotice(!useClosureNotice)}
+          <SettingSwitch
+            checked={useClosureNotice}
+            onChange={setUseClosureNotice}
           />
         </UIStyles.setting.ContentLayout>
         {useClosureNotice && (

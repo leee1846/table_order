@@ -1,31 +1,39 @@
 import styled from '@emotion/styled';
 import { TYPOGRAPHY, theme } from '@repo/ui';
 
+export const ButtonLoadingContent = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+`;
+
 export const TitleContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
 `;
 
-export const SID = styled.p`
-  padding: 8px 12px;
-  background-color: ${theme.colors.grey[100]};
-  border-radius: 0.5rem;
+export const Versions = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
-  color: ${theme.colors.grey[600]};
-  ${TYPOGRAPHY.BD_2}
+  gap: 16px;
+  padding: 8px 12px;
+  border-radius: 0.5rem;
+  background-color: ${theme.colors.grey[100]};
 
-  & > span {
-    color: ${theme.colors.grey[700]};
-    ${TYPOGRAPHY.BD_1}
+  & > div {
+    width: 0.0625rem;
+    height: 0.75rem;
+    background-color: ${theme.colors.grey[500]};
   }
-`;
+  & > p {
+    color: ${theme.colors.grey[600]};
+    ${TYPOGRAPHY.BD_2}
 
-export const LanguageList = styled.div`
-  display: flex;
-  gap: 14px;
-  color: ${theme.colors.grey[600]};
-  ${TYPOGRAPHY.ST_4}
+    & > span {
+      color: ${theme.colors.grey[700]};
+      ${TYPOGRAPHY.BD_1}
+      margin-left: 4px;
+    }
+  }
 `;

@@ -2,7 +2,7 @@ import { useAdminTranslation } from '@/config/i18n';
 import { useEffect, useRef, useState } from 'react';
 import type { IShopSetting, IShopTime, TMenuboardType } from '@repo/api/types';
 import * as UIStyles from '@repo/ui/styles';
-import { ToggleButton } from '@repo/ui/components';
+import { SettingSwitch } from '@/pages/settings/MiscellaneousPage/common/SettingSwitch';
 import { useTimeInput } from '@/hooks/useTimeInput';
 import { StoreIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -92,10 +92,9 @@ export const StoreEnvironment = ({
       <UIStyles.setting.ContentsLayout>
         <UIStyles.setting.ContentLayout>
           <p>{t('고객 테이블 이용 시간 표시')}</p>
-          <ToggleButton
-            size="M"
-            isOn={tableOccupationTime}
-            onChange={() => setTableOccupationTime(!tableOccupationTime)}
+          <SettingSwitch
+            checked={tableOccupationTime}
+            onChange={setTableOccupationTime}
           />
         </UIStyles.setting.ContentLayout>
       </UIStyles.setting.ContentsLayout>

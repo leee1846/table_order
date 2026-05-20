@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
+import { capsSmartOrderBlueGreyLogo } from '@repo/ui/icons';
 import { SettingsSidebar, useTranslation } from '@repo/feature/components';
 import { createSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
-import { useGetCategoryList, useGetShopThemeMenu } from '@repo/api/queries';
+import { useGetCategoryList } from '@repo/api/queries';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
@@ -12,14 +13,10 @@ export const SidebarLayout = () => {
   const navigate = useNavigate();
   const { t, i18n } = useAdminTranslation();
 
-  const { shopSeq, shopCode } = useAuth();
+  const { shopSeq } = useAuth();
 
   const { data: categoryListResponse } = useGetCategoryList({
     shopSeq: shopSeq ?? 0,
-  });
-
-  const { data: shopThemeMenuResponse } = useGetShopThemeMenu(shopCode ?? '', {
-    enabled: !!shopCode,
   });
 
   const categoryMenuSubMenus = useMemo(() => {
@@ -48,25 +45,17 @@ export const SidebarLayout = () => {
     navigate(ROUTES.TABLES.generate());
   };
 
-  const logoImagePath = shopThemeMenuResponse?.data?.logoImagePath;
-  const logoImageSrc =
-    typeof logoImagePath === 'string' && logoImagePath.trim().length > 0
-      ? logoImagePath.trim()
-      : null;
-
   return (
     <SettingsSidebar
       useTranslation={useTranslation}
       menus={SIDEBAR_MENUS}
       logoElement={
         <button type="button" onClick={onClickLogo}>
-          {logoImageSrc ? (
-            <img
-              src={logoImageSrc}
-              alt={t('매장 로고')}
-              style={{ width: '100%' }}
-            />
-          ) : null}
+          <img
+            src={capsSmartOrderBlueGreyLogo}
+            alt={t('매장 로고')}
+            style={{ width: '100%' }}
+          />
         </button>
       }
       onClickHomeButton={onClickLogo}

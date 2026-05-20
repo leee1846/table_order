@@ -7,7 +7,8 @@ import type {
 } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
-import { CheckButton, Dropdown, ToggleButton } from '@repo/ui/components';
+import { CheckButton, Dropdown } from '@repo/ui/components';
+import { SettingSwitch } from '@/pages/settings/MiscellaneousPage/common/SettingSwitch';
 import * as S from '@/pages/settings/MiscellaneousPage/Language/language.style';
 import { LanguageIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
@@ -124,11 +125,7 @@ export const Language = ({
       <div>
         <UIStyles.setting.ContentLayout>
           <p>{t('다국어 설정')}</p>
-          <ToggleButton
-            size="M"
-            isOn={locale}
-            onChange={(value) => setLocale(value)}
-          />
+          <SettingSwitch checked={locale} onChange={setLocale} />
         </UIStyles.setting.ContentLayout>
         {locale && (
           <S.CheckboxWrapper>

@@ -88,7 +88,7 @@ export const AppHistoriesPage = () => {
   const pageTitle = useMemo(() => {
     const typeLabel =
       type === APP_TYPE.MENU
-        ? '메뉴'
+        ? '메뉴판'
         : type === APP_TYPE.POS_APP
           ? '관리자'
           : '에이전트';

@@ -5,15 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { AppStorage } from '@repo/util/app';
 import { STORAGE_KEYS } from '@/constants/keys';
-import { useShopThemePage } from '@/hooks/useShopThemePage';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
+import { capsSmartOrderBlueGreyLogo } from '@repo/ui/icons';
 
 export const SidebarLayout = () => {
   const navigate = useNavigate();
   const { t } = useAdminTranslation();
-
-  const { data: shopPageSettingData } = useShopThemePage();
 
   const onClickLogo = () => {
     navigate(ROUTES.TABLES.generate());
@@ -42,7 +40,7 @@ export const SidebarLayout = () => {
       logoElement={
         <button type="button" onClick={onClickLogo} style={{ width: '100%' }}>
           <img
-            src={shopPageSettingData?.shopThemeData?.logoImagePath ?? ''}
+            src={capsSmartOrderBlueGreyLogo}
             alt={t('매장 로고')}
             style={{ width: '100%' }}
           />

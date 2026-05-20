@@ -3,13 +3,13 @@ import { useEffect, useMemo, useState } from 'react';
 import type { IShopSetting, TVanCode } from '@repo/api/types';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
-import { Dropdown, ToggleButton } from '@repo/ui/components';
+import { Dropdown } from '@repo/ui/components';
+import { SettingSwitch } from '@/pages/settings/MiscellaneousPage/common/SettingSwitch';
 import { PaymentsIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import type { MiscellaneousChange } from '@/pages/settings/MiscellaneousPage/types';
 import { CapacitorApp } from '@repo/util/app';
 import { toast } from '@repo/feature/utils';
-import * as S from '@/pages/settings/MiscellaneousPage/Payment/payment.style';
 import { isShopRole } from '@/utils/common';
 
 type PaymentTypeOption = 'prepayment' | 'postpayment';
@@ -202,42 +202,37 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
 
           <UIStyles.setting.ContentLayout>
             <p>{t('더치페이 기능 설정')}</p>
-            <ToggleButton
-              size="M"
-              isOn={usePrepaymentDutch}
-              onChange={(value) => setUsePrepaymentDutch(value)}
+            <SettingSwitch
+              checked={usePrepaymentDutch}
+              onChange={setUsePrepaymentDutch}
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
             <p>{t('후불결제 기능 설정')}</p>
-            <ToggleButton
-              size="M"
-              isOn={usePrepaymentDeferredPayment}
-              onChange={(value) => setUsePrepaymentDeferredPayment(value)}
+            <SettingSwitch
+              checked={usePrepaymentDeferredPayment}
+              onChange={setUsePrepaymentDeferredPayment}
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
             <p>{t('결제 후 자동테이블 정리')}</p>
-            <ToggleButton
-              size="M"
-              isOn={usePrepaymentAutoReset}
-              onChange={(value) => setUsePrepaymentAutoReset(value)}
+            <SettingSwitch
+              checked={usePrepaymentAutoReset}
+              onChange={setUsePrepaymentAutoReset}
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
             <p>{t('현금결제 안내 사용')}</p>
-            <ToggleButton
-              size="M"
-              isOn={usePrepaymentCashPaymentInducement}
-              onChange={(value) => setUsePrepaymentCashPaymentInducement(value)}
+            <SettingSwitch
+              checked={usePrepaymentCashPaymentInducement}
+              onChange={setUsePrepaymentCashPaymentInducement}
             />
           </UIStyles.setting.ContentLayout>
           <UIStyles.setting.ContentLayout>
             <p>{t('현금결제 기능 설정')}</p>
-            <ToggleButton
-              size="M"
-              isOn={usePrepaymentCashPayment}
-              onChange={(value) => setUsePrepaymentCashPayment(value)}
+            <SettingSwitch
+              checked={usePrepaymentCashPayment}
+              onChange={setUsePrepaymentCashPayment}
             />
           </UIStyles.setting.ContentLayout>
         </>
@@ -245,21 +240,15 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
 
       <UIStyles.setting.ContentLayout>
         <p>{t('매출 총액 표시 설정')}</p>
-        <ToggleButton
-          size="M"
-          isOn={isSalesTotalVisible}
-          onChange={() => {
+        <SettingSwitch
+          checked={isSalesTotalVisible}
+          onChange={(checked) => {
             if (CapacitorApp.isNative()) {
               toast(t('관리자 웹에서 변경해주세요.'));
               return;
             }
-            setIsSalesTotalVisible(!isSalesTotalVisible);
+            setIsSalesTotalVisible(checked);
           }}
-          customStyle={
-            CapacitorApp.isNative()
-              ? S.getNativeToggleButtonStyle(isSalesTotalVisible)
-              : undefined
-          }
         />
       </UIStyles.setting.ContentLayout>
 
@@ -293,21 +282,15 @@ export const Payment = ({ shopSetting, onChange }: PaymentProps) => {
           {!isSalesTotalVisible && (
             <UIStyles.setting.ContentLayout>
               <p>{t('매출 상세 내역 잠금 설정')}</p>
-              <ToggleButton
-                size="M"
-                isOn={isSalesDetailLocked}
-                onChange={() => {
+              <SettingSwitch
+                checked={isSalesDetailLocked}
+                onChange={(checked) => {
                   if (CapacitorApp.isNative()) {
                     toast(t('관리자 웹에서 변경해주세요.'));
                     return;
                   }
-                  setIsSalesDetailLocked(!isSalesDetailLocked);
+                  setIsSalesDetailLocked(checked);
                 }}
-                customStyle={
-                  CapacitorApp.isNative()
-                    ? S.getNativeToggleButtonStyle(isSalesDetailLocked)
-                    : undefined
-                }
               />
             </UIStyles.setting.ContentLayout>
           )}
