@@ -56,6 +56,7 @@ export const Stores = ({
     useState<ICreateAdminMemberRequest>(DEFAULT_MEMBER_DATA);
   const [activeTab, setActiveTab] = useState('storeInfo');
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  const isDevelopEnv = false; //import.meta.env.MODE === 'development';
 
   useEffect(() => {
     let finalShopData = { ...DEFAULT_SHOP_DATA };
@@ -146,17 +147,20 @@ export const Stores = ({
         />
       ),
     });
-    tabItems.push({
-      key: 'storeAdInfo',
-      label: '매장 광고 정보',
-      children: (
-        <StoreAdInfoTab
-          shopSeq={formData?.shopSeq}
-          //formData={memberFormData}
-          //updateFormData={updateMemberFormData}
-        />
-      ),
-    });
+
+    if (isDevelopEnv) {
+      tabItems.push({
+        key: 'storeAdInfo',
+        label: '매장 광고 정보',
+        children: (
+          <StoreAdInfoTab
+            shopSeq={formData?.shopSeq}
+            //formData={memberFormData}
+            //updateFormData={updateMemberFormData}
+          />
+        ),
+      });
+    }
   }
 
   return (
