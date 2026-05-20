@@ -1,16 +1,27 @@
-import { BasicButton } from '@repo/ui/components';
-import * as UIStyles from '@repo/ui/styles';
-import { openDualActionDialog } from '@repo/feature/utils';
+import { useEffect, useState } from 'react';
+import { css } from '@emotion/react';
+import { getLatestAppVersion } from '@repo/api/fetchers';
+import { useGetLatestAppVersion } from '@repo/api/queries';
+import type { ITokenPayload, TAppType } from '@repo/api/types';
 import { getAccessToken } from '@repo/api/auth';
-import type { ITokenPayload } from '@repo/api/types';
+import { BasicButton, LoadingSpinner } from '@repo/ui/components';
+import * as UIStyles from '@repo/ui/styles';
+import { theme } from '@repo/ui';
+import {
+  openConfirmDialog,
+  openDualActionDialog,
+  toast,
+} from '@repo/feature/utils';
 import { decodeJwtToken } from '@repo/util/function';
+import { CapacitorApp, Installer } from '@repo/util/app';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { clearAuthData } from '@/utils/auth';
 import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
 import { useDeviceStore } from '@/stores/useDeviceStore';
-import { useGetLatestAppVersion } from '@repo/api/queries';
+
+const APP_TYPE: TAppType = 'MENU';
 
 export const Account = () => {
   const versionEnv = import.meta.env.VITE_APP_VERSION_ENV;
@@ -25,7 +36,80 @@ export const Account = () => {
   const shopName = currentShopDetail?.shopName;
 
   const deviceData = useDeviceStore((s) => s.data);
-  const { data: latestVersionData } = useGetLatestAppVersion('MENU');
+  const { data: latestVersionData } = useGetLatestAppVersion(APP_TYPE);
+
+  const latestAppVersionText = latestVersionData?.data?.version;
+  const [currentVersion, setCurrentVersion] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    if (!CapacitorApp.isNative()) {
+      return;
+    }
+
+    const getAppInfo = async () => {
+      const appInfo = await CapacitorApp.getInfo();
+      setCurrentVersion(appInfo?.version ?? '');
+    };
+
+    void getAppInfo();
+  }, []);
+
+  const executeAppUpdate = async () => {
+    if (
+      latestAppVersionText &&
+      currentVersion &&
+      currentVersion === latestAppVersionText
+    ) {
+      toast(t('이미 최신 버전입니다.'), {
+        position: 'center-center',
+        duration: 1000,
+      });
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      const response = await getLatestAppVersion(APP_TYPE);
+      const { downloadPath, checksum } = response?.data ?? {};
+
+      if (!downloadPath || !checksum) {
+        toast(t('업데이트 정보를 가져올 수 없습니다.'), {
+          position: 'center-center',
+          duration: 1000,
+        });
+        setIsUpdating(false);
+        return;
+      }
+
+      toast(t('업데이트를 시작합니다. 잠시만 기다려주세요.'), {
+        position: 'center-center',
+        duration: 1500,
+      });
+      await Installer.startUpdate(downloadPath, checksum);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : t('업데이트에 실패했습니다.');
+      openConfirmDialog({
+        title: t('업데이트 실패'),
+        content: message,
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleAppUpdate = () => {
+    openDualActionDialog({
+      title: t('앱 업데이트'),
+      content: t('앱을 업데이트하시겠습니까?'),
+      primaryText: t('예'),
+      secondaryText: t('아니오'),
+      onConfirm: () => {
+        void executeAppUpdate();
+      },
+    });
+  };
 
   const handleLogout = () => {
     openDualActionDialog({
@@ -46,9 +130,31 @@ export const Account = () => {
         <UIStyles.setting.Title>
           {t('시스템 버전 및 네트워크 정보')}
         </UIStyles.setting.Title>
-        <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
-          {t('로그아웃')}
-        </BasicButton>
+        <div style={{ display: 'flex', gap: 12 }}>
+          {CapacitorApp.isNative() && (
+            <BasicButton
+              variant="Outline_Grey_M"
+              onClick={handleAppUpdate}
+              disabled={isUpdating}
+              customStyle={css`
+                &:disabled {
+                  background-color: ${theme.colors.grey[50]};
+                }
+              `}
+            >
+              {isUpdating ? (
+                <S.ButtonLoadingContent>
+                  <LoadingSpinner size={48.5} />
+                </S.ButtonLoadingContent>
+              ) : (
+                t('앱 업데이트')
+              )}
+            </BasicButton>
+          )}
+          <BasicButton variant="Outline_Grey_M" onClick={handleLogout}>
+            {t('로그아웃')}
+          </BasicButton>
+        </div>
       </UIStyles.setting.Header>
 
       <UIStyles.setting.ContentsLayout>
@@ -65,13 +171,17 @@ export const Account = () => {
               </span>
             </p>
             <div />
+            {CapacitorApp.isNative() && (
+              <>
+                <p>
+                  {t('APP 버전')}{' '}
+                  <span>{currentVersion || deviceData?.version || '-'}</span>
+                </p>
+                <div />
+              </>
+            )}
             <p>
-              {t('APP 버전')} <span>{deviceData?.version}</span>
-            </p>
-            <div />
-            <p>
-              {t('APP 최신 버전')}{' '}
-              <span>{latestVersionData?.data?.version ?? '-'}</span>
+              {t('APP 최신 버전')} <span>{latestAppVersionText ?? '-'}</span>
             </p>
           </S.Versions>
         </UIStyles.setting.ContentLayout>
