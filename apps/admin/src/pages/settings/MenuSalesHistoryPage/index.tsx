@@ -17,6 +17,10 @@ import {
   isStartDateAfterEndDate,
   isEndDateBeforeStartDate,
   formatLocalizedDate,
+  formatDateString,
+  isSameOrAfter,
+  isSameOrBefore,
+  getTodayDateString,
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetCategoryList, useGetMenuSalesHistory } from '@repo/api/queries';
@@ -327,8 +331,15 @@ export const MenuSalesHistoryPage = () => {
           startDate={startDate}
           endDate={startDate}
           onSelectDate={handleSelectStartDate}
-          beforeYears={1}
-          afterYears={1}
+          canNavigatePrev={(y, m) =>
+            isSameOrAfter(
+              formatDateString(y, m, 1),
+              formatDateString(new Date().getFullYear() - 1, 1, 1),
+            )
+          }
+          canNavigateNext={(y, m) =>
+            isSameOrBefore(formatDateString(y, m, 1), getTodayDateString())
+          }
           i18nInstance={adminI18n}
         />
       )}
@@ -340,8 +351,15 @@ export const MenuSalesHistoryPage = () => {
           startDate={endDate}
           endDate={endDate}
           onSelectDate={handleSelectEndDate}
-          beforeYears={1}
-          afterYears={1}
+          canNavigatePrev={(y, m) =>
+            isSameOrAfter(
+              formatDateString(y, m, 1),
+              formatDateString(new Date().getFullYear() - 1, 1, 1),
+            )
+          }
+          canNavigateNext={(y, m) =>
+            isSameOrBefore(formatDateString(y, m, 1), getTodayDateString())
+          }
           i18nInstance={adminI18n}
         />
       )}

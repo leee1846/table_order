@@ -42,6 +42,11 @@ export const Header = styled.div`
     align-items: center;
     justify-content: center;
     cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.3;
+    }
   }
 
   & > p {

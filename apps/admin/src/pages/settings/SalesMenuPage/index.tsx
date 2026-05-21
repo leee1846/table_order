@@ -11,6 +11,10 @@ import {
   isStartDateAfterEndDate,
   isEndDateBeforeStartDate,
   formatLocalizedDate,
+  formatDateString,
+  isSameOrAfter,
+  isSameOrBefore,
+  getTodayDateString,
   type TDateRangePreset,
 } from '@repo/util/date';
 import { toast } from '@repo/feature/utils';
@@ -174,8 +178,15 @@ export const SalesMenuPage = () => {
           startDate={startDate}
           endDate={startDate}
           onSelectDate={handleSelectStartDate}
-          beforeYears={1}
-          afterYears={1}
+          canNavigatePrev={(y, m) =>
+            isSameOrAfter(
+              formatDateString(y, m, 1),
+              formatDateString(new Date().getFullYear() - 1, 1, 1),
+            )
+          }
+          canNavigateNext={(y, m) =>
+            isSameOrBefore(formatDateString(y, m, 1), getTodayDateString())
+          }
           i18nInstance={adminI18n}
         />
       )}
@@ -187,8 +198,15 @@ export const SalesMenuPage = () => {
           startDate={endDate}
           endDate={endDate}
           onSelectDate={handleSelectEndDate}
-          beforeYears={1}
-          afterYears={1}
+          canNavigatePrev={(y, m) =>
+            isSameOrAfter(
+              formatDateString(y, m, 1),
+              formatDateString(new Date().getFullYear() - 1, 1, 1),
+            )
+          }
+          canNavigateNext={(y, m) =>
+            isSameOrBefore(formatDateString(y, m, 1), getTodayDateString())
+          }
           i18nInstance={adminI18n}
         />
       )}

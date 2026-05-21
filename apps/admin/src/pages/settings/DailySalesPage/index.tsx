@@ -10,6 +10,9 @@ import {
   formatDateToYYYYMMDD,
   getTodayDateString,
   formatLocalizedDate,
+  formatDateString,
+  isSameOrAfter,
+  isSameOrBefore,
 } from '@repo/util/date';
 import { useAuth } from '@/hooks/useAuth';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
@@ -194,8 +197,15 @@ export const DailySalesPage = () => {
           startDate={selectedDate}
           endDate={selectedDate}
           onSelectDate={handleSelectDate}
-          beforeYears={1}
-          afterYears={1}
+          canNavigatePrev={(y, m) =>
+            isSameOrAfter(
+              formatDateString(y, m, 1),
+              formatDateString(new Date().getFullYear() - 1, 1, 1)
+            )
+          }
+          canNavigateNext={(y, m) =>
+            isSameOrBefore(formatDateString(y, m, 1), getTodayDateString())
+          }
           i18nInstance={adminI18n}
         />
       )}

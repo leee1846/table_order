@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { i18n as I18nInstance } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../index';
@@ -26,8 +26,42 @@ import { BasicButton } from '../BasicButton';
 
 interface Props {
   type?: 'single' | 'range';
-  beforeYears?: number; // 현재 연도로부터 몇 년 전까지 허용
-  afterYears?: number; // 현재 연도로부터 몇 년 후까지 허용
+  /**
+   * 이전 달 이동 가능 여부를 결정하는 콜백.
+   * 이동하려는 대상 연도·월을 받아 이동 가능하면 true를 반환합니다.
+   *
+   * @param year  이동하려는 대상 연도
+   * @param month 이동하려는 대상 월 (1-12)
+   *
+   * @example
+   * ```tsx
+   * canNavigatePrev={(y, m) =>
+   *   isSameOrAfter(
+   *     formatDateString(y, m, 1),
+   *     formatDateString(new Date().getFullYear() - 1, 1, 1),
+   *   )
+   * }
+   * ```
+   */
+  canNavigatePrev?: (year: number, month: number) => boolean;
+  /**
+   * 다음 달 이동 가능 여부를 결정하는 콜백.
+   * 이동하려는 대상 연도·월을 받아 이동 가능하면 true를 반환합니다.
+   *
+   * @param year  이동하려는 대상 연도
+   * @param month 이동하려는 대상 월 (1-12)
+   *
+   * @example
+   * ```tsx
+   * canNavigateNext={(y, m) =>
+   *   isSameOrBefore(
+   *     formatDateString(y, m, 1),
+   *     formatDateString(new Date().getFullYear() + 1, 12, 1),
+   *   )
+   * }
+   * ```
+   */
+  canNavigateNext?: (year: number, month: number) => boolean;
   onClose: () => void;
   startDate: string; // 'YYYY-MM-DD'
   endDate: string; // 'YYYY-MM-DD'
@@ -49,13 +83,10 @@ interface CalenderTranslations {
   selectedDays: (count: number) => string;
 }
 
-// 상수 정의
-const getCurrentYear = () => new Date().getFullYear();
-
 export const Calender = ({
   type = 'single',
-  beforeYears,
-  afterYears,
+  canNavigatePrev,
+  canNavigateNext,
   onClose,
   startDate,
   endDate,
@@ -67,10 +98,6 @@ export const Calender = ({
   });
 
   const language = i18nInstance?.language ?? 'KO';
-
-  const currentYear = getCurrentYear();
-  const MIN_YEAR = beforeYears !== undefined ? currentYear - beforeYears : null;
-  const MAX_YEAR = afterYears !== undefined ? currentYear + afterYears : null;
 
   // 번역 데이터 생성
   const translationsData: CalenderTranslations = {
@@ -282,50 +309,97 @@ export const Calender = ({
     }
   };
 
-  const onClickPrev = () => {
-    if (month === 1) {
-      // beforeYears가 설정된 경우 MIN_YEAR보다 작아지지 않도록 체크
-      if (MIN_YEAR !== null && year <= MIN_YEAR) {
-        return;
+  // 이전/다음 달 이동 대상 연도·월 (파생값)
+  const prevMonth = month === 1 ? 12 : month - 1;
+  const prevYear = month === 1 ? year - 1 : year;
+  const nextMonth = month === 12 ? 1 : month + 1;
+  const nextYear = month === 12 ? year + 1 : year;
+
+  // canNavigatePrev 미제공 시 이동 제한 없음, 제공 시 콜백이 false를 반환하면 비활성화
+  const isPrevDisabled = canNavigatePrev
+    ? !canNavigatePrev(prevYear, prevMonth)
+    : false;
+
+  // canNavigateNext 미제공 시 이동 제한 없음, 제공 시 콜백이 false를 반환하면 비활성화
+  const isNextDisabled = canNavigateNext
+    ? !canNavigateNext(nextYear, nextMonth)
+    : false;
+
+  /**
+   * 연도 입력 유효성 검사 및 clamp 용 최솟값 연도.
+   * 해당 연도의 12월(가장 늦은 달)이 접근 가능한지로 판단합니다.
+   * canNavigatePrev(y, 12)가 false가 되는 최초 연도의 +1로 역산합니다.
+   * 제공되지 않으면 null (제한 없음).
+   */
+  const derivedMinYear = useMemo(() => {
+    if (!canNavigatePrev) {
+      return null;
+    }
+    const baseYear = new Date().getFullYear();
+    for (let y = baseYear; y >= baseYear - 200; y--) {
+      if (!canNavigatePrev(y, 12)) {
+        return y + 1;
       }
-      setYear(year - 1);
-      setMonth(12);
-      setYearInput((year - 1).toString());
-    } else {
-      setMonth(month - 1);
+    }
+    return null;
+  }, [canNavigatePrev]);
+
+  /**
+   * 연도 입력 유효성 검사 및 clamp 용 최댓값 연도.
+   * 해당 연도의 1월(가장 이른 달)이 접근 가능한지로 판단합니다.
+   * canNavigateNext(y, 1)이 false가 되는 최초 연도의 -1로 역산합니다.
+   * 제공되지 않으면 null (제한 없음).
+   */
+  const derivedMaxYear = useMemo(() => {
+    if (!canNavigateNext) {
+      return null;
+    }
+    const baseYear = new Date().getFullYear();
+    for (let y = baseYear; y <= baseYear + 200; y++) {
+      if (!canNavigateNext(y, 1)) {
+        return y - 1;
+      }
+    }
+    return null;
+  }, [canNavigateNext]);
+
+  const onClickPrev = () => {
+    if (isPrevDisabled) {
+      return;
+    }
+    setYear(prevYear);
+    setMonth(prevMonth);
+    if (prevYear !== year) {
+      setYearInput(prevYear.toString());
     }
   };
 
   const onClickNext = () => {
-    if (month === 12) {
-      // afterYears가 설정된 경우 MAX_YEAR보다 커지지 않도록 체크
-      if (MAX_YEAR !== null && year >= MAX_YEAR) {
-        return;
-      }
-      setYear(year + 1);
-      setMonth(1);
-      setYearInput((year + 1).toString());
-    } else {
-      setMonth(month + 1);
+    if (isNextDisabled) {
+      return;
+    }
+    setYear(nextYear);
+    setMonth(nextMonth);
+    if (nextYear !== year) {
+      setYearInput(nextYear.toString());
     }
   };
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // 숫자만 허용(util), 최대 4자리
     const digitsOnly = allowOnlyNumbers(value);
     if (digitsOnly.length > 4) {
       return;
     }
 
-    // 4자리 완성 시 min/max 범위를 벗어나면 입력 무시
+    // 4자리 완성 시 derivedMinYear/derivedMaxYear 범위를 벗어나면 입력 무시
     if (digitsOnly.length === 4) {
       const num = parseInt(digitsOnly, 10);
       if (!Number.isNaN(num)) {
-        if (MIN_YEAR !== null && num < MIN_YEAR) {
+        if (derivedMinYear !== null && num < derivedMinYear) {
           return;
         }
-        if (MAX_YEAR !== null && num > MAX_YEAR) {
+        if (derivedMaxYear !== null && num > derivedMaxYear) {
           return;
         }
       }
@@ -337,23 +411,21 @@ export const Calender = ({
   const handleYearBlur = () => {
     const numericValue = parseInt(yearInput, 10);
 
-    // 숫자가 아닌 경우 현재 연도로 복원
     if (isNaN(numericValue)) {
       setYearInput(year.toString());
       return;
     }
 
-    // MIN_YEAR와 MAX_YEAR 범위 내로 조정 (제한이 있는 경우만)
+    // derivedMinYear/derivedMaxYear 범위 내로 clamp
     let validYear = numericValue;
-    if (MIN_YEAR !== null) {
-      validYear = Math.max(validYear, MIN_YEAR);
+    if (derivedMinYear !== null) {
+      validYear = Math.max(validYear, derivedMinYear);
     }
-    if (MAX_YEAR !== null) {
-      validYear = Math.min(validYear, MAX_YEAR);
+    if (derivedMaxYear !== null) {
+      validYear = Math.min(validYear, derivedMaxYear);
     }
     setYearInput(validYear.toString());
 
-    // 검증된 연도가 현재 연도와 다르면 달력 업데이트
     if (validYear !== year) {
       setYear(validYear);
     }
@@ -395,7 +467,7 @@ export const Calender = ({
           <CloseIcon width={32} height={32} color={theme.colors.grey[700]} />
         </S.CloseButton>
         <S.Header>
-          <button type="button" onClick={onClickPrev}>
+          <button type="button" onClick={onClickPrev} disabled={isPrevDisabled}>
             <ChevronBackwardIcon
               width={44}
               height={44}
@@ -418,8 +490,8 @@ export const Calender = ({
                     onChange={handleYearChange}
                     onBlur={handleYearBlur}
                     onKeyDown={handleYearKeyDown}
-                    min={MIN_YEAR ?? undefined}
-                    max={MAX_YEAR ?? undefined}
+                    min={derivedMinYear ?? undefined}
+                    max={derivedMaxYear ?? undefined}
                     width={yearInput.length}
                   />
                   {suffix}
@@ -427,7 +499,7 @@ export const Calender = ({
               );
             })()}
           </p>
-          <button type="button" onClick={onClickNext}>
+          <button type="button" onClick={onClickNext} disabled={isNextDisabled}>
             <ChevronForwardIcon
               width={44}
               height={44}

@@ -13,6 +13,10 @@ import {
   isStartDateAfterEndDate,
   isEndDateBeforeStartDate,
   formatLocalizedDate,
+  formatDateString,
+  isSameOrAfter,
+  isSameOrBefore,
+  getTodayDateString,
   type TDateRangePreset,
 } from '@repo/util/date';
 import { formatCurrency } from '@repo/util/string';
@@ -240,8 +244,15 @@ export const PaymentsCardsPage = () => {
           startDate={startDate}
           endDate={startDate}
           onSelectDate={(date) => onSelectStartDate(date)}
-          beforeYears={1}
-          afterYears={1}
+          canNavigatePrev={(y, m) =>
+            isSameOrAfter(
+              formatDateString(y, m, 1),
+              formatDateString(new Date().getFullYear() - 1, 1, 1),
+            )
+          }
+          canNavigateNext={(y, m) =>
+            isSameOrBefore(formatDateString(y, m, 1), getTodayDateString())
+          }
           i18nInstance={adminI18n}
         />
       )}
@@ -253,8 +264,15 @@ export const PaymentsCardsPage = () => {
           startDate={endDate}
           endDate={endDate}
           onSelectDate={(date) => onSelectEndDate(date)}
-          beforeYears={1}
-          afterYears={1}
+          canNavigatePrev={(y, m) =>
+            isSameOrAfter(
+              formatDateString(y, m, 1),
+              formatDateString(new Date().getFullYear() - 1, 1, 1),
+            )
+          }
+          canNavigateNext={(y, m) =>
+            isSameOrBefore(formatDateString(y, m, 1), getTodayDateString())
+          }
           i18nInstance={adminI18n}
         />
       )}
