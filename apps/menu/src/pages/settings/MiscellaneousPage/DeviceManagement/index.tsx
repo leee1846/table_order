@@ -41,6 +41,12 @@ export const DeviceManagement = () => {
       return;
     }
 
+    // TODO
+    // 동일 로직 admin에도 추가 (app일떄만 노출)
+    // 날짜별 로그 조회 브릿지 추가 및 호출
+    // 로그가 존재하지 않습니다.
+    // 로그를 가져오지 못했습니다.
+
     openDualActionDialog({
       title: t('앱 로그 전송'),
       content: t('앱 로그를 전송하시겠습니까?'),
