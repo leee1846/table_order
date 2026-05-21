@@ -56,18 +56,6 @@ export const Account = () => {
   }, []);
 
   const executeAppUpdate = async () => {
-    if (
-      latestAppVersionText &&
-      currentVersion &&
-      currentVersion === latestAppVersionText
-    ) {
-      toast(t('이미 최신 버전입니다.'), {
-        position: 'center-center',
-        duration: 1000,
-      });
-      return;
-    }
-
     setIsUpdating(true);
     try {
       const response = await getLatestAppVersion(APP_TYPE);
@@ -100,6 +88,18 @@ export const Account = () => {
   };
 
   const handleAppUpdate = () => {
+    if (
+      latestAppVersionText &&
+      currentVersion &&
+      currentVersion === latestAppVersionText
+    ) {
+      toast(t('이미 최신 버전입니다.'), {
+        position: 'center-center',
+        duration: 1000,
+      });
+      return;
+    }
+
     openDualActionDialog({
       title: t('앱 업데이트'),
       content: t('앱을 업데이트하시겠습니까?'),
