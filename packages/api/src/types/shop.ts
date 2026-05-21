@@ -249,3 +249,5 @@ export interface ICreateShopRequest {
   useDatadog: boolean;
   settingInfo: IGetAdminShopSettingInfo;
 }
+
+export type TShopLogType = 'MENU' | 'POS_APP' | 'AGENT';

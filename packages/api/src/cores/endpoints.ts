@@ -1,4 +1,5 @@
 import type { THistoryCode } from '../types/admin';
+import { TShopLogType } from '../types/shop';
 
 /**
  * API 엔드포인트 상수들을 정의합니다.
@@ -97,6 +98,7 @@ export const ENDPOINTS = {
     THEME_MENU: (shopCode: string) => `/shop/theme/menu/${shopCode}`,
     THEME_PAGE: (shopCode: string) => `/shop/theme/page/${shopCode}`,
     THEME_PAGE_UPDATE: () => `/shop/theme/page`,
+    LOG: (shopCode: string, type: TShopLogType) => `/log/${shopCode}/${type}`,
   },
 
   TABLE: {
