@@ -111,13 +111,22 @@ interface DateProps {
   isIncluded: boolean;
   isPreviousMonth: boolean;
   isNextMonth: boolean;
+  isDisabled: boolean;
 }
 const getDateCss = ({
   isPreviousMonth,
   isNextMonth,
   isSelected,
   isIncluded,
+  isDisabled,
 }: DateProps) => {
+  if (isDisabled) {
+    return css`
+      color: ${colors.grey[500]};
+      background-color: ${colors.white};
+      cursor: not-allowed;
+    `;
+  }
   if (isSelected) {
     return css`
       color: ${colors.primary[500]};
@@ -151,8 +160,8 @@ export const Date = styled.button<DateProps>`
   justify-content: center;
   cursor: pointer;
   ${TYPOGRAPHY.MT_5}
-  ${({ isPreviousMonth, isNextMonth, isSelected, isIncluded }) =>
-    getDateCss({ isPreviousMonth, isNextMonth, isSelected, isIncluded })}
+  ${({ isPreviousMonth, isNextMonth, isSelected, isIncluded, isDisabled }) =>
+    getDateCss({ isPreviousMonth, isNextMonth, isSelected, isIncluded, isDisabled })}
 `;
 
 export const buttonCss = css`

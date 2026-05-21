@@ -62,6 +62,29 @@ interface Props {
    * ```
    */
   canNavigateNext?: (year: number, month: number) => boolean;
+  /**
+   * 날짜 비활성화 여부를 결정하는 콜백.
+   * 대상 날짜('YYYY-MM-DD')와 달력 그리드 상의 위치(dateType)를 받아,
+   * 비활성화해야 하면 true를 반환합니다.
+   * 비활성화된 날짜는 클릭이 차단되며, 이전/다음 달 날짜와 동일한 회색 UI로 표시됩니다.
+   *
+   * @param date     판단할 날짜 ('YYYY-MM-DD')
+   * @param dateType 달력 그리드 상의 위치 ('prev' | 'current' | 'next')
+   *
+   * @example
+   * ```tsx
+   * // 이전·다음 달 overflow 날짜 및 오늘 이후 날짜 비활성화
+   * isDateDisabled={(date, dateType) =>
+   *   dateType === 'prev' ||
+   *   dateType === 'next' ||
+   *   !isSameOrBefore(date, getTodayDateString())
+   * }
+   * ```
+   */
+  isDateDisabled?: (
+    date: string,
+    dateType: 'prev' | 'current' | 'next'
+  ) => boolean;
   onClose: () => void;
   startDate: string; // 'YYYY-MM-DD'
   endDate: string; // 'YYYY-MM-DD'
@@ -87,6 +110,7 @@ export const Calender = ({
   type = 'single',
   canNavigatePrev,
   canNavigateNext,
+  isDateDisabled,
   onClose,
   startDate,
   endDate,
@@ -294,12 +318,29 @@ export const Calender = ({
   };
 
   /**
+   * 해당 날짜가 isDateDisabled 콜백에 의해 비활성화 되는지 확인합니다.
+   */
+  const isDisabledDate = (
+    date: number,
+    dateType: 'prev' | 'current' | 'next'
+  ): boolean => {
+    if (!isDateDisabled) {
+      return false;
+    }
+    return isDateDisabled(convertToDateString(date, dateType), dateType);
+  };
+
+  /**
    * 날짜 선택 핸들러 (임시 상태만 업데이트)
    */
   const handleSelectDate = (
     date: number,
     dateType: 'prev' | 'current' | 'next'
   ) => {
+    if (isDisabledDate(date, dateType)) {
+      return;
+    }
+
     const clickedDate = convertToDateString(date, dateType);
 
     if (type === 'single') {
@@ -525,6 +566,7 @@ export const Calender = ({
                     isNextMonth={day.type === 'next'}
                     isSelected={isSelected(day.date, day.type)}
                     isIncluded={isIncluded(day.date, day.type)}
+                    isDisabled={isDisabledDate(day.date, day.type)}
                     onClick={() => handleSelectDate(day.date, day.type)}
                   >
                     {day.date}
