@@ -14,6 +14,10 @@ import {
   getDateRangeByPreset,
   toYYYYMMDDRange,
   formatLocalizedDate,
+  formatDateString,
+  isSameOrAfter,
+  isSameOrBefore,
+  getTodayDateString,
   type TDateRangePreset,
 } from '@repo/util/date';
 import * as UIStyles from '@repo/ui/styles';
@@ -244,8 +248,15 @@ export const SalesListDialog = ({
           startDate={startDate}
           endDate={endDate}
           onSelectDate={handleSelectDate}
-          beforeYears={1}
-          afterYears={1}
+          canNavigatePrev={(y, m) =>
+            isSameOrAfter(
+              formatDateString(y, m, 1),
+              formatDateString(new Date().getFullYear() - 1, 1, 1),
+            )
+          }
+          canNavigateNext={(y, m) =>
+            isSameOrBefore(formatDateString(y, m, 1), getTodayDateString())
+          }
           i18nInstance={adminI18n}
         />
       )}

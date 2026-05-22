@@ -337,6 +337,8 @@
   "앱 로그 전송": "Send App Logs",
   "앱 로그를 전송하시겠습니까?": "Would you like to send the app logs?",
   "로그 전송": "Send Logs",
+  "날짜를 선택해주세요.": "Please select a date.",
+  "로그 전송을 성공하였습니다.": "Logs sent successfully.",
   "수량을 {{count}}개 이상 입력해주세요.": "Please enter a quantity of at least {{count}}.",
   "최소 {{count}}개 이상 선택해주세요.": "Please select at least {{count}} items.",
   "최대 {{count}}개까지 선택 가능합니다.": "You can select up to {{count}} items.",

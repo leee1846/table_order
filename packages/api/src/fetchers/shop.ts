@@ -13,6 +13,7 @@ import type {
   IUpdateShopThemePageRequest,
   TUpdateShopThemePageResponse,
   ICreateShopRequest,
+  TShopLogType,
 } from '../types/shop';
 
 export const getShops = async (): Promise<TGetShopsResponse> => {
@@ -173,6 +174,32 @@ export const createShop = async (
     method: 'POST',
     url: ENDPOINTS.SHOP.CREATE,
     data: params,
+  });
+
+  return response.data;
+};
+
+export const createShopLog = async (
+  shopCode: string,
+  type: TShopLogType,
+  logText: string,
+  fileName = `${type.toLowerCase()}.log`
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+
+  const formData = new FormData();
+  formData.append(
+    'file',
+    new File([logText], fileName, { type: 'text/plain' })
+  );
+
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.SHOP.LOG(shopCode, type),
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
 
   return response.data;
