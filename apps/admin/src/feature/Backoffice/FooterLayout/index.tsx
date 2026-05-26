@@ -1,7 +1,15 @@
 import React from 'react';
-import * as S from './footerLayout.style';
-
+import { Layout, Divider } from 'antd';
 import adtLogo from '@/assets/adt.png';
+import {
+  BottomSection,
+  FooterInner,
+  InfoArea,
+  LinkArea,
+  LogoArea,
+  StyledFooter,
+  TopSection,
+} from './footerLayout.style';
 
 /**
  * SK Shieldus / ADT Caps 디자인 가이드 사양:
@@ -14,15 +22,15 @@ import adtLogo from '@/assets/adt.png';
 
 const CorporateFooter: React.FC = () => {
   return (
-    <S.StyledFooter>
-      <S.FooterInner>
+    <StyledFooter>
+      <FooterInner>
         {/* 상단 영역: BI 및 주요 링크 */}
-        <S.TopSection>
-          <S.LogoArea>
+        <TopSection>
+          <LogoArea>
             <img src={adtLogo} alt="ADT 캡스" />
-          </S.LogoArea>
+          </LogoArea>
 
-          <S.LinkArea>
+          <LinkArea>
             <a
               href="https://www.skshieldus.com/privacy-policy/sk/v37"
               className="link-item bold"
@@ -31,16 +39,16 @@ const CorporateFooter: React.FC = () => {
             >
               개인정보처리방침
             </a>
-            <S.CustomDivider orientation="vertical" />
-            <a /* href="/terms" */ className="link-item">이용약관</a>
-            <S.CustomDivider orientation="vertical" />
-            <span className="link-item">고객센터 1500-6400</span>
-          </S.LinkArea>
-        </S.TopSection>
+            {/* <CustomDivider orientation="vertical" />
+            <a /* href="/terms"  className="link-item">이용약관</a>
+            <CustomDivider orientation="vertical" />
+            <span className="link-item">고객센터 1500-6400</span> */}
+          </LinkArea>
+        </TopSection>
 
         {/* 하단 영역: 기업 정보 및 패밀리 사이트 */}
-        <S.BottomSection>
-          <S.InfoArea>
+        <BottomSection>
+          <InfoArea>
             <div className="company-details">
               <span>에스케이쉴더스 주식회사</span>
               <span className="bar">|</span>
@@ -53,7 +61,7 @@ const CorporateFooter: React.FC = () => {
             <div className="copyright">
               COPYRIGHT © 2026 SK SHIELDUS. ALL RIGHTS RESERVED.
             </div>
-          </S.InfoArea>
+          </InfoArea>
 
           {/*           <FamilySiteArea>
             <StyledSelect
@@ -67,9 +75,9 @@ const CorporateFooter: React.FC = () => {
               <Option value="site3">인재채용</Option>
             </StyledSelect>
           </FamilySiteArea> */}
-        </S.BottomSection>
-      </S.FooterInner>
-    </S.StyledFooter>
+        </BottomSection>
+      </FooterInner>
+    </StyledFooter>
   );
 };
 

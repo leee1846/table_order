@@ -26,7 +26,7 @@ export const TopSection = styled.div`
 `;
 
 export const LogoArea = styled.div`
-  margin-right: 40px; /* 가이드 사양: BI와 메뉴 간격 */
+  margin-right: 30px; /* 가이드 사양: BI와 메뉴 간격 */
   display: flex;
   align-items: center;
 
@@ -81,3 +81,23 @@ export const InfoArea = styled.div`
     font-family: 'Arial', sans-serif;
   }
 `;
+
+// const FamilySiteArea = styled.div`
+//   /* 가이드 사양: 우측 정렬된 패밀리 사이트 선택창 */
+// `;
+
+// const StyledSelect = styled(Select)`
+//   width: 160px;
+
+//   .ant-select-selector {
+//     border-radius: 4px !important;
+//     border-color: #cccccc !important;
+//     font-size: 12px !important;
+//     color: #666666 !important;
+//     background-color: #ffffff !important;
+//   }
+
+//   .ant-select-arrow {
+//     color: #999999;
+//   }
+// `;
