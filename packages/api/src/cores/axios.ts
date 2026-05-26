@@ -1,21 +1,6 @@
 import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 import { saveAppLog } from '@repo/util/app';
 
-/**
- * config.data는 axios 내부에서 직렬화되기 전 원본 값
- * 문자열이면 JSON 파싱을 시도하고, 실패하면 원본 문자열을 반환합니다.
- */
-const tryParseJson = (value: unknown): unknown => {
-  if (typeof value !== 'string') {
-    return value;
-  }
-  try {
-    return JSON.parse(value) as unknown;
-  } catch {
-    return value;
-  }
-};
-
 export const createAxiosInstance = (
   config?: CreateAxiosDefaults
 ): AxiosInstance => {
@@ -35,9 +20,7 @@ export const createAxiosInstance = (
       method: reqConfig.method?.toUpperCase(),
       url: reqConfig.url,
       baseURL: reqConfig.baseURL,
-      params: reqConfig.params as Record<string, unknown> | undefined,
       authorization: reqConfig.headers?.Authorization as string | undefined,
-      body: tryParseJson(reqConfig.data) as Record<string, unknown> | undefined,
     });
     return reqConfig;
   });
@@ -55,7 +38,6 @@ export const createAxiosInstance = (
         method: response.config?.method?.toUpperCase(),
         url: response.config?.url,
         status: response.status,
-        data: response.data as Record<string, unknown> | undefined,
       });
       return response;
     },

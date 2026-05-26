@@ -26,7 +26,6 @@ export const saveAppLog = (
     console.log(
       JSON.stringify({
         tag,
-        ts: new Date().toISOString(),
         ...data,
       })
     );
@@ -35,7 +34,6 @@ export const saveAppLog = (
     console.log(
       JSON.stringify({
         tag,
-        ts: new Date().toISOString(),
         error: 'log_serialize_failed',
       })
     );
