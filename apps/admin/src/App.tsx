@@ -7,7 +7,9 @@ import { useSSEHandler } from './hooks/useSSEHandler';
 import { useSystemStatusMonitor } from './hooks/useSystemStatusMonitor';
 import { AdminGlobalLoadingIndicator } from './feature/AdminGlobalLoadingIndicator';
 import { closeNetworkErrorDialogAndClearState } from './config/QueryProvider';
+import CorporateFooter from '@/feature/backoffice/FooterLayout';
 import { reconnectSseOnNetworkRecovery } from './utils/sseConnection';
+import * as S from './app.style';
 
 const App = () => {
   const { tableNum } = useParams();
@@ -50,10 +52,13 @@ const App = () => {
   const isBackoffice = location.pathname.includes('backoffice');
 
   return (
-    <div>
-      <Outlet />
+    <S.AppContainer>
+      <S.MainContent>
+        <Outlet />
+      </S.MainContent>
+      {isBackoffice && <CorporateFooter />}
       {!isBackoffice && <AdminGlobalLoadingIndicator />}
-    </div>
+    </S.AppContainer>
   );
 };
 
