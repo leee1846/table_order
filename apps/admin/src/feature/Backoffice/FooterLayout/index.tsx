@@ -1,5 +1,4 @@
 import React from 'react';
-import { Layout, Divider } from 'antd';
 import adtLogo from '@/assets/adt.png';
 import {
   BottomSection,
