@@ -22,7 +22,6 @@ export const saveAppLog = (
   }
 
   try {
-    // eslint-disable-next-line no-console
     console.log(
       JSON.stringify({
         tag,
@@ -30,7 +29,6 @@ export const saveAppLog = (
       })
     );
   } catch {
-    // eslint-disable-next-line no-console
     console.log(
       JSON.stringify({
         tag,
