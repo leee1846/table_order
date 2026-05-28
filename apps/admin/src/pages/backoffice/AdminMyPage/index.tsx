@@ -195,7 +195,7 @@ export const AdminMyPage = () => {
             <S.TokenInfoKey>버전</S.TokenInfoKey>
             <S.TokenInfoValue>
               {versionEnv
-                ? `${__APP_VERSION__} (${versionEnv})`
+                ? `${__APP_VERSION__}-${versionEnv}`
                 : __APP_VERSION__}
             </S.TokenInfoValue>
           </S.TokenInfoItem>

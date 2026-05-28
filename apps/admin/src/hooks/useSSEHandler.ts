@@ -194,6 +194,9 @@ export const useSSEHandler = (tableNumber?: string) => {
         queryClient.invalidateQueries({
           queryKey: queryKeys.orders.currentTableList(shopCode),
         });
+        queryClient.invalidateQueries({
+          queryKey: ['orders', 'orderLogList'],
+        });
         return;
       }
 

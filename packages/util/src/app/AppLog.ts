@@ -22,20 +22,16 @@ export const saveAppLog = (
   }
 
   try {
-    // eslint-disable-next-line no-console
     console.log(
       JSON.stringify({
         tag,
-        ts: new Date().toISOString(),
         ...data,
       })
     );
   } catch {
-    // eslint-disable-next-line no-console
     console.log(
       JSON.stringify({
         tag,
-        ts: new Date().toISOString(),
         error: 'log_serialize_failed',
       })
     );
