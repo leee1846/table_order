@@ -23,6 +23,13 @@ export interface ILoginMenuboardAdminRequest {
   pw: string;
 }
 
+export interface ILoginMenuboardAdminData {
+  menuboardToken: string;
+}
+
+export type TLoginMenuboardAdminResponse =
+  IApiResponse<ILoginMenuboardAdminData>;
+
 export interface ILoginSalesRequest {
   shopCode: string;
   pw: string;
