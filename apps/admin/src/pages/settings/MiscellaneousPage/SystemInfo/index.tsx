@@ -276,7 +276,7 @@ export const SystemInfo = ({
               {t('WEB 버전')}
               <span>
                 {versionEnv
-                  ? `${__APP_VERSION__} (${versionEnv})`
+                  ? `${__APP_VERSION__}-${versionEnv}`
                   : __APP_VERSION__}
               </span>
             </p>
