@@ -134,7 +134,7 @@ export const StoresPage = () => {
         content: '엑셀 다운로드가 완료되었습니다.',
         key: 'downloadExcel',
       });
-    } catch (error) {
+    } catch {
       message.error({
         content: '엑셀 다운로드에 실패했습니다.',
         key: 'downloadExcel',

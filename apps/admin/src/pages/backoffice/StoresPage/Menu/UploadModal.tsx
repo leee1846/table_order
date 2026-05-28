@@ -37,8 +37,12 @@ export const UploadModal = ({ isOpen, onClose, shopCode }: Props) => {
   };
 
   const handleRemove = (file: UploadFile) => {
-    if (file.uid === 'excel') setExcelFile(null);
-    if (file.uid === 'zip') setZipFile(null);
+    if (file.uid === 'excel') {
+      setExcelFile(null);
+    }
+    if (file.uid === 'zip') {
+      setZipFile(null);
+    }
   };
 
   const handleClose = () => {

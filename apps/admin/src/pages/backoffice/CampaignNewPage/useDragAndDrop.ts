@@ -12,7 +12,9 @@ export const useRecordDragAndDrop = <T>(
 
   const handleDragEnter = useCallback(
     (index: number, tabKey: string) => {
-      if (draggedItemIndex === null || draggedItemIndex === index) return;
+      if (draggedItemIndex === null || draggedItemIndex === index) {
+        return;
+      }
 
       setRecordState((prev) => {
         const newItems = [...(prev[tabKey] || [])];
@@ -48,7 +50,9 @@ export const useListDragAndDrop = <T>(
 
   const handleDragEnter = useCallback(
     (index: number) => {
-      if (draggedItemIndex === null || draggedItemIndex === index) return;
+      if (draggedItemIndex === null || draggedItemIndex === index) {
+        return;
+      }
 
       const newItems = [...items];
       const draggedItem = newItems[draggedItemIndex];

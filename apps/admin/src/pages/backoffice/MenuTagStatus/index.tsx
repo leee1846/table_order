@@ -201,7 +201,9 @@ const MenuGroupStatus: React.FC = () => {
 
   // 개별 등록 처리
   const handleRegister = (shopSeq: number) => {
-    if (!activeGroupId || !campaignSeq) return;
+    if (!activeGroupId || !campaignSeq) {
+      return;
+    }
 
     registerSync(
       {
@@ -240,7 +242,9 @@ const MenuGroupStatus: React.FC = () => {
 
   // 일괄 등록 처리
   const handleBulkRegister = () => {
-    if (!activeGroupId || !campaignSeq) return;
+    if (!activeGroupId || !campaignSeq) {
+      return;
+    }
     /*     if (selectedRowKeys.length === 0) {
       message.warning('등록할 매장을 선택해주세요.');
       return;
@@ -394,7 +398,7 @@ const MenuGroupStatus: React.FC = () => {
               dataSource={syncList}
               pagination={{
                 current: currentPage,
-                pageSize: pageSize,
+                pageSize,
                 total: syncData?.totalCount || 0,
                 showSizeChanger: true,
                 placement: ['bottomEnd'],

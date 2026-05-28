@@ -202,7 +202,7 @@ export const StoreGroupNewPage = () => {
 
       message.success(`매장 그룹이 ${isEditMode ? '수정' : '등록'}되었습니다.`);
       navigate(ROUTES.BACKOFFICE.STORE_GROUP.generate());
-    } catch (error) {
+    } catch {
       message.error(
         `매장 그룹 ${isEditMode ? '수정' : '등록'} 중 오류가 발생했습니다.`
       );
@@ -243,7 +243,7 @@ export const StoreGroupNewPage = () => {
         } else {
           message.warning('유효한 매장 ID가 없습니다.');
         }
-      } catch (error) {
+      } catch {
         message.error('엑셀 파일을 읽는 중 오류가 발생했습니다.');
       }
     };
@@ -277,7 +277,7 @@ export const StoreGroupNewPage = () => {
         content: '엑셀 양식 다운로드가 완료되었습니다.',
         key: 'downloadExcelTemplate',
       });
-    } catch (error) {
+    } catch {
       message.error({
         content: '엑셀 양식 다운로드에 실패했습니다.',
         key: 'downloadExcelTemplate',

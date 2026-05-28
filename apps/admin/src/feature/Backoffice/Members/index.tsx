@@ -62,8 +62,12 @@ export const Members = ({
   };
 
   const getSubtitle = () => {
-    if (mode === 'create') return '등록';
-    if (mode === 'edit') return '수정';
+    if (mode === 'create') {
+      return '등록';
+    }
+    if (mode === 'edit') {
+      return '수정';
+    }
     return '상세';
   };
 
