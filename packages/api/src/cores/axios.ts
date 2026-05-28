@@ -1,5 +1,13 @@
-import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
+import axios, {
+  AxiosInstance,
+  CreateAxiosDefaults,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 import { saveAppLog } from '@repo/util/app';
+import {
+  applyAndroidIdRequestHeader,
+  resolveAndroidIdForHeader,
+} from './androidIdHeader';
 
 export const createAxiosInstance = (
   config?: CreateAxiosDefaults
@@ -24,6 +32,19 @@ export const createAxiosInstance = (
     });
     return reqConfig;
   });
+
+  /**
+   * [Android ID 요청 인터셉터]
+   * 네이티브 환경에서만 브릿지 조회 후 X-Android-Id 헤더를 설정합니다.
+   * 조회 중인 요청은 동일 in-flight Promise를 await하여 HTTP 전송 전에 완료됩니다.
+   */
+  instance.interceptors.request.use(
+    async (reqConfig: InternalAxiosRequestConfig) => {
+      const androidId = await resolveAndroidIdForHeader();
+      applyAndroidIdRequestHeader(reqConfig, androidId);
+      return reqConfig;
+    }
+  );
 
   /**
    * [응답 인터셉터]
