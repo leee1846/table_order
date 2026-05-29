@@ -26,7 +26,6 @@ import { useFirstOrderRequiredCheck } from '@/hooks/useFirstOrderRequiredCheck';
 import { useBreakTimeCartClear } from '@/hooks/useBreakTimeCartClear';
 import { useCategoryVisibilityManager } from '@/hooks/useCategoryVisibilityManager';
 import { useShopThemePage } from '@/hooks/useShopThemePage';
-import { AdminAccessPasswordModal } from '@/pages/MainPage/AdminAccessPasswordModal';
 import { ClosedPage } from '@/pages/MainPage/ClosedPage';
 import { BreakTime } from '@/pages/MainPage/BreakTime';
 import { InitialPage } from '@/pages/MainPage/InitialPage';
@@ -118,10 +117,6 @@ export const MainPage = () => {
   };
 
   const pageStates = {
-    adminAccess: {
-      show: adminAccessControl.showAdminAccessPasswordModal,
-      onClose: () => adminAccessControl.setShowAdminAccessPasswordModal(false),
-    },
     shopClosure: {
       show: closureState.showClosed,
       message: closureState.closureMessage ?? '',
@@ -169,13 +164,6 @@ export const MainPage = () => {
   const handleOpenAdminAccessPasswordModal = () => {
     adminAccessControl.setShowAdminAccessPasswordModal(true);
   };
-
-  /** 관리자 접근 비밀번호 모달 노출 */
-  if (pageStates.adminAccess.show) {
-    return (
-      <AdminAccessPasswordModal onClose={pageStates.adminAccess.onClose} />
-    );
-  }
 
   /** 휴무 페이지 */
   if (pageStates.shopClosure.show) {

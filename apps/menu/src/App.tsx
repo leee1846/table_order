@@ -9,6 +9,8 @@ import { reconnectSseOnNetworkRecovery } from '@/utils/sseConnection';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { PosSyncOverlayModal } from '@/feature/PosSyncOverlayModal';
 import { MenuGlobalLoadingIndicator } from '@/feature/MenuGlobalLoadingIndicator';
+import { AdminAccessPasswordModal } from '@/pages/MainPage/AdminAccessPasswordModal';
+import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 
 /** 디바이스 스토어 hydration 이후에만 마운트 → useSSEHandler/useSystemStatusMonitor가 항상 채워진 data 참조 */
 const AppContent = () => {
@@ -22,11 +24,14 @@ const AppContent = () => {
   });
   useSSEHandler();
 
+  const show = useRequestAdminAccessModalStore((s) => s.show);
+
   return (
     <div>
       <Outlet />
       <PosSyncOverlayModal />
       <MenuGlobalLoadingIndicator />
+      {show && <AdminAccessPasswordModal />}
     </div>
   );
 };

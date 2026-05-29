@@ -1,37 +1,44 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { CloseIcon, ArrowBackIcon, PasswordIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
-import { AppStorage } from '@repo/util/app';
 import { usePostLoginMenuboardAdmin } from '@repo/api/queries';
 import { openConfirmDialog } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
-import { STORAGE_KEYS, TIMER_KEYS } from '@/constants/keys';
+import { TIMER_KEYS } from '@/constants/keys';
 import { globalTimerManager } from '@/utils/timerManager';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import * as S from '@/pages/MainPage/AdminAccessPasswordModal/adminAccessPasswordModal.style';
 import { useShopStore } from '@/stores/useShopStore';
 import { useDeviceStore } from '@/stores/useDeviceStore';
+import { setMenuboardToken } from '@/feature/MenuboardAuth';
 
 const PASSWORD_MAX_LENGTH = 4;
 
-interface Props {
-  onClose: () => void;
-}
-
-export const AdminAccessPasswordModal = ({ onClose }: Props) => {
+export const AdminAccessPasswordModal = () => {
   const [password, setPassword] = useState<string | null>(null);
 
   const { theme } = useThemeMode();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isMainPage = pathname === ROUTES.ROOT.path;
   const { t } = useAdminTranslation();
   const { data: shopData } = useShopStore();
   const deviceData = useDeviceStore((s) => s.data);
   const setShowAdminAccessModal = useRequestAdminAccessModalStore(
     (s) => s.setShow
   );
+
+  const onClose = () => {
+    if (isMainPage) {
+      setShowAdminAccessModal(false);
+      return;
+    }
+
+    navigate(ROUTES.ROOT.generate());
+  };
 
   const { mutateAsync: loginMenuboardAdmin } = usePostLoginMenuboardAdmin({
     ignoreGlobalErrors: [401],
@@ -46,20 +53,22 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
         }
         if (error.response?.status === 400) {
           setPassword(null);
+          // 다수 비밀번호 입력 실패 시 비밀번호 잠금 상태
           if (error.response?.data?.status?.code === -104) {
-            onClose();
+            // 메인페이지일경우 주문 화면으로 이동
+            // 관리자모드 페이지일경우 그대로 비밀번호 입력 화면 유지
+            // 관리자페이지에서 비밀번호 다시 설정해야 입력 가능
+            if (deviceData?.tableNumber && isMainPage) {
+              setShowAdminAccessModal(false);
+            }
           }
         }
       },
     },
   });
 
-  const handleLoginSuccess = () => {
-    AppStorage.saveData({
-      key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
-      value: true,
-      isTemporary: true,
-    });
+  const handleLoginSuccess = (menuboardToken: string) => {
+    setMenuboardToken(menuboardToken);
 
     // 페이지가 이동되는 동안 모달이 닫혀 깜빡임이 생김
     // modal상태는 500ms 뒤에 닫히도록 설정
@@ -85,7 +94,17 @@ export const AdminAccessPasswordModal = ({ onClose }: Props) => {
       pw: completedPassword,
     }).then((response) => {
       if (response.status.code === 0) {
-        handleLoginSuccess();
+        const menuboardToken = response.data?.menuboardToken;
+        // 응답 코드는 성공이지만 토큰이 없는 경우 인증 실패 처리
+        if (!menuboardToken) {
+          openConfirmDialog({
+            title: t('인증 실패'),
+            content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
+          });
+          setPassword(null);
+          return;
+        }
+        handleLoginSuccess(menuboardToken);
       } else {
         openConfirmDialog({
           title: t('인증 실패'),
