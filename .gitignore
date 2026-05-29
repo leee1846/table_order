@@ -32,3 +32,6 @@ yarn-error.log*
 .idea/
 
 .vscode
+
+# pnpm
+pnpm-lock.yaml
