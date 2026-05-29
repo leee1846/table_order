@@ -2,6 +2,8 @@ import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useGetShopDetail } from '@repo/api/queries';
 import { useEffect } from 'react';
 import { useShopStore } from '@/stores/useShopStore';
+import { useCustomerLanguageStore } from '@/stores/useCustomerLanguageStore';
+import type { IShopSetting } from '@repo/api/types';
 
 interface Props {
   /**
@@ -10,6 +12,25 @@ interface Props {
    */
   skipInitialRequest?: boolean;
 }
+
+/** 다국어 OFF이고 현재 언어가 기본 언어와 다를 때만 기본 언어로 맞춤 */
+const syncCustomerLanguageWhenLocaleDisabled = (
+  shopSetting: IShopSetting | undefined
+): void => {
+  if (!shopSetting || shopSetting.useLocale) {
+    return;
+  }
+
+  const { currentLanguage } = useCustomerLanguageStore.getState().data;
+  if (currentLanguage === shopSetting.shopLanguage) {
+    return;
+  }
+
+  useCustomerLanguageStore.getState().setData({
+    currentLanguage: shopSetting.shopLanguage,
+    isSelected: false,
+  });
+};
 
 /**
  * 매장 상세 정보를 로드하고 관리하는 커스텀 훅
@@ -29,10 +50,11 @@ export const useShopDetailData = (options?: Props) => {
   const { data: storeData, setData: setShopDetailData } = useShopDetailStore();
 
   const enabled = !!shopData?.shopCode && !storeData && !skipInitialRequest;
-  const { data: apiData, refetch, isLoading } = useGetShopDetail(
-    shopData?.shopCode ?? '',
-    { enabled }
-  );
+  const {
+    data: apiData,
+    refetch,
+    isLoading,
+  } = useGetShopDetail(shopData?.shopCode ?? '', { enabled });
 
   useEffect(() => {
     if (skipInitialRequest) {
@@ -45,6 +67,7 @@ export const useShopDetailData = (options?: Props) => {
 
     const updateData = async () => {
       await setShopDetailData(apiData.data);
+      syncCustomerLanguageWhenLocaleDisabled(apiData.data.shopSetting);
     };
 
     updateData();
@@ -58,6 +81,7 @@ export const useShopDetailData = (options?: Props) => {
     const result = await refetch();
     if (result.data?.data) {
       await setShopDetailData(result.data.data);
+      syncCustomerLanguageWhenLocaleDisabled(result.data.data.shopSetting);
     }
     return result.data?.data;
   };
