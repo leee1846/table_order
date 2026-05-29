@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppStorage } from '@repo/util/app';
 import {
   openConfirmDialog,
   openDualActionDialog,
@@ -28,7 +27,6 @@ import {
 } from '@repo/feature/components';
 import adminI18n, { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
-import { STORAGE_KEYS } from '@/constants/keys';
 import {
   markTablesListTableGroupForRestoreAfterTableDetailNav,
   useEnsureSelectedTableGroupInList,
@@ -292,13 +290,6 @@ export const TablesPage = () => {
   const { setData: setLanguageData } = useCustomerLanguageStore();
   const { showInitialPage } = useInitialPageStore();
 
-  // 관리자 비밀번호 캐시 제거
-  const clearAdminPasswordCache = () => {
-    AppStorage.removeData({
-      key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
-    });
-  };
-
   // 메뉴 초기 데이터 새로고침
   const refreshMenuInitialData = useCallback(async () => {
     await refreshCategoriesData();
@@ -375,7 +366,6 @@ export const TablesPage = () => {
   const selectTable = async (table: TableWithStatus) => {
     await updateDeviceDetail(table.tableNumber);
     await refreshMenuInitialData();
-    clearAdminPasswordCache();
     navigate(ROUTES.ROOT.generate());
   };
 
@@ -412,7 +402,6 @@ export const TablesPage = () => {
   const handleCurrentTableClick = async () => {
     await updateDeviceDetail(deviceData?.tableNumber ?? '');
     await refreshMenuInitialData();
-    clearAdminPasswordCache();
     navigate(ROUTES.ROOT.generate());
   };
 

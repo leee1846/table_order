@@ -17,8 +17,15 @@ import { getCurrentUnixTime } from '@repo/util/time';
 import { ROUTES } from '@/constants/routes';
 import { clearAuthData } from '@/utils/auth';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
+import {
+  isMenuboardProtectedUrl,
+  getMenuboardToken,
+  removeMenuboardToken,
+} from '@/feature/MenuboardAuth';
+import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 
 const activeErrorTypes = new Set<string>();
+const MENUBOARD_TOKEN_EXPIRED_ERROR = 'menuboard_token_expired';
 
 // 인증 만료 다이얼로그 중복 노출 방지 (forceReLogin 1회만 실행되도록 보장)
 let hasForceReLoginCalled = false;
@@ -156,6 +163,29 @@ privateApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // 관리자 모드 접근 엑세스 토큰 만료 및 토큰이 없는경우
+    // 토큰이 변조된경우 401에러로 반환
+    if (
+      statusCode === 403 &&
+      error.response?.data?.status?.code === -106 &&
+      isMenuboardProtectedUrl(config?.url ?? '', config?.method ?? '')
+    ) {
+      removeMenuboardToken();
+      useRequestAdminAccessModalStore.getState().setShow(true);
+      if (!activeErrorTypes.has(MENUBOARD_TOKEN_EXPIRED_ERROR)) {
+        activeErrorTypes.add(MENUBOARD_TOKEN_EXPIRED_ERROR);
+        openConfirmDialog({
+          title: '관리자 모드 인증 만료',
+          content:
+            '관리자 모드 인증이 만료되었습니다.\n비밀번호를 다시 입력해주세요.',
+          onConfirm: () => {
+            activeErrorTypes.delete(MENUBOARD_TOKEN_EXPIRED_ERROR);
+          },
+        });
+      }
+      return Promise.reject(error);
+    }
+
     // 나머지 모든 error dialog 처리
     handleApiErrorDialog(error, {
       openConfirmDialog,
@@ -170,3 +200,14 @@ privateApi.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// 관리자 모드 API 요청에 X-Menuboard-Token 헤더 주입
+privateApi.interceptors.request.use((config) => {
+  if (isMenuboardProtectedUrl(config.url ?? '', config.method ?? '')) {
+    const token = getMenuboardToken();
+    if (token) {
+      config.headers['X-Menuboard-Token'] = token;
+    }
+  }
+  return config;
+});

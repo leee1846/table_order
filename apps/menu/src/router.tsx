@@ -6,8 +6,11 @@ import {
 } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { getAccessToken } from '@repo/api/auth';
-import { saveAppLog, AppStorage } from '@repo/util/app';
-import { STORAGE_KEYS } from './constants/keys';
+import { saveAppLog } from '@repo/util/app';
+import {
+  removeMenuboardToken,
+  getMenuboardToken,
+} from '@/feature/MenuboardAuth';
 import App from './App';
 import { MainPage } from '@/pages/MainPage';
 import { LoginPage } from '@/pages/LoginPage';
@@ -28,17 +31,12 @@ const authCheckerLoader = () => {
 };
 
 /**
- * 관리자 페이지 접근을 위한 비밀번호 인증 상태 확인 loader
+ * 관리자 모드 접근 토큰 보유 여부 확인
+ * menuboardToken이 없으면 ROOT로 이동 처리 (선택한 테이블이 없으면 자동으로 관리자모드 비밀번호 입력 UI노출됨)
  */
-const adminVerificationCheckLoader = async () => {
-  const data = await AppStorage.loadData<boolean>({
-    key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
-  });
-  const isVerified = data?.value ?? false;
-
-  if (!isVerified) {
-    window.location.replace(ROUTES.ROOT.generate());
-    return null;
+const adminVerificationCheckLoader = () => {
+  if (!getMenuboardToken()) {
+    return redirect(ROUTES.ROOT.generate());
   }
   return null;
 };
@@ -57,6 +55,7 @@ export const router = createBrowserRouter([
          * 로그인 페이지를 제외한 모든 페이지에서 확인
          * */
         loader: authCheckerLoader,
+        shouldRevalidate: () => true,
         element: <Outlet />,
         children: [
           {
@@ -69,6 +68,7 @@ export const router = createBrowserRouter([
              * 메인 페이지를 제외한 모든 페이지에서 확인
              * */
             loader: adminVerificationCheckLoader,
+            shouldRevalidate: () => true,
             element: <Outlet />,
             children: [
               {
@@ -122,11 +122,18 @@ let prevPathname: string | null = null;
  */
 router.subscribe((state) => {
   if (state.navigation.state === 'idle') {
+    const targetPath = state.location.pathname;
+
+    // login 또는 root 페이지로 이동 시 menuboard 토큰 제거
+    if (targetPath === ROUTES.LOGIN.path || targetPath === ROUTES.ROOT.path) {
+      removeMenuboardToken();
+    }
+
     saveAppLog('[페이지 이동]', {
       from: prevPathname,
-      to: state.location.pathname,
+      to: targetPath,
       search: state.location.search,
     });
-    prevPathname = state.location.pathname;
+    prevPathname = targetPath;
   }
 });

@@ -3,8 +3,6 @@ import { getSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
-import { AppStorage } from '@repo/util/app';
-import { STORAGE_KEYS } from '@/constants/keys';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import { capsSmartOrderBlueGreyLogo } from '@repo/ui/icons';
@@ -23,9 +21,6 @@ export const SidebarLayout = () => {
     useRequestAdminAccessModalStore.getState().setShow(false);
 
     if (deviceData?.tableNumber) {
-      AppStorage.removeData({
-        key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
-      });
       navigate(ROUTES.ROOT.generate());
       return;
     }

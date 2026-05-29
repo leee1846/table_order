@@ -6,8 +6,6 @@ import { useRemoteSupport } from '@repo/feature/hooks';
 import { capsSmartOrderBlueGreyLogo, HomeFilledIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { toast } from '@repo/feature/utils';
-import { AppStorage } from '@repo/util/app';
-import { STORAGE_KEYS } from '@/constants/keys';
 import { useDeviceStore } from '@/stores/useDeviceStore';
 import { useRequestAdminAccessModalStore } from '@/stores/useRequestAdminAccessModalStore';
 import * as S from './sidebar.styles';
@@ -26,9 +24,6 @@ export const Sidebar = () => {
     useRequestAdminAccessModalStore.getState().setShow(false);
 
     if (useDeviceStore.getState().data?.tableNumber) {
-      AppStorage.removeData({
-        key: STORAGE_KEYS.ADMIN_PASSWORD_VERIFIED,
-      });
       navigate(ROUTES.ROOT.generate());
       return;
     }

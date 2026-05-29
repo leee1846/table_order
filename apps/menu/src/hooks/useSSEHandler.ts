@@ -239,16 +239,20 @@ export const useSSEHandler = () => {
   // ----- Refetch 콜백 (handlersRef에 주입되어 핸들러에서 사용) -----
   const refetchCurrentTableList = useCallback(
     (shopCode: string) => {
+      // type: 'active' → 활성 구독자(TablesPage 마운트)가 있을 때만 요청 (토큰 없는 페이지에서 보호 API 호출 방지)
       queryClient.refetchQueries({
         queryKey: queryKeys.orders.currentTableList(shopCode),
+        type: 'active',
       });
     },
     [queryClient]
   );
   const refetchDeviceList = useCallback(
     (shopCode: string) => {
+      // type: 'active' → 활성 구독자(TablesPage 마운트)가 있을 때만 요청 (토큰 없는 페이지에서 보호 API 호출 방지)
       queryClient.refetchQueries({
         queryKey: queryKeys.device.list(shopCode),
+        type: 'active',
       });
     },
     [queryClient]
