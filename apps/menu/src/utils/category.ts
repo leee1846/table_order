@@ -117,7 +117,11 @@ export const checkCategorySaleStatus = (
     };
   }
 
-  const isTimeAvailable = isWithinSaleTime(saleStartTime!, saleEndTime!, currentTime);
+  const isTimeAvailable = isWithinSaleTime(
+    saleStartTime!,
+    saleEndTime!,
+    currentTime
+  );
   const timeChangeMs = getTimeUntilNextSaleStateChange(
     saleStartTime!,
     saleEndTime!,
@@ -157,16 +161,20 @@ const detectAfterMidnightSlot = (
   saleEndTime: string,
   currentTime: Date
 ): boolean => {
-  const { hour: startHour, minute: startMinute } = parseTimeString(saleStartTime);
+  const { hour: startHour, minute: startMinute } =
+    parseTimeString(saleStartTime);
   const { hour: endHour, minute: endMinute } = parseTimeString(saleEndTime);
 
   const startTotalMin = parseInt(startHour) * 60 + parseInt(startMinute);
   const endTotalMin = parseInt(endHour) * 60 + parseInt(endMinute);
 
   // 자정을 넘기지 않는 경우 (예: 09:00 ~ 21:00) → 기존 로직 유지
-  if (startTotalMin <= endTotalMin) return false;
+  if (startTotalMin <= endTotalMin) {
+    return false;
+  }
 
-  const currentTotalMin = currentTime.getHours() * 60 + currentTime.getMinutes();
+  const currentTotalMin =
+    currentTime.getHours() * 60 + currentTime.getMinutes();
 
   // 자정을 넘기는 경우: 현재 시각이 종료 시간 이전 새벽 구간인지 확인
   // 예) 21:00~03:00에서 현재 01:30 → 01:30 < 03:00 → true (전날 세션)

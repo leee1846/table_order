@@ -54,7 +54,7 @@ const CorporateFooter: React.FC = () => {
               <span>사업자등록번호 120-86-07747</span>
               <span className="bar">|</span>
               <span>
-                주소 : 13486 경기도 성남시 분당구 판교로 227번길 23, 485층
+                주소 : 13486 경기도 성남시 분당구 판교로 227번길 23, 4&5층
               </span>
             </div>
             <div className="copyright">

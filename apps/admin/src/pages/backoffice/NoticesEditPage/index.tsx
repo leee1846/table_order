@@ -76,7 +76,7 @@ export const NoticesEditPage = () => {
         try {
           await deleteNoticeMutation.mutateAsync(noticeId);
           message.success('공지사항이 삭제되었습니다.');
-        } catch (e) {
+        } catch {
           message.error('공지 사항 삭제 중 오류가 발생했습니다.');
         }
         navigate(ROUTES.BACKOFFICE.NOTICES.generate());

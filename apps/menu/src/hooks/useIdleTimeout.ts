@@ -71,7 +71,9 @@ export const useIdleTimeout = (
   // 수동으로 타이머와 이벤트를 등록(시작)하는 함수
   const startTimer = useCallback(() => {
     // 이미 등록된 이벤트가 있다면 중복 등록 방지
-    if (cleanupRef.current) return;
+    if (cleanupRef.current) {
+      return;
+    }
 
     resetTimer();
 

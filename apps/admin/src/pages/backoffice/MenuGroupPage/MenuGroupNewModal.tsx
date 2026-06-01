@@ -92,7 +92,9 @@ const MenuGroupModal: React.FC<MenuGroupModalProps> = ({
           ? '메뉴 그룹이 등록되었습니다.'
           : '메뉴 그룹이 수정되었습니다.'
       );
-      if (onSuccess) onSuccess();
+      if (onSuccess) {
+        onSuccess();
+      }
       onClose();
     } catch (error) {
       console.error('Validation failed:', error);
