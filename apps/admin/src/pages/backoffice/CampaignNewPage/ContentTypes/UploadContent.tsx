@@ -16,6 +16,7 @@ export type UploadStatus = '완료' | '오류 : 15초 초과' | '오류 : 30MB �
 
 export interface UploadedFile {
   id: string;
+  contentSeq?: number;
   url?: string;
   name: string;
   duration?: string;

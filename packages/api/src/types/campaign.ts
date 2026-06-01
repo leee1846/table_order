@@ -51,6 +51,7 @@ export interface CampaignRequestJson {
 }
 
 export interface CampaignContent {
+  contentSeq?: number;
   adType: string;
   filePath: string;
   fileName: string;
