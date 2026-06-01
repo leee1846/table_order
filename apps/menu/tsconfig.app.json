@@ -15,7 +15,8 @@
       "@repo/ui": ["../../packages/ui/src/index.ts"],
       "@repo/ui/*": ["../../packages/ui/src/*"]
     },
-    "types": ["@emotion/react/types/css-prop"]
+    "types": ["@emotion/react/types/css-prop"],
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src/**/*",

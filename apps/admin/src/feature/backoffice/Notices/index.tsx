@@ -58,7 +58,7 @@ export const Notices = ({
   }, [initialData]);
 
   const updateFormData = (updates: Partial<NoticesFormData>) => {
-    setFormData((prev) => ({ ...prev, ...updates }));
+    setFormData((prev: NoticesFormData) => ({ ...prev, ...updates }));
   };
 
   const handleSave = async () => {
