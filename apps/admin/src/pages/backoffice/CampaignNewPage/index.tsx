@@ -249,6 +249,7 @@ const CampaignNewPagePage: React.FC = () => {
           }
 
           requestData.contents!.push({
+            contentSeq: fileItem.contentSeq, // 기존 콘텐츠면 서버에서 받은 값, 신규면 undefined
             adType,
             filePath: '', // 서버 등록 전이므로 빈 문자열
             fileName: fileItem.name || '',
@@ -270,6 +271,7 @@ const CampaignNewPagePage: React.FC = () => {
           fileArray.push(null);
         }
         requestData.contents!.push({
+          contentSeq: typeof menuItem.id === 'number' ? menuItem.id : undefined, // 기존 콘텐츠면 서버에서 받은 값
           adType: menuItem.adType,
           filePath: menuItem.filePath,
           fileName: menuItem.fileName,
@@ -303,6 +305,7 @@ const CampaignNewPagePage: React.FC = () => {
           fileArray.push(null);
         }
         requestData.contents!.push({
+          contentSeq: fileItem.contentSeq, // 기존 콘텐츠면 서버에서 받은 값, 신규면 undefined
           adType: orderCompAdType,
           filePath: '',
           fileName: fileItem.originFileObj?.name || fileItem.name || '',
@@ -424,6 +427,7 @@ const CampaignNewPagePage: React.FC = () => {
 
       const uploadedFile: UploadedFile = {
         id: String(content.contentSeq), // Use contentSeq as a unique ID
+        contentSeq: content.contentSeq, // 수정 요청 시 서버로 돌려보낼 값
         name: content.fileName,
         status: '완료',
         url: content.filePath, // This should be a full URL to the file for preview
