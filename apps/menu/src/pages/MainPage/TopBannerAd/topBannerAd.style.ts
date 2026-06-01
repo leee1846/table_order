@@ -11,6 +11,7 @@ export const ImgContainer = styled.div`
   aspect-ratio: 50/9;
   border-radius: 0.5rem;
   overflow: hidden;
+  background-color: ${({ theme }) => theme.colors.grey[900]};
 
   & .top-banner-ad-swiper {
     width: 100%;

@@ -9,8 +9,8 @@ export const StandbyAd = () => {
   const { hideStandbyAd } = useStandbyAdStore();
   const { data: adData } = useAdStore();
 
-  // 로딩 중에는 렌더하지 않음 — 빈 화면 노출 및 탭으로 광고 우회 방지
-  if (adData.isAdDataLoading) {
+  // 로딩 중이거나 재생 가능한 항목이 없으면 렌더하지 않음
+  if (adData.isAdDataLoading || adData.standbyFiles.length === 0) {
     return null;
   }
 

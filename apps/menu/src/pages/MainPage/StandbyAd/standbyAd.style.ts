@@ -9,6 +9,7 @@ export const Container = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100%;
+  background-color: ${({ theme }) => theme.colors.grey[900]};
 `;
 
 export const AdContainer = styled.div`
@@ -16,6 +17,7 @@ export const AdContainer = styled.div`
   min-height: 0;
   width: 100%;
   overflow: hidden;
+  background-color: ${({ theme }) => theme.colors.grey[900]};
 `;
 
 export const Notice = styled.p`

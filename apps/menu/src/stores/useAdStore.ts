@@ -39,7 +39,7 @@ export interface IAdStoreData {
 interface IAdStore {
   data: IAdStoreData;
   /**
-   * API 응답 전체를 받아 adType별로 그룹화하고 AppStorage(AD_FILES)에 캐시
+   * 유효성 검증을 통과한 파일만 adType별로 그룹화하고 AppStorage(AD_FILES)에 캐시
    */
   setAdFiles: (files: IGetMenuAdFile[]) => Promise<void>;
   /**
