@@ -262,6 +262,7 @@ export const useSSEHandler = () => {
     (shopCode: string) => {
       queryClient.refetchQueries({
         queryKey: queryKeys.menu.adFiles(shopCode),
+        type: 'active',
       });
     },
     [queryClient]
