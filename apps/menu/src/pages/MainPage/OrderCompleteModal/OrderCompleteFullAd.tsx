@@ -35,6 +35,6 @@ export const OrderCompleteFullAd = ({
         onComplete={onClose}
       />
     </S.AdContainer>
-    <S.Notice>{t('주문을 시작하려면 화면을 터치해 주세요.')}</S.Notice>
+    <S.Notice>{t('주문이 완료되었습니다. 화면을 터치해 주세요.')}</S.Notice>
   </OverlayS.FullscreenViewport>
 );

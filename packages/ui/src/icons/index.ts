@@ -85,3 +85,4 @@ export { default as DocumentIcon } from './document.svg';
 export { default as RingIcon } from './ring.svg';
 export { default as TotalDiscountIcon } from './total_discount.svg';
 export { default as AmountChangeIcon } from './amount_change.svg';
+export { default as AdThumbnailImage } from './ad_thumbnail.png';

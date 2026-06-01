@@ -477,6 +477,8 @@ export interface IGetMenuAdFile {
   fileSizeKb: number;
   sortOrder: number;
   contentDescription: string;
+  contentStartDate: string;
+  contentEndDate: string;
 }
 
 export type TGetMenuAdFilesResponse = IApiResponse<IGetMenuAdFile[]>;

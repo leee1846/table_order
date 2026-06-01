@@ -8,8 +8,7 @@ import type { ICategoryWithMenus } from '@repo/api/types';
 import { DOM_IDS } from '@/constants/keys';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
-
-const BANNER_AD = true;
+import { useAdStore } from '@/stores/useAdStore';
 
 interface Props {
   categories: ICategoryWithMenus[];
@@ -23,6 +22,9 @@ export const Contents = ({
   categoryNavigation,
 }: Props) => {
   const { t } = useCustomerTranslation();
+  const { data: adData } = useAdStore();
+  const hasBannerAd =
+    !adData.isAdDataLoading && adData.topBannerFiles.length > 0;
 
   const { activate, deactivate } = categoryNavigation;
 
@@ -40,17 +42,17 @@ export const Contents = ({
       ) : useSinglePageMenuboard ? (
         <S.Container
           id={DOM_IDS.CONTENTS_SCROLL_CONTAINER}
-          paddingTop={BANNER_AD ? '10px' : '30px'}
+          paddingTop={hasBannerAd ? '10px' : '30px'}
         >
-          {BANNER_AD && <TopBannerAd />}
+          {hasBannerAd && <TopBannerAd />}
           <TabContent selectedCategory={categoryNavigation.selectedCategory} />
         </S.Container>
       ) : (
         <S.Container
           id={DOM_IDS.CONTENTS_SCROLL_MODE_CONTAINER}
-          paddingTop={BANNER_AD ? '10px' : '30px'}
+          paddingTop={hasBannerAd ? '10px' : '30px'}
         >
-          {BANNER_AD && <TopBannerAd />}
+          {hasBannerAd && <TopBannerAd />}
           {/* eagerMountCategorySeq: 사이드바로 멀리 이동 시 해당 섹션만 Lazy 우회 */}
           <ScrollContent
             categories={categories}

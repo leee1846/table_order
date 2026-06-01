@@ -4,6 +4,7 @@ import type { Swiper as SwiperType } from 'swiper';
 import type { IGetMenuAdFile } from '@repo/api/types';
 import * as S from '@/feature/AdMediaSlider/adMediaSlider.style';
 import 'swiper/css';
+import { AdThumbnailImage } from '@repo/ui/icons';
 
 // 이미지에는 종료 이벤트가 없어서 시간 기준 완료 판단
 const IMAGE_AUTO_SLIDE_MS = 10000;
@@ -78,7 +79,7 @@ const VideoSlide = ({
       muted
       playsInline
       loop={loopPlayback}
-      poster="https://d1pv6p24gb2rr8.cloudfront.net/ad/campaign/13/STANDBY_IMAGE/fd18fcc0_black.png"
+      poster={AdThumbnailImage}
     />
   );
 };
