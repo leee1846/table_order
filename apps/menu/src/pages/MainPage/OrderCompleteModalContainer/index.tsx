@@ -3,7 +3,7 @@ import { useModalStore } from '@/stores/useModalStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { OrderCompleteModal } from '@/pages/MainPage/OrderCompleteModal';
-import { shouldShowOrderCompleteHalfAd } from '@/pages/MainPage/OrderCompleteModal/orderCompleteAdVisibility';
+import { shouldShowOrderCompleteCountdown } from '@/pages/MainPage/OrderCompleteModal/orderCompleteAdVisibility';
 import { useAdStore } from '@/stores/useAdStore';
 import {
   applyMenuboardStateAfterTableOrderHistoriesCleared,
@@ -21,7 +21,7 @@ export const OrderCompleteModalContainer = () => {
 
   const countdownActive = useMemo(
     () =>
-      shouldShowOrderCompleteHalfAd(
+      shouldShowOrderCompleteCountdown(
         adData.orderCompleteFullFiles,
         adData.orderCompleteSideFiles
       ),
@@ -62,7 +62,7 @@ export const OrderCompleteModalContainer = () => {
     })();
   }, [setModalData, refreshTableOrderHistoriesData]);
 
-  // half(사이드) 광고일 때만 20초 카운트다운 후 자동 닫기 — 전면·기본 완료 화면은 제외
+  // 전면 광고가 아닐 때(반쪽 광고·기본 완료 화면) 20초 카운트다운 후 자동 닫기
   useEffect(() => {
     if (!countdownActive) {
       return;

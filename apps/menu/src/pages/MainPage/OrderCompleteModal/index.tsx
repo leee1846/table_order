@@ -22,7 +22,7 @@ interface Props {
   totalPrice: number;
   onClose: () => void;
   countdown: number;
-  /** half(사이드) 광고일 때만 20초 표시·자동 닫기 */
+  /** 전면 광고가 아닐 때(반쪽 광고·기본 완료 화면) 20초 표시·자동 닫기 */
   countdownActive: boolean;
 }
 
