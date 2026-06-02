@@ -15,6 +15,7 @@ type Mode = 'create' | 'edit' | 'detail';
 interface Props {
   mode: Mode;
   initialData?: NoticesFormData;
+  store?: boolean;
   onSave?: (data: NoticesFormData) => Promise<void>;
   onDelete?: () => Promise<void>;
 }
@@ -38,7 +39,13 @@ const ButtonGroup = styled.div`
   gap: 8px;
 `;
 
-export const Notices = ({ mode, initialData, onSave, onDelete }: Props) => {
+export const Notices = ({
+  mode,
+  initialData,
+  onSave,
+  onDelete,
+  store = false,
+}: Props) => {
   const navigate = useNavigate();
   const [formData, setFormData] =
     useState<NoticesFormData>(DEFAULT_NOTICES_DATA);
@@ -51,7 +58,7 @@ export const Notices = ({ mode, initialData, onSave, onDelete }: Props) => {
   }, [initialData]);
 
   const updateFormData = (updates: Partial<NoticesFormData>) => {
-    setFormData((prev) => ({ ...prev, ...updates }));
+    setFormData((prev: NoticesFormData) => ({ ...prev, ...updates }));
   };
 
   const handleSave = async () => {
@@ -96,6 +103,7 @@ export const Notices = ({ mode, initialData, onSave, onDelete }: Props) => {
 
       <FormWrapper>
         <NoticesForm
+          store={store}
           mode={mode}
           formData={formData}
           updateFormData={updateFormData}

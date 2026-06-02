@@ -36,7 +36,7 @@ export const StoresSidebarLayout = () => {
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isMaster = tokenPayload?.role === 'MASTER';
-  const isDevelopEnv = false; //import.meta.env.MODE === 'development';
+  const isDevelopEnv = import.meta.env.MODE === 'development';
 
   const SIDEBAR_MENUS = useMemo<TMenu[]>(() => {
     const menus: TMenu[] = [
