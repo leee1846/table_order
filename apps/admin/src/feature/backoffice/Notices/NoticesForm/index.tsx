@@ -37,6 +37,7 @@ type Mode = 'create' | 'edit' | 'detail';
 interface Props {
   mode: Mode;
   formData: NoticesFormData;
+  store?: boolean;
   updateFormData: (updates: Partial<NoticesFormData>) => void;
 }
 

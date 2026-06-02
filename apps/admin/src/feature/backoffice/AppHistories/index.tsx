@@ -86,7 +86,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
   }, [initialData]);
 
   const updateFormData = (updates: Partial<AppHistoriesFormData>) => {
-    setFormData((prev) => ({ ...prev, ...updates }));
+    setFormData((prev: AppHistoriesFormData) => ({ ...prev, ...updates }));
   };
 
   const handleSave = async () => {
