@@ -3,7 +3,7 @@ import { capsSmartOrderBlueGreyLogo } from '@repo/ui/icons';
 import { SettingsSidebar, useTranslation } from '@repo/feature/components';
 import { createSidebarMenus } from '@/constants/settings';
 import { ROUTES } from '@/constants/routes';
-import { useGetCategoryList } from '@repo/api/queries';
+import { useGetAdminShopDetail, useGetCategoryList } from '@repo/api/queries';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminTranslation } from '@/config/i18n';
@@ -13,10 +13,14 @@ export const SidebarLayout = () => {
   const navigate = useNavigate();
   const { t, i18n } = useAdminTranslation();
 
-  const { shopSeq } = useAuth();
+  const { shopSeq, shopCode} = useAuth();
 
   const { data: categoryListResponse } = useGetCategoryList({
     shopSeq: shopSeq ?? 0,
+  });
+
+  const { data: shopDetailResponse } = useGetAdminShopDetail(shopCode ?? '', {
+    enabled: !!shopCode,
   });
 
   const categoryMenuSubMenus = useMemo(() => {
@@ -59,6 +63,8 @@ export const SidebarLayout = () => {
         </button>
       }
       onClickHomeButton={onClickLogo}
+      shopName={shopDetailResponse?.data?.shopName}
+      shopCode={shopCode ?? undefined}
     />
   );
 };
