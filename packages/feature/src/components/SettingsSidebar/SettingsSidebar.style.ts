@@ -28,6 +28,18 @@ export const Logo = styled.div`
   }
 `;
 
+export const ShopName = styled.div`
+  //text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0 20px;
+  ${TYPOGRAPHY.ST_4};
+  color: ${theme.colors.grey[600]};
+  margin-top: -10px;
+  margin-bottom: 10px;
+`;
+
 export const List = styled.ul`
   display: flex;
   flex-direction: column;
