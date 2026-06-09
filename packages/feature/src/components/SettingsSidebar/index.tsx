@@ -15,6 +15,8 @@ export const SettingsSidebar = ({
   logoElement,
   onClickHomeButton,
   useTranslation,
+  shopName,
+  shopCode,
 }: SettingsSidebarProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -90,7 +92,7 @@ export const SettingsSidebar = ({
     <S.Layout>
       <S.Section>
         <S.Logo>{logoElement}</S.Logo>
-
+        {shopName && <S.ShopName title={shopCode}>{shopName}</S.ShopName>}
         <S.List>
           {menus.map((menu) => {
             const hasSubMenus = !!menu.subMenus?.length;

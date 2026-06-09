@@ -18,6 +18,8 @@ export type TMenu = {
 export interface SettingsSidebarProps {
   menus: TMenu[];
   logoElement: React.ReactElement<ButtonHTMLAttributes<HTMLButtonElement>>;
+  shopName?: string;
+  shopCode?: string;
   onClickHomeButton: () => void;
   useTranslation: typeof useTranslation;
 }
