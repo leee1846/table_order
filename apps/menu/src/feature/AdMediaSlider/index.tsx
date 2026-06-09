@@ -51,6 +51,7 @@ const VideoSlide = ({
       });
     } else {
       el.pause();
+      el.currentTime = 0;
     }
   }, [isActive, src]);
 
