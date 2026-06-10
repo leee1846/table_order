@@ -74,7 +74,7 @@ const AdMenuAddModal: React.FC<AdMenuAddModalProps> = ({
   const menuGroupOptions = (menuGroupResponse?.data?.content || []).map(
     (group: IMenuGroup) => ({
       value: String(group.menuGroupSeq),
-      label: group.menuGroupName,
+      label: `${group.menuGroupName} (${group.menuGroupTag})`,
     })
   );
 
