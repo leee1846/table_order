@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { IGetMenuAdFile } from '@repo/api/types';
 import { useGetMenuAdFiles } from '@repo/api/queries';
 import { useShopStore } from '@/stores/useShopStore';
@@ -84,6 +84,9 @@ const registerLocalVideoUrl = async (
  * 광고 파일 데이터를 로드하고 영상을 AdStorage에 두고 로컬 URL을 등록한다.
  */
 export const useAdData = () => {
+  // 태블릿 첫 실행 시 광고 파일 다운로드 로딩 상태
+  const [isMenuAdFilesLoading, setIsMenuAdFilesLoading] = useState(true);
+
   const { data: shopData } = useShopStore();
   const shopCode = shopData?.shopCode ?? '';
 
@@ -92,6 +95,7 @@ export const useAdData = () => {
   const { data: apiData } = useGetMenuAdFiles(shopCode, {
     enabled: !!shopCode,
   });
+
   useEffect(() => {
     if (apiData === undefined) {
       return;
@@ -193,10 +197,15 @@ export const useAdData = () => {
       }
     };
 
-    void run();
+    void (async () => {
+      await run();
+      setIsMenuAdFilesLoading(false);
+    })();
 
     return () => {
       cancelled = true;
     };
   }, [apiData, setAdFiles, setLocalVideoUrl, setAdDataLoading]);
+
+  return { isMenuAdFilesLoading };
 };

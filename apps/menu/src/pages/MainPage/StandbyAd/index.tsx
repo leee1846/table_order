@@ -9,11 +9,6 @@ export const StandbyAd = () => {
   const { hideStandbyAd } = useStandbyAdStore();
   const { data: adData } = useAdStore();
 
-  // 로딩 중이거나 재생 가능한 항목이 없으면 렌더하지 않음
-  if (adData.isAdDataLoading || adData.standbyFiles.length === 0) {
-    return null;
-  }
-
   return (
     <S.Container
       onClick={hideStandbyAd}

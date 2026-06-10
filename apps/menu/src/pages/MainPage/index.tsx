@@ -41,7 +41,7 @@ import { OrderCompleteModalContainer } from '@/pages/MainPage/OrderCompleteModal
 
 export const MainPage = () => {
   useShopData();
-  useAdData();
+  const { isMenuAdFilesLoading } = useAdData();
   useTableGroupData();
   const { data: shopDetailData, isLoading: isShopDetailLoading } =
     useShopDetailData();
@@ -132,11 +132,13 @@ export const MainPage = () => {
     breakTimeLastOrder: breakTimeLastOrderState,
     closureLastOrder: closureLastOrderState,
     standbyAd: {
-      // 로딩 중에는 계속 블로킹 (파일 여부를 모르므로)
+      // API·영상 다운로드 로딩 중에는 노출하지 않음
       // 로딩 완료 후 파일이 없으면 즉시 해제, 있으면 광고 노출
       show:
         standbyAdData.isStandbyAdVisible &&
-        (adData.isAdDataLoading || adData.standbyFiles.length > 0),
+        !isMenuAdFilesLoading &&
+        !adData.isAdDataLoading &&
+        adData.standbyFiles.length > 0,
     },
     initialPage: {
       show: initialPageData.showInitialPage && hasInitialPageDetailImages,
