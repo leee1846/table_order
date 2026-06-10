@@ -130,7 +130,7 @@ const OrderFormImageSettings: React.FC<OrderFormImageSettingsProps> = ({
         {/* 광고 노출 유형 선택 */}
         <div style={{ marginBottom: '24px' }}>
           <SectionLabel>
-            광고 노출 유형 <span className="required">*</span>
+            광고 노출 유형 {/* <span className="required">*</span> */}
           </SectionLabel>
 
           <Radio.Group
