@@ -32,3 +32,6 @@ yarn-error.log*
 .idea/
 
 .vscode
+
+# Claude Code (local guidance only)
+CLAUDE.md
