@@ -27,6 +27,11 @@ nexa/
 - **패키지 매니저**: [pnpm](https://pnpm.io/) (v9.0.0)
 - **Node.js**: v24.11.1
 
+## pnpm 설치
+```bash
+npm install -g pnpm@9.0.0
+```
+
 ## 📦 설치
 
 루트 디렉토리에서 다음 명령어를 실행하세요:

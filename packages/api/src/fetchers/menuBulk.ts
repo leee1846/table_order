@@ -143,3 +143,19 @@ export const replaceMenuMainImage = async (params: {
 
   return response.data;
 };
+
+/**
+ * 메뉴 SSE 동기화를 요청합니다.
+ * POST /menu/bulk/menu-sse/{shopCode}
+ */
+export const postMenuBulkMenuSse = async (
+  shopCode: string
+): Promise<TVoidApiResponse> => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.MENU.MENU_SSE(shopCode),
+  });
+
+  return response.data;
+};

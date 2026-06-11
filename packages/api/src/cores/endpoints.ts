@@ -88,6 +88,7 @@ export const ENDPOINTS = {
       `/menu/bulk/pos-excel-bundle/${shopCode}`,
     REPLACE_MAIN_IMAGE: (menuSeq: number) => `/menu/bulk/image/${menuSeq}`,
     AD_FILE: (shopCode: string) => `/menu/ad/file/${shopCode}`,
+    MENU_SSE: (shopCode: string) => `/menu/bulk/menu-sse/${shopCode}`,
   },
 
   SHOP: {
