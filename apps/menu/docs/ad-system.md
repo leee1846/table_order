@@ -67,7 +67,9 @@ interface IGetMenuAdFile {
 `useAdData` 훅이 앱 전체 광고 데이터 로드를 담당한다. `apps/menu/src/pages/MainPage/index.tsx`에서 호출된다.
 
 ```
-1. useGetMenuAdFiles(shopCode) → API 응답 (IGetMenuAdFile[])
+0. 앱 세션 최초 1회만 마운트 후 5초 대기 → canFetchAdFiles=true (이후 재진입 시 즉시 true)
+       ↓
+1. useGetMenuAdFiles(shopCode, enabled: shopCode && canFetchAdFiles) → API 응답 (IGetMenuAdFile[])
        ↓
 2. AdStorage.listAds()
    stale 영상 파일 삭제 (API 응답에 없는 filePath의 파일명)

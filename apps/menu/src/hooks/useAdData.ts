@@ -5,6 +5,12 @@ import { useShopStore } from '@/stores/useShopStore';
 import { useAdStore } from '@/stores/useAdStore';
 import { AdStorage } from '@repo/util/app';
 
+/** 태블릿 첫 부팅 시 Capacitor 엔진 준비 대기 후 광고 API 요청 */
+const NATIVE_AD_FETCH_DELAY_MS = 5000;
+
+/** 앱 세션(프로세스) 내 최초 1회만 부팅 지연 적용 — 이후 페이지 재진입 시 즉시 fetch */
+let isInitialAdFetchDelayDone = false;
+
 /** AdStorage에 내려받아 재생하는 광고 adType */
 const VIDEO_AD_TYPES = new Set<string>([
   'STANDBY_VIDEO',
@@ -86,6 +92,24 @@ const registerLocalVideoUrl = async (
 export const useAdData = () => {
   // 태블릿 첫 실행 시 광고 파일 다운로드 로딩 상태
   const [isMenuAdFilesLoading, setIsMenuAdFilesLoading] = useState(true);
+  const [canFetchAdFiles, setCanFetchAdFiles] = useState(
+    () => isInitialAdFetchDelayDone
+  );
+
+  useEffect(() => {
+    if (isInitialAdFetchDelayDone) {
+      return;
+    }
+
+    const timerId = setTimeout(() => {
+      isInitialAdFetchDelayDone = true;
+      setCanFetchAdFiles(true);
+    }, NATIVE_AD_FETCH_DELAY_MS);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, []);
 
   const { data: shopData } = useShopStore();
   const shopCode = shopData?.shopCode ?? '';
@@ -93,7 +117,7 @@ export const useAdData = () => {
   const { setAdFiles, setLocalVideoUrl, setAdDataLoading } = useAdStore();
 
   const { data: apiData } = useGetMenuAdFiles(shopCode, {
-    enabled: !!shopCode,
+    enabled: !!shopCode && canFetchAdFiles,
   });
 
   useEffect(() => {
