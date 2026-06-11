@@ -623,11 +623,9 @@ export const useSSEHandler = () => {
 
     handleDeviceMessage: (shopCode: string) => {
       const { locationPathname } = sseHandlerDataRef.current;
-      if (locationPathname !== ROUTES.TABLES.generate()) {
-        return;
+      if (locationPathname === ROUTES.TABLES.generate()) {
+        handlersRef.current.refetchDeviceList(shopCode);
       }
-
-      handlersRef.current.refetchDeviceList(shopCode);
     },
 
     handlePickupMessage: (message: ISseMessage) => {

@@ -48,6 +48,7 @@ import { Sidebar } from '@/pages/TablesPage/Sidebar';
 import { getDeviceInfo } from '@/utils/deviceInfo';
 import { useShopStore } from '@/stores/useShopStore';
 import { NoContent } from '@/feature/NoContent';
+import { isMenuboardTokenExpiredError } from '@/feature/MenuboardAuth';
 import { useThemeMode } from '@repo/ui';
 
 // 헬퍼 함수: 주문 시간 포맷팅
@@ -400,7 +401,9 @@ export const TablesPage = () => {
 
   // 현재 선택된 테이블 클릭 처리
   const handleCurrentTableClick = async () => {
-    await updateDeviceDetail(deviceData?.tableNumber ?? '');
+    // 서버와 테이블 넘버가 매칭되지 않을수도 있어서 방어처리 코드인데 불필요하여 일단 주석처리함
+    // 해당 함수 실행하면 SSE "DEVICE"타입이 발생하고 토큰 만료로 인하여 관리자모드 비밀번호 팝업이 깜빡일 수 있음
+    // await updateDeviceDetail(deviceData?.tableNumber ?? '');
     await refreshMenuInitialData();
     navigate(ROUTES.ROOT.generate());
   };
@@ -442,7 +445,12 @@ export const TablesPage = () => {
         handleOccupiedTableClick(table);
         return;
       }
-    } catch {
+    } catch (error) {
+      // 토큰 만료 에러 시 privateApi에서 처리되므로 무시
+      if (isMenuboardTokenExpiredError(error)) {
+        return;
+      }
+
       openConfirmDialog({
         title: t('오류'),
         content: t('테이블 점유 상태를 알 수 없습니다.'),

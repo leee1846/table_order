@@ -19,6 +19,7 @@ import { clearAuthData } from '@/utils/auth';
 import { disconnectSse, initializeSseConnection } from '@/utils/sseConnection';
 import {
   isMenuboardProtectedUrl,
+  isMenuboardTokenExpiredError,
   getMenuboardToken,
   removeMenuboardToken,
 } from '@/feature/MenuboardAuth';
@@ -165,11 +166,8 @@ privateApi.interceptors.response.use(
 
     // 관리자 모드 접근 엑세스 토큰 만료 및 토큰이 없는경우
     // 토큰이 변조된경우 401에러로 반환
-    if (
-      statusCode === 403 &&
-      error.response?.data?.status?.code === -106 &&
-      isMenuboardProtectedUrl(config?.url ?? '', config?.method ?? '')
-    ) {
+    const isPasswordUiVisible = useRequestAdminAccessModalStore.getState().show;
+    if (isMenuboardTokenExpiredError(error) && !isPasswordUiVisible) {
       removeMenuboardToken();
       useRequestAdminAccessModalStore.getState().setShow(true);
       if (!activeErrorTypes.has(MENUBOARD_TOKEN_EXPIRED_ERROR)) {

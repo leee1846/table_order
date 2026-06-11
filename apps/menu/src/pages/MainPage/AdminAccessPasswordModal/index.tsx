@@ -4,6 +4,7 @@ import { CloseIcon, ArrowBackIcon, PasswordIcon } from '@repo/ui/icons';
 import { useThemeMode } from '@repo/ui';
 import { Keypad } from '@repo/ui/components';
 import { usePostLoginMenuboardAdmin } from '@repo/api/queries';
+import { useQueryClient } from '@repo/api/tanstack-query';
 import { openConfirmDialog } from '@repo/feature/utils';
 import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { ROUTES } from '@/constants/routes';
@@ -22,6 +23,7 @@ export const AdminAccessPasswordModal = () => {
 
   const { theme } = useThemeMode();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { pathname } = useLocation();
   const isMainPage = pathname === ROUTES.ROOT.path;
   const { t } = useAdminTranslation();
@@ -67,8 +69,14 @@ export const AdminAccessPasswordModal = () => {
     },
   });
 
-  const handleLoginSuccess = (menuboardToken: string) => {
+  const handleLoginSuccess = async (menuboardToken: string) => {
     setMenuboardToken(menuboardToken);
+
+    if (isMainPage) {
+      navigate(ROUTES.TABLES.generate());
+    } else {
+      await queryClient.refetchQueries({ type: 'active' });
+    }
 
     // 페이지가 이동되는 동안 모달이 닫혀 깜빡임이 생김
     // modal상태는 500ms 뒤에 닫히도록 설정
@@ -79,8 +87,6 @@ export const AdminAccessPasswordModal = () => {
       },
       500
     );
-
-    navigate(ROUTES.TABLES.generate());
   };
 
   const handlePasswordComplete = async (completedPassword: string) => {
@@ -89,30 +95,31 @@ export const AdminAccessPasswordModal = () => {
       return;
     }
 
-    await loginMenuboardAdmin({
+    const response = await loginMenuboardAdmin({
       shopCode,
       pw: completedPassword,
-    }).then((response) => {
-      if (response.status.code === 0) {
-        const menuboardToken = response.data?.menuboardToken;
-        // 응답 코드는 성공이지만 토큰이 없는 경우 인증 실패 처리
-        if (!menuboardToken) {
-          openConfirmDialog({
-            title: t('인증 실패'),
-            content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
-          });
-          setPassword(null);
-          return;
-        }
-        handleLoginSuccess(menuboardToken);
-      } else {
+    });
+
+    if (response.status.code === 0) {
+      const menuboardToken = response.data?.menuboardToken;
+      // 응답 코드는 성공이지만 토큰이 없는 경우 인증 실패 처리
+      if (!menuboardToken) {
         openConfirmDialog({
           title: t('인증 실패'),
           content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
         });
         setPassword(null);
+        return;
       }
+      await handleLoginSuccess(menuboardToken);
+      return;
+    }
+
+    openConfirmDialog({
+      title: t('인증 실패'),
+      content: t('인증에 실패했습니다. 비밀번호를 다시 입력해주세요.'),
     });
+    setPassword(null);
   };
 
   const handleNumberPress = (number: number) => {

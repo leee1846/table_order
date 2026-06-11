@@ -96,7 +96,6 @@ export const getTableOccupiedCheck = async (
   const response = await axiosInstance<TGetTableOccupiedCheckResponse>({
     method: 'GET',
     url: ENDPOINTS.DEVICE.TABLE_OCCUPIED_CHECK(shopCode, tableNumber),
-    skipGlobalErrorHandling: true,
   });
 
   return response.data;
