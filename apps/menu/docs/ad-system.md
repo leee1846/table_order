@@ -46,7 +46,7 @@ interface IGetMenuAdFile {
   fileName: string;
   durationSec: number;
   fileSizeKb: number;
-  sortOrder: number;     // 슬라이드 순서 기준
+  sortOrder: number;     // (미사용) 노출 순서는 sortOrder가 아니라 API 응답 array 순서를 그대로 따른다
   contentDescription: string;
   contentStartDate: string;
   contentEndDate: string;
@@ -84,7 +84,8 @@ interface IGetMenuAdFile {
    └─ 이미지: filePath가 존재하는 것만
        ↓
 5. setAdFiles(validFiles)
-   └─ adType별로 groupAdFiles() → sortOrder 오름차순 정렬
+   └─ adType별로 groupAdFiles() → sortOrder 무시, API 응답 array 순서 그대로 유지
+   └─ ORDER_COMP FULL/SIDE가 모두 있으면 array에서 먼저 등장하는 유형만 남기고 다른 유형은 제외
    └─ AppStorage(AD_FILES 키)에 캐시 저장
        ↓
 6. setAdDataLoading(false) → StandbyAd / TopBannerAd 렌더 허용
@@ -197,7 +198,8 @@ soleVideoRepeats = isLooping && slides.length === 1 && slides[0].isVideo
 // apps/menu/src/pages/MainPage/OrderCompleteModal/orderCompleteAdVisibility.ts
 
 shouldShowOrderCompleteFullscreenAd(fullFiles, sideFiles): boolean
-  // FULL 파일 존재 AND (SIDE 없거나 첫 FULL sortOrder <= 첫 SIDE sortOrder)
+  // groupAdFiles에서 FULL/SIDE 중 array에 먼저 등장하는 유형만 채워지므로
+  // FULL 파일이 존재하면(= array에서 FULL이 먼저) 전면 광고만 표시
   → true이면 전면 광고만 표시
 
 shouldShowOrderCompleteHalfAd(fullFiles, sideFiles): boolean
@@ -213,7 +215,7 @@ shouldShowOrderCompleteCountdown(fullFiles, sideFiles): boolean
 카운트다운 타이머(20초, 1초 단위 감소)와 자동 닫기(`handleClose`) 로직도 `OrderCompleteModalContainer`에 있다.
 `OrderCompleteModal`은 `countdownActive`, `countdown` 값을 props로 받기만 하는 presentational 컴포넌트다.
 
-FULL과 SIDE가 동시에 존재할 때는 `sortOrder`가 낮은(앞 순서인) 타입만 표시한다.
+FULL과 SIDE가 동시에 존재할 때는 API 응답 array에서 먼저 등장하는 타입만 표시하고 다른 타입은 `groupAdFiles`에서 제외한다.
 FULL과 SIDE를 동시에 표시하는 경우는 없다.
 
 ---
@@ -241,7 +243,7 @@ SSE 'AD_MENU' 메시지 수신 (useSSEHandler.ts > handleAdMenuMessage)
 
 - **`isAdDataLoading` 플래그:** 영상 다운로드가 진행 중인 동안 `true`다. `StandbyAd`와 `TopBannerAd`는 이 값이 `true`인 동안 렌더링하지 않는다. `OrderCompleteModal`은 이 플래그를 직접 참조하지 않는다.
 
-- **FULL/SIDE 동시 표시 없음:** `orderCompleteFullFiles`와 `orderCompleteSideFiles`가 모두 있을 때 `sortOrder` 기준으로 하나만 선택한다. 두 슬롯이 동시에 표시되는 경우는 없다.
+- **FULL/SIDE 동시 표시 없음:** API 응답 array에 FULL/SIDE가 모두 있을 때 `groupAdFiles`가 먼저 등장하는 유형만 채우고 다른 유형 배열은 비운다(`[]`). 따라서 두 슬롯이 동시에 표시되는 경우는 없으며, 노출 순서는 sortOrder가 아니라 array 순서를 따른다.
 
 - **`localVideoUrls`의 key는 `filePath`:** `fileName`이 아니다. `AdStorage`에 저장된 파일명(`storageName`)은 `filePath`의 마지막 경로 세그먼트이며, `localVideoUrls`의 key는 전체 `filePath` URL이다.
 

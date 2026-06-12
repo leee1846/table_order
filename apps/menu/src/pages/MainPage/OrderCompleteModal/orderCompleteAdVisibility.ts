@@ -1,6 +1,10 @@
 import type { IGetMenuAdFile } from '@repo/api/types';
 
-/** sortOrder 기준 FULL이 SIDE보다 먼저(또는 동등)면 전면 광고만 표시 */
+/**
+ * 전면 광고 노출 여부.
+ * useAdStore.groupAdFiles에서 FULL/SIDE 중 array에 먼저 등장하는 유형만 채워주므로,
+ * FULL이 채워져 있으면(=array에서 FULL이 먼저) 전면 광고를 표시한다.
+ */
 export function shouldShowOrderCompleteFullscreenAd(
   orderCompleteFullFiles: readonly IGetMenuAdFile[],
   orderCompleteSideFiles: readonly IGetMenuAdFile[]

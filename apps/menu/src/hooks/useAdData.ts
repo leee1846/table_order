@@ -51,24 +51,18 @@ const removeStaleAdVideos = async (
 ): Promise<Set<string>> => {
   try {
     const { files: before } = await AdStorage.listAds();
-    console.warn('!!! 기존에 저장된 파일 목록 (stale 정리 전)', before);
 
     const stale = before.filter((f) => !wantedNames.has(f.fileName));
-    console.warn(
-      '!!! 삭제 대상 (API에 없는 저장된 파일)',
-      stale.map((f) => f.fileName)
-    );
+
     for (const f of stale) {
       try {
-        const del = await AdStorage.deleteAd({ fileName: f.fileName });
-        console.warn('!!! 삭제 결과', f.fileName, del);
+        await AdStorage.deleteAd({ fileName: f.fileName });
       } catch {
         // noop
       }
     }
 
     const { files: after } = await AdStorage.listAds();
-    console.warn('!!! stale 정리 직후 저장된 파일 목록', after);
     return fileNamesFromList(after);
   } catch {
     return new Set();
@@ -134,10 +128,8 @@ export const useAdData = () => {
       setAdDataLoading(hasAdFiles);
 
       const videoFiles = files.filter(isVideoAdFile);
-      console.warn('!!! api response 비디오 목록!!!!!!!', videoFiles);
 
       const wantedStorageNames = currentVideoStorageNames(files);
-      console.warn('!!! 저장할 파일명들', [...wantedStorageNames]);
 
       const namesOnDisk = await removeStaleAdVideos(wantedStorageNames);
 
@@ -153,7 +145,6 @@ export const useAdData = () => {
 
         try {
           if (namesOnDisk.has(storageName)) {
-            console.warn('!!! list에 이미 있음 — downloadAd 생략', storageName);
             if (cancelled) {
               return;
             }
@@ -164,11 +155,6 @@ export const useAdData = () => {
             );
             continue;
           }
-
-          console.warn('!!! list에 없음 — downloadAd 진행', {
-            storageName,
-            url: file.filePath,
-          });
 
           const dl = await AdStorage.downloadAd({
             url: file.filePath,
@@ -196,13 +182,6 @@ export const useAdData = () => {
         }
       }
 
-      try {
-        const { files: storedFiles } = await AdStorage.listAds();
-        console.warn('!!! AdStorage 최종 파일 목록', storedFiles);
-      } catch {
-        // noop
-      }
-
       if (cancelled) {
         return;
       }
@@ -213,7 +192,6 @@ export const useAdData = () => {
       const validFiles = files.filter((f) =>
         isVideoAdFile(f) ? !!localVideoUrls[f.filePath] : !!f.filePath?.trim()
       );
-      console.warn('!!! store에 반영할 유효 광고 목록', validFiles);
       await setAdFiles(validFiles);
 
       if (hasAdFiles) {

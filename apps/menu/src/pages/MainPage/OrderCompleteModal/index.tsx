@@ -45,7 +45,7 @@ export const OrderCompleteModal = ({
   const { orderCompleteFullFiles, orderCompleteSideFiles, localVideoUrls } =
     adData;
 
-  // sortOrder 기준으로 FULL/SIDE 중 먼저 오는 타입만 표시
+  // array 순서 기준으로 FULL/SIDE 중 먼저 오는 타입만 표시
   const showFullscreenAd = shouldShowOrderCompleteFullscreenAd(
     orderCompleteFullFiles,
     orderCompleteSideFiles

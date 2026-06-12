@@ -57,9 +57,6 @@ interface IAdStore {
 // 내부 유틸
 // ============================================================================
 
-const sortByOrder = (files: IGetMenuAdFile[]) =>
-  [...files].sort((a, b) => a.sortOrder - b.sortOrder);
-
 const groupAdFiles = (
   files: IGetMenuAdFile[]
 ): Pick<
@@ -68,20 +65,36 @@ const groupAdFiles = (
   | 'topBannerFiles'
   | 'orderCompleteFullFiles'
   | 'orderCompleteSideFiles'
-> => ({
-  standbyFiles: sortByOrder(
-    files.filter((f) => (STANDBY_TYPES as string[]).includes(f.adType))
-  ),
-  topBannerFiles: sortByOrder(
-    files.filter((f) => (TOP_BANNER_TYPES as string[]).includes(f.adType))
-  ),
-  orderCompleteFullFiles: sortByOrder(
-    files.filter((f) => (ORDER_COMP_FULL_TYPES as string[]).includes(f.adType))
-  ),
-  orderCompleteSideFiles: sortByOrder(
-    files.filter((f) => (ORDER_COMP_SIDE_TYPES as string[]).includes(f.adType))
-  ),
-});
+> => {
+  // sortOrder를 무시하고 API 응답(array) 순서를 그대로 노출 순서로 사용
+  const orderCompleteFullFiles = files.filter((f) =>
+    (ORDER_COMP_FULL_TYPES as string[]).includes(f.adType)
+  );
+  const orderCompleteSideFiles = files.filter((f) =>
+    (ORDER_COMP_SIDE_TYPES as string[]).includes(f.adType)
+  );
+
+  // FULL/SIDE가 모두 존재하면 array에서 먼저 등장하는 유형만 노출하고 다른 유형은 제외
+  const firstOrderCompFile = files.find(
+    (f) =>
+      (ORDER_COMP_FULL_TYPES as string[]).includes(f.adType) ||
+      (ORDER_COMP_SIDE_TYPES as string[]).includes(f.adType)
+  );
+  const isSideFirst =
+    !!firstOrderCompFile &&
+    (ORDER_COMP_SIDE_TYPES as string[]).includes(firstOrderCompFile.adType);
+
+  return {
+    standbyFiles: files.filter((f) =>
+      (STANDBY_TYPES as string[]).includes(f.adType)
+    ),
+    topBannerFiles: files.filter((f) =>
+      (TOP_BANNER_TYPES as string[]).includes(f.adType)
+    ),
+    orderCompleteFullFiles: isSideFirst ? [] : orderCompleteFullFiles,
+    orderCompleteSideFiles: isSideFirst ? orderCompleteSideFiles : [],
+  };
+};
 
 const INITIAL_DATA: IAdStoreData = {
   standbyFiles: [],
