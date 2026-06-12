@@ -9,12 +9,12 @@ import customerI18n from '@/config/i18n/customer.i18n';
 import { useModalStore } from '@/stores/useModalStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { Trans } from 'react-i18next';
+import { AdMediaSlider } from '@/feature/AdMediaSlider';
+import { OrderCompleteFullAd } from '@/pages/MainPage/OrderCompleteModal/OrderCompleteFullAd';
 import {
-  AdMediaSlider,
   shouldShowOrderCompleteFullscreenAd,
   shouldShowOrderCompleteHalfAd,
-} from '@/feature/ad';
-import { OrderCompleteFullAd } from '@/pages/MainPage/OrderCompleteModal/OrderCompleteFullAd';
+} from '@/pages/MainPage/OrderCompleteModal/orderCompleteAdVisibility';
 import { useAdStore } from '@/stores/useAdStore';
 
 interface Props {
@@ -45,9 +45,11 @@ export const OrderCompleteModal = ({
   const { orderCompleteFullFiles, orderCompleteSideFiles, localVideoUrls } =
     adData;
 
-  // groupAdFiles에서 API 배열 순서 기준으로 선택된 ORDER_COMP 슬롯만 표시
-  const showFullscreenAd =
-    shouldShowOrderCompleteFullscreenAd(orderCompleteFullFiles);
+  // sortOrder 기준으로 FULL/SIDE 중 먼저 오는 타입만 표시
+  const showFullscreenAd = shouldShowOrderCompleteFullscreenAd(
+    orderCompleteFullFiles,
+    orderCompleteSideFiles
+  );
   const showHalfAd = shouldShowOrderCompleteHalfAd(
     orderCompleteFullFiles,
     orderCompleteSideFiles

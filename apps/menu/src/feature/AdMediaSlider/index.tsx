@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from 'swiper';
 import type { IGetMenuAdFile } from '@repo/api/types';
-import * as S from '@/feature/ad/AdMediaSlider/adMediaSlider.style';
+import * as S from '@/feature/AdMediaSlider/adMediaSlider.style';
 import 'swiper/css';
 import { AdThumbnailImage } from '@repo/ui/icons';
 

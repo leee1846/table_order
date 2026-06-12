@@ -1,8 +1,23 @@
 import { create } from '@repo/feature/zustand';
-import type { IGetMenuAdFile } from '@repo/api/types';
+import type { IGetMenuAdFile, TGetMenuAdFilesAdType } from '@repo/api/types';
 import { STORAGE_KEYS } from '@/constants/keys';
-import { groupAdFiles } from '@/feature/ad/groupAdFiles';
 import { AdStorage, AppStorage } from '@repo/util/app';
+
+const STANDBY_TYPES: readonly TGetMenuAdFilesAdType[] = [
+  'STANDBY_VIDEO',
+  'STANDBY_IMAGE',
+];
+
+const TOP_BANNER_TYPES: readonly TGetMenuAdFilesAdType[] = ['TOP_BANNER_IMAGE'];
+
+const ORDER_COMP_FULL_TYPES: readonly TGetMenuAdFilesAdType[] = [
+  'ORDER_COMP_FULL_VIDEO',
+  'ORDER_COMP_FULL_IMAGE',
+];
+
+const ORDER_COMP_SIDE_TYPES: readonly TGetMenuAdFilesAdType[] = [
+  'ORDER_COMP_SIDE_IMAGE',
+];
 
 export interface IAdStoreData {
   /** 전면 대기 광고 (STANDBY_VIDEO, STANDBY_IMAGE) */
@@ -37,6 +52,36 @@ interface IAdStore {
   setAdDataLoading: (loading: boolean) => void;
   clearData: () => void;
 }
+
+// ============================================================================
+// 내부 유틸
+// ============================================================================
+
+const sortByOrder = (files: IGetMenuAdFile[]) =>
+  [...files].sort((a, b) => a.sortOrder - b.sortOrder);
+
+const groupAdFiles = (
+  files: IGetMenuAdFile[]
+): Pick<
+  IAdStoreData,
+  | 'standbyFiles'
+  | 'topBannerFiles'
+  | 'orderCompleteFullFiles'
+  | 'orderCompleteSideFiles'
+> => ({
+  standbyFiles: sortByOrder(
+    files.filter((f) => (STANDBY_TYPES as string[]).includes(f.adType))
+  ),
+  topBannerFiles: sortByOrder(
+    files.filter((f) => (TOP_BANNER_TYPES as string[]).includes(f.adType))
+  ),
+  orderCompleteFullFiles: sortByOrder(
+    files.filter((f) => (ORDER_COMP_FULL_TYPES as string[]).includes(f.adType))
+  ),
+  orderCompleteSideFiles: sortByOrder(
+    files.filter((f) => (ORDER_COMP_SIDE_TYPES as string[]).includes(f.adType))
+  ),
+});
 
 const INITIAL_DATA: IAdStoreData = {
   standbyFiles: [],

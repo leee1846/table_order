@@ -1,6 +1,6 @@
 import type { TFunction } from 'i18next';
 import type { IGetMenuAdFile } from '@repo/api/types';
-import { AdMediaSlider } from '@/feature/ad';
+import { AdMediaSlider } from '@/feature/AdMediaSlider';
 import * as S from '@/pages/MainPage/StandbyAd/standbyAd.style';
 import * as OverlayS from '@/pages/MainPage/OrderCompleteModal/OrderCompleteFullAd.style';
 

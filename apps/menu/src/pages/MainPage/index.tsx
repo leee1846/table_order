@@ -5,7 +5,7 @@ import { Header } from '@/pages/MainPage/Header';
 import { CartButton } from '@/pages/MainPage/CartButton';
 import { Contents } from '@/pages/MainPage/Contents';
 import { useShopData } from '@/hooks/useShopData';
-import { useAdData } from '@/feature/ad';
+import { useAdData } from '@/hooks/useAdData';
 import { useCategoriesData } from '@/hooks/useCategoriesData';
 import { useCategoryNavigation } from '@/hooks/useCategoryNavigation';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';

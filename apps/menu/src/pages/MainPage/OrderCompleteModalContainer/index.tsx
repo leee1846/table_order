@@ -3,7 +3,7 @@ import { useModalStore } from '@/stores/useModalStore';
 import { useShopDetailStore } from '@/stores/useShopDetailStore';
 import { useTableOrderHistoriesData } from '@/hooks/useTableOrderHistoriesData';
 import { OrderCompleteModal } from '@/pages/MainPage/OrderCompleteModal';
-import { shouldShowOrderCompleteCountdown } from '@/feature/ad';
+import { shouldShowOrderCompleteCountdown } from '@/pages/MainPage/OrderCompleteModal/orderCompleteAdVisibility';
 import { useAdStore } from '@/stores/useAdStore';
 import {
   applyMenuboardStateAfterTableOrderHistoriesCleared,
@@ -20,8 +20,12 @@ export const OrderCompleteModalContainer = () => {
   const [countdown, setCountdown] = useState(CLOSE_COUNTDOWN_SECONDS);
 
   const countdownActive = useMemo(
-    () => shouldShowOrderCompleteCountdown(adData.orderCompleteFullFiles),
-    [adData.orderCompleteFullFiles]
+    () =>
+      shouldShowOrderCompleteCountdown(
+        adData.orderCompleteFullFiles,
+        adData.orderCompleteSideFiles
+      ),
+    [adData.orderCompleteFullFiles, adData.orderCompleteSideFiles]
   );
 
   const handleClose = useCallback((): void => {

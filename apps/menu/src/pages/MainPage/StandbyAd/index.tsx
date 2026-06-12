@@ -1,4 +1,4 @@
-import { AdMediaSlider } from '@/feature/ad';
+import { AdMediaSlider } from '@/feature/AdMediaSlider';
 import * as S from '@/pages/MainPage/StandbyAd/standbyAd.style';
 import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 import { useStandbyAdStore } from '@/stores/useStandbyAdStore';
