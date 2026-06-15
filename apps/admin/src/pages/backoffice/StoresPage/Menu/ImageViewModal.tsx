@@ -4,6 +4,7 @@ import { CloseOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import {
   useGetMenuBulkImageList,
   usePostReplaceMenuMainImage,
+  usePostMenuBulkMenuSse,
 } from '@repo/api/queries';
 import { useQueryClient } from '@repo/api/tanstack-query';
 import * as S from './ImageViewModal.style';
@@ -17,13 +18,13 @@ interface Props {
 
 export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
   const { message } = App.useApp();
-  //const [isDownloading, setIsDownloading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [draggingMenuSeq, setDraggingMenuSeq] = useState<number | null>(null);
 
   const queryClient = useQueryClient();
   const { mutateAsync: replaceImage } = usePostReplaceMenuMainImage();
-
+  const { mutateAsync: requestMenuSse, isPending: isSyncing } =
+    usePostMenuBulkMenuSse();
   const { data, isLoading } = useGetMenuBulkImageList(shopCode, {
     enabled: isOpen,
   });
@@ -32,58 +33,16 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
   const menuList = data?.data || [];
   const downloadableImages = menuList.filter((item) => item.imagePath);
 
-  // const handleDownloadAll = async () => {
-  //   if (downloadableImages.length === 0) return;
-  //   setIsDownloading(true);
-
-  //   try {
-  //     const zip = new JSZip();
-
-  //     // 각 이미지 URL을 fetch하여 zip 객체에 추가
-  //     await Promise.all(
-  //       downloadableImages.map(async (item, index) => {
-  //         if (!item.imagePath) return;
-  //         try {
-  //           const response = await fetch(item.imagePath);
-  //           const blob = await response.blob();
-  //           const ext =
-  //             item.imageExtension?.replace(/^\./, '') ||
-  //             blob.type.split('/')[1] ||
-  //             'jpg';
-
-  //           // 메뉴명에서 특수문자를 제거하여 안전한 파일명 생성
-  //           const safeMenuName =
-  //             item.menuName
-  //               .replace(/[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\s]/g, '')
-  //               .trim() || 'image';
-  //           zip.file(`${safeMenuName}_${index + 1}.${ext}`, blob);
-  //         } catch (err) {
-  //           console.error(
-  //             `Failed to fetch image ${index + 1}:`,
-  //             item.imagePath,
-  //             err
-  //           );
-  //         }
-  //       })
-  //     );
-
-  //     const zipBlob = await zip.generateAsync({ type: 'blob' });
-  //     const url = URL.createObjectURL(zipBlob);
-  //     const a = document.createElement('a');
-  //     a.href = url;
-  //     a.download = `${shopCode}_images.zip`;
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     document.body.removeChild(a);
-  //     URL.revokeObjectURL(url);
-  //     message.success('전체 이미지 다운로드가 완료되었습니다.');
-  //   } catch (error) {
-  //     console.error('Failed to create zip:', error);
-  //     message.error('이미지 압축 다운로드에 실패했습니다.');
-  //   } finally {
-  //     setIsDownloading(false);
-  //   }
-  // };
+  const handleSync = async () => {
+    try {
+      await requestMenuSse(shopCode);
+      message.success('동기화를 요청하였습니다.');
+    } catch (error) {
+      console.error('Sync failed:', error);
+      //message.error('동기화 처리에 실패했습니다.');
+    }
+    onClose();
+  };
 
   const handleDragOver = (
     e: React.DragEvent<HTMLDivElement>,
@@ -152,16 +111,14 @@ export const ImageViewModal = ({ isOpen, onClose, shopCode }: Props) => {
       }}
       footer={
         <S.ModalFooter>
-          {/*
           <Button
             size="large"
-            onClick={handleDownloadAll}
-            disabled={downloadableImages.length === 0 || isLoading || isDownloading}
-            loading={isDownloading}
+            onClick={handleSync}
+            disabled={isLoading || isUploading || isSyncing}
+            loading={isLoading || isSyncing}
           >
-            전체 이미지 다운로드
+            동기화
           </Button>
-          */}
           <Button size="large" type="primary" onClick={onClose}>
             닫기
           </Button>
