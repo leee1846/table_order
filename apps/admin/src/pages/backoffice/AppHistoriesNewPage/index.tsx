@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { ROUTES } from '@/constants/routes';
 import { AppHistories } from '@/feature/backoffice/AppHistories';
@@ -40,6 +40,10 @@ const convertToCreateParams = (
 
 export const AppHistoriesNewPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const typeParam = searchParams.get('type') || 'MENU';
+  const isService = typeParam === 'SERVICE';
+
   const { mutateAsync: createAppVersion } = usePostAppVersion();
   const { mutateAsync: postAppVersionFile } = usePostAppVersionFile();
 
@@ -47,11 +51,18 @@ export const AppHistoriesNewPage = () => {
     data: AppHistoriesFormData,
     appFile?: File | null
   ) => {
-    if (!validateAppHistoriesData(data, { appFile, requireAppFile: true })) {
+    // 서비스 타입일 경우 구분 고정 및 버전 디폴트값 설정
+    if (isService) {
+      data.type = 'SERVICE';
+    }
+
+    if (
+      !validateAppHistoriesData(data, { appFile, requireAppFile: !isService })
+    ) {
       return;
     }
 
-    if (!appFile) {
+    if (!isService && !appFile) {
       return;
     }
 
@@ -59,7 +70,16 @@ export const AppHistoriesNewPage = () => {
     const result = await createAppVersion(params);
 
     const appVersionSeq = result.data?.appVersionSeq;
-    await postAppVersionFile({ appVersionSeq, file: appFile });
+
+    if (isService) {
+      // 서비스 타입일 경우 더미 파일 생성하여 전송
+      const dummyFile = new File(['dummy'], 'dummy.zip', {
+        type: 'text/plain',
+      });
+      await postAppVersionFile({ appVersionSeq, file: dummyFile });
+    } else if (appFile) {
+      await postAppVersionFile({ appVersionSeq, file: appFile });
+    }
 
     message.success('배포 생성이 완료되었습니다.');
     navigate(ROUTES.BACKOFFICE.APP_HISTORIES.generate(data.type));
@@ -67,7 +87,7 @@ export const AppHistoriesNewPage = () => {
 
   return (
     <Container>
-      <AppHistories mode="create" onSave={handleSave} />
+      <AppHistories mode="create" onSave={handleSave} isService={isService} />
     </Container>
   );
 };

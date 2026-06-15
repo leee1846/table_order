@@ -56,7 +56,7 @@ export const Stores = ({
     useState<ICreateAdminMemberRequest>(DEFAULT_MEMBER_DATA);
   const [activeTab, setActiveTab] = useState('storeInfo');
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
-  const isDevelopEnv = false; //import.meta.env.MODE === 'development';
+  const isDevelopEnv = import.meta.env.MODE === 'development';
 
   useEffect(() => {
     let finalShopData = { ...DEFAULT_SHOP_DATA };

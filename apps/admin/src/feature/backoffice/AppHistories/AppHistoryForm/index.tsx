@@ -71,6 +71,7 @@ interface Props {
   appFile?: File | null;
   onSelectAppFileClick: () => void;
   onRemoveAppFile: () => void;
+  isService?: boolean;
 }
 
 export const AppHistoryForm = ({
@@ -80,6 +81,7 @@ export const AppHistoryForm = ({
   appFile,
   onSelectAppFileClick,
   onRemoveAppFile,
+  isService,
 }: Props) => {
   const isReadOnly = mode === 'detail';
 
@@ -88,91 +90,127 @@ export const AppHistoryForm = ({
       <SectionTitle level={5}>배포 정보</SectionTitle>
       <FormContent>
         {/* 생성 모드일 때만 파일 업로드 노출 */}
-        <FieldGroup>
-          <Label>
-            앱 파일 (APK/ZIP) <span>*</span>
-          </Label>
-          {mode === 'detail' && formData.downloadPath ? (
-            <FileUploadWrapper>
-              <Button
-                icon={<DownloadOutlined />}
-                href={formData.downloadPath}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
-              >
-                {formData.downloadPath.replace(/^.*\//, '')}
-              </Button>
-            </FileUploadWrapper>
-          ) : (
-            <FileUploadWrapper>
-              <Button
-                icon={<UploadOutlined />}
-                onClick={onSelectAppFileClick}
-                disabled={isReadOnly}
-              >
-                파일 선택
-              </Button>
-              {appFile && (
-                <Space>
-                  <Text>{appFile.name}</Text>
-                  {!isReadOnly && (
-                    <Button
-                      type="text"
-                      //danger
-                      icon={<DeleteOutlined />}
-                      onClick={onRemoveAppFile}
-                    />
+        {!isService && (
+          <>
+            <FieldGroup>
+              <Label>
+                앱 파일 (APK/ZIP) <span>*</span>
+              </Label>
+              {mode === 'detail' && formData.downloadPath ? (
+                <FileUploadWrapper>
+                  <Button
+                    icon={<DownloadOutlined />}
+                    href={formData.downloadPath}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                  >
+                    {formData.downloadPath.replace(/^.*\//, '')}
+                  </Button>
+                </FileUploadWrapper>
+              ) : (
+                <FileUploadWrapper>
+                  <Button
+                    icon={<UploadOutlined />}
+                    onClick={onSelectAppFileClick}
+                    disabled={isReadOnly}
+                  >
+                    파일 선택
+                  </Button>
+                  {appFile && (
+                    <Space>
+                      <Text>{appFile.name}</Text>
+                      {!isReadOnly && (
+                        <Button
+                          type="text"
+                          //danger
+                          icon={<DeleteOutlined />}
+                          onClick={onRemoveAppFile}
+                        />
+                      )}
+                    </Space>
                   )}
-                </Space>
+                </FileUploadWrapper>
               )}
-            </FileUploadWrapper>
-          )}
-        </FieldGroup>
-        <HorizontalLayout>
-          <FieldGroup>
-            <Label>
-              구분 <span>*</span>
-            </Label>
-            <Input
-              size="large"
-              placeholder="파일 업로드 시 자동 입력됩니다."
-              value={formData.type}
-              onChange={(e) =>
-                updateFormData({ type: e.target.value as TAppType })
-              }
-              disabled={true}
-            />
-          </FieldGroup>
-          <FieldGroup>
-            <Label>
-              버전 <span>*</span>
-            </Label>
-            <Input
-              size="large"
-              placeholder="파일 업로드 시 자동 입력됩니다."
-              value={formData.version}
-              onChange={(e) => updateFormData({ version: e.target.value })}
-              disabled={true}
-            />
-          </FieldGroup>
-        </HorizontalLayout>
-
-        <FieldGroup>
-          <Label>
-            배포일시 <span>*</span>
-          </Label>
-          <Input
-            size="large"
-            type="datetime-local"
-            placeholder="배포일시를 입력하세요"
-            value={formData.deployDateTime}
-            onChange={(e) => updateFormData({ deployDateTime: e.target.value })}
-            disabled={isReadOnly}
-            style={{ maxWidth: 400 }}
-          />
-        </FieldGroup>
-
+            </FieldGroup>
+            <HorizontalLayout>
+              <FieldGroup>
+                <Label>
+                  구분 <span>*</span>
+                </Label>
+                <Input
+                  size="large"
+                  placeholder="파일 업로드 시 자동 입력됩니다."
+                  value={formData.type}
+                  onChange={(e) =>
+                    updateFormData({ type: e.target.value as TAppType })
+                  }
+                  disabled={true}
+                />
+              </FieldGroup>
+              <FieldGroup>
+                <Label>
+                  버전 <span>*</span>
+                </Label>
+                <Input
+                  size="large"
+                  placeholder="파일 업로드 시 자동 입력됩니다."
+                  value={formData.version}
+                  onChange={(e) => updateFormData({ version: e.target.value })}
+                  disabled={true}
+                />
+              </FieldGroup>
+            </HorizontalLayout>
+            <FieldGroup>
+              <Label>
+                배포일시 <span>*</span>
+              </Label>
+              <Input
+                size="large"
+                type="datetime-local"
+                placeholder="배포일시를 입력하세요"
+                value={formData.deployDateTime}
+                onChange={(e) =>
+                  updateFormData({ deployDateTime: e.target.value })
+                }
+                disabled={isReadOnly}
+                style={{ maxWidth: 400 }}
+              />
+            </FieldGroup>
+          </>
+        )}
+        {isService && (
+          <HorizontalLayout>
+            <FieldGroup>
+              <Label>
+                버전 <span>*</span>
+              </Label>
+              <Input
+                size="large"
+                placeholder="버전을 입력하세요"
+                value={formData.version}
+                onChange={(e) => updateFormData({ version: e.target.value })}
+                disabled={isReadOnly}
+              />
+            </FieldGroup>
+            <FieldGroup>
+              <Label>
+                배포일시 <span>*</span>
+              </Label>
+              <Input
+                size="large"
+                type="datetime-local"
+                placeholder="배포일시를 입력하세요"
+                value={formData.deployDateTime}
+                onChange={(e) =>
+                  updateFormData({ deployDateTime: e.target.value })
+                }
+                disabled={isReadOnly}
+                style={{ maxWidth: 400 }}
+              />
+            </FieldGroup>
+          </HorizontalLayout>
+        )}
         <FieldGroup>
           <Label>
             제목 <span>*</span>
@@ -186,7 +224,6 @@ export const AppHistoryForm = ({
             style={{ maxWidth: 800 }}
           />
         </FieldGroup>
-
         <FieldGroup>
           <Label>
             내용 <span>*</span>

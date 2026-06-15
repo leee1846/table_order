@@ -1,6 +1,6 @@
 import type { IApiResponse, IPaginationParams } from './common';
 
-export type TAppType = 'MENU' | 'POS_APP' | 'AGENT' | '';
+export type TAppType = 'MENU' | 'POS_APP' | 'AGENT' | 'SERVICE' | '';
 
 export interface IPostAppVersionResponse {
   appVersionSeq: number;

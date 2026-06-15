@@ -26,6 +26,7 @@ export const APP_TYPE = {
   MENU: 'MENU',
   POS_APP: 'POS_APP',
   AGENT: 'AGENT',
+  SERVICE: 'SERVICE',
 } as const;
 
 export const StoresSidebarLayout = () => {
@@ -114,6 +115,11 @@ export const StoresSidebarLayout = () => {
           id: 'agent',
           label: '에이전트',
           path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.AGENT),
+        },
+        {
+          id: 'service',
+          label: '서비스',
+          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.SERVICE),
         },
       ],
     });

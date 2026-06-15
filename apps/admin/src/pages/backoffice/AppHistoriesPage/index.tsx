@@ -88,10 +88,12 @@ export const AppHistoriesPage = () => {
   const pageTitle = useMemo(() => {
     const typeLabel =
       type === APP_TYPE.MENU
-        ? '메뉴판'
+        ? '메뉴판 앱'
         : type === APP_TYPE.POS_APP
-          ? '관리자'
-          : '에이전트';
+          ? '관리자 앱'
+          : type === 'SERVICE'
+            ? '서비스'
+            : '에이전트';
     return `배포 관리 (${typeLabel})`;
   }, [type]);
 
@@ -116,7 +118,9 @@ export const AppHistoriesPage = () => {
   }, [type]);
 
   const handleCreate = () => {
-    navigate(ROUTES.BACKOFFICE.APP_HISTORIES_NEW.generate());
+    navigate(
+      `${ROUTES.BACKOFFICE.APP_HISTORIES_NEW.generate()}?type=${type || 'MENU'}`
+    );
   };
 
   const formatDeployDate = (dateStr: string | null | undefined): string => {
@@ -144,13 +148,6 @@ export const AppHistoriesPage = () => {
       align: 'center',
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
-    // {
-    //   title: '구분',
-    //   dataIndex: 'type',
-    //   key: 'type',
-    //   width: 100,
-    //   align: 'center',
-    // },
     {
       title: '버전',
       dataIndex: 'version',

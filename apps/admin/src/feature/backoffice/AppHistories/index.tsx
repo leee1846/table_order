@@ -27,6 +27,7 @@ interface Props {
   mode: Mode;
   initialData?: AppHistoriesFormData;
   onSave?: (data: AppHistoriesFormData, appFile?: File | null) => Promise<void>;
+  isService?: boolean;
 }
 
 const FormWrapper = styled.div`
@@ -53,7 +54,12 @@ interface ManifestInfo {
   buildDate: string;
 }
 
-export const AppHistories = ({ mode, initialData, onSave }: Props) => {
+export const AppHistories = ({
+  mode,
+  initialData,
+  onSave,
+  isService,
+}: Props) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<AppHistoriesFormData>(
     DEFAULT_APP_HISTORIES_DATA
@@ -68,16 +74,20 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
     if (formData.type) {
       typeLabel =
         formData?.type === APP_TYPE.MENU
-          ? '메뉴판'
+          ? '메뉴판 앱'
           : formData?.type === APP_TYPE.POS_APP
-            ? '관리자'
-            : '에이전트';
+            ? '관리자 앱'
+            : formData?.type === 'SERVICE'
+              ? '서비스'
+              : '에이전트';
     } else {
-      typeLabel = '';
+      if (isService) {
+        typeLabel = '서비스';
+      }
     }
 
     return typeLabel ? `배포 관리 (${typeLabel})` : '배포 관리';
-  }, [formData]);
+  }, [formData, isService]);
 
   useEffect(() => {
     if (initialData) {
@@ -241,6 +251,7 @@ export const AppHistories = ({ mode, initialData, onSave }: Props) => {
           appFile={appFile}
           onSelectAppFileClick={handleSelectAppFileClick}
           onRemoveAppFile={handleRemoveAppFile}
+          isService={isService || formData?.type === 'SERVICE'}
         />
 
         <ActionButtons>
