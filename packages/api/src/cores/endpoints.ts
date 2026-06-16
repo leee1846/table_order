@@ -120,6 +120,7 @@ export const ENDPOINTS = {
       `/device/control/${shopCode}/${deviceControlType}`,
     TABLE_OCCUPIED_CHECK: (shopCode: string, tableNumber: string) =>
       `/device/${shopCode}/table/${tableNumber}`,
+    LOGOUT: (shopCode: string) => `/device/${shopCode}/logout`,
   },
 
   SSE: {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { getLatestAppVersion } from '@repo/api/fetchers';
-import { useGetLatestAppVersion } from '@repo/api/queries';
+import { useGetLatestAppVersion, usePostDeviceLogout } from '@repo/api/queries';
 import type { ITokenPayload, TAppType } from '@repo/api/types';
 import { getAccessToken } from '@repo/api/auth';
 import { BasicButton, LoadingSpinner } from '@repo/ui/components';
@@ -20,6 +20,8 @@ import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { clearAuthData } from '@/utils/auth';
 import * as S from '@/pages/settings/MiscellaneousPage/Account/account.style';
 import { useDeviceStore } from '@/stores/useDeviceStore';
+import { axios } from '@repo/api/axios';
+import { isMenuboardTokenExpiredError } from '@/feature/MenuboardAuth/menuboardAuthError';
 
 const APP_TYPE: TAppType = 'MENU';
 
@@ -111,15 +113,44 @@ export const Account = () => {
     });
   };
 
+  // 예측 불가능한 로그아웃 api 에러 시, api요청 실패 상태에서 로그아웃 처리
+  // 400, 404, 409, 500, 502 에러 코드는 예측 불가능한 에러 코드로 간주
+  const { mutateAsync: postDeviceLogout } = usePostDeviceLogout({
+    ignoreGlobalErrors: [400, 404, 409, 500, 502],
+  });
   const handleLogout = () => {
+    const proceedLogout = () => {
+      clearAuthData();
+      window.location.href = ROUTES.LOGIN.generate();
+    };
+
     openDualActionDialog({
       title: t('로그아웃'),
       content: t('로그아웃하시겠습니까?'),
       primaryText: t('예'),
       secondaryText: t('아니오'),
       onConfirm: () => {
-        clearAuthData();
-        window.location.href = ROUTES.LOGIN.generate();
+        if (!shopCode) {
+          proceedLogout();
+          return;
+        }
+
+        postDeviceLogout(shopCode)
+          .then(proceedLogout)
+          .catch((error) => {
+            // 로그인 인증 토큰 만료(401) 시, interceptor에서 처리되므로 여기서는 처리하지 않음
+            // 메뉴보드 토큰 만료(403, -106) 시, interceptor에서 처리되므로 여기서는 처리하지 않음
+            if (
+              axios.isCancel(error) ||
+              error?.response?.status === 401 ||
+              isMenuboardTokenExpiredError(error)
+            ) {
+              return;
+            }
+
+            // 예측 불가능한 로그아웃 api 에러 시, api요청 실패 상태에서 로그아웃 처리
+            proceedLogout();
+          });
       },
     });
   };

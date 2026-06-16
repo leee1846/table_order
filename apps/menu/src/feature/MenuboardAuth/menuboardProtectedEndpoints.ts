@@ -21,6 +21,8 @@ const ADMIN_API_LIST: { method: string; pattern: RegExp }[] = [
   { method: 'POST', pattern: toPattern(`/order/pickup/${SEG}/${SEG}`) }, // 주문 알림 전송
   { method: 'GET', pattern: toPattern(`/sales/card-approval/${SEG}`) }, // 카드 승인 내역 조회
   { method: 'POST', pattern: toPattern(`/log/${SEG}/${SEG}`) }, // 디바이스 로그 전송
+  { method: 'POST', pattern: toPattern(`/device/${SEG}/logout`) }, // 디바이스 로그아웃
+  { method: 'POST', pattern: toPattern(`/device/${SEG}`) }, // 디바이스 상세 정보 생성
 ];
 
 export const isMenuboardProtectedUrl = (

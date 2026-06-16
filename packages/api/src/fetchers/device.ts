@@ -100,3 +100,17 @@ export const getTableOccupiedCheck = async (
 
   return response.data;
 };
+
+export const postDeviceLogout = async (
+  shopCode: string,
+  ignoreGlobalErrors?: number[]
+) => {
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TVoidApiResponse>({
+    method: 'POST',
+    url: ENDPOINTS.DEVICE.LOGOUT(shopCode),
+    ignoreGlobalErrors,
+  });
+
+  return response.data;
+};
