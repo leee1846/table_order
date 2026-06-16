@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import * as S from '@/pages/MainPage/mainPage.style';
 import { StandbyAd } from '@/pages/MainPage/StandbyAd';
 import { Sidebar } from '@/pages/MainPage/Sidebar';
@@ -38,8 +39,12 @@ import { useTableGroupData } from '@/hooks/useTableGroupData';
 import { CashPaymentInducement } from '@/feature/CashPaymentInducement';
 import { useModalStore } from '@/stores/useModalStore';
 import { OrderCompleteModalContainer } from '@/pages/MainPage/OrderCompleteModalContainer';
+import { PosSyncOverlayModal } from '@/feature/PosSyncOverlayModal';
+import { useCustomerTranslation } from '@/config/i18n/customer.i18n';
 
 export const MainPage = () => {
+  const { t } = useCustomerTranslation();
+
   useShopData();
   const { isMenuAdFilesLoading } = useAdData();
   useTableGroupData();
@@ -167,6 +172,46 @@ export const MainPage = () => {
     adminAccessControl.setShowAdminAccessPasswordModal(true);
   };
 
+  // root 페이지 첫 진입 시 화면을 그리는데 필요한 데이터가 모두 로드됐는지 판단
+  // 초기 화면 노출 여부 / 언어 선택 노출 여부 / 고객 수 선택 노출 여부
+  const isFirstPaintReady =
+    (shopDetailData !== null || !isShopDetailLoading) &&
+    (shopThemeData?.themePageData !== null || !isThemePageLoading) &&
+    (tableOrderHistoriesData !== null || !isTableOrderHistoriesLoading);
+
+  // isFirstPaintReady를 구성하면서 깜빡임이 발생 가능하여 최소 노출을 하기 위한 상태
+  const [isMinVisibleElapsed, setIsMinVisibleElapsed] = useState(false);
+  // loading UI가 제거되지 않는 경우를 고려하여 강제 해제하기 위한 상태
+  const [isForceHidden, setIsForceHidden] = useState(false);
+
+  useEffect(() => {
+    const FIRST_PAINT_MIN_VISIBLE_MS = 1000;
+    const FIRST_PAINT_MAX_VISIBLE_MS = 3000;
+
+    // 최소 노출 시간 경과 여부를 설정
+    const minTimer = setTimeout(
+      () => setIsMinVisibleElapsed(true),
+      FIRST_PAINT_MIN_VISIBLE_MS
+    );
+    // 최대 노출 시간 경과 여부를 설정
+    const maxTimer = setTimeout(
+      () => setIsForceHidden(true),
+      FIRST_PAINT_MAX_VISIBLE_MS
+    );
+    return () => {
+      clearTimeout(minTimer);
+      clearTimeout(maxTimer);
+    };
+  }, []);
+
+  // 강제 해제 전이면서 (최소 노출 시간 미경과 또는 아직 미정착)일 때 로딩 화면으로 대체
+  const showFirstPaintLoading =
+    !isForceHidden && (!isMinVisibleElapsed || !isFirstPaintReady);
+
+  if (showFirstPaintLoading) {
+    return <PosSyncOverlayModal message={t('화면을 준비하는 중')} />;
+  }
+
   /** 휴무 페이지 */
   if (pageStates.shopClosure.show) {
     return (
@@ -216,21 +261,12 @@ export const MainPage = () => {
     return <CashPaymentInducement />;
   }
 
-  /**
-   * 화면 표시 여부를 결정하는 핵심 데이터가 로드될 때까지 렌더링 차단
-   */
-  const isDataReady =
-    (shopDetailData !== null || !isShopDetailLoading) &&
-    (shopThemeData?.themePageData !== null || !isThemePageLoading) &&
-    (tableOrderHistoriesData !== null || !isTableOrderHistoriesLoading);
-
   /** 초기 화면 / 언어 선택 / 객수 선택: 전체화면 페이지 위에 주문 완료 모달 노출 */
   if (
-    isDataReady &&
-    (pageStates.standbyAd.show ||
-      pageStates.initialPage.show ||
-      pageStates.languageSelector.show ||
-      pageStates.customerCount.show)
+    pageStates.standbyAd.show ||
+    pageStates.initialPage.show ||
+    pageStates.languageSelector.show ||
+    pageStates.customerCount.show
   ) {
     return (
       <>
