@@ -39,9 +39,15 @@ interface Props {
   formData: NoticesFormData;
   store?: boolean;
   updateFormData: (updates: Partial<NoticesFormData>) => void;
+  isNotice?: boolean;
 }
 
-export const NoticesForm = ({ mode, formData, updateFormData }: Props) => {
+export const NoticesForm = ({
+  mode,
+  formData,
+  updateFormData,
+  isNotice,
+}: Props) => {
   const isReadOnly = mode === 'detail';
   const [form] = Form.useForm();
 
@@ -59,18 +65,20 @@ export const NoticesForm = ({ mode, formData, updateFormData }: Props) => {
         disabled={isReadOnly}
         requiredMark={true}
       >
-        <Form.Item
-          label={<Text strong>유형</Text>}
-          name="boardType"
-          rules={[{ required: true, message: '유형을 선택해주세요.' }]}
-        >
-          <Select
-            size="large"
-            options={BOARD_TYPE_OPTIONS}
-            placeholder="유형 선택"
-            style={{ maxWidth: 400 }}
-          />
-        </Form.Item>
+        {!isNotice && (
+          <Form.Item
+            label={<Text strong>유형</Text>}
+            name="boardType"
+            rules={[{ required: true, message: '유형을 선택해주세요.' }]}
+          >
+            <Select
+              size="large"
+              options={BOARD_TYPE_OPTIONS}
+              placeholder="유형 선택"
+              style={{ maxWidth: 400 }}
+            />
+          </Form.Item>
+        )}
 
         <Form.Item
           label={<Text strong>제목</Text>}

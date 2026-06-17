@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, Flex } from 'antd';
 import styled from '@emotion/styled';
 import { NoticesForm } from '@/feature/backoffice/Notices/NoticesForm';
@@ -50,12 +50,18 @@ export const Notices = ({
   const [formData, setFormData] =
     useState<NoticesFormData>(DEFAULT_NOTICES_DATA);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  const [searchParams] = useSearchParams();
+  const typeParam = searchParams.get('type');
+  const isNotice = typeParam === 'ADMIN';
+  const pageTitle = isNotice ? '공지 사항' : '매장 공지 사항';
 
   useEffect(() => {
     if (initialData) {
       setFormData({ ...initialData });
+    } else if (isNotice) {
+      setFormData((prev) => ({ ...prev, boardType: 'ADMIN' }));
     }
-  }, [initialData]);
+  }, [initialData, isNotice]);
 
   const updateFormData = (updates: Partial<NoticesFormData>) => {
     setFormData((prev: NoticesFormData) => ({ ...prev, ...updates }));
@@ -88,7 +94,7 @@ export const Notices = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Flex justify="space-between" align="center">
-        <PageTitle title="공지 사항" subtitle={getSubtitle()} />
+        <PageTitle title={pageTitle} subtitle={getSubtitle()} />
         <ButtonGroup>
           {mode === 'edit' && onDelete && (
             <Button onClick={onDelete} danger>
@@ -107,6 +113,7 @@ export const Notices = ({
           mode={mode}
           formData={formData}
           updateFormData={updateFormData}
+          isNotice={isNotice}
         />
 
         <ActionButtons>

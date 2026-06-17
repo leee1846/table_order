@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { ROUTES } from '@/constants/routes';
 import { Notices } from '@/feature/backoffice/Notices';
@@ -28,6 +28,7 @@ const convertToCreateParams = (
 
 export const NoticesNewPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { mutateAsync: createNotice } = usePostNotice();
 
   const handleSave = async (data: NoticesFormData) => {
@@ -39,7 +40,11 @@ export const NoticesNewPage = () => {
     await createNotice(params);
 
     message.success('공지 사항 생성이 완료되었습니다.');
-    navigate(ROUTES.BACKOFFICE.NOTICES.generate());
+
+    const typeParam = searchParams.get('type');
+    navigate(
+      `${ROUTES.BACKOFFICE.NOTICES.generate()}${typeParam ? `?type=${typeParam}` : ''}`
+    );
   };
 
   return (

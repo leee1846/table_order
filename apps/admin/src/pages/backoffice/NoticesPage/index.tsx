@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Table, Button, Input, Space, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
@@ -16,6 +16,8 @@ import { useTablePageState } from '@/feature/backoffice/hooks';
 import { formatDateTime } from '@repo/util/date';
 import type { INotice } from '@repo/api/types';
 import { getBoardTypeLabel } from '@/feature/backoffice/Notices/constants';
+import { padZero } from '../../../../../../packages/util/src/string/index';
+import { theme } from '@repo/ui';
 
 // --- Emotion Styles ---
 const Container = styled.div`
@@ -74,6 +76,10 @@ const DEFAULT_PAGE_SIZE = 10;
 
 export const NoticesPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const typeParam = searchParams.get('type');
+  const pageTitle = typeParam === 'ADMIN' ? '공지 사항' : '매장 공지 사항';
+  const qparam = typeParam ? `?type=${typeParam}` : '';
   // const queryClient = useQueryClient();
   // const deleteNoticeMutation = useDeleteNotice();
   // const { showConfirm } = useConfirmDialog();
@@ -88,17 +94,28 @@ export const NoticesPage = () => {
     handlePageChange,
   } = useTablePageState({ pageSize });
 
-  const { data: noticeList, isFetching } = useGetNoticeList(
+  const {
+    data: noticeList,
+    isFetching,
+    refetch,
+  } = useGetNoticeList(
     {
       page: currentPage, // 0-based index
       pageSize,
       searchWord: searchKeyword,
+      boardType: typeParam === 'ADMIN' ? 'ADMIN' : undefined,
     },
     { placeholderData: keepPreviousData }
   );
 
+  useEffect(() => {
+    handlePageChange(1);
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeParam]);
+
   const handleCreate = () => {
-    navigate(ROUTES.BACKOFFICE.NOTICES_NEW.generate());
+    navigate(`${ROUTES.BACKOFFICE.NOTICES_NEW.generate()}${qparam}`);
   };
 
   // const handleDelete = (notice: INotice) => {
@@ -128,14 +145,28 @@ export const NoticesPage = () => {
       align: 'center',
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
-    {
-      title: '유형',
-      dataIndex: 'boardType',
-      key: 'boardType',
-      width: 80,
-      align: 'center',
-      render: (boardType) => getBoardTypeLabel(boardType),
-    },
+    ...(pageTitle !== '공지 사항'
+      ? [
+          {
+            title: '유형',
+            dataIndex: 'boardType' as const,
+            key: 'boardType',
+            width: 80,
+            align: 'center' as const,
+            render: (boardType: string) => {
+              const label = getBoardTypeLabel(boardType);
+              if (boardType === 'EMERGENCY') {
+                return (
+                  <span style={{ color: theme.colors.semantic[500] }}>
+                    {label}
+                  </span>
+                );
+              }
+              return label;
+            },
+          },
+        ]
+      : []),
     {
       title: '제목',
       dataIndex: 'noticeTitle',
@@ -164,22 +195,22 @@ export const NoticesPage = () => {
             <Button
               type="text"
               icon={<EditOutlined />}
-              onClick={() =>
+              onClick={() => {
                 navigate(
-                  ROUTES.BACKOFFICE.NOTICES_EDIT.generate(record.noticeSeq)
-                )
-              }
+                  `${ROUTES.BACKOFFICE.NOTICES_EDIT.generate(record.noticeSeq)}${qparam}`
+                );
+              }}
             />
           </Tooltip>
           <Tooltip title="상세">
             <Button
               type="text"
               icon={<FileTextOutlined />}
-              onClick={() =>
+              onClick={() => {
                 navigate(
-                  ROUTES.BACKOFFICE.NOTICES_DETAIL.generate(record.noticeSeq)
-                )
-              }
+                  `${ROUTES.BACKOFFICE.NOTICES_DETAIL.generate(record.noticeSeq)}${qparam}`
+                );
+              }}
             />
           </Tooltip>
           {/*           <Tooltip title="삭제">
@@ -197,7 +228,7 @@ export const NoticesPage = () => {
 
   return (
     <Container>
-      <PageTitle title="공지 사항" subtitle="목록" />
+      <PageTitle title={pageTitle} subtitle="목록" />
       <ContentCard>
         <TopBar>
           <Space>
@@ -219,7 +250,7 @@ export const NoticesPage = () => {
               icon={<PlusOutlined />}
               onClick={handleCreate}
             >
-              공지 사항 등록
+              {`${pageTitle} 등록`}
             </CreateButton>
           </Space>
         </TopBar>
@@ -227,7 +258,7 @@ export const NoticesPage = () => {
         <StyledTable
           columns={columns}
           dataSource={noticeList?.data?.noticeList ?? []}
-          rowKey="noticeId"
+          rowKey="noticeSeq"
           loading={isFetching}
           pagination={{
             current: currentPage,

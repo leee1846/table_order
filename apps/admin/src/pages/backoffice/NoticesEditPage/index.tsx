@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import styled from '@emotion/styled';
 import { Notices } from '@/feature/backoffice/Notices';
@@ -46,8 +46,10 @@ const convertToFormData = (
 
 export const NoticesEditPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { id } = useParams<{ id: string }>();
   const { showConfirm } = useConfirmDialog();
+  const typeParam = searchParams.get('type');
 
   const { data } = useGetNoticeDetail(Number(id || 0), {
     enabled: !!id,
@@ -79,7 +81,10 @@ export const NoticesEditPage = () => {
         } catch {
           message.error('공지 사항 삭제 중 오류가 발생했습니다.');
         }
-        navigate(ROUTES.BACKOFFICE.NOTICES.generate());
+
+        navigate(
+          `${ROUTES.BACKOFFICE.NOTICES.generate()}${typeParam ? `?type=${typeParam}` : ''}`
+        );
       },
     });
   };
@@ -106,7 +111,9 @@ export const NoticesEditPage = () => {
     });
 
     message.success('공지 사항 수정이 완료되었습니다.');
-    navigate(ROUTES.BACKOFFICE.NOTICES.generate());
+    navigate(
+      `${ROUTES.BACKOFFICE.NOTICES.generate()}${typeParam ? `?type=${typeParam}` : ''}`
+    );
   };
 
   return (

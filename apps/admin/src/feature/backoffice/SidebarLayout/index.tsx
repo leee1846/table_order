@@ -12,6 +12,7 @@ type TSubMenu = {
   id: string | number;
   label: string;
   path: string;
+  matchPattern?: string;
 };
 
 type TMenu = {
@@ -44,7 +45,7 @@ export const StoresSidebarLayout = () => {
       {
         id: 'notices',
         label: '공지 사항',
-        path: ROUTES.BACKOFFICE.NOTICES.generate(),
+        path: `${ROUTES.BACKOFFICE.NOTICES.generate()}?type=ADMIN`,
         matchPattern: '/backoffice/notices/*',
       },
     ];
@@ -65,13 +66,30 @@ export const StoresSidebarLayout = () => {
             label: '매장 그룹 관리',
             path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
           },
+          {
+            id: 'store-notices',
+            label: '매장 공지 사항',
+            path: ROUTES.BACKOFFICE.NOTICES.generate(),
+          },
         ],
       });
     } else {
       menus.push({
-        id: 'store-list',
+        id: 'stores',
         label: '매장 관리',
-        path: ROUTES.BACKOFFICE.STORES.generate(),
+        matchPattern: '/backoffice/stores/*',
+        subMenus: [
+          {
+            id: 'store-list',
+            label: '매장 관리',
+            path: ROUTES.BACKOFFICE.STORES.generate(),
+          },
+          {
+            id: 'store-notices',
+            label: '매장 공지 사항',
+            path: ROUTES.BACKOFFICE.NOTICES.generate(),
+          },
+        ],
       });
     }
 
@@ -148,27 +166,96 @@ export const StoresSidebarLayout = () => {
 
   const selectedKeys = useMemo(() => {
     const currentPath = location.pathname;
+    const currentSearch = location.search;
 
     // Check for active sub-menu first
     for (const menu of SIDEBAR_MENUS) {
-      const activeSubMenu = menu.subMenus?.find((sm) =>
-        matchPath({ path: sm.path, end: true }, currentPath)
-      );
+      const activeSubMenu = menu.subMenus?.find((sm) => {
+        const [basePath, search] = sm.path.split('?');
+
+        const isMatchPattern = sm.matchPattern
+          ? matchPath({ path: sm.matchPattern, end: false }, currentPath) !==
+            null
+          : false;
+        const isExactMatch =
+          basePath &&
+          matchPath({ path: basePath, end: true }, currentPath) !== null;
+
+        if (!isMatchPattern && !isExactMatch) {
+          return false;
+        }
+
+        if (search) {
+          const searchParams = new URLSearchParams(search);
+          const currentParams = new URLSearchParams(currentSearch);
+          for (const [key, value] of searchParams.entries()) {
+            if (currentParams.get(key) !== value) {
+              return false;
+            }
+          }
+          return true;
+        } else {
+          if (
+            basePath?.includes('/backoffice/notices') &&
+            currentSearch.includes('type=ADMIN')
+          ) {
+            return false;
+          }
+          return true;
+        }
+      });
       if (activeSubMenu) {
         return [menu.path || menu.id, activeSubMenu.path];
       }
     }
 
     // Check for active main menu
-    const activeMenu = SIDEBAR_MENUS.find(
-      (m) =>
-        (m.matchPattern &&
-          matchPath({ path: m.matchPattern, end: false }, currentPath)) ||
-        m.path === currentPath
-    );
+    const activeMenu = SIDEBAR_MENUS.find((m) => {
+      if (!m.path && !m.matchPattern) {
+        return false;
+      }
+
+      const [basePath, search] = (m.path || '').split('?');
+
+      const isMatchPattern = m.matchPattern
+        ? matchPath({ path: m.matchPattern, end: false }, currentPath) !== null
+        : false;
+      const isExactMatch = basePath
+        ? matchPath({ path: basePath, end: true }, currentPath) !== null
+        : false;
+
+      if (!isMatchPattern && !isExactMatch) {
+        return false;
+      }
+
+      if (search) {
+        const searchParams = new URLSearchParams(search);
+        const currentParams = new URLSearchParams(currentSearch);
+        for (const [key, value] of searchParams.entries()) {
+          if (currentParams.get(key) !== value) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        if (
+          basePath?.includes('/backoffice/notices') &&
+          currentSearch.includes('type=ADMIN')
+        ) {
+          return false;
+        }
+        if (
+          m.matchPattern?.includes('/backoffice/notices') &&
+          currentSearch.includes('type=ADMIN')
+        ) {
+          return false;
+        }
+        return true;
+      }
+    });
 
     return activeMenu ? [activeMenu.path || activeMenu.id] : [];
-  }, [location.pathname, SIDEBAR_MENUS]);
+  }, [location.pathname, location.search, SIDEBAR_MENUS]);
 
   useEffect(() => {
     return () => {

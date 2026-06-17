@@ -19,6 +19,7 @@ export const Notices = ({ notices, pageSize }: NoticesProps) => {
   const BOARD_TYPE_LABELS: Record<TNoticeBoardType, string> = {
     GENERAL: t('일반'),
     EMERGENCY: t('긴급'),
+    ADMIN: t('관리자'),
   };
 
   const [openNoticeId, setOpenNoticeId] = useState<number | null>(null);

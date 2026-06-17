@@ -1,6 +1,6 @@
 import { IApiResponse } from './common';
 
-export type TNoticeBoardType = 'GENERAL' | 'EMERGENCY';
+export type TNoticeBoardType = 'GENERAL' | 'EMERGENCY' | 'ADMIN';
 
 /**
  * 공지사항 정보
@@ -25,6 +25,7 @@ export interface IGetNoticeListParams {
   page?: number;
   pageSize?: number;
   searchWord?: string;
+  boardType?: TNoticeBoardType;
 }
 
 /**
