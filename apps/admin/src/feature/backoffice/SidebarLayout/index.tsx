@@ -38,7 +38,6 @@ export const StoresSidebarLayout = () => {
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isMaster = tokenPayload?.role === 'MASTER';
-  const isDevelopEnv = import.meta.env.MODE === 'development';
 
   const SIDEBAR_MENUS = useMemo<TMenu[]>(() => {
     const menus: TMenu[] = [
@@ -50,50 +49,25 @@ export const StoresSidebarLayout = () => {
       },
     ];
 
-    if (isDevelopEnv) {
-      menus.push({
-        id: 'stores',
-        label: '매장 관리',
-        matchPattern: '/backoffice/stores/*',
-        subMenus: [
-          {
-            id: 'store-list',
-            label: '매장 관리',
-            path: ROUTES.BACKOFFICE.STORES.generate(),
-          },
-          {
-            id: 'store-group',
-            label: '매장 그룹 관리',
-            path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
-          },
-          {
-            id: 'store-notices',
-            label: '매장 공지 사항',
-            path: ROUTES.BACKOFFICE.NOTICES.generate(),
-          },
-        ],
-      });
-    } else {
-      menus.push({
-        id: 'stores',
-        label: '매장 관리',
-        matchPattern: '/backoffice/stores/*',
-        subMenus: [
-          {
-            id: 'store-list',
-            label: '매장 관리',
-            path: ROUTES.BACKOFFICE.STORES.generate(),
-          },
-          {
-            id: 'store-notices',
-            label: '매장 공지 사항',
-            path: ROUTES.BACKOFFICE.NOTICES.generate(),
-          },
-        ],
-      });
-    }
+    menus.push({
+      id: 'stores',
+      label: '매장 관리',
+      matchPattern: '/backoffice/stores/*',
+      subMenus: [
+        {
+          id: 'store-list',
+          label: '매장 관리',
+          path: ROUTES.BACKOFFICE.STORES.generate(),
+        },
+        {
+          id: 'store-notices',
+          label: '매장 공지 사항',
+          path: ROUTES.BACKOFFICE.NOTICES.generate(),
+        },
+      ],
+    });
 
-    if (isMaster && isDevelopEnv) {
+    if (isMaster) {
       menus.push({
         id: 'campaign',
         label: '광고 관리',
@@ -103,6 +77,11 @@ export const StoresSidebarLayout = () => {
             id: 'campaign-manage',
             label: '캠페인 관리',
             path: ROUTES.BACKOFFICE.CAMPAIGN.generate(),
+          },
+          {
+            id: 'store-group',
+            label: '매장 그룹 관리',
+            path: ROUTES.BACKOFFICE.STORE_GROUP.generate(),
           },
           {
             id: 'menu_group',
@@ -142,6 +121,13 @@ export const StoresSidebarLayout = () => {
       ],
     });
 
+    menus.push({
+      id: 'manual',
+      label: '매뉴얼',
+      path: ROUTES.BACKOFFICE.MANUAL.generate(),
+      matchPattern: '/backoffice/manual/*',
+    });
+
     if (isMaster) {
       menus.push({
         id: 'members',
@@ -150,8 +136,9 @@ export const StoresSidebarLayout = () => {
         matchPattern: '/backoffice/members/*',
       });
     }
+
     return menus;
-  }, [isMaster, isDevelopEnv]);
+  }, [isMaster]);
 
   const isPathActive = (path: string, matchPattern?: string) => {
     if (matchPattern) {
