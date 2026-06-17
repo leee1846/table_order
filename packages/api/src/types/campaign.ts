@@ -225,3 +225,29 @@ export interface IRegisterMenuGroupSyncData {
 
 export type TPostRegisterMenuGroupSyncResponse =
   IApiResponse<IRegisterMenuGroupSyncData>;
+
+// ============================================================================
+// 캠페인 메뉴 그룹 동기화 매장 재등록
+// ============================================================================
+
+export interface IPostReRegisterMenuGroupSyncRequest {
+  campaignSeq: number | string;
+  menuGroupSeq: number | string;
+  shopSeqs: number[];
+}
+
+export interface IReRegisterMenuGroupSyncResultItem {
+  shopSeq: number;
+  reason?: string;
+}
+
+export interface IReRegisterMenuGroupSyncData {
+  menuGroupSeq: number;
+  registeredCount: number;
+  noChangeCount: number;
+  registered: IReRegisterMenuGroupSyncResultItem[];
+  noChange: IReRegisterMenuGroupSyncResultItem[];
+}
+
+export type TPostReRegisterMenuGroupSyncResponse =
+  IApiResponse<IReRegisterMenuGroupSyncData>;

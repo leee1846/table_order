@@ -6,6 +6,7 @@ import {
   useGetCampaignMenuGroups,
   useGetCampaignMenuGroupSyncStatus,
   usePostRegisterMenuGroupSync,
+  usePostReRegisterMenuGroupSync,
 } from '@repo/api/queries';
 import type { ICampaignMenuGroupSyncStatus } from '@repo/api/types';
 import styled from '@emotion/styled';
@@ -199,6 +200,9 @@ const MenuGroupStatus: React.FC = () => {
   // 동기화 등록 Mutation
   const { mutate: registerSync } = usePostRegisterMenuGroupSync();
 
+  // 동기화 재등록 Mutation
+  const { mutate: reRegisterSync } = usePostReRegisterMenuGroupSync();
+
   // 개별 등록 처리
   const handleRegister = (shopSeq: number) => {
     if (!activeGroupId || !campaignSeq) {
@@ -222,9 +226,9 @@ const MenuGroupStatus: React.FC = () => {
           );
 
           if (failedItem) {
-            message.error(failedItem.reason || '등록에 실패했습니다.');
+            message.error(failedItem?.reason || '등록에 실패했습니다.');
           } else if (successItem) {
-            message.success(successItem.reason || '등록이 완료되었습니다.');
+            message.success(successItem?.reason || '등록이 완료되었습니다.');
           } else if (data?.failedCount && data.failedCount > 0) {
             message.error('등록에 실패했습니다.');
           } else {
@@ -235,6 +239,48 @@ const MenuGroupStatus: React.FC = () => {
         },
         onError: () => {
           message.error('등록 중 오류가 발생했습니다.');
+        },
+      }
+    );
+  };
+
+  // 개별 재등록 처리
+  const handleReRegister = (shopSeq: number) => {
+    if (!activeGroupId || !campaignSeq) {
+      return;
+    }
+
+    reRegisterSync(
+      {
+        campaignSeq: Number(campaignSeq),
+        menuGroupSeq: activeGroupId,
+        shopSeqs: [shopSeq],
+      },
+      {
+        onSuccess: (res) => {
+          const data = res?.data;
+          const successItem = data?.registered?.find(
+            (item) => item.shopSeq === shopSeq
+          );
+          const noChangeItem = data?.noChange?.find(
+            (item) => item.shopSeq === shopSeq
+          );
+
+          if (noChangeItem) {
+            message.info(noChangeItem?.reason || '변경할 메뉴가 없습니다.');
+          } else if (
+            successItem ||
+            (data?.registeredCount && data.registeredCount > 0)
+          ) {
+            message.success(successItem?.reason || '재등록이 완료되었습니다.');
+          } else {
+            message.error('재등록에 실패했습니다.');
+          }
+
+          refetchSyncStatus(); // 테이블 갱신
+        },
+        onError: () => {
+          message.error('재등록 중 오류가 발생했습니다.');
         },
       }
     );
@@ -323,7 +369,9 @@ const MenuGroupStatus: React.FC = () => {
             등록
           </RegisterButton>
         ) : (
-          <Text type="secondary">—</Text>
+          <Button size="small" onClick={() => handleReRegister(record.shopSeq)}>
+            재등록
+          </Button>
         );
       },
     },

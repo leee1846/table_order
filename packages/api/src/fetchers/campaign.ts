@@ -17,6 +17,8 @@ import type {
   IGetCampaignMenuGroupSyncStatusParams,
   TPostRegisterMenuGroupSyncResponse,
   IPostRegisterMenuGroupSyncRequest,
+  IPostReRegisterMenuGroupSyncRequest,
+  TPostReRegisterMenuGroupSyncResponse,
 } from '../types/campaign';
 import type { TVoidApiResponse } from '../types/common';
 import type { TGetStoresByGroupsResponse } from '../types/storeGroup';
@@ -84,6 +86,23 @@ export const postRegisterMenuGroupSync = async (
   const response = await axiosInstance<TPostRegisterMenuGroupSyncResponse>({
     method: 'POST',
     url: `/campaigns/${campaignSeq}/menu-groups/${menuGroupSeq}/shops/sync-register`,
+    data: { shopSeqs },
+  });
+  return response.data;
+};
+
+/**
+ * 캠페인 메뉴 그룹 동기화 매장 재등록
+ * POST /campaigns/{campaignSeq}/menu-groups/{menuGroupSeq}/shops/re-register
+ */
+export const postReRegisterMenuGroupSync = async (
+  params: IPostReRegisterMenuGroupSyncRequest
+): Promise<TPostReRegisterMenuGroupSyncResponse> => {
+  const { campaignSeq, menuGroupSeq, shopSeqs } = params;
+  const axiosInstance = getAxiosInstance('private');
+  const response = await axiosInstance<TPostReRegisterMenuGroupSyncResponse>({
+    method: 'POST',
+    url: `/campaigns/${campaignSeq}/menu-groups/${menuGroupSeq}/shops/re-register`,
     data: { shopSeqs },
   });
   return response.data;

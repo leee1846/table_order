@@ -10,3 +10,4 @@ export * from './usePatchToggleAdTypeExclusion';
 export * from './useGetCampaignMenuGroups';
 export * from './useGetCampaignMenuGroupSyncStatus';
 export * from './usePostRegisterMenuGroupSync';
+export * from './usePostReRegisterMenuGroupSync';
