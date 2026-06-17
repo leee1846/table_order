@@ -16,7 +16,6 @@ import { useTablePageState } from '@/feature/backoffice/hooks';
 import { formatDateTime } from '@repo/util/date';
 import type { INotice } from '@repo/api/types';
 import { getBoardTypeLabel } from '@/feature/backoffice/Notices/constants';
-import { padZero } from '../../../../../../packages/util/src/string/index';
 import { theme } from '@repo/ui';
 
 // --- Emotion Styles ---
