@@ -7,27 +7,27 @@
 
 ## 1. 파일 맵
 
-| 역할 | 경로 |
-|------|------|
-| 비밀번호 입력 UI | `apps/menu/src/pages/MainPage/AdminAccessPasswordModal/index.tsx` |
-| 토큰 저장·조회·삭제 | `apps/menu/src/feature/MenuboardAuth/menuboardTokenStorage.ts` |
-| 보호 API URL 판별 | `apps/menu/src/feature/MenuboardAuth/menuboardProtectedEndpoints.ts` |
-| menuboard 토큰 만료 에러 판별 | `apps/menu/src/feature/MenuboardAuth/menuboardAuthError.ts` |
-| MenuboardAuth 공개 API | `apps/menu/src/feature/MenuboardAuth/index.ts` |
-| 모달 노출 Zustand 스토어 | `apps/menu/src/stores/useRequestAdminAccessModalStore.ts` |
-| 메인 페이지 자동 노출 제어 | `apps/menu/src/hooks/useAdminAccessControl.ts` |
-| 라우트 보호·토큰 제거 | `apps/menu/src/router.tsx` |
-| axios 인터셉터 (헤더·만료 처리) | `apps/menu/src/config/api/privateApi.ts` |
-| 전역 모달 마운트 | `apps/menu/src/App.tsx` |
-| 로고 3연타 수동 진입 | `apps/menu/src/pages/MainPage/Header/index.tsx` |
-| 메인 페이지 연동 | `apps/menu/src/pages/MainPage/index.tsx` |
-| 테이블 삭제 SSE → 모달 | `apps/menu/src/hooks/useSSEHandler.ts` |
-| 테이블 없음(-101) → 모달 | `apps/menu/src/hooks/useTableOrderHistoriesData.ts` |
-| 홈 복귀 시 모달 숨김 | `apps/menu/src/pages/TablesPage/Sidebar/index.tsx`, `apps/menu/src/pages/settings/SidebarLayout/index.tsx` |
-| 로그아웃 시 토큰 정리 | `apps/menu/src/utils/auth.ts` (`clearAuthData`) |
-| 관리자 로그인 API fetcher | `packages/api/src/fetchers/auth.ts` — `loginMenuboardAdmin` |
-| 관리자 로그인 mutation 훅 | `packages/api/src/queries/auth/usePostLoginMenuboardAdmin.ts` |
-| 응답 타입 | `packages/api/src/types/auth.ts` — `ILoginMenuboardAdminData` |
+| 역할                            | 경로                                                                                                       |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| 비밀번호 입력 UI                | `apps/menu/src/pages/MainPage/AdminAccessPasswordModal/index.tsx`                                          |
+| 토큰 저장·조회·삭제             | `apps/menu/src/feature/MenuboardAuth/menuboardTokenStorage.ts`                                             |
+| 보호 API URL 판별               | `apps/menu/src/feature/MenuboardAuth/menuboardProtectedEndpoints.ts`                                       |
+| menuboard 토큰 만료 에러 판별   | `apps/menu/src/feature/MenuboardAuth/menuboardAuthError.ts`                                                |
+| MenuboardAuth 공개 API          | `apps/menu/src/feature/MenuboardAuth/index.ts`                                                             |
+| 모달 노출 Zustand 스토어        | `apps/menu/src/stores/useRequestAdminAccessModalStore.ts`                                                  |
+| 메인 페이지 자동 노출 제어      | `apps/menu/src/hooks/useAdminAccessControl.ts`                                                             |
+| 라우트 보호·토큰 제거           | `apps/menu/src/router.tsx`                                                                                 |
+| axios 인터셉터 (헤더·만료 처리) | `apps/menu/src/config/api/privateApi.ts`                                                                   |
+| 전역 모달 마운트                | `apps/menu/src/App.tsx`                                                                                    |
+| 로고 3연타 수동 진입            | `apps/menu/src/pages/MainPage/Header/index.tsx`                                                            |
+| 메인 페이지 연동                | `apps/menu/src/pages/MainPage/index.tsx`                                                                   |
+| 테이블 삭제 SSE → 모달          | `apps/menu/src/hooks/useSSEHandler.ts`                                                                     |
+| 테이블 없음(-101) → 모달        | `apps/menu/src/hooks/useTableOrderHistoriesData.ts`                                                        |
+| 홈 복귀 시 모달 숨김            | `apps/menu/src/pages/TablesPage/Sidebar/index.tsx`, `apps/menu/src/pages/settings/SidebarLayout/index.tsx` |
+| 로그아웃 시 토큰 정리           | `apps/menu/src/utils/auth.ts` (`clearAuthData`)                                                            |
+| 관리자 로그인 API fetcher       | `packages/api/src/fetchers/auth.ts` — `loginMenuboardAdmin`                                                |
+| 관리자 로그인 mutation 훅       | `packages/api/src/queries/auth/usePostLoginMenuboardAdmin.ts`                                              |
+| 응답 타입                       | `packages/api/src/types/auth.ts` — `ILoginMenuboardAdminData`                                              |
 
 ---
 
@@ -35,10 +35,10 @@
 
 메뉴보드 앱은 **두 종류의 토큰**을 사용한다. 혼동하면 라우트·인터셉터 수정 시 버그가 난다.
 
-| 토큰 | 저장소 | 발급 시점 | 용도 |
-|------|--------|----------|------|
-| `accessToken` / `refreshToken` | `@repo/api/auth` (local 등) | `LoginPage` 매장 로그인 | 앱 전체 JWT 인증. `privateApi` request interceptor가 `Authorization: Bearer` 주입·갱신 |
-| `menuboardToken` | `sessionStorage` (`menuboard-token` 키) | `AdminAccessPasswordModal` 4자리 비밀번호 성공 | 관리자 모드 전용. 보호 API에 `X-Menuboard-Token` 헤더로 전달 |
+| 토큰                           | 저장소                                  | 발급 시점                                      | 용도                                                                                   |
+| ------------------------------ | --------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `accessToken` / `refreshToken` | `@repo/api/auth` (local 등)             | `LoginPage` 매장 로그인                        | 앱 전체 JWT 인증. `privateApi` request interceptor가 `Authorization: Bearer` 주입·갱신 |
+| `menuboardToken`               | `sessionStorage` (`menuboard-token` 키) | `AdminAccessPasswordModal` 4자리 비밀번호 성공 | 관리자 모드 전용. 보호 API에 `X-Menuboard-Token` 헤더로 전달                           |
 
 - `menuboardToken`은 JWT access token과 **독립**이다. access token 갱신과 무관하게 별도 만료·재입력 흐름을 가진다.
 - `menuboardToken`은 **session storage**만 사용한다. 탭/세션 종료 시 사라진다.
@@ -97,25 +97,25 @@ if (targetPath === ROUTES.LOGIN.path || targetPath === ROUTES.ROOT.path) {
 
 ### 모달을 `setShow(true)` 하는 경로
 
-| 트리거 | 조건 | 파일 |
-|--------|------|------|
-| 테이블 미선택 | `deviceData.tableNumber` 없음 (디바이스 초기화 완료 후) | `useAdminAccessControl.ts` |
-| 디바이스 404 | `deviceDataError.status === 404` → `clearDeviceData()` 후 | `useAdminAccessControl.ts` |
-| 테이블 삭제(로컬 검증) | `tableGroupData`에 현재 `tableNumber` 없음 | `useAdminAccessControl.ts`, `useSSEHandler.ts` |
-| 주문 내역 API -101 | 존재하지 않는 테이블 → `tableNumber: null` 후 | `useTableOrderHistoriesData.ts` |
-| menuboard 토큰 만료 | `privateApi` 403 + `-106` (비밀번호 UI 미노출 시) | `privateApi.ts` |
-| 로고 3연타 | 메인 헤더 로고 600ms 내 3회 클릭 | `MainPage/Header/index.tsx` |
-| 수동 호출 | `adminAccessControl.setShowAdminAccessPasswordModal(true)` | `MainPage/index.tsx` |
+| 트리거                 | 조건                                                       | 파일                                           |
+| ---------------------- | ---------------------------------------------------------- | ---------------------------------------------- |
+| 테이블 미선택          | `deviceData.tableNumber` 없음 (디바이스 초기화 완료 후)    | `useAdminAccessControl.ts`                     |
+| 디바이스 404           | `deviceDataError.status === 404` → `clearDeviceData()` 후  | `useAdminAccessControl.ts`                     |
+| 테이블 삭제(로컬 검증) | `tableGroupData`에 현재 `tableNumber` 없음                 | `useAdminAccessControl.ts`, `useSSEHandler.ts` |
+| 주문 내역 API -101     | 존재하지 않는 테이블 → `tableNumber: null` 후              | `useTableOrderHistoriesData.ts`                |
+| menuboard 토큰 만료    | `privateApi` 403 + `-107` (비밀번호 UI 미노출 시)          | `privateApi.ts`                                |
+| 로고 3연타             | 메인 헤더 로고 600ms 내 3회 클릭                           | `MainPage/Header/index.tsx`                    |
+| 수동 호출              | `adminAccessControl.setShowAdminAccessPasswordModal(true)` | `MainPage/index.tsx`                           |
 
 ### 모달을 `setShow(false)` 하는 경로
 
-| 트리거 | 파일 |
-|--------|------|
-| 유효한 `tableNumber` 확정 | `useAdminAccessControl.ts` |
-| 로그인 성공 후 500ms 지연 | `AdminAccessPasswordModal` — `TIMER_KEYS.ADMIN_ACCESS_MODAL_HIDE` |
-| 비밀번호 잠금(-104) + 메인 + `tableNumber` 있음 | `AdminAccessPasswordModal` (모달만 닫고 주문 화면 유지) |
-| 홈 버튼(관리자 사이드바) | `TablesPage/Sidebar`, `settings/SidebarLayout` — **navigate 전** `setShow(false)` (깜빡임 방지) |
-| 스토어 리셋 | `resetStores.ts` |
+| 트리거                                          | 파일                                                                                            |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 유효한 `tableNumber` 확정                       | `useAdminAccessControl.ts`                                                                      |
+| 로그인 성공 후 500ms 지연                       | `AdminAccessPasswordModal` — `TIMER_KEYS.ADMIN_ACCESS_MODAL_HIDE`                               |
+| 비밀번호 잠금(-104) + 메인 + `tableNumber` 있음 | `AdminAccessPasswordModal` (모달만 닫고 주문 화면 유지)                                         |
+| 홈 버튼(관리자 사이드바)                        | `TablesPage/Sidebar`, `settings/SidebarLayout` — **navigate 전** `setShow(false)` (깜빡임 방지) |
+| 스토어 리셋                                     | `resetStores.ts`                                                                                |
 
 ### useAdminAccessControl 깜빡임 방지
 
@@ -151,18 +151,18 @@ usePostLoginMenuboardAdmin({
 ### 성공 판정
 
 ```ts
-response.status.code === 0 && response.data?.menuboardToken
+response.status.code === 0 && response.data?.menuboardToken;
 ```
 
 `code === 0`이어도 `menuboardToken`이 없으면 인증 실패 다이얼로그 + `setPassword(null)`.
 
 ### 에러 코드 처리
 
-| HTTP | status.code | 동작 |
-|------|-------------|------|
-| 401 | (any) | 인증 실패 다이얼로그, 비밀번호 초기화 (`onError`) |
-| 400 | `-104` | 비밀번호 잠금. `setPassword(null)`. 메인+`tableNumber` 있으면 모달만 닫음. 관리자 페이지에서는 모달 유지(백오피스에서 비밀번호 재설정 필요) |
-| 기타 실패 | — | 인증 실패 다이얼로그, `setPassword(null)` |
+| HTTP      | status.code | 동작                                                                                                                                        |
+| --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| 401       | (any)       | 인증 실패 다이얼로그, 비밀번호 초기화 (`onError`)                                                                                           |
+| 400       | `-104`      | 비밀번호 잠금. `setPassword(null)`. 메인+`tableNumber` 있으면 모달만 닫음. 관리자 페이지에서는 모달 유지(백오피스에서 비밀번호 재설정 필요) |
+| 기타 실패 | —           | 인증 실패 다이얼로그, `setPassword(null)`                                                                                                   |
 
 ### 모달 닫기(×) 동작
 
@@ -198,9 +198,9 @@ if (isMenuboardProtectedUrl(config.url, config.method)) {
 
 ```ts
 // isMenuboardTokenExpiredError(error)
-error.response?.status === 403
-&& error.response?.data?.status?.code === -106
-&& isMenuboardProtectedUrl(config.url, config.method)
+error.response?.status === 403 &&
+  error.response?.data?.status?.code === -107 &&
+  isMenuboardProtectedUrl(config.url, config.method);
 ```
 
 처리 순서 (`privateApi` response interceptor, JWT 401 처리 **이후**):
@@ -216,22 +216,22 @@ JWT access token 401 갱신 로직과 **별도** 분기다. menuboard 만료는 
 
 ## 7. 보호 API 목록 (ADMIN_API_LIST)
 
-`menuboardProtectedEndpoints.ts`에 method + URL 정규식으로 정의. **새 관리자 API 추가 시 반드시 여기에 등록**해야 `X-Menuboard-Token`이 붙고 만료(-106) 처리가 동작한다.
+`menuboardProtectedEndpoints.ts`에 method + URL 정규식으로 정의. **새 관리자 API 추가 시 반드시 여기에 등록**해야 `X-Menuboard-Token`이 붙고 만료(-107) 처리가 동작한다.
 
-| method | URL 패턴 | 용도 |
-|--------|----------|------|
-| GET | `/order/{shopCode}` | 테이블별 주문 목록 |
-| GET | `/device/list/{shopCode}` | 디바이스 목록 |
-| GET | `/device/{shopCode}/table/{tableNumber}` | 테이블 점유 확인 |
-| PUT | `/order/move/{shopCode}` | 주문 테이블 이동 |
-| PUT | `/order/share/{shopCode}` | 주문 합석 |
-| PUT | `/order/cancel/menu` | 선택 메뉴 취소 |
-| PUT | `/order/cancel/{shopCode}/{tableNumber}` | 전체 메뉴 취소 |
-| PUT | `/order/clear/{shopCode}/{tableNumber}` | 테이블 초기화 |
-| POST | `/order/custom-amount` | 금액 변경/할인/서비스 |
-| POST | `/order/pickup/{shopCode}/{tableNumber}` | 주문 알림 |
-| GET | `/sales/card-approval/{shopCode}` | 카드 승인 내역 |
-| POST | `/log/{shopCode}/{tableNumber}` | 디바이스 로그 |
+| method | URL 패턴                                 | 용도                  |
+| ------ | ---------------------------------------- | --------------------- |
+| GET    | `/order/{shopCode}`                      | 테이블별 주문 목록    |
+| GET    | `/device/list/{shopCode}`                | 디바이스 목록         |
+| GET    | `/device/{shopCode}/table/{tableNumber}` | 테이블 점유 확인      |
+| PUT    | `/order/move/{shopCode}`                 | 주문 테이블 이동      |
+| PUT    | `/order/share/{shopCode}`                | 주문 합석             |
+| PUT    | `/order/cancel/menu`                     | 선택 메뉴 취소        |
+| PUT    | `/order/cancel/{shopCode}/{tableNumber}` | 전체 메뉴 취소        |
+| PUT    | `/order/clear/{shopCode}/{tableNumber}`  | 테이블 초기화         |
+| POST   | `/order/custom-amount`                   | 금액 변경/할인/서비스 |
+| POST   | `/order/pickup/{shopCode}/{tableNumber}` | 주문 알림             |
+| GET    | `/sales/card-approval/{shopCode}`        | 카드 승인 내역        |
+| POST   | `/log/{shopCode}/{tableNumber}`          | 디바이스 로그         |
 
 `SEG = '[^/]+'` — 쿼리스트링은 `url.split('?')[0]`으로 제거 후 매칭.
 
@@ -256,7 +256,7 @@ JWT access token 401 갱신 로직과 **별도** 분기다. menuboard 만료는 
 
 ```
 보호 API 호출 (X-Menuboard-Token 첨부)
-  → 403, code -106
+  → 403, code -107
   → removeMenuboardToken + setShow(true) + 만료 다이얼로그
   → (현재 URL 유지, 모달 오버레이)
   → 비밀번호 재입력 → setMenuboardToken → refetchQueries(active)
@@ -287,7 +287,7 @@ adminVerificationCheckLoader → redirect /
 
 - **ROOT 이동 시 토큰 제거는 `router.subscribe`가 담당한다.** `navigate('/')`만으로 menuboard 세션이 끊긴다. 토큰을 유지한 채 메인에 머무르려는 요구가 있으면 이 구독 로직을 함께 수정해야 한다.
 
-- **비밀번호 UI가 이미 보일 때 `-106` 처리를 스킵한다.** `privateApi`의 `isPasswordUiVisible` 가드. 재입력 중 연쇄 API 실패로 다이얼로그가 중복되지 않게 한다.
+- **비밀번호 UI가 이미 보일 때 `-107` 처리를 스킵한다.** `privateApi`의 `isPasswordUiVisible` 가드. 재입력 중 연쇄 API 실패로 다이얼로그가 중복되지 않게 한다.
 
 - **로그인 mutation의 `ignoreGlobalErrors: [401]`은 필수에 가깝다.** 제거하면 JWT 스타일 전역 401 처리와 충돌할 수 있다.
 

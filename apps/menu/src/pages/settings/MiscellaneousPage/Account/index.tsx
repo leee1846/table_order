@@ -139,7 +139,7 @@ export const Account = () => {
           .then(proceedLogout)
           .catch((error) => {
             // 로그인 인증 토큰 만료(401) 시, interceptor에서 처리되므로 여기서는 처리하지 않음
-            // 메뉴보드 토큰 만료(403, -106) 시, interceptor에서 처리되므로 여기서는 처리하지 않음
+            // 메뉴보드 토큰 만료(403, -107) 시, interceptor에서 처리되므로 여기서는 처리하지 않음
             if (
               axios.isCancel(error) ||
               error?.response?.status === 401 ||
