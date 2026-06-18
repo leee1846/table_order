@@ -205,8 +205,8 @@ const CampaignPage: React.FC = () => {
     size: pageSize,
     name: appliedSearchText || undefined,
     status: mapToBackendStatus(statusFilter),
-    startDate: appliedDateStrings[0] || undefined,
-    endDate: appliedDateStrings[1] || undefined,
+    startDate: (appliedDateStrings && appliedDateStrings[0]) || undefined,
+    endDate: (appliedDateStrings && appliedDateStrings[1]) || undefined,
   });
 
   const { mutateAsync: updateCampaignActive } = usePatchUpdateCampaignActive();
