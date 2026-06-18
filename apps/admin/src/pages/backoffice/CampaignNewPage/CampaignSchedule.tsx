@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   DatePicker,
@@ -95,6 +95,9 @@ const InfoAlertBox = styled.div`
 export interface CampaignScheduleProps {
   schedules: CampaignShopData[];
   onChange: (schedules: CampaignShopData[]) => void;
+  overallStartDate?: dayjs.Dayjs | null;
+  overallEndDate?: dayjs.Dayjs | null;
+  onEditingChange?: (isEditing: boolean) => void;
 }
 
 interface EditableFormValues {
@@ -105,11 +108,20 @@ interface EditableFormValues {
 const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
   schedules,
   onChange,
+  overallStartDate,
+  overallEndDate,
+  onEditingChange,
 }) => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState<number | ''>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    if (onEditingChange) {
+      onEditingChange(editingKey !== '');
+    }
+  }, [editingKey, onEditingChange]);
 
   const isEditing = (record: CampaignShopData) => record.shopSeq === editingKey;
 
@@ -153,6 +165,25 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
     }
   };
 
+  // 전체 집행 기간 외의 날짜 비활성화
+  const disabledDate = (current: dayjs.Dayjs) => {
+    if (!current) {
+      return false;
+    }
+
+    // 전체 시작일 이전 날짜 비활성화
+    if (overallStartDate && current.isBefore(overallStartDate, 'day')) {
+      return true;
+    }
+
+    // 전체 종료일 이후 날짜 비활성화
+    if (overallEndDate && current.isAfter(overallEndDate, 'day')) {
+      return true;
+    }
+
+    return false;
+  };
+
   // 테이블 컬럼 정의
   // 테이블 컬럼 정의
   const columns: ColumnsType<CampaignShopData> = [
@@ -175,7 +206,11 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
             style={{ margin: 0 }}
             rules={[{ required: false, message: '시작일을 입력하세요!' }]}
           >
-            <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+            <DatePicker
+              format="YYYY-MM-DD"
+              style={{ width: '100%' }}
+              disabledDate={disabledDate}
+            />
           </Form.Item>
         ) : (
           text
@@ -194,7 +229,11 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
             style={{ margin: 0 }}
             rules={[{ required: false, message: '종료일을 입력하세요!' }]}
           >
-            <DatePicker format="YYYY-MM-DD" style={{ width: '100%' }} />
+            <DatePicker
+              format="YYYY-MM-DD"
+              style={{ width: '100%' }}
+              disabledDate={disabledDate}
+            />
           </Form.Item>
         ) : (
           text

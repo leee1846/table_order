@@ -103,7 +103,7 @@ export const UploadModal = ({ isOpen, onClose, shopCode }: Props) => {
       title={<S.ModalTitle>엑셀 / 이미지 업로드</S.ModalTitle>}
       open={isOpen}
       onCancel={handleClose}
-      maskClosable={!isUploading}
+      mask={!isUploading}
       closable={!isUploading}
       closeIcon={<CloseOutlined style={{ color: '#fff' }} />}
       width={500}

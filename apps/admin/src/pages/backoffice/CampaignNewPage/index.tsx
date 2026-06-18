@@ -103,6 +103,11 @@ const CampaignNewPagePage: React.FC = () => {
 
   // --- 매장/그룹 선택 상태 ---
   const [campaignShops, setCampaignShops] = useState<CampaignShopData[]>([]);
+  const [isScheduleEditing, setIsScheduleEditing] = useState(false);
+
+  // --- 전체 집행 기간 상태(실시간 감지) ---
+  const overallStartDate = Form.useWatch('overallStartDate', form);
+  const overallEndDate = Form.useWatch('overallEndDate', form);
 
   const [campaignSeq, setCampaignSeq] = useState<number | null>(null);
   const { mutateAsync: createCampaign } = usePostCreateCampaign();
@@ -177,6 +182,11 @@ const CampaignNewPagePage: React.FC = () => {
   };
 
   const onFinish = async (values: BasicInfoFormValues) => {
+    if (currentStep === 3 && isScheduleEditing) {
+      message.warning('매장별 집행 기간 편집을 완료(저장 또는 취소)해 주세요.');
+      return;
+    }
+
     if (currentStep < STEPS.length - 1) {
       setCurrentStep((prev) => prev + 1);
       return;
@@ -488,7 +498,15 @@ const CampaignNewPagePage: React.FC = () => {
           <StepBlock
             key={step}
             active={currentStep === index}
-            onClick={() => setCurrentStep(index)} // 필요시 클릭으로 스텝 이동 막을 수 있음
+            onClick={() => {
+              if (currentStep === 3 && isScheduleEditing) {
+                message.warning(
+                  '매장별 집행 기간 편집을 완료(저장 또는 취소)해 주세요.'
+                );
+                return;
+              }
+              setCurrentStep(index);
+            }}
           >
             {step}
           </StepBlock>
@@ -578,6 +596,9 @@ const CampaignNewPagePage: React.FC = () => {
             <CampaignSchedule
               schedules={campaignShops}
               onChange={setCampaignShops}
+              overallStartDate={overallStartDate}
+              overallEndDate={overallEndDate}
+              onEditingChange={setIsScheduleEditing}
             />
           </div>
           {currentStep === 4 && (
