@@ -250,6 +250,6 @@ export const Content = styled.main`
   -webkit-overflow-scrolling: touch;
   gap: 32px;
   padding: 32px 40px;
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 0 auto;
 `;

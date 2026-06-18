@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { keepPreviousData } from '@repo/api/tanstack-query';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Input, Space, Tooltip, App } from 'antd';
+import { Button, Input, Space, Tooltip, App } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   PlusOutlined,
@@ -11,7 +11,6 @@ import {
   UploadOutlined,
   PictureOutlined,
 } from '@ant-design/icons';
-import styled from '@emotion/styled';
 import { ROUTES } from '@/constants/routes';
 import { useGetAdminShopList, useGetDownloadPosExcel } from '@repo/api/queries';
 import { useTablePageState } from '@/feature/backoffice/hooks';
@@ -19,61 +18,18 @@ import PageTitle from '@/feature/backoffice/components/PageTitle';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { UploadModal } from './Menu/UploadModal';
 import { ImageViewModal } from './Menu/ImageViewModal';
+import { formatDateTime } from '@repo/util/date';
+import * as XLSX from 'xlsx';
+import * as S from './storesPage.style';
+import { useStyle, type ShopDataType } from './storesPage.style';
 
 const DEFAULT_PAGE_SIZE = 10;
-
-// --- Emotion Styles ---
-const Container = styled.div`
-  background-color: #f4f7fa;
-  height: 100%;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-`;
-
-const ContentCard = styled.div`
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-`;
-
-const TopBar = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  flex-shrink: 0;
-`;
-
-// 임시 타입 (실제 데이터 타입에 맞춰 수정 필요)
-interface ShopDataType {
-  shopSeq: number;
-  shopCode: string;
-  shopName: string;
-  ownerName?: string;
-  phone?: string;
-  status?: string;
-  memberId?: string | number;
-}
-
-const StyledTable = styled(Table<ShopDataType>)`
-  .ant-table-thead > tr > th {
-    background-color: #1d2a6d !important;
-    color: white !important;
-    border-bottom: none;
-  }
-`;
 
 export const StoresPage = () => {
   const { message } = App.useApp();
   const navigate = useNavigate();
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const { styles } = useStyle();
 
   const {
     currentPage,
@@ -142,6 +98,37 @@ export const StoresPage = () => {
     }
   };
 
+  const handleListExcelDownload = () => {
+    const data = shopList?.data?.shopList ?? [];
+    if (data.length === 0) {
+      message.warning('다운로드할 데이터가 없습니다.');
+      return;
+    }
+
+    const excelData = data.map((item, index) => ({
+      'No.': (currentPage - 1) * pageSize + index + 1,
+      '매장 ID': item.shopCode || '-',
+      매장명: item.shopName || '-',
+      사업자등록번호: item.businessNumber || '-',
+      주소: item.address1 || '-',
+      '최초 연동 일시': item.firstLinkedDate
+        ? formatDateTime(item.firstLinkedDate, 'YYYY-MM-DD HH:mm')
+        : '-',
+      '마지막 주문 일시': item.lastOrderDate
+        ? formatDateTime(item.lastOrderDate, 'YYYY-MM-DD HH:mm')
+        : '-',
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, '매장 목록');
+
+    XLSX.writeFile(
+      workbook,
+      `매장_목록_${formatDateTime(new Date().toISOString(), 'YYYYMMDD_HHmmss')}.xlsx`
+    );
+  };
+
   // TODO: 실제 API 응답 데이터 구조에 맞게 컬럼 데이터인덱스 수정 필요
   const columns: ColumnsType<ShopDataType> = [
     {
@@ -149,13 +136,21 @@ export const StoresPage = () => {
       key: 'no',
       width: 60,
       align: 'center',
+      fixed: 'start',
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
     {
       title: '매장 ID',
       dataIndex: 'shopCode',
       key: 'shopCode',
-      width: 120,
+      width: 160,
+      fixed: 'start',
+      render: (text: string) =>
+        text ? (
+          <span style={{ userSelect: 'text', cursor: 'text' }}>{text}</span>
+        ) : (
+          '-'
+        ),
       onHeaderCell: () => ({
         style: { textAlign: 'center' },
       }),
@@ -164,20 +159,31 @@ export const StoresPage = () => {
       title: '매장명',
       dataIndex: 'shopName',
       key: 'shopName',
-      width: 200,
       onHeaderCell: () => ({
         style: { textAlign: 'center' },
       }),
+      render: (text: string) =>
+        text ? (
+          <span style={{ userSelect: 'text', cursor: 'text' }}>{text}</span>
+        ) : (
+          '-'
+        ),
     },
     {
       title: '사업자등록번호',
       dataIndex: 'businessNumber',
       key: 'businessNumber',
-      width: 150,
+      width: 130,
       align: 'center',
+      render: (text: string) =>
+        text ? (
+          <span style={{ userSelect: 'text', cursor: 'text' }}>{text}</span>
+        ) : (
+          '-'
+        ),
     },
     {
-      title: '기본 주소',
+      title: '주소',
       dataIndex: 'address1',
       key: 'address1',
       onHeaderCell: () => ({
@@ -185,10 +191,29 @@ export const StoresPage = () => {
       }),
     },
     {
-      title: '매장 메뉴',
-      key: 'storeMenu',
+      title: '최초 연동 일시',
+      dataIndex: 'firstLinkedDate',
+      key: 'firstLinkedDate',
       width: 150,
       align: 'center',
+      render: (date?: string) =>
+        date ? formatDateTime(date, 'YYYY-MM-DD HH:mm') : '-',
+    },
+    {
+      title: '마지막 주문 일시',
+      dataIndex: 'lastOrderDate',
+      key: 'lastOrderDate',
+      width: 150,
+      align: 'center',
+      render: (date?: string) =>
+        date ? formatDateTime(date, 'YYYY-MM-DD HH:mm') : '-',
+    },
+    {
+      title: '매장 메뉴',
+      key: 'storeMenu',
+      width: 120,
+      align: 'center',
+      fixed: 'end',
       render: (_, record) => (
         <Space size={0}>
           <Tooltip title="엑셀 다운로드">
@@ -232,8 +257,9 @@ export const StoresPage = () => {
     {
       title: '관리',
       key: 'management',
-      width: 100,
+      width: 90,
       align: 'center',
+      fixed: 'end',
       render: (_, record) => (
         <Space size={0}>
           <Tooltip title="수정">
@@ -262,10 +288,10 @@ export const StoresPage = () => {
   ];
 
   return (
-    <Container>
+    <S.Container>
       <PageTitle title="매장 관리" subtitle="목록" />
-      <ContentCard>
-        <TopBar>
+      <S.ContentCard>
+        <S.TopBar>
           <Space>
             <Input
               placeholder="검색어를 입력하세요"
@@ -285,6 +311,18 @@ export const StoresPage = () => {
           </Space>
           <Space>
             <Button
+              icon={<DownloadOutlined />}
+              style={{
+                borderRadius: '8px',
+                height: '40px',
+                padding: '0 20px',
+                fontWeight: 600,
+              }}
+              onClick={handleListExcelDownload}
+            >
+              엑셀 다운로드
+            </Button>
+            <Button
               type="primary"
               icon={<PlusOutlined />}
               style={{
@@ -298,14 +336,18 @@ export const StoresPage = () => {
               매장 등록
             </Button>
           </Space>
-        </TopBar>
-        <StyledTable
+        </S.TopBar>
+        <S.StyledTable
           loading={isFetching}
+          className={styles.customTable}
           columns={columns}
           dataSource={shopList?.data?.shopList ?? []}
           rowKey={(record) => record.shopCode || Math.random().toString()}
           pagination={{
             current: currentPage,
+            pageSizeOptions: [
+              10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000,
+            ],
             pageSize,
             onChange: (page, size) => {
               handlePageChange(page);
@@ -318,9 +360,9 @@ export const StoresPage = () => {
             showTotal: (total) => `총 ${total}건`,
             showSizeChanger: true,
           }}
-          //scroll={{ y: 'calc(100vh - 400px)' }}
+          scroll={{ x: 'max-content' }}
         />
-      </ContentCard>
+      </S.ContentCard>
       {selectedShopForUpload && (
         <UploadModal
           isOpen={isUploadModalOpen}
@@ -343,6 +385,6 @@ export const StoresPage = () => {
           shopSeq={selectedShopForImage.shopSeq}
         />
       )}
-    </Container>
+    </S.Container>
   );
 };

@@ -8,6 +8,8 @@ export interface IGetAdminShopItem {
   address1: string;
   address2: string;
   businessNumber: string;
+  firstLinkedDate: string;
+  lastOrderDate: string;
   shopCode: string;
   ownerName: string;
   managerName: string;

@@ -32,6 +32,7 @@
     "@repo/ui": "workspace:*",
     "@repo/util": "workspace:*",
     "antd": "^6.3.3",
+    "antd-style": "^4.1.0",
     "app-info-parser": "^1.1.6",
     "dayjs": "^1.11.19",
     "i18next": "^25.6.3",
