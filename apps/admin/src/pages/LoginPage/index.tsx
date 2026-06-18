@@ -193,6 +193,7 @@ export const LoginPage = () => {
     return (
       <button
         type="button"
+        tabIndex={-1}
         onClick={() =>
           setPasswordInputType(
             passwordInputType === 'password' ? 'text' : 'password'
@@ -225,6 +226,15 @@ export const LoginPage = () => {
               onChange={handleIdChange}
               value={id}
               errorMessage={idErrorMessage}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === 'Tab') {
+                  e.preventDefault();
+                  const passwordInput = document.querySelector(
+                    'input[placeholder*="비밀번호"]'
+                  ) as HTMLInputElement | null;
+                  passwordInput?.focus();
+                }
+              }}
             />
           </div>
           <div>
@@ -236,6 +246,11 @@ export const LoginPage = () => {
               value={password}
               rightComponent={passwordInputTextVisibilityComponent()}
               errorMessage={passwordErrorMessage}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleLogin();
+                }
+              }}
             />
           </div>
           <S.ButtonContainer>
