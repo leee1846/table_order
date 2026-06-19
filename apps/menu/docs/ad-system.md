@@ -14,6 +14,7 @@
 | Query Key | `packages/api/src/queries/queryKeys.ts` — `queryKeys.menu.adFiles(shopCode)` |
 | 데이터 로드·영상 다운로드 | `apps/menu/src/hooks/useAdData.ts` |
 | 광고 파일 상태 스토어 | `apps/menu/src/stores/useAdStore.ts` |
+| 네이티브 광고 저장소·Blob URL 생성 | `packages/util/src/app/AdStorage.ts` (`getAdObjectUrl`) |
 | 전면 대기 광고 노출 상태 | `apps/menu/src/stores/useStandbyAdStore.ts` |
 | 슬라이더 공통 컴포넌트 | `apps/menu/src/feature/AdMediaSlider/index.tsx` |
 | 전면 대기 광고 | `apps/menu/src/pages/MainPage/StandbyAd/index.tsx` |
@@ -75,9 +76,17 @@ interface IGetMenuAdFile {
    stale 영상 파일 삭제 (API 응답에 없는 filePath의 파일명)
        ↓
 3. 영상 파일(STANDBY_VIDEO, ORDER_COMP_FULL_VIDEO)만 반복
-   ├─ 디스크에 이미 있으면 → AdStorage.getAdUrl() → setLocalVideoUrl(filePath, url)
+   ├─ 디스크에 이미 있으면 → registerLocalVideoUrl(filePath, storageName)
    └─ 없으면 → AdStorage.downloadAd({ url, fileName, overwrite: false })
-              → AdStorage.getAdUrl() → setLocalVideoUrl(filePath, url)
+              → registerLocalVideoUrl(filePath, storageName)
+
+   registerLocalVideoUrl(filePath, storageName):
+     ├─ 이미 localVideoUrls[filePath]가 blob: URL이면 → 그대로 유지하고 return
+     │    (재조회 시 동일 영상의 불필요한 blob 재생성·재생 깜빡임 방지)
+     ├─ 1순위: getAdObjectUrl(storageName)
+     │    └─ Filesystem.readFile(External/sks_ads/storageName) → base64 → Blob → URL.createObjectURL
+     │       (성공 시 setLocalVideoUrl(filePath, blobUrl))
+     └─ 폴백: 위 실패(null) 시 → AdStorage.getAdUrl() (_capacitor_file_ URL) → setLocalVideoUrl
        ↓
 4. 유효 파일만 필터링
    └─ 영상: localVideoUrls[filePath]가 등록된 것만
@@ -100,7 +109,7 @@ interface IAdStoreData {
   topBannerFiles: IGetMenuAdFile[];
   orderCompleteFullFiles: IGetMenuAdFile[];
   orderCompleteSideFiles: IGetMenuAdFile[];
-  localVideoUrls: Record<string, string>; // key: filePath, value: AdStorage 로컬 URL
+  localVideoUrls: Record<string, string>; // key: filePath, value: Blob URL(blob:) 또는 폴백 _capacitor_file_ URL
   isLoaded: boolean;       // API 응답 or AppStorage 복원 완료
   isAdDataLoading: boolean; // 영상 다운로드 포함 전체 처리 진행 중
 }
@@ -110,6 +119,19 @@ interface IAdStoreData {
 
 앱 재기동 시 API 응답 전에 이전 데이터로 즉시 렌더링하기 위해 `AD_FILES` 키로 캐시한다.
 `isLoaded`가 이미 `true`이면(API가 먼저 응답) 캐시를 덮어쓰지 않는다.
+단, `localVideoUrls`(영상 로컬 URL)는 캐시 대상이 아니다 — Blob URL은 세션(프로세스) 한정이므로
+재기동 시 비어 있고, API 응답 후 `useAdData`가 다시 등록한다.
+
+### Blob URL 도입 배경과 수명 관리
+
+`_capacitor_file_` 로컬 HTTP 서버로 영상을 스트리밍하면 Range 요청 처리 문제로
+`FFmpegDemuxer: data source error`(net::ERR_FAILED) / `PIPELINE_ERROR_READ`가 발생해 재생이 끊긴다.
+이를 우회하기 위해 영상 파일 전체를 `Filesystem.readFile`로 읽어 `Blob` → `URL.createObjectURL`로 재생한다.
+
+Blob URL은 메모리에 상주하므로 `useAdStore`가 수명을 직접 관리한다 (`revokeIfObjectUrl`은 `blob:`만 해제):
+- `setLocalVideoUrl`: 같은 key를 다른 URL로 교체할 때 이전 Blob URL 해제
+- `setAdFiles`: 새 API 응답에 없는 filePath의 Blob URL 해제 후 맵에서 제거
+- `clearData`: 보유한 모든 Blob URL 해제 (리셋/로그아웃)
 
 ---
 
@@ -237,7 +259,9 @@ SSE 'AD_MENU' 메시지 수신 (useSSEHandler.ts > handleAdMenuMessage)
 
 ## 8. 주의사항
 
-- **영상 재생 소스:** 영상은 `filePath`(원본 URL)가 아니라 `localVideoUrls[filePath]`(로컬 URL)로 재생한다. `localVideoUrls`에 등록되지 않은 영상은 `prepareSlides`에서 제외되므로 슬라이드에 나타나지 않는다.
+- **영상 재생 소스:** 영상은 `filePath`(원본 URL)가 아니라 `localVideoUrls[filePath]`로 재생한다. 이 값은 1순위로 `getAdObjectUrl`이 만든 **Blob URL(`blob:`)**, 실패 시 폴백으로 `_capacitor_file_` 로컬 URL이다. `localVideoUrls`에 등록되지 않은 영상은 `prepareSlides`에서 제외되므로 슬라이드에 나타나지 않는다.
+
+- **Blob URL 수명 관리(메모리 누수 방지):** Blob URL은 세션 한정 메모리 리소스다. `useAdStore`가 `setLocalVideoUrl`(교체 시)·`setAdFiles`(제거 시)·`clearData`(리셋 시)에서 `URL.revokeObjectURL`로 해제한다. SSE `AD_MENU` 반복 갱신 시에도 동일 영상은 `registerLocalVideoUrl`의 `blob:` 가드로 재생성하지 않아 누수와 재생 깜빡임이 없다.
 
 - **TopBannerAd는 AdMediaSlider를 사용하지 않는다:** Swiper `Autoplay` 모듈을 직접 사용하며 영상을 지원하지 않는다. 영상 지원이 필요하면 `AdMediaSlider`로 교체해야 한다.
 

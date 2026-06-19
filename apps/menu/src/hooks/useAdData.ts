@@ -3,7 +3,7 @@ import type { IGetMenuAdFile } from '@repo/api/types';
 import { useGetMenuAdFiles } from '@repo/api/queries';
 import { useShopStore } from '@/stores/useShopStore';
 import { useAdStore } from '@/stores/useAdStore';
-import { AdStorage } from '@repo/util/app';
+import { AdStorage, getAdObjectUrl } from '@repo/util/app';
 
 /** 태블릿 첫 부팅 시 Capacitor 엔진 준비 대기 후 광고 API 요청 */
 const NATIVE_AD_FETCH_DELAY_MS = 5000;
@@ -74,6 +74,18 @@ const registerLocalVideoUrl = async (
   storageName: string,
   setLocalVideoUrl: (filePathKey: string, url: string) => void
 ): Promise<void> => {
+  // 이미 유효한 Blob URL을 가진 영상은 재생성하지 않음 (재조회 때 불필요한 영상 리로드 방지)
+  const existing = useAdStore.getState().data.localVideoUrls[filePath];
+  if (existing?.startsWith('blob:')) {
+    return;
+  }
+  // 1순위: 파일을 직접 읽어 Blob URL 사용 (HTTP 스트리밍의 data source 오류 우회)
+  const objectUrl = await getAdObjectUrl(storageName);
+  if (objectUrl) {
+    setLocalVideoUrl(filePath, objectUrl);
+    return;
+  }
+  // 폴백: Blob 생성 실패 시 기존 로컬 URL(_capacitor_file_) 사용
   const { url } = await AdStorage.getAdUrl({ fileName: storageName });
   if (url) {
     setLocalVideoUrl(filePath, url);
