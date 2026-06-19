@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import adminI18n, { useAdminTranslation } from '@/config/i18n';
 import { SectionWrapper } from '@/pages/settings/MiscellaneousPage/common/SectionWrapper';
 import * as UIStyles from '@repo/ui/styles';
-import { BasicButton, Calender } from '@repo/ui/components';
+import { BasicButton, Calender, FullscreenLoadingSpinner } from '@repo/ui/components';
 import { CalendarMonthIcon, SettingsIcon } from '@repo/ui/icons';
 import { theme } from '@repo/ui';
 import { usePostShopLog } from '@repo/api/queries';
@@ -120,25 +120,10 @@ export const DeviceManagement = () => {
     }
   };
 
+  const [isFetchingLogFiles, setIsFetchingLogFiles] = useState(false);
   const sendLog = async () => {
     if (!selectedDate || logFileEntries.length === 0) {
       toast(t('날짜를 선택해주세요.'), TOAST_OPTIONS);
-      return;
-    }
-
-    let logFiles;
-    try {
-      logFiles = await LogManager.fetchLogFilesForDate({
-        date: selectedDate,
-        entries: logFileEntries,
-      });
-    } catch {
-      toast(t('로그를 가져오는데 실패하였습니다.'), TOAST_OPTIONS);
-      return;
-    }
-
-    if (logFiles.length === 0) {
-      toast(t('로그가 존재하지 않습니다.'), TOAST_OPTIONS);
       return;
     }
 
@@ -149,25 +134,43 @@ export const DeviceManagement = () => {
       secondaryText: t('취소'),
       onConfirm: () => {
         void (async () => {
-          if (!shopCode) {
-            toast(t('로그 전송에 실패하였습니다.'), TOAST_OPTIONS);
-            return;
-          }
-
           try {
-            await Promise.all(
-              logFiles.map((file) =>
-                postShopLog({
-                  shopCode,
-                  type: 'POS_APP',
-                  logText: file.content,
-                  fileName: file.name,
-                })
-              )
-            );
+            setIsFetchingLogFiles(true);
+            let logFiles;
+
+            try {
+              logFiles = await LogManager.fetchLogFilesForDate({
+                date: selectedDate,
+                entries: logFileEntries,
+              });
+            } catch {
+              toast(t('로그를 가져오는데 실패하였습니다.'), TOAST_OPTIONS);
+              return;
+            }
+
+            if (logFiles.length === 0) {
+              toast(t('로그가 존재하지 않습니다.'), TOAST_OPTIONS);
+              return;
+            }
+
+            if (!shopCode) {
+              toast(t('로그 전송에 실패하였습니다.'), TOAST_OPTIONS);
+              return;
+            }
+
+            for (const file of logFiles) {
+              await postShopLog({
+                shopCode,
+                type: 'POS_APP',
+                logText: file.content,
+                fileName: file.name,
+              });
+            }
             toast(t('로그 전송을 성공하였습니다.'), TOAST_OPTIONS);
           } catch {
             toast(t('로그 전송에 실패하였습니다.'), TOAST_OPTIONS);
+          } finally {
+            setIsFetchingLogFiles(false);
           }
         })();
       },
@@ -176,6 +179,8 @@ export const DeviceManagement = () => {
 
   return (
     <>
+      {isFetchingLogFiles && <FullscreenLoadingSpinner />}
+
       <SectionWrapper
         title={t('디바이스 관리')}
         icon={
@@ -211,7 +216,11 @@ export const DeviceManagement = () => {
                   : t('날짜 선택')}
               </S.DateText>
             </S.DateButton>
-            <BasicButton variant="Outline_Grey_M" onClick={sendLog}>
+            <BasicButton
+              variant="Outline_Grey_M"
+              onClick={sendLog}
+              disabled={isFetchingLogFiles}
+            >
               {t('로그 전송')}
             </BasicButton>
           </S.Actions>

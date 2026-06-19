@@ -1,4 +1,5 @@
 import { Capacitor, registerPlugin, type Plugin } from '@capacitor/core';
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 
 export interface LogFile {
   /** 파일명 */
@@ -126,20 +127,21 @@ export const LogManager: ILogManager = {
     return Promise.all(
       targetEntries.map(async (entry) => {
         const src = Capacitor.convertFileSrc(entry.path);
-        const response = await fetch(src);
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch log file: ${response.status}`);
+        const { data } = await Filesystem.readFile({
+          path: `logs/${entry.name}`,
+          directory: Directory.External,
+          encoding: Encoding.UTF8,
+        });
+        if (typeof data !== 'string') {
+          throw new Error(`Failed to read log file: ${entry.name}`);
         }
-
-        const content = await response.text();
 
         return {
           name: entry.name,
           size: entry.size,
           originalPath: entry.path,
           src,
-          content,
+          content: data,
         };
       })
     );
