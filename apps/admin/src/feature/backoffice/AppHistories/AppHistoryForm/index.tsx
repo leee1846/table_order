@@ -94,7 +94,7 @@ export const AppHistoryForm = ({
           <>
             <FieldGroup>
               <Label>
-                앱 파일 (APK/ZIP) <span>*</span>
+                앱 파일 (APK/ZIP/EXE) <span>*</span>
               </Label>
               {mode === 'detail' && formData.downloadPath ? (
                 <FileUploadWrapper>

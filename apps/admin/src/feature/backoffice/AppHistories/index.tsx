@@ -16,11 +16,13 @@ import { APP_TYPE } from '../SidebarLayout';
 
 type Mode = 'create' | 'edit' | 'detail';
 
-const APP_ARCHIVE_ACCEPT = '.apk,.zip';
+const APP_ARCHIVE_ACCEPT = '.apk,.zip,.exe';
 
 const isAllowedAppArchiveFile = (fileName: string): boolean => {
   const lower = fileName.toLowerCase();
-  return lower.endsWith('.apk') || lower.endsWith('.zip');
+  return (
+    lower.endsWith('.apk') || lower.endsWith('.zip') || lower.endsWith('.exe')
+  );
 };
 
 interface Props {
@@ -172,10 +174,73 @@ export const AppHistories = ({
       } catch (error) {
         console.error('압축 해제 실패:', error);
       }
+    } else if (file.name?.toLowerCase().includes('.exe')) {
+      const reader = new FileReader();
+
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const arrayBuffer = e.target?.result as ArrayBuffer | null;
+        if (!arrayBuffer) {
+          return;
+        }
+
+        const uint8Array = new Uint8Array(arrayBuffer);
+
+        // 1. 'ProductVersion' 문자열의 UTF-16 LE 바이트 배열 정의 (p.r.o.d.u.c.t.V.e.r.s.i.o.n.)
+        const pattern = new Uint8Array([
+          80, 0, 114, 0, 111, 0, 100, 0, 117, 0, 99, 0, 116, 0, 86, 0, 101, 0,
+          114, 0, 115, 0, 105, 0, 111, 0, 110, 0,
+        ]);
+
+        let matchIndex = -1;
+
+        // 2. 바이너리에서 패턴 고속 검색
+        for (let i = 0; i <= uint8Array.length - pattern.length; i++) {
+          let found = true;
+          for (let j = 0; j < pattern.length; j++) {
+            if (uint8Array[i + j] !== pattern[j]) {
+              found = false;
+              break;
+            }
+          }
+          if (found) {
+            matchIndex = i;
+            break;
+          }
+        }
+
+        // 3. 패턴 매칭 성공 시 데이터 추출
+        if (matchIndex !== -1) {
+          // 'ProductVersion' 키워드 뒤의 데이터 영역(120바이트)을 잘라 디코딩
+          const searchRegion = uint8Array.subarray(
+            matchIndex,
+            matchIndex + 120
+          );
+          const text = new TextDecoder('utf-16le').decode(searchRegion);
+
+          // 숫자.숫자.숫자.숫자 형태의 버전 정규식 매칭
+          const versionRegex = /\d+\.\d+\.\d+(?:\.\d+)?/;
+          const versionMatch = text.match(versionRegex);
+
+          if (versionMatch && versionMatch[0]) {
+            updateFormData({ version: versionMatch[0], type: 'AGENT' });
+            return; // 정상 종료
+          }
+        }
+
+        // 4. 실패 시 예외 처리
+        message.warning('버전 정보(ProductVersion)를 찾을 수 없습니다.');
+        updateFormData({
+          version: DEFAULT_APP_HISTORIES_DATA.version,
+          type: DEFAULT_APP_HISTORIES_DATA.type,
+        });
+      };
+
+      // 구조상 1MB 뒤쪽에 정보가 있을 수 있으므로 slice 없이 파일 전체를 읽는 것을 권장합니다.
+      reader.readAsArrayBuffer(file);
     }
 
     if (!isAllowedAppArchiveFile(file.name)) {
-      message.warning('APK 또는 ZIP 파일만 업로드 가능합니다.');
+      message.warning('APK, ZIP, EXE 파일만 업로드 가능합니다.');
       setAppFile(null);
       updateFormData({
         version: DEFAULT_APP_HISTORIES_DATA.version,
