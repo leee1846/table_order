@@ -64,6 +64,7 @@ import { StoreGroupPage } from '@/pages/backoffice/StoreGroupPage';
 import { StoreGroupNewPage } from '@/pages/backoffice/StoreGroupNewPage';
 import MenuTagStatus from '@/pages/backoffice/MenuTagStatus';
 import { MembersDetailPage } from '@/pages/backoffice/MembersDetailPage';
+import { ManualPage } from '@/pages/backoffice/ManualPage';
 
 // ============================================================================
 // Helper Functions - Token & Payload
@@ -281,6 +282,11 @@ const createBackofficeRoutes = () => [
     path: ROUTES.BACKOFFICE.NOTICES_DETAIL.path,
     loader: requireBackofficeLoader,
     element: createRoute(NoticesDetailPage),
+  },
+  {
+    path: ROUTES.BACKOFFICE.MANUAL.path,
+    loader: requireBackofficeLoader,
+    element: createRoute(ManualPage),
   },
   {
     path: ROUTES.BACKOFFICE.MEMBERS.path,

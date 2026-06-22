@@ -18,5 +18,6 @@ export * from './storeGroup';
 export * from './store';
 export * from './campaign';
 export * from './menuBulk';
+export * from './manual';
 
 export { queryKeys } from './queryKeys';

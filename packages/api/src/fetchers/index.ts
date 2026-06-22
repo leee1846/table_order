@@ -16,3 +16,4 @@ export * from './member';
 export * from './sse';
 export * from './storeGroup';
 export * from './store';
+export * from './manual';

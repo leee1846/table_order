@@ -351,4 +351,11 @@ export const queryKeys = {
       params.size,
     ],
   },
+
+  manual: {
+    all: ['menu'] as const,
+    /** 매뉴얼 리스트 조회 */
+    list: (page?: number, size?: number, keyword?: string) =>
+      [...queryKeys.manual.all, 'list', page, size, keyword] as const,
+  },
 };

@@ -77,6 +77,10 @@ export const ROUTES = {
       path: 'members/:memberId',
       generate: (memberId: string) => `/backoffice/members/${memberId}`,
     },
+    MANUAL: {
+      path: 'manual',
+      generate: () => '/backoffice/manual',
+    },
     CAMPAIGN: {
       path: 'campaign',
       generate: () => `/backoffice/campaign`,

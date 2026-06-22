@@ -206,4 +206,12 @@ export const ENDPOINTS = {
     COPY: (campaignSeq: number | string) => `/campaigns/${campaignSeq}`,
     ACTIVE: '/campaigns/active',
   },
+
+  MANUAL: {
+    MANUAL_LIST: '/admin/manual/list',
+    UPLOAD: '/admin/manual',
+    DOWNLOAD: (manualSeq: number | string) =>
+      `/admin/manual/${manualSeq}/download`,
+    DELETE: '/admin/manual',
+  },
 } as const;
