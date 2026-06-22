@@ -18,6 +18,9 @@
 | 할부 공통 로직 | `apps/menu/src/feature/Installment/` |
 | 세금·금액 계산 | `apps/menu/src/utils/calculation.ts` |
 | 환불 실패 로그 | `apps/menu/src/utils/logOrderRequestRefundFailed.ts` |
+| KICC RESULT_CODE 상수 | `apps/menu/src/constants/kiccPaymentResultCode.ts` |
+| KICC 에러 처리 유틸 | `apps/menu/src/utils/kiccPaymentError.ts` |
+| 가맹점 다운로드 (설정) | `apps/menu/src/pages/settings/MiscellaneousPage/Payment/index.tsx` |
 | 모달 상태 | `apps/menu/src/stores/useModalStore.ts` |
 | POS 이중 경로 조율 | `packages/feature/src/stores/usePosOrderStore.ts` |
 | SSE 연결 관리 | `packages/feature/src/hooks/useSSE.ts` |
@@ -252,11 +255,38 @@ interface ISseMessage {
 
 ## 7. 에러 처리 & 환불 패턴
 
+### 7-1. 승인 후 실패 시 환불 (`cancelPaymentAndThrow`)
+
+카드 결제·나눠서 결제에서 `Payment.approve()` 성공 이후 `createTableOrder()` 또는 `postPaymentApproval()`이 실패하면 동일한 패턴으로 처리한다.
+
+```ts
+// CardPaymentInstallmentModal, SplitPaymentModal 공통 패턴
+const cancelPaymentAndThrow = async (
+  paymentResult: IPaymentResponse,
+  buildRefundFailedSummary: () => string
+): Promise<never> => {
+  try {
+    await Payment.cancel(paymentResult);
+  } catch {
+    logOrderRequestRefundFailed(buildRefundFailedSummary(), paymentResult);
+    throw new Error(t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.'));
+  }
+  throw new Error(t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'));
+};
+
+// 사용 예
+await createOrder().catch(() =>
+  cancelPaymentAndThrow(paymentResult, () =>
+    orderRequestRefundFailedSummaryAfterOrderCreate(shopCode, tableNumber)
+  )
+);
+```
+
 | 실패 지점 | 이미 발생한 것 | 처리 |
 |-----------|--------------|------|
-| `createTableOrder()` 실패 | 단말기 승인 완료 | `Payment.cancel(approvalResult)` |
-| `postPaymentApproval()` 실패 | 단말기 승인 완료 | `Payment.cancel(approvalResult)` |
-| POS 폴링 -603 or 타임아웃 | 서버 승인 완료 | `Payment.cancel()` → 실패 시 `logOrderRequestRefundFailed()` |
+| `createTableOrder()` 실패 | 단말기 승인 완료 | `cancelPaymentAndThrow()` → 환불 성공 시 `'직원에게 문의'`, 환불 실패 시 로그 + `'환불은 직원에게 문의'` |
+| `postPaymentApproval()` 실패 | 단말기 승인 완료 | 동일 |
+| POS 폴링 -603 or 타임아웃 | 서버 승인 완료 | `Payment.cancel()` → 실패 시 `logOrderRequestRefundFailed()` → `handleOrderCompleteFailure()` |
 
 ```ts
 // apps/menu/src/utils/logOrderRequestRefundFailed.ts
@@ -267,6 +297,78 @@ orderRequestRefundFailedSummaryAfterOrderCreate(shopCode, tableNumber): string
 orderRequestRefundFailedSummaryAfterPaymentApproval(paymentMethodCode): string
 orderRequestRefundFailedSummaryAfterPosOrderFailure(): string
 ```
+
+`cancelPaymentAndThrow`에서 던지는 `Error`는 API/서버 에러로 취급된다. KICC 단말기 원문이 아닌 `t()`로 만든 고정 메시지가 dialog에 노출된다.
+
+### 7-2. KICC 단말기 에러 처리
+
+KICC 관련 에러 dialog는 아래 3개 파일에서 `getKiccPaymentErrorDialogMessage()`로 통합 처리한다.
+
+| 파일 | i18n | fallback 메시지 |
+|------|------|----------------|
+| `CardPaymentInstallmentModal` | `useCustomerTranslation` | `주문 요청에 실패하였습니다. 직원에게 문의해주세요.` |
+| `SplitPaymentModal` | `useCustomerTranslation` | `결제 처리 중 오류가 발생했습니다.` |
+| `MiscellaneousPage/Payment` (가맹점 다운로드) | `useAdminTranslation` | `가맹점 다운로드 중 오류가 발생했습니다.` |
+
+#### 에러 분류 흐름
+
+```
+catch (error)
+  ├─ isKiccPaymentUserCancelError(error) → dialog 없이 return (조용히 종료)
+  └─ handlePaymentError(error)
+       └─ getKiccPaymentErrorDialogMessage(error, fallback, t)
+            ├─ API/서버 Error (isKiccPaymentPluginError === false)
+            │    └─ error.message 그대로 (또는 fallback)
+            └─ KICC 플러그인 reject
+                 └─ RESULT_CODE → constant 한국어 메시지 → t(한국어) 번역
+                      └─ `(${resultCode}) ${t(messageByCode)}` 형식으로 dialog 노출
+```
+
+#### KICC reject 객체 형태
+
+환경(Capacitor 버전·네이티브 구현)에 따라 `RESULT_CODE` / `RESULT_MSG` 위치가 달라질 수 있다. 파서는 아래를 모두 확인한다.
+
+```ts
+error.data?.RESULT_CODE
+error.RESULT_CODE
+error.code                    // Capacitor 표준 reject
+error.data?.RESULT_MSG / EVENT_MSG
+error.RESULT_MSG / EVENT_MSG
+```
+
+#### 사용자 취소 판정 (`isKiccPaymentUserCancelError`)
+
+다음 중 하나이면 취소로 간주하고 dialog를 띄우지 않는다.
+
+```ts
+error.message === 'USER_CANCEL' && error.code === 'CANCELED'  // Capacitor reject
+RESULT_CODE === '9999'                                         // KICC 단말기 취소
+```
+
+#### RESULT_CODE 상수 & 다국어
+
+```ts
+// apps/menu/src/constants/kiccPaymentResultCode.ts
+KICC_PAYMENT_RESULT_MESSAGE_BY_CODE  // RESULT_CODE → 한국어 기본 메시지 (350개)
+
+// apps/menu/src/utils/kiccPaymentError.ts
+getKiccPaymentErrorDialogMessage(error, fallbackMessage, t): string
+isKiccPaymentUserCancelError(error): boolean
+```
+
+다국어는 기존 flat key 방식을 따른다. constant의 **한국어 메시지 자체가 i18n 키**이며, `locales/{en,jp,ch,ru}/translation.json`에 번역이 등록되어 있다. 고유 한국어 메시지 328개(중복 코드는 동일 키 공유).
+
+```ts
+// 예: RESULT_CODE '8035' → constant '잔액 부족' → t('잔액 부족') → EN: 'Insufficient balance'
+// dialog 노출: "(8035) Insufficient balance"
+```
+
+| 에러 종류 | dialog 메시지 출처 |
+|----------|-------------------|
+| `Payment.approve()` KICC reject | constant + `t()` 다국어 + `(코드)` 접두사 |
+| `cancelPaymentAndThrow` throw | `error.message` (API 에러, `t()` 고정 문구) |
+| POS 실패 (`handleOrderCompleteFailure`) | `t()` 고정 문구 (KICC 미적용) |
+| 가맹점 다운로드 KICC reject | constant + `t()` 다국어 + `(코드)` 접두사 |
 
 ---
 
@@ -304,3 +406,6 @@ convertCartMenusToAdjustedOrders(cartMenus): IOrder[]
 - **`postPaymentApproval` 반환값:** `IApiResponse<number>`의 `data`가 `paymentSeq`다. 환불(`putPaymentCancel`) 호출 시 필요하므로 반드시 저장해야 한다.
 - **SSE 'PAYMENT' 타입 없음:** `ISseMessage.type`에 `'PAYMENT'`는 존재하지 않는다.
 - **나눠서 결제 주문 생성:** 첫 라운드에서만 `createTableOrder()`를 호출한다. 이후 라운드는 동일한 `orderGroupUuid`와 `orderUuid`를 재사용한다.
+- **KICC 에러 vs API 에러 구분:** `getKiccPaymentErrorDialogMessage`는 `isKiccPaymentPluginError`로 KICC reject 여부를 판별한다. `throw new Error(t(...))` 형태의 API/서버 에러는 `error.message`를 그대로 노출하므로 KICC constant가 적용되지 않는다.
+- **`Payment.cancel` 실패는 KICC dialog로 노출되지 않음:** `cancelPaymentAndThrow` 내부에서 catch 후 `throw new Error(t('...환불은 직원에게...'))`로 변환된다.
+- **KICC 다국어 키:** `kicc.error.{code}` 형식이 아니라 constant 한국어 메시지(`잔액 부족` 등)가 i18n 키다. 번역 추가 시 `translation.json`에 한국어 키로 등록한다.

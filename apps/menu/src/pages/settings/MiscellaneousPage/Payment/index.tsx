@@ -4,6 +4,7 @@ import { useAdminTranslation } from '@/config/i18n/admin.i18n';
 import { useMerchantRegistration } from '@/hooks/useMerchantRegistration';
 import { useShopDetailData } from '@/hooks/useShopDetailData';
 import { openConfirmDialog, toast } from '@repo/feature/utils';
+import { getKiccPaymentErrorDialogMessage } from '@/utils/kiccPaymentError';
 import { useState } from 'react';
 
 export const Payment = () => {
@@ -65,33 +66,13 @@ export const Payment = () => {
         duration: 1500,
       });
     } catch (error) {
-      // 에러 데이터 안전하게 추출
-      const errorData = (
-        error as {
-          data?: {
-            RESULT_CODE?: string;
-            RESULT_MSG?: string;
-            EVENT_MSG?: string;
-          };
-        }
-      )?.data;
-
-      let errorMessage = '가맹점 다운로드 중 오류가 발생했습니다.';
-      let errorCode = '';
-
-      if (errorData) {
-        errorMessage =
-          errorData.RESULT_MSG || errorData.EVENT_MSG || errorMessage;
-        errorCode = errorData.RESULT_CODE || '';
-      } else if (error instanceof Error) {
-        errorMessage = error.message || errorMessage;
-      }
-
       openConfirmDialog({
         title: t('오류'),
-        content: errorCode
-          ? `${errorMessage}\n오류 코드: ${errorCode}`
-          : errorMessage,
+        content: getKiccPaymentErrorDialogMessage(
+          error,
+          t('가맹점 다운로드 중 오류가 발생했습니다.'),
+          t
+        ),
       });
     } finally {
       setIsDownloading(false);

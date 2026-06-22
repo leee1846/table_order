@@ -56,6 +56,10 @@ import {
   orderRequestRefundFailedSummaryAfterPosOrderFailure,
 } from '@/utils/logOrderRequestRefundFailed';
 import { TABLE_REMOVED_STATUS_CODE } from '@/constants/common';
+import {
+  getKiccPaymentErrorDialogMessage,
+  isKiccPaymentUserCancelError,
+} from '@/utils/kiccPaymentError';
 
 interface Props {
   onClose: () => void;
@@ -186,17 +190,6 @@ const calculatePersonPrice = (
   return personIndex === 0 ? remainderAmount : baseAmount;
 };
 
-
-/**
- * 사용자 취소 에러 여부 확인
- * 결제 과정에서 사용자가 취소한 경우를 판별
- */
-const isUserCancelError = (error: unknown): boolean => {
-  return (
-    (error as Error).message === 'USER_CANCEL' &&
-    (error as unknown as { code: string }).code === 'CANCELED'
-  );
-};
 
 export const SplitPaymentModal = ({ onClose }: Props) => {
   const { t } = useCustomerTranslation();
@@ -529,6 +522,27 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   };
 
   /**
+   * 카드 승인 후 단계(주문 생성·결제 승인 전송)가 실패했을 때 호출.
+   * 승인된 카드 결제를 취소(환불)하고 에러를 던진다.
+   * - 환불 성공: '직원에게 문의' 에러
+   * - 환불 실패: 진단 로그 후 '환불 문의' 에러
+   */
+  const cancelPaymentAndThrow = async (
+    paymentResult: IPaymentResponse,
+    buildRefundFailedSummary: () => string
+  ): Promise<never> => {
+    try {
+      await Payment.cancel(paymentResult);
+    } catch {
+      logOrderRequestRefundFailed(buildRefundFailedSummary(), paymentResult);
+      throw new Error(
+        t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
+      );
+    }
+    throw new Error(t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.'));
+  };
+
+  /**
    * 카드 결제 실행
    * @param paymentAmount - 결제할 금액
    * @param onSuccess - 결제 성공 시 실행할 콜백
@@ -560,7 +574,7 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
           ? INSTALLMENT_LUMP_SUM
           : installmentMonths;
 
-      // 3. 카드 단말기 승인 요청
+      // 3. 카드 단말기 승인 요청 (실패 시 그대로 전파 → KICC 메시지 처리)
       const paymentResult: IPaymentResponse = await Payment.approve({
         amount: paymentAmount,
         tax: taxAmount,
@@ -571,69 +585,45 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
       const shopCode = shopData?.shopCode ?? '';
       const tableNumber = useDeviceStore.getState().data?.tableNumber ?? '';
 
-      // 4. 주문 생성 또는 재사용 (첫 결제 시에만 생성)
-      let orderGroupUuid: string;
-      let orderUuid: string;
-      try {
-        const orderResult = await ensureOrderCreated();
-        orderGroupUuid = orderResult.orderGroupUuid;
-        orderUuid = orderResult.orderUuid;
-      } catch {
-        try {
-          await Payment.cancel(paymentResult);
-        } catch {
-          logOrderRequestRefundFailed(
-            orderRequestRefundFailedSummaryAfterOrderCreate(
-              shopCode,
-              tableNumber
-            ),
-            paymentResult
-          );
-          throw new Error(
-            t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
-          );
-        }
-        throw new Error(t('결제 처리 중 오류가 발생했습니다.'));
-      }
+      // 4. 주문 생성 또는 재사용 (첫 결제 시에만 생성, 실패 시 카드 환불 후 에러)
+      const { orderGroupUuid, orderUuid } = await ensureOrderCreated().catch(
+        () =>
+          cancelPaymentAndThrow(
+            paymentResult,
+            () =>
+              orderRequestRefundFailedSummaryAfterOrderCreate(
+                shopCode,
+                tableNumber
+              )
+          )
+      );
 
-      // 5. 서버에 결제 승인 정보 전송 (실패 시 에러 무시)
+      // 5. 서버에 결제 승인 정보 전송 (실패 시 카드 환불 후 에러)
       paymentSeqRef.current = 0;
-      try {
-        const shopDetailData = useShopDetailStore.getState().data;
-        const approvalResponse = await postPaymentApproval({
-          params: {
-            paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
-            orderGroupUuid,
-            orderUuid,
-          },
-          data: paymentResult,
-        });
-        paymentSeqRef.current = approvalResponse.data ?? 0;
-      } catch {
-        try {
-          await Payment.cancel(paymentResult);
-        } catch {
-          logOrderRequestRefundFailed(
+      const shopDetailData = useShopDetailStore.getState().data;
+      const approvalResponse = await postPaymentApproval({
+        params: {
+          paymentMethodCode: shopDetailData?.shopSetting?.vanCode ?? 'EASY',
+          orderGroupUuid,
+          orderUuid,
+        },
+        data: paymentResult,
+      }).catch(() =>
+        cancelPaymentAndThrow(
+          paymentResult,
+          () =>
             orderRequestRefundFailedSummaryAfterPaymentApproval(
               useShopDetailStore.getState().data?.shopSetting?.vanCode ?? 'EASY'
-            ),
-            paymentResult
-          );
-          throw new Error(
-            t('주문 요청에 실패하였습니다. 환불은 직원에게 문의해주세요.')
-          );
-        }
-        throw new Error(
-          t('주문 요청에 실패하였습니다. 직원에게 문의해주세요.')
-        );
-        // postPaymentApproval 실패는 무시
-      }
+            )
+        )
+      );
+      paymentSeqRef.current = approvalResponse.data ?? 0;
 
       // 6. 성공 콜백 실행 (setState 반영 전에 사용하기 위해 orderUuid, paymentResult 인자로 전달)
       onSuccess(orderUuid, paymentResult);
     } catch (error) {
       // 사용자가 결제를 취소한 경우
-      if (isUserCancelError(error)) {
+      if (isKiccPaymentUserCancelError(error)) {
         // setModalData('isCardPaymentProgressModalOpened', false);
         return;
       }
@@ -649,10 +639,11 @@ export const SplitPaymentModal = ({ onClose }: Props) => {
   const handlePaymentError = (error: unknown): void => {
     // setModalData('isCardPaymentProgressModalOpened', false);
 
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : t('결제 처리 중 오류가 발생했습니다.');
+    const errorMessage = getKiccPaymentErrorDialogMessage(
+      error,
+      t('결제 처리 중 오류가 발생했습니다.'),
+      t
+    );
 
     openConfirmDialog({
       title: t('오류'),
