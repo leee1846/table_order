@@ -13,9 +13,10 @@ import * as S from '@/pages/settings/NoticesPage/Notices/notices.style';
 interface NoticesProps {
   notices: INotice[];
   pageSize?: number;
+  currentPage?: number
 }
 
-export const Notices = ({ notices, pageSize }: NoticesProps) => {
+export const Notices = ({ notices, pageSize, currentPage }: NoticesProps) => {
   const BOARD_TYPE_LABELS: Record<TNoticeBoardType, string> = {
     GENERAL: t('일반'),
     EMERGENCY: t('긴급'),
@@ -69,7 +70,7 @@ export const Notices = ({ notices, pageSize }: NoticesProps) => {
 
   return (
     <S.Container>
-      {notices.map((notice) => {
+      {notices.map((notice, index) => {
         const isOpen = openNoticeId === notice.noticeSeq;
 
         return (
@@ -86,7 +87,7 @@ export const Notices = ({ notices, pageSize }: NoticesProps) => {
               appIsNative={appIsNative}
             >
               <S.LeftContainer isOpen={isOpen}>
-                <S.Num isOpen={isOpen}>{notice.noticeSeq}</S.Num>
+                <S.Num isOpen={isOpen}>{(Number(currentPage) - 1) * Number(pageSize) + Number(index) + 1}</S.Num>
                 <S.Status
                   boardType={notice.boardType as TNoticeBoardType}
                   isOpen={isOpen}

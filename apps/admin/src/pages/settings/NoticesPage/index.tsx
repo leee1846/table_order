@@ -51,7 +51,7 @@ export const NoticesPage = () => {
             </BasicButton>
           </S.Header>
 
-          <Notices notices={notices} pageSize={PAGE_SIZE} />
+          <Notices notices={notices} pageSize={PAGE_SIZE} currentPage={currentPage}/>
         </S.Container>
 
         <UIStyles.setting.Footer>
