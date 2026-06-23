@@ -111,10 +111,10 @@ export const StoresPage = () => {
       매장명: item.shopName || '-',
       사업자등록번호: item.businessNumber || '-',
       주소: item.address1 || '-',
-      '최초 연동 일시': item.firstLinkedDate
+      '최초 POS 연동 일시': item.firstLinkedDate
         ? formatDateTime(item.firstLinkedDate, 'YYYY-MM-DD HH:mm')
         : '-',
-      '마지막 주문 일시': item.lastOrderDate
+      '최근 주문 일시': item.lastOrderDate
         ? formatDateTime(item.lastOrderDate, 'YYYY-MM-DD HH:mm')
         : '-',
     }));
@@ -159,6 +159,7 @@ export const StoresPage = () => {
       title: '매장명',
       dataIndex: 'shopName',
       key: 'shopName',
+      width: 230,
       onHeaderCell: () => ({
         style: { textAlign: 'center' },
       }),
@@ -169,19 +170,19 @@ export const StoresPage = () => {
           '-'
         ),
     },
-    {
-      title: '사업자등록번호',
-      dataIndex: 'businessNumber',
-      key: 'businessNumber',
-      width: 130,
-      align: 'center',
-      render: (text: string) =>
-        text ? (
-          <span style={{ userSelect: 'text', cursor: 'text' }}>{text}</span>
-        ) : (
-          '-'
-        ),
-    },
+    // {
+    //   title: '사업자등록번호',
+    //   dataIndex: 'businessNumber',
+    //   key: 'businessNumber',
+    //   width: 130,
+    //   align: 'center',
+    //   render: (text: string) =>
+    //     text ? (
+    //       <span style={{ userSelect: 'text', cursor: 'text' }}>{text}</span>
+    //     ) : (
+    //       '-'
+    //     ),
+    // },
     {
       title: '주소',
       dataIndex: 'address1',
@@ -191,7 +192,7 @@ export const StoresPage = () => {
       }),
     },
     {
-      title: '최초 연동 일시',
+      title: '최초 POS 연동 일시',
       dataIndex: 'firstLinkedDate',
       key: 'firstLinkedDate',
       width: 150,
@@ -200,10 +201,10 @@ export const StoresPage = () => {
         date ? formatDateTime(date, 'YYYY-MM-DD HH:mm') : '-',
     },
     {
-      title: '마지막 주문 일시',
+      title: '최근 주문 일시',
       dataIndex: 'lastOrderDate',
       key: 'lastOrderDate',
-      width: 150,
+      width: 142,
       align: 'center',
       render: (date?: string) =>
         date ? formatDateTime(date, 'YYYY-MM-DD HH:mm') : '-',
@@ -257,7 +258,7 @@ export const StoresPage = () => {
     {
       title: '관리',
       key: 'management',
-      width: 90,
+      width: 80,
       align: 'center',
       fixed: 'end',
       render: (_, record) => (
