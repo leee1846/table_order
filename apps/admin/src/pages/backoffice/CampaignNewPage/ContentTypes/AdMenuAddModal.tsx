@@ -53,6 +53,11 @@ const LabelWrapper = styled.div`
   gap: 8px;
 `;
 
+const RequiredMark = styled.span`
+  color: #ff4d4f;
+  margin-left: 4px;
+`;
+
 // --- Component ---
 const AdMenuAddModal: React.FC<AdMenuAddModalProps> = ({
   isOpen,
@@ -114,6 +119,10 @@ const AdMenuAddModal: React.FC<AdMenuAddModalProps> = ({
   };
 
   const handleConfirm = () => {
+    if (!selectedSeq) {
+      message.warning('메뉴 그룹을 선택해주세요.');
+      return;
+    }
     onConfirm({
       selectedItem:
         menuGroupResponse?.data?.content.find(
@@ -176,7 +185,7 @@ const AdMenuAddModal: React.FC<AdMenuAddModalProps> = ({
         {/* 1. 선택된 메뉴 영역 */}
         <Section>
           <Text strong style={{ fontSize: '14px', color: '#262626' }}>
-            메뉴 그룹 선택{' '}
+            메뉴 그룹 선택<RequiredMark>*</RequiredMark>
             {/* <Text type="secondary" style={{ fontWeight: 'normal' }}>
               (1개만 선택 가능)
             </Text> */}
