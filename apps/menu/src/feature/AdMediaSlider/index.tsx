@@ -5,10 +5,30 @@ import type { IGetMenuAdFile } from '@repo/api/types';
 import * as S from '@/feature/AdMediaSlider/adMediaSlider.style';
 import 'swiper/css';
 import { AdThumbnailImage } from '@repo/ui/icons';
+// TODO: 제거 예정 (영상 재생 실패 추적 로그)
+import { saveAppLog } from '@repo/util/app';
 
 // 이미지에는 종료 이벤트가 없어서 시간 기준 완료 판단
 const IMAGE_AUTO_SLIDE_MS = 10000;
 const EMPTY_LOCAL_VIDEO_URLS: Readonly<Record<string, string>> = {};
+
+// TODO: 제거 예정 (영상 재생 실패 추적 로그) — 아래 상수/헬퍼 4개 블록 전체
+// HTMLMediaElement.error.code → 사람이 읽을 수 있는 이름 (재생 실패 원인 추적용)
+const MEDIA_ERROR_NAME: Record<number, string> = {
+  1: 'MEDIA_ERR_ABORTED',
+  2: 'MEDIA_ERR_NETWORK',
+  3: 'MEDIA_ERR_DECODE',
+  4: 'MEDIA_ERR_SRC_NOT_SUPPORTED',
+};
+
+// 재생 소스가 Blob인지 _capacitor_file_ 스트리밍 폴백인지 구분
+const srcKind = (src: string): string =>
+  src.startsWith('blob:') ? 'blob' : 'capacitor-file';
+
+// 재생 중인데 currentTime이 이 시간 이상 진행되지 않으면 멈춤(frozen)으로 판단
+const STALL_DETECT_MS = 3000;
+// 멈춤 감지 폴링 주기
+const STALL_POLL_MS = 1000;
 
 // 영상 파일만 로컬 다운로드 URL 기준으로 재생하기 위한 타입 구분
 const isVideoAd = (file: IGetMenuAdFile) =>
@@ -26,6 +46,8 @@ type VideoSlideProps = {
   // 단일 영상 무한 반복 시 Swiper 이동 없이 video loop 사용
   readonly loopPlayback: boolean;
   readonly onEnded: () => void;
+  // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 로그 추적용 식별자 (재생 동작에는 영향 없음)
+  readonly label?: string;
 };
 
 // Swiper 활성 슬라이드와 실제 video 재생 상태 동기화
@@ -34,6 +56,7 @@ const VideoSlide = ({
   isActive,
   loopPlayback,
   onEnded,
+  label,
 }: VideoSlideProps) => {
   const ref = useRef<HTMLVideoElement>(null);
 
@@ -46,14 +69,114 @@ const VideoSlide = ({
 
     if (isActive) {
       el.currentTime = 0;
-      void el.play().catch(() => {
-        // 재생 실패 무시
+      // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 catch 본문을 비우고
+      // 의존성 배열에서 label 제거: `void el.play().catch(() => {}); }, [isActive, src]);`
+      void el.play().catch((error: unknown) => {
+        // 재생 실패 무시 (동작 유지), 원인만 기록
+        saveAppLog('[광고 영상 재생 실패]', {
+          label,
+          srcKind: srcKind(src),
+          name: error instanceof Error ? error.name : 'unknown',
+          message: error instanceof Error ? error.message : String(error),
+        });
       });
     } else {
       el.pause();
       el.currentTime = 0;
     }
-  }, [isActive, src]);
+  }, [isActive, src, label]);
+
+  // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 아래 useEffect 전체 삭제
+  // error 외에도 stalled/waiting/abort 등 재생을 방해하는 모든 미디어 이벤트를 추적
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) {
+      return;
+    }
+
+    const snapshot = (tag: string) => () => {
+      const mediaError = el.error;
+      saveAppLog(tag, {
+        label,
+        srcKind: srcKind(src),
+        code: mediaError?.code ?? null,
+        codeName:
+          mediaError?.code != null
+            ? (MEDIA_ERROR_NAME[mediaError.code] ?? 'UNKNOWN')
+            : null,
+        message: mediaError?.message ?? '',
+        networkState: el.networkState,
+        readyState: el.readyState,
+        currentTime: el.currentTime,
+        paused: el.paused,
+      });
+    };
+
+    // error: 디코드/포맷 실패 / stalled·waiting: 데이터 미수신 버퍼링 / abort: 로딩 중단
+    const handlers: ReadonlyArray<readonly [string, () => void]> = [
+      ['error', snapshot('[광고 영상 에러]')],
+      ['stalled', snapshot('[광고 영상 stalled]')],
+      ['waiting', snapshot('[광고 영상 버퍼링]')],
+      ['abort', snapshot('[광고 영상 중단]')],
+    ];
+
+    handlers.forEach(([event, handler]) => {
+      el.addEventListener(event, handler);
+    });
+    return () => {
+      handlers.forEach(([event, handler]) => {
+        el.removeEventListener(event, handler);
+      });
+    };
+  }, [src, label]);
+
+  // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 아래 useEffect 전체 삭제
+  // 코덱 문제 등으로 error 이벤트 없이 화면만 멈추는(frozen) 경우 감지
+  // 재생 중(!paused)인데 timeupdate가 일정 시간 끊기면 currentTime 미진행 → 멈춤으로 기록
+  useEffect(() => {
+    if (!isActive) {
+      return;
+    }
+    const el = ref.current;
+    if (!el) {
+      return;
+    }
+
+    let lastProgressAt = Date.now();
+    let stallLogged = false;
+
+    const handleTimeUpdate = () => {
+      lastProgressAt = Date.now();
+      // 다시 진행되면 다음 멈춤도 잡을 수 있도록 플래그 해제
+      stallLogged = false;
+    };
+    el.addEventListener('timeupdate', handleTimeUpdate);
+
+    const intervalId = setInterval(() => {
+      // 일시정지·종료 상태는 정상이므로 제외
+      if (el.paused || el.ended) {
+        return;
+      }
+      const sinceProgress = Date.now() - lastProgressAt;
+      if (!stallLogged && sinceProgress >= STALL_DETECT_MS) {
+        stallLogged = true;
+        saveAppLog('[광고 영상 멈춤 의심]', {
+          label,
+          srcKind: srcKind(src),
+          sinceProgressMs: sinceProgress,
+          currentTime: el.currentTime,
+          readyState: el.readyState,
+          networkState: el.networkState,
+          errorCode: el.error?.code ?? null,
+        });
+      }
+    }, STALL_POLL_MS);
+
+    return () => {
+      el.removeEventListener('timeupdate', handleTimeUpdate);
+      clearInterval(intervalId);
+    };
+  }, [isActive, src, label]);
 
   // 영상은 10초 타이머가 아니라 ended 이벤트를 완료 기준으로 사용
   useEffect(() => {
@@ -248,12 +371,21 @@ export const AdMediaSlider = ({
                 isActive={index === realIndex}
                 loopPlayback={soleVideoRepeats}
                 onEnded={handleVideoEnded}
+                // TODO: 제거 예정 (영상 재생 실패 추적 로그)
+                label={slide.file.fileName}
               />
             ) : (
               <S.AdMediaImage
                 src={slide.src}
                 alt={slide.file.contentDescription}
                 draggable={false}
+                // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 아래 onError 제거
+                onError={() => {
+                  saveAppLog('[광고 이미지 에러]', {
+                    fileName: slide.file.fileName,
+                    adType: slide.file.adType,
+                  });
+                }}
               />
             )}
           </SwiperSlide>

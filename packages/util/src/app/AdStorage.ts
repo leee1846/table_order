@@ -1,5 +1,7 @@
 import { registerPlugin, type Plugin } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
+// TODO: 제거 예정 (영상 재생 실패 추적 로그)
+import { saveAppLog } from './AppLog';
 
 export interface AdStorageDownloadAdResult {
   success: boolean;
@@ -99,11 +101,32 @@ export const getAdObjectUrl = async (
       directory: Directory.External,
     });
     if (typeof data !== 'string' || data.length === 0) {
+      // TODO: 제거 예정 (영상 재생 실패 추적 로그)
+      saveAppLog('[광고 영상 Blob 실패]', {
+        fileName,
+        reason: 'empty-or-non-string',
+        dataType: typeof data,
+      });
       return null;
     }
     const blob = base64ToBlob(data, videoMimeFromName(fileName));
-    return URL.createObjectURL(blob);
-  } catch {
+    const objectUrl = URL.createObjectURL(blob);
+    // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 이 블록 제거 시 위 두 줄을
+    // `return URL.createObjectURL(base64ToBlob(data, videoMimeFromName(fileName)));` 로 되돌릴 것
+    saveAppLog('[광고 영상 Blob 생성]', {
+      fileName,
+      mimeType: videoMimeFromName(fileName),
+      approxKb: Math.round(((data.length * 3) / 4) / 1024),
+      blobSize: blob.size,
+    });
+    return objectUrl;
+  } catch (error) {
+    // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 `} catch {` 로 되돌릴 것
+    saveAppLog('[광고 영상 Blob 실패]', {
+      fileName,
+      reason: 'read-or-decode-throw',
+      message: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 };

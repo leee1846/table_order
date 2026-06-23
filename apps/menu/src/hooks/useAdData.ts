@@ -3,7 +3,8 @@ import type { IGetMenuAdFile } from '@repo/api/types';
 import { useGetMenuAdFiles } from '@repo/api/queries';
 import { useShopStore } from '@/stores/useShopStore';
 import { useAdStore } from '@/stores/useAdStore';
-import { AdStorage, getAdObjectUrl } from '@repo/util/app';
+// TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 saveAppLog import 삭제
+import { AdStorage, getAdObjectUrl, saveAppLog } from '@repo/util/app';
 
 /** 태블릿 첫 부팅 시 Capacitor 엔진 준비 대기 후 광고 API 요청 */
 const NATIVE_AD_FETCH_DELAY_MS = 5000;
@@ -54,6 +55,13 @@ const removeStaleAdVideos = async (
 
     const stale = before.filter((f) => !wantedNames.has(f.fileName));
 
+    // TODO: 제거 예정 (영상 재생 실패 추적 로그)
+    if (stale.length > 0) {
+      saveAppLog('[광고 영상 stale 삭제]', {
+        deleted: stale.map((f) => f.fileName),
+      });
+    }
+
     for (const f of stale) {
       try {
         await AdStorage.deleteAd({ fileName: f.fileName });
@@ -64,7 +72,11 @@ const removeStaleAdVideos = async (
 
     const { files: after } = await AdStorage.listAds();
     return fileNamesFromList(after);
-  } catch {
+    // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 `} catch {` 로 되돌릴 것
+  } catch (error) {
+    saveAppLog('[광고 영상 stale 삭제 실패]', {
+      message: error instanceof Error ? error.message : String(error),
+    });
     return new Set();
   }
 };
@@ -77,19 +89,42 @@ const registerLocalVideoUrl = async (
   // 이미 유효한 Blob URL을 가진 영상은 재생성하지 않음 (재조회 때 불필요한 영상 리로드 방지)
   const existing = useAdStore.getState().data.localVideoUrls[filePath];
   if (existing?.startsWith('blob:')) {
+    // TODO: 제거 예정 (영상 재생 실패 추적 로그)
+    saveAppLog('[광고 영상 URL 등록]', {
+      fileName: storageName,
+      source: 'blob-cached',
+    });
     return;
   }
   // 1순위: 파일을 직접 읽어 Blob URL 사용 (HTTP 스트리밍의 data source 오류 우회)
   const objectUrl = await getAdObjectUrl(storageName);
   if (objectUrl) {
     setLocalVideoUrl(filePath, objectUrl);
+    // TODO: 제거 예정 (영상 재생 실패 추적 로그)
+    saveAppLog('[광고 영상 URL 등록]', {
+      fileName: storageName,
+      source: 'blob',
+    });
     return;
   }
   // 폴백: Blob 생성 실패 시 기존 로컬 URL(_capacitor_file_) 사용
   const { url } = await AdStorage.getAdUrl({ fileName: storageName });
   if (url) {
     setLocalVideoUrl(filePath, url);
+    // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 아래 saveAppLog와 return 삭제
+    // (Blob 실패로 _capacitor_file_ 스트리밍 폴백 → Range 재생 끊김 위험 구간)
+    saveAppLog('[광고 영상 URL 등록]', {
+      fileName: storageName,
+      source: 'fallback-capacitor-file',
+    });
+    return;
   }
+  // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 아래 블록 전체 삭제
+  // (Blob·폴백 모두 실패 → 영상이 슬라이드에서 제외됨)
+  saveAppLog('[광고 영상 URL 등록]', {
+    fileName: storageName,
+    source: 'none',
+  });
 };
 
 /**
@@ -141,6 +176,24 @@ export const useAdData = () => {
 
       const videoFiles = files.filter(isVideoAdFile);
 
+      // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 아래 saveAppLog 블록 전체 삭제
+      // 응답에 어떤 영상이 내려왔는지·확장자/용량까지 추적 (재생 실패 원인 1차 단서)
+      saveAppLog('[광고 데이터 응답]', {
+        total: files.length,
+        byType: files.reduce<Record<string, number>>((acc, f) => {
+          acc[f.adType] = (acc[f.adType] ?? 0) + 1;
+          return acc;
+        }, {}),
+        videos: videoFiles.map((f) => ({
+          adType: f.adType,
+          fileName: f.fileName,
+          ext: f.filePath.split('.').pop()?.toLowerCase() ?? '',
+          fileSizeKb: f.fileSizeKb,
+          durationSec: f.durationSec,
+          filePath: f.filePath,
+        })),
+      });
+
       const wantedStorageNames = currentVideoStorageNames(files);
 
       const namesOnDisk = await removeStaleAdVideos(wantedStorageNames);
@@ -160,6 +213,11 @@ export const useAdData = () => {
             if (cancelled) {
               return;
             }
+            // TODO: 제거 예정 (영상 재생 실패 추적 로그)
+            saveAppLog('[광고 영상 다운로드]', {
+              fileName: storageName,
+              result: 'disk-cache',
+            });
             await registerLocalVideoUrl(
               file.filePath,
               storageName,
@@ -175,8 +233,20 @@ export const useAdData = () => {
           });
 
           if (!dl.success && !dl.skipped) {
+            // TODO: 제거 예정 (영상 재생 실패 추적 로그)
+            saveAppLog('[광고 영상 다운로드 실패]', {
+              fileName: storageName,
+              filePath: file.filePath,
+            });
             continue;
           }
+
+          // TODO: 제거 예정 (영상 재생 실패 추적 로그)
+          saveAppLog('[광고 영상 다운로드]', {
+            fileName: storageName,
+            result: dl.skipped ? 'skipped' : 'downloaded',
+            path: dl.path,
+          });
 
           namesOnDisk.add(storageName);
 
@@ -189,8 +259,13 @@ export const useAdData = () => {
             storageName,
             setLocalVideoUrl
           );
-        } catch {
-          // noop
+          // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 `} catch { // noop }` 로 되돌릴 것
+        } catch (error) {
+          saveAppLog('[광고 영상 다운로드 예외]', {
+            fileName: storageName,
+            filePath: file.filePath,
+            message: error instanceof Error ? error.message : String(error),
+          });
         }
       }
 
@@ -204,6 +279,28 @@ export const useAdData = () => {
       const validFiles = files.filter((f) =>
         isVideoAdFile(f) ? !!localVideoUrls[f.filePath] : !!f.filePath?.trim()
       );
+
+      // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 excludedVideos 계산부터 아래 saveAppLog 블록까지 삭제
+      // 슬라이드에서 제외된 영상(로컬 URL 미등록)을 명확히 추적
+      const excludedVideos = videoFiles
+        .filter((f) => !localVideoUrls[f.filePath])
+        .map((f) => f.fileName);
+      saveAppLog('[광고 유효 파일 집계]', {
+        total: files.length,
+        valid: validFiles.length,
+        videoTotal: videoFiles.length,
+        videoRegistered: videoFiles.length - excludedVideos.length,
+        excludedVideos,
+        registeredSources: videoFiles
+          .filter((f) => !!localVideoUrls[f.filePath])
+          .map((f) => ({
+            fileName: f.fileName,
+            kind: localVideoUrls[f.filePath]?.startsWith('blob:')
+              ? 'blob'
+              : 'capacitor-file',
+          })),
+      });
+
       await setAdFiles(validFiles);
 
       if (hasAdFiles) {
