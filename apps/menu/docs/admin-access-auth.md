@@ -205,12 +205,26 @@ error.response?.status === 403 &&
 
 처리 순서 (`privateApi` response interceptor, JWT 401 처리 **이후**):
 
-1. `useRequestAdminAccessModalStore.getState().show === true`이면 **아무것도 하지 않음** (중복 다이얼로그·루프 방지).
+0. **현재 페이지가 관리자 컨텍스트인지 확인** (`window.location.pathname`). `/`(root) 또는 `/login`이면 만료 팝업·모달을 **띄우지 않고 reject만** 한다. (아래 "root/login 가드" 참고)
+1. `useRequestAdminAccessModalStore.getState().show === true`이면 팝업/모달 처리를 **건너뜀** (중복 다이얼로그·루프 방지).
 2. `removeMenuboardToken()`
 3. `setShow(true)` — 비밀번호 모달 재노출
 4. `activeErrorTypes`로 중복 방지하며 확인 다이얼로그 1회: "관리자 모드 인증이 만료되었습니다."
 
+단, `isMenuboardTokenExpiredError(error)`인 경우 위 분기를 타든 안 타든 **항상 이 분기 안에서 `return Promise.reject(error)`** 한다 → 아래 `handleApiErrorDialog`(일반 에러 팝업)로 절대 떨어지지 않는다.
+
 JWT access token 401 갱신 로직과 **별도** 분기다. menuboard 만료는 `forceReLogin`을 호출하지 않는다.
+
+### root/login 가드 (전이 찰나 오탐 방지)
+
+`/`·`/login`은 menuboard 토큰을 **의도적으로 제거한 고객/로그인 화면**이다. 그런데 페이지 전이 찰나에:
+
+- 다른 탭릿발 SSE(`DEVICE`/`TABLE`)로 시작된 `device.list`·`currentTableList` refetch
+- `useSystemStatusMonitor`·`useSSEHandler`의 `POST /device/{shopCode}` (페이지 무관 실행)
+
+가 **토큰 제거 직후** 전송되어 `403 -107`로 돌아올 수 있다. 이때 가드가 없으면 고객 화면(root)에 "관리자 모드 인증 만료" 다이얼로그가 뜬다.
+
+→ `pathname`이 `/`·`/login`이면 이 처리를 스킵한다. 토큰 제거(`router.subscribe`)·URL 변경은 React 렌더/ref 갱신보다 **먼저** 확정되므로, `window.location.pathname`으로 판정하면 전이 찰나에도 정확히 root를 인식한다. 요청 자체를 막지는 않으며(에러는 조용히 reject), 부적절한 팝업만 억제한다.
 
 ---
 
@@ -257,6 +271,7 @@ JWT access token 401 갱신 로직과 **별도** 분기다. menuboard 만료는 
 ```
 보호 API 호출 (X-Menuboard-Token 첨부)
   → 403, code -107
+  → (pathname이 / 또는 /login 이면 → 팝업 없이 reject, 종료)
   → removeMenuboardToken + setShow(true) + 만료 다이얼로그
   → (현재 URL 유지, 모달 오버레이)
   → 비밀번호 재입력 → setMenuboardToken → refetchQueries(active)
@@ -288,6 +303,8 @@ adminVerificationCheckLoader → redirect /
 - **ROOT 이동 시 토큰 제거는 `router.subscribe`가 담당한다.** `navigate('/')`만으로 menuboard 세션이 끊긴다. 토큰을 유지한 채 메인에 머무르려는 요구가 있으면 이 구독 로직을 함께 수정해야 한다.
 
 - **비밀번호 UI가 이미 보일 때 `-107` 처리를 스킵한다.** `privateApi`의 `isPasswordUiVisible` 가드. 재입력 중 연쇄 API 실패로 다이얼로그가 중복되지 않게 한다.
+
+- **`/`·`/login`에서는 `-107` 만료 팝업을 띄우지 않는다.** `privateApi`의 root/login 가드(`window.location.pathname`). 페이지 전이 찰나에 보호 API(`device.list`·`POST /device` 등)가 토큰 제거 직후 전송돼 `403 -107`로 돌아와도, 고객 화면에 관리자 만료 팝업이 뜨지 않게 한다. 단 `-107`은 항상 분기 내에서 reject되어 일반 에러 핸들러로 떨어지지 않는다.
 
 - **로그인 mutation의 `ignoreGlobalErrors: [401]`은 필수에 가깝다.** 제거하면 JWT 스타일 전역 401 처리와 충돌할 수 있다.
 

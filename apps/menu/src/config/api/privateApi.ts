@@ -166,20 +166,30 @@ privateApi.interceptors.response.use(
 
     // 관리자 모드 접근 엑세스 토큰 만료 및 토큰이 없는경우
     // 토큰이 변조된경우 401에러로 반환
-    const isPasswordUiVisible = useRequestAdminAccessModalStore.getState().show;
-    if (isMenuboardTokenExpiredError(error) && !isPasswordUiVisible) {
-      removeMenuboardToken();
-      useRequestAdminAccessModalStore.getState().setShow(true);
-      if (!activeErrorTypes.has(MENUBOARD_TOKEN_EXPIRED_ERROR)) {
-        activeErrorTypes.add(MENUBOARD_TOKEN_EXPIRED_ERROR);
-        openConfirmDialog({
-          title: '관리자 모드 인증 만료',
-          content:
-            '관리자 모드 인증이 만료되었습니다.\n비밀번호를 다시 입력해주세요.',
-          onConfirm: () => {
-            activeErrorTypes.delete(MENUBOARD_TOKEN_EXPIRED_ERROR);
-          },
-        });
+    if (isMenuboardTokenExpiredError(error)) {
+      // root(/)·login(/login)은 menuboard 토큰을 의도적으로 제거한 고객 화면이므로,
+      // 페이지 전이 찰나에 들어온 -107(보호 API 응답)은 만료 팝업/비밀번호 모달 없이 무시한다.
+      const currentPathname = window.location.pathname;
+      const isMenuboardContext =
+        currentPathname !== ROUTES.ROOT.path &&
+        currentPathname !== ROUTES.LOGIN.path;
+
+      const isPasswordUiVisible =
+        useRequestAdminAccessModalStore.getState().show;
+      if (isMenuboardContext && !isPasswordUiVisible) {
+        removeMenuboardToken();
+        useRequestAdminAccessModalStore.getState().setShow(true);
+        if (!activeErrorTypes.has(MENUBOARD_TOKEN_EXPIRED_ERROR)) {
+          activeErrorTypes.add(MENUBOARD_TOKEN_EXPIRED_ERROR);
+          openConfirmDialog({
+            title: '관리자 모드 인증 만료',
+            content:
+              '관리자 모드 인증이 만료되었습니다.\n비밀번호를 다시 입력해주세요.',
+            onConfirm: () => {
+              activeErrorTypes.delete(MENUBOARD_TOKEN_EXPIRED_ERROR);
+            },
+          });
+        }
       }
       return Promise.reject(error);
     }
