@@ -194,25 +194,28 @@ export const useAdData = () => {
         })),
       });
 
+      // STANDBY_VIDEO와 주문완료 영상을 분리해 단계별로 처리한다.
+      // Phase 1(STANDBY) 완료 시 로딩을 즉시 해제하고,
+      // Phase 2(ORDER_COMP)는 백그라운드에서 계속 처리한다.
+      const standbyVideoFiles = videoFiles.filter(
+        (f) => f.adType === 'STANDBY_VIDEO'
+      );
+      const orderCompVideoFiles = videoFiles.filter(
+        (f) => f.adType !== 'STANDBY_VIDEO'
+      );
+
       const wantedStorageNames = currentVideoStorageNames(files);
 
       const namesOnDisk = await removeStaleAdVideos(wantedStorageNames);
 
-      for (const file of videoFiles) {
-        if (cancelled) {
-          return;
-        }
-
+      // 영상 파일 1개를 다운로드하고 로컬 URL을 등록하는 공통 처리
+      const processVideoFile = async (file: IGetMenuAdFile): Promise<void> => {
         const storageName = storageFileNameFromFilePath(file.filePath);
         if (!storageName) {
-          continue;
+          return;
         }
-
         try {
           if (namesOnDisk.has(storageName)) {
-            if (cancelled) {
-              return;
-            }
             // TODO: 제거 예정 (영상 재생 실패 추적 로그)
             saveAppLog('[광고 영상 다운로드]', {
               fileName: storageName,
@@ -223,7 +226,7 @@ export const useAdData = () => {
               storageName,
               setLocalVideoUrl
             );
-            continue;
+            return;
           }
 
           const dl = await AdStorage.downloadAd({
@@ -238,7 +241,7 @@ export const useAdData = () => {
               fileName: storageName,
               filePath: file.filePath,
             });
-            continue;
+            return;
           }
 
           // TODO: 제거 예정 (영상 재생 실패 추적 로그)
@@ -249,11 +252,6 @@ export const useAdData = () => {
           });
 
           namesOnDisk.add(storageName);
-
-          if (cancelled) {
-            return;
-          }
-
           await registerLocalVideoUrl(
             file.filePath,
             storageName,
@@ -267,21 +265,49 @@ export const useAdData = () => {
             message: error instanceof Error ? error.message : String(error),
           });
         }
+      };
+
+      // 현재 localVideoUrls 기준으로 유효 파일 목록을 생성하는 공통 처리
+      const buildValidFiles = (): IGetMenuAdFile[] => {
+        const { localVideoUrls } = useAdStore.getState().data;
+        return files.filter((f) =>
+          isVideoAdFile(f) ? !!localVideoUrls[f.filePath] : !!f.filePath?.trim()
+        );
+      };
+
+      // ── Phase 1: STANDBY 영상 (병렬) ────────────────────────────────────
+      if (cancelled) {
+        return;
       }
+      await Promise.all(standbyVideoFiles.map(processVideoFile));
 
       if (cancelled) {
         return;
       }
 
-      // 다운로드·검증 완료 후 유효 항목만 store에 반영
+      // STANDBY 영상(+이미지) 처리 완료 → store 반영 및 로딩 즉시 해제
+      // ORDER_COMP 영상은 아직 미완이지만, 전면대기 광고 표시에는 불필요하므로
+      // 이 시점에 로딩 오버레이를 제거해 전면대기 광고를 즉시 노출한다.
+      await setAdFiles(buildValidFiles());
+      if (hasAdFiles) {
+        setAdDataLoading(false);
+      }
+      setIsMenuAdFilesLoading(false);
+
+      // ── Phase 2: 주문완료 영상 (병렬, 백그라운드) ───────────────────────
+      await Promise.all(orderCompVideoFiles.map(processVideoFile));
+
+      if (cancelled) {
+        return;
+      }
+
+      // 모든 영상 처리 완료 후 유효 항목만 store에 최종 반영 (orderCompleteFullFiles 업데이트)
       // 영상: localVideoUrl 등록 성공한 것만 / 이미지: filePath가 있는 것만
-      const { localVideoUrls } = useAdStore.getState().data;
-      const validFiles = files.filter((f) =>
-        isVideoAdFile(f) ? !!localVideoUrls[f.filePath] : !!f.filePath?.trim()
-      );
+      const validFiles = buildValidFiles();
 
       // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 excludedVideos 계산부터 아래 saveAppLog 블록까지 삭제
       // 슬라이드에서 제외된 영상(로컬 URL 미등록)을 명확히 추적
+      const { localVideoUrls } = useAdStore.getState().data;
       const excludedVideos = videoFiles
         .filter((f) => !localVideoUrls[f.filePath])
         .map((f) => f.fileName);
@@ -302,14 +328,11 @@ export const useAdData = () => {
       });
 
       await setAdFiles(validFiles);
-
-      if (hasAdFiles) {
-        setAdDataLoading(false);
-      }
     };
 
     void (async () => {
       await run();
+      // run()이 cancelled로 조기 종료된 경우에 대한 안전망
       setIsMenuAdFilesLoading(false);
     })();
 

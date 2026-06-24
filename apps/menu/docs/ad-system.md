@@ -75,10 +75,27 @@ interface IGetMenuAdFile {
 2. AdStorage.listAds()
    stale 영상 파일 삭제 (API 응답에 없는 filePath의 파일명)
        ↓
-3. 영상 파일(STANDBY_VIDEO, ORDER_COMP_FULL_VIDEO)만 반복
+3. 영상 파일을 STANDBY / ORDER_COMP 두 그룹으로 분리해 단계별·병렬 처리
+
+   ── Phase 1: STANDBY_VIDEO ──────────────────────────────────────────────
+   Promise.all(standbyVideoFiles) — 각 파일 병렬 처리:
    ├─ 디스크에 이미 있으면 → registerLocalVideoUrl(filePath, storageName)
    └─ 없으면 → AdStorage.downloadAd({ url, fileName, overwrite: false })
               → registerLocalVideoUrl(filePath, storageName)
+       ↓
+   Phase 1 완료 → setAdFiles(현재 유효 파일) — standbyFiles·topBannerFiles 등 즉시 반영
+               → setAdDataLoading(false)      ← 전면대기 광고 즉시 노출
+               → setIsMenuAdFilesLoading(false)
+
+   ── Phase 2: ORDER_COMP_FULL_VIDEO (백그라운드) ─────────────────────────
+   Promise.all(orderCompVideoFiles) — 각 파일 병렬 처리:
+   ├─ 디스크에 이미 있으면 → registerLocalVideoUrl(filePath, storageName)
+   └─ 없으면 → AdStorage.downloadAd(...)
+              → registerLocalVideoUrl(filePath, storageName)
+       ↓
+   Phase 2 완료 → setAdFiles(모든 유효 파일) — orderCompleteFullFiles 최종 반영
+       ↓
+   AppStorage(AD_FILES 키)에 최종 캐시 저장
 
    registerLocalVideoUrl(filePath, storageName):
      ├─ 이미 localVideoUrls[filePath]가 blob: URL이면 → 그대로 유지하고 return
@@ -87,18 +104,15 @@ interface IGetMenuAdFile {
      │    └─ Filesystem.readFile(External/sks_ads/storageName) → base64 → Blob → URL.createObjectURL
      │       (성공 시 setLocalVideoUrl(filePath, blobUrl))
      └─ 폴백: 위 실패(null) 시 → AdStorage.getAdUrl() (_capacitor_file_ URL) → setLocalVideoUrl
-       ↓
-4. 유효 파일만 필터링
-   └─ 영상: localVideoUrls[filePath]가 등록된 것만
-   └─ 이미지: filePath가 존재하는 것만
-       ↓
-5. setAdFiles(validFiles)
-   └─ adType별로 groupAdFiles() → sortOrder 무시, API 응답 array 순서 그대로 유지
-   └─ ORDER_COMP FULL/SIDE가 모두 있으면 array에서 먼저 등장하는 유형만 남기고 다른 유형은 제외
-   └─ AppStorage(AD_FILES 키)에 캐시 저장
-       ↓
-6. setAdDataLoading(false) → StandbyAd / TopBannerAd 렌더 허용
 ```
+
+### Phase 분리 설계 의도
+
+전면대기 광고(`StandbyAd`) 표시에는 `STANDBY_VIDEO`/`STANDBY_IMAGE`만 필요하고
+`ORDER_COMP_FULL_VIDEO`는 불필요하다. Phase 1 완료 시점에 로딩을 해제함으로써
+주문완료 영상 다운로드가 남아있어도 전면대기 광고를 즉시 노출한다.
+주문완료 영상은 Phase 2에서 백그라운드로 계속 다운로드되며, 실제 주문이 완료될 시점에는
+이미 준비 완료 상태인 경우가 대부분이다.
 
 ### 스토어 상태
 
@@ -265,7 +279,7 @@ SSE 'AD_MENU' 메시지 수신 (useSSEHandler.ts > handleAdMenuMessage)
 
 - **TopBannerAd는 AdMediaSlider를 사용하지 않는다:** Swiper `Autoplay` 모듈을 직접 사용하며 영상을 지원하지 않는다. 영상 지원이 필요하면 `AdMediaSlider`로 교체해야 한다.
 
-- **`isAdDataLoading` 플래그:** 영상 다운로드가 진행 중인 동안 `true`다. `StandbyAd`와 `TopBannerAd`는 이 값이 `true`인 동안 렌더링하지 않는다. `OrderCompleteModal`은 이 플래그를 직접 참조하지 않는다.
+- **`isAdDataLoading` 플래그:** Phase 1(STANDBY) 처리 중에 `true`다. Phase 1 완료 시 `false`로 전환되며, 이후 Phase 2(ORDER_COMP)는 백그라운드에서 진행된다. `StandbyAd`와 `TopBannerAd`는 이 값이 `true`인 동안 렌더링하지 않는다. `OrderCompleteModal`은 이 플래그를 직접 참조하지 않는다.
 
 - **FULL/SIDE 동시 표시 없음:** API 응답 array에 FULL/SIDE가 모두 있을 때 `groupAdFiles`가 먼저 등장하는 유형만 채우고 다른 유형 배열은 비운다(`[]`). 따라서 두 슬롯이 동시에 표시되는 경우는 없으며, 노출 순서는 sortOrder가 아니라 array 순서를 따른다.
 
