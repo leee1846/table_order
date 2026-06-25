@@ -43,6 +43,13 @@ type PreparedSlide = {
 type VideoSlideProps = {
   readonly src: string;
   readonly isActive: boolean;
+  // 디코더 해제 후 표시할 poster — 캡처된 첫 프레임 또는 기본 썸네일
+  readonly poster: string;
+  // 이 영상의 첫 프레임이 이미 캡처되었는지 (true면 재캡처 생략)
+  readonly posterCaptured: boolean;
+  // 첫 프레임 캡처 시 부모에 전달할 식별자(contentSeq)
+  readonly captureKey: number;
+  readonly onCaptureFirstFrame: (key: number, dataUrl: string) => void;
   // 단일 영상 무한 반복 시 Swiper 이동 없이 video loop 사용
   readonly loopPlayback: boolean;
   readonly onEnded: () => void;
@@ -54,13 +61,18 @@ type VideoSlideProps = {
 const VideoSlide = ({
   src,
   isActive,
+  poster,
+  posterCaptured,
+  captureKey,
+  onCaptureFirstFrame,
   loopPlayback,
   onEnded,
   label,
 }: VideoSlideProps) => {
   const ref = useRef<HTMLVideoElement>(null);
 
-  // React 상태 변경만으로 video가 멈추지 않아 활성 영상만 재생
+  // 활성 슬라이드만 src를 붙여 디코딩하고, 비활성은 src를 떼어 디코더/버퍼를 해제한다.
+  // (모든 영상에 src를 물려두면 디코더가 누적돼 저사양 기기에서 OOM으로 앱이 종료된다)
   useEffect(() => {
     const el = ref.current;
     if (!el) {
@@ -68,6 +80,11 @@ const VideoSlide = ({
     }
 
     if (isActive) {
+      // src 미부착(비활성→활성 전환) 시에만 로드 — 이미 같은 src면 불필요한 리로드 방지
+      if (el.getAttribute('src') !== src) {
+        el.src = src;
+        el.load();
+      }
       el.currentTime = 0;
       // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 catch 본문을 비우고
       // 의존성 배열에서 label 제거: `void el.play().catch(() => {}); }, [isActive, src]);`
@@ -82,7 +99,9 @@ const VideoSlide = ({
       });
     } else {
       el.pause();
-      el.currentTime = 0;
+      // src 제거 + load()로 디코더와 버퍼를 즉시 해제 (currentTime=0만으로는 해제되지 않음)
+      el.removeAttribute('src');
+      el.load();
     }
   }, [isActive, src, label]);
 
@@ -196,14 +215,71 @@ const VideoSlide = ({
     };
   }, [loopPlayback, onEnded, src]);
 
+  // 첫 프레임을 한 번 캡처해 poster로 사용한다.
+  // 디코더는 활성 영상에만 살아 있으므로(메모리 제약), 해제된 영상도 자기 첫 화면을
+  // 보여주려면 그 프레임을 이미지로 떠 둬야 한다. poster가 곧 첫 프레임이라 재생 시작도 매끄럽다.
+  useEffect(() => {
+    if (posterCaptured) {
+      return;
+    }
+    const el = ref.current;
+    if (!el) {
+      return;
+    }
+
+    let rafId = 0;
+
+    const capture = () => {
+      // 인코딩(toDataURL)이 재생 시작 프레임을 막지 않도록 다음 프레임으로 미룬다
+      if (rafId) {
+        return;
+      }
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        if (el.videoWidth === 0 || el.videoHeight === 0) {
+          return;
+        }
+        // 영상과 동일한 선명도를 위해 원본 해상도로 캡처(축소 안 함).
+        // 과대 소스(예: 4K)만 가로 1920px로 제한해 인코딩 비용 폭주 방지.
+        const scale = Math.min(1, 1920 / el.videoWidth);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(el.videoWidth * scale);
+        canvas.height = Math.round(el.videoHeight * scale);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          return;
+        }
+        try {
+          ctx.drawImage(el, 0, 0, canvas.width, canvas.height);
+          onCaptureFirstFrame(captureKey, canvas.toDataURL('image/jpeg', 0.85));
+        } catch {
+          // _capacitor_file_ 폴백 등으로 canvas가 오염되면 캡처 불가 → 기본 poster 유지
+        }
+      });
+    };
+
+    el.addEventListener('loadeddata', capture);
+    // 이미 첫 프레임이 준비된 경우 이벤트를 놓칠 수 있어 즉시 한 번 시도
+    if (el.readyState >= 2) {
+      capture();
+    }
+    return () => {
+      el.removeEventListener('loadeddata', capture);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, [posterCaptured, captureKey, onCaptureFirstFrame]);
+
+  // src는 위 useEffect가 활성 슬라이드에만 명령형으로 붙인다.
+  // 비활성(디코더 해제) 상태에서는 poster(캡처된 첫 프레임)만 표시된다.
   return (
     <S.AdMediaVideo
       ref={ref}
-      src={src}
       muted
       playsInline
       loop={loopPlayback}
-      poster={AdThumbnailImage}
+      poster={poster}
     />
   );
 };
@@ -256,6 +332,13 @@ export const AdMediaSlider = ({
   const isCompleteRef = useRef(false);
 
   slidesRef.current = slides;
+
+  // 영상별 캡처된 첫 프레임 poster (key: contentSeq) — 디코더 해제 후 첫 화면 표시용
+  const [posters, setPosters] = useState<Record<number, string>>({});
+  const handleCaptureFirstFrame = useCallback((key: number, dataUrl: string) => {
+    // 영상당 1회만 저장 (이미 있으면 동일 객체 반환해 불필요한 리렌더 방지)
+    setPosters((prev) => (prev[key] ? prev : { ...prev, [key]: dataUrl }));
+  }, []);
 
   // 단일 영상 반복은 빈 슬라이드 이동 없이 영상 자체 반복
   const soleVideoRepeats =
@@ -369,6 +452,10 @@ export const AdMediaSlider = ({
               <VideoSlide
                 src={slide.src}
                 isActive={index === realIndex}
+                poster={posters[slide.file.contentSeq] ?? AdThumbnailImage}
+                posterCaptured={!!posters[slide.file.contentSeq]}
+                captureKey={slide.file.contentSeq}
+                onCaptureFirstFrame={handleCaptureFirstFrame}
                 loopPlayback={soleVideoRepeats}
                 onEnded={handleVideoEnded}
                 // TODO: 제거 예정 (영상 재생 실패 추적 로그)

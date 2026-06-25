@@ -215,7 +215,6 @@ prepareSlides(files, localVideoUrls)
 
 영상 슬라이드 활성화
   → video ended 이벤트 → handleVideoEnded() → handleSlideComplete()
-  → 영상 전환 시 이전 영상 pause() + currentTime = 0, 새 영상 currentTime = 0 → play()
 
 handleSlideComplete()
   ├─ !isLooping && 마지막 슬라이드 → complete() → onComplete?.()
@@ -225,6 +224,41 @@ handleSlideComplete()
 soleVideoRepeats = isLooping && slides.length === 1 && slides[0].isVideo
   → <video loop> 속성 사용, Swiper 이동 없음, handleVideoEnded() 구독 안 함
 ```
+
+### 영상 디코더 관리 (OOM 방지) — VideoSlide
+
+모든 슬라이드의 `<video>`는 DOM에 동시에 mount되지만, **`src`는 활성 슬라이드에만 명령형으로 부착**한다.
+`<video>`에 `src`를 박아두면(특히 재생되면) Android WebView가 MediaCodec 디코더와 프레임 버퍼를
+잡는데, 7개 같은 다수 영상에 모두 src를 유지하면 디코더가 누적돼 저사양 태블릿에서 **네이티브 OOM으로
+앱이 강제 종료**된다(이전에 6번째 영상 재생 중 크래시 발생).
+
+```
+isActive  → src 미부착 시 el.src = src; el.load() → currentTime=0 → play()
+!isActive → el.pause(); el.removeAttribute('src'); el.load()
+            (removeAttribute만으로는 디코더가 해제되지 않아 load() 필수)
+```
+
+→ 한 시점에 디코더를 쥐는 영상은 활성 1개뿐. JSX에는 `src`를 두지 않고 위 useEffect가 단독 통제한다.
+
+### 첫 프레임 poster 캡처
+
+디코더가 해제된 비활성 영상은 보여줄 프레임이 없어 `poster`만 표시된다. 기본 썸네일(`AdThumbnailImage`)
+대신 **각 영상의 첫 프레임을 1회 캡처해 그 영상의 poster로 사용**하면, 디코더 해제 상태에서도(좌/우 이동·idle)
+자기 첫 화면이 보이고 재생 시작도 frame 0에서 이어져 깜빡임이 없다.
+
+```
+loadeddata(첫 프레임 준비) → requestAnimationFrame(재생 시작 프레임 비차단)
+  → canvas.drawImage(video) → toDataURL('image/jpeg', 0.85)
+  → onCaptureFirstFrame(contentSeq, dataUrl)
+
+부모(AdMediaSlider): posters: Record<contentSeq, dataUrl> 상태로 보관
+  → poster={posters[contentSeq] ?? AdThumbnailImage}
+  → posterCaptured(=이미 캡처됨)이면 재캡처 생략
+```
+
+- **매핑은 오직 `contentSeq` 기준** — 캡처가 다른 영상 poster로 섞일 수 없다.
+- **저장은 메모리 한정** — `useState`라 컴포넌트 언마운트(광고 닫힘) 시 GC, 디스크 미사용(용량 영향 0).
+- **해상도** — 원본 그대로 캡처(`Math.min(1, 1920 / videoWidth)`), 과대 소스(예: 4K)만 가로 1920px로 제한.
 
 ---
 
