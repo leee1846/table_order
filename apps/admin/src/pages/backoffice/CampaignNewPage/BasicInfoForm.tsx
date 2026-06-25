@@ -1,7 +1,6 @@
 import React from 'react';
 import { Form, Input, type FormInstance } from 'antd';
 import styled from '@emotion/styled';
-import { MAX_DESCRIPTION_LENGTH, MAX_NAME_LENGTH } from '@repo/util/constants';
 
 const FormLabel = styled.span<{ isMain?: boolean }>`
   font-weight: bold;
@@ -35,13 +34,13 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
         name="campaignName"
         //rules={[{ required: true, message: '캠페인명을 입력해주세요.' }]}
       >
-        <Input placeholder="캠페인명을 입력해주세요" maxLength={MAX_NAME_LENGTH} />
+        <Input placeholder="캠페인명을 입력해주세요" />
       </Form.Item>
       <Form.Item label={<FormLabel>광고 별명</FormLabel>} name="adDescription">
-        <Input placeholder="광고 별명을 입력하세요." maxLength={MAX_DESCRIPTION_LENGTH}/>
+        <Input placeholder="광고 별명을 입력하세요." />
       </Form.Item>
-      <Form.Item label={<FormLabel>광고주</FormLabel>} name="advertiserName" >
-        <Input placeholder="광고주를 입력하세요." maxLength={MAX_NAME_LENGTH}/>
+      <Form.Item label={<FormLabel>광고주</FormLabel>} name="advertiserName">
+        <Input placeholder="광고주를 입력하세요." />
       </Form.Item>
       {mode === 'edit' && (
         <Form.Item label={<FormLabel>등록된 광고유형</FormLabel>}>
