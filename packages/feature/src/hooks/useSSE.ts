@@ -5,6 +5,13 @@ import { openConfirmDialog, closeDialog } from '../utils/dialog';
 const RETRY_AFTER_DIALOG_MS = 30 * 1000; // 30초
 
 /**
+ * 서버 heartbeat(PING 등 모든 수신 메시지) 미수신 허용 시간.
+ * 초과 시 클라이언트만 연결을 유지하고 서버는 끊은 half-open 상태로 보고 강제 재연결한다.
+ * 서버 PING 주기(10초)의 2배 — 1회 누락은 허용한다.
+ */
+const HEARTBEAT_TIMEOUT_MS = 20 * 1000;
+
+/**
  * SSE 연결 상태를 나타내는 타입
  */
 type TSSEConnectionState<T> = {
@@ -33,6 +40,8 @@ type TSSEConnectionState<T> = {
   connectionErrorDialogId: string | null;
   /** processMessageQueue에서 스케줄된 rAF ID (disconnectSSE 시 취소용) */
   pendingRafId: ReturnType<typeof requestAnimationFrame> | null;
+  /** 서버 heartbeat 감시 타이머 ID — 수신 메시지마다 리셋, 만료 시 강제 재연결 */
+  heartbeatWatchdogId: ReturnType<typeof setTimeout> | null;
 };
 
 /**
@@ -108,6 +117,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       retryAfterDialogTimeoutId: null,
       connectionErrorDialogId: null,
       pendingRafId: null,
+      heartbeatWatchdogId: null,
     };
     sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
   }
@@ -122,6 +132,139 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
   saveAppLog('[SSE 연결 시도]', { key });
   const eventSource = new EventSource(url);
   state.eventSource = eventSource;
+
+  /**
+   * 연결이 죽은 것으로 판단됐을 때(onerror 또는 heartbeat 타임아웃) 재연결을 수행한다.
+   * onerror 중복 발화·watchdog 경합에 대비해 이 EventSource 인스턴스에 대해 한 번만 동작한다.
+   */
+  const triggerReconnect = (reason: string) => {
+    // 이 EventSource 인스턴스가 여전히 현재 연결일 때만 처리 (이미 교체/해제됐으면 무시)
+    if (state.eventSource !== eventSource) {
+      return;
+    }
+
+    // heartbeat 감시 타이머 정리 (재연결 성공 시 onopen에서 다시 무장)
+    if (state.heartbeatWatchdogId) {
+      clearTimeout(state.heartbeatWatchdogId);
+      state.heartbeatWatchdogId = null;
+    }
+
+    // 기존 EventSource 종료
+    eventSource.close();
+    state.eventSource = null;
+    state.isConnected = false;
+    state.setIsConnectedCallbacks.forEach((callback) => callback(false));
+
+    // 재시도 횟수 증가
+    state.reconnectAttempts += 1;
+
+    saveAppLog('[SSE 연결 오류]', {
+      key,
+      재시도횟수: state.reconnectAttempts,
+      reason,
+    });
+
+    // 5번 이상 시도했으면 다이얼로그 표시 후 30초마다 재시도 (타이머는 다이얼로그 노출 중에만 동작)
+    if (state.reconnectAttempts > 5) {
+      if (state.reconnectTimeoutId) {
+        clearTimeout(state.reconnectTimeoutId);
+        state.reconnectTimeoutId = null;
+      }
+      if (state.retryAfterDialogTimeoutId) {
+        clearTimeout(state.retryAfterDialogTimeoutId);
+        state.retryAfterDialogTimeoutId = null;
+      }
+
+      state.isReconnecting = false;
+      state.reconnectAttempts = 0;
+      state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
+      notifyReconnectingChange();
+
+      // 이미 연결 오류 다이얼로그가 떠 있으면 새로 열지 않고 타이머만 (재)시작 (중복 다이얼로그·state 꼬임 방지)
+      if (!state.connectionErrorDialogId) {
+        const dialogId = openConfirmDialog({
+          title: '연결 오류',
+          content: '네트워크가 끊어졌습니다. 다시 시도하시겠습니까?',
+          confirmText: '확인',
+          onConfirm: () => {
+            if (state.retryAfterDialogTimeoutId) {
+              clearTimeout(state.retryAfterDialogTimeoutId);
+              state.retryAfterDialogTimeoutId = null;
+            }
+            state.connectionErrorDialogId = null;
+            if (state.url) {
+              state.isReconnecting = true;
+              state.reconnectAttempts = 0;
+              state.setIsReconnectingCallbacks.forEach((callback) =>
+                callback(true)
+              );
+              notifyReconnectingChange();
+              connectSSE(key, state.url);
+            }
+          },
+        });
+        state.connectionErrorDialogId = dialogId;
+      }
+
+      state.retryAfterDialogTimeoutId = setTimeout(() => {
+        const s = sseConnectionMap.get(key) as
+          | TSSEConnectionState<unknown>
+          | undefined;
+        if (s) {
+          s.retryAfterDialogTimeoutId = null;
+          if (s.url) {
+            connectSSE(key, s.url);
+          }
+        }
+      }, RETRY_AFTER_DIALOG_MS);
+      return;
+    }
+
+    // 5번 이하면 재시도 (2초 딜레이 후)
+    if (state.url) {
+      // 재연결 상태를 true로 설정 (loading 상태 유지)
+      if (!state.isReconnecting) {
+        state.isReconnecting = true;
+        state.setIsReconnectingCallbacks.forEach((callback) => callback(true));
+        notifyReconnectingChange();
+      }
+
+      // 기존 재연결 타임아웃이 있으면 정리
+      if (state.reconnectTimeoutId) {
+        clearTimeout(state.reconnectTimeoutId);
+        state.reconnectTimeoutId = null;
+      }
+
+      // 2초 딜레이 후 재연결 시도
+      const reconnectUrl = state.url;
+      state.reconnectTimeoutId = setTimeout(() => {
+        state.reconnectTimeoutId = null;
+        if (reconnectUrl) {
+          connectSSE(key, reconnectUrl);
+        }
+      }, 2000);
+    }
+  };
+
+  /**
+   * 서버 heartbeat 감시 타이머를 (재)무장한다.
+   * 수신 메시지마다 호출 — 메시지가 도착했다는 것은 연결이 살아있다는 증거이므로 타이머를 리셋한다.
+   * HEARTBEAT_TIMEOUT_MS 동안 어떤 메시지도 오지 않으면 half-open으로 보고 재연결한다.
+   * 핸들러(useSSEHandler)가 아니라 onmessage(raw 수신)에서 리셋하므로 rAF 기반 메시지 큐 지연과 무관하다.
+   */
+  const armHeartbeatWatchdog = () => {
+    if (state.heartbeatWatchdogId) {
+      clearTimeout(state.heartbeatWatchdogId);
+    }
+    state.heartbeatWatchdogId = setTimeout(() => {
+      state.heartbeatWatchdogId = null;
+      saveAppLog('[SSE heartbeat 타임아웃]', {
+        key,
+        timeoutMs: HEARTBEAT_TIMEOUT_MS,
+      });
+      triggerReconnect('heartbeat timeout');
+    }, HEARTBEAT_TIMEOUT_MS);
+  };
 
   eventSource.onopen = () => {
     if (state.reconnectTimeoutId) {
@@ -144,6 +287,8 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
     state.setIsConnectedCallbacks.forEach((callback) => callback(true));
     state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
     notifyReconnectingChange();
+    // 연결 직후 heartbeat 감시 시작 (첫 메시지가 안 와도 죽은 연결을 감지)
+    armHeartbeatWatchdog();
     saveAppLog('[SSE 연결 성공]', { key });
   };
 
@@ -179,6 +324,9 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
   };
 
   eventSource.onmessage = (event) => {
+    // 어떤 메시지든 수신 = 연결 생존 신호 → heartbeat 감시 타이머 리셋
+    // (파싱 실패 여부와 무관하게 도착 자체가 생존 증거이므로 try 이전에 리셋)
+    armHeartbeatWatchdog();
     try {
       const parsed = JSON.parse(event.data) as T;
       // 메시지를 큐에 추가
@@ -199,102 +347,7 @@ export const connectSSE = <T = unknown>(key: string, url: string): void => {
       eventSource.readyState === EventSource.CLOSED ||
       eventSource.readyState === EventSource.CONNECTING
     ) {
-      // 기존 EventSource 종료
-      eventSource.close();
-      state.eventSource = null;
-      state.isConnected = false;
-      state.setIsConnectedCallbacks.forEach((callback) => callback(false));
-
-      // 재시도 횟수 증가
-      state.reconnectAttempts += 1;
-
-      saveAppLog('[SSE 연결 오류]', {
-        key,
-        재시도횟수: state.reconnectAttempts,
-      });
-
-      // 5번 이상 시도했으면 다이얼로그 표시 후 30초마다 재시도 (타이머는 다이얼로그 노출 중에만 동작)
-      if (state.reconnectAttempts > 5) {
-        if (state.reconnectTimeoutId) {
-          clearTimeout(state.reconnectTimeoutId);
-          state.reconnectTimeoutId = null;
-        }
-        if (state.retryAfterDialogTimeoutId) {
-          clearTimeout(state.retryAfterDialogTimeoutId);
-          state.retryAfterDialogTimeoutId = null;
-        }
-
-        state.isReconnecting = false;
-        state.reconnectAttempts = 0;
-        state.setIsReconnectingCallbacks.forEach((callback) => callback(false));
-        notifyReconnectingChange();
-
-        // 이미 연결 오류 다이얼로그가 떠 있으면 새로 열지 않고 타이머만 (재)시작 (중복 다이얼로그·state 꼬임 방지)
-        if (!state.connectionErrorDialogId) {
-          const dialogId = openConfirmDialog({
-            title: '연결 오류',
-            content: '네트워크가 끊어졌습니다. 다시 시도하시겠습니까?',
-            confirmText: '확인',
-            onConfirm: () => {
-              if (state.retryAfterDialogTimeoutId) {
-                clearTimeout(state.retryAfterDialogTimeoutId);
-                state.retryAfterDialogTimeoutId = null;
-              }
-              state.connectionErrorDialogId = null;
-              if (state.url) {
-                state.isReconnecting = true;
-                state.reconnectAttempts = 0;
-                state.setIsReconnectingCallbacks.forEach((callback) =>
-                  callback(true)
-                );
-                notifyReconnectingChange();
-                connectSSE(key, state.url);
-              }
-            },
-          });
-          state.connectionErrorDialogId = dialogId;
-        }
-
-        state.retryAfterDialogTimeoutId = setTimeout(() => {
-          const s = sseConnectionMap.get(key) as
-            | TSSEConnectionState<unknown>
-            | undefined;
-          if (s) {
-            s.retryAfterDialogTimeoutId = null;
-            if (s.url) {
-              connectSSE(key, s.url);
-            }
-          }
-        }, RETRY_AFTER_DIALOG_MS);
-        return;
-      }
-
-      // 5번 이하면 재시도 (2초 딜레이 후)
-      if (state.url) {
-        // 재연결 상태를 true로 설정 (loading 상태 유지)
-        if (!state.isReconnecting) {
-          state.isReconnecting = true;
-          state.setIsReconnectingCallbacks.forEach((callback) =>
-            callback(true)
-          );
-          notifyReconnectingChange();
-        }
-
-        // 기존 재연결 타임아웃이 있으면 정리
-        if (state.reconnectTimeoutId) {
-          clearTimeout(state.reconnectTimeoutId);
-          state.reconnectTimeoutId = null;
-        }
-
-        // 2초 딜레이 후 재연결 시도
-        const reconnectUrl = state.url;
-        state.reconnectTimeoutId = setTimeout(() => {
-          state.reconnectTimeoutId = null;
-          if (reconnectUrl) {
-            connectSSE(key, reconnectUrl);
-          }
-        }, 2000);
-      }
+      triggerReconnect('onerror');
     } else {
       // 기존 로직 (OPEN 상태의 에러)
       const error = new Error(JSON.stringify(err));
@@ -327,6 +380,11 @@ export const disconnectSSE = (key: string, reason?: string): void => {
     if (state.connectionErrorDialogId) {
       closeDialog(state.connectionErrorDialogId);
       state.connectionErrorDialogId = null;
+    }
+    // heartbeat 감시 타이머 정리 (해제 후 좀비 재연결 방지)
+    if (state.heartbeatWatchdogId) {
+      clearTimeout(state.heartbeatWatchdogId);
+      state.heartbeatWatchdogId = null;
     }
 
     // EventSource 종료
@@ -395,6 +453,7 @@ export const useSSEData = <T = unknown>(key: string) => {
         retryAfterDialogTimeoutId: null,
         connectionErrorDialogId: null,
         pendingRafId: null,
+        heartbeatWatchdogId: null,
       };
       sseConnectionMap.set(key, state as TSSEConnectionState<unknown>);
     }
