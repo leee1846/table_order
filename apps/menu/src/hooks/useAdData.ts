@@ -4,7 +4,7 @@ import { useGetMenuAdFiles } from '@repo/api/queries';
 import { useShopStore } from '@/stores/useShopStore';
 import { useAdStore } from '@/stores/useAdStore';
 // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 saveAppLog import 삭제
-import { AdStorage, getAdObjectUrl, saveAppLog } from '@repo/util/app';
+import { AdStorage, saveAppLog } from '@repo/util/app';
 
 /** 태블릿 첫 부팅 시 Capacitor 엔진 준비 대기 후 광고 API 요청 */
 const NATIVE_AD_FETCH_DELAY_MS = 5000;
@@ -101,41 +101,19 @@ const registerLocalVideoUrl = async (
   storageName: string,
   setLocalVideoUrl: (filePathKey: string, url: string) => void
 ): Promise<void> => {
-  // 이미 유효한 Blob URL을 가진 영상은 재생성하지 않음 (재조회 때 불필요한 영상 리로드 방지)
-  const existing = useAdStore.getState().data.localVideoUrls[filePath];
-  if (existing?.startsWith('blob:')) {
-    // TODO: 제거 예정 (영상 재생 실패 추적 로그)
-    saveAppLog('[광고 영상 URL 등록]', {
-      fileName: storageName,
-      source: 'blob-cached',
-    });
-    return;
-  }
-  // 1순위: 파일을 직접 읽어 Blob URL 사용 (HTTP 스트리밍의 data source 오류 우회)
-  const objectUrl = await getAdObjectUrl(storageName);
-  if (objectUrl) {
-    setLocalVideoUrl(filePath, objectUrl);
-    // TODO: 제거 예정 (영상 재생 실패 추적 로그)
-    saveAppLog('[광고 영상 URL 등록]', {
-      fileName: storageName,
-      source: 'blob',
-    });
-    return;
-  }
-  // 폴백: Blob 생성 실패 시 기존 로컬 URL(_capacitor_file_) 사용
+  // 로컬 URL(_capacitor_file_) 사용 — WebView가 HTTP로 스트리밍 재생한다.
   const { url } = await AdStorage.getAdUrl({ fileName: storageName });
   if (url) {
     setLocalVideoUrl(filePath, url);
-    // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 아래 saveAppLog와 return 삭제
-    // (Blob 실패로 _capacitor_file_ 스트리밍 폴백 → Range 재생 끊김 위험 구간)
+    // TODO: 제거 예정 (영상 재생 실패 추적 로그)
     saveAppLog('[광고 영상 URL 등록]', {
       fileName: storageName,
-      source: 'fallback-capacitor-file',
+      source: 'capacitor-file',
     });
     return;
   }
   // TODO: 제거 예정 (영상 재생 실패 추적 로그) — 제거 시 아래 블록 전체 삭제
-  // (Blob·폴백 모두 실패 → 영상이 슬라이드에서 제외됨)
+  // (로컬 URL 획득 실패 → 영상이 슬라이드에서 제외됨)
   saveAppLog('[광고 영상 URL 등록]', {
     fileName: storageName,
     source: 'none',

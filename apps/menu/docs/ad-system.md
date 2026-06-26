@@ -14,7 +14,7 @@
 | Query Key | `packages/api/src/queries/queryKeys.ts` — `queryKeys.menu.adFiles(shopCode)` |
 | 데이터 로드·영상 다운로드 | `apps/menu/src/hooks/useAdData.ts` |
 | 광고 파일 상태 스토어 | `apps/menu/src/stores/useAdStore.ts` |
-| 네이티브 광고 저장소·Blob URL 생성 | `packages/util/src/app/AdStorage.ts` (`getAdObjectUrl`) |
+| 네이티브 광고 저장소 (`_capacitor_file_` URL) | `packages/util/src/app/AdStorage.ts` (`getAdUrl`) |
 | 전면 대기 광고 노출 상태 | `apps/menu/src/stores/useStandbyAdStore.ts` |
 | 슬라이더 공통 컴포넌트 | `apps/menu/src/feature/AdMediaSlider/index.tsx` |
 | 전면 대기 광고 | `apps/menu/src/pages/MainPage/StandbyAd/index.tsx` |
@@ -100,12 +100,8 @@ interface IGetMenuAdFile {
    AppStorage(AD_FILES 키)에 최종 캐시 저장
 
    registerLocalVideoUrl(filePath, storageName):
-     ├─ 이미 localVideoUrls[filePath]가 blob: URL이면 → 그대로 유지하고 return
-     │    (재조회 시 동일 영상의 불필요한 blob 재생성·재생 깜빡임 방지)
-     ├─ 1순위: getAdObjectUrl(storageName)
-     │    └─ Filesystem.readFile(External/sks_ads/storageName) → base64 → Blob → URL.createObjectURL
-     │       (성공 시 setLocalVideoUrl(filePath, blobUrl))
-     └─ 폴백: 위 실패(null) 시 → AdStorage.getAdUrl() (_capacitor_file_ URL) → setLocalVideoUrl
+     └─ AdStorage.getAdUrl(storageName) → _capacitor_file_ 로컬 URL
+        (성공 시 setLocalVideoUrl(filePath, url) / 실패 시 슬라이드에서 제외)
 ```
 
 ### Phase 분리 설계 의도
@@ -125,7 +121,7 @@ interface IAdStoreData {
   topBannerFiles: IGetMenuAdFile[];
   orderCompleteFullFiles: IGetMenuAdFile[];
   orderCompleteSideFiles: IGetMenuAdFile[];
-  localVideoUrls: Record<string, string>; // key: filePath, value: Blob URL(blob:) 또는 폴백 _capacitor_file_ URL
+  localVideoUrls: Record<string, string>; // key: filePath, value: _capacitor_file_ 로컬 URL
   isLoaded: boolean;       // API 응답 or AppStorage 복원 완료
   isAdDataLoading: boolean; // 영상 다운로드 포함 전체 처리 진행 중
 }
@@ -135,19 +131,21 @@ interface IAdStoreData {
 
 앱 재기동 시 API 응답 전에 이전 데이터로 즉시 렌더링하기 위해 `AD_FILES` 키로 캐시한다.
 `isLoaded`가 이미 `true`이면(API가 먼저 응답) 캐시를 덮어쓰지 않는다.
-단, `localVideoUrls`(영상 로컬 URL)는 캐시 대상이 아니다 — Blob URL은 세션(프로세스) 한정이므로
+단, `localVideoUrls`(영상 로컬 URL)는 캐시 대상이 아니다 — `_capacitor_file_` URL은 세션(프로세스) 한정이므로
 재기동 시 비어 있고, API 응답 후 `useAdData`가 다시 등록한다.
 
-### Blob URL 도입 배경과 수명 관리
+### 영상 재생 소스 (`_capacitor_file_`)
 
-`_capacitor_file_` 로컬 HTTP 서버로 영상을 스트리밍하면 Range 요청 처리 문제로
-`FFmpegDemuxer: data source error`(net::ERR_FAILED) / `PIPELINE_ERROR_READ`가 발생해 재생이 끊긴다.
-이를 우회하기 위해 영상 파일 전체를 `Filesystem.readFile`로 읽어 `Blob` → `URL.createObjectURL`로 재생한다.
+영상은 `AdStorage.getAdUrl`이 반환하는 `_capacitor_file_` 로컬 HTTP URL로 재생한다.
+`<video>`가 WebView 로컬 HTTP 서버로 영상을 Range 스트리밍하며, 파일 본문을 메모리에
+적재하지 않으므로 RAM 사용이 작다.
 
-Blob URL은 메모리에 상주하므로 `useAdStore`가 수명을 직접 관리한다 (`revokeIfObjectUrl`은 `blob:`만 해제):
-- `setLocalVideoUrl`: 같은 key를 다른 URL로 교체할 때 이전 Blob URL 해제
-- `setAdFiles`: 새 API 응답에 없는 filePath의 Blob URL 해제 후 맵에서 제거
-- `clearData`: 보유한 모든 Blob URL 해제 (리셋/로그아웃)
+> 주의: 로컬 HTTP 서버의 Range 요청 처리 문제로 일부 환경에서
+> `FFmpegDemuxer: data source error`(net::ERR_FAILED) / `PIPELINE_ERROR_READ`가 발생해
+> 재생이 끊길 수 있다. (과거 Blob URL 방식으로 우회했던 이슈)
+
+`localVideoUrls`에는 `_capacitor_file_` 문자열 URL만 보관하며, 별도 메모리 해제(revoke)는
+필요 없다. `setAdFiles`는 새 API 응답에 없는 filePath의 URL만 맵에서 제거한다.
 
 ---
 
@@ -309,9 +307,7 @@ SSE 'AD_MENU' 메시지 수신 (useSSEHandler.ts > handleAdMenuMessage)
 
 ## 8. 주의사항
 
-- **영상 재생 소스:** 영상은 `filePath`(원본 URL)가 아니라 `localVideoUrls[filePath]`로 재생한다. 이 값은 1순위로 `getAdObjectUrl`이 만든 **Blob URL(`blob:`)**, 실패 시 폴백으로 `_capacitor_file_` 로컬 URL이다. `localVideoUrls`에 등록되지 않은 영상은 `prepareSlides`에서 제외되므로 슬라이드에 나타나지 않는다.
-
-- **Blob URL 수명 관리(메모리 누수 방지):** Blob URL은 세션 한정 메모리 리소스다. `useAdStore`가 `setLocalVideoUrl`(교체 시)·`setAdFiles`(제거 시)·`clearData`(리셋 시)에서 `URL.revokeObjectURL`로 해제한다. SSE `AD_MENU` 반복 갱신 시에도 동일 영상은 `registerLocalVideoUrl`의 `blob:` 가드로 재생성하지 않아 누수와 재생 깜빡임이 없다.
+- **영상 재생 소스:** 영상은 `filePath`(원본 URL)가 아니라 `localVideoUrls[filePath]`로 재생한다. 이 값은 `AdStorage.getAdUrl`이 반환하는 `_capacitor_file_` 로컬 URL이다. `localVideoUrls`에 등록되지 않은 영상은 `prepareSlides`에서 제외되므로 슬라이드에 나타나지 않는다.
 
 - **TopBannerAd는 AdMediaSlider를 사용하지 않는다:** Swiper `Autoplay` 모듈을 직접 사용하며 영상을 지원하지 않는다. 영상 지원이 필요하면 `AdMediaSlider`로 교체해야 한다.
 
@@ -319,7 +315,7 @@ SSE 'AD_MENU' 메시지 수신 (useSSEHandler.ts > handleAdMenuMessage)
 
 - **FULL/SIDE 동시 표시 없음:** API 응답 array에 FULL/SIDE가 모두 있을 때 `groupAdFiles`가 먼저 등장하는 유형만 채우고 다른 유형 배열은 비운다(`[]`). 따라서 두 슬롯이 동시에 표시되는 경우는 없으며, 노출 순서는 sortOrder가 아니라 array 순서를 따른다.
 
-- **0바이트 손상 캐시 자동 복구:** 다운로드 중단 등으로 0바이트로 남은 영상 파일은 파일명만으로 캐시 적중 처리되면 `getAdObjectUrl`의 Blob 생성이 실패(빈 데이터)하고 `_capacitor_file_` 폴백마저 재생 불가(`MEDIA_ERR_SRC_NOT_SUPPORTED`)가 되어 슬라이드가 그 영상에서 멈춘다. 이를 막기 위해 `removeStaleAdVideos`가 `listAds()`의 `size === 0` 파일을 stale과 함께 삭제하고, 다음 로드 사이클에서 정상 재다운로드한다. (`size`가 undefined이거나 정상 크기인 파일은 삭제 대상이 아니다)
+- **0바이트 손상 캐시 자동 복구:** 다운로드 중단 등으로 0바이트로 남은 영상 파일은 파일명만으로 캐시 적중 처리되면 재생 불가(`MEDIA_ERR_SRC_NOT_SUPPORTED`)가 되어 슬라이드가 그 영상에서 멈춘다. 이를 막기 위해 `removeStaleAdVideos`가 `listAds()`의 `size === 0` 파일을 stale과 함께 삭제하고, 다음 로드 사이클에서 정상 재다운로드한다. (`size`가 undefined이거나 정상 크기인 파일은 삭제 대상이 아니다)
 
 - **`localVideoUrls`의 key는 `filePath`:** `fileName`이 아니다. `AdStorage`에 저장된 파일명(`storageName`)은 `filePath`의 마지막 경로 세그먼트이며, `localVideoUrls`의 key는 전체 `filePath` URL이다.
 

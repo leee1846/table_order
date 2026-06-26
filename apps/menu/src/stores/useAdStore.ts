@@ -96,13 +96,6 @@ const groupAdFiles = (
   };
 };
 
-/** Blob URL(createObjectURL)만 메모리에서 해제 — 일반 URL은 무시 */
-const revokeIfObjectUrl = (url: string | undefined): void => {
-  if (url && url.startsWith('blob:')) {
-    URL.revokeObjectURL(url);
-  }
-};
-
 const INITIAL_DATA: IAdStoreData = {
   standbyFiles: [],
   topBannerFiles: [],
@@ -155,27 +148,19 @@ export const useAdStore = create<IAdStore>((set) => {
 
     setAdFiles: async (files) => {
       const nextFilePaths = new Set(files.map((f) => f.filePath));
-      set((state) => {
-        // 새 API 응답에 없는 filePath의 Blob URL은 메모리 해제 후 제거
-        Object.entries(state.data.localVideoUrls).forEach(([key, url]) => {
-          if (!nextFilePaths.has(key)) {
-            revokeIfObjectUrl(url);
-          }
-        });
-        return {
-          data: {
-            ...state.data,
-            ...groupAdFiles(files),
-            // 유지되는 영상은 URL을 그대로 보존
-            localVideoUrls: Object.fromEntries(
-              Object.entries(state.data.localVideoUrls).filter(([key]) =>
-                nextFilePaths.has(key)
-              )
-            ),
-            isLoaded: true,
-          },
-        };
-      });
+      set((state) => ({
+        data: {
+          ...state.data,
+          ...groupAdFiles(files),
+          // 새 API 응답에 없는 filePath의 URL만 제거 — 유지되는 영상은 URL을 그대로 보존
+          localVideoUrls: Object.fromEntries(
+            Object.entries(state.data.localVideoUrls).filter(([key]) =>
+              nextFilePaths.has(key)
+            )
+          ),
+          isLoaded: true,
+        },
+      }));
       await AppStorage.saveData({
         key: STORAGE_KEYS.AD_FILES,
         value: files,
@@ -183,22 +168,15 @@ export const useAdStore = create<IAdStore>((set) => {
     },
 
     setLocalVideoUrl: (fileName, url) => {
-      set((state) => {
-        // 같은 키를 새 Blob URL로 교체할 때 이전 Blob URL 메모리 해제
-        const prev = state.data.localVideoUrls[fileName];
-        if (prev !== url) {
-          revokeIfObjectUrl(prev);
-        }
-        return {
-          data: {
-            ...state.data,
-            localVideoUrls: {
-              ...state.data.localVideoUrls,
-              [fileName]: url,
-            },
+      set((state) => ({
+        data: {
+          ...state.data,
+          localVideoUrls: {
+            ...state.data.localVideoUrls,
+            [fileName]: url,
           },
-        };
-      });
+        },
+      }));
     },
 
     setAdDataLoading: (loading) => {
@@ -211,10 +189,7 @@ export const useAdStore = create<IAdStore>((set) => {
       void AppStorage.removeData({ key: STORAGE_KEYS.AD_FILES });
       void AppStorage.removeData({ key: STORAGE_KEYS.AD_VIDEO_PATHS });
       void AdStorage.clearAds().catch(() => undefined);
-      set((state) => {
-        Object.values(state.data.localVideoUrls).forEach(revokeIfObjectUrl);
-        return { data: INITIAL_DATA };
-      });
+      set({ data: INITIAL_DATA });
     },
   };
 });
