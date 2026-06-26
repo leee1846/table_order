@@ -45,7 +45,12 @@ const fileNamesFromList = (files: { fileName: string }[]): Set<string> =>
   new Set(files.map((f) => f.fileName));
 
 /**
- * stale 삭제 후, 디스크에 남아 있는 광고 파일명 집합을 반환한다.
+ * stale(응답에 없는) 파일과 손상된(0바이트) 파일을 삭제한 뒤,
+ * 디스크에 남아 있는 광고 파일명 집합을 반환한다.
+ *
+ * 0바이트 파일은 이전 다운로드가 중단돼 남은 손상 파일이다. 파일명만으로 캐시
+ * 적중을 판단하면 재생 불가 상태로 영구히 재사용되므로, 여기서 제거해 호출부가
+ * 정상적으로 재다운로드하도록 한다.
  */
 const removeStaleAdVideos = async (
   wantedNames: Set<string>
@@ -53,7 +58,11 @@ const removeStaleAdVideos = async (
   try {
     const { files: before } = await AdStorage.listAds();
 
+    // 응답에 없는 파일(stale) + 응답엔 있으나 0바이트인 손상 파일(broken)을 삭제 대상으로
     const stale = before.filter((f) => !wantedNames.has(f.fileName));
+    const broken = before.filter(
+      (f) => wantedNames.has(f.fileName) && f.size === 0
+    );
 
     // TODO: 제거 예정 (영상 재생 실패 추적 로그)
     if (stale.length > 0) {
@@ -61,8 +70,14 @@ const removeStaleAdVideos = async (
         deleted: stale.map((f) => f.fileName),
       });
     }
+    // TODO: 제거 예정 (영상 재생 실패 추적 로그)
+    if (broken.length > 0) {
+      saveAppLog('[광고 영상 손상 파일 삭제]', {
+        deleted: broken.map((f) => f.fileName),
+      });
+    }
 
-    for (const f of stale) {
+    for (const f of [...stale, ...broken]) {
       try {
         await AdStorage.deleteAd({ fileName: f.fileName });
       } catch {
