@@ -94,19 +94,15 @@ const AdMenuAddModal: React.FC<AdMenuAddModalProps> = ({
       if (initialData) {
         setSelectedSeq(String(initialData.menuGroupSeq));
         setAdDescription(initialData.contentDescription || '');
-        if (initialData.originFileObj || initialData.filePath) {
-          setFileList([
-            {
-              uid: '-1',
-              name: initialData.fileName || 'image',
-              status: 'done',
-              url: initialData.filePath || undefined,
-              //originFileObj: initialData.originFileObj as File
-            },
-          ]);
-        } else {
-          setFileList([]);
-        }
+        setFileList([
+          {
+            uid: '-1',
+            name: initialData.fileName || '',
+            status: 'done',
+            url: initialData.filePath || undefined,
+            //originFileObj: initialData.originFileObj as File
+          },
+        ]);
       } else {
         resetState();
       }

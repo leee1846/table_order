@@ -214,7 +214,7 @@ const AdMenuContent: React.FC<AdMenuContentProps> = ({
                 fileName: data.adImage ? file?.name || '' : '',
                 fileSizeKb: data.adImage
                   ? file
-                    ? Math.round(file.size / 1024)
+                    ? file.size ? Math.round(file.size / 1024) : item.fileSizeKb
                     : item.fileSizeKb
                   : 0,
                 menuGroupSeq: data.selectedItem!.menuGroupSeq,
