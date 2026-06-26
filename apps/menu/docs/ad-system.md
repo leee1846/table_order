@@ -74,6 +74,8 @@ interface IGetMenuAdFile {
        ↓
 2. AdStorage.listAds()
    stale 영상 파일 삭제 (API 응답에 없는 filePath의 파일명)
+   + 손상 영상 파일 삭제 (API 응답엔 있으나 size === 0인 0바이트 파일)
+     → 삭제되어 namesOnDisk에서 빠지므로 아래 3에서 정상 재다운로드됨
        ↓
 3. 영상 파일을 STANDBY / ORDER_COMP 두 그룹으로 분리해 단계별·병렬 처리
 
@@ -316,6 +318,8 @@ SSE 'AD_MENU' 메시지 수신 (useSSEHandler.ts > handleAdMenuMessage)
 - **`isAdDataLoading` 플래그:** Phase 1(STANDBY) 처리 중에 `true`다. Phase 1 완료 시 `false`로 전환되며, 이후 Phase 2(ORDER_COMP)는 백그라운드에서 진행된다. `StandbyAd`와 `TopBannerAd`는 이 값이 `true`인 동안 렌더링하지 않는다. `OrderCompleteModal`은 이 플래그를 직접 참조하지 않는다.
 
 - **FULL/SIDE 동시 표시 없음:** API 응답 array에 FULL/SIDE가 모두 있을 때 `groupAdFiles`가 먼저 등장하는 유형만 채우고 다른 유형 배열은 비운다(`[]`). 따라서 두 슬롯이 동시에 표시되는 경우는 없으며, 노출 순서는 sortOrder가 아니라 array 순서를 따른다.
+
+- **0바이트 손상 캐시 자동 복구:** 다운로드 중단 등으로 0바이트로 남은 영상 파일은 파일명만으로 캐시 적중 처리되면 `getAdObjectUrl`의 Blob 생성이 실패(빈 데이터)하고 `_capacitor_file_` 폴백마저 재생 불가(`MEDIA_ERR_SRC_NOT_SUPPORTED`)가 되어 슬라이드가 그 영상에서 멈춘다. 이를 막기 위해 `removeStaleAdVideos`가 `listAds()`의 `size === 0` 파일을 stale과 함께 삭제하고, 다음 로드 사이클에서 정상 재다운로드한다. (`size`가 undefined이거나 정상 크기인 파일은 삭제 대상이 아니다)
 
 - **`localVideoUrls`의 key는 `filePath`:** `fileName`이 아니다. `AdStorage`에 저장된 파일명(`storageName`)은 `filePath`의 마지막 경로 세그먼트이며, `localVideoUrls`의 key는 전체 `filePath` URL이다.
 
