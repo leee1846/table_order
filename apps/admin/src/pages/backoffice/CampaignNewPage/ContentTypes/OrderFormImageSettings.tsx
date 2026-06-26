@@ -3,6 +3,7 @@ import { Typography, Divider, Radio } from 'antd';
 import styled from '@emotion/styled';
 import UploadContent, { type UploadedFile } from './UploadContent';
 import { useListDragAndDrop } from '../useDragAndDrop';
+import { useConfirmDialog } from '@/feature/backoffice/hooks/useConfirmDialog';
 
 const { Title, Text } = Typography;
 
@@ -93,6 +94,30 @@ const OrderFormImageSettings: React.FC<OrderFormImageSettingsProps> = ({
   orderFiles,
   setOrderFiles,
 }) => {
+  const { showConfirm } = useConfirmDialog();
+
+  const handleExposureTypeChange = (newType: 'full' | 'half') => {
+    if (newType === exposureType) {
+      return;
+    }
+
+    // 업로드된 파일이 있을 경우에만 확인 모달을 띄웁니다.
+    if (orderFiles.length > 0) {
+      showConfirm({
+        title: '유형 변경 확인',
+        content:
+          '광고 노출 유형을 변경하면 이전에 업로드한 파일이 모두 삭제됩니다. 계속하시겠습니까?',
+        okText: '변경',
+        onConfirm: () => {
+          setExposureType(newType);
+          setOrderFiles([]);
+        },
+      });
+    } else {
+      setExposureType(newType);
+    }
+  };
+
   // --- Custom Hook 적용 ---
   const { handleDragStart, handleDragEnter, handleDragEnd } =
     useListDragAndDrop(orderFiles, setOrderFiles);
@@ -135,10 +160,7 @@ const OrderFormImageSettings: React.FC<OrderFormImageSettingsProps> = ({
 
           <Radio.Group
             value={exposureType}
-            onChange={(e) => {
-              setExposureType(e.target.value);
-              setOrderFiles([]); // 유형이 변경될 때 파일 목록 초기화
-            }}
+            onChange={(e) => handleExposureTypeChange(e.target.value)}
             style={{ width: '100%' }}
           >
             <TypeCard selected={exposureType === 'full'}>
