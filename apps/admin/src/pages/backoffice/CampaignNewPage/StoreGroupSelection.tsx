@@ -261,7 +261,6 @@ const StoreGroupSelection: React.FC<StoreGroupSelectionProps> = ({
       </div>
 
       <StyledTable
-        locale={{ emptyText: '추가된 매장을 여기에 넣어줘' }}
         rowSelection={{
           selectedRowKeys: checkedKeys,
           onChange: setCheckedKeys,
