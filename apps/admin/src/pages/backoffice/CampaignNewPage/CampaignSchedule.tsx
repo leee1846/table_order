@@ -184,6 +184,23 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
     return false;
   };
 
+  const disabledEndDate = (current: dayjs.Dayjs) => {
+    // 전체 집행 기간 제약 조건을 먼저 확인합니다.
+    if (disabledDate(current)) {
+      return true;
+    }
+
+    // 현재 폼의 시작일 값을 가져옵니다.
+    const startDate = form.getFieldValue('startDate') as dayjs.Dayjs | null;
+
+    // 시작일이 선택되었고, 현재 날짜가 시작일보다 이전이면 비활성화합니다.
+    if (startDate && current.isBefore(startDate, 'day')) {
+      return true;
+    }
+
+    return false;
+  };
+
   // 테이블 컬럼 정의
   // 테이블 컬럼 정의
   const columns: ColumnsType<CampaignShopData> = [
@@ -210,6 +227,12 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
               format="YYYY-MM-DD"
               style={{ width: '100%' }}
               disabledDate={disabledDate}
+              onChange={(date) => {
+                const endDate = form.getFieldValue('endDate');
+                if (date && endDate && date.isAfter(endDate, 'day')) {
+                  form.setFieldsValue({ endDate: null });
+                }
+              }}
             />
           </Form.Item>
         ) : (
@@ -232,7 +255,7 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
             <DatePicker
               format="YYYY-MM-DD"
               style={{ width: '100%' }}
-              disabledDate={disabledDate}
+              disabledDate={disabledEndDate}
             />
           </Form.Item>
         ) : (

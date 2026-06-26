@@ -181,6 +181,25 @@ const CampaignNewPagePage: React.FC = () => {
     }`,
   };
 
+  const disabledOverallEndDate = (current: dayjs.Dayjs) => {
+    if (!overallStartDate) {
+      return false;
+    }
+
+    return current && current.isBefore(overallStartDate, 'day');
+  };
+
+  // 시작일이 종료일 이후로 설정되면 종료일을 초기화
+  useEffect(() => {
+    if (
+      overallStartDate &&
+      overallEndDate &&
+      overallStartDate.isAfter(overallEndDate, 'day')
+    ) {
+      form.setFieldsValue({ overallEndDate: null });
+    }
+  }, [overallStartDate, overallEndDate, form]);
+
   const onFinish = async (values: BasicInfoFormValues) => {
     if (currentStep === 3 && isScheduleEditing) {
       message.warning('매장별 집행 기간 편집을 완료(저장 또는 취소)해 주세요.');
@@ -589,6 +608,7 @@ const CampaignNewPagePage: React.FC = () => {
                     style={{ width: '400px' }}
                     placeholder="종료일"
                     size="large"
+                    disabledDate={disabledOverallEndDate}
                   />
                 </Form.Item>
               </FormRow>
