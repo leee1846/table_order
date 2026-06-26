@@ -261,7 +261,7 @@ const CampaignNewPagePage: React.FC = () => {
           requestData.contents!.push({
             contentSeq: fileItem.contentSeq, // 기존 콘텐츠면 서버에서 받은 값, 신규면 undefined
             adType,
-            filePath: '', // 서버 등록 전이므로 빈 문자열
+            filePath: fileItem.url || '', // 서버 등록 전이므로 빈 문자열
             fileName: fileItem.name || '',
             fileSizeKb: fileItem.originFileObj
               ? Math.round(fileItem.originFileObj.size / 1024)
@@ -317,7 +317,7 @@ const CampaignNewPagePage: React.FC = () => {
         requestData.contents!.push({
           contentSeq: fileItem.contentSeq, // 기존 콘텐츠면 서버에서 받은 값, 신규면 undefined
           adType: orderCompAdType,
-          filePath: '',
+          filePath: fileItem.url || '',
           fileName: fileItem.originFileObj?.name || fileItem.name || '',
           fileSizeKb: fileItem.originFileObj
             ? Math.round(fileItem.originFileObj.size / 1024)
