@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Button, Tooltip, Space } from 'antd';
+import { Typography, Button, Tooltip, Space, type UploadFile } from 'antd';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -204,23 +204,23 @@ const AdMenuContent: React.FC<AdMenuContentProps> = ({
     const file = data.adImage as File | undefined;
 
     if (editingItem) {
+      const newFile = (data.adImage as UploadFile | undefined)
+        ?.originFileObj as File | undefined;
+
       setMenuItems((prev) =>
         prev.map((item) =>
           item.id === editingItem.id
             ? {
                 ...item,
-                id: data.selectedItem!.menuGroupSeq,
-                filePath: data.adImage ? (file ? '' : item.filePath) : '',
-                fileName: data.adImage ? file?.name || '' : '',
-                fileSizeKb: data.adImage
-                  ? file
-                    ? file.size ? Math.round(file.size / 1024) : item.fileSizeKb
-                    : item.fileSizeKb
-                  : 0,
+                filePath: newFile ? '' : item.filePath,
+                fileName: newFile ? newFile.name : item.fileName,
+                fileSizeKb: newFile
+                  ? Math.round(newFile.size / 1024)
+                  : item.fileSizeKb,
                 menuGroupSeq: data.selectedItem!.menuGroupSeq,
                 contentDescription: data.adDescription || '',
                 menuGroupName: data.selectedItem!.menuGroupName || '',
-                originFileObj: data.adImage ? file : item.originFileObj,
+                originFileObj: newFile ?? item.originFileObj,
               }
             : item
         )
