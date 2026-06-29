@@ -39,6 +39,8 @@ export const StoresSidebarLayout = () => {
 
   const isMaster = tokenPayload?.role === 'MASTER';
 
+  const isAdmin = tokenPayload?.role === 'ADMIN';
+
   const SIDEBAR_MENUS = useMemo<TMenu[]>(() => {
     const menus: TMenu[] = [
       {
@@ -67,7 +69,7 @@ export const StoresSidebarLayout = () => {
       ],
     });
 
-    if (isMaster) {
+    if (isMaster || isAdmin) {
       menus.push({
         id: 'campaign',
         label: '광고 관리',
@@ -92,34 +94,36 @@ export const StoresSidebarLayout = () => {
       });
     }
 
-    menus.push({
-      id: 'app-histories',
-      label: '배포 관리',
-      //path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(),
-      matchPattern: '/backoffice/app-histories/*',
-      subMenus: [
-        {
-          id: 'menu-app',
-          label: '메뉴판 앱',
-          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.MENU),
-        },
-        {
-          id: 'admin-app',
-          label: '관리자 앱',
-          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.POS_APP),
-        },
-        {
-          id: 'agent',
-          label: '에이전트',
-          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.AGENT),
-        },
-        {
-          id: 'service',
-          label: '서비스',
-          path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.SERVICE),
-        },
-      ],
-    });
+    if (isMaster || isAdmin) {
+      menus.push({
+        id: 'app-histories',
+        label: '배포 관리',
+        //path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(),
+        matchPattern: '/backoffice/app-histories/*',
+        subMenus: [
+          {
+            id: 'menu-app',
+            label: '메뉴판 앱',
+            path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.MENU),
+          },
+          {
+            id: 'admin-app',
+            label: '관리자 앱',
+            path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.POS_APP),
+          },
+          {
+            id: 'agent',
+            label: '에이전트',
+            path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.AGENT),
+          },
+          {
+            id: 'service',
+            label: '서비스',
+            path: ROUTES.BACKOFFICE.APP_HISTORIES.generate(APP_TYPE.SERVICE),
+          },
+        ],
+      });
+    }
 
     menus.push({
       id: 'manual',

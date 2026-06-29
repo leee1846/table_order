@@ -310,27 +310,27 @@ const createBackofficeRoutes = () => [
   },
   {
     path: ROUTES.BACKOFFICE.CAMPAIGN.path,
-    loader: requireMasterLoader,
+    loader: requireBackofficeLoader,
     element: createRoute(CampaignPage),
   },
   {
     path: ROUTES.BACKOFFICE.CAMPAIGN_NEW.path,
-    loader: requireMasterLoader,
+    loader: requireBackofficeLoader,
     element: createRoute(CampaignNewPage),
   },
   {
     path: ROUTES.BACKOFFICE.CAMPAIGN_EDIT.path,
-    loader: requireMasterLoader,
+    loader: requireBackofficeLoader,
     element: createRoute(CampaignNewPage),
   },
   {
     path: ROUTES.BACKOFFICE.MENU_GROUP.path,
-    loader: requireMasterLoader,
+    loader: requireBackofficeLoader,
     element: createRoute(MenuGroupPage),
   },
   {
     path: ROUTES.BACKOFFICE.STORE_GROUP.path,
-    loader: requireMasterLoader,
+    loader: requireBackofficeLoader,
     element: createRoute(StoreGroupPage),
   },
   {
