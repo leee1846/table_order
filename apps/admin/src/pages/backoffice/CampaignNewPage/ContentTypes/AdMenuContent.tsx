@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Button, Tooltip, Space } from 'antd';
+import { Typography, Button, Tooltip, Space, type UploadFile } from 'antd';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -15,7 +15,7 @@ const { Text } = Typography;
 
 // --- Types ---
 export interface MenuItem {
-  id?: string | number;
+  id: string | number;
   adType: string;
   filePath: string;
   fileName: string;
@@ -192,7 +192,7 @@ const AdMenuContent: React.FC<AdMenuContentProps> = ({
     useListDragAndDrop(menuItems, setMenuItems);
 
   const handleDelete = (id: string) => {
-    setMenuItems((prev) => prev.filter((item) => String(item.id) !== id));
+    setMenuItems((prev) => prev.filter((item) => item.id !== Number(id)));
   };
 
   const handleConfirmAdTag = (data: adMenuData) => {
@@ -201,23 +201,26 @@ const AdMenuContent: React.FC<AdMenuContentProps> = ({
       return;
     }
 
-    const uploadFile = data.adImage;
+    const file = data.adImage as File | undefined;
 
     if (editingItem) {
+      const newFile = (data.adImage as UploadFile | undefined)
+        ?.originFileObj as File | undefined;
+
       setMenuItems((prev) =>
         prev.map((item) =>
           item.id === editingItem.id
             ? {
                 ...item,
-                filePath: uploadFile?.url || '',
-                fileName: uploadFile?.name || '',
-                fileSizeKb:
-                  uploadFile && uploadFile.size
-                    ? Math.round(uploadFile.size / 1024)
-                    : 0,
+                filePath: newFile ? '' : item.filePath,
+                fileName: newFile ? newFile.name : item.fileName,
+                fileSizeKb: newFile
+                  ? Math.round(newFile.size / 1024)
+                  : item.fileSizeKb,
                 menuGroupSeq: data.selectedItem!.menuGroupSeq,
                 contentDescription: data.adDescription || '',
                 menuGroupName: data.selectedItem!.menuGroupName || '',
+                originFileObj: newFile ?? item.originFileObj,
               }
             : item
         )
@@ -225,18 +228,16 @@ const AdMenuContent: React.FC<AdMenuContentProps> = ({
     } else {
       // 새 메뉴 아이템 생성
       const newMenuItem: MenuItem = {
-        id: `new-${Date.now()}`,
+        id: data.selectedItem.menuGroupSeq,
         adType: 'AD_MENU_IMAGE',
         filePath: '',
-        fileName: uploadFile?.name || '',
-        fileSizeKb:
-          uploadFile && uploadFile.size
-            ? Math.round(uploadFile.size / 1024)
-            : 0,
+        fileName: file?.name || '',
+        fileSizeKb: file ? Math.round(file.size / 1024) : 0,
         menuGroupSeq: data.selectedItem.menuGroupSeq,
         contentDescription: data.adDescription || '',
         sortOrder: menuItems.length + 1,
         menuGroupName: data.selectedItem.menuGroupName || '',
+        originFileObj: file,
       };
       setMenuItems([...menuItems, newMenuItem]);
     }
@@ -262,7 +263,7 @@ const AdMenuContent: React.FC<AdMenuContentProps> = ({
       <ListContainer>
         {menuItems.map((item, index) => (
           <TopMenuAdListItem
-            key={Number(index)}
+            key={item.id}
             item={item}
             index={index}
             onDragStart={handleDragStart}
