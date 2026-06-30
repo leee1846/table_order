@@ -156,8 +156,8 @@ const StoreGroupSelection: React.FC<StoreGroupSelectionProps> = ({
               // 그룹명 문자열을 기반으로 일관된 랜덤 색상을 선택하여 리렌더링 시 깜빡임 방지
               const colorIndex =
                 group.groupName
-                  .split('')
-                  .reduce((acc, char) => acc + char.charCodeAt(0), 0) %
+                  ?.split('')
+                  ?.reduce((acc, char) => acc + char.charCodeAt(0), 0) %
                 TAG_COLORS.length;
 
               return (
