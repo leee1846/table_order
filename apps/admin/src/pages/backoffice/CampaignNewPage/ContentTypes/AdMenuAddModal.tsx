@@ -15,6 +15,7 @@ import { useGetMenuGroupList } from '@repo/api/queries';
 import type { IMenuGroup } from '@repo/api/types';
 import { IMAGE_DIMENSIONS } from './UploadContent';
 import type { MenuItem } from './AdMenuContent';
+import type { RcFile } from 'antd/es/upload';
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -94,15 +95,20 @@ const AdMenuAddModal: React.FC<AdMenuAddModalProps> = ({
       if (initialData) {
         setSelectedSeq(String(initialData.menuGroupSeq));
         setAdDescription(initialData.contentDescription || '');
-        setFileList([
-          {
-            uid: '-1',
-            name: initialData.fileName || '',
-            status: 'done',
-            url: initialData.filePath || undefined,
-            //originFileObj: initialData.originFileObj as File
-          },
-        ]);
+        if (initialData.originFileObj || initialData.filePath) {
+          setFileList([
+            {
+              uid: String(initialData.id) || '',
+              name: initialData.fileName || '',
+              status: 'done',
+              url: initialData.filePath || undefined,
+              size: initialData.fileSizeKb * 1024,
+              originFileObj: initialData.originFileObj as RcFile,
+            },
+          ]);
+        } else {
+          setFileList([]);
+        }
       } else {
         resetState();
       }
@@ -119,12 +125,24 @@ const AdMenuAddModal: React.FC<AdMenuAddModalProps> = ({
       message.warning('메뉴 그룹을 선택해주세요.');
       return;
     }
+
+    const file = fileList[0];
+    if (!file) {
+      message.warning('광고 이미지를 업로드해주세요.');
+      return;
+    }
     onConfirm({
       selectedItem:
         menuGroupResponse?.data?.content.find(
           (group: IMenuGroup) => group.menuGroupSeq === Number(selectedSeq)
         ) || null,
-      adImage: fileList.length > 0 ? fileList[0] : undefined,
+      adImage: {
+        ...file,
+        name: file.name,
+        url: file.url,
+        size: file.size,
+        originFileObj: file as RcFile,
+      },
       adDescription,
     });
     resetState();
@@ -207,7 +225,7 @@ const AdMenuAddModal: React.FC<AdMenuAddModalProps> = ({
         <Section>
           <LabelWrapper>
             <Text strong style={{ fontSize: '14px', color: '#262626' }}>
-              광고 이미지
+              광고 이미지<RequiredMark>*</RequiredMark>
             </Text>
             {/* <PriorityBadge>매장 설정보다 우선 적용</PriorityBadge> */}
           </LabelWrapper>
