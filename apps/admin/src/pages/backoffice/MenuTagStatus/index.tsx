@@ -11,6 +11,7 @@ import {
 import type { ICampaignMenuGroupSyncStatus } from '@repo/api/types';
 import styled from '@emotion/styled';
 import PageTitle from '@/feature/backoffice/components/PageTitle';
+import GroupButtonItem from './GroupButtonItem';
 
 const { Title, Text } = Typography;
 
@@ -52,30 +53,6 @@ const LeftPanel = styled.div`
   flex-direction: column;
   gap: 8px;
   overflow-y: auto;
-`;
-
-const GroupButton = styled(Button)<{ 'data-active'?: boolean }>`
-  width: 100%;
-  text-align: center;
-
-  ${({ 'data-active': active }) =>
-    active
-      ? `
-        background-color: #1d2a6d;
-        color: #fff;
-        border-color: #1d2a6d;
-        font-weight: 600;
-        &:hover, &:focus {
-          background-color: #1d2a6d;
-          color: #fff;
-          opacity: 0.9;
-        }
-      `
-      : `
-        background-color: #fff;
-        color: #8c8c8c;
-        border-color: #d9d9d9;
-      `}
 `;
 
 // 우측 패널 (테이블 영역)
@@ -391,14 +368,12 @@ const MenuGroupStatus: React.FC = () => {
               </div>
             ) : (
               menuGroups.map((group) => (
-                <GroupButton
+                <GroupButtonItem
                   key={group.menuGroupSeq}
-                  data-active={activeGroupId === group.menuGroupSeq}
+                  group={group}
+                  isActive={activeGroupId === group.menuGroupSeq}
                   onClick={() => setActiveGroupId(group.menuGroupSeq)}
-                  size="large"
-                >
-                  {group.menuGroupName} ({group.menuGroupTag})
-                </GroupButton>
+                />
               ))
             )}
           </LeftPanel>
