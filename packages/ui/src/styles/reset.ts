@@ -121,6 +121,8 @@ export const resetStyles = css`
   body {
     touch-action: pan-x pan-y;
     overscroll-behavior: none;
+    /* 문서 레벨 순간 가로 오버플로로 인한 뷰포트 좌우 흔들림 방지 (세로 스크롤·내부 가로 스크롤 컨테이너에는 영향 없음) */
+    overflow-x: hidden;
   }
   ol,
   ul {
