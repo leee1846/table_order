@@ -471,6 +471,79 @@ export const useSSEHandler = () => {
       });
     },
 
+    // 카테고리(=메뉴) 데이터가 갱신되면, 장바구니에 담긴 동일 menuSeq의
+    // 이름/가격/옵션 정보도 최신 데이터로 동기화한다.
+    // - 수량/선택옵션(quantity)은 유지
+    // - 매칭 실패 시 기존 값 유지
+    // handleMenuMessage(root)와 handleAdMenuMessage에서 공통 사용.
+    syncCartWithLatestMenu: () =>
+      refreshCategoriesData().then((categories) => {
+        if (!categories || categories.length < 1) {
+          return;
+        }
+
+        const cartState = useCartStore.getState();
+        const cartMenus = cartState.data.menus;
+        if (!cartMenus || cartMenus.length < 1) {
+          return;
+        }
+
+        cartMenus.forEach((cartMenu, cartIndex) => {
+          const updatedMenu =
+            categories
+              .flatMap((c) => c.menuInfoList ?? [])
+              .find((m) => m.menuSeq === cartMenu.menuSeq) ?? null;
+
+          if (!updatedMenu) {
+            return;
+          }
+
+          const updatedOptions = cartMenu.selectedOptions.map((opt) => {
+            const latestOpt =
+              updatedMenu.optionGroupList
+                ?.flatMap((g) => g.optionList ?? [])
+                .find((o) => o.optionSeq === opt.optionSeq) ?? null;
+
+            if (!latestOpt) {
+              return opt;
+            }
+
+            return {
+              ...opt,
+              optionName: latestOpt.optionName,
+              optionPrice: latestOpt.optionPrice,
+              localeOptionName: latestOpt.localeOptionName,
+            };
+          });
+
+          const nextCartMenu = {
+            ...cartMenu,
+            menuName: updatedMenu.menuName,
+            menuPrice: updatedMenu.menuPrice,
+            localeMenuName: updatedMenu.localeMenuName,
+            selectedOptions: updatedOptions,
+          };
+
+          const changed =
+            nextCartMenu.menuName !== cartMenu.menuName ||
+            nextCartMenu.menuPrice !== cartMenu.menuPrice ||
+            nextCartMenu.localeMenuName !== cartMenu.localeMenuName ||
+            nextCartMenu.selectedOptions.some((o, i) => {
+              const prev = cartMenu.selectedOptions[i];
+              return (
+                !prev ||
+                o.optionName !== prev.optionName ||
+                o.optionPrice !== prev.optionPrice ||
+                o.localeOptionName !== prev.localeOptionName
+              );
+            });
+
+          if (changed) {
+            cartState.updateCartItem(cartIndex, nextCartMenu);
+          }
+        });
+      }),
+
     // MENU 메시지 핸들러: 메뉴 정보 업데이트 처리
     // 테이블 상세 페이지(/tables/:tableNum)에서는 packages/feature 하위에 공통 컴포넌트를 사용하므로,
     // queryClient.refetchQueries 사용하여 update 처리
@@ -498,76 +571,7 @@ export const useSSEHandler = () => {
         useAddMenuDialogStore.getState().requestClose();
       } else {
         void refreshTableOrderHistoriesData();
-        void refreshCategoriesData().then((categories) => {
-          // 카테고리(=메뉴) 데이터가 갱신되면, 장바구니에 담긴 동일 menuSeq의
-          // 이름/가격/옵션 정보도 최신 데이터로 동기화한다.
-          // - 수량/선택옵션(quantity)은 유지
-          // - 매칭 실패 시 기존 값 유지
-          if (!categories || categories.length < 1) {
-            return;
-          }
-
-          const cartState = useCartStore.getState();
-          const cartMenus = cartState.data.menus;
-          if (!cartMenus || cartMenus.length < 1) {
-            return;
-          }
-
-          cartMenus.forEach((cartMenu, cartIndex) => {
-            const updatedMenu =
-              categories
-                .flatMap((c) => c.menuInfoList ?? [])
-                .find((m) => m.menuSeq === cartMenu.menuSeq) ?? null;
-
-            if (!updatedMenu) {
-              return;
-            }
-
-            const updatedOptions = cartMenu.selectedOptions.map((opt) => {
-              const latestOpt =
-                updatedMenu.optionGroupList
-                  ?.flatMap((g) => g.optionList ?? [])
-                  .find((o) => o.optionSeq === opt.optionSeq) ?? null;
-
-              if (!latestOpt) {
-                return opt;
-              }
-
-              return {
-                ...opt,
-                optionName: latestOpt.optionName,
-                optionPrice: latestOpt.optionPrice,
-                localeOptionName: latestOpt.localeOptionName,
-              };
-            });
-
-            const nextCartMenu = {
-              ...cartMenu,
-              menuName: updatedMenu.menuName,
-              menuPrice: updatedMenu.menuPrice,
-              localeMenuName: updatedMenu.localeMenuName,
-              selectedOptions: updatedOptions,
-            };
-
-            const changed =
-              nextCartMenu.menuName !== cartMenu.menuName ||
-              nextCartMenu.menuPrice !== cartMenu.menuPrice ||
-              nextCartMenu.localeMenuName !== cartMenu.localeMenuName ||
-              nextCartMenu.selectedOptions.some((o, i) => {
-                const prev = cartMenu.selectedOptions[i];
-                return (
-                  !prev ||
-                  o.optionName !== prev.optionName ||
-                  o.optionPrice !== prev.optionPrice ||
-                  o.localeOptionName !== prev.localeOptionName
-                );
-              });
-
-            if (changed) {
-              cartState.updateCartItem(cartIndex, nextCartMenu);
-            }
-          });
-        });
+        void handlersRef.current.syncCartWithLatestMenu();
       }
 
       useModalStore.getState().closeMenuDetail();
@@ -794,14 +798,15 @@ export const useSSEHandler = () => {
     // 메뉴보드 갱신은 handleMenuMessage와 동일 로직 재사용 (장바구니 동기화·다이얼로그 닫기 포함)
     handleAdMenuMessage: () => {
       const { locationPathname, currentShopData } = sseHandlerDataRef.current;
-      if (locationPathname === ROUTES.LOGIN.path) {
+      // 광고는 root(메뉴판) 페이지에서만 노출·갱신되므로 root가 아니면 무시
+      if (locationPathname !== ROUTES.ROOT.path) {
         return;
       }
       const shopCode = currentShopData?.shopCode;
       if (shopCode) {
         handlersRef.current.refetchAdFiles(shopCode);
       }
-      handlersRef.current.handleMenuMessage();
+      void handlersRef.current.syncCartWithLatestMenu();
     },
 
     handleLogoutMessage: async () => {
