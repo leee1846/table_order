@@ -1,0 +1,114 @@
+include:
+  - project: 'sksits/cicd-templates'
+    ref: main
+    file:
+      - '/common/variables.yml'
+      - '/build/nodejs.yml'
+
+stages:
+  - install
+  - lint
+  - test
+  - build
+  - deploy
+
+default:
+  image: reg.skshieldus.com/nexa/node:24
+  tags:
+    - ${RUNNER_TAG}
+
+
+variables:
+  NODE_VERSION: "24"
+  PACKAGE_MANAGER: "pnpm"
+  SKIP_LINT: "false"
+  SKIP_TEST: "true"
+  RUNNER_TAG: nexa
+  NPM_REGISTRY: "http://10.46.234.172:12016/repository/npm/"
+  PNPM_VERSION: "9.0.0"
+  DEPLOY_ENV: "dev"
+
+oidc_test:
+  stage: install
+  image: reg.skshieldus.com/nexa/gradle:7.5-jdk11
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://gitlab.com
+  script:
+    - |
+      echo "== STS 호출 =="
+      curl -s -X POST "https://sts.ap-northeast-2.amazonaws.com/" \
+        --data-urlencode "Action=AssumeRoleWithWebIdentity" \
+        --data-urlencode "Version=2011-06-15" \
+        --data-urlencode "RoleArn=arn:aws:iam::228768154203:role/nexa-gitlab-oidc-role" \
+        --data-urlencode "RoleSessionName=gitlab-oidc-test" \
+        --data-urlencode "WebIdentityToken=${GITLAB_OIDC_TOKEN}"
+      echo
+
+install_deps:
+  stage: install
+  before_script:
+    - npm config set registry "$NPM_REGISTRY"
+    - npm install -g pnpm@${PNPM_VERSION}
+  script:
+    - pnpm install --no-frozen-lockfile
+  artifacts:
+    paths:
+      - node_modules/
+      - packages/*/node_modules/
+      - apps/*/node_modules/
+    expire_in: 1 hour
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+lint_job:
+  stage: lint
+  dependencies:
+    - install_deps
+  before_script:
+    - npm config set registry "$NPM_REGISTRY"
+    - npm install -g pnpm@${PNPM_VERSION}
+  script:
+    - pnpm lint
+
+build_job:
+  stage: build
+  dependencies:
+    - install_deps
+  before_script:
+    - npm config set registry "$NPM_REGISTRY"
+    - npm install -g pnpm@${PNPM_VERSION}
+  script:
+    - echo "[INFO] build env = $DEPLOY_ENV"
+    - pnpm --filter admin build:$DEPLOY_ENV
+    - pnpm --filter menu build:$DEPLOY_ENV
+    - ls -lh apps/admin/dist apps/menu/dist
+    - ls -lh apps/admin/dist/assets apps/menu/dist/assets 
+  artifacts:
+    name: "${CI_PROJECT_NAME}-${CI_COMMIT_SHORT_SHA}-${DEPLOY_ENV}"
+    paths:
+      - apps/admin/dist
+      - apps/menu/dist/
+    expire_in: 1 week
+
+egress_check:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - timeout 10 bash -c 'echo > /dev/tcp/sts.ap-northeast-2.amazonaws.com/443' && echo "[OK] STS 443 도달" || echo "[FAIL] STS egress 막힘"
+    - timeout 10 bash -c 'echo > /dev/tcp/ec2.ap-northeast-2.amazonaws.com/443' && echo "[OK] ec2 443 도달" || echo "[FAIL] ec2 egress 막힘"
+    - timeout 10 bash -c 'echo > /dev/tcp/s3.ap-northeast-2.amazonaws.com/443' && echo "[OK] S3 443 도달" || echo "[FAIL] S3 egress 막힘"
+    - env | grep -iE "proxy" || echo "프록시 환경 변수 없음"
+    
+
+# deploy_job:
+#   stage: deploy
+#   image: "$DEPLOY_IMAGE"
+#   dependencies:
+#     - build_job
+#   variables:
+#     GIT_STRATEGY: none 
+#   script:
+#     - aws sts get-caller-identity
