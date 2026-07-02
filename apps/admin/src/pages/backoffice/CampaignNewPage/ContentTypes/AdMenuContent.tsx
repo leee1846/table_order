@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Button, Tooltip, Space } from 'antd';
+import { Typography, Button, Tooltip, Space, App } from 'antd';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -186,6 +186,7 @@ const AdMenuContent: React.FC<AdMenuContentProps> = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const { message } = App.useApp();
 
   // --- Custom Hook 적용 ---
   const { handleDragStart, handleDragEnter, handleDragEnd } =
@@ -198,6 +199,20 @@ const AdMenuContent: React.FC<AdMenuContentProps> = ({
   const handleConfirmAdTag = (data: adMenuData) => {
     if (!data.selectedItem) {
       // 메뉴가 선택되지 않았으면 아무것도 하지 않음
+      return;
+    }
+
+    const selectedMenuGroupSeq = data.selectedItem?.menuGroupSeq;
+
+    // 수정 모드가 아닐 때, 또는 수정 모드이지만 menuGroupSeq가 변경되었을 때 중복 체크
+    const isDuplicate = menuItems.some(
+      (item) =>
+        item.menuGroupSeq === selectedMenuGroupSeq &&
+        item.id !== editingItem?.id
+    );
+
+    if (isDuplicate) {
+      message.warning('이미 추가된 메뉴 그룹입니다.');
       return;
     }
 
